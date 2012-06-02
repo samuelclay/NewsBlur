@@ -34,6 +34,10 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         this.$el.bind('mouseleave', this.mouseleave);
 
         this.model.story_view = this;
+        this.story_share_view = new NEWSBLUR.Views.StoryShareView({
+            model: this.model, 
+            el: this.el
+        });
     },
     
     // =============
@@ -44,103 +48,96 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         this.feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
         this.classifiers = NEWSBLUR.assets.classifiers[this.model.get('story_feed_id')];
         
-        this.$el.html(this.render_to_string());
+        this.$el.html(this.template({
+            story               : this.model,
+            feed                : NEWSBLUR.reader.flags.river_view && this.feed,
+            tag                 : _.first(this.model.get("story_tags")),
+            title               : this.make_story_title(),
+            authors_score       : this.classifiers.authors[this.model.get('story_authors')],
+            tags_score          : this.classifiers.tags,
+            options             : this.options
+        }));
         this.toggle_classes();
         this.toggle_read_status();
         this.generate_gradients();
-        
-        this.$el.data('story_id', this.model.id).data('feed_id', this.model.get('story_feed_id'));
-        
+        this.render_comments();
+
+        // this.$el.data('story_id', this.model.id).data('feed_id', this.model.get('story_feed_id'));
+
         return this;
     },
     
-    render_to_string: function() {
-        var $story_title = _.template('\
-            <div class="NB-feed-story-header">\
-                <div class="NB-feed-story-header-feed">\
-                    <% if (feed) { %>\
-                        <div class="NB-feed-story-feed">\
-                            <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
-                            <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
-                        </div>\
-                    <% } %>\
-                </div>\
-                <div class="NB-feed-story-header-info">\
-                    <% if (story.get("story_authors")) { %>\
-                        <div class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
-                            <%= story.get("story_authors") %>\
-                        </div>\
-                    <% } %>\
-                    <% if (story.get("story_tags", []).length) { %>\
-                        <div class="NB-feed-story-tags">\
-                            <% _.each(story.get("story_tags"), function(tag) { %>\
-                                <div class="NB-feed-story-tag <% if (tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
-                                    <%= tag %>\
-                                </div>\
-                            <% }) %>\
-                        </div>\
-                    <% } %>\
-                    <div class="NB-feed-story-title-container">\
-                        <div class="NB-feed-story-sentiment"></div>\
-                        <div class="NB-feed-story-manage-icon"></div>\
-                        <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
+    template: _.template('\
+        <div class="NB-feed-story-header">\
+            <div class="NB-feed-story-header-feed">\
+                <% if (feed) { %>\
+                    <div class="NB-feed-story-feed">\
+                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                        <span class="NB-feed-story-header-title"><%= feed.get("feed_title") %></span>\
                     </div>\
-                    <% if (story.get("long_parsed_date")) { %>\
-                        <span class="NB-feed-story-date">\
-                            <% if (story.has_modifications()) { %>\
-                                <div class="NB-feed-story-hide-changes" \
-                                     title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %>\
-                                            story modifications">\
-                                </div>\
-                            <% } %>\
-                            <%= story.get("long_parsed_date") %>\
-                        </span>\
-                    <% } %>\
-                </div>\
+                <% } %>\
             </div>\
-            <div class="NB-feed-story-content">\
-                <%= story.get("story_content") %>\
-            </div>\
-            <% if (story.get("comment_count") || story.get("share_count")) { %>\
-                <div class="NB-feed-story-comments">\
-                    this.make_story_share_comments(story)\
-                </div>\
-            <% } %>\
-            <div class="NB-feed-story-sideoptions-container">\
-                <div class="NB-sideoption NB-feed-story-train">\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title">Train this story</div>\
-                </div>\
-                <div class="NB-sideoption NB-feed-story-save">\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save this story" %></div>\
-                </div>\
-                <div class="NB-sideoption NB-feed-story-share">\
-                    <div class="NB-sideoption-icon">&nbsp;</div>\
-                    <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
-                </div>\
-                <div class="NB-sideoption-share-wrapper">\
-                    <div class="NB-sideoption-share">\
-                        <div class="NB-sideoption-share-wordcount"></div>\
-                        <div class="NB-sideoption-share-optional">Optional</div>\
-                        <div class="NB-sideoption-share-title">Comments:</div>\
-                        <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
-                        <div class="NB-sideoption-share-save NB-modal-submit-button">Share</div>\
+            <div class="NB-feed-story-header-info">\
+                <% if (story.get("story_authors")) { %>\
+                    <div class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
+                        <%= story.get("story_authors") %>\
                     </div>\
+                <% } %>\
+                <% if (story.get("story_tags", []).length) { %>\
+                    <div class="NB-feed-story-tags">\
+                        <% _.each(story.get("story_tags"), function(tag) { %>\
+                            <div class="NB-feed-story-tag <% if (tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
+                                <%= tag %>\
+                            </div>\
+                        <% }) %>\
+                    </div>\
+                <% } %>\
+                <div class="NB-feed-story-title-container">\
+                    <div class="NB-feed-story-sentiment"></div>\
+                    <div class="NB-feed-story-manage-icon"></div>\
+                    <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
+                </div>\
+                <% if (story.get("long_parsed_date")) { %>\
+                    <span class="NB-feed-story-date">\
+                        <% if (story.has_modifications()) { %>\
+                            <div class="NB-feed-story-hide-changes" \
+                                 title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %>\
+                                        story modifications">\
+                            </div>\
+                        <% } %>\
+                        <%= story.get("long_parsed_date") %>\
+                    </span>\
+                <% } %>\
+            </div>\
+        </div>\
+        <div class="NB-feed-story-content">\
+            <%= story.get("story_content") %>\
+        </div>\
+        <div class="NB-feed-story-share-container"></div>\
+        <div class="NB-feed-story-sideoptions-container">\
+            <div class="NB-sideoption NB-feed-story-train">\
+                <div class="NB-sideoption-icon">&nbsp;</div>\
+                <div class="NB-sideoption-title">Train this story</div>\
+            </div>\
+            <div class="NB-sideoption NB-feed-story-save">\
+                <div class="NB-sideoption-icon">&nbsp;</div>\
+                <div class="NB-sideoption-title"><%= story.get("starred") ? "Saved" : "Save this story" %></div>\
+            </div>\
+            <div class="NB-sideoption NB-feed-story-share">\
+                <div class="NB-sideoption-icon">&nbsp;</div>\
+                <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
+            </div>\
+            <div class="NB-sideoption-share-wrapper">\
+                <div class="NB-sideoption-share">\
+                    <div class="NB-sideoption-share-wordcount"></div>\
+                    <div class="NB-sideoption-share-optional">Optional</div>\
+                    <div class="NB-sideoption-share-title">Comments:</div>\
+                    <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
+                    <div class="NB-sideoption-share-save NB-modal-submit-button">Share</div>\
                 </div>\
             </div>\
-        ', {
-            story           : this.model,
-            feed            : NEWSBLUR.reader.flags.river_view && this.feed,
-            tag             : _.first(this.model.get("story_tags")),
-            title           : this.make_story_title(),
-            authors_score   : this.classifiers.authors[this.model.get('story_authors')],
-            tags_score      : this.classifiers.tags,
-            options         : this.options
-        });
-        
-        return $story_title;
-    },
+        </div>\
+    '),
     
     generate_gradients: function() {
         var $header = this.$('.NB-feed-story-header-feed');
@@ -166,6 +163,13 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         });
         
         return title;
+    },
+    
+    render_comments: function() {
+        if (this.model.get("comment_count") || this.model.get("share_count")) {
+            var $comments = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).el;
+            this.$('.NB-feed-story-share-container').replaceWith($comments);
+        }
     },
     
     // ============
@@ -374,14 +378,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     },
     
     toggle_feed_story_share_dialog: function() {
-
-            $.targetIs(e, { tagSelector: '.NB-feed-story-share' }, function($t, $p){
-                e.preventDefault();
-                var $story = $t.closest('.NB-feed-story');
-                var feed_id = $story.data('feed_id');
-                var story_id = $story.data('story_id');
-                self.toggle_feed_story_share_dialog(story_id, feed_id);
-            });
+        // Check story_share_view.js
     }
             
 

@@ -20,45 +20,40 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     render: function() {
-        this.$el.html(this.render_to_string());
+        this.$el.html(this.template({
+            story    : this.model,
+            feed     : NEWSBLUR.reader.flags.river_view && NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
+            tag      : _.first(this.model.get("story_tags")),
+            options  : this.options
+        }));
         this.toggle_classes();
         this.toggle_read_status();
         
         return this;
     },
     
-    render_to_string: function() {
-        var is_river = NEWSBLUR.reader.flags.river_view;
-        var $story_title = _.template('\
-            <div class="NB-storytitles-sentiment"></div>\
-            <a href="<%= story.get("story_permalink") %>" class="story_title">\
-                <% if (feed) { %>\
-                    <div class="NB-story-feed">\
-                        <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
-                        <span class="feed_title"><%= feed.get("feed_title") %></span>\
-                    </div>\
-                <% } %>\
-                <div class="NB-storytitles-star"></div>\
-                <div class="NB-storytitles-share"></div>\
-                <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
-                <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
-                <% if (tag) { %>\
-                    <span class="NB-storytitles-tags">\
-                        <span class="NB-storytitles-tag"><%= tag %></span>\
-                    </span>\
-                <% } %>\
-            </a>\
-            <span class="story_date"><%= story.get("short_parsed_date") %></span>\
-            <div class="NB-story-manage-icon"></div>\
-        ', {
-            story    : this.model,
-            feed     : is_river && NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
-            tag      : _.first(this.model.get("story_tags")),
-            options  : this.options
-        });
-        
-        return $story_title;
-    },
+    template: _.template('\
+        <div class="NB-storytitles-sentiment"></div>\
+        <a href="<%= story.get("story_permalink") %>" class="story_title">\
+            <% if (feed) { %>\
+                <div class="NB-story-feed">\
+                    <img class="feed_favicon" src="<%= $.favicon(feed) %>">\
+                    <span class="feed_title"><%= feed.get("feed_title") %></span>\
+                </div>\
+            <% } %>\
+            <div class="NB-storytitles-star"></div>\
+            <div class="NB-storytitles-share"></div>\
+            <span class="NB-storytitles-title"><%= story.get("story_title") %></span>\
+            <span class="NB-storytitles-author"><%= story.get("story_authors") %></span>\
+            <% if (tag) { %>\
+                <span class="NB-storytitles-tags">\
+                    <span class="NB-storytitles-tag"><%= tag %></span>\
+                </span>\
+            <% } %>\
+        </a>\
+        <span class="story_date"><%= story.get("short_parsed_date") %></span>\
+        <div class="NB-story-manage-icon"></div>\
+    '),
     
     // ============
     // = Bindings =

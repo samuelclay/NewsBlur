@@ -90,7 +90,7 @@
             // = Bindings =
             // ============
     
-            _.bindAll(this, 'show_stories_error', 'make_story_share_comment');
+            _.bindAll(this, 'show_stories_error');
     
             // ==================
             // = Initialization =
@@ -1473,7 +1473,7 @@
                 var $iframe = this.$s.$feed_iframe.contents();
                 this.fetch_story_locations_in_story_frame(stories_count, false, $iframe);
                 if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
-                    this.prefetch_story_locations_in_feed_view();
+                    // this.prefetch_story_locations_in_feed_view();
                 }
             } else {
                 if (this.story_view == 'page') {
@@ -1488,7 +1488,7 @@
                       }, this), 250);
                   }
                 } else if (this.story_view == 'feed') {
-                    this.prefetch_story_locations_in_feed_view();
+                    // this.prefetch_story_locations_in_feed_view();
                 } else if (this.story_view == 'story' && !this.counts['find_next_unread_on_page_of_feed_stories_load']) {
                     this.show_next_story(1);
                 }
@@ -1617,7 +1617,7 @@
                 }
                 this.show_story_titles_above_intelligence_level({'animate': false});
                 this.flags['story_titles_loaded'] = true;
-                this.prefetch_story_locations_in_feed_view();
+                // this.prefetch_story_locations_in_feed_view();
                 this.scroll_story_titles_to_show_selected_story_title();
                 // this.fill_out_story_titles();
             }
@@ -1695,7 +1695,7 @@
                 }
                 this.scroll_story_titles_to_show_selected_story_title();
                 // this.fill_out_story_titles();
-                this.prefetch_story_locations_in_feed_view();
+                // this.prefetch_story_locations_in_feed_view();
                 this.hide_stories_progress_bar();
             }
         },
@@ -2233,189 +2233,10 @@
                 });
             }
         },
-        
-        toggle_feed_story_share_dialog: function(story_id, feed_id, options) {
-            options = options || {};
-            var $feed_story = this.find_story_in_feed_view(story_id);
-            var $sideoption = $('.NB-sideoption.NB-feed-story-share', $feed_story);
-            var $share = $('.NB-sideoption-share-wrapper', $feed_story);
-            var $story_content = $('.NB-feed-story-content', $feed_story);
-            var $comment_input = $('.NB-sideoption-share-comments', $share);
-            var $story_comments = $('.NB-feed-story-comments', $feed_story);
-            
-            if (options.close ||
-                ($sideoption.hasClass('NB-active') && !options.resize_open)) {
-                // Close
-                $share.animate({
-                    'height': 0
-                }, {
-                    'duration': 300,
-                    'easing': 'easeInOutQuint',
-                    'queue': false,
-                    'complete': function() {
-                        $('.NB-error', $share).remove();
-                    }
-                });
-                $sideoption.removeClass('NB-active');
-                if ($story_content.data('original_height')) {
-                    $story_content.animate({
-                        'height': $story_content.data('original_height')
-                    }, {
-                        'duration': 300,
-                        'easing': 'easeInOutQuint',
-                        'queue': false,
-                        'complete': _.bind(this.fetch_story_locations_in_feed_view, this, {'reset_timer': true})
-                    });
-                    $story_content.removeData('original_height');
-                }
-            } else {
-                // Open/resize
-                $sideoption.addClass('NB-active');
-                var $share_clone = $share.clone();
-                var full_height = $share_clone.css({
-                    'height': 'auto',
-                    'position': 'absolute',
-                    'visibility': 'hidden'
-                }).appendTo($share.parent()).height();
-                $share_clone.remove();
-                $share.animate({
-                    'height': full_height
-                }, {
-                    'duration': 350,
-                    'easing': 'easeInOutQuint',
-                    'queue': false,
-                    'complete': function() {
-                        $comment_input.focus();
-                    }
-                });
-            
-                var sideoptions_height = $('.NB-feed-story-sideoptions-container', $feed_story).innerHeight() + 12;
-                var content_height = $story_content.innerHeight() + $story_comments.innerHeight();
-                // console.log(["heights", full_height + sideoptions_height, content_height]);
-                if (sideoptions_height + full_height > content_height) {
-                    // this.$s.$feed_stories.scrollTo(this.$s.$feed_stories.scrollTop() + sideoptions_height, {
-                    //     'duration': 350,
-                    //     'queue': false,
-                    //     'easing': 'easeInOutQuint'
-                    // });
-                    var original_height = $story_content.height();
-                    $story_content.animate({
-                        'height': original_height + ((full_height + sideoptions_height) - content_height)
-                    }, {
-                        'duration': 350,
-                        'easing': 'easeInOutQuint',
-                        'queue': false,
-                        'complete': _.bind(this.fetch_story_locations_in_feed_view, this, {'reset_timer': true})
-                    }).data('original_height', original_height);
-                }
-                this.update_share_button_label($comment_input);
-                var share = _.bind(function(e) {
-                    e.preventDefault();
-                    this.mark_story_as_shared(story_id, {'source': 'sideoption'});
-                }, this);
-                $('.NB-sideoption-share-comments', $share).bind('keydown', 'ctrl+return', share);
-                $('.NB-sideoption-share-comments', $share).bind('keydown', 'meta+return', share);
 
-            }
-        },
-        
-        mark_story_as_shared: function(story_id, options) {
-            options = options || {};
-            story_id = story_id || this.active_story.id;
-            var story = this.model.get_story(story_id);
-            var $story_title = this.find_story_in_story_titles(story_id);
-            var $feed_story = this.find_story_in_feed_view(story_id);
-            var $share_star = $('.NB-storytitles-share', $story_title);
-            var $share_button = $('.NB-sideoption-share-save', $feed_story);
-            var $share_button_menu = $('.NB-menu-manage-story-share-save');
-            var $share_menu = $share_button_menu.closest('.NB-sideoption-share');
-            var $share_sideoption = $('.NB-feed-story-share .NB-sideoption-title', $feed_story);
-            var $comments_sideoptions = $('.NB-sideoption-share-comments', $feed_story);
-            var $comments_menu = $('.NB-sideoption-share-comments', $share_menu);
-            var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
-            var feed = NEWSBLUR.reader.model.get_feed(NEWSBLUR.reader.active_feed);
-            var source_user_id = feed && feed.get('user_id');
-            
-            $story_title.addClass('NB-story-shared');
-            $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
-            $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
-            this.model.mark_story_as_shared(story_id, story.get('story_feed_id'), comments, source_user_id, _.bind(function(data) {
-                this.toggle_feed_story_share_dialog(story_id, story.get('story_feed_id'), {'close': true});
-                this.hide_confirm_story_share_menu_item(true);
-                $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
-                $share_sideoption.text('Shared').closest('.NB-sideoption');
-                $feed_story.addClass('NB-story-shared');
-                $comments_menu.val(comments);
-                $comments_sideoptions.val(comments);
-                var $new_comments = $.make('div', { className: 'NB-feed-story-comments' }, this.make_story_share_comments(data.story));
-                var $old_comments = $('.NB-feed-story-comments', $feed_story);
-                if (!$old_comments.length) {
-                    $old_comments = $.make('div', { className: 'NB-feed-story-comments' });
-                    $('.NB-feed-story-content', $feed_story).after($old_comments);
-                }
-                $old_comments.replaceWith($new_comments);
-                
-                $share_star.attr({'title': 'Shared!'});
-                $share_star.tipsy({
-                    gravity: 'sw',
-                    fade: true,
-                    trigger: 'manual',
-                    offsetOpposite: -1
-                });
-                var tipsy = $share_star.data('tipsy');
-                tipsy.enable();
-                tipsy.show();
-
-                $share_star.animate({
-                    'opacity': 1
-                }, {
-                    'duration': 850,
-                    'queue': false,
-                    'complete': function() {
-                        if (tipsy.enabled) {
-                            tipsy.hide();
-                            tipsy.disable();
-                        }
-                    }
-                });
-                this.fetch_story_locations_in_feed_view({'reset_timer': true});
-            }, this), _.bind(function(data) {
-                var message = data && data.message || "Sorry, this story could not be shared. Probably a bug.";
-                if (!NEWSBLUR.Globals.is_authenticated) {
-                    message = "You need to be logged in to share a story.";
-                }
-                var $error = $.make('div', { className: 'NB-error' }, message);
-                $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
-                $share_button.siblings('.NB-error').remove();
-                $share_button.after($error);
-                if ($share_button_menu.length) {
-                    $share_button_text.removeClass('NB-disabled').text('Share');
-                    $share_button_text.siblings('.NB-error').remove();
-                    $share_button_text.after($error.clone());
-                }
-                this.toggle_feed_story_share_dialog(story_id, story.get('story_feed_id'), {'resize_open': true});
-            }, this));
-            
-            this.blur_to_page();
-        },
-        
-        update_share_button_label: function($t) {
-            if (!$t) $t = $('.NB-menu-manage-story-share-save');
-            var $share = $t.closest('.NB-sideoption-share');
-            var $comment_input = $('.NB-sideoption-share-comments', $share);
-            var $share_button = $('.NB-sideoption-share-save,.NB-menu-manage-story-share-save', $share);
-
-            if (!_.string.isBlank($comment_input.val())) {
-                $share_button.text('Share with comment');
-            } else {
-                $share_button.text('Share');
-            }
-        },
-        
-        count_selected_words_when_sharing_story: function($feed_story) {
-            var $wordcount = $('.NB-sideoption-share-wordcount', $feed_story);
-            
-        },
+        // ===========
+        // = Send To =
+        // ===========
         
         send_story_to_instapaper: function(story_id) {
             var story = this.model.get_story(story_id);
@@ -3116,7 +2937,7 @@
             }
             
             if (!stories || !stories.length) {
-                this.fetch_story_locations_in_feed_view({'reset_timer': true});
+                // this.fetch_story_locations_in_feed_view({'reset_timer': true});
             }
             
             if (first_load) this.show_stories_preference_in_feed_view(true);
@@ -3277,230 +3098,6 @@
             }
         },
         
-        // ==================
-        // = Story Comments =
-        // ==================
-        
-        make_story_share_comments: function(story) {
-            var self = this;
-            var $comments = $([]);
-            
-            if (story.get('share_count')) {
-                var $public_teaser = $.make('div', { className: 'NB-story-comments-shares-teaser-wrapper' }, [
-                    $.make('div', { className: 'NB-story-comments-shares-teaser' }, [
-                        (story.get('share_count') && $.make('div', { className: 'NB-right' }, [
-                            'Shared by ',
-                            $.make('b', story.get('share_count')),
-                            ' ',
-                            Inflector.pluralize('person', story.get('share_count'))
-                        ])),
-                        (story.get('share_count') && $.make('span', [
-                            (story.get('share_count_public') && $.make('div', { className: 'NB-story-share-profiles NB-story-share-profiles-public' }, 
-                                _.map(story.get('shared_by_public'), function(user_id) { return self.make_story_share_profile(user_id); })
-                            )),
-                            (story.get('share_count_friends') && $.make('div', { className: 'NB-story-share-label' }, 'Shared by: ')),
-                            (story.get('share_count_friends') && $.make('div', { className: 'NB-story-share-profiles NB-story-share-profiles-friends' }, 
-                                _.map(story.get('shared_by_friends'), function(user_id) { return self.make_story_share_profile(user_id); })
-                            ))
-                        ]))
-                    ])
-                ]);
-                $comments.push($public_teaser);
-            }
-            
-            if (story.get('comment_count_friends')) {
-                _.each(story.get('comments'), _.bind(function(comment) {
-                    var $comment = this.make_story_share_comment(comment);
-                    $comments.push($comment);
-                }, this));
-            }
-            
-            if (story.get('comment_count_public')) {
-                var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
-                    $.make('div', { className: 'NB-story-comments-public-teaser' }, [
-                        'There ',
-                        Inflector.pluralize('is', story.get('comment_count_public')),
-                        ' ',
-                        $.make('b', story.get('comment_count_public')),
-                        ' public ',
-                        Inflector.pluralize('comment', story.get('comment_count_public'))
-                    ])
-                ]);
-                $comments.push($public_teaser);
-            }
-            
-            return $comments;
-        },
-        
-        make_story_share_comment: function(comment) {
-            var user = this.model.user_profiles.find(comment.user_id);
-            var comments = comment.comments;
-            comments = comments.replace(/\n+/g, '<br><br>');
-            var reshare_class = comment.source_user_id ? 'NB-story-comment-reshare' : '';
-            
-            var $comment = $.make('div', { className: 'NB-story-comment' }, [
-                $.make('div', { className: 'NB-user-avatar ' + reshare_class }, [
-                    $.make('img', { src: user.get('photo_url') })
-                ]),
-                $.make('div', { className: 'NB-story-comment-author-container' }, [
-                    (comment.source_user_id && $.make('div', { className: 'NB-story-comment-reshares' }, [
-                        this.make_story_share_profile(comment.source_user_id)
-                    ])),
-                    $.make('div', { className: 'NB-story-comment-username' }, user.get('username')),
-                    $.make('div', { className: 'NB-story-comment-date' }, comment.shared_date + ' ago'),
-                    (comment.user_id == NEWSBLUR.Globals.user_id && $.make('div', { className: 'NB-story-comment-edit-button NB-story-comment-share-edit-button' }, [
-                        $.make('div', { className: 'NB-story-comment-edit-button-wrapper' }, 'edit')
-                    ])),
-                    $.make('div', { className: 'NB-story-comment-reply-button' }, [
-                        $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, 'reply')
-                    ])
-                ]),
-                $.make('div', { className: 'NB-story-comment-content' }, comments),
-                (comment.replies.length && this.make_story_share_comment_replies(comment.replies))
-            ]).data('user_id', user.get('id'));
-            
-            return $comment;
-        },
-        
-        make_story_share_comment_replies: function(replies) {
-            var user_id = NEWSBLUR.Globals.user_id;
-            var $replies = _.map(replies, _.bind(function(reply) {
-                var user = this.model.get_user(reply.user_id);
-                return $.make('div', { className: 'NB-story-comment-reply' }, [
-                    $.make('img', { className: 'NB-user-avatar NB-story-comment-reply-photo', src: user.get('photo_url') }),
-                    $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, user.get('username')),
-                    $.make('div', { className: 'NB-story-comment-date NB-story-comment-reply-date' }, reply.publish_date + ' ago'),
-                    (reply.user_id == user_id && $.make('div', { className: 'NB-story-comment-edit-button NB-story-comment-reply-edit-button' }, [
-                        $.make('div', { className: 'NB-story-comment-edit-button-wrapper' }, 'edit')
-                    ])),
-                    $.make('div', { className: 'NB-story-comment-reply-content' }, reply.comments)
-                ]).data('user_id', user.get('id'));
-            }, this));
-            $replies = $.make('div', { className: 'NB-story-comment-replies' }, $replies);
-
-            return $replies;
-        },
-        
-        open_social_comment_reply_form: function($comment, $reply) {
-            var profile = this.model.user_profile;
-            var is_editing = !!$reply;
-            
-            var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
-                $.make('img', { className: 'NB-story-comment-reply-photo', src: profile.get('photo_url') }),
-                $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, profile.get('username')),
-                $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments' }),
-                $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, is_editing ? 'Save' : 'Post')
-            ]);
-            this.remove_social_comment_reply_form();
-            
-            if (is_editing) {
-                var original_message = $('.NB-story-comment-reply-content', $reply).text();
-                $('input', $form).val(original_message);
-                $form.data('original_message', original_message);
-                $reply.hide().addClass('NB-story-comment-reply-hidden');
-                $reply.after($form);
-            } else {
-                $comment.append($form);
-            }
-            
-            $('.NB-story-comment-reply-comments', $form).bind('keydown', 'enter', 
-                _.bind(this.save_social_comment_reply, this, $comment, $form));
-            $('.NB-story-comment-reply-comments', $form).bind('keydown', 'return', 
-                _.bind(this.save_social_comment_reply, this, $comment, $form));
-            $('.NB-story-comment-reply-comments', $form).bind('keydown', 'esc', _.bind(function(e) {
-                e.preventDefault();
-                this.remove_social_comment_reply_form();
-            }, this));
-            $('input', $form).focus();
-            this.fetch_story_locations_in_feed_view();
-        },
-        
-        remove_social_comment_reply_form: function() {
-            $('.NB-story-comment-reply-form').remove();
-            $('.NB-story-comment-reply-hidden').show();
-        },
-        
-        save_social_comment_reply: function($comment, $form) {
-            var $feed_story = $comment.closest('.NB-feed-story');
-            $form = $form || $(".NB-story-comment-reply-form", $feed_story);
-            var $submit = $(".NB-modal-submit-button", $form);
-            var story_id = $comment.closest('.NB-feed-story').data('story_id');
-            var story = this.model.get_story(story_id);
-            var comment_user_id = $comment.data('user_id').replace('social:', '');
-            var comment_reply = $('.NB-story-comment-reply-comments', $form).val();
-            var original_message = $form.data('original_message');
-            
-            if (!comment_reply || comment_reply.length <= 1) {
-                this.remove_social_comment_reply_form();
-                this.fetch_story_locations_in_feed_view();
-                return;
-            }
-            
-            if ($submit.hasClass('NB-disabled')) {
-                return;
-            }
-            
-            $submit.addClass('NB-disabled').text('Posting...');
-            this.model.save_comment_reply(story_id, story.get('story_feed_id'), 
-                                          comment_user_id, comment_reply, 
-                                          original_message,
-                                          _.bind(function(data) {
-                var $new_comment = this.make_story_share_comment(data.comment);
-                $comment.replaceWith($new_comment);
-                this.fetch_story_locations_in_feed_view();
-            }, this), _.bind(function(data) {
-                var message = data && data.message || "Sorry, this reply could not be posted. Probably a bug.";
-                if (!NEWSBLUR.Globals.is_authenticated) {
-                    message = "You need to be logged in to reply to a comment.";
-                }
-                var $error = $.make('div', { className: 'NB-error' }, message);
-                $submit.removeClass('NB-disabled').text('Post');
-                $form.find('.NB-error').remove();
-                $form.append($error);
-                this.fetch_story_locations_in_feed_view();
-            }, this));
-        },
-        
-        make_story_share_profile: function(user_id) {
-            var user = this.model.user_profiles.find(user_id);
-            
-            var $profile = $.make('div', { className: 'NB-story-share-profile' }, [
-                $.make('div', { className: 'NB-user-avatar', title: user.get('username') }, [
-                    $.make('img', { src: user.get('photo_url') })
-                ]).tipsy({
-                    delayIn: 50,
-                    gravity: 's',
-                    fade: true,
-                    offset: 3
-                })
-            ]).data('user_id', user_id);
-            
-            return $profile;
-        },
-        
-        load_public_story_comments: function(story_id) {
-            var story = this.model.get_story(story_id);
-            this.model.load_public_story_comments(story_id, story.get('story_feed_id'), _.bind(function(data) {
-                var $comments = $.make('div', { className: 'NB-story-comments-public' });
-                var comments = _.select(data.comments, _.bind(function(comment) {
-                    return !_.contains(this.model.user_profile.get('following_user_ids'), comment.user_id);
-                }, this));
-                var $header = $.make('div', { 
-                    className: 'NB-story-comments-public-header-wrapper' 
-                }, $.make('div', { 
-                    className: 'NB-story-comments-public-header' 
-                }, Inflector.pluralize(' public comment', comments.length, true))).prependTo($comments);
-                _.each(comments, _.bind(function(comment) {
-                    var $comment = this.make_story_share_comment(comment);
-                    $comments.append($comment);
-                }, this));
-                
-                var $story = this.find_story_in_feed_view(story_id);
-                $('.NB-story-comments-public-teaser-wrapper', $story).replaceWith($comments);
-                this.fetch_story_locations_in_feed_view();
-            }, this));
-        },
-        
         // ===================
         // = Taskbar - Story =
         // ===================
@@ -3584,7 +3181,7 @@
                 
                 this.show_stories_preference_in_feed_view();
                 if (!this.flags['feed_view_positions_calculated']) {
-                    this.prefetch_story_locations_in_feed_view();
+                    // this.prefetch_story_locations_in_feed_view();
                 }
             } else if (view == 'story') {
                 $story_pane.animate({
@@ -4319,7 +3916,7 @@
             if (type == 'story') {
                 var share = _.bind(function(e) {
                     e.preventDefault();
-                    this.mark_story_as_shared(story_id, {'source': 'menu'});
+                    this.active_story.story_share_view.mark_story_as_shared({'source': 'menu'});
                 }, this);
                 $('.NB-sideoption-share-comments', $manage_menu_container).bind('keydown', 'ctrl+return', share);
                 $('.NB-sideoption-share-comments', $manage_menu_container).bind('keydown', 'meta+return', share);
@@ -4861,7 +4458,7 @@
                     // NEWSBLUR.log(['Show/Hide stories', $stories_show.filter(':visible').length, $stories_show.length, $stories_hide.filter(':visible').length, $stories_hide.length]);
                     setTimeout(function() {
                         self.flags['feed_view_positions_calculated'] = false;
-                        self.prefetch_story_locations_in_feed_view();
+                        // self.prefetch_story_locations_in_feed_view();
                     }, 500);
                 }
             }
@@ -6232,63 +5829,6 @@
                 e.preventDefault();
                 var feed_id = self.active_feed;
                 self.follow_user_in_tryfeed(feed_id);
-            }); 
-            
-            // = Social =======================================================
-            
-            $.targetIs(e, { tagSelector: '.NB-story-comments-public-teaser' }, function($t, $p){
-                e.preventDefault();
-                var story_id = $t.closest('.NB-feed-story').data('story_id');
-                self.load_public_story_comments(story_id);
-            });
-            $.targetIs(e, { tagSelector: '.NB-story-share-profile .NB-user-avatar' }, function($t, $p){
-                e.preventDefault();
-                var user_id = $t.closest('.NB-story-share-profile').data('user_id');
-                $t.tipsy('hide');
-                self.open_social_profile_modal(user_id);
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-story-comment .NB-user-avatar' }, function($t, $p){
-                e.preventDefault();
-                var $parent = $t.closest('.NB-story-comment-reply');
-                if (!$parent.length) {
-                    $parent = $t.closest('.NB-story-comment');
-                }
-                var user_id = $parent.data('user_id');
-                self.open_social_profile_modal(user_id);
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-username' }, function($t, $p){
-                e.preventDefault();
-                var $parent = $t.closest('.NB-story-comment-reply');
-                if (!$parent.length) {
-                    $parent = $t.closest('.NB-story-comment');
-                }
-                var user_id = $parent.data('user_id');
-                self.open_social_profile_modal(user_id);
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-reply-button' }, function($t, $p){
-                e.preventDefault();
-                var $comment = $t.closest('.NB-story-comment');
-                self.open_social_comment_reply_form($comment);
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-share-edit-button' }, function($t, $p){
-                e.preventDefault();
-                var $story = $t.closest('.NB-feed-story');
-                var feed_id = $story.data('feed_id');
-                var story_id = $story.data('story_id');
-                self.toggle_feed_story_share_dialog(story_id, feed_id);
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-reply-edit-button' }, function($t, $p){
-                e.preventDefault();
-                var $comment = $t.closest('.NB-story-comment');
-                var $reply = $t.closest('.NB-story-comment-reply');
-                self.open_social_comment_reply_form($comment, $reply);
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-story-comment .NB-story-comment-reply .NB-modal-submit-button' }, function($t, $p){
-                e.preventDefault();
-                if ($t.hasClass('NB-disabled')) return;
-                
-                var $comment = $t.closest('.NB-story-comment');
-                self.save_social_comment_reply($comment);
             }); 
             
             // = Interactions Module ==========================================

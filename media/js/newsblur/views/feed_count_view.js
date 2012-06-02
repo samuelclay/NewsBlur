@@ -12,11 +12,6 @@ NEWSBLUR.Views.FeedCount = Backbone.View.extend({
     },
     
     render: function() {
-        $(this.el).html($(this.render_to_string()));
-        return this;
-    },
-    
-    render_to_string: function() {
         var feed = this.model;
         var unread_class = "";
         var counts = feed.attributes;
@@ -31,7 +26,17 @@ NEWSBLUR.Views.FeedCount = Backbone.View.extend({
             unread_class += ' unread_negative';
         }
         
-        var $floater = _.template('\
+        this.$el.html(this.template({
+          ps           : counts['ps'],
+          nt           : counts['nt'],
+          ng           : counts['ng'],
+          unread_class : unread_class
+        }));
+        
+        return this;
+    },
+    
+    template: _.template('\
         <div class="<%= unread_class %>">\
           <span class="unread_count unread_count_positive <% if (ps) { %>unread_count_full<% } else { %>unread_count_empty<% } %>">\
             <%= ps %>\
@@ -43,15 +48,7 @@ NEWSBLUR.Views.FeedCount = Backbone.View.extend({
             <%= ng %>\
           </span>\
         </div>\
-        ', {
-          ps           : counts['ps'],
-          nt           : counts['nt'],
-          ng           : counts['ng'],
-          unread_class : unread_class
-        });
-        
-        return $floater;
-    },
+    '),
     
     // ===========
     // = Actions =
