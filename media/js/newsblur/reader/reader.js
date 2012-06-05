@@ -3748,7 +3748,7 @@
                 $manage_menu.data('story_id', story_id);
                 $manage_menu.data('$story', $item);
                 
-                this.update_share_button_label($('.NB-sideoption-share-comments', $manage_menu));
+                // this.update_share_button_label($('.NB-sideoption-share-comments', $manage_menu));
             }
             
             if (inverse) $manage_menu.addClass('NB-inverse');

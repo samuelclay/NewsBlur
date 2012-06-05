@@ -11,22 +11,23 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
     },
     
     initialize: function(options) {
+        console.log(["init comment", this.model, this]);
         this.user = NEWSBLUR.assets.user_profiles.find(this.model.get('user_id'));
     },
     
     render: function() {
         this.model.set('comments', this.model.get('comments').replace(/\n+/g, '<br><br>'));
         var reshare_class = this.model.get('source_user_id') ? 'NB-story-comment-reshare' : '';
-        
+
         var $comment = $.make('div', [
             $.make('div', { className: 'NB-user-avatar ' + reshare_class }, [
-                $.make('img', { src: user.get('photo_url') })
+                $.make('img', { src: this.user.get('photo_url') })
             ]),
             $.make('div', { className: 'NB-story-comment-author-container' }, [
                 (this.model.get('source_user_id') && $.make('div', { className: 'NB-story-comment-reshares' }, [
                     NEWSBLUR.Views.ProfileThumb.create(this.model.get('source_user_id'))
                 ])),
-                $.make('div', { className: 'NB-story-comment-username' }, user.get('username')),
+                $.make('div', { className: 'NB-story-comment-username' }, this.user.get('username')),
                 $.make('div', { className: 'NB-story-comment-date' }, this.model.get('shared_date') + ' ago'),
                 (this.model.get('user_id') == NEWSBLUR.Globals.user_id && $.make('div', { className: 'NB-story-comment-edit-button NB-story-comment-share-edit-button' }, [
                     $.make('div', { className: 'NB-story-comment-edit-button-wrapper' }, 'edit')
@@ -35,8 +36,8 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                     $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, 'reply')
                 ])
             ]),
-            $.make('div', { className: 'NB-story-comment-content' }, comments),
-            (this.model.get('replies').length && this.make_story_share_comment_replies())
+            $.make('div', { className: 'NB-story-comment-content' }, this.model.get('comments')),
+            this.make_story_share_comment_replies()
         ]);
         
         this.$el.html($comment);
@@ -45,10 +46,12 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
     },
     
     make_story_share_comment_replies: function() {
+        if (!this.model.replies || !this.model.replies.length) return;
+        
         var user_id = NEWSBLUR.Globals.user_id;
-        var $replies = _.map(this.model.get('replies'), function(reply) {
-            return new NEWSBLUR.Views.StoryCommentReply({model: reply, comment: this}).el;
-        });
+        var $replies = this.model.replies.map(_.bind(function(reply) {
+            return new NEWSBLUR.Views.StoryCommentReply({model: reply, comment: this}).render().el;
+        }, this));
         $replies = $.make('div', { className: 'NB-story-comment-replies' }, $replies);
 
         return $replies;
@@ -69,10 +72,11 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
     
     open_reply: function(options) {
         options = options || {};
+        var current_user = NEWSBLUR.assets.user_profile;
         
         var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
-            $.make('img', { className: 'NB-story-comment-reply-photo', src: this.user.get('photo_url') }),
-            $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, this.user.get('username')),
+            $.make('img', { className: 'NB-story-comment-reply-photo', src: current_user.get('photo_url') }),
+            $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, current_user.get('username')),
             $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments' }),
             $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, options.is_editing ? 'Save' : 'Post')
         ]);

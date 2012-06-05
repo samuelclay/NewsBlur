@@ -27,7 +27,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             var $share_count_public = this.$('.NB-story-share-profiles-public');
             _.each(this.model.get('shared_by_public'), function(user_id) { 
                 var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id);
-                $share_count_friends.append($thumb);
+                $share_count_public.append($thumb);
             });
             var $share_count_friends = this.$('.NB-story-share-profiles-friends');
             _.each(this.model.get('share_count_friends'), function(user_id) { 
@@ -36,28 +36,28 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             });
         }
         
-        if (story.get('comment_count_friends')) {
-            _.each(story.get('comments'), _.bind(function(comment) {
-                var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model});
+        if (this.model.get('comment_count_friends')) {
+            this.model.comments.each(_.bind(function(comment) {
+                var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
                 $el.append($comment);
             }, this));
         }
         
-        if (story.get('comment_count_public')) {
+        if (this.model.get('comment_count_public')) {
             var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
                 $.make('div', { className: 'NB-story-comments-public-teaser' }, [
                     'There ',
-                    Inflector.pluralize('is', story.get('comment_count_public')),
+                    Inflector.pluralize('is', this.model.get('comment_count_public')),
                     ' ',
-                    $.make('b', story.get('comment_count_public')),
+                    $.make('b', this.model.get('comment_count_public')),
                     ' public ',
-                    Inflector.pluralize('comment', story.get('comment_count_public'))
+                    Inflector.pluralize('comment', this.model.get('comment_count_public'))
                 ])
             ]);
             $el.append($public_teaser);
         }
         
-        return $comments;
+        return this;
     },
     
     template: _.template('\
@@ -84,25 +84,26 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
     // = Events =
     // ==========
     
-    load_public_story_comments: function(story_id) {
-        var story = this.model.get_story(story_id);
-        this.model.load_public_story_comments(story_id, story.get('story_feed_id'), _.bind(function(data) {
+    load_public_story_comments: function() {
+        var following_user_ids = NEWSBLUR.assets.user_profile.get('following_user_ids');
+        NEWSBLUR.assets.load_public_story_comments(this.model.id, this.model.get('story_feed_id'), _.bind(function(comments) {
+            console.log(["comments", comments]);
             var $comments = $.make('div', { className: 'NB-story-comments-public' });
-            var comments = _.select(data.comments, _.bind(function(comment) {
-                return !_.contains(this.model.user_profile.get('following_user_ids'), comment.user_id);
+            var public_comments = comments.select(_.bind(function(comment) {
+                return !_.contains(following_user_ids, comment.get('user_id'));
             }, this));
+            console.log(["public_comments", public_comments]);
             var $header = $.make('div', { 
                 className: 'NB-story-comments-public-header-wrapper' 
             }, $.make('div', { 
                 className: 'NB-story-comments-public-header' 
-            }, Inflector.pluralize(' public comment', comments.length, true))).prependTo($comments);
-            _.each(comments, _.bind(function(comment) {
-                var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model});
+            }, Inflector.pluralize(' public comment', public_comments.length, true))).prependTo($comments);
+            _.each(public_comments, _.bind(function(comment) {
+                var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
                 $comments.append($comment);
             }, this));
             
-            var $story = this.find_story_in_feed_view(story_id);
-            $('.NB-story-comments-public-teaser-wrapper', $story).replaceWith($comments);
+            this.$('.NB-story-comments-public-teaser-wrapper').replaceWith($comments);
             // this.fetch_story_locations_in_feed_view();
         }, this));
     }

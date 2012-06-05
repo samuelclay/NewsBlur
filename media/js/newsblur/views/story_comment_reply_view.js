@@ -9,25 +9,29 @@ NEWSBLUR.Views.StoryCommentReply = Backbone.View.extend({
     },
     
     render: function() {
-        var $reply = $(_.template('\
-        <img class="NB-user-avatar NB-story-comment-reply-photo" src="<%= user.get("photo_url") %>" />\
-        <div class="NB-story-comment-username NB-story-comment-reply-username"><%= user.get("publish_date") %> ago</div>\
-        <div class="NB-story-comment-date NB-story-comment-reply-date"><%= user.get("username") %></div>\
-        <% if (reply.user_id = user.id) { %>\
-            <div class="NB-story-comment-edit-button NB-story-comment-reply-edit-button">\
-                <div class="NB-story-comment-edit-button-wrapper">edit</div>\
-            </div>\
-            <div class="NB-story-comment-reply-content"><%= reply.get("comments") %></div>\
-        <% } %>\
-        '), {
+        console.log(["reply user", NEWSBLUR.assets.get_user(this.model.get('user_id')), this.model]);
+        var $reply = $(this.template({
             reply: this.model,
-            user: NEWSBLUR.assets.get_user(this.model.get('user_id'))
-        });
+            user: NEWSBLUR.assets.get_user(this.model.get('user_id')),
+            current_user_id: NEWSBLUR.Globals.user_id
+        }));
         
         this.$el.html($reply);
         
         return this;
     },
+    
+    template: _.template('\
+        <img class="NB-user-avatar NB-story-comment-reply-photo" src="<%= user.get("photo_url") %>" />\
+        <div class="NB-story-comment-username NB-story-comment-reply-username"><%= user.get("username") %></div>\
+        <div class="NB-story-comment-date NB-story-comment-reply-date"><%= reply.get("publish_date") %> ago</div>\
+        <% if (reply.get("user_id") == current_user_id) { %>\
+            <div class="NB-story-comment-edit-button NB-story-comment-reply-edit-button">\
+                <div class="NB-story-comment-edit-button-wrapper">edit</div>\
+            </div>\
+        <% } %>\
+        <div class="NB-story-comment-reply-content"><%= reply.get("comments") %></div>\
+    '),
     
     // ==========
     // = Events =

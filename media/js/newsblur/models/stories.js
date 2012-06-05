@@ -1,5 +1,11 @@
 NEWSBLUR.Models.Story = Backbone.Model.extend({
     
+    initialize: function() {
+        if (this.get('comments')) {
+            this.comments = new NEWSBLUR.Collections.Comments(this.get('comments'));
+        }
+    },
+    
     score: function() {
         if (NEWSBLUR.reader.active_feed == 'starred') {
             return 1;

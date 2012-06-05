@@ -167,7 +167,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     
     render_comments: function() {
         if (this.model.get("comment_count") || this.model.get("share_count")) {
-            var $comments = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).el;
+            var $comments = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).render().el;
             this.$('.NB-feed-story-share-container').replaceWith($comments);
         }
     },

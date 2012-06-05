@@ -344,7 +344,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     load_feed_precallback: function(data, feed_id, callback, first_load) {
         var self = this;
         
-        // NEWSBLUR.log(['load_feed_precallback', feed_id, this.feed_id, this.feed_id == feed_id, first_load]);
         if (data.dupe_feed_id && this.feed_id == data.dupe_feed_id) {
             feed_id = data.dupe_feed_id;
         }
@@ -361,6 +360,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             }
             if (data.stories && !data.stories.length) {
                 this.flags['no_more_stories'] = true;
+            }
+            
+            if (data.user_profiles) {
+                var profiles = _.reject(data.user_profiles, _.bind(function(profile) {
+                    return profile.id in this.user_profiles._byId;
+                }, this));
+                this.user_profiles.add(profiles);
             }
             
             if (data.stories && first_load) {
@@ -384,12 +390,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.stories.add(data.stories, {silent: true});
                 this.stories.trigger('add', {added: data.stories.length});
             }
-            if (data.user_profiles) {
-                var profiles = _.reject(data.user_profiles, _.bind(function(profile) {
-                    return profile.id in this.user_profiles._byId;
-                }, this));
-                this.user_profiles.add(profiles);
-            }
+            
             $.isFunction(callback) && callback(data, first_load);
         }
     },
@@ -1112,7 +1113,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (data.user_profiles) {
                 this.add_user_profiles(data.user_profiles);
             }
-            callback(data);
+            var comments = new NEWSBLUR.Collections.Comments(data.comments);
+            callback(comments);
         }, this), null, {request_type: 'GET'});
     },
     
