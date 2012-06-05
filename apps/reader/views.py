@@ -643,14 +643,14 @@ def load_river_stories(request):
     #     starred_stories = {}
     
     # Intelligence classifiers for all feeds involved
-    classifier_feeds = MClassifierFeed.objects(user_id=user.pk,
-                                               feed_id__in=found_feed_ids)
-    classifier_authors = MClassifierAuthor.objects(user_id=user.pk, 
-                                                   feed_id__in=found_feed_ids)
-    classifier_titles = MClassifierTitle.objects(user_id=user.pk, 
-                                                 feed_id__in=found_feed_ids)
-    classifier_tags = MClassifierTag.objects(user_id=user.pk, 
-                                             feed_id__in=found_feed_ids)
+    classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
+                                               feed_id__in=found_feed_ids))
+    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
+                                                   feed_id__in=found_feed_ids))
+    classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
+                                                 feed_id__in=found_feed_ids))
+    classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
+                                             feed_id__in=found_feed_ids))
     classifiers = sort_classifiers_by_feed(user=user, feed_ids=found_feed_ids,
                                            classifier_feeds=classifier_feeds,
                                            classifier_authors=classifier_authors,
@@ -668,10 +668,10 @@ def load_river_stories(request):
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
         story['intelligence'] = {
-            'feed':   apply_classifier_feeds(classifier_feeds[story['story_feed_id']], story['story_feed_id']),
-            'author': apply_classifier_authors(classifier_authors[story['story_feed_id']], story),
-            'tags':   apply_classifier_tags(classifier_tags[story['story_feed_id']], story),
-            'title':  apply_classifier_titles(classifier_titles[story['story_feed_id']], story),
+            'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
+            'author': apply_classifier_authors(classifier_authors, story),
+            'tags':   apply_classifier_tags(classifier_tags, story),
+            'title':  apply_classifier_titles(classifier_titles, story),
         }
 
     diff = time.time() - start

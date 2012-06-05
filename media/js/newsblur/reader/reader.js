@@ -163,9 +163,9 @@
             
             this.switch_taskbar_view(view, flag);
             this.check_story_titles_last_story();
-            this.flags.fetch_story_locations_in_feed_view = this.flags.fetch_story_locations_in_feed_view ||
-                                                            _.throttle(_.bind(this.fetch_story_locations_in_feed_view, this), 2000);
-            this.flags.fetch_story_locations_in_feed_view();
+            // this.flags.fetch_story_locations_in_feed_view = this.flags.fetch_story_locations_in_feed_view ||
+            //                                                 _.throttle(_.bind(this.fetch_story_locations_in_feed_view, this), 2000);
+            // this.flags.fetch_story_locations_in_feed_view();
         },
         
         apply_resizable_layout: function(refresh) {
