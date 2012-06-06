@@ -82,8 +82,8 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         ]);
         this.remove_social_comment_reply_form();
         
-        if (options.is_editing) {
-            var original_message = this.$('.NB-story-comment-reply-content').text();
+        if (options.is_editing && options.$reply) {
+            var original_message = $('.NB-story-comment-reply-content', options.$reply).text();
             $('input', $form).val(original_message);
             $form.data('original_message', original_message);
             options.$reply.hide().addClass('NB-story-comment-reply-hidden');
@@ -131,6 +131,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                                       comment_user_id, comment_reply, 
                                       original_message,
                                       _.bind(function(data) {
+            console.log(["save comment", data, this.model]);
             this.model.set(data.comment);
             this.render();
             // this.fetch_story_locations_in_feed_view();

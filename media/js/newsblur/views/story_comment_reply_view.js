@@ -9,7 +9,6 @@ NEWSBLUR.Views.StoryCommentReply = Backbone.View.extend({
     },
     
     render: function() {
-        console.log(["reply user", NEWSBLUR.assets.get_user(this.model.get('user_id')), this.model]);
         var $reply = $(this.template({
             reply: this.model,
             user: NEWSBLUR.assets.get_user(this.model.get('user_id')),

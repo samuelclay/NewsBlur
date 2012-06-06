@@ -111,7 +111,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
     
     show_loading: function(options) {
-        console.log(["show_loading", options]);
         if (NEWSBLUR.assets.flags['no_more_stories']) return;
         
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;

@@ -7,12 +7,6 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
 
     },
     
-    open_social_profile_modal: function(e) {
-        var user_id = this.$('.NB-story-share-profile').data('user_id');
-        $(e.currentTarget).tipsy('hide');
-        this.open_social_profile_modal(user_id);
-    },
-    
     render: function() {
         var self = this;
         var $el = this.$el;
@@ -21,43 +15,52 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             this.$el.html(this.template({
                 story: this.model
             }));
+            this.render_teaser();
+            this.render_comments_friends();
+            this.render_comments_public();
         }
-        
-        if (this.model.get('share_count')) {
-            var $share_count_public = this.$('.NB-story-share-profiles-public');
-            _.each(this.model.get('shared_by_public'), function(user_id) { 
-                var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id);
-                $share_count_public.append($thumb);
-            });
-            var $share_count_friends = this.$('.NB-story-share-profiles-friends');
-            _.each(this.model.get('share_count_friends'), function(user_id) { 
-                var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id);
-                $share_count_friends.append($thumb);
-            });
-        }
-        
-        if (this.model.get('comment_count_friends')) {
-            this.model.comments.each(_.bind(function(comment) {
-                var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
-                $el.append($comment);
-            }, this));
-        }
-        
-        if (this.model.get('comment_count_public')) {
-            var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
-                $.make('div', { className: 'NB-story-comments-public-teaser' }, [
-                    'There ',
-                    Inflector.pluralize('is', this.model.get('comment_count_public')),
-                    ' ',
-                    $.make('b', this.model.get('comment_count_public')),
-                    ' public ',
-                    Inflector.pluralize('comment', this.model.get('comment_count_public'))
-                ])
-            ]);
-            $el.append($public_teaser);
-        }
-        
+
         return this;
+    },
+    
+    render_teaser: function() {
+        if (!this.model.get('share_count')) return;
+        
+        var $share_count_public = this.$('.NB-story-share-profiles-public');
+        _.each(this.model.get('shared_by_public'), function(user_id) { 
+            var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id).render().el;
+            $share_count_public.append($thumb);
+        });
+        var $share_count_friends = this.$('.NB-story-share-profiles-friends');
+        _.each(this.model.get('shared_by_friends'), function(user_id) { 
+            var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id).render().el;
+            $share_count_friends.append($thumb);
+        });
+    },
+    
+    render_comments_friends: function() {
+        if (!this.model.get('comment_count_friends')) return;
+        
+        this.model.comments.each(_.bind(function(comment) {
+            var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
+            this.$el.append($comment);
+        }, this));
+    },
+    
+    render_comments_public: function() {
+        if (!this.model.get('comment_count_public')) return;
+
+        var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
+            $.make('div', { className: 'NB-story-comments-public-teaser' }, [
+                'There ',
+                Inflector.pluralize('is', this.model.get('comment_count_public')),
+                ' ',
+                $.make('b', this.model.get('comment_count_public')),
+                ' public ',
+                Inflector.pluralize('comment', this.model.get('comment_count_public'))
+            ])
+        ]);
+        this.$el.append($public_teaser);
     },
     
     template: _.template('\
