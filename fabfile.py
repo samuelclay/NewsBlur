@@ -31,14 +31,13 @@ env.VENDOR_PATH   = "~/projects/code"
 env.user = 'sclay'
 env.roledefs ={
     'local': ['localhost'],
-    
-    'web': ['www.newsblur.com', 
-            'app02.newsblur.com'],
+    'app': ['app01.newsblur.com', 
+            'app02.newsblur.com', 
+            'app03.newsblur.com', 
+            'app04.newsblur.com'],
     'dev': ['dev.newsblur.com'],
-    
-    'app': ['app01.newsblur.com',
-            'app02.newsblur.com',
-            'app03.newsblur.com'],
+    'web': ['app02.newsblur.com', 
+            'app04.newsblur.com'],
     'db': ['db01.newsblur.com', 
            'db02.newsblur.com', 
            'db03.newsblur.com', 
@@ -252,10 +251,14 @@ def setup_app():
     setup_app_firewall()
     setup_app_motd()
     copy_app_settings()
+    copy_certificates()
+    configure_nginx()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
     setup_node()
     configure_node()
+    pre_deploy()
+    deploy()
 
 def setup_db():
     setup_common()
@@ -357,11 +360,11 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    # sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
+    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
     
     put('config/pystartup.py', '.pystartup')
-    # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
-    #     sudo('python setup.py install')
+    with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
+        sudo('python setup.py install')
         
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
@@ -378,7 +381,7 @@ def setup_hosts():
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
-    # put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('/etc/init.d/pgbouncer stop')
     with settings(warn_only=True):
@@ -387,7 +390,6 @@ def config_pgbouncer():
     sudo('/etc/init.d/pgbouncer start')
     
 def config_monit():
-    # sudo('apt-get install -y monit')
     put('config/monit.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
     sudo('echo "startup=1" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
@@ -506,7 +508,7 @@ def setup_staging():
         run('touch logs/newsblur.log')
 
 def setup_node():
-    sudo('add-apt-repository ppa:chris-lea/node.js')
+    sudo('add-apt-repository -y ppa:chris-lea/node.js')
     sudo('apt-get update')
     sudo('apt-get install -y nodejs')
     run('curl http://npmjs.org/install.sh | sudo sh')
@@ -521,16 +523,14 @@ def configure_node():
     sudo('supervisorctl start node_unread')
     sudo('supervisorctl start node_favicons')
 
-def copy_certificates():
-    # with cd(env.NEWSBLUR_PATH):
-    #     run('mkdir -p config/certificates')
-    with cd(os.path.join(env.NEWSBLUR_PATH, 'config/certificates')):
-        put('data/www.newsblur.com.crt', 'www.newsblur.com.crt')
-        put('data/www.newsblur.com.nopass.key', 'www.newsblur.com.key')
-
 def copy_app_settings():
     put('config/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
     run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+
+def copy_certificates():
+    run('mkdir -p %s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('config/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
     
 # ==============
 # = Setup - DB =

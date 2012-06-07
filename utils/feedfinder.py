@@ -221,7 +221,7 @@ def isFeed(uri):
     protocol = urlparse.urlparse(uri)
     if protocol[0] not in ('http', 'https'): return 0
     try:
-        data = _gatekeeper.get(uri)
+        data = _gatekeeper.get(uri, check=False)
     except (KeyError, UnicodeDecodeError):
         return False
     count = couldBeFeedData(data)
