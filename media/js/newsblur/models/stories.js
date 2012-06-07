@@ -2,11 +2,16 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     initialize: function() {
         this.bind('change:comments', this.populate_comments);
+        this.bind('change:comment_count', this.populate_comments);
         this.populate_comments();
     },
     
-    populate_comments: function() {
-        if (this.get('comments')) {
+    populate_comments: function(story, collection, changes) {
+        var comments = this.get('comments');
+
+        if (!this.get('comment_count')) {
+            delete this.comments;
+        } else if (comments && comments.length) {
             this.comments = new NEWSBLUR.Collections.Comments(this.get('comments'));
         }
     },

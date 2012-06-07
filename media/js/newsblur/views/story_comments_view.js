@@ -39,7 +39,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
     },
     
     render_comments_friends: function() {
-        if (!this.model.get('comment_count_friends')) return;
+        if (!this.model.get('comment_count_friends') || !this.model.get('comment_count')) return;
         
         this.model.comments.each(_.bind(function(comment) {
             var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
@@ -48,7 +48,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
     },
     
     render_comments_public: function() {
-        if (!this.model.get('comment_count_public')) return;
+        if (!this.model.get('comment_count_public') || !this.model.get('comment_count')) return;
 
         var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
             $.make('div', { className: 'NB-story-comments-public-teaser' }, [

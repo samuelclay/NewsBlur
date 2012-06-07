@@ -104,7 +104,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                     // 'complete': _.bind(this.fetch_story_locations_in_feed_view, this, {'reset_timer': true})
                 }).data('original_height', original_height);
             }
-            this.update_share_button_label($comment_input);
+            this.update_share_button_label();
             var share = _.bind(function(e) {
                 e.preventDefault();
                 this.mark_story_as_shared({'source': 'sideoption'});
@@ -131,7 +131,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         this.model.set("shared", true);
         $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
         $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
-        NEWSBLUR.assets.mark_story_as_shared(this.model.id, this.model.get('story_feed_id'), comments, source_user_id, _.bind(function(data) {
+        NEWSBLUR.assets.mark_story_as_shared(this.model.id, this.model.get('story_feed_id'), comments, source_user_id, _.bind(function() {
             this.toggle_feed_story_share_dialog({'close': true});
             NEWSBLUR.reader.hide_confirm_story_share_menu_item(true);
             $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
@@ -140,16 +140,6 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $comments_menu.val(comments);
             $comments_sideoptions.val(comments);
             this.model.story_view.render_comments();
-            // var $new_comments = $.make('div', { className: 'NB-feed-story-comments' }, new NEWSBLUR.Views.StoryComment({
-            //     model: comment, 
-            //     story: this.model
-            // }).el);
-            // var $old_comments = this.model.story_view.$('.NB-feed-story-comments');
-            // if (!$old_comments.length) {
-            //     $old_comments = $.make('div', { className: 'NB-feed-story-comments' });
-            //     this.model.story_view.$('.NB-feed-story-content').after($old_comments);
-            // }
-            // $old_comments.replaceWith($new_comments);
             
             $share_star.attr({'title': 'Shared!'});
             $share_star.tipsy({
@@ -200,7 +190,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $comment_input = this.$('.NB-sideoption-share-comments');
         var $share_button = this.$('.NB-sideoption-share-save,.NB-menu-manage-story-share-save');
         
-        $share_button.removeClass('NB-saving');
+        $share_button.removeClass('NB-saving').removeClass('NB-disabled');
         
         if (!_.string.isBlank($comment_input.val())) {
             $share_button.text('Share with comment');

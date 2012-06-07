@@ -262,6 +262,7 @@ def mark_story_as_shared(request):
     story = Feed.format_story(story)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)
     story = stories[0]
+    story['shared_comments'] = shared_story['comments'] or ""
     
     return {'code': code, 'story': story, 'user_profiles': profiles}
 
