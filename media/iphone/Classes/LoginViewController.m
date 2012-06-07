@@ -52,6 +52,11 @@
     [super viewWillAppear:animated];
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [self.activityIndicator stopAnimating];
     [super viewDidAppear:animated];

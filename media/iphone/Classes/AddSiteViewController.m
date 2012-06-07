@@ -77,7 +77,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [self.activityIndicator stopAnimating];
     [super viewDidAppear:animated];
-    [self showFolderPicker];
+    // [self showFolderPicker];
 }
 
 

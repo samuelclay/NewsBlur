@@ -125,6 +125,11 @@
  }
  */
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:
+(UIInterfaceOrientation)toInterfaceOrientation {
+    return YES;
+}
+
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
@@ -258,7 +263,7 @@
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     if (![currentiPhoneVersion isEqualToString:serveriPhoneVersion]) {
         NSLog(@"Version: %@ - %@", serveriPhoneVersion, currentiPhoneVersion);
-        NSString *title = [NSString stringWithFormat:@"You should download the new version of NewsBlur.\n\nNew version: v%@.\nYou have: v%@.", serveriPhoneVersion, currentiPhoneVersion];
+        NSString *title = [NSString stringWithFormat:@"You should download the new version of NewsBlur.\n\nNew version: v%@\nYou have: v%@", serveriPhoneVersion, currentiPhoneVersion];
         UIAlertView *upgradeConfirm = [[UIAlertView alloc] initWithTitle:title message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Upgrade!", nil];
         [upgradeConfirm show];
         [upgradeConfirm setTag:2];
@@ -776,11 +781,6 @@
 - (void)requestFailed:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:
-(UIInterfaceOrientation)toInterfaceOrientation {
-    return YES;
 }
 
 #pragma mark -
