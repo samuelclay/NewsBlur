@@ -223,9 +223,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (data.user_profiles) {
                 this.add_user_profiles(data.user_profiles);
             }
-            callback(data);
             var story = this.get_story(story_id);
-            if (story) story.set('shared_comments', comments);
+            story.set(data.story);
+            callback(data);
         }, this);
         
         if (NEWSBLUR.Globals.is_authenticated) {

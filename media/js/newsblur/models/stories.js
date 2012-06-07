@@ -1,6 +1,11 @@
 NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     initialize: function() {
+        this.bind('change:comments', this.populate_comments);
+        this.populate_comments();
+    },
+    
+    populate_comments: function() {
         if (this.get('comments')) {
             this.comments = new NEWSBLUR.Collections.Comments(this.get('comments'));
         }

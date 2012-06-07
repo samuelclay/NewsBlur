@@ -11,14 +11,12 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon",
         "contextmenu .NB-feed-story-header"     : "show_manage_menu",
         "click .NB-feed-story-manage-icon"      : "show_manage_menu",
-        "click .NB-sideoption-share-save"       : "mark_story_as_shared",
         "click .NB-feed-story-hide-changes"     : "hide_story_changes",
         "click .NB-feed-story-header-title"     : "open_feed",
         "click .NB-feed-story-tag"              : "save_classifier",
         "click .NB-feed-story-author"           : "save_classifier",
         "click .NB-feed-story-train"            : "open_story_trainer",
-        "click .NB-feed-story-save"             : "star_story",
-        "click .NB-feed-story-share"            : "toggle_feed_story_share_dialog"
+        "click .NB-feed-story-save"             : "star_story"
     },
     
     initialize: function() {
@@ -34,10 +32,6 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         this.$el.bind('mouseleave', this.mouseleave);
 
         this.model.story_view = this;
-        this.story_share_view = new NEWSBLUR.Views.StoryShareView({
-            model: this.model, 
-            el: this.el
-        });
     },
     
     // =============
@@ -55,7 +49,13 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
             title               : this.make_story_title(),
             authors_score       : this.classifiers.authors[this.model.get('story_authors')],
             tags_score          : this.classifiers.tags,
-            options             : this.options
+            options             : this.options,
+            story_share_view    : new NEWSBLUR.Views.StoryShareView({
+                model: this.model, 
+                el: this.el
+            }).template({
+                story: this.model
+            })
         }));
         this.toggle_classes();
         this.toggle_read_status();
@@ -127,15 +127,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
                 <div class="NB-sideoption-icon">&nbsp;</div>\
                 <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
             </div>\
-            <div class="NB-sideoption-share-wrapper">\
-                <div class="NB-sideoption-share">\
-                    <div class="NB-sideoption-share-wordcount"></div>\
-                    <div class="NB-sideoption-share-optional">Optional</div>\
-                    <div class="NB-sideoption-share-title">Comments:</div>\
-                    <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
-                    <div class="NB-sideoption-share-save NB-modal-submit-button">Share</div>\
-                </div>\
-            </div>\
+            <%= story_share_view %>\
         </div>\
     '),
     
@@ -168,7 +160,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     render_comments: function() {
         if (this.model.get("comment_count") || this.model.get("share_count")) {
             var $comments = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).render().el;
-            this.$('.NB-feed-story-share-container').replaceWith($comments);
+            this.$('.NB-feed-story-share-container,.NB-feed-story-comments').replaceWith($comments);
         }
     },
     
@@ -319,7 +311,6 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     show_manage_menu: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
         NEWSBLUR.reader.show_manage_menu('story', this.$el, {
             story_id: this.model.id,
             feed_id: this.model.get('story_feed_id')
@@ -375,11 +366,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     open_story_in_new_tab: function() {
         window.open(this.model.get('story_permalink'), '_blank');
         window.focus();
-    },
-    
-    toggle_feed_story_share_dialog: function() {
-        // Check story_share_view.js
     }
-            
+    
 
 });

@@ -73,10 +73,15 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
                         <%= Inflector.pluralize("person", story.get("share_count")) %>\
                     </div>\
                     <% if (story.get("share_count_public")) { %>\
-                        <div class="NB-story-share-profiles NB-story-share-profiles-public"><div>\
+                        <div class="NB-story-share-profiles NB-story-share-profiles-public"></div>\
+                    <% } %>\
+                <% } %>\
+                <% if (story.get("share_count")) { %>\
+                    <% if (story.get("share_count_friends")) { %>\
+                        <div class="NB-story-share-label">Shared by: </div>\
                     <% } %>\
                     <% if (story.get("share_count_friends")) { %>\
-                        <div class="NB-story-share-profiles NB-story-share-profiles-friends"><div>\
+                        <div class="NB-story-share-profiles NB-story-share-profiles-friends"></div>\
                     <% } %>\
                 <% } %>\
             </div>\
@@ -90,17 +95,16 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
     load_public_story_comments: function() {
         var following_user_ids = NEWSBLUR.assets.user_profile.get('following_user_ids');
         NEWSBLUR.assets.load_public_story_comments(this.model.id, this.model.get('story_feed_id'), _.bind(function(comments) {
-            console.log(["comments", comments]);
             var $comments = $.make('div', { className: 'NB-story-comments-public' });
             var public_comments = comments.select(_.bind(function(comment) {
                 return !_.contains(following_user_ids, comment.get('user_id'));
             }, this));
-            console.log(["public_comments", public_comments]);
             var $header = $.make('div', { 
                 className: 'NB-story-comments-public-header-wrapper' 
             }, $.make('div', { 
                 className: 'NB-story-comments-public-header' 
             }, Inflector.pluralize(' public comment', public_comments.length, true))).prependTo($comments);
+
             _.each(public_comments, _.bind(function(comment) {
                 var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
                 $comments.append($comment);

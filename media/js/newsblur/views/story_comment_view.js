@@ -11,7 +11,6 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
     },
     
     initialize: function(options) {
-        console.log(["init comment", this.model, this]);
         this.user = NEWSBLUR.assets.user_profiles.find(this.model.get('user_id'));
     },
     
@@ -131,7 +130,6 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                                       comment_user_id, comment_reply, 
                                       original_message,
                                       _.bind(function(data) {
-            console.log(["save comment", data, this.model]);
             this.model.set(data.comment);
             this.render();
             // this.fetch_story_locations_in_feed_view();

@@ -3728,13 +3728,9 @@
                     ]),
                     $.make('li', { className: 'NB-menu-manage-story NB-menu-manage-confirm NB-menu-manage-story-share-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position' }, [
-                            $.make('div', { className: 'NB-sideoption-share'}, [
-                                $.make('div', { className: 'NB-sideoption-share-wordcount' }),
-                                $.make('div', { className: 'NB-sideoption-share-optional' }, 'Optional'),
-                                $.make('div', { className: 'NB-sideoption-share-title' }, 'Comments:'),
-                                $.make('textarea', { className: 'NB-sideoption-share-comments' }, story.get('shared_comments')),
-                                $.make('div', { className: 'NB-menu-manage-story-share-save NB-modal-submit-green NB-modal-submit-button' }, 'Share')
-                            ])
+                            new NEWSBLUR.Views.StoryShareView({
+                                model: this.model
+                            }).render().el
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -5547,12 +5543,6 @@
                     self.show_confirm_story_share_menu_item();
                 }
             });  
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-story-share-save' }, function($t, $p){
-                e.preventDefault();
-                e.stopPropagation();
-                var story_id = $t.closest('.NB-menu-manage').data('story_id'); 
-                self.mark_story_as_shared(story_id, {'source': 'menu'});
-            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-share-confirm' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
@@ -6166,11 +6156,6 @@
         handle_keyup: function(elem, e) {
             var self = this;
             
-            $.targetIs(e, { tagSelector: '.NB-sideoption-share-comments' }, function($t, $p) {
-                e.preventDefault();
-                
-                self.update_share_button_label($t);
-            });
         },
         
         handle_keystrokes: function() {      
