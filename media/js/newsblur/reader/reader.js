@@ -1050,127 +1050,6 @@
             this.model.save_feed_order(combined_folders);
         },
         
-        count_collapsed_unread_stories: function() {
-            var self = this;
-            
-            _.each(NEWSBLUR.Preferences.collapsed_folders, _.bind(function(folder) {
-                var $folder_title = $('.folder_title_text', this.$s.$feed_list).filter(function() {
-                    return $.trim($(this).text()) == $.trim(folder);
-                }).closest('.folder_title');
-                this.collapse_folder($folder_title, true);
-                var $folder = $folder_title.parent('li.folder');
-                var $children = $folder.children('ul.folder');
-                this.show_collapsed_folder_count($folder_title, $children, {'skip_animation': true});
-            }, this));
-            
-            if (this.model.preference('folder_counts')) {
-                var $folder_titles = $('.folder_title', this.$s.$feed_list);
-                $folder_titles.each(function() {
-                    var $folder_title = $(this);
-                    if (!_.contains(NEWSBLUR.Preferences.collapsed_folders, $folder_title.text())) {
-                        var $folder = $folder_title.parent('li.folder');
-                        var $children = $folder.children('ul.folder');
-                        self.show_collapsed_folder_count($folder_title, $children, {'skip_animation': true});
-                    }
-                });
-            }
-        },
-        
-        collapse_folder: function($folder_title, force_collapse) {
-            var self = this;
-            var $feed_list = this.$s.$feed_list;
-            var $folder = $folder_title.parent('li.folder');
-            var $children = $folder.children('ul.folder');
-            
-            // Hiding / Collapsing
-            if (force_collapse || 
-                ($children.length && 
-                 $children.eq(0).is(':visible') && 
-                 !$folder.data('collapsed'))) {
-                this.model.collapsed_folders($('.folder_title_text', $folder_title).text(), true);
-                $folder.data('collapsed', true).addClass('NB-folder-collapsed');
-                $children.animate({'opacity': 0}, {
-                    'queue': false,
-                    'duration': force_collapse ? 0 : 200,
-                    'complete': function() {
-                        self.show_collapsed_folder_count($folder_title, $children);
-                        $children.slideUp({
-                            'duration': 270,
-                            'easing': 'easeOutQuart'
-                        });
-                    }
-                });
-            } 
-            // Showing / Expanding
-            else if ($children.length && 
-                       ($folder.data('collapsed') || !$children.eq(0).is(':visible'))) {
-                this.model.collapsed_folders($('.folder_title_text', $folder_title).text(), false);
-                $folder.data('collapsed', false).removeClass('NB-folder-collapsed');
-                if (!this.model.preference('folder_counts')) {
-                    this.hide_collapsed_folder_count($folder_title);
-                }
-                $children.css({'opacity': 0}).slideDown({
-                    'duration': 240,
-                    'easing': 'easeInOutCubic',
-                    'complete': function() {
-                        $children.animate({'opacity': 1}, {'queue': false, 'duration': 200});
-                    }
-                });
-            }
-        },
-        
-        show_collapsed_folder_count: function($folder_title, $children, options) {
-            options = options || {};
-            var $counts = $('.feed_counts_floater', $folder_title);
-            $counts.remove();
-            $children = $('li.feed', $children).not('.NB-feed-inactive');
-            var $river = $('.NB-feedlist-collapse-icon', $folder_title);
-            
-            var positive_count = 0;
-            var neutral_count = 0;
-            var negative_count = 0;
-            $('.unread_count_positive.unread_count_full', $children).each(function() {
-                positive_count += parseInt($(this).text(), 10);
-            });
-            $('.unread_count_neutral.unread_count_full', $children).each(function() {
-                neutral_count += parseInt($(this).text(), 10);
-            });
-            $('.unread_count_negative.unread_count_full', $children).each(function() {
-                negative_count += parseInt($(this).text(), 10);
-            });
-            
-            if ($folder_title.hasClass('NB-hover')) {
-                $river.animate({'opacity': 0}, {'duration': options.skip_animation ? 0 : 100});
-                $folder_title.addClass('NB-feedlist-folder-title-recently-collapsed');
-                $folder_title.one('mouseover', function() {
-                    $river.css({'opacity': ''});
-                    $folder_title.removeClass('NB-feedlist-folder-title-recently-collapsed');
-                });
-            }
-            
-            var $counts = this.make_feed_counts_floater(positive_count, neutral_count, negative_count);
-            $folder_title.prepend($counts.css({
-                'opacity': 0
-            }));
-            $counts.animate({'opacity': 1}, {'duration': options.skip_animation ? 0 : 400});
-        },
-        
-        hide_collapsed_folder_count: function($folder_title) {
-            var $counts = $('.feed_counts_floater', $folder_title);
-            var $river = $('.NB-feedlist-collapse-icon', $folder_title);
-            
-            $counts.animate({'opacity': 0}, {
-                'duration': 300 
-            });
-            
-            $river.animate({'opacity': .6}, {'duration': 400});
-            $folder_title.removeClass('NB-feedlist-folder-title-recently-collapsed');
-            $folder_title.one('mouseover', function() {
-                $river.css({'opacity': ''});
-                // $folder_title.removeClass('NB-feedlist-folder-title-recently-collapsed');
-            });
-        },
-        
         show_feed_chooser_button: function() {
             var self = this;
             var $progress = this.$s.$feeds_progress;
@@ -2707,9 +2586,9 @@
         
         check_story_titles_last_story: function() {
             var $story_titles = this.$s.$story_titles;
+            if (!this.active_feed) return;
             
             if (!this.model.flags['no_more_stories']) {
-                console.log(["check_story_titles_last_story"]);
                 var $last_story = $('#story_titles .story').last();
                 var container_offset = $story_titles.position().top;
                 var full_height = ($last_story.offset() && $last_story.offset().top) + $last_story.height() - container_offset;
@@ -4645,7 +4524,7 @@
             this.flags['refresh_inline_feed_delay'] = false;
             this.flags['pause_feed_refreshing'] = false;
             this.check_feed_fetch_progress();
-            this.count_collapsed_unread_stories();
+            // this.count_collapsed_unread_stories();
         },
         
         // ===================
@@ -5296,10 +5175,6 @@
             $.targetIs(e, { tagSelector: '#feed_list .folder_title .NB-feedlist-collapse-icon' }, function($t, $p){
                 e.preventDefault();
                 stopPropagation = true;
-                var $folder = $t.closest('.folder_title');
-                if (!self.flags['sorting_feed']) {
-                    self.collapse_folder($folder);
-                }
             });
             if (stopPropagation) return;
             $.targetIs(e, { tagSelector: '#feed_list .folder_title' }, function($t, $p){

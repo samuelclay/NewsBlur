@@ -139,7 +139,31 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
                 item.folders.deselect();
             }
         });
+    },
+    
+    unread_counts: function() {
+        var counts = this.reduce(function(counts, item) {
+            if (item.is_feed()) {
+                var feed_counts = item.feed.unread_counts();
+                counts['ps'] += feed_counts['ps'];
+                counts['nt'] += feed_counts['nt'];
+                counts['ng'] += feed_counts['ng'];
+            } else {
+                var folder_counts = item.folders.unread_counts();
+                counts['ps'] += folder_counts['ps'];
+                counts['nt'] += folder_counts['nt'];
+                counts['ng'] += folder_counts['ng'];
+            }
+            return counts;
+        }, {
+            ps: 0,
+            nt: 0,
+            ng: 0
+        });
+        
+        return counts;
     }
+
     
 }, {
     

@@ -1,15 +1,25 @@
 NEWSBLUR.Models.Feed = Backbone.Model.extend({
     
     initialize: function() {
-        _.bindAll(this, 'on_change', 'delete_feed');
+        _.bindAll(this, 'on_change', 'delete_feed', 'update_folder_counts');
         this.bind('change', this.on_change);
+        this.bind('change:ps', this.update_folder_counts);
+        this.bind('change:nt', this.update_folder_counts);
+        this.bind('change:ng', this.update_folder_counts);
         this.views = [];
+        this.folders = [];
     },
     
     on_change: function() {
         if (!('selected' in this.changedAttributes())) {
             NEWSBLUR.log(['Feed Change', this.changedAttributes(), this.previousAttributes()]);
         }
+    },
+    
+    update_folder_counts: function() {
+        _.each(this.folders, function(folder) {
+            folder.trigger('change:counts');
+        });
     },
     
     delete_feed: function(options) {
@@ -80,6 +90,14 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         is_light = $.textColor({r: r, g: g, b: b}) != 'white';
         this._is_light = is_light;
         return is_light;
+    },
+    
+    unread_counts: function() {
+        return {
+            ps: this.get('ps'),
+            nt: this.get('nt'),
+            ng: this.get('ng')
+        };
     }
     
 });

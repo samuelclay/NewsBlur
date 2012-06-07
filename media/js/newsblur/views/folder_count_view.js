@@ -1,15 +1,6 @@
-NEWSBLUR.Views.FeedCount = Backbone.View.extend({
+NEWSBLUR.Views.FolderCount = Backbone.View.extend({
     
     className: 'feed_counts_floater',
-    
-    initialize: function() {
-        _.bindAll(this, 'render');
-        if (!this.options.stale) {
-            this.model.bind('change:ps', this.render);
-            this.model.bind('change:nt', this.render);
-            this.model.bind('change:ng', this.render);
-        }
-    },
     
     // ==========
     // = Render =
@@ -17,7 +8,7 @@ NEWSBLUR.Views.FeedCount = Backbone.View.extend({
     
     render: function() {
         var unread_class = "";
-        var counts = this.model.unread_counts();
+        var counts = this.collection.unread_counts();
 
         if (counts['ps']) {
             unread_class += ' unread_positive';
@@ -57,13 +48,6 @@ NEWSBLUR.Views.FeedCount = Backbone.View.extend({
     // = Actions =
     // ===========
     
-    center: function() {
-        var i_width = this.$el.width();
-        var o_width = NEWSBLUR.reader.$s.$story_taskbar.width();
-        var left = (o_width / 2.0) - (i_width / 2.0);
-        this.$el.css({'left': left});
-    },
-    
     flash: function() {
         var $floater = this.$el;
         
@@ -75,20 +59,6 @@ NEWSBLUR.Views.FeedCount = Backbone.View.extend({
                 $floater.animate({'opacity': .2}, {'duration': 250, 'queue': false});
             }, 400);
         });        
-    },
-    
-    fall: function() {
-        var $floater = this.$el;
-        
-        _.delay(function() {
-            $floater.animate({
-                'top': $('#story_taskbar').height()
-            }, {
-                'duration': 500, 
-                'queue': false,
-                'easing': 'easeOutQuint'
-            });
-        }, 500);
     }
     
 });
