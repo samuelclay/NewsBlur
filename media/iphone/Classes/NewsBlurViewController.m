@@ -259,10 +259,15 @@
     [self calculateFeedLocations:YES];
     [self.feedTitlesTable reloadData];
     
-    NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];
+    NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];    
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-    if (![currentiPhoneVersion isEqualToString:serveriPhoneVersion]) {
-        NSLog(@"Version: %@ - %@", serveriPhoneVersion, currentiPhoneVersion);
+    
+    float serveriPhoneVersionFloat = [serveriPhoneVersion floatValue];
+    float currentiPhoneVersionFloat = [currentiPhoneVersion floatValue];
+
+    //NSLog(@"serveriPhoneVersionFloat: %f and currentiPhoneVersionFloat: %f", serveriPhoneVersionFloat, currentiPhoneVersionFloat);
+    if (currentiPhoneVersionFloat < serveriPhoneVersionFloat) {
+        NSLog(@"Version: %f - %f", serveriPhoneVersionFloat, currentiPhoneVersionFloat);
         NSString *title = [NSString stringWithFormat:@"You should download the new version of NewsBlur.\n\nNew version: v%@\nYou have: v%@", serveriPhoneVersion, currentiPhoneVersion];
         UIAlertView *upgradeConfirm = [[UIAlertView alloc] initWithTitle:title message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Upgrade!", nil];
         [upgradeConfirm show];
@@ -316,6 +321,7 @@
         if (buttonIndex == 0) {
             return;
         } else {
+            //  this doesn't work in simulator!!! because simulator has no app store
             NSURL *url = [NSURL URLWithString:@"http://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=463981119&mt=8"];
             [[UIApplication sharedApplication] openURL:url];
         }
