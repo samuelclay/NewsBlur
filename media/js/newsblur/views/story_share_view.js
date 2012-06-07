@@ -6,6 +6,10 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         "keyup .NB-sideoption-share-comments"   : "update_share_button_label"
     },
     
+    initialize: function() {
+        this.model.story_share_view = this;
+    },
+    
     render: function() {
         this.$el.html(this.template({
             story: this.model
@@ -73,7 +77,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $share.animate({
                 'height': full_height
             }, {
-                'duration': 350,
+                'duration': options.immediate ? 0 : 350,
                 'easing': 'easeInOutQuint',
                 'queue': false,
                 'complete': function() {
@@ -195,7 +199,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $share = this.$('.NB-sideoption-share');
         var $comment_input = this.$('.NB-sideoption-share-comments');
         var $share_button = this.$('.NB-sideoption-share-save,.NB-menu-manage-story-share-save');
-
+        
+        $share_button.removeClass('NB-saving');
+        
         if (!_.string.isBlank($comment_input.val())) {
             $share_button.text('Share with comment');
         } else {

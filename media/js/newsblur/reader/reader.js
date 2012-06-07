@@ -3631,7 +3631,10 @@
                 var starred_title = story.get('starred') ? 'Remove bookmark' : 'Save This Story';
                 var shared_class = story.get('shared') ? ' NB-story-shared ' : '';
                 var shared_title = story.get('shared') ? 'Shared' : 'Share story';
-
+                story.story_share_menu_view = new NEWSBLUR.Views.StoryShareView({
+                    model: story
+                });
+                
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-story ' + starred_class + shared_class }, [
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-story-open' }, [
@@ -3728,9 +3731,7 @@
                     ]),
                     $.make('li', { className: 'NB-menu-manage-story NB-menu-manage-confirm NB-menu-manage-story-share-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position' }, [
-                            new NEWSBLUR.Views.StoryShareView({
-                                model: this.model
-                            }).render().el
+                            story.story_share_menu_view.render().el
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
@@ -3912,7 +3913,8 @@
             if (type == 'story') {
                 var share = _.bind(function(e) {
                     e.preventDefault();
-                    this.active_story.story_share_view.mark_story_as_shared({'source': 'menu'});
+                    var story = NEWSBLUR.assets.get_story(story_id);
+                    story.story_share_menu_view.mark_story_as_shared({'source': 'menu'});
                 }, this);
                 $('.NB-sideoption-share-comments', $manage_menu_container).bind('keydown', 'ctrl+return', share);
                 $('.NB-sideoption-share-comments', $manage_menu_container).bind('keydown', 'meta+return', share);
@@ -4210,16 +4212,21 @@
         // = Manage Menu - Share Story =
         // =============================
         
-        show_confirm_story_share_menu_item: function() {
+        show_confirm_story_share_menu_item: function(story_id) {
             var self = this;
+            if (!story_id) story_id = $('.NB-menu-manage').data('story_id');
+            var story = NEWSBLUR.assets.get_story(story_id);
             var $share = $('.NB-menu-manage-story-share');
             var $confirm = $('.NB-menu-manage-story-share-confirm');
+            var $story_share = story.story_share_menu_view.$el;
             var $position = $('.NB-menu-manage-confirm-position', $confirm);
             
             $share.addClass('NB-menu-manage-story-share-cancel');
             $('.NB-menu-manage-title', $share).text('Cancel share');
+            $confirm.css({'height': 0, 'display': 'block'});
+            story.story_share_menu_view.toggle_feed_story_share_dialog({immediate: true});
             $position.css('position', 'relative');
-            var height = $confirm.height();
+            var height = $story_share.height();
             $position.css('position', 'absolute');
             $confirm.css({'height': 0, 'display': 'block'}).animate({'height': height}, {
                 'duration': 500, 
@@ -4230,6 +4237,8 @@
         },
         
         hide_confirm_story_share_menu_item: function(shared) {
+            var story_id = $('.NB-menu-manage').data('story_id');
+            var story = NEWSBLUR.assets.get_story(story_id);
             var $share = $('.NB-menu-manage-story-share');
             var $confirm = $('.NB-menu-manage-story-share-confirm');
             
@@ -4244,9 +4253,7 @@
             $('.NB-menu-manage-title', $share).text(text);
             $confirm.slideUp(500, _.bind(function() {
                 if (shared) {
-                    var story_id = this.active_story.id;
-                    var $story_title = this.find_story_in_story_titles(story_id);
-                    this.hide_manage_menu('story', $story_title, true);
+                    this.hide_manage_menu('story', story.story_title_view.$el, true);
                 }
             }, this));
             this.flags['showing_confirm_input_on_manage_menu'] = false;
@@ -6324,11 +6331,10 @@
             $document.bind('keydown', 'shift+s', function(e) {
                 e.preventDefault();
                 if (self.active_story) {
-                    var story_id = self.active_story.id;
-                    var $story_title = self.find_story_in_story_titles(story_id);
-                    self.add_hover_inverse_to_feed($story_title);
-                    self.show_manage_menu('story', $story_title);
-                    self.show_confirm_story_share_menu_item();
+                    var $story_title = self.active_story.story_title_view.$el;
+                    self.active_story.story_title_view.mouseenter_manage_icon();
+                    self.show_manage_menu('story', $story_title, {story_id: self.active_story.id});
+                    self.show_confirm_story_share_menu_item(self.active_story.id);
                 }
             });
         }

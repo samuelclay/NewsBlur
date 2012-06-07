@@ -11,6 +11,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
     },
     
     initialize: function(options) {
+        this.story = options.story;
         this.user = NEWSBLUR.assets.user_profiles.find(this.model.get('user_id'));
     },
     
@@ -66,7 +67,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
     },
     
     toggle_feed_story_share_dialog: function() {
-        this.model.story_share_view.toggle_feed_story_share_dialog();
+        this.story.story_share_view.toggle_feed_story_share_dialog();
     },
     
     open_reply: function(options) {
