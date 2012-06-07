@@ -116,13 +116,13 @@
 								<int key="IBUIBaselineAdjustment">1</int>
 								<float key="IBUIMinimumFontSize">12</float>
 								<int key="IBUINumberOfLines">2</int>
-								<object class="IBUIFontDescription" key="IBUIFontDescription" id="960020026">
+								<object class="IBUIFontDescription" key="IBUIFontDescription" id="968270764">
 									<string key="name">Helvetica-Bold</string>
 									<string key="family">Helvetica</string>
 									<int key="traits">2</int>
 									<double key="pointSize">15</double>
 								</object>
-								<object class="NSFont" key="IBUIFont" id="125712816">
+								<object class="NSFont" key="IBUIFont" id="540559276">
 									<string key="NSName">Helvetica-Bold</string>
 									<double key="NSSize">15</double>
 									<int key="NSfFlags">16</int>
@@ -209,7 +209,7 @@
 							<object class="IBUIView" id="111782255">
 								<reference key="NSNextResponder" ref="247257992"/>
 								<int key="NSvFlags">290</int>
-								<string key="NSFrameSize">{1024, 20}</string>
+								<string key="NSFrame">{{0, -1}, {1004, 20}}</string>
 								<reference key="NSSuperview" ref="247257992"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1001310564"/>
@@ -271,8 +271,8 @@
 								<int key="IBUIBaselineAdjustment">1</int>
 								<float key="IBUIMinimumFontSize">12</float>
 								<int key="IBUINumberOfLines">2</int>
-								<reference key="IBUIFontDescription" ref="960020026"/>
-								<reference key="IBUIFont" ref="125712816"/>
+								<reference key="IBUIFontDescription" ref="968270764"/>
+								<reference key="IBUIFont" ref="540559276"/>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 							<object class="IBUILabel" id="450494992">
@@ -475,10 +475,10 @@
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="1001310564"/>
-							<reference ref="111782255"/>
 							<reference ref="753396836"/>
 							<reference ref="450494992"/>
 							<reference ref="607536273"/>
+							<reference ref="111782255"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>

@@ -474,15 +474,27 @@
 
 - (UIView *)tableView:(UITableView *)tableView 
             viewForHeaderInSection:(NSInteger)section {
+    
+    int headerLabelHeight, folderImageViewY, disclosureImageViewY;
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
+        headerLabelHeight = 30;
+        folderImageViewY = 7;
+        disclosureImageViewY = 8;
+    }else{
+        headerLabelHeight = 20;
+        folderImageViewY = 2;
+        disclosureImageViewY = 3;
+    }
+        
     // create the parent view that will hold header Label
     UIControl* customView = [[[UIControl alloc] 
                               initWithFrame:CGRectMake(0.0, 0.0, 
-                                                       tableView.bounds.size.width, 21.0)] 
+                                                       tableView.bounds.size.width, headerLabelHeight + 1)] 
                              autorelease];
     
     
     UIView *borderBottom = [[[UIView alloc] 
-                             initWithFrame:CGRectMake(0.0, 20.0, 
+                             initWithFrame:CGRectMake(0.0, headerLabelHeight, 
                                                       tableView.bounds.size.width, 1.0)]
                             autorelease];
     borderBottom.backgroundColor = [UIColorFromRGB(0xB7BDC6) colorWithAlphaComponent:0.5];
@@ -496,7 +508,7 @@
     headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
     headerLabel.highlightedTextColor = [UIColor whiteColor];
     headerLabel.font = [UIFont boldSystemFontOfSize:11];
-    headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, 20.0);
+    headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, headerLabelHeight);
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (section == 0) {
@@ -513,13 +525,13 @@
     
     UIImage *folderImage = [UIImage imageNamed:@"folder.png"];
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
-    folderImageView.frame = CGRectMake(14.0, 2.0, 16.0, 16.0);
+    folderImageView.frame = CGRectMake(14.0, folderImageViewY, 16.0, 16.0);
     [customView addSubview:folderImageView];
     [folderImageView release];
 
     UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
     UIImageView *disclosureImageView = [[UIImageView alloc] initWithImage:disclosureImage];
-    disclosureImageView.frame = CGRectMake(customView.frame.size.width - 20, 3.0, 9.0, 14.0);
+    disclosureImageView.frame = CGRectMake(customView.frame.size.width - 20, disclosureImageViewY, 9.0, 14.0);
     [customView addSubview:disclosureImageView];
     [disclosureImageView release];
 
@@ -553,7 +565,11 @@
 //    if ([[folder stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
 //        return 0;
 //    }
-    return 21;
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
+        return 31;
+    }else{
+        return 21;
+    }
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {

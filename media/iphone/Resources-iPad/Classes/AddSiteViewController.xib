@@ -176,7 +176,7 @@
 						<string key="NSFrame">{{209, 113.5}, {350, 29}}</string>
 						<reference key="NSSuperview" ref="973185930"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="947146700"/>
+						<reference key="NSNextKeyView" ref="382037909"/>
 						<string key="NSReuseIdentifierKey">_NS:262</string>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBSegmentControlStyle">2</int>
@@ -275,7 +275,7 @@
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUIText"/>
 						<int key="IBUIBorderStyle">3</int>
-						<string key="IBUIPlaceholder">Choose a folder</string>
+						<string key="IBUIPlaceholder">Choose the parent folder</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MAA</bytes>
@@ -329,7 +329,7 @@
 						<string key="NSFrame">{{215, 224}, {20, 20}}</string>
 						<reference key="NSSuperview" ref="973185930"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="359716653"/>
+						<reference key="NSNextKeyView" ref="133572282"/>
 						<string key="NSReuseIdentifierKey">_NS:824</string>
 						<reference key="IBUIBackgroundColor" ref="346851231"/>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -376,7 +376,7 @@
 						<bool key="IBUIMultipleTouchEnabled">YES</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 					</object>
-					<object class="IBUILabel" id="947146700">
+					<object class="IBUILabel" id="382037909">
 						<reference key="NSNextResponder" ref="973185930"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{220, 189}, {50, 21}}</string>
@@ -394,13 +394,13 @@
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>
 						<float key="IBUIMinimumFontSize">10</float>
-						<object class="IBUIFontDescription" key="IBUIFontDescription" id="832394896">
+						<object class="IBUIFontDescription" key="IBUIFontDescription" id="638475919">
 							<int key="type">1</int>
 							<double key="pointSize">17</double>
 						</object>
 						<reference key="IBUIFont" ref="24658222"/>
 					</object>
-					<object class="IBUILabel" id="359716653">
+					<object class="IBUILabel" id="133572282">
 						<reference key="NSNextResponder" ref="973185930"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrame">{{220, 291}, {50, 21}}</string>
@@ -418,7 +418,7 @@
 						<nil key="IBUIHighlightedColor"/>
 						<int key="IBUIBaselineAdjustment">0</int>
 						<float key="IBUIMinimumFontSize">10</float>
-						<reference key="IBUIFontDescription" ref="832394896"/>
+						<reference key="IBUIFontDescription" ref="638475919"/>
 						<reference key="IBUIFont" ref="24658222"/>
 					</object>
 				</object>
@@ -5084,8 +5084,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<reference ref="151912820"/>
 							<reference ref="782639577"/>
 							<reference ref="919711053"/>
-							<reference ref="947146700"/>
-							<reference ref="359716653"/>
+							<reference ref="382037909"/>
+							<reference ref="133572282"/>
 							<reference ref="622270256"/>
 							<reference ref="450177912"/>
 						</object>
@@ -5187,12 +5187,12 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">70</int>
-						<reference key="object" ref="947146700"/>
+						<reference key="object" ref="382037909"/>
 						<reference key="parent" ref="973185930"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">71</int>
-						<reference key="object" ref="359716653"/>
+						<reference key="object" ref="133572282"/>
 						<reference key="parent" ref="973185930"/>
 					</object>
 				</object>
