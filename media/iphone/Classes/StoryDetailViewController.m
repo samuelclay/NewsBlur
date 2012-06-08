@@ -287,8 +287,6 @@
                         "</style>"
                         "<meta name=\"viewport\" content=\"width=320\"/>"];
     }
-    
-    
     NSString *story_author      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
         NSString *author = [NSString stringWithFormat:@"%@",
@@ -350,10 +348,12 @@
             UIScrollView * theScrollView = (UIScrollView *)aSubView;
             if (appDelegate.isRiverView) {
                 theScrollView.contentInset = UIEdgeInsetsMake(19, 0, 0, 0);
+                theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(24, 0, 5, 0);
             } else {
-                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0); 
+                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
+                theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(14, 0, 5, 0);
             }
-            [self.webView insertSubview:feedTitleGradient belowSubview:theScrollView];
+            [self.webView insertSubview:feedTitleGradient aboveSubview:theScrollView];
             [theScrollView setContentOffset:CGPointMake(0, appDelegate.isRiverView ? -19 : -9) animated:NO];
             
             // Such a fucking hack. This hides the top shadow of the scroll view
@@ -373,15 +373,6 @@
             break;
         }
     }
-    
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-//    NSLog(@"ContentOffset: %f %f", scrollView.contentOffset.x, scrollView.contentOffset.y);
-    self.feedTitleGradient.frame = CGRectMake(scrollView.contentOffset.x < 0 ? -1 * scrollView.contentOffset.x : 0, 
-                                              -1 * scrollView.contentOffset.y - self.feedTitleGradient.frame.size.height, 
-                                              self.feedTitleGradient.frame.size.width, 
-                                              self.feedTitleGradient.frame.size.height);
 }
 
 - (void)setActiveStory {

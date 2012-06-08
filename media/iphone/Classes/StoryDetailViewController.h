@@ -10,8 +10,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface StoryDetailViewController : UIViewController 
-<UIScrollViewDelegate> {
+@interface StoryDetailViewController : UIViewController {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;
