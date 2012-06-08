@@ -64,15 +64,11 @@
                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] 
                              autorelease];
     
-    UIScrollView* currentScrollView;
-    for (UIView* subView in self.webView.subviews) {
-        if ([subView isKindOfClass:[UIScrollView class]]) {
-            currentScrollView = (UIScrollView*)subView;
-            currentScrollView.delegate = self;
-        }
-    }
-    
     [super viewDidLoad];
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -205,7 +201,7 @@
                         "  display: none;"
                         "}"
                         "</style>"
-                        "<meta name=\"viewport\" content=\"width=768\"/>"];
+                        "<meta name=\"viewport\" content=\"width=device-width\"/>"];
     } else {
         imgCssString = [NSString stringWithFormat:@"<style>"
                         "body {"
@@ -285,7 +281,7 @@
                         "  display: none;"
                         "}"
                         "</style>"
-                        "<meta name=\"viewport\" content=\"width=320\"/>"];
+                        "<meta name=\"viewport\" content=\"width=device-width\"/>"];
     }
     NSString *story_author      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
@@ -335,7 +331,7 @@
                                                               [appDelegate.activeStory 
                                                                objectForKey:@"story_feed_id"]]];
     self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed 
-                                 withRect:CGRectMake(0, -1, self.webView.frame.size.width, 21)];
+                                 withRect:CGRectMake(0, -1, 1024, 21)]; // 1024 hack for self.webView.frame.size.width
     
     self.feedTitleGradient.tag = 12; // Not attached yet. Remove old gradients, first.
     for (UIView *subview in self.webView.subviews) {

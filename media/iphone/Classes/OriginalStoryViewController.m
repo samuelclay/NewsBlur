@@ -48,6 +48,10 @@
     }
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+}
+
 - (void)viewDidLoad {
     
     CGRect navBarFrame = self.view.bounds;

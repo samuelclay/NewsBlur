@@ -54,6 +54,10 @@
     [super viewDidLoad];
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
