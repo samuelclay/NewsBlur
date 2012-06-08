@@ -107,17 +107,16 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     check_collapsed: function(options) {
         options = options || {};
         var self = this;
+        if (!this.options.title || !this.options.title.length) return;
         
         var show_folder_counts = NEWSBLUR.assets.preference('folder_counts');
         var collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, this.options.title);
-        console.log(["check_collapsed", this.options.title, show_folder_counts, collapsed]);
         if (collapsed || show_folder_counts) {
             this.show_collapsed_folder_count(options);
         }
     },
     
     show_collapsed_folder_count: function(options) {
-        console.log(["show_collapsed_folder_count", options]);
         options = options || {};
         var $folder_title = this.$('.folder_title').eq(0);
         var $counts = $('.feed_counts_floater', $folder_title);
