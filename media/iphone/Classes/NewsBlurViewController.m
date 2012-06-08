@@ -476,6 +476,8 @@
             viewForHeaderInSection:(NSInteger)section {
     
     int headerLabelHeight, folderImageViewY, disclosureImageViewY;
+    
+    // set up layout values based on iPad/iPhone
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
         headerLabelHeight = 30;
         folderImageViewY = 7;
