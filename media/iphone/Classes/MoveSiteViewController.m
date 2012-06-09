@@ -52,6 +52,11 @@
     [super viewDidLoad];
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    return YES;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [self.errorLabel setHidden:YES];
     [self.movingLabel setHidden:YES];

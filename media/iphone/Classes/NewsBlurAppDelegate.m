@@ -142,7 +142,17 @@
 - (void)showMoveSite {
     UINavigationController *navController = self.navigationController;
     [moveSiteViewController initWithNibName:nil bundle:nil];
-    [navController presentModalViewController:moveSiteViewController animated:YES];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        moveSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+        [navController presentModalViewController:moveSiteViewController animated:YES];
+        moveSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); //it's important to do this after presentModalViewController
+        moveSiteViewController.view.superview.center = self.view.center;
+    } else {
+        [navController presentModalViewController:moveSiteViewController animated:YES];
+    }
+    
+    
 }
 
 - (void)reloadFeedsView:(BOOL)showLoader {
