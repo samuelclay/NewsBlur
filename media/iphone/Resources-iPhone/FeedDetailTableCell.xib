@@ -48,7 +48,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBUILabel" id="750430533">
 								<reference key="NSNextResponder" ref="994014136"/>
-								<int key="NSvFlags">292</int>
+								<int key="NSvFlags">291</int>
 								<string key="NSFrame">{{172, 44}, {119, 15}}</string>
 								<reference key="NSSuperview" ref="994014136"/>
 								<reference key="NSWindow"/>
@@ -89,7 +89,7 @@
 							</object>
 							<object class="IBUILabel" id="417683225">
 								<reference key="NSNextResponder" ref="994014136"/>
-								<int key="NSvFlags">292</int>
+								<int key="NSvFlags">290</int>
 								<string key="NSFrame">{{20, 7}, {271, 34}}</string>
 								<reference key="NSSuperview" ref="994014136"/>
 								<reference key="NSWindow"/>
@@ -130,7 +130,7 @@
 							</object>
 							<object class="IBUILabel" id="194816084">
 								<reference key="NSNextResponder" ref="994014136"/>
-								<int key="NSvFlags">292</int>
+								<int key="NSvFlags">294</int>
 								<string key="NSFrame">{{20, 44}, {150, 15}}</string>
 								<reference key="NSSuperview" ref="994014136"/>
 								<reference key="NSWindow"/>
@@ -565,9 +565,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>feedFavicon</string>
 							<string>feedGradient</string>
-							<string>feedTitle</string>
 							<string>storyAuthor</string>
 							<string>storyDate</string>
 							<string>storyTitle</string>
@@ -575,9 +573,7 @@
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>UIImageView</string>
 							<string>UIView</string>
-							<string>UILabel</string>
 							<string>UILabel</string>
 							<string>UILabel</string>
 							<string>UILabel</string>
@@ -588,9 +584,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>feedFavicon</string>
 							<string>feedGradient</string>
-							<string>feedTitle</string>
 							<string>storyAuthor</string>
 							<string>storyDate</string>
 							<string>storyTitle</string>
@@ -599,16 +593,8 @@
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
-								<string key="name">feedFavicon</string>
-								<string key="candidateClassName">UIImageView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">feedGradient</string>
 								<string key="candidateClassName">UIView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">feedTitle</string>
-								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">storyAuthor</string>

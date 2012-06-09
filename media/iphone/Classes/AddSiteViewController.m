@@ -40,7 +40,7 @@
     return self;
 }
 
-- (void)viewDidLoad {    
+- (void)viewDidLoad {
     UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
     [inFolderInput setLeftView:folderImage];
     [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
@@ -57,7 +57,15 @@
     
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
-    addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
+    NSLog(@"The self.view.frame.size.width is %f", self.view.frame.size.width);
+    
+    if(UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+        NSLog(@"portrait");
+    } else {
+        NSLog(@"landscape");
+    }
+    
+    addFolderInput.frame = CGRectMake(UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ? self.view.frame.size.width : self.view.frame.size.height, 
                                       siteAddressInput.frame.origin.y, 
                                       siteAddressInput.frame.size.width, 
                                       siteAddressInput.frame.size.height);
@@ -334,7 +342,7 @@
                                                 siteAddressInput.frame.origin.y, 
                                                 siteAddressInput.frame.size.width, 
                                                 siteAddressInput.frame.size.height);
-            addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
+            addFolderInput.frame = CGRectMake(UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ? self.view.frame.size.width : self.view.frame.size.height, 
                                               siteAddressInput.frame.origin.y, 
                                               siteAddressInput.frame.size.width, 
                                               siteAddressInput.frame.size.height);
@@ -342,7 +350,7 @@
     } else {
         [addButton setTitle:@"Add Folder"];
         [siteAddressInput resignFirstResponder];
-        addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
+        addFolderInput.frame = CGRectMake(UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ? self.view.frame.size.width : self.view.frame.size.height, 
                                           siteAddressInput.frame.origin.y, 
                                           siteAddressInput.frame.size.width, 
                                           siteAddressInput.frame.size.height);
