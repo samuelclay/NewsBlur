@@ -163,8 +163,8 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // = Events =
     // ==========
     
-    detect_selected_story: function(selected_story) {
-        if (selected_story.get('selected')) {
+    detect_selected_story: function(selected_story, selected) {
+        if (selected) {
             this.deselect(selected_story);
             this.active_story = selected_story;
             NEWSBLUR.reader.active_story = selected_story;

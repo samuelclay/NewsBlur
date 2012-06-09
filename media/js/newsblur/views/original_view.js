@@ -164,7 +164,6 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
     },
     
     scroll_to_selected_story: function(story, options) {
-        console.log(["scroll_to_selected_story", story, options]);
         var $iframe = this.$el;
         var $story = this.find_story_in_feed_iframe(story);
         options = options || {};
@@ -226,7 +225,7 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
             if (last_story) {
                 $last_story = this.find_story_in_feed_iframe(last_story, $iframe);
             }
-            // NEWSBLUR.log(['last_story', last_story_index, last_story_position, last_story, $last_story]);
+            NEWSBLUR.log(['last_story', last_story_index, last_story_position, last_story, $last_story]);
             var last_story_same_position;
             if ($last_story && $last_story.length) {
                 last_story_same_position = parseInt($last_story.offset().top, 10)==last_story_position;
@@ -243,7 +242,7 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
                 if (last_story_same_position && i < last_story_index) return true; 
                 
                 var $story = this.find_story_in_feed_iframe(story, $iframe);
-                // NEWSBLUR.log(['Pre-fetching', parseInt(s, 10), last_story_index, last_story_same_position, $story, story.get('story_title')]);
+                NEWSBLUR.log(['Pre-fetching', i, last_story_index, last_story_same_position, $story, story.get('story_title')]);
                 if (!$story || 
                     !$story.length || 
                     this.flags['iframe_fetching_story_locations'] ||
@@ -429,7 +428,6 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
         this.$el.load(_.bind(function() {
             NEWSBLUR.reader.flags['iframe_view_loaded'] = true;
             this.disable_iframe_buster_buster();
-            console.log(["iframe load event"]);
             this.setup_events();
             if (NEWSBLUR.reader.flags['story_titles_loaded']) {
                 NEWSBLUR.log(['iframe loaded, titles loaded']);
@@ -515,10 +513,8 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
         }, 1);
     },
     
-    disable_iframe_buster_buster: function(force) {
-        if (this.flags['iframe_view_loaded'] || this.flags['iframe_view_not_busting'] || force) {
-            clearInterval(this.locks.iframe_buster_buster);
-        }
+    disable_iframe_buster_buster: function() {
+        clearInterval(this.locks.iframe_buster_buster);
     },
     
     // ==========
@@ -536,9 +532,9 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
             // NEWSBLUR.log(['Scroll iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
             if (!story) return;
 
-            if (!story.get('selected')) {
-                story.set('selected', true, {selected_in_original: true});
-            }
+            // if (!story.get('selected')) {
+            story.set('selected', true, {selected_in_original: true, immediate: true});
+            // }
             if (!this.flags.iframe_scroll_snap_back_prepared) {
                 this.iframe_scroll = from_top - NEWSBLUR.reader.cache.mouse_position_y;
             }
@@ -559,9 +555,9 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
         NEWSBLUR.reader.cache.mouse_position_y = e.pageY - scroll_top;
         NEWSBLUR.reader.$s.$mouse_indicator.css('top', NEWSBLUR.reader.cache.mouse_position_y - 8);
         
-        setTimeout(_.bind(function() {
-            this.flags['mousemove_timeout'] = false;
-        }, this), 40);
+        // setTimeout(_.bind(function() {
+        //     this.flags['mousemove_timeout'] = false;
+        // }, this), 40);
         if (!this.flags['mousemove_timeout']
             && !NEWSBLUR.reader.flags.scrolling_by_selecting_story_title) {
             var from_top = NEWSBLUR.reader.cache.mouse_position_y + scroll_top;
@@ -569,12 +565,12 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
             var closest = $.closest(from_top, positions);
             var story = this.cache.iframe_story_positions[positions[closest]];
             // console.log(["mousemove", story, from_top, positions[closest], this.cache.iframe_story_positions]);
-            this.flags['mousemove_timeout'] = true;
+            // this.flags['mousemove_timeout'] = true;
             if (!story) return;
             
             if (!story.get('selected')) {
-                story.set('selected', true, {selected_in_original: true});
-                this.flags['mousemove_timeout'] = false;
+                story.set('selected', true, {selected_in_original: true, immediate: true});
+                // this.flags['mousemove_timeout'] = false;
             }
         }
     },

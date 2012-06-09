@@ -215,7 +215,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
 
         if (selected && !options.selected_by_scrolling) {
-            NEWSBLUR.app.story_list.scroll_to_selected_story(this);
+            NEWSBLUR.app.story_list.scroll_to_selected_story(this, options);
         }
     },
     
