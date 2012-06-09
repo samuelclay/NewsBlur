@@ -49,21 +49,12 @@
     [addFolderInput setLeftView:folderImage2];
     [addFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     [folderImage2 release];
-    
     UIImageView *urlImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"world.png"]];
     [siteAddressInput setLeftView:urlImage];
     [siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
     [urlImage release];
     
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
-    NSLog(@"The self.view.frame.size.width is %f", self.view.frame.size.width);
-    
-    if(UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
-        NSLog(@"portrait");
-    } else {
-        NSLog(@"landscape");
-    }
     
     addFolderInput.frame = CGRectMake(UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ? self.view.frame.size.width : self.view.frame.size.height, 
                                       siteAddressInput.frame.origin.y, 

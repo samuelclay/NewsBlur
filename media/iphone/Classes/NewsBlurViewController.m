@@ -251,13 +251,12 @@
     [self calculateFeedLocations:YES];
     [self.feedTitlesTable reloadData];
     
-    NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];    
+    NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];  
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
     float serveriPhoneVersionFloat = [serveriPhoneVersion floatValue];
     float currentiPhoneVersionFloat = [currentiPhoneVersion floatValue];
 
-    //NSLog(@"serveriPhoneVersionFloat: %f and currentiPhoneVersionFloat: %f", serveriPhoneVersionFloat, currentiPhoneVersionFloat);
     if (currentiPhoneVersionFloat < serveriPhoneVersionFloat) {
         NSLog(@"Version: %f - %f", serveriPhoneVersionFloat, currentiPhoneVersionFloat);
         NSString *title = [NSString stringWithFormat:@"You should download the new version of NewsBlur.\n\nNew version: v%@\nYou have: v%@", serveriPhoneVersion, currentiPhoneVersion];
@@ -469,12 +468,11 @@
     
     int headerLabelHeight, folderImageViewY, disclosureImageViewY;
     
-    // set up layout values based on iPad/iPhone
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         headerLabelHeight = 30;
         folderImageViewY = 7;
         disclosureImageViewY = 8;
-    }else{
+    } else {
         headerLabelHeight = 20;
         folderImageViewY = 2;
         disclosureImageViewY = 3;
