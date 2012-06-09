@@ -551,7 +551,7 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
         }
 
         var scroll_top = this.$el.contents().scrollTop();
-        // console.log(["mousemove", scroll_top, e]);
+        // console.log(["mousemove", scroll_top, e.pageY]);
         NEWSBLUR.reader.cache.mouse_position_y = e.pageY - scroll_top;
         NEWSBLUR.reader.$s.$mouse_indicator.css('top', NEWSBLUR.reader.cache.mouse_position_y - 8);
         

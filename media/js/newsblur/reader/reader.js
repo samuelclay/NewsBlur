@@ -1219,16 +1219,6 @@
             }
         },
         
-        setup_mousemove_on_views: function() {
-            this.hide_mouse_indicator();
-            this.$s.$content_pane
-                .unbind('mouseleave.reader')
-                .bind('mouseleave.reader', $.rescope(this.hide_mouse_indicator, this));
-            this.$s.$content_pane
-                .unbind('mouseenter.reader')
-                .bind('mouseenter.reader', $.rescope(this.show_mouse_indicator, this));
-        },
-        
         set_correct_story_view_for_feed: function(feed_id, view) {
             var feed = this.model.get_feed(feed_id);
             var $original_tabs = $('.task_view_page, .task_view_story');
@@ -2524,7 +2514,7 @@
                     this.show_story_titles_above_intelligence_level({'animate': false});
                 }
             }
-            this.cache.story_pane_position = null;
+            NEWSBLUR.app.story_list.cache.story_pane_position = null;
         },
         
         // ==============
@@ -3927,11 +3917,22 @@
         // ===================
         // = Mouse Indicator =
         // ===================
+
+        setup_mousemove_on_views: function() {
+            this.hide_mouse_indicator();
+            this.$s.$content_pane
+                .unbind('mouseleave.reader')
+                .bind('mouseleave.reader', $.rescope(this.hide_mouse_indicator, this));
+            this.$s.$content_pane
+                .unbind('mouseenter.reader')
+                .bind('mouseenter.reader', $.rescope(this.show_mouse_indicator, this));
+        },
         
         hide_mouse_indicator: function() {
             var self = this;
 
             if (!this.flags['mouse_indicator_hidden']) {
+                console.log(["hide_mouse_indicator", this.flags['mouse_indicator_hidden']]);
                 this.flags['mouse_indicator_hidden'] = true;
                 this.$s.$mouse_indicator.animate({'opacity': 0, 'left': -10}, {
                     'duration': 200, 
@@ -3945,8 +3946,8 @@
         
         show_mouse_indicator: function() {
             var self = this;
-            
             if (this.flags['mouse_indicator_hidden']) {
+                console.log(["show_mouse_indicator", this.flags['mouse_indicator_hidden']]);
                 this.flags['mouse_indicator_hidden'] = false;
                 this.$s.$mouse_indicator.animate({'opacity': 1, 'left': 0}, {
                     'duration': 200, 
@@ -4007,7 +4008,7 @@
         
         position_mouse_indicator: function() {
             var position = parseInt(this.model.preference('lock_mouse_indicator'), 10);
-            if (position == 0) {
+            if (position <= 0 || position > this.$s.$content_pane.height()) {
                 position = 50; // Start with a 50 offset
             } else {
                 position = position - 8; // Compensate for mouse indicator height.
