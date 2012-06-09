@@ -219,11 +219,15 @@
         // With some valid UIView *view:
         NSArray *subviews = [[detailViewController.view subviews] copy];
         for (UIView *subview in subviews) {
-            [subview removeFromSuperview];
+            if (subview.tag == 12) {
+                [subview removeFromSuperview];
+            }
         }
         [subviews release];
         
+        storyDetailViewController.view.tag = 12;
         [detailViewController.view addSubview:storyDetailViewController.view];
+        storyDetailViewController.view.frame = CGRectMake(0,44,704,704);
     } else{
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];

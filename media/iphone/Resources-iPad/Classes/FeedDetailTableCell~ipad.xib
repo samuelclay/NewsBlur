@@ -52,7 +52,6 @@
 								<string key="NSFrame">{{865, 35}, {119, 15}}</string>
 								<reference key="NSSuperview" ref="994014136"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<object class="NSColor" key="IBUIBackgroundColor" id="932003208">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MSAxIDEAA</bytes>
@@ -193,6 +192,7 @@
 				<reference key="IBUIBackgroundColor" ref="932003208"/>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<int key="IBUIAccessoryType">1</int>
+				<float key="IBUIIndentationWidth">0.0</float>
 				<reference key="IBUIContentView" ref="994014136"/>
 				<string key="IBUIReuseIdentifier">FeedDetailCellIdentifier</string>
 			</object>
@@ -222,7 +222,6 @@
 								<string key="NSFrame">{{865, 55}, {119, 15}}</string>
 								<reference key="NSSuperview" ref="247257992"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<reference key="IBUIBackgroundColor" ref="932003208"/>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<int key="IBUIContentMode">7</int>
@@ -334,6 +333,7 @@
 				<int key="IBUITag">1</int>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<int key="IBUIAccessoryType">1</int>
+				<float key="IBUIIndentationWidth">0.0</float>
 				<reference key="IBUIContentView" ref="247257992"/>
 				<string key="IBUIReuseIdentifier">RiverFeedDetailCellIdentifier</string>
 				<real value="73" key="IBUIRowHeight"/>

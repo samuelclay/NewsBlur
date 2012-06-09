@@ -45,7 +45,7 @@
 					<object class="IBUITableView" id="224086083">
 						<reference key="NSNextResponder" ref="774585933"/>
 						<int key="NSvFlags">274</int>
-						<string key="NSFrame">{{2, 0}, {764, 960}}</string>
+						<string key="NSFrameSize">{320, 960}</string>
 						<reference key="NSSuperview" ref="774585933"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="895374018"/>
@@ -72,7 +72,7 @@
 							<object class="IBUISegmentedControl" id="117639116">
 								<reference key="NSNextResponder" ref="895374018"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{303, 8}, {161, 30}}</string>
+								<string key="NSFrame">{{79, 8}, {161, 30}}</string>
 								<reference key="NSSuperview" ref="895374018"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView"/>
@@ -116,7 +116,7 @@
 								</object>
 							</object>
 						</object>
-						<string key="NSFrame">{{0, 960}, {768, 44}}</string>
+						<string key="NSFrame">{{0, 960}, {320, 44}}</string>
 						<reference key="NSSuperview" ref="774585933"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="117639116"/>
@@ -168,7 +168,7 @@
 						<reference key="IBUITintColor" ref="131787584"/>
 					</object>
 				</object>
-				<string key="NSFrame">{{0, 20}, {768, 1004}}</string>
+				<string key="NSFrameSize">{320, 1004}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="224086083"/>
@@ -177,9 +177,6 @@
 					<bytes key="NSRGB">MC4yMjcwMjkxMjggMC4zNjIxMzU3NzY0IDAuNDU2NTIxNzM5MQA</bytes>
 				</object>
 				<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
-				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
-					<int key="IBUIStatusBarStyle">2</int>
-				</object>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 			</object>
 		</object>
@@ -302,8 +299,8 @@
 						<reference key="object" ref="774585933"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="224086083"/>
 							<reference ref="895374018"/>
+							<reference ref="224086083"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -619,6 +616,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/BaseViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">DetailViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/DetailViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1020,24 +1025,28 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addSiteViewController</string>
+							<string>detailViewController</string>
 							<string>feedDetailViewController</string>
 							<string>feedsViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
+							<string>splitViewController</string>
 							<string>storyDetailViewController</string>
 							<string>window</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>AddSiteViewController</string>
+							<string>DetailViewController</string>
 							<string>FeedDetailViewController</string>
 							<string>NewsBlurViewController</string>
 							<string>LoginViewController</string>
 							<string>MoveSiteViewController</string>
 							<string>UINavigationController</string>
 							<string>OriginalStoryViewController</string>
+							<string>UISplitViewController</string>
 							<string>StoryDetailViewController</string>
 							<string>UIWindow</string>
 						</object>
@@ -1047,12 +1056,14 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addSiteViewController</string>
+							<string>detailViewController</string>
 							<string>feedDetailViewController</string>
 							<string>feedsViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
+							<string>splitViewController</string>
 							<string>storyDetailViewController</string>
 							<string>window</string>
 						</object>
@@ -1061,6 +1072,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">addSiteViewController</string>
 								<string key="candidateClassName">AddSiteViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">detailViewController</string>
+								<string key="candidateClassName">DetailViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">feedDetailViewController</string>
@@ -1085,6 +1100,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">originalStoryViewController</string>
 								<string key="candidateClassName">OriginalStoryViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">splitViewController</string>
+								<string key="candidateClassName">UISplitViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">storyDetailViewController</string>

@@ -76,10 +76,9 @@
 							<object class="IBUISegmentedControl" id="122945842">
 								<reference key="NSNextResponder" ref="929039419"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{303, 8}, {161, 30}}</string>
+								<string key="NSFrame">{{79, 8}, {161, 30}}</string>
 								<reference key="NSSuperview" ref="929039419"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBSegmentControlStyle">2</int>
 								<int key="IBNumberOfSegments">3</int>
