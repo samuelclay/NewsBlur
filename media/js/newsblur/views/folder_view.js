@@ -35,7 +35,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var depth = this.options.depth;
         var folder_title = this.options.title;
         var folder = this.collection;
-        this.options.collapsed =  _.contains(NEWSBLUR.Preferences.collapsed_folders, this.options.title);
+        this.options.collapsed =  this.options.title && _.contains(NEWSBLUR.Preferences.collapsed_folders, this.options.title);
         var $feeds = this.collection.map(function(item) {
             if (item.is_feed()) {
                 var feed_view = new NEWSBLUR.Views.Feed({
