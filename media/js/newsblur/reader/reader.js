@@ -112,7 +112,6 @@
             this.handle_mouse_indicator_hover();
             this.position_mouse_indicator();
             this.handle_login_and_signup_forms();
-            this.iframe_buster_buster();
             this.apply_story_styling();
             this.apply_tipsy_titles();
             this.load_recommended_feeds();
@@ -397,28 +396,6 @@
             this.model.preference('dashboard_date', new Date);
         },
         
-        iframe_buster_buster: function() {
-            var self = this;
-            var prevent_bust = 0;
-            window.onbeforeunload = function() { 
-              prevent_bust++;
-            };
-            clearInterval(this.locks.iframe_buster_buster);
-            this.locks.iframe_buster_buster = setInterval(function() {
-                if (prevent_bust > 0) {
-                    prevent_bust -= 2;
-                    if (!self.flags['iframe_view_loaded'] && 
-                        !self.flags['iframe_view_not_busting'] && 
-                        _.contains(['page', 'story'], self.story_view) && 
-                        self.active_feed) {
-                      $('.NB-feed-frame').attr('src', '');
-                      window.top.location = '/reader/buster';
-                      $('.task_view_feed').click();
-                    }
-                }
-            }, 1);
-        },
-
         add_url_from_querystring: function() {
             if (this.flags['added_url_from_querystring']) return;
             
