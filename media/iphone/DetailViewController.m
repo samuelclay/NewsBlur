@@ -42,4 +42,21 @@
 	return YES;
 }
 
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    NSArray *subviews = [[self.view subviews] copy];
+    for (UIView *subview in subviews) {
+        if (subview.tag == 12) {
+            if (toInterfaceOrientation == UIInterfaceOrientationPortrait || toInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
+                NSLog(@"portrait");
+                subview.frame = CGRectMake(0,44,768,960);
+            } else {
+                NSLog(@"landscape");
+                subview.frame = CGRectMake(0,44,704,704);
+            }
+        }
+    }
+    
+
+}
+
 @end

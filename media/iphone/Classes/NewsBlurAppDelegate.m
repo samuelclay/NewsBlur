@@ -227,7 +227,12 @@
         
         storyDetailViewController.view.tag = 12;
         [detailViewController.view addSubview:storyDetailViewController.view];
-        storyDetailViewController.view.frame = CGRectMake(0,44,704,704);
+        if (UIInterfaceOrientationIsPortrait(detailViewController.interfaceOrientation)) {
+            storyDetailViewController.view.frame = CGRectMake(0,44,768,960);
+        } else {
+            storyDetailViewController.view.frame = CGRectMake(0,44,704,704);
+        }
+
     } else{
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
