@@ -16,9 +16,11 @@
 @class AddSiteViewController;
 @class MoveSiteViewController;
 @class OriginalStoryViewController;
+@class DetailViewController;
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate> {
     UIWindow *window;
+    UISplitViewController *splitViewController;
     UINavigationController *navigationController;
     NewsBlurViewController *feedsViewController;
     FeedDetailViewController *feedDetailViewController;
@@ -27,6 +29,7 @@
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
     OriginalStoryViewController *originalStoryViewController;
+    DetailViewController *detailViewController;
     
     NSString * activeUsername;
     BOOL isRiverView;
@@ -53,6 +56,7 @@
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
+@property (nonatomic, retain) IBOutlet UISplitViewController *splitViewController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *navigationController;
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
@@ -61,6 +65,7 @@
 @property (nonatomic, retain) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic, retain) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic, retain) IBOutlet OriginalStoryViewController *originalStoryViewController;
+@property (nonatomic, retain) IBOutlet DetailViewController *detailViewController;
 
 @property (readwrite, retain) NSString * activeUsername;
 @property (nonatomic, readwrite) BOOL isRiverView;

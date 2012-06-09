@@ -14,6 +14,7 @@
 #import "AddSiteViewController.h"
 #import "MoveSiteViewController.h"
 #import "OriginalStoryViewController.h"
+#import "DetailViewController.h"
 #import "MBProgressHUD.h"
 #import "Utilities.h"
 #import "StringHelper.h"
@@ -21,6 +22,8 @@
 @implementation NewsBlurAppDelegate
 
 @synthesize window;
+
+@synthesize splitViewController;
 @synthesize navigationController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
@@ -29,6 +32,7 @@
 @synthesize addSiteViewController;
 @synthesize moveSiteViewController;
 @synthesize originalStoryViewController;
+@synthesize detailViewController;
 
 @synthesize activeUsername;
 @synthesize isRiverView;
@@ -61,8 +65,21 @@
 //    [TestFlight takeOff:@"101dd20fb90f7355703b131d9af42633_MjQ0NTgyMDExLTA4LTIxIDIzOjU3OjEzLjM5MDcyOA"];
     [ASIHTTPRequest setDefaultUserAgentString:@"NewsBlur iPhone App v1.0"];
     
-    navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
-    [window addSubview:navigationController.view];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        NSLog(@"******************* iPad");
+        navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
+        [window addSubview:splitViewController.view];
+        
+        splitViewController.viewControllers = [NSArray arrayWithObjects:navigationController, detailViewController, nil];
+        
+        [window addSubview:splitViewController.view];
+
+        
+    } else {
+        navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
+        [window addSubview:navigationController.view];
+    }
+    
     [window makeKeyAndVisible];
     
     [feedsViewController fetchFeedList:YES];
@@ -85,6 +102,7 @@
     [addSiteViewController release];
     [moveSiteViewController release];
     [originalStoryViewController release];
+    [detailViewController release];
     [navigationController release];
     [window release];
     [activeUsername release];
@@ -196,14 +214,28 @@
     } else {
         feedTitle = [activeFeed objectForKey:@"feed_title"];
     }
-    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
-    [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
-    [newBackButton release];
-    UINavigationController *navController = self.navigationController;   
-    [navController pushViewController:storyDetailViewController animated:YES];
-    [navController.navigationItem setLeftBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease]];
-    navController.navigationItem.hidesBackButton = YES;
-    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        // With some valid UIView *view:
+        NSArray *subviews = [[detailViewController.view subviews] copy];
+        for (UIView *subview in subviews) {
+            [subview removeFromSuperview];
+        }
+        [subviews release];
+        
+        [detailViewController.view addSubview:storyDetailViewController.view];
+    } else{
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
+        [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
+        [newBackButton release];
+        UINavigationController *navController = self.navigationController;   
+        [navController pushViewController:storyDetailViewController animated:YES];
+        [navController.navigationItem setLeftBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease]];
+        navController.navigationItem.hidesBackButton = YES;
+        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    }
+
+
 }
 
 - (void)navigationController:(UINavigationController *)navController 
