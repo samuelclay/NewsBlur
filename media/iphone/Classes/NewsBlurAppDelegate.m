@@ -126,7 +126,16 @@
 - (void)showAdd {
     UINavigationController *navController = self.navigationController;
     [addSiteViewController initWithNibName:nil bundle:nil];
-    [navController presentModalViewController:addSiteViewController animated:YES];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        addSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+        [navController presentModalViewController:addSiteViewController animated:YES];
+        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); //it's important to do this after presentModalViewController
+        addSiteViewController.view.superview.center = self.view.center;
+    } else {
+        [navController presentModalViewController:addSiteViewController animated:YES];
+    }
+    
     [addSiteViewController reload];
 }
 
