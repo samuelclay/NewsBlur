@@ -228,9 +228,9 @@
         storyDetailViewController.view.tag = 12;
         [detailViewController.view addSubview:storyDetailViewController.view];
         if (UIInterfaceOrientationIsPortrait(detailViewController.interfaceOrientation)) {
-            storyDetailViewController.view.frame = CGRectMake(0,44,768,960);
+            storyDetailViewController.view.frame = CGRectMake(0,0,768,1004);
         } else {
-            storyDetailViewController.view.frame = CGRectMake(0,44,704,704);
+            storyDetailViewController.view.frame = CGRectMake(0,0,704,748);
         }
 
     } else{
@@ -615,7 +615,7 @@
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
-    gradient.opacity = 1;
+    gradient.opacity = 0.7;
     unsigned int color = 0;
     unsigned int colorFade = 0;
     if ([start class] == [NSNull class]) {
@@ -632,20 +632,20 @@
     
     CALayer *whiteBackground = [CALayer layer];
     whiteBackground.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
-    whiteBackground.backgroundColor = [UIColor whiteColor].CGColor;
+    whiteBackground.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:0.7].CGColor;
     [gradientView.layer addSublayer:whiteBackground];
     
     [gradientView.layer addSublayer:gradient];
     
     CALayer *topBorder = [CALayer layer];
     topBorder.frame = CGRectMake(0, 1, rect.size.width, 1);
-    topBorder.backgroundColor = UIColorFromRGB(colorFade).CGColor;
+    topBorder.backgroundColor = [UIColorFromRGB(colorFade) colorWithAlphaComponent:0.7].CGColor;
     topBorder.opacity = 1;
     [gradientView.layer addSublayer:topBorder];
     
     CALayer *bottomBorder = [CALayer layer];
     bottomBorder.frame = CGRectMake(0, rect.size.height-1, rect.size.width, 1);
-    bottomBorder.backgroundColor = UIColorFromRGB(colorFade).CGColor;
+    bottomBorder.backgroundColor = [UIColorFromRGB(colorFade) colorWithAlphaComponent:0.7].CGColor;
     bottomBorder.opacity = 1;
     [gradientView.layer addSublayer:bottomBorder];
     
