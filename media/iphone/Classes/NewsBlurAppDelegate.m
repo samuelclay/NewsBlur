@@ -66,7 +66,6 @@
     [ASIHTTPRequest setDefaultUserAgentString:@"NewsBlur iPhone App v1.0"];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-        NSLog(@"******************* iPad");
         navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
         [window addSubview:splitViewController.view];
         

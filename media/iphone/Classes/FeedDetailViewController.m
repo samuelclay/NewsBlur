@@ -10,6 +10,7 @@
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
+#import "DetailViewController.h"
 #import "PullToRefreshView.h"
 #import "ASIFormDataRequest.h"
 #import "NSString+HTML.h"
@@ -129,6 +130,20 @@
     [pull refreshLastUpdatedDate];
     
 	[super viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        NSArray *subviews = [[appDelegate.detailViewController.view subviews] copy];
+        for (UIView *subview in subviews) {
+            if (subview.tag == 12) {
+                [subview removeFromSuperview];
+            }
+        }
+        [subviews release];
+
+    }
+    
 }
 
 - (void)dealloc {
