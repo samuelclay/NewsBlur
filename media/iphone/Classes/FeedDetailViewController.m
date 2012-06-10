@@ -490,6 +490,18 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < [appDelegate.activeFeedStoryLocations count]) {
+        
+        FeedDetailTableCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+       
+        cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
+        cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
+        cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:0.5];
+        cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+        cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
+        cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
+        cell.storyUnreadIndicator.alpha = 0.15f;
+        cell.feedGradient.alpha = 0.25f;
+        
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:location]];
         [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
