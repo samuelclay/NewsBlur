@@ -3,7 +3,11 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
     initialize: function(model) {
         if (_.isNumber(model)) {
             this.feed = NEWSBLUR.assets.feeds.get(model);
-            this.set('is_feed', true);
+
+            // The feed needs to exists as a model as well. Otherwise, chuck it.
+            if (this.feed) {
+                this.set('is_feed', true);
+            }
         } else if (model) {
             var title = _.keys(model)[0];
             var children = model[title];
@@ -148,7 +152,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
                 counts['ps'] += feed_counts['ps'];
                 counts['nt'] += feed_counts['nt'];
                 counts['ng'] += feed_counts['ng'];
-            } else {
+            } else if (item.is_folder()) {
                 var folder_counts = item.folders.unread_counts();
                 counts['ps'] += folder_counts['ps'];
                 counts['nt'] += folder_counts['nt'];
@@ -182,6 +186,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         
         var feedA = modelA.feed;
         var feedB = modelB.feed;
+        
         if (sort_order == 'ALPHABETICAL' || !sort_order) {
             return feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1;
         } else if (sort_order == 'MOSTUSED') {

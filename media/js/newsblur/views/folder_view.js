@@ -40,7 +40,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             if (item.is_feed()) {
                 var feed_view = new NEWSBLUR.Views.Feed({
                     model: item.feed, 
-                    type: 'feed', 
+                    type: 'feed',
                     depth: depth,
                     folder_title: folder_title,
                     folder: folder
@@ -48,7 +48,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 item.feed.views.push(feed_view);
                 item.feed.folders.push(folder);
                 return feed_view.el;
-            } else {
+            } else if (item.is_folder()) {
                 var folder_view = new NEWSBLUR.Views.Folder({
                     model: item,
                     collection: item.folders,
