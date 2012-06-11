@@ -8,6 +8,7 @@
 
 #import "NewsBlurViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "DetailViewController.h"
 #import "FeedTableCell.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
@@ -105,6 +106,20 @@
     
     [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
                                       animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+    
+    
+    // remove the right detail view in storySplitController
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        NSArray *subviews = [[appDelegate.detailViewController.view subviews] copy];
+        for (UIView *subview in subviews) {
+            if (subview.tag == 12) {
+                [subview removeFromSuperview];
+            }
+        }
+        [subviews release];
+        
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {

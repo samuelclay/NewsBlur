@@ -132,20 +132,6 @@
 	[super viewDidAppear:animated];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-        NSArray *subviews = [[appDelegate.detailViewController.view subviews] copy];
-        for (UIView *subview in subviews) {
-            if (subview.tag == 12) {
-                [subview removeFromSuperview];
-            }
-        }
-        [subviews release];
-
-    }
-    
-}
-
 - (void)dealloc {
     [storyTitlesTable release];
     [feedViewToolbar release];

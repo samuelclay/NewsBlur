@@ -10,8 +10,11 @@
 
 @class NewsBlurAppDelegate;
 
-@interface DetailViewController : UIViewController {
+@interface DetailViewController : UIViewController <UISplitViewControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
+
+@property (strong, nonatomic) UIPopoverController *masterPopoverController;
+
 
 @end

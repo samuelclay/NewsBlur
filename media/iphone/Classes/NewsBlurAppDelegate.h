@@ -20,7 +20,7 @@
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate> {
     UIWindow *window;
-    UISplitViewController *splitViewController;
+    UISplitViewController *splitStoryController;
     UINavigationController *navigationController;
     NewsBlurViewController *feedsViewController;
     FeedDetailViewController *feedDetailViewController;
@@ -56,7 +56,7 @@
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) IBOutlet UISplitViewController *splitViewController;
+@property (nonatomic, retain) IBOutlet UISplitViewController *splitStoryController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *navigationController;
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;

@@ -9,11 +9,8 @@
 #import "DetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 
-@interface DetailViewController ()
-
-@end
-
 @implementation DetailViewController
+@synthesize masterPopoverController = _masterPopoverController;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -43,20 +40,35 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    NSArray *subviews = [[self.view subviews] copy];
-    for (UIView *subview in subviews) {
-        if (subview.tag == 12) {
-            if (toInterfaceOrientation == UIInterfaceOrientationPortrait || toInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
-                NSLog(@"portrait");
-                subview.frame = CGRectMake(0,44,768,960);
-            } else {
-                NSLog(@"landscape");
-                subview.frame = CGRectMake(0,44,704,704);
-            }
-        }
-    }
-    
+//    NSArray *subviews = [[self.view subviews] copy];
+//    for (UIView *subview in subviews) {
+//        if (subview.tag == 12) {
+//            if (toInterfaceOrientation == UIInterfaceOrientationPortrait || toInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
+//                NSLog(@"portrait");
+//                subview.frame = CGRectMake(0,44,768,960);
+//            } else {
+//                NSLog(@"landscape");
+//                subview.frame = CGRectMake(0,44,704,704);
+//            }
+//        }
+//    }
+//    
+}
 
+#pragma mark - Split view
+
+- (void)splitViewController:(UISplitViewController *)splitController willHideViewController:(UIViewController *)viewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)popoverController
+{
+    //    barButtonItem.title = NSLocalizedString(@"Master", @"Master");
+    [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
+    self.masterPopoverController = popoverController;
+}
+
+- (void)splitViewController:(UISplitViewController *)splitController willShowViewController:(UIViewController *)viewController invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem
+{
+    // Called when the view is shown again in the split view, invalidating the button and popover controller.
+    //    [self.navigationItem setLeftBarButtonItem:nil animated:YES];
+    self.masterPopoverController = nil;
 }
 
 @end

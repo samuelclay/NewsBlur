@@ -126,6 +126,7 @@
 				<string key="NSFrameSize">{768, 1024}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">1</int>
 					<bytes key="NSRGB">MSAxIDEAA</bytes>
@@ -285,19 +286,19 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">splitViewController</string>
-						<reference key="source" ref="664661524"/>
-						<reference key="destination" ref="159036857"/>
-					</object>
-					<int key="connectionID">141</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">detailViewController</string>
 						<reference key="source" ref="664661524"/>
 						<reference key="destination" ref="543420271"/>
 					</object>
 					<int key="connectionID">142</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">splitStoryController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="159036857"/>
+					</object>
+					<int key="connectionID">143</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -598,7 +599,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">142</int>
+			<int key="maxID">143</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1216,7 +1217,7 @@
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
-							<string>splitViewController</string>
+							<string>splitStoryController</string>
 							<string>storyDetailViewController</string>
 							<string>window</string>
 						</object>
@@ -1247,7 +1248,7 @@
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
-							<string>splitViewController</string>
+							<string>splitStoryController</string>
 							<string>storyDetailViewController</string>
 							<string>window</string>
 						</object>
@@ -1286,7 +1287,7 @@
 								<string key="candidateClassName">OriginalStoryViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">splitViewController</string>
+								<string key="name">splitStoryController</string>
 								<string key="candidateClassName">UISplitViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">

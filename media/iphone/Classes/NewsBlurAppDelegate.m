@@ -23,7 +23,7 @@
 
 @synthesize window;
 
-@synthesize splitViewController;
+@synthesize splitStoryController;
 @synthesize navigationController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
@@ -67,11 +67,14 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
         navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
-        [window addSubview:splitViewController.view];
+        [window addSubview:splitStoryController.view];
         
-        splitViewController.viewControllers = [NSArray arrayWithObjects:navigationController, detailViewController, nil];
+        splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, detailViewController, nil];
         
-        [window addSubview:splitViewController.view];
+        [window addSubview:splitStoryController.view];
+        
+        splitStoryController.delegate = (id)detailViewController;
+        self.window.rootViewController = self.splitViewController;
 
         
     } else {
