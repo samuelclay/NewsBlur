@@ -22,6 +22,8 @@
     UIWindow *window;
     UISplitViewController *splitStoryController;
     UINavigationController *navigationController;
+    UINavigationController *splitStoryDetailNavigationController;
+
     NewsBlurViewController *feedsViewController;
     FeedDetailViewController *feedDetailViewController;
     StoryDetailViewController *storyDetailViewController;
@@ -58,6 +60,7 @@
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet UISplitViewController *splitStoryController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *navigationController;
+@property (nonatomic, readonly, retain) IBOutlet UINavigationController *splitStoryDetailNavigationController;
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, retain) IBOutlet StoryDetailViewController *storyDetailViewController;
@@ -97,6 +100,7 @@
 - (void)loadFeedDetailView;
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
+- (void)adjustStoryDetailWebView;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)hideNavigationBar:(BOOL)animated;
 - (void)showNavigationBar:(BOOL)animated;

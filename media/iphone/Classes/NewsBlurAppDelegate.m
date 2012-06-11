@@ -25,6 +25,7 @@
 
 @synthesize splitStoryController;
 @synthesize navigationController;
+@synthesize splitStoryDetailNavigationController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
 @synthesize storyDetailViewController;
@@ -69,7 +70,10 @@
         navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
         [window addSubview:splitStoryController.view];
         
-        splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, detailViewController, nil];
+        splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:detailViewController];
+        [window addSubview:splitStoryController.view];
+        
+        splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, splitStoryDetailNavigationController, nil];
         
         [window addSubview:splitStoryController.view];
         
@@ -229,12 +233,9 @@
         
         storyDetailViewController.view.tag = 12;
         [detailViewController.view addSubview:storyDetailViewController.view];
-        if (UIInterfaceOrientationIsPortrait(detailViewController.interfaceOrientation)) {
-            storyDetailViewController.view.frame = CGRectMake(0,0,768,1004);
-        } else {
-            storyDetailViewController.view.frame = CGRectMake(0,0,704,748);
-        }
+        [self adjustStoryDetailWebView];
 
+        
     } else{
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
@@ -247,6 +248,15 @@
     }
 
 
+}
+
+- (void)adjustStoryDetailWebView {
+    if (UIInterfaceOrientationIsPortrait(detailViewController.interfaceOrientation)) {
+        storyDetailViewController.view.frame = CGRectMake(0,0,768,960);
+    } else {
+        storyDetailViewController.view.frame = CGRectMake(0,0,704,704);
+    }
+    
 }
 
 - (void)navigationController:(UINavigationController *)navController 
