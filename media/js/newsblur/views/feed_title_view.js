@@ -14,8 +14,9 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     initialize: function() {
-        _.bindAll(this, 'render', 'changed', 'delete_feed');
-        this.model.bind('change', this.changed);
+        _.bindAll(this, 'render', 'delete_feed');
+        this.model.bind('change', this.changed, this);
+        this.model.bind('change:updated', this.render_updated_time, this);
         
         if (this.model.is_social() && !this.model.get('feed_title')) {
             var profile = NEWSBLUR.assets.user_profiles.get(this.model.get('user_id')) || {};
@@ -24,8 +25,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     destroy: function() {
-        this.remove();
-        this.model.unbind('change', this.changed);
+        this.$el.empty();
+        this.model.unbind(null, this);
     },
     
     changed: function(model, options) {
@@ -101,6 +102,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         this.$el.replaceWith($feed);
         this.setElement($feed);
         this.render_counts();
+        this.setup_tooltips();
+        this.render_updated_time();
         
         return this;
     },
@@ -137,9 +140,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             }
         }
         
-        if (this.options.type == 'story') {
-            extra_classes += ' NB-feedbar';
-        }
         return extra_classes;
     },
     
@@ -148,6 +148,24 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         this.$('.feed_counts').html(this.counts_view.el);
         if (this.options.type == 'story') {
             this.$('.NB-story-title-indicator-count').html(this.counts_view.$el.clone());
+        }
+    },
+    
+    setup_tooltips: function() {
+        if (this.options.type == 'story' && NEWSBLUR.assets.preference('show_tooltips')) {
+            this.$('.NB-feedbar-train-feed, .NB-feedbar-statistics').tipsy({
+                gravity: 's',
+                delayIn: 375
+            });
+        }
+    },
+    
+    render_updated_time: function() {
+        if (this.options.type == 'story') {
+            var updated_text = this.model.get('updated') ? 
+                               this.model.get('updated') + ' ago' : 
+                               'Loading...';
+            this.$('.NB-feedbar-last-updated-date').text(updated_text);
         }
     },
     
