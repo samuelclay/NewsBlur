@@ -1,4 +1,4 @@
-NEWSBLUR.Views.Feed = Backbone.View.extend({
+NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     options: {
         depth: 0,

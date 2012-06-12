@@ -49,11 +49,14 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     // = Actions =
     // ===========
     
-    scroll_to_selected_story: function(story_view, options) {
+    scroll_to_selected_story: function(story, options) {
         options = options || {};
+        if (!story || !story.story_view) return;
+        
         NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
+        clearTimeout(NEWSBLUR.reader.locks.scrolling);
         this.$el.scrollable().stop();
-        this.$el.scrollTo(story_view.$el, { 
+        this.$el.scrollTo(story.story_view.$el, { 
             duration: options.immediate ? 0 : 340,
             axis: 'y', 
             easing: 'easeInOutQuint', 

@@ -175,6 +175,8 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
         
         if ($story && $story.length) {
             NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] = true;
+            clearTimeout(NEWSBLUR.reader.locks.scrolling);
+            
             if (options.immediate || NEWSBLUR.reader.story_view != 'page') {
                 $iframe.scrollTo($story, { duration: 0, axis: 'y', offset: -24 }); // Do this at story_view switch
                 NEWSBLUR.reader.locks.scrolling = setTimeout(function() {
@@ -579,7 +581,11 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
         if (selected && 
             NEWSBLUR.reader.story_view == 'page' && 
             !options.selected_in_original) {
-            this.scroll_to_selected_story(model);
+            var found = this.scroll_to_selected_story(model);
+            NEWSBLUR.reader.switch_to_correct_view(found);
+            if (!found) {
+                NEWSBLUR.app.story_list.scroll_to_selected_story(model);
+            }
         }
     }
     

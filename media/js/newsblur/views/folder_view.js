@@ -38,16 +38,16 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         this.options.collapsed =  this.options.title && _.contains(NEWSBLUR.Preferences.collapsed_folders, this.options.title);
         var $feeds = this.collection.map(function(item) {
             if (item.is_feed()) {
-                var feed_view = new NEWSBLUR.Views.Feed({
+                var feed_title_view = new NEWSBLUR.Views.FeedTitleView({
                     model: item.feed, 
                     type: 'feed',
                     depth: depth,
                     folder_title: folder_title,
                     folder: folder
                 }).render();
-                item.feed.views.push(feed_view);
+                item.feed.views.push(feed_title_view);
                 item.feed.folders.push(folder);
-                return feed_view.el;
+                return feed_title_view.el;
             } else if (item.is_folder()) {
                 var folder_view = new NEWSBLUR.Views.Folder({
                     model: item,

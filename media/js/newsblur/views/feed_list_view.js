@@ -82,7 +82,11 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         var $social_feeds = this.$s.$social_feeds;
         var profile = NEWSBLUR.assets.user_profile;
         var $feeds = NEWSBLUR.assets.social_feeds.map(function(feed) {
-            var feed_view = new NEWSBLUR.Views.Feed({model: feed, type: 'feed', depth: 0}).render();
+            var feed_view = new NEWSBLUR.Views.FeedTitleView({
+                model: feed, 
+                type: 'feed', 
+                depth: 0
+            }).render();
             feed.views.push(feed_view);
             return feed_view.el;
         });
