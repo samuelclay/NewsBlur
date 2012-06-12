@@ -1163,6 +1163,30 @@ background: transparent;
     display: block;
 }
 
+#story_titles .NB-feedbar .NB-folder .NB-folder-title {
+    padding: 1px 0 1px 22px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #606060;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 0 #EEEEEE;
+    position: relative;
+}
+
+#story_titles .NB-feedbar .NB-folder .NB-folder-icon {
+    background: transparent url('/media/embed/icons/silk/folder.png') no-repeat 0 0;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    left: 4px;
+    top: 3px;
+}
+
+#story_titles .NB-feedbar .folder ul.folder,
+#story_titles .NB-feedbar .folder .NB-feedlist-collapse-icon {
+    display: none;
+}
+
 /* ============================= */
 /* = Story Titles Hidden Count = */
 /* ============================= */

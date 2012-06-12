@@ -14,7 +14,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     events: {
         "contextmenu"                       : "show_manage_menu",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
-        "click"                             : "open",
+        "click .folder_title"               : "open",
         "click .NB-feedlist-collapse-icon"  : "collapse_folder",
         "mouseenter"                        : "add_hover_inverse",
         "mouseleave"                        : "remove_hover_inverse"
@@ -27,44 +27,56 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             this.model.bind('change:folder_title', this.update_title);
             this.model.bind('change:selected', this.update_selected);
             this.model.bind('delete', this.delete_folder);
+            this.options.folder_title = this.model.get('folder_title');
         }
-        this.collection.bind('change:counts', this.check_collapsed);
+        if (this.collection) {
+            this.collection.bind('change:counts', this.check_collapsed);
+        }
+    },
+    
+    destroy: function() {
+        if (this.model) {
+            this.model.unbind(null, this);
+        }
+        this.$el.remove();
     },
     
     render: function() {
         var depth = this.options.depth;
-        var folder_title = this.options.title;
+        var folder_title = this.options.folder_title;
         var folder = this.collection;
-        this.options.collapsed =  this.options.title && _.contains(NEWSBLUR.Preferences.collapsed_folders, this.options.title);
-        var $feeds = this.collection.map(function(item) {
-            if (item.is_feed()) {
-                var feed_title_view = new NEWSBLUR.Views.FeedTitleView({
-                    model: item.feed, 
-                    type: 'feed',
-                    depth: depth,
-                    folder_title: folder_title,
-                    folder: folder
-                }).render();
-                item.feed.views.push(feed_title_view);
-                item.feed.folders.push(folder);
-                return feed_title_view.el;
-            } else if (item.is_folder()) {
-                var folder_view = new NEWSBLUR.Views.Folder({
-                    model: item,
-                    collection: item.folders,
-                    depth: depth + 1,
-                    title: item.get('folder_title')
-                }).render();
-                item.folder_views.push(folder_view);
-                return folder_view.el;
-            }
-        });
-        $feeds.push(this.make('div', { 'class': 'feed NB-empty' }));
+        this.options.collapsed =  folder_title && _.contains(NEWSBLUR.Preferences.collapsed_folders, folder_title);
 
         var $folder = this.render_folder();
         $(this.el).html($folder);
-        this.$('.folder').append($feeds);
-
+        
+        if (!this.options.only_title) {
+            var $feeds = this.collection.map(function(item) {
+                if (item.is_feed()) {
+                    var feed_title_view = new NEWSBLUR.Views.FeedTitleView({
+                        model: item.feed, 
+                        type: 'feed',
+                        depth: depth,
+                        folder_title: folder_title,
+                        folder: folder
+                    }).render();
+                    item.feed.views.push(feed_title_view);
+                    item.feed.folders.push(folder);
+                    return feed_title_view.el;
+                } else if (item.is_folder()) {
+                    var folder_view = new NEWSBLUR.Views.Folder({
+                        model: item,
+                        collection: item.folders,
+                        depth: depth + 1
+                    }).render();
+                    item.folder_views.push(folder_view);
+                    return folder_view.el;
+                }
+            });
+            $feeds.push(this.make('div', { 'class': 'feed NB-empty' }));
+            this.$('.folder').append($feeds);
+        }
+        
         this.check_collapsed({skip_animation: true});
         
         return this;
@@ -84,7 +96,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         </ul>\
         ', {
           depth         : this.options.depth,
-          folder_title  : this.options.title,
+          folder_title  : this.options.folder_title,
           is_collapsed  : this.options.collapsed,
           root          : this.options.root
         });
@@ -93,7 +105,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     update_title: function() {
-        this.$('.folder_title_text').eq(0).html(this.model.get('folder_title'));
+        this.$('.folder_title_text').eq(0).html(this.options.folder_title);
     },
     
     update_selected: function() {
@@ -107,10 +119,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     check_collapsed: function(options) {
         options = options || {};
         var self = this;
-        if (!this.options.title || !this.options.title.length) return;
+        if (!this.options.folder_title || !this.options.folder_title.length) return;
         
         var show_folder_counts = NEWSBLUR.assets.preference('folder_counts');
-        var collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, this.options.title);
+        var collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, this.options.folder_title);
         if (collapsed || show_folder_counts) {
             this.show_collapsed_folder_count(options);
         }
@@ -162,17 +174,22 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     // ==========
    
     open: function(e) {
+        var $folder = $(e.currentTarget).closest('li.folder');
+        if ($folder[0] != this.el) return;
+        if ($(e.currentTarget)[0] != this.$('.folder_title')[0]) return;
         
+        NEWSBLUR.reader.open_river_stories(this.$el, this.model);
     },
     
     show_manage_menu: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+
         NEWSBLUR.reader.show_manage_menu('folder', this.$el, {
             toplevel: this.options.depth == 0,
-            folder_title: this.options.title
+            folder_title: this.options.folder_title
         });
+
         return false;
     },
     
@@ -201,6 +218,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     collapse_folder: function(e, options) {
+        e.preventDefault();
+        e.stopPropagation();
         options = options || {};
         var self = this;
         var $children = this.$el.children('ul.folder');
@@ -212,8 +231,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             ($children.length && 
              $children.eq(0).is(':visible') && 
              !this.collection.collapsed)) {
-            console.log(["hiding folder", $children, this.collection, this.options.title]);
-            NEWSBLUR.assets.collapsed_folders(this.options.title, true);
+            console.log(["hiding folder", $children, this.collection, this.options.folder_title]);
+            NEWSBLUR.assets.collapsed_folders(this.options.folder_title, true);
             this.collection.collapsed = true;
             this.$el.addClass('NB-folder-collapsed');
             $children.animate({'opacity': 0}, {
@@ -231,8 +250,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         // Showing / Expanding
         else if ($children.length && 
                    (this.collection.collapsed || !$children.eq(0).is(':visible'))) {
-            console.log(["showing folder", this.collection, this.options.title]);
-            NEWSBLUR.assets.collapsed_folders(this.options.title, false);
+            console.log(["showing folder", this.collection, this.options.folder_title]);
+            NEWSBLUR.assets.collapsed_folders(this.options.folder_title, false);
             this.collection.collapsed = false;
             this.$el.removeClass('NB-folder-collapsed');
             if (!NEWSBLUR.assets.preference('folder_counts')) {
