@@ -114,27 +114,27 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (NEWSBLUR.assets.flags['no_more_stories']) return;
         
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
-        var $feedbar = $('.NB-story-titles-end-stories-line', $story_titles);
+        var $endline = $('.NB-story-titles-end-stories-line', $story_titles);
         
-        if (!$feedbar.length) {
-            $feedbar = $.make('div', { className: 'NB-story-titles-end-stories-line' });
-            $story_titles.append($feedbar);
+        if (!$endline.length) {
+            $endline = $.make('div', { className: 'NB-story-titles-end-stories-line' });
+            $story_titles.append($endline);
         }
-        $feedbar.css({'background': '#E1EBFF'});
+        $endline.css({'background': '#E1EBFF'});
         
-        $feedbar.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+        $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
                 .animate({'backgroundColor': '#E1EBFF'}, 1050);
         this.feed_stories_loading = setInterval(function() {
-            $feedbar.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+            $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
                     .animate({'backgroundColor': '#E1EBFF'}, 1050);
         }, 1500);
         
         if (options.show_loading) {
             this.pre_load_page_scroll_position = $('#story_titles').scrollTop();
             if (this.pre_load_page_scroll_position > 0) {
-                this.pre_load_page_scroll_position += $feedbar.outerHeight();
+                this.pre_load_page_scroll_position += $endline.outerHeight();
             }
-            $story_titles.scrollTo($feedbar, { 
+            $story_titles.scrollTo($endline, { 
                 duration: 0,
                 axis: 'y', 
                 easing: 'easeInOutQuint', 

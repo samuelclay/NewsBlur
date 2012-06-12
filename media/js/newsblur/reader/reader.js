@@ -1915,12 +1915,6 @@
             
         },
         
-        recalculate_story_scores: function(feed_id) {
-            feed_id = feed_id || this.active_feed;
-            
-            this.model.recalculate_story_scores(feed_id);
-        },
-        
         // ===========
         // = Stories =
         // ===========
@@ -1979,24 +1973,26 @@
                 ]);
                 this.$s.$feedbar.html(NEWSBLUR.app.feed_title_view);
             }
-
+            
+            this.show_feed_hidden_story_title_indicator();
         },
         
         show_feed_hidden_story_title_indicator: function(is_feed_load) {
             if (is_feed_load && this.flags['unread_threshold_temporarily']) return;
             else this.flags['unread_threshold_temporarily'] = null;
+            if (!this.active_feed) return;
             
             var $story_titles = this.$s.$story_titles;
             var feed_id = this.active_feed;
             var feed = this.model.get_feed(feed_id);
             var unread_view_name = this.get_unread_view_name();
             var $indicator = $('.NB-story-title-indicator', $story_titles);
-            var hidden_stories = _.any(this.model.stories, _.bind(function(story) {
-                var score = this.compute_story_score(story);
-
-                if (unread_view_name == 'positive') return score <= 0;
-                else if (unread_view_name == 'neutral') return score < 0;
-            }, this));
+            var hidden_stories = false;
+            if (unread_view_name == 'positive') {
+                hidden_stories = !!(feed.get('nt') | feed.get('ng'));
+            } else if (unread_view_name == 'neutral') {
+                hidden_stories = !!feed.get('ng');
+            }
             if (!hidden_stories) return;
             
             $indicator.css({'display': 'block', 'opacity': 0});
@@ -2233,25 +2229,6 @@
         make_story_content: function(story_content) {
             var $story_content = $('<div>').html(story_content);
             return $story_content;
-        },
-        
-        save_classifier: function(type, value, score, feed_id, callback) {
-            var data = {
-                'feed_id': feed_id
-            };
-            if (score == 0) {
-                data['remove_like_'+type] = value;
-            } else if (score == 1) {
-                data['like_'+type] = value;
-            } else if (score == -1) {
-                data['dislike_'+type] = value;
-            }
-            
-            this.model.classifiers[feed_id][type+'s'][value] = score;
-            this.model.save_classifier(data, _.bind(function(resp) {
-                this.model.recalculate_story_scores(feed_id);
-                this.force_feeds_refresh(callback, true, feed_id);
-            }, this));
         },
         
         apply_story_styling: function(reset_stories) {
@@ -3385,22 +3362,7 @@
             var $slider = this.$s.$intelligence_slider;
             var unread_view = this.model.preference('unread_view');
             
-            this.switch_feed_view_unread_view(unread_view);
             this.slide_intelligence_slider(unread_view);
-            
-            // $slider.slider({
-            //     range: 'max',
-            //     min: -1,
-            //     max: 1,
-            //     step: 1,
-            //     value: unread_view,
-            //     slide: function(e, ui) {
-            //         self.switch_feed_view_unread_view(ui.value);
-            //     },
-            //     stop: function(e, ui) {
-            //         self.slide_intelligence_slider(ui.value);
-            //     }
-            // });
         },
         
         slide_intelligence_slider: function(value) {
@@ -3550,21 +3512,6 @@
                 }
             }
             
-            if ((this.story_view == 'feed' || this.flags.page_view_showing_feed_view) && 
-                this.model.preference('feed_view_single_story')) {
-                // No need to show/hide feed view stories under single_story preference. 
-                // If the user switches to feed/page, then no animation is happening 
-                // and this will work anyway.
-                var active_story = this.active_story;
-                var $active_story = active_story && $('.NB-feed-story').filter(function() { 
-                  return $(this).data('story_id') == active_story.id; 
-                });
-                if ($active_story && $active_story.length) {
-                  $stories_show = $stories_show.not('.NB-feed-story').add($active_story);
-                  $stories_hide = $stories_hide.add('.NB-feed-story').not($stories_show);
-                }
-            }
-            
             if (!options['animate']) {
                 $stories_hide.css({'display': 'none'});
                 $stories_show.css({'display': 'block'});
@@ -3574,7 +3521,7 @@
             if (this.story_view == 'feed' && !this.model.preference('feed_view_single_story')) {
                 if ($stories_show.filter(':visible').length != $stories_show.length
                     || $stories_hide.filter(':visible').length != 0) {
-                    // NEWSBLUR.log(['Show/Hide stories', $stories_show.filter(':visible').length, $stories_show.length, $stories_hide.filter(':visible').length, $stories_hide.length]);
+                    NEWSBLUR.log(['Show/Hide stories', $stories_show.filter(':visible').length, $stories_show.length, $stories_hide.filter(':visible').length, $stories_hide.length]);
                     setTimeout(function() {
                         self.flags['feed_view_positions_calculated'] = false;
                         // self.prefetch_story_locations_in_feed_view();
@@ -3582,7 +3529,7 @@
                 }
             }
             
-            // NEWSBLUR.log(['Showing correct stories', this.story_view, this.flags['feed_view_positions_calculated'], unread_view_name, $stories_show.length, $stories_hide.length]);
+            NEWSBLUR.log(['Showing correct stories', this.story_view, this.flags['feed_view_positions_calculated'], unread_view_name, $stories_show.length, $stories_hide.length]);
             if (options['animate'] && options['follow']) {
                 if (this.model.preference('animations')) {
                     $stories_hide.slideUp(500, function() {
@@ -4849,7 +4796,6 @@
                     unread_value = 1;
                 }
                 
-                self.switch_feed_view_unread_view(unread_value);
                 self.slide_intelligence_slider(unread_value);
             }); 
             

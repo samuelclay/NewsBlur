@@ -1137,25 +1137,29 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             };
             
             _.each(this.classifiers[feed_id].titles, _.bind(function(classifier_score, classifier_title) {
-                if (story.get('story_title', '').indexOf(classifier_title) != -1) {
+                if (intelligence.title <= 0 && 
+                    story.get('story_title', '').indexOf(classifier_title) != -1) {
                     intelligence.title = classifier_score;
                 }
             }, this));
             
             _.each(this.classifiers[feed_id].authors, _.bind(function(classifier_score, classifier_author) {
-                if (story.get('story_authors', '').indexOf(classifier_author) != -1) {
+                if (intelligence.author <= 0 &&
+                    story.get('story_authors', '').indexOf(classifier_author) != -1) {
                     intelligence.author = classifier_score;
                 }
             }, this));
             
             _.each(this.classifiers[feed_id].tags, _.bind(function(classifier_score, classifier_tag) {
-                if (story.get('story_tags') && _.contains(story.get('story_tags'), classifier_tag)) {
+                if (intelligence.tags <= 0 &&
+                    story.get('story_tags') && _.contains(story.get('story_tags'), classifier_tag)) {
                     intelligence.tags = classifier_score;
                 }
             }, this));
             
             _.each(this.classifiers[feed_id].feeds, _.bind(function(classifier_score, classifier_feed_id) {
-                if (story.get('story_feed_id') == classifier_feed_id) {
+                if (intelligence.feed <= 0 &&
+                    story.get('story_feed_id') == classifier_feed_id) {
                     intelligence.feed = classifier_score;
                 }
             }, this));
