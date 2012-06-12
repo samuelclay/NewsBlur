@@ -184,6 +184,7 @@
 }
 - (void)webViewDidFinishLoad:(UIWebView *)aWebView
 {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self updateButtons];
     [self updateTitle:aWebView];

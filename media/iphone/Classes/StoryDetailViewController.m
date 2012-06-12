@@ -479,7 +479,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)showOriginalSubview:(id)sender {
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory 
                                        objectForKey:@"story_permalink"]];
-    [appDelegate showOriginalStory:url];
+    [appDelegate showOriginalStory:url fromOriginalButton: YES];
 }
 
 @end
