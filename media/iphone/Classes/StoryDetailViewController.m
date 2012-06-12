@@ -9,7 +9,7 @@
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailViewController.h"
-#import "DetailViewController.h"
+#import "SplitStoryDetailViewController.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "Base64.h"

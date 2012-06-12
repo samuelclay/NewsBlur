@@ -6,13 +6,21 @@
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
-#import "DetailViewController.h"
+#import "SplitStoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 
-@implementation DetailViewController
+@implementation SplitStoryDetailViewController
 
 @synthesize masterPopoverController = _masterPopoverController;
 @synthesize appDelegate;
+@synthesize detailItem = _detailItem;
+
+- (void)dealloc 
+{
+    [_detailItem release];
+    [_masterPopoverController release];
+    [super dealloc];
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -26,14 +34,13 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+	// Do any additional setup after loading the view, typically from a nib.
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
     // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

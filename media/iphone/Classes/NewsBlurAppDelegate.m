@@ -14,7 +14,7 @@
 #import "AddSiteViewController.h"
 #import "MoveSiteViewController.h"
 #import "OriginalStoryViewController.h"
-#import "DetailViewController.h"
+#import "SplitStoryDetailViewController.h"
 #import "MBProgressHUD.h"
 #import "Utilities.h"
 #import "StringHelper.h"
@@ -68,13 +68,10 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
         navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
-        [window addSubview:splitStoryController.view];
         
         splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:detailViewController];
         splitStoryDetailNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
         detailViewController.navigationItem.title = @"NewsBlur";
-        
-        [window addSubview:splitStoryController.view];
         
         splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, splitStoryDetailNavigationController, nil];
         

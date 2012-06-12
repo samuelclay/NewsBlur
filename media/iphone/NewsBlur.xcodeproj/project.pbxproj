@@ -79,8 +79,8 @@
 		43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01F156603170008733D /* NewsBlurViewController.xib */; };
 		43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F020156603170008733D /* OriginalStoryViewController.xib */; };
 		43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F021156603170008733D /* StoryDetailViewController.xib */; };
-		43C1E6401583DA3F006874F1 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C1E63E1583DA3F006874F1 /* DetailViewController.m */; };
-		43C1E6411583DA3F006874F1 /* DetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C1E63F1583DA3F006874F1 /* DetailViewController~ipad.xib */; };
+		43C1E6401583DA3F006874F1 /* SplitStoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C1E63E1583DA3F006874F1 /* SplitStoryDetailViewController.m */; };
+		43C1E6411583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */; };
 		78095E34128EF30C00230C8E /* ASIAuthenticationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E25128EF30C00230C8E /* ASIAuthenticationDialog.m */; };
 		78095E35128EF30D00230C8E /* ASIDownloadCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E28128EF30C00230C8E /* ASIDownloadCache.m */; };
 		78095E36128EF30D00230C8E /* ASIFormDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E2A128EF30C00230C8E /* ASIFormDataRequest.m */; };
@@ -256,9 +256,9 @@
 		43B8F01F156603170008733D /* NewsBlurViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsBlurViewController.xib; sourceTree = "<group>"; };
 		43B8F020156603170008733D /* OriginalStoryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OriginalStoryViewController.xib; sourceTree = "<group>"; };
 		43B8F021156603170008733D /* StoryDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoryDetailViewController.xib; sourceTree = "<group>"; };
-		43C1E63D1583DA3F006874F1 /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DetailViewController.h; path = ../DetailViewController.h; sourceTree = "<group>"; };
-		43C1E63E1583DA3F006874F1 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DetailViewController.m; path = ../DetailViewController.m; sourceTree = "<group>"; };
-		43C1E63F1583DA3F006874F1 /* DetailViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "DetailViewController~ipad.xib"; sourceTree = "<group>"; };
+		43C1E63D1583DA3F006874F1 /* SplitStoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; name = SplitStoryDetailViewController.h; path = ../SplitStoryDetailViewController.h; sourceTree = "<group>"; };
+		43C1E63E1583DA3F006874F1 /* SplitStoryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SplitStoryDetailViewController.m; path = ../SplitStoryDetailViewController.m; sourceTree = "<group>"; };
+		43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "SplitStoryDetailViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D0451F1565BC150085F811 /* MainWindow~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow~ipad.xib"; path = "Resources-iPad/MainWindow~ipad.xib"; sourceTree = "<group>"; };
 		43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "NewsBlurViewController~ipad.xib"; path = "Resources-iPad/NewsBlurViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "FeedDetailViewController~ipad.xib"; path = "Resources-iPad/Classes/FeedDetailViewController~ipad.xib"; sourceTree = "<group>"; };
@@ -528,8 +528,8 @@
 				28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */,
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
-				43C1E63D1583DA3F006874F1 /* DetailViewController.h */,
-				43C1E63E1583DA3F006874F1 /* DetailViewController.m */,
+				43C1E63D1583DA3F006874F1 /* SplitStoryDetailViewController.h */,
+				43C1E63E1583DA3F006874F1 /* SplitStoryDetailViewController.m */,
 				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
 				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 				FFE5322D144C8AC300ACFDE0 /* Utilities.h */,
@@ -699,7 +699,7 @@
 				43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */,
 				43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
-				43C1E63F1583DA3F006874F1 /* DetailViewController~ipad.xib */,
+				43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */,
 			);
 			name = "Resources-iPad";
 			sourceTree = "<group>";
@@ -1224,7 +1224,7 @@
 				433D24851582EEC800AE9E72 /* NewsBlurViewController~ipad.xib in Resources */,
 				433D24861582EECA00AE9E72 /* OriginalStoryViewController~ipad.xib in Resources */,
 				433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */,
-				43C1E6411583DA3F006874F1 /* DetailViewController~ipad.xib in Resources */,
+				43C1E6411583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1331,7 +1331,7 @@
 				FF2D8CE114886ECF00057B80 /* OAToken.m in Sources */,
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
 				4307BEFE1565EEBC007A932A /* Base64.m in Sources */,
-				43C1E6401583DA3F006874F1 /* DetailViewController.m in Sources */,
+				43C1E6401583DA3F006874F1 /* SplitStoryDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

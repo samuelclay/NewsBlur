@@ -8,7 +8,7 @@
 
 #import "NewsBlurViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "DetailViewController.h"
+#import "SplitStoryDetailViewController.h"
 #import "FeedTableCell.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"

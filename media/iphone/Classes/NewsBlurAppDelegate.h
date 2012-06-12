@@ -16,7 +16,7 @@
 @class AddSiteViewController;
 @class MoveSiteViewController;
 @class OriginalStoryViewController;
-@class DetailViewController;
+@class SplitStoryDetailViewController;
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate> {
     UIWindow *window;
@@ -31,7 +31,7 @@
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
     OriginalStoryViewController *originalStoryViewController;
-    DetailViewController *detailViewController;
+    SplitStoryDetailViewController *detailViewController;
     
     NSString * activeUsername;
     BOOL isRiverView;
@@ -68,7 +68,7 @@
 @property (nonatomic, retain) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic, retain) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic, retain) IBOutlet OriginalStoryViewController *originalStoryViewController;
-@property (nonatomic, retain) IBOutlet DetailViewController *detailViewController;
+@property (nonatomic, retain) IBOutlet SplitStoryDetailViewController *detailViewController;
 
 @property (readwrite, retain) NSString * activeUsername;
 @property (nonatomic, readwrite) BOOL isRiverView;
