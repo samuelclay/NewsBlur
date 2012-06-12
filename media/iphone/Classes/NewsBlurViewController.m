@@ -121,6 +121,7 @@
     
     appDelegate.detailViewController.navigationItem.titleView = nil;
     appDelegate.detailViewController.navigationItem.title = @"NewsBlur";
+    appDelegate.detailViewController.navigationItem.rightBarButtonItem = nil;  
 }
 
 - (void)viewDidAppear:(BOOL)animated {
