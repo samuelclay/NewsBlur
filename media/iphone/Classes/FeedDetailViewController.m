@@ -72,7 +72,12 @@
     }
     
     UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-    self.navigationItem.titleView = titleLabel;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        appDelegate.detailViewController.navigationItem.titleView = titleLabel;
+    } else {
+        self.navigationItem.titleView = titleLabel;
+    }
 
     // Commenting out until training is ready...
     //    UIBarButtonItem *trainBarButton = [UIBarButtonItem alloc];
@@ -507,6 +512,11 @@
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:location]];
         [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
         [appDelegate loadStoryDetailView];
+
+        if(appDelegate.detailViewController.masterPopoverController.popoverVisible) {
+            NSLog(@"popover visible");
+            [appDelegate.detailViewController.masterPopoverController dismissPopoverAnimated:YES];
+        }
     }
 }
 
