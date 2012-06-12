@@ -77,7 +77,6 @@
         
         [window addSubview:splitStoryController.view];
         
-        splitStoryController.delegate = (id)detailViewController;
         self.window.rootViewController = self.splitViewController;
 
         
@@ -89,7 +88,7 @@
     [window makeKeyAndVisible];
     
     [feedsViewController fetchFeedList:YES];
-    
+
 	return YES;
 }
 

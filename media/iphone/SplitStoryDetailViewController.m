@@ -13,11 +13,9 @@
 
 @synthesize masterPopoverController = _masterPopoverController;
 @synthesize appDelegate;
-@synthesize detailItem = _detailItem;
 
 - (void)dealloc 
 {
-    [_detailItem release];
     [_masterPopoverController release];
     [super dealloc];
 }
