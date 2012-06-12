@@ -109,7 +109,6 @@
     
     
     // remove the right detail view in storySplitController
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
         NSArray *subviews = [[appDelegate.detailViewController.view subviews] copy];
         for (UIView *subview in subviews) {
@@ -118,8 +117,10 @@
             }
         }
         [subviews release];
-        
     }
+    
+    appDelegate.detailViewController.navigationItem.titleView = nil;
+    appDelegate.detailViewController.navigationItem.title = @"NewsBlur";
 }
 
 - (void)viewDidAppear:(BOOL)animated {

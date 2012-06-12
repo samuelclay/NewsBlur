@@ -9,6 +9,7 @@
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailViewController.h"
+#import "DetailViewController.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "Base64.h"
@@ -94,7 +95,12 @@
                                        target:self 
                                        action:@selector(showOriginalSubview:)
                                        ];
-    self.navigationItem.rightBarButtonItem = originalButton;
+    if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
+        appDelegate.detailViewController.navigationItem.rightBarButtonItem = originalButton;  
+    } else {
+        self.navigationItem.rightBarButtonItem = originalButton;   
+    }
+
     [originalButton release];
     
 	[super viewDidAppear:animated];
@@ -147,13 +153,13 @@
                              "  font-weight: 600;"
                              "  background-color: #E0E0E0;"
                              "  border-bottom: 1px solid #A0A0A0;"
-                             "  padding: 20px 36px 20px;"
+                             "  padding: 20px 24px 20px;"
                              "  text-shadow: 1px 1px 0 #EFEFEF;"
                              "  overflow: hidden;"
                              "  max-width: none;"
                              "}"
                              ".NB-story {"
-                             "  margin: 20px 36px;"
+                             "  margin: 20px 24px;"
                              "}"
                              ".NB-story-author {"
                              "    color: #969696;"

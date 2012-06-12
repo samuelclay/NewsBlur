@@ -160,6 +160,8 @@
 - (BOOL)webView:(UIWebView *)webView 
         shouldStartLoadWithRequest:(NSURLRequest *)request 
         navigationType:(UIWebViewNavigationType)navigationType {
+
+
     if ([[[request URL] scheme] isEqual:@"mailto"]) {
         [[UIApplication sharedApplication] openURL:[request URL]];
         return NO;
@@ -167,6 +169,11 @@
         [self updateAddress:request];
         return NO;
     }
+    
+    
+    NSURL* mainUrl = [request mainDocumentURL];
+    NSString* absoluteString = [mainUrl absoluteString];
+    self.pageUrl.text = absoluteString;
     return YES;
 }
 
