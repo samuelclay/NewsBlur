@@ -21,3 +21,26 @@ xcuserdata
 *.pbxuser
 media/maintenance.html
 config/settings
+
+# ----------------------
+# Android
+# ----------------------
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+media/android/NewsBlur/bin/
+media/android/NewsBlur/gen/
+media/android/NewsBlurTest/bin/
+media/android/NewsBlurTest/gen/
+
+# Local configuration file (sdk path, etc)
+media/android/NewsBlur/local.properties
+media/android/NewsBlurTest/local.properties
