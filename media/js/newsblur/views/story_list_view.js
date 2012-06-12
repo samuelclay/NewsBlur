@@ -52,9 +52,14 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     scroll_to_selected_story: function(story, options) {
         options = options || {};
         if (!story || !story.story_view) return;
-        
-        NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
-        clearTimeout(NEWSBLUR.reader.locks.scrolling);
+
+        // console.log(["Scroll in Feed", story.get('story_title'), options]);
+
+        if (!options.immediate) {
+            clearTimeout(NEWSBLUR.reader.locks.scrolling);
+            NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
+        }
+
         this.$el.scrollable().stop();
         this.$el.scrollTo(story.story_view.$el, { 
             duration: options.immediate ? 0 : 340,
@@ -63,6 +68,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             offset: 0, // scroll_offset, 
             queue: false, 
             onAfter: function() {
+                if (options.immediate) return;
+
                 NEWSBLUR.reader.locks.scrolling = setTimeout(function() {
                     NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = false;
                 }, 100);
@@ -213,7 +220,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         // NEWSBLUR.log(['handle_scroll_feed_view', this.story_view, this.flags['switching_to_feed_view'], this.flags['scrolling_by_selecting_story_title']]);
         if ((this.story_view == 'feed' ||
              (this.story_view == 'page' && this.flags['page_view_showing_feed_view'])) &&
-            !this.flags['switching_to_feed_view'] &&
             !this.flags['scrolling_by_selecting_story_title'] &&
             !NEWSBLUR.assets.preference('feed_view_single_story')) {
             var from_top = this.cache.mouse_position_y + this.$s.$feed_stories.scrollTop();

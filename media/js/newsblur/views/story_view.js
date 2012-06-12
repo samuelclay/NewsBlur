@@ -299,8 +299,7 @@ NEWSBLUR.Views.StoryView = Backbone.View.extend({
     mouseenter: function() {
         if (this.model.get('selected')) return;
         
-        if (NEWSBLUR.reader.flags['switching_to_feed_view'] ||
-            NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] ||
+        if (NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] ||
             NEWSBLUR.assets.preference('feed_view_single_story')) {
             return;
         }

@@ -1019,7 +1019,6 @@
                 'feed_view_images_loaded': {},
                 'feed_view_positions_calculated': false,
                 'scrolling_by_selecting_story_title': false,
-                'switching_to_feed_view': false,
                 'page_view_showing_feed_view': false,
                 'feed_view_showing_story_view': false,
                 'story_titles_loaded': false,
@@ -2395,11 +2394,11 @@
                 this.story_view = view;
             }
             
-            // this.flags.scrolling_by_selecting_story_title = true;
-            // clearInterval(this.locks.scrolling);
-            // this.locks.scrolling = setTimeout(function() {
-            //     self.flags.scrolling_by_selecting_story_title = false;
-            // }, 1000);
+            this.flags.scrolling_by_selecting_story_title = true;
+            clearInterval(this.locks.scrolling);
+            this.locks.scrolling = setTimeout(function() {
+                self.flags.scrolling_by_selecting_story_title = false;
+            }, 550);
             if (view == 'page') {
                 if (this.flags['iframe_prevented_from_loading']) {
                     NEWSBLUR.app.original_view.load_feed_iframe();
@@ -2414,9 +2413,7 @@
                     'queue': false
                 });
             } else if (view == 'feed') {
-                if (this.active_story) {
-                    NEWSBLUR.app.story_list.scroll_to_selected_story(this.active_story.story_view, {immediate: true});
-                }
+                NEWSBLUR.app.story_list.scroll_to_selected_story(this.active_story, {immediate: true});
                 
                 $story_pane.animate({
                     'left': -1 * $feed_iframe.width()
@@ -2425,11 +2422,6 @@
                     'duration': this.model.preference('animations') ? 550 : 0,
                     'queue': false
                 });
-                
-                this.flags['switching_to_feed_view'] = true;
-                setTimeout(function() {
-                    self.flags['switching_to_feed_view'] = false;
-                }, 100);
                 
                 this.show_stories_preference_in_feed_view();
                 if (!this.flags['feed_view_positions_calculated']) {

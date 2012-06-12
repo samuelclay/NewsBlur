@@ -168,35 +168,37 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
         var $story = this.find_story_in_feed_iframe(story);
         options = options || {};
         
+        if (!story) return;
+        
         if (!NEWSBLUR.assets.preference('animations') ||
             NEWSBLUR.reader.story_view == 'feed' ||
             NEWSBLUR.reader.story_view == 'story' ||
             NEWSBLUR.reader.flags['page_view_showing_feed_view']) options.immediate = true;
+
+        // console.log(["Scroll in Original", story.get('story_title'), options]);
         
         if ($story && $story.length) {
-            NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] = true;
-            clearTimeout(NEWSBLUR.reader.locks.scrolling);
-            
-            if (options.immediate || NEWSBLUR.reader.story_view != 'page') {
-                $iframe.scrollTo($story, { duration: 0, axis: 'y', offset: -24 }); // Do this at story_view switch
-                NEWSBLUR.reader.locks.scrolling = setTimeout(function() {
-                    NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] = false;
-                }, 100);
-            } else if (NEWSBLUR.reader.story_view == 'page') {
-                $iframe.scrollable().stop();
-                $iframe.scrollTo($story, { 
-                    duration: 380,
-                    axis: 'y', 
-                    easing: 'easeInOutQuint', 
-                    offset: -24, 
-                    queue: false, 
-                    onAfter: function() {
-                        NEWSBLUR.reader.locks.scrolling = setTimeout(function() {
-                            NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] = false;
-                        }, 100);
-                    }
-                });
+            if (!options.immediate) {
+                clearTimeout(NEWSBLUR.reader.locks.scrolling);
+                NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] = true;
             }
+            
+            $iframe.scrollable().stop();
+            $iframe.scrollTo($story, { 
+                duration: options.immediate ? 0 : 380,
+                axis: 'y', 
+                easing: 'easeInOutQuint', 
+                offset: -24, 
+                queue: false, 
+                onAfter: function() {
+                    if (options.immediate) return;
+                    
+                    NEWSBLUR.reader.locks.scrolling = setTimeout(function() {
+                        NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] = false;
+                    }, 100);
+                }
+            });
+
             var parent_scroll = $story.parents('.NB-feed-story-view').scrollTop();
             var story_offset = $story.offset().top;
 
@@ -531,11 +533,11 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
             var positions = this.cache.iframe_story_positions_keys;
             var closest = $.closest(from_top, positions);
             var story = this.cache.iframe_story_positions[positions[closest]];
-            // NEWSBLUR.log(['Scroll iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
             if (!story) return;
+            // console.log(['Scroll iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
 
             // if (!story.get('selected')) {
-            story.set('selected', true, {selected_in_original: true, immediate: true});
+            story.set('selected', true, {selected_in_original: true, scroll: true, immediate: true});
             // }
             if (!this.flags.iframe_scroll_snap_back_prepared) {
                 this.iframe_scroll = from_top - NEWSBLUR.reader.cache.mouse_position_y;
@@ -553,27 +555,30 @@ NEWSBLUR.Views.OriginalView = Backbone.View.extend({
         }
 
         var scroll_top = this.$el.contents().scrollTop();
-        // console.log(["mousemove", scroll_top, e.pageY]);
+        // console.log(["mousemove", e, scroll_top, e.pageY]);
         NEWSBLUR.reader.cache.mouse_position_y = e.pageY - scroll_top;
         NEWSBLUR.reader.$s.$mouse_indicator.css('top', NEWSBLUR.reader.cache.mouse_position_y - 8);
         
         // setTimeout(_.bind(function() {
         //     this.flags['mousemove_timeout'] = false;
         // }, this), 40);
-        if (!this.flags['mousemove_timeout']
-            && !NEWSBLUR.reader.flags.scrolling_by_selecting_story_title) {
-            var from_top = NEWSBLUR.reader.cache.mouse_position_y + scroll_top;
-            var positions = this.cache.iframe_story_positions_keys;
-            var closest = $.closest(from_top, positions);
-            var story = this.cache.iframe_story_positions[positions[closest]];
-            // console.log(["mousemove", story, from_top, positions[closest], this.cache.iframe_story_positions]);
-            // this.flags['mousemove_timeout'] = true;
-            if (!story) return;
-            
-            if (!story.get('selected')) {
-                story.set('selected', true, {selected_in_original: true, immediate: true});
-                // this.flags['mousemove_timeout'] = false;
-            }
+        
+        if (this.flags['mousemove_timeout'] ||
+            NEWSBLUR.reader.flags['scrolling_by_selecting_story_title']) {
+            return;
+        }
+
+        var from_top = NEWSBLUR.reader.cache.mouse_position_y + scroll_top;
+        var positions = this.cache.iframe_story_positions_keys;
+        var closest = $.closest(from_top, positions);
+        var story = this.cache.iframe_story_positions[positions[closest]];
+        // console.log(["mousemove", story, from_top, positions[closest], this.cache.iframe_story_positions]);
+        // this.flags['mousemove_timeout'] = true;
+        if (!story) return;
+        
+        if (!story.get('selected')) {
+            story.set('selected', true, {selected_in_original: true, mouse: true, immediate: true});
+            // this.flags['mousemove_timeout'] = false;
         }
     },
     
