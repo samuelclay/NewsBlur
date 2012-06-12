@@ -4670,9 +4670,9 @@
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-mark-read' }, function($t, $p){
                 e.preventDefault();
-                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
-                self.mark_folder_as_read(folder_name, $folder);
+                var folder = NEWSBLUR.assets.folders.get_view($folder).model;
+                self.mark_folder_as_read(folder);
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-subscribe' }, function($t, $p){
                 e.preventDefault();
