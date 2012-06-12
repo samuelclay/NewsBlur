@@ -114,7 +114,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
           
         if (story && this.cache.feed_title_floater_story_id != story.id) {
-            $story = $story || this.find_story_in_feed_view(story.id);
+            $story = $story || story.story_view.$el;
             $header = $header || $('.NB-feed-story-header-feed', $story);
             $('.NB-floater').removeClass('NB-floater');
             $header.addClass('NB-floater');
