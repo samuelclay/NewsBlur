@@ -1,4 +1,7 @@
-package com.newsblur;
+package com.newsblur.activity;
+
+import com.newsblur.R;
+import com.newsblur.R.layout;
 
 import android.app.Activity;
 import android.os.Bundle;
