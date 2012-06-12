@@ -71,6 +71,8 @@
         [window addSubview:splitStoryController.view];
         
         splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:detailViewController];
+        splitStoryDetailNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+        
         [window addSubview:splitStoryController.view];
         
         splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, splitStoryDetailNavigationController, nil];
