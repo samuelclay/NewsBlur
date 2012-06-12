@@ -1,4 +1,4 @@
-NEWSBLUR.Views.StoryView = Backbone.View.extend({
+NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     tagName: 'li',
     

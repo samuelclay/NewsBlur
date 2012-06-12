@@ -1,4 +1,4 @@
-NEWSBLUR.Views.OriginalView = Backbone.View.extend({
+NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
     
     initialize: function() {
         _.bindAll(this, 'handle_scroll_feed_iframe', 'handle_mousemove_iframe_view', 'setup_events');

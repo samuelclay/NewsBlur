@@ -22,7 +22,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     render: function() {
         var collection = this.collection;
         var $stories = this.collection.map(function(story) {
-            return new NEWSBLUR.Views.StoryView({
+            return new NEWSBLUR.Views.StoryDetailView({
                 model: story,
                 collection: collection
             }).render().el;
@@ -34,7 +34,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (options.added) {
             var collection = this.collection;
             var $stories = _.map(this.collection.models.slice(-1 * options.added), function(story) {
-                return new NEWSBLUR.Views.StoryView({
+                return new NEWSBLUR.Views.StoryDetailView({
                     model: story,
                     collection: collection
                 }).render().el;
