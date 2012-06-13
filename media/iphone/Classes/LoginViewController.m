@@ -137,14 +137,10 @@
     [jsonString release];
     [signUpView release];
     [logInView release];
-<<<<<<< HEAD
     [signUpUsernameInput release];
     [signUpPasswordInput release];
     [selectSignUpButton release];
     [selectLoginButton release];
-=======
-    [tourView release];
->>>>>>> b15e7424b2eec64ecfef7077ffd036fac917d7ad
     [super dealloc];
 }
 
@@ -282,7 +278,6 @@
 }
 
 - (IBAction)selectSignUp {
-<<<<<<< HEAD
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [UIView animateWithDuration:0.35 animations:^{
             self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
@@ -309,35 +304,6 @@
             self.logInView.frame = CGRectMake(134 + 128, 80, 500, 300);         
         }];
     }
-=======
-    self.signUpView.frame = CGRectMake(-634, 134, 500, 350); 
-    [UIView animateWithDuration:0.35 animations:^{
-        self.signUpView.frame = CGRectMake(134, 134, 500, 350); 
-        self.logInView.frame = CGRectMake(902, 134, 500, 350); 
-        self.tourView.frame = CGRectMake(1670, 134, 500, 350); 
-        
-    }];
-}
-
-- (IBAction)selectLogin {
-    [UIView animateWithDuration:0.35 animations:^{
-        self.signUpView.frame = CGRectMake(-634, 134, 500, 350); 
-        self.logInView.frame = CGRectMake(134, 134, 500, 350); 
-        self.tourView.frame = CGRectMake(902, 134, 500, 350); 
-        
-    }];
-}
-
-- (IBAction)selectTour {
-    self.tourView.frame = CGRectMake(902, 134, 500, 350); 
-    
-    [UIView animateWithDuration:0.35 animations:^{
-        self.signUpView.frame = CGRectMake(-634, 134, 500, 350); 
-        self.logInView.frame = CGRectMake(-634, 134, 500, 350); 
-        self.tourView.frame = CGRectMake(134, 134, 500, 350); 
-        
-    }];
->>>>>>> b15e7424b2eec64ecfef7077ffd036fac917d7ad
 }
 
 - (void)animateLoop {
@@ -381,14 +347,5 @@
         [usernameInput becomeFirstResponder];
     }
 }
-<<<<<<< HEAD
-=======
 
-- (void)viewDidUnload {
-    [self setSignUpView:nil];
-    [self setLogInView:nil];
-    [self setTourView:nil];
-    [super viewDidUnload];
-}
->>>>>>> b15e7424b2eec64ecfef7077ffd036fac917d7ad
 @end
