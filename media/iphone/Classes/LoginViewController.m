@@ -57,19 +57,26 @@
     self.signUpPasswordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.signUpUsernameInput.borderStyle = UITextBorderStyleRoundedRect;
 
-    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
-        self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
-        self.logInView.frame = CGRectMake(902, 180, 500, 300); 
-        self.selectSignUpButton.frame = CGRectMake(134, 80, 250, 50);
-        self.selectLoginButton.frame = CGRectMake(384, 80, 250, 50);
-    } else {
-        self.signUpView.frame = CGRectMake(134 + 128, 80, 500, 300); 
-        self.logInView.frame = CGRectMake(902 + 128, 80, 500, 300); 
-        self.selectSignUpButton.frame = CGRectMake(134 + 128, 20, 250, 50);
-        self.selectLoginButton.frame = CGRectMake(384 + 128, 20, 250, 50);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+            self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
+            self.logInView.frame = CGRectMake(902, 180, 500, 300); 
+            self.selectSignUpButton.frame = CGRectMake(134, 80, 250, 50);
+            self.selectLoginButton.frame = CGRectMake(384, 80, 250, 50);
+            self.errorLabel.frame = CGRectMake(244, 400, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
+            self.authenticatingLabel.frame = CGRectMake(244, 400, self.authenticatingLabel.frame.size.width, self.authenticatingLabel.frame.size.height);
+            self.activityIndicator.frame = CGRectMake(296, 416, self.activityIndicator.frame.size.width, self.activityIndicator.frame.size.height);
+        } else {
+            self.signUpView.frame = CGRectMake(134 + 128, 80, 500, 300); 
+            self.logInView.frame = CGRectMake(902 + 128, 80, 500, 300); 
+            self.selectSignUpButton.frame = CGRectMake(134 + 128, 20, 250, 50);
+            self.selectLoginButton.frame = CGRectMake(384 + 128, 20, 250, 50);
+            self.errorLabel.frame = CGRectMake(244 + 128, 400 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
+            self.authenticatingLabel.frame = CGRectMake(244 + 128, 400 - 100, self.authenticatingLabel.frame.size.width, self.authenticatingLabel.frame.size.height);
+            self.activityIndicator.frame = CGRectMake(296 + 128, 416 - 100, self.activityIndicator.frame.size.width, self.activityIndicator.frame.size.height);
+        } 
     }
 
-    
     [super viewDidLoad];
 }
 
@@ -116,13 +123,22 @@
 
             self.selectSignUpButton.frame = CGRectMake(134, 80, 250, 50);
             self.selectLoginButton.frame = CGRectMake(384, 80, 250, 50);
+            
+            self.errorLabel.frame = CGRectMake(244, 400, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
+            self.authenticatingLabel.frame = CGRectMake(244, 400, self.authenticatingLabel.frame.size.width, self.authenticatingLabel.frame.size.height);
+            self.activityIndicator.frame = CGRectMake(296, 416, self.activityIndicator.frame.size.width, self.activityIndicator.frame.size.height);
+
 
         }else{
             self.signUpView.frame = CGRectMake(self.signUpView.frame.origin.x + 128, 80, 500, 300); 
             self.logInView.frame = CGRectMake(self.logInView.frame.origin.x + 128, 80, 500, 300);
 
-            self.selectSignUpButton.frame = CGRectMake(134 + 128, 20, 250, 50);
-            self.selectLoginButton.frame = CGRectMake(384 + 128, 20, 250, 50);
+            self.selectSignUpButton.frame = CGRectMake(134 + 128, 80 - 60, 250, 50);
+            self.selectLoginButton.frame = CGRectMake(384 + 128, 80 - 60, 250, 50);
+            
+            self.errorLabel.frame = CGRectMake(244 + 128, 400 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
+            self.authenticatingLabel.frame = CGRectMake(244 + 128, 400 - 100, self.authenticatingLabel.frame.size.width, self.authenticatingLabel.frame.size.height);
+            self.activityIndicator.frame = CGRectMake(296 + 128, 416 - 100, self.activityIndicator.frame.size.width, self.activityIndicator.frame.size.height);
         }
 
     }
@@ -150,19 +166,36 @@
 #pragma mark Login
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[textField resignFirstResponder];
-	if(textField == usernameInput) {
-        [passwordInput becomeFirstResponder];
-    } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 0) {
-        NSLog(@"Password return");
-        NSLog(@"appdelegate:: %@", [self appDelegate]);
-        [self checkPassword];
-    } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 1) {
-        [emailInput becomeFirstResponder];
-    } else if (textField == emailInput) {
-        [self registerAccount];
+    [textField resignFirstResponder];
+    if  (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        NSLog(@"in it");
+        if(textField == usernameInput) {
+            [passwordInput becomeFirstResponder];
+            NSLog(@"password is now first responder");
+        } else if (textField == passwordInput) {
+            [self checkPassword];
+        } else if (textField == signUpUsernameInput){
+            [signUpPasswordInput becomeFirstResponder];
+        } else if (textField == signUpPasswordInput) {
+            [emailInput becomeFirstResponder];
+        } else if (textField == emailInput) {
+            [self registerAccount];
+        }
+    } else {
+        if(textField == usernameInput) {
+            [passwordInput becomeFirstResponder];
+        } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 0) {
+            NSLog(@"Password return");
+            NSLog(@"appdelegate:: %@", [self appDelegate]);
+            [self checkPassword];
+        } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 1) {
+            [emailInput becomeFirstResponder];
+        } else if (textField == emailInput) {
+            [self registerAccount];
+        }
+
     }
-	return YES;
+    return YES;
 }
 
 - (void)checkPassword {
@@ -222,8 +255,13 @@
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[usernameInput text] forKey:@"username"]; 
-    [request setPostValue:[passwordInput text] forKey:@"password"]; 
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [request setPostValue:[signUpUsernameInput text] forKey:@"username"]; 
+        [request setPostValue:[signUpPasswordInput text] forKey:@"password"]; 
+    } else {
+        [request setPostValue:[usernameInput text] forKey:@"username"]; 
+        [request setPostValue:[passwordInput text] forKey:@"password"]; 
+    }
     [request setPostValue:[emailInput text] forKey:@"email"]; 
     [request setPostValue:@"login" forKey:@"submit"]; 
     [request setPostValue:@"1" forKey:@"api"]; 
@@ -240,15 +278,18 @@
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     // int statusCode = [request responseStatusCode];
+    
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
-        [appDelegate showLogin];
         NSDictionary *errors = [results valueForKey:@"errors"];
         if ([errors valueForKey:@"email"]) {
             [self.errorLabel setText:[[errors valueForKey:@"email"] objectAtIndex:0]];   
         } else if ([errors valueForKey:@"username"]) {
             [self.errorLabel setText:[[errors valueForKey:@"username"] objectAtIndex:0]];
+        } else if ([errors valueForKey:@"__all__"]) {
+            [self.errorLabel setText:[[errors valueForKey:@"__all__"] objectAtIndex:0]];
         }
+
         [self.errorLabel setHidden:NO];
     } else {
         [appDelegate reloadFeedsView:YES];
@@ -264,20 +305,12 @@
 }
 
 #pragma mark -
-#pragma mark Login
-
-- (IBAction)tapLoginButton {
-    [self checkPassword];
-}
-
-#pragma mark -
-#pragma mark Signup
-
-- (IBAction)selectLoginSignup {
-    [self animateLoop];
-}
+#pragma mark iPad: Sign Up/Login Toggle
 
 - (IBAction)selectSignUp {
+    [self.errorLabel setHidden:YES];
+    [self.authenticatingLabel setHidden:YES];
+    [self.activityIndicator stopAnimating];
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [UIView animateWithDuration:0.35 animations:^{
             self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
@@ -289,10 +322,13 @@
             self.logInView.frame = CGRectMake(902 + 128, 80, 500, 300);         
         }]; 
     }
-
+    
 }
 
 - (IBAction)selectLogin {
+    [self.errorLabel setHidden:YES];
+    [self.authenticatingLabel setHidden:YES];
+    [self.activityIndicator stopAnimating];
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [UIView animateWithDuration:0.35 animations:^{
             self.signUpView.frame = CGRectMake(-634, 180, 500, 300); 
@@ -306,17 +342,24 @@
     }
 }
 
+#pragma mark -
+#pragma mark iPhone: Sign Up/Login Toggle
+
+- (IBAction)selectLoginSignup {
+    [self animateLoop];
+}
+
 - (void)animateLoop {
     if ([self.loginControl selectedSegmentIndex] == 0) {
         [UIView animateWithDuration:0.5 animations:^{
             // Login
-            usernameInput.frame = CGRectMake(186, 388, 400, 44); 
+            usernameInput.frame = CGRectMake(20, 67, 280, 31); 
             usernameOrEmailLabel.alpha = 1.0;
             
             
-            passwordInput.frame = CGRectMake(186, 496, 400, 44);
-            passwordLabel.frame = CGRectMake(186, 460, 120, 22);
-            passwordOptionalLabel.frame = CGRectMake(483, 466, 101, 16);
+            passwordInput.frame = CGRectMake(20, 129, 280, 31);
+            passwordLabel.frame = CGRectMake(21, 106, 212, 22);
+            passwordOptionalLabel.frame = CGRectMake(199, 112, 101, 16);
             
             emailInput.alpha = 0.0;
             emailLabel.alpha = 0.0;
@@ -329,18 +372,17 @@
     } else {
         [UIView animateWithDuration:0.5 animations:^{
             // Signup
-            usernameInput.frame = CGRectMake(186, 388, 190, 44); 
+            usernameInput.frame = CGRectMake(20, 67, 130, 31); 
             usernameOrEmailLabel.alpha = 0.0;
             
             
-            passwordInput.frame = CGRectMake(396, 388, 190, 44);
-            passwordLabel.frame = CGRectMake(396, 353, 120, 22);
-            passwordOptionalLabel.frame = CGRectMake(483, 359, 101, 16);
+            passwordInput.frame = CGRectMake(170, 67, 130, 31);
+            passwordLabel.frame = CGRectMake(171, 44, 212, 22);
+            passwordOptionalLabel.frame = CGRectMake(199, 50, 101, 16);
             
             emailInput.alpha = 1.0;
             emailLabel.alpha = 1.0;
-        }];
-        
+        }];        
         passwordInput.returnKeyType = UIReturnKeyNext;
         usernameInput.keyboardType = UIKeyboardTypeAlphabet;
         [usernameInput resignFirstResponder];

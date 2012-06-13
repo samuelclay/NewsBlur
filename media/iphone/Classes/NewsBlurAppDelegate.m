@@ -77,7 +77,7 @@
         
         [window addSubview:splitStoryController.view];
         
-        self.window.rootViewController = self.splitViewController;
+        self.window.rootViewController = self.splitStoryController;
 
         
     } else {
@@ -143,8 +143,8 @@
 
 - (void)showLogin {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.navigationController presentModalViewController:loginViewController animated:YES];
-
+        [self.detailViewController.masterPopoverController dismissPopoverAnimated:YES];
+        [self.splitStoryController presentModalViewController:loginViewController animated:YES];
     } else {
         [self.navigationController presentModalViewController:loginViewController animated:YES];
     }

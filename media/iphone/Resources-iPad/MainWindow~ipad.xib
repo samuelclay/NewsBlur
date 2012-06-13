@@ -294,19 +294,19 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">navigationController</string>
-						<reference key="source" ref="664661524"/>
-						<reference key="destination" ref="1024563784"/>
-					</object>
-					<int key="connectionID">144</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">splitStoryDetailNavigationController</string>
 						<reference key="source" ref="664661524"/>
 						<reference key="destination" ref="543420271"/>
 					</object>
 					<int key="connectionID">145</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">navigationController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="1024563784"/>
+					</object>
+					<int key="connectionID">144</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -487,17 +487,17 @@
 						<reference key="parent" ref="159036857"/>
 					</object>
 					<object class="IBObjectRecord">
+						<int key="objectID">41</int>
+						<reference key="object" ref="152879769"/>
+						<reference key="parent" ref="1024563784"/>
+					</object>
+					<object class="IBObjectRecord">
 						<int key="objectID">40</int>
 						<reference key="object" ref="121528350"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="451803536"/>
 						</object>
-						<reference key="parent" ref="1024563784"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">41</int>
-						<reference key="object" ref="152879769"/>
 						<reference key="parent" ref="1024563784"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -962,14 +962,42 @@
 					<string key="className">LoginViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">selectLoginSignup</string>
-						<string key="NS.object.0">id</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>selectLogin</string>
+							<string>selectLoginSignup</string>
+							<string>selectSignUp</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+						</object>
 					</object>
 					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">selectLoginSignup</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">selectLoginSignup</string>
-							<string key="candidateClassName">id</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>selectLogin</string>
+							<string>selectLoginSignup</string>
+							<string>selectSignUp</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">selectLogin</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">selectLoginSignup</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">selectSignUp</string>
+								<string key="candidateClassName">id</string>
+							</object>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
@@ -982,10 +1010,16 @@
 							<string>emailInput</string>
 							<string>emailLabel</string>
 							<string>errorLabel</string>
+							<string>logInView</string>
 							<string>loginControl</string>
 							<string>passwordInput</string>
 							<string>passwordLabel</string>
 							<string>passwordOptionalLabel</string>
+							<string>selectLoginButton</string>
+							<string>selectSignUpButton</string>
+							<string>signUpPasswordInput</string>
+							<string>signUpUsernameInput</string>
+							<string>signUpView</string>
 							<string>usernameInput</string>
 							<string>usernameLabel</string>
 							<string>usernameOrEmailLabel</string>
@@ -998,10 +1032,16 @@
 							<string>UITextField</string>
 							<string>UILabel</string>
 							<string>UILabel</string>
+							<string>UIView</string>
 							<string>UISegmentedControl</string>
 							<string>UITextField</string>
 							<string>UILabel</string>
 							<string>UILabel</string>
+							<string>UIButton</string>
+							<string>UIButton</string>
+							<string>UITextField</string>
+							<string>UITextField</string>
+							<string>UIView</string>
 							<string>UITextField</string>
 							<string>UILabel</string>
 							<string>UILabel</string>
@@ -1017,10 +1057,16 @@
 							<string>emailInput</string>
 							<string>emailLabel</string>
 							<string>errorLabel</string>
+							<string>logInView</string>
 							<string>loginControl</string>
 							<string>passwordInput</string>
 							<string>passwordLabel</string>
 							<string>passwordOptionalLabel</string>
+							<string>selectLoginButton</string>
+							<string>selectSignUpButton</string>
+							<string>signUpPasswordInput</string>
+							<string>signUpUsernameInput</string>
+							<string>signUpView</string>
 							<string>usernameInput</string>
 							<string>usernameLabel</string>
 							<string>usernameOrEmailLabel</string>
@@ -1052,6 +1098,10 @@
 								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">logInView</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">loginControl</string>
 								<string key="candidateClassName">UISegmentedControl</string>
 							</object>
@@ -1066,6 +1116,26 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">passwordOptionalLabel</string>
 								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">selectLoginButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">selectSignUpButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">signUpPasswordInput</string>
+								<string key="candidateClassName">UITextField</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">signUpUsernameInput</string>
+								<string key="candidateClassName">UITextField</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">signUpView</string>
+								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">usernameInput</string>

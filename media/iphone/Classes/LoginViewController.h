@@ -13,7 +13,7 @@
 @class NewsBlurAppDelegate;
 
 @interface LoginViewController : UIViewController 
-<UIScrollViewDelegate, ASIHTTPRequestDelegate> {
+<ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     UITextField *usernameInput;

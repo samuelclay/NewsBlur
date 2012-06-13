@@ -191,7 +191,7 @@
 							<object class="IBUITextField" id="687007471">
 								<reference key="NSNextResponder" ref="187389719"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{245, 83}, {148, 34}}</string>
+								<string key="NSFrame">{{245, 84}, {148, 34}}</string>
 								<reference key="NSSuperview" ref="187389719"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="818910445"/>
@@ -493,7 +493,7 @@
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 						</object>
-						<string key="NSFrame">{{134, 200}, {500, 300}}</string>
+						<string key="NSFrame">{{134, 180}, {500, 300}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="317474888"/>
@@ -596,7 +596,7 @@
 					<object class="IBUILabel" id="886045981">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">-2147483356</int>
-						<string key="NSFrame">{{244, 428}, {280, 52}}</string>
+						<string key="NSFrame">{{244, 400}, {280, 52}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="787395549"/>
@@ -632,7 +632,7 @@
 					<object class="IBUILabel" id="787395549">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">-2147483356</int>
-						<string key="NSFrame">{{244, 428}, {280, 52}}</string>
+						<string key="NSFrame">{{244, 400}, {280, 52}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="266033325"/>
@@ -655,7 +655,7 @@
 					<object class="IBUIActivityIndicatorView" id="266033325">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">-2147483356</int>
-						<string key="NSFrame">{{374, 444}, {20, 20}}</string>
+						<string key="NSFrame">{{296, 416}, {20, 20}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="187389719"/>
@@ -858,6 +858,22 @@
 						<int key="IBEventType">7</int>
 					</object>
 					<int key="connectionID">105</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="573966723"/>
+						<reference key="destination" ref="372490531"/>
+					</object>
+					<int key="connectionID">125</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="954416046"/>
+						<reference key="destination" ref="372490531"/>
+					</object>
+					<int key="connectionID">124</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1125,7 +1141,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">123</int>
+			<int key="maxID">125</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
