@@ -89,9 +89,9 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
                 if (feed.is_social()) {
                     mark_read_fn = NEWSBLUR.assets.mark_social_story_as_read;
                 }
-                mark_read_fn.call(NEWSBLUR.assets, story.id, story.get('story_feed_id'), function(read) {
-                    NEWSBLUR.reader.update_read_count(story.id, story.get('story_feed_id'), {previously_read: read});
-                });
+                mark_read_fn.call(NEWSBLUR.assets, story.id, story.get('story_feed_id'), _.bind(function(read) {
+                    this.update_read_count(story, {previously_read: read});
+                }, this));
                 story.set('read_status', 1);
             }
         }, this), delay * 1000);
@@ -99,10 +99,41 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     mark_unread: function(story, options) {
         options = options || {};
-        NEWSBLUR.assets.mark_story_as_unread(story.id, story.get('story_feed_id'), function(read) {
-            NEWSBLUR.reader.update_read_count(story.id, story.get('story_feed_id'), {unread: true});
-        });
+        NEWSBLUR.assets.mark_story_as_unread(story.id, story.get('story_feed_id'), _.bind(function(read) {
+            this.update_read_count(story, {unread: true});
+        }, this));
         story.set('read_status', 0);
+    },
+    
+    update_read_count: function(story, options) {
+        options = options || {};
+        
+        if (options.previously_read) return;
+
+        var story_unread_counter  = NEWSBLUR.app.story_unread_counter;
+        var unread_view           = NEWSBLUR.reader.get_unread_view_name();
+        var feed                  = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
+        
+        if (story.score() > 0) {
+            var count = Math.max(feed.get('ps') + (options.unread?1:-1), 0);
+            feed.set('ps', count, {instant: true});
+        } else if (story.score() == 0) {
+            var count = Math.max(feed.get('nt') + (options.unread?1:-1), 0);
+            feed.set('nt', count, {instant: true});
+        } else if (story.score() < 0) {
+            var count = Math.max(feed.get('ng') + (options.unread?1:-1), 0);
+            feed.set('ng', count, {instant: true});
+        }
+        
+        if (story_unread_counter) {
+            story_unread_counter.flash();
+        }
+        
+        // if ((unread_view == 'positive' && feed.get('ps') == 0) ||
+        //     (unread_view == 'neutral' && feed.get('ps') == 0 && feed.get('nt') == 0) ||
+        //     (unread_view == 'negative' && feed.get('ps') == 0 && feed.get('nt') == 0 && feed.get('ng') == 0)) {
+        //     story_unread_counter.fall();
+        // }
     },
     
     // ==================
