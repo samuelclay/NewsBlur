@@ -60,19 +60,24 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         options = options || {};
         if (!story || !story.story_view) return;
 
-        // console.log(["Scroll in Feed", story.get('story_title'), options]);
+        console.log(["Scroll in Feed", story.get('story_title'), options]);
 
         if (!options.immediate) {
             clearTimeout(NEWSBLUR.reader.locks.scrolling);
             NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
         }
-
+        var $story = story.story_view.$el;
+        
+        if (options.scroll_to_comments) {
+            $story = $('.NB-feed-story-comments', $story);
+        }
+        
         this.$el.scrollable().stop();
-        this.$el.scrollTo(story.story_view.$el, { 
+        this.$el.scrollTo($story, { 
             duration: options.immediate ? 0 : 340,
             axis: 'y', 
             easing: 'easeInOutQuint', 
-            offset: 0, // scroll_offset, 
+            offset: options.scroll_offset || 0,
             queue: false, 
             onAfter: function() {
                 if (options.immediate) return;
@@ -228,6 +233,26 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             // NEWSBLUR.log(['Positioning story', position, $story, story, this.cache.feed_view_story_positions_keys]);
         }
     },
+
+    check_feed_view_scrolled_to_bottom: function() {
+        var $story_titles = this.$s.$story_titles;
+        var $feed_view = this.$s.$feed_view;
+
+        if (!this.model.flags['no_more_stories']) {
+            console.log(["check_feed_view_scrolled_to_bottom"]);
+            var $last_story = $('.NB-feed-story', $feed_view).last();
+            var container_offset = $feed_view.position().top;
+            var full_height = ($last_story.offset() && $last_story.offset().top) + $last_story.height() - container_offset;
+            var visible_height = $feed_view.height();
+            var scroll_y = $feed_view.scrollTop();
+        
+            // Fudge factor is simply because it looks better at 13 pixels off.
+            if ((visible_height + 26) >= full_height) {
+                // NEWSBLUR.log(['Feed view scroll', full_height, container_offset, visible_height, scroll_y]);
+                this.load_page_of_feed_stories();
+            }
+        }
+    },
     
     // ==========
     // = Events =
@@ -273,7 +298,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         //     this.flags['mousemove_timeout'] = true;
         //     if (story == this.active_story) return;
         //     // NEWSBLUR.log(['Mousemove feed view', from_top, closest, positions[closest]]);
-        //     this.navigate_story_titles_to_story(story);
+        //     NEWSBLUR.app.story_titles.scroll_to_selected_story(story);
+
         // }
     },
     
@@ -292,7 +318,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             var closest = $.closest(position, positions);
             var story = this.cache.feed_view_story_positions[positions[closest]];
             // NEWSBLUR.log(['Scroll feed view', from_top, e, closest, positions[closest], this.cache.feed_view_story_positions_keys, positions, self.cache]);
-            this.navigate_story_titles_to_story(story);
+            NEWSBLUR.app.story_titles.scroll_to_selected_story(story);
             this.check_feed_view_scrolled_to_bottom();
         }
         

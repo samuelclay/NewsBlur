@@ -163,7 +163,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     get_next_story: function(direction, options) {
         options = options || {};
         if (direction == -1) return this.get_previous_story(options);
-        console.log(["next at score", options]);
+
         var visible_stories = this.visible(options.score);
 
         if (!this.active_story) {
