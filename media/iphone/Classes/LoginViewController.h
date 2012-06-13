@@ -36,12 +36,26 @@
 - (void)checkPassword;
 - (void)registerAccount;
 - (IBAction)selectLoginSignup;
+
+- (IBAction)selectSignUp;
+
+- (IBAction)selectLogin;
+- (IBAction)tapLoginButton;
+
+- (IBAction)selectTour;
+
+
 - (void)animateLoop;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+
 @property (nonatomic, retain) IBOutlet UITextField *usernameInput;
 @property (nonatomic, retain) IBOutlet UITextField *passwordInput;
 @property (nonatomic, retain) IBOutlet UITextField *emailInput;
+
+@property (retain, nonatomic) IBOutlet UIView *signUpView;
+@property (retain, nonatomic) IBOutlet UIView *logInView;
+@property (retain, nonatomic) IBOutlet UIView *tourView;
 
 @property (nonatomic, retain) NSMutableData * jsonString;
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView *activityIndicator;

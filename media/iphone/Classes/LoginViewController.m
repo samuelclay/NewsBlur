@@ -18,6 +18,9 @@
 @synthesize usernameInput;
 @synthesize passwordInput;
 @synthesize emailInput;
+@synthesize signUpView;
+@synthesize logInView;
+@synthesize tourView;
 @synthesize jsonString;
 @synthesize activityIndicator;
 @synthesize authenticatingLabel;
@@ -35,12 +38,21 @@
 		[appDelegate hideNavigationBar:NO];
     }
     return self;
-}
+    
+    }
 
 - (void)viewDidLoad {
     [usernameInput becomeFirstResponder];
     
 	[appDelegate hideNavigationBar:NO];
+    
+    self.usernameInput.borderStyle = UITextBorderStyleRoundedRect;
+    self.passwordInput.borderStyle = UITextBorderStyleRoundedRect;
+    self.emailInput.borderStyle = UITextBorderStyleRoundedRect;
+    
+    self.signUpView.frame = CGRectMake(134, 134, 500, 350); 
+    self.logInView.frame = CGRectMake(902, 134, 500, 350); 
+    self.tourView.frame = CGRectMake(1670, 134, 500, 350);
     
     [super viewDidLoad];
 }
@@ -74,7 +86,11 @@
     [appDelegate release];
     [usernameInput release];
     [passwordInput release];
+    [emailInput release];
     [jsonString release];
+    [signUpView release];
+    [logInView release];
+    [tourView release];
     [super dealloc];
 }
 
@@ -196,23 +212,60 @@
 }
 
 #pragma mark -
+#pragma mark Login
+
+- (IBAction)tapLoginButton {
+    [self checkPassword];
+}
+
+#pragma mark -
 #pragma mark Signup
 
 - (IBAction)selectLoginSignup {
     [self animateLoop];
 }
 
+- (IBAction)selectSignUp {
+    self.signUpView.frame = CGRectMake(-634, 134, 500, 350); 
+    [UIView animateWithDuration:0.35 animations:^{
+        self.signUpView.frame = CGRectMake(134, 134, 500, 350); 
+        self.logInView.frame = CGRectMake(902, 134, 500, 350); 
+        self.tourView.frame = CGRectMake(1670, 134, 500, 350); 
+        
+    }];
+}
+
+- (IBAction)selectLogin {
+    [UIView animateWithDuration:0.35 animations:^{
+        self.signUpView.frame = CGRectMake(-634, 134, 500, 350); 
+        self.logInView.frame = CGRectMake(134, 134, 500, 350); 
+        self.tourView.frame = CGRectMake(902, 134, 500, 350); 
+        
+    }];
+}
+
+- (IBAction)selectTour {
+    self.tourView.frame = CGRectMake(902, 134, 500, 350); 
+    
+    [UIView animateWithDuration:0.35 animations:^{
+        self.signUpView.frame = CGRectMake(-634, 134, 500, 350); 
+        self.logInView.frame = CGRectMake(-634, 134, 500, 350); 
+        self.tourView.frame = CGRectMake(134, 134, 500, 350); 
+        
+    }];
+}
+
 - (void)animateLoop {
     if ([self.loginControl selectedSegmentIndex] == 0) {
         [UIView animateWithDuration:0.5 animations:^{
             // Login
-            usernameInput.frame = CGRectMake(20, 67, 280, 31); 
+            usernameInput.frame = CGRectMake(186, 388, 400, 44); 
             usernameOrEmailLabel.alpha = 1.0;
             
             
-            passwordInput.frame = CGRectMake(20, 129, 280, 31);
-            passwordLabel.frame = CGRectMake(21, 106, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(199, 112, 101, 16);
+            passwordInput.frame = CGRectMake(186, 496, 400, 44);
+            passwordLabel.frame = CGRectMake(186, 460, 120, 22);
+            passwordOptionalLabel.frame = CGRectMake(483, 466, 101, 16);
             
             emailInput.alpha = 0.0;
             emailLabel.alpha = 0.0;
@@ -225,13 +278,13 @@
     } else {
         [UIView animateWithDuration:0.5 animations:^{
             // Signup
-            usernameInput.frame = CGRectMake(20, 67, 130, 31); 
+            usernameInput.frame = CGRectMake(186, 388, 190, 44); 
             usernameOrEmailLabel.alpha = 0.0;
             
             
-            passwordInput.frame = CGRectMake(170, 67, 130, 31);
-            passwordLabel.frame = CGRectMake(171, 44, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(199, 50, 101, 16);
+            passwordInput.frame = CGRectMake(396, 388, 190, 44);
+            passwordLabel.frame = CGRectMake(396, 353, 120, 22);
+            passwordOptionalLabel.frame = CGRectMake(483, 359, 101, 16);
             
             emailInput.alpha = 1.0;
             emailLabel.alpha = 1.0;
@@ -244,4 +297,10 @@
     }
 }
 
+- (void)viewDidUnload {
+    [self setSignUpView:nil];
+    [self setLogInView:nil];
+    [self setTourView:nil];
+    [super viewDidUnload];
+}
 @end

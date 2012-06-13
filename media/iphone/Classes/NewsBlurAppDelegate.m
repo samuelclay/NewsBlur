@@ -142,8 +142,13 @@
 #pragma mark Views
 
 - (void)showLogin {
-    UINavigationController *navController = self.navigationController;
-    [navController presentModalViewController:loginViewController animated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.navigationController presentModalViewController:loginViewController animated:YES];
+
+    } else {
+        [self.navigationController presentModalViewController:loginViewController animated:YES];
+    }
+        
 }
 
 - (void)showAdd {
