@@ -245,7 +245,8 @@
 - (IBAction)doOpenActionSheet {
 //    NSURL *url = [NSURL URLWithString:appDelegate.activeOriginalStoryURL];
     NSURL *url = [NSURL URLWithString:self.pageUrl.text];
-    SHKItem *item = [SHKItem URL:url title: @"test" ];
+    SHKItem *item = [SHKItem URL:url title:[appDelegate.activeStory 
+                                            objectForKey:@"story_title"]];
     SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
     [actionSheet showInView:self.view];
 
