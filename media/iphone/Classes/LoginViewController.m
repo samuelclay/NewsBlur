@@ -11,6 +11,7 @@
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "JSON.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation LoginViewController
 
@@ -18,6 +19,12 @@
 @synthesize usernameInput;
 @synthesize passwordInput;
 @synthesize emailInput;
+@synthesize signUpUsernameInput;
+@synthesize signUpPasswordInput;
+@synthesize selectSignUpButton;
+@synthesize selectLoginButton;
+@synthesize signUpView;
+@synthesize logInView;
 @synthesize jsonString;
 @synthesize activityIndicator;
 @synthesize authenticatingLabel;
@@ -35,14 +42,43 @@
 		[appDelegate hideNavigationBar:NO];
     }
     return self;
-}
+    
+    }
 
 - (void)viewDidLoad {
     [usernameInput becomeFirstResponder];
     
 	[appDelegate hideNavigationBar:NO];
     
+    self.usernameInput.borderStyle = UITextBorderStyleRoundedRect;
+    self.passwordInput.borderStyle = UITextBorderStyleRoundedRect;
+    self.emailInput.borderStyle = UITextBorderStyleRoundedRect;
+    self.signUpPasswordInput.borderStyle = UITextBorderStyleRoundedRect;
+    self.signUpUsernameInput.borderStyle = UITextBorderStyleRoundedRect;
+
+    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+        self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
+        self.logInView.frame = CGRectMake(902, 180, 500, 300); 
+        self.selectSignUpButton.frame = CGRectMake(134, 80, 250, 50);
+        self.selectLoginButton.frame = CGRectMake(384, 80, 250, 50);
+    } else {
+        self.signUpView.frame = CGRectMake(134 + 128, 80, 500, 300); 
+        self.logInView.frame = CGRectMake(902 + 128, 80, 500, 300); 
+        self.selectSignUpButton.frame = CGRectMake(134 + 128, 20, 250, 50);
+        self.selectLoginButton.frame = CGRectMake(384 + 128, 20, 250, 50);
+    }
+    
     [super viewDidLoad];
+}
+
+- (void)viewDidUnload {
+    [self setSignUpView:nil];
+    [self setLogInView:nil];
+    [self setSignUpUsernameInput:nil];
+    [self setSignUpPasswordInput:nil];
+    [self setSelectSignUpButton:nil];
+    [self setSelectLoginButton:nil];
+    [super viewDidUnload];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -70,13 +106,43 @@
 	// Release any cached data, images, etc that aren't in use.
 }
 
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)){
+            self.signUpView.frame = CGRectMake(self.signUpView.frame.origin.x - 128, 180, 500, 300); 
+            self.logInView.frame = CGRectMake(self.logInView.frame.origin.x - 128, 180, 500, 300);
+
+            self.selectSignUpButton.frame = CGRectMake(134, 80, 250, 50);
+            self.selectLoginButton.frame = CGRectMake(384, 80, 250, 50);
+
+        }else{
+            self.signUpView.frame = CGRectMake(self.signUpView.frame.origin.x + 128, 80, 500, 300); 
+            self.logInView.frame = CGRectMake(self.logInView.frame.origin.x + 128, 80, 500, 300);
+
+            self.selectSignUpButton.frame = CGRectMake(134 + 128, 20, 250, 50);
+            self.selectLoginButton.frame = CGRectMake(384 + 128, 20, 250, 50);
+        }
+
+    }
+}
+
+
 - (void)dealloc {
     [appDelegate release];
     [usernameInput release];
     [passwordInput release];
+    [emailInput release];
     [jsonString release];
+    [signUpView release];
+    [logInView release];
+    [signUpUsernameInput release];
+    [signUpPasswordInput release];
+    [selectSignUpButton release];
+    [selectLoginButton release];
     [super dealloc];
 }
+
+
 
 #pragma mark -
 #pragma mark Login
@@ -202,17 +268,46 @@
     [self animateLoop];
 }
 
+- (IBAction)selectSignUp {
+    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+        [UIView animateWithDuration:0.35 animations:^{
+            self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
+            self.logInView.frame = CGRectMake(902, 180, 500, 300);         
+        }]; 
+    } else {
+        [UIView animateWithDuration:0.35 animations:^{
+            self.signUpView.frame = CGRectMake(134 + 128, 80, 500, 300); 
+            self.logInView.frame = CGRectMake(902 + 128, 80, 500, 300);         
+        }]; 
+    }
+
+}
+
+- (IBAction)selectLogin {
+    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+        [UIView animateWithDuration:0.35 animations:^{
+            self.signUpView.frame = CGRectMake(-634, 180, 500, 300); 
+            self.logInView.frame = CGRectMake(134, 180, 500, 300);         
+        }];
+    } else {
+        [UIView animateWithDuration:0.35 animations:^{
+            self.signUpView.frame = CGRectMake(-634 + 128, 80, 500, 300); 
+            self.logInView.frame = CGRectMake(134 + 128, 80, 500, 300);         
+        }];
+    }
+}
+
 - (void)animateLoop {
     if ([self.loginControl selectedSegmentIndex] == 0) {
         [UIView animateWithDuration:0.5 animations:^{
             // Login
-            usernameInput.frame = CGRectMake(20, 67, 280, 31); 
+            usernameInput.frame = CGRectMake(186, 388, 400, 44); 
             usernameOrEmailLabel.alpha = 1.0;
             
             
-            passwordInput.frame = CGRectMake(20, 129, 280, 31);
-            passwordLabel.frame = CGRectMake(21, 106, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(199, 112, 101, 16);
+            passwordInput.frame = CGRectMake(186, 496, 400, 44);
+            passwordLabel.frame = CGRectMake(186, 460, 120, 22);
+            passwordOptionalLabel.frame = CGRectMake(483, 466, 101, 16);
             
             emailInput.alpha = 0.0;
             emailLabel.alpha = 0.0;
@@ -225,13 +320,13 @@
     } else {
         [UIView animateWithDuration:0.5 animations:^{
             // Signup
-            usernameInput.frame = CGRectMake(20, 67, 130, 31); 
+            usernameInput.frame = CGRectMake(186, 388, 190, 44); 
             usernameOrEmailLabel.alpha = 0.0;
             
             
-            passwordInput.frame = CGRectMake(170, 67, 130, 31);
-            passwordLabel.frame = CGRectMake(171, 44, 212, 22);
-            passwordOptionalLabel.frame = CGRectMake(199, 50, 101, 16);
+            passwordInput.frame = CGRectMake(396, 388, 190, 44);
+            passwordLabel.frame = CGRectMake(396, 353, 120, 22);
+            passwordOptionalLabel.frame = CGRectMake(483, 359, 101, 16);
             
             emailInput.alpha = 1.0;
             emailLabel.alpha = 1.0;
@@ -243,5 +338,4 @@
         [usernameInput becomeFirstResponder];
     }
 }
-
 @end

@@ -105,7 +105,7 @@
 - (void)hideNavigationBar:(BOOL)animated;
 - (void)showNavigationBar:(BOOL)animated;
 - (void)setTitle:(NSString *)title;
-- (void)showOriginalStory:(NSURL *)url;
+- (void)showOriginalStory:(NSURL *)url fromOriginalButton:(BOOL)fromOriginalButton;
 - (void)closeOriginalStory;
 
 - (int)indexOfNextStory;
