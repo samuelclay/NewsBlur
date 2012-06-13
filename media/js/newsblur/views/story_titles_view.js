@@ -174,7 +174,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     snap_back_scroll_position: function() {
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
-        if (this.post_load_page_scroll_position == $story_titles.scrollTop() && this.pre_load_page_scroll_position != null) {
+        if (this.post_load_page_scroll_position == $story_titles.scrollTop() &&
+            this.pre_load_page_scroll_position != null) {
             $story_titles.scrollTo(this.pre_load_page_scroll_position, { 
                 duration: 0,
                 axis: 'y', 

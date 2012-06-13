@@ -140,11 +140,11 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // = Model Managers =
     // ==================
     
-    visible: function() {
-        var unread_score = NEWSBLUR.assets.preference('unread_view');
+    visible: function(score) {
+        score = _.isUndefined(score) ? NEWSBLUR.assets.preference('unread_view') : score;
         
         return this.select(function(story) {
-            return story.score() >= unread_score;
+            return story.score() >= score;
         });
     },
     
@@ -160,10 +160,11 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // = Getters =
     // ===========
     
-    get_next_story: function(direction) {
-        if (direction == -1) return this.get_previous_story();
-        
-        var visible_stories = this.visible();
+    get_next_story: function(direction, options) {
+        options = options || {};
+        if (direction == -1) return this.get_previous_story(options);
+        console.log(["next at score", options]);
+        var visible_stories = this.visible(options.score);
 
         if (!this.active_story) {
             return visible_stories[0];
@@ -176,8 +177,9 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         }
     },
     
-    get_previous_story: function() {
-        var visible_stories = this.visible();
+    get_previous_story: function(options) {
+        options = options || {};
+        var visible_stories = this.visible(options.score);
 
         if (!this.active_story) {
             return visible_stories[0];
