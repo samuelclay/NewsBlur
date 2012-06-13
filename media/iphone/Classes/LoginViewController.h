@@ -56,10 +56,6 @@
 @property (retain, nonatomic) IBOutlet UIView *signUpView;
 @property (retain, nonatomic) IBOutlet UIView *logInView;
 
-@property (retain, nonatomic) IBOutlet UIView *signUpView;
-@property (retain, nonatomic) IBOutlet UIView *logInView;
-@property (retain, nonatomic) IBOutlet UIView *tourView;
-
 @property (nonatomic, retain) NSMutableData * jsonString;
 @property (nonatomic, retain) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (nonatomic, retain) IBOutlet UILabel *authenticatingLabel;

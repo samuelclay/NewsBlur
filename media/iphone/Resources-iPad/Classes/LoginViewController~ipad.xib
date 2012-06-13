@@ -289,7 +289,6 @@
 								<string key="NSFrame">{{93, 172}, {300, 34}}</string>
 								<reference key="NSSuperview" ref="187389719"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<object class="NSColor" key="IBUIBackgroundColor">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MQA</bytes>
@@ -724,27 +723,11 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">signUpView</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="187389719"/>
-					</object>
-					<int key="connectionID">101</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">usernameOrEmailLabel</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="953340890"/>
 					</object>
 					<int key="connectionID">44</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">logInView</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="567251921"/>
-					</object>
-					<int key="connectionID">102</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -817,6 +800,22 @@
 						<reference key="destination" ref="317891323"/>
 					</object>
 					<int key="connectionID">121</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">signUpView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="187389719"/>
+					</object>
+					<int key="connectionID">122</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">logInView</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="567251921"/>
+					</object>
+					<int key="connectionID">123</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -1126,7 +1125,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">121</int>
+			<int key="maxID">123</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1454,13 +1453,9 @@
 							<string>selectLogin</string>
 							<string>selectLoginSignup</string>
 							<string>selectSignUp</string>
-							<string>tapLoginButton</string>
-							<string>tapSignupButton</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -1473,8 +1468,6 @@
 							<string>selectLogin</string>
 							<string>selectLoginSignup</string>
 							<string>selectSignUp</string>
-							<string>tapLoginButton</string>
-							<string>tapSignupButton</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1488,14 +1481,6 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">selectSignUp</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">tapLoginButton</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">tapSignupButton</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>
