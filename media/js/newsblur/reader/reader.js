@@ -4098,9 +4098,9 @@
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
             this.reset_feed();
-            this.model.set_feed(feed_id, feed);
+            feed = this.model.set_feed(feed_id, feed);
 
-            $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(feed.feed_title);
+            $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(feed.get('feed_title'));
             $('.NB-feeds-header-icon',  this.$s.$tryfeed_header).attr('src', $.favicon(feed));
 
             $tryfeed_container.slideDown(350, _.bind(function() {
@@ -4175,7 +4175,8 @@
         },
         
         add_recommended_feed: function(feed_id) {
-            var feed_address = this.model.get_feed(feed_id ? feed_id : this.active_feed).feed_address;
+            feed_id = feed_id || this.active_feed;
+            var feed_address = this.model.get_feed(feed_id).get('feed_address');
             
             this.open_add_feed_modal({url: feed_address});
         },
