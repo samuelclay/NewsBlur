@@ -60,8 +60,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         options = options || {};
         if (!story || !story.story_view) return;
 
-        console.log(["Scroll in Feed", story.get('story_title'), options]);
-
         if (!options.immediate) {
             clearTimeout(NEWSBLUR.reader.locks.scrolling);
             NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;

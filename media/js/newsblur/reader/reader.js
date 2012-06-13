@@ -448,30 +448,6 @@
             $(':focus').blur();
         },
         
-        // =======================
-        // = Getters and Finders =
-        // =======================
-        
-        find_story_in_story_titles: function(story_id) {
-            var story = story_id && this.model.get_story(story_id);
-            if (!story_id) story = this.active_story;
-            var $stories = $('.story', this.$s.$story_titles);
-            var $story_title;
-            console.log(["DEPRECATED find_story_in_story_titles", story]);
-            if (story) {
-                $stories.each(function() {
-                    var $this = $(this);
-                    if ($this.data('story_id') == story.id) {
-                        $story_title = $this;
-                        // NEWSBLUR.log(['Finding story in story titles', $this, story_id, story]);
-                        return false;
-                    }
-                });
-            }
-            
-            return $story_title;
-        },
-        
         // ==============
         // = Navigation =
         // ==============
@@ -487,41 +463,25 @@
         },
         
         show_next_unread_story: function() {
-            var $story_titles = this.$s.$story_titles;
-            var $current_story = $('.selected', $story_titles);
-            var $next_story;
             var unread_count = this.get_unread_count(true);
             
             // NEWSBLUR.log(['show_next_unread_story', unread_count, $current_story]);
             
             if (unread_count) {
-                if (!$current_story.length) {
-                    // Nothing selected, choose first unread.
-                    $next_story = $('.story:not(.read):visible:first', $story_titles);
-                } else {
-                    // Start searching below, then search above current story.
-                    $next_story = $current_story.nextAll('.story:not(.read):visible').eq(0);
-                    if (!$next_story.length) {
-                        $next_story = $current_story.prevAll('.story:not(.read):visible').eq(0);
-                    }
-                }
+                var next_story = NEWSBLUR.assets.stories.get_next_unread_story();
                 
-                if ($next_story && $next_story.length) {
+                if (next_story) {
                     this.counts['find_next_unread_on_page_of_feed_stories_load'] = 0;
-                    var story_id = $next_story.data('story_id');
-                    if (story_id) {
-                        var story = this.model.get_story(story_id);
-                        this.push_current_story_on_history();
-                        story.set('selected', true);
-                    }
-                } else if (this.counts['find_next_unread_on_page_of_feed_stories_load'] < this.constants.FILL_OUT_PAGES && 
+                    this.push_current_story_on_history();
+                    next_story.set('selected', true);
+                } else if (this.counts['find_next_unread_on_page_of_feed_stories_load'] <
+                           this.constants.FILL_OUT_PAGES && 
                            !this.model.flags['no_more_stories']) {
                     // Nothing up, nothing down, but still unread. Load 1 page then find it.
                     this.counts['find_next_unread_on_page_of_feed_stories_load'] += 1;
                     this.load_page_of_feed_stories();
                 }
             }
-            
         },
         
         open_next_unread_story_across_feeds: function() {
@@ -3418,14 +3378,8 @@
                 }
                 setTimeout(function() {
                     if (!self.active_story) return;
-                    var $story = self.find_story_in_story_titles(self.active_story.id);
-                    // NEWSBLUR.log(['$story', $story]);
-                    if ($story && $story.length && $story.is(':visible')) {
-                        var story = self.active_story;
-                        self.active_story = null; // Set is in open_story(), which allows it to scroll.
-                        NEWSBLUR.app.story_list.scroll_to_selected_story(story);
-                        NEWSBLUR.app.story_titles.scroll_to_selected_story(story);
-                    }
+                    NEWSBLUR.app.story_list.scroll_to_selected_story(self.active_story);
+                    NEWSBLUR.app.story_titles.scroll_to_selected_story(self.active_story);
                 }, this.model.preference('animations') ? 550 : 0);
             }
         },
