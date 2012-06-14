@@ -2,7 +2,7 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     
     initialize: function() {
         _.bindAll(this, 'on_change', 'delete_feed', 'update_folder_counts');
-        this.bind('change', this.on_change);
+        // this.bind('change', this.on_change);
         this.bind('change:ps', this.update_folder_counts);
         this.bind('change:nt', this.update_folder_counts);
         this.bind('change:ng', this.update_folder_counts);

@@ -190,9 +190,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         
         if (onlySelected) return;
         
-        if (this.model.changedAttributes()) {
-            console.log(["Story changed", this.model.changedAttributes(), this.model.previousAttributes()]);
-        }
+        // if (this.model.changedAttributes()) {
+        //     console.log(["Story changed", this.model.changedAttributes(), this.model.previousAttributes()]);
+        // }
         
         var story = this.model;
         var unread_view = NEWSBLUR.assets.preference('unread_view');
@@ -201,6 +201,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (this.feed) {
             this.$el.toggleClass('NB-inverse', this.feed.is_light());
         }
+        this.$el.toggleClass('NB-river-story', NEWSBLUR.reader.flags.river_view);
         this.$el.toggleClass('NB-story-starred', !!story.get('starred'));
         this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
         this.$el.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
