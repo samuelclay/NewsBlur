@@ -121,7 +121,7 @@
 - (void)showStory {
 //    NSLog(@"Loaded Story view: %@", appDelegate.activeStory);
 
-    NSString *customImgCssString, *universalImgCssString;
+    NSString *customImgCssString, *universalImgCssString, *sharingHtmlString;
     // set up layout values based on iPad/iPhone
     
     universalImgCssString = [NSString stringWithFormat:@
@@ -166,6 +166,12 @@
                               "</style>"];
     }
     
+   sharingHtmlString      = [NSString stringWithFormat:@
+    "<div class='NB-share-header'></div>"
+    "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
+    "<a class='NB-share-button' href='share://share'><span class='NB-share-icon'></span>Share Story</a>"
+    "<a class='NB-save-button' href='save://save'><span class='NB-save-icon'></span>Save Story</a>"
+                        "</div></div>"];
     NSString *story_author      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
         NSString *author = [NSString stringWithFormat:@"%@",
@@ -199,15 +205,18 @@
                              [appDelegate.activeStory objectForKey:@"story_title"],
                              story_author,
                              story_tags];
-    NSString *htmlString = [NSString stringWithFormat:@"<body onload='init()'>%@ <div class=\"NB-story\">%@</div> %@ %@</body>",
-                             storyHeader, 
+    NSString *htmlString = [NSString stringWithFormat:@"<html><head>%@ %@</head><body onload='init()'>%@<div class=\"NB-story\">%@ </div>%@</body></html>",
+                            universalImgCssString, 
+                            customImgCssString,
+                            storyHeader, 
                             [appDelegate.activeStory objectForKey:@"story_content"],
-                            universalImgCssString, customImgCssString];
+                            sharingHtmlString
+                            ];
     NSLog(@"%@", [appDelegate.activeStory objectForKey:@"story_content"]);
-    NSString *feed_link = [[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
-                                                                [appDelegate.activeStory 
-                                                                 objectForKey:@"story_feed_id"]]] 
-                           objectForKey:@"feed_link"];
+//    NSString *feed_link = [[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
+//                                                                [appDelegate.activeStory 
+//                                                                 objectForKey:@"story_feed_id"]]] 
+//                           objectForKey:@"feed_link"];
 
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
