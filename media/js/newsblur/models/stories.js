@@ -141,12 +141,13 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // ==================
     
     visible: function(score, unread_only) {
-        score = _.isUndefined(score) ? NEWSBLUR.assets.preference('unread_view') : score;
+        var active_story_id = this.active_story && this.active_story.id;
+        score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
         
         return this.select(function(story) {
             var visible = story.score() >= score;
             if (unread_only) {
-                return visible && !story.get('read_status');
+                return visible && (!story.get('read_status') || story.id == active_story_id);
             }
             return visible;
         });
@@ -199,7 +200,6 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     get_next_unread_story: function(options) {
         options = options || {};
         var visible_stories = this.visible(options.score, true);
-        
         if (!visible_stories.length) return;
         
         if (!this.active_story) {
@@ -207,10 +207,12 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         }
 
         var current_index = _.indexOf(visible_stories, this.active_story);
-
-        if (current_index+1 <= visible_stories.length) {
+        
+        // The +1+1 is because the currently selected story is included, so it
+        // counts for more than what is available.
+        if (current_index+1+1 <= visible_stories.length) {
             return visible_stories[current_index+1];
-        } else if (current_index-1 > 0) {
+        } else if (current_index-1 >= 0) {
             return visible_stories[current_index-1];
         }
     },

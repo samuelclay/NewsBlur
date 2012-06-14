@@ -2070,11 +2070,6 @@
             if (first_load) NEWSBLUR.app.story_list.show_stories_preference_in_feed_view(true);
         },
         
-        make_story_content: function(story_content) {
-            var $story_content = $('<div>').html(story_content);
-            return $story_content;
-        },
-        
         apply_story_styling: function(reset_stories) {
             var $body = this.$s.$body;
             $body.removeClass('NB-theme-sans-serif');
