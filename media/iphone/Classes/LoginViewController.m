@@ -27,8 +27,6 @@
 @synthesize logInView;
 
 @synthesize jsonString;
-@synthesize activityIndicator;
-@synthesize authenticatingLabel;
 @synthesize errorLabel;
 @synthesize loginControl;
 @synthesize usernameLabel;
@@ -63,17 +61,13 @@
             self.logInView.frame = CGRectMake(902, 180, 500, 300); 
             self.selectSignUpButton.frame = CGRectMake(134, 80, 250, 50);
             self.selectLoginButton.frame = CGRectMake(384, 80, 250, 50);
-            self.errorLabel.frame = CGRectMake(244, 400, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
-            self.authenticatingLabel.frame = CGRectMake(244, 400, self.authenticatingLabel.frame.size.width, self.authenticatingLabel.frame.size.height);
-            self.activityIndicator.frame = CGRectMake(296, 416, self.activityIndicator.frame.size.width, self.activityIndicator.frame.size.height);
+            self.errorLabel.frame = CGRectMake(244, 180, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
         } else {
             self.signUpView.frame = CGRectMake(134 + 128, 80, 500, 300); 
             self.logInView.frame = CGRectMake(902 + 128, 80, 500, 300); 
             self.selectSignUpButton.frame = CGRectMake(134 + 128, 20, 250, 50);
             self.selectLoginButton.frame = CGRectMake(384 + 128, 20, 250, 50);
-            self.errorLabel.frame = CGRectMake(244 + 128, 400 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
-            self.authenticatingLabel.frame = CGRectMake(244 + 128, 400 - 100, self.authenticatingLabel.frame.size.width, self.authenticatingLabel.frame.size.height);
-            self.activityIndicator.frame = CGRectMake(296 + 128, 416 - 100, self.activityIndicator.frame.size.width, self.activityIndicator.frame.size.height);
+            self.errorLabel.frame = CGRectMake(244 + 128, 180 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
         } 
     }
 
@@ -92,8 +86,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [self.errorLabel setHidden:YES];
-    [self.authenticatingLabel setHidden:YES];
-    [self.activityIndicator stopAnimating];
     [super viewWillAppear:animated];
 }
 
@@ -103,7 +95,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [self.activityIndicator stopAnimating];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     [super viewDidAppear:animated];
 }
 
@@ -120,25 +112,15 @@
         if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)){
             self.signUpView.frame = CGRectMake(self.signUpView.frame.origin.x - 128, 180, 500, 300); 
             self.logInView.frame = CGRectMake(self.logInView.frame.origin.x - 128, 180, 500, 300);
-
             self.selectSignUpButton.frame = CGRectMake(134, 80, 250, 50);
             self.selectLoginButton.frame = CGRectMake(384, 80, 250, 50);
-            
-            self.errorLabel.frame = CGRectMake(244, 400, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
-            self.authenticatingLabel.frame = CGRectMake(244, 400, self.authenticatingLabel.frame.size.width, self.authenticatingLabel.frame.size.height);
-            self.activityIndicator.frame = CGRectMake(296, 416, self.activityIndicator.frame.size.width, self.activityIndicator.frame.size.height);
-
-
+            self.errorLabel.frame = CGRectMake(244, 180, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
         }else{
             self.signUpView.frame = CGRectMake(self.signUpView.frame.origin.x + 128, 80, 500, 300); 
             self.logInView.frame = CGRectMake(self.logInView.frame.origin.x + 128, 80, 500, 300);
-
             self.selectSignUpButton.frame = CGRectMake(134 + 128, 80 - 60, 250, 50);
             self.selectLoginButton.frame = CGRectMake(384 + 128, 80 - 60, 250, 50);
-            
-            self.errorLabel.frame = CGRectMake(244 + 128, 400 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
-            self.authenticatingLabel.frame = CGRectMake(244 + 128, 400 - 100, self.authenticatingLabel.frame.size.width, self.authenticatingLabel.frame.size.height);
-            self.activityIndicator.frame = CGRectMake(296 + 128, 416 - 100, self.activityIndicator.frame.size.width, self.activityIndicator.frame.size.height);
+            self.errorLabel.frame = CGRectMake(244 + 128, 180 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
         }
 
     }
@@ -171,7 +153,6 @@
         NSLog(@"in it");
         if(textField == usernameInput) {
             [passwordInput becomeFirstResponder];
-            NSLog(@"password is now first responder");
         } else if (textField == passwordInput) {
             [self checkPassword];
         } else if (textField == signUpUsernameInput){
@@ -199,10 +180,11 @@
 }
 
 - (void)checkPassword {
-    [self.authenticatingLabel setHidden:NO];
-    [self.authenticatingLabel setText:@"Authenticating..."];
     [self.errorLabel setHidden:YES];
-    [self.activityIndicator startAnimating];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Authenticating";
+    
     NSString *urlString = [NSString stringWithFormat:@"http://%@/api/login",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
@@ -221,8 +203,7 @@
 
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
-    [self.authenticatingLabel setHidden:YES];
-    [self.activityIndicator stopAnimating];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
@@ -245,10 +226,10 @@
 
 
 - (void)registerAccount {
-    [self.authenticatingLabel setHidden:NO];
-    [self.authenticatingLabel setText:@"Registering..."];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Registering...";
     [self.errorLabel setHidden:YES];
-    [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/api/signup",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
@@ -272,8 +253,7 @@
 }
 
 - (void)finishRegistering:(ASIHTTPRequest *)request {
-    [self.authenticatingLabel setHidden:YES];
-    [self.activityIndicator stopAnimating];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
@@ -309,8 +289,6 @@
 
 - (IBAction)selectSignUp {
     [self.errorLabel setHidden:YES];
-    [self.authenticatingLabel setHidden:YES];
-    [self.activityIndicator stopAnimating];
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [UIView animateWithDuration:0.35 animations:^{
             self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
@@ -327,8 +305,6 @@
 
 - (IBAction)selectLogin {
     [self.errorLabel setHidden:YES];
-    [self.authenticatingLabel setHidden:YES];
-    [self.activityIndicator stopAnimating];
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [UIView animateWithDuration:0.35 animations:^{
             self.signUpView.frame = CGRectMake(-634, 180, 500, 300); 
@@ -340,6 +316,17 @@
             self.logInView.frame = CGRectMake(134 + 128, 80, 500, 300);         
         }];
     }
+}
+
+- (IBAction)tapLoginButton {
+    [self.view endEditing:YES];
+    [self checkPassword];
+    
+}
+
+- (IBAction)tapSignUpButton {
+    [self.view endEditing:YES];
+    [self registerAccount];
 }
 
 #pragma mark -
@@ -355,7 +342,6 @@
             // Login
             usernameInput.frame = CGRectMake(20, 67, 280, 31); 
             usernameOrEmailLabel.alpha = 1.0;
-            
             
             passwordInput.frame = CGRectMake(20, 129, 280, 31);
             passwordLabel.frame = CGRectMake(21, 106, 212, 22);
@@ -374,7 +360,6 @@
             // Signup
             usernameInput.frame = CGRectMake(20, 67, 130, 31); 
             usernameOrEmailLabel.alpha = 0.0;
-            
             
             passwordInput.frame = CGRectMake(170, 67, 130, 31);
             passwordLabel.frame = CGRectMake(171, 44, 212, 22);

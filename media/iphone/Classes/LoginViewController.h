@@ -39,6 +39,8 @@
 
 - (IBAction)selectSignUp;
 - (IBAction)selectLogin;
+- (IBAction)tapLoginButton;
+- (IBAction)tapSignUpButton;
 
 
 - (void)animateLoop;
@@ -57,8 +59,6 @@
 @property (retain, nonatomic) IBOutlet UIView *logInView;
 
 @property (nonatomic, retain) NSMutableData * jsonString;
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView *activityIndicator;
-@property (nonatomic, retain) IBOutlet UILabel *authenticatingLabel;
 @property (nonatomic, retain) IBOutlet UILabel *errorLabel;
 @property (nonatomic, retain) IBOutlet UISegmentedControl *loginControl;
 

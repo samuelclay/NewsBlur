@@ -65,6 +65,8 @@
 		433323BB158901C10025064D /* login_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323BA158901C10025064D /* login_background.png */; };
 		433323BE1589022C0025064D /* user.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323BC1589022C0025064D /* user.png */; };
 		433323BF1589022C0025064D /* user@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323BD1589022C0025064D /* user@2x.png */; };
+		433323C215895E280025064D /* orange_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323C015895E280025064D /* orange_button.png */; };
+		433323C5158963BB0025064D /* orange_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323C4158963BB0025064D /* orange_button@2x.png */; };
 		433D247E1582EEB400AE9E72 /* AddSiteAutocompleteCell~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */; };
 		433D247F1582EEB900AE9E72 /* AddSiteViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */; };
 		433D24801582EEBB00AE9E72 /* FeedDetailTableCell~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045231565BC150085F811 /* FeedDetailTableCell~ipad.xib */; };
@@ -258,6 +260,8 @@
 		433323BA158901C10025064D /* login_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = login_background.png; sourceTree = "<group>"; };
 		433323BC1589022C0025064D /* user.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = user.png; sourceTree = "<group>"; };
 		433323BD1589022C0025064D /* user@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "user@2x.png"; sourceTree = "<group>"; };
+		433323C015895E280025064D /* orange_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orange_button.png; sourceTree = "<group>"; };
+		433323C4158963BB0025064D /* orange_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "orange_button@2x.png"; sourceTree = "<group>"; };
 		43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteAutocompleteCell.xib; sourceTree = "<group>"; };
 		43B8F019156603170008733D /* AddSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteViewController.xib; sourceTree = "<group>"; };
 		43B8F01A156603170008733D /* FeedDetailTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedDetailTableCell.xib; sourceTree = "<group>"; };
@@ -684,6 +688,8 @@
 		433323B5158901A40025064D /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				433323C015895E280025064D /* orange_button.png */,
+				433323C4158963BB0025064D /* orange_button@2x.png */,
 				433323BC1589022C0025064D /* user.png */,
 				433323BD1589022C0025064D /* user@2x.png */,
 				433323BA158901C10025064D /* login_background.png */,
@@ -1258,6 +1264,8 @@
 				433323BB158901C10025064D /* login_background.png in Resources */,
 				433323BE1589022C0025064D /* user.png in Resources */,
 				433323BF1589022C0025064D /* user@2x.png in Resources */,
+				433323C215895E280025064D /* orange_button.png in Resources */,
+				433323C5158963BB0025064D /* orange_button@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
