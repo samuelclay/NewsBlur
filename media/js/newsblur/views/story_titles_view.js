@@ -190,8 +190,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // = Bindings =
     // ============
     
-    scroll_to_selected_story: function(story_title_view) {
-        var story_title_view = story_title_view || this.collection.active_story.story_title_view;
+    scroll_to_selected_story: function(story) {
+        var story_title_view = story.story_title_view || this.collection.active_story.story_title_view;
         var story_title_visisble = NEWSBLUR.reader.$s.$story_titles.isScrollVisible(story_title_view.$el);
         if (!story_title_visisble) {
             var container_offset = NEWSBLUR.reader.$s.$story_titles.position().top;

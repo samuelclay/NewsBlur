@@ -40,6 +40,10 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
             return true;
         }
         return false;
+    },
+    
+    mark_read: function(options) {
+        return NEWSBLUR.assets.stories.mark_read(this, options);
     }
     
 });

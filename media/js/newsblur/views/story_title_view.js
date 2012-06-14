@@ -101,13 +101,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
         
         if (this.model.get('selected')) {
-            NEWSBLUR.app.story_titles.scroll_to_selected_story(this);
+            NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);
         }
     },
     
     toggle_starred: function() {
         var $star = this.$('.NB-storytitles-star');
-        NEWSBLUR.app.story_titles.scroll_to_selected_story(this);
+        NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);
         
         if (this.model.get('starred')) {
             $star.attr({'title': 'Saved!'});

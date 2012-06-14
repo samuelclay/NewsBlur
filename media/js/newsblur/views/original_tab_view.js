@@ -534,11 +534,12 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             var closest = $.closest(from_top, positions);
             var story = this.cache.iframe_story_positions[positions[closest]];
             if (!story) return;
+            if (story.score() < NEWSBLUR.reader.get_unread_view_score()) return;
             // console.log(['Scroll iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
-
-            // if (!story.get('selected')) {
-            story.set('selected', true, {selected_in_original: true, scroll: true, immediate: true});
-            // }
+            
+            if (!story.get('selected')) {
+                story.set('selected', true, {selected_in_original: true, scroll: true, immediate: true});
+            }
             if (!this.flags.iframe_scroll_snap_back_prepared) {
                 this.iframe_scroll = from_top - NEWSBLUR.reader.cache.mouse_position_y;
             }
@@ -575,6 +576,12 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         // console.log(["mousemove", story, from_top, positions[closest], this.cache.iframe_story_positions]);
         // this.flags['mousemove_timeout'] = true;
         if (!story) return;
+        if (story.score() < NEWSBLUR.reader.get_unread_view_score()) {
+            if (!story.get('read_status')) {
+                story.mark_read();
+            }
+            return;
+        }
         
         if (!story.get('selected')) {
             story.set('selected', true, {selected_in_original: true, mouse: true, immediate: true});
