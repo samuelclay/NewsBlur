@@ -19,11 +19,13 @@ public class Constants {
 	public static String FEED_FAVICON_COLOUR = "favicon_colour";
 	public static String FEED_ACTIVE = "active";
 	
+	public static String CLASSIFIER_TABLE = "classifiers";
 	public static String CLASSIFIER_ID = BaseColumns._ID;
 	public static String CLASSIFIER_TYPE = "type";
 	public static String CLASSIFIER_KEY = "key";
 	public static String CLASSIFIER_VALUE = "value";
 	
+	public static String STORY_TABLE = "stories";
 	public static String STORY_ID = BaseColumns._ID;
 	public static String STORY_TITLE = "title";
 	public static String STORY_DATE = "date";
