@@ -543,7 +543,7 @@
                     // Even though a story_id is specified, this just means go to the comments.
                     // Refactor when stories can be scrolled to separately from comments.
                     story.set('selected', true, {scroll_to_comments: true});
-                }, this), 800);
+                }, this), 100);
             } else if (this.counts['select_story_in_feed'] < this.constants.FILL_OUT_PAGES && 
                        !this.model.flags['no_more_stories']) {
                 // Nothing up, nothing down, but still not found. Load 1 page then find it.
@@ -651,7 +651,7 @@
             if (this.story_view == 'page') {
                 this.$s.$feed_iframe.scrollTo({top:dir+'='+scroll_height, left:'+=0'}, 230, {queue: false});
             } else if (this.story_view == 'feed') {
-                this.$s.$feed_stories.scrollTo({top:dir+'='+scroll_height, left:'+=0'}, 340, {queue: false});
+                this.$s.$feed_stories.scrollTo({top:dir+'='+scroll_height, left:'+=0'}, 230, {queue: false});
             }
         },
         
@@ -968,6 +968,7 @@
             
             if (!feed || (temp && !options.try_feed)) {
                 // Setup tryfeed views first, then come back here.
+                options.feed = options.feed.attributes;
                 return this.load_feed_in_tryfeed_view(feed_id, options);
             }
 
@@ -3966,7 +3967,7 @@
                 feed_id      : feed_id,
                 feed_title   : options.feed && options.feed.feed_title,
                 temp         : true
-            }, options.feed);
+            }, options.feed.attributes);
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
             this.reset_feed();
@@ -4757,10 +4758,10 @@
                     self.open_feed(feed_id, {
                         'story_id': story_id, 
                         'scroll_to_comments': true,
-                        'feed': {
+                        'feed': new NEWSBLUR.Models.Feed({
                             'feed_title': $('.NB-interaction-sharedstory-title', $interaction).text(),
                             'favicon_url': $('.NB-interaction-photo', $interaction).attr('src')
-                        }
+                        })
                     });
                 }
             }); 
