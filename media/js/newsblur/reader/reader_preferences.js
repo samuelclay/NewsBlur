@@ -709,7 +709,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             NEWSBLUR.reader.switch_feed_view_unread_view();
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.apply_tipsy_titles();
-            NEWSBLUR.reader.show_stories_preference_in_feed_view();
+            NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
             if (self.original_preferences['feed_order'] != form['feed_order'] ||
                 self.original_preferences['folder_counts'] != form['folder_counts']) {
               NEWSBLUR.app.feed_list.make_feeds();

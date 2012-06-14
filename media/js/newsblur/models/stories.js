@@ -161,11 +161,11 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         });
     },
     
-    hidden: function() {
-        var unread_score = NEWSBLUR.assets.preference('unread_view');
-        
+    hidden: function(score) {
+        score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
+
         return this.select(function(story) {
-            return story.score() < unread_view;
+            return story.score() < score;
         });
     },
     

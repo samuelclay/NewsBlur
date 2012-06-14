@@ -135,6 +135,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var $counts = $('.feed_counts_floater', $folder_title);
         var $river = $('.NB-feedlist-collapse-icon', $folder_title);
         
+        this.$el.addClass('NB-folder-collapsed');
         $counts.remove();
 
         if ($folder_title.hasClass('NB-hover')) {
