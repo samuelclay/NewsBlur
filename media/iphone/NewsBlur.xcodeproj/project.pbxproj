@@ -67,6 +67,8 @@
 		433323BF1589022C0025064D /* user@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323BD1589022C0025064D /* user@2x.png */; };
 		433323C215895E280025064D /* orange_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323C015895E280025064D /* orange_button.png */; };
 		433323C5158963BB0025064D /* orange_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323C4158963BB0025064D /* orange_button@2x.png */; };
+		433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 433323CB158968ED0025064D /* FirstTimeUserViewController.m */; };
+		433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 433323CC158968ED0025064D /* FirstTimeUserViewController.xib */; };
 		433D247E1582EEB400AE9E72 /* AddSiteAutocompleteCell~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */; };
 		433D247F1582EEB900AE9E72 /* AddSiteViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */; };
 		433D24801582EEBB00AE9E72 /* FeedDetailTableCell~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045231565BC150085F811 /* FeedDetailTableCell~ipad.xib */; };
@@ -262,6 +264,9 @@
 		433323BD1589022C0025064D /* user@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "user@2x.png"; sourceTree = "<group>"; };
 		433323C015895E280025064D /* orange_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orange_button.png; sourceTree = "<group>"; };
 		433323C4158963BB0025064D /* orange_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "orange_button@2x.png"; sourceTree = "<group>"; };
+		433323CA158968ED0025064D /* FirstTimeUserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstTimeUserViewController.h; sourceTree = "<group>"; };
+		433323CB158968ED0025064D /* FirstTimeUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstTimeUserViewController.m; sourceTree = "<group>"; };
+		433323CC158968ED0025064D /* FirstTimeUserViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FirstTimeUserViewController.xib; path = Classes/FirstTimeUserViewController.xib; sourceTree = "<group>"; };
 		43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteAutocompleteCell.xib; sourceTree = "<group>"; };
 		43B8F019156603170008733D /* AddSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteViewController.xib; sourceTree = "<group>"; };
 		43B8F01A156603170008733D /* FeedDetailTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedDetailTableCell.xib; sourceTree = "<group>"; };
@@ -530,6 +535,8 @@
 				FF5EA47D143B691000B7563D /* AddSiteViewController.m */,
 				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
 				FFD1D7301459B63500E46F89 /* BaseViewController.m */,
+				433323CA158968ED0025064D /* FirstTimeUserViewController.h */,
+				433323CB158968ED0025064D /* FirstTimeUserViewController.m */,
 				7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */,
 				7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */,
 				787A0CD811CE65330056422D /* FeedDetailViewController.h */,
@@ -726,6 +733,7 @@
 				43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */,
 				43D045231565BC150085F811 /* FeedDetailTableCell~ipad.xib */,
 				43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */,
+				433323CC158968ED0025064D /* FirstTimeUserViewController.xib */,
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
 				43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */,
@@ -1266,6 +1274,7 @@
 				433323BF1589022C0025064D /* user@2x.png in Resources */,
 				433323C215895E280025064D /* orange_button.png in Resources */,
 				433323C5158963BB0025064D /* orange_button@2x.png in Resources */,
+				433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1373,6 +1382,7 @@
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
 				4307BEFE1565EEBC007A932A /* Base64.m in Sources */,
 				43C1E6401583DA3F006874F1 /* SplitStoryDetailViewController.m in Sources */,
+				433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

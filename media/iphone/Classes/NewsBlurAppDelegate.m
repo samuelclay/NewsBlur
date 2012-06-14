@@ -10,6 +10,7 @@
 #import "NewsBlurViewController.h"
 #import "FeedDetailViewController.h"
 #import "StoryDetailViewController.h"
+#import "FirstTimeUserViewController.h"
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
 #import "MoveSiteViewController.h"
@@ -28,12 +29,13 @@
 @synthesize splitStoryDetailNavigationController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
+@synthesize firstTimeUserViewController;
 @synthesize storyDetailViewController;
 @synthesize loginViewController;
 @synthesize addSiteViewController;
 @synthesize moveSiteViewController;
 @synthesize originalStoryViewController;
-@synthesize detailViewController;
+@synthesize splitStoryDetailViewController;
 
 @synthesize activeUsername;
 @synthesize isRiverView;
@@ -69,9 +71,9 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
         navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
         
-        splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:detailViewController];
+        splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:splitStoryDetailViewController];
         splitStoryDetailNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        detailViewController.navigationItem.title = @"NewsBlur";
+        splitStoryDetailViewController.navigationItem.title = @"NewsBlur";
         
         splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, splitStoryDetailNavigationController, nil];
         
@@ -87,7 +89,8 @@
     
     [window makeKeyAndVisible];
     
-    [feedsViewController fetchFeedList:YES];
+//    [feedsViewController fetchFeedList:YES];
+    [self showFirstTimeUser];
 
 	return YES;
 }
@@ -107,8 +110,9 @@
     [addSiteViewController release];
     [moveSiteViewController release];
     [originalStoryViewController release];
-    [detailViewController release];
+    [splitStoryDetailViewController release];
     [navigationController release];
+    [firstTimeUserViewController release];
     [window release];
     [activeUsername release];
     [activeFeed release];
@@ -143,12 +147,22 @@
 
 - (void)showLogin {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.detailViewController.masterPopoverController dismissPopoverAnimated:YES];
+        [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
         [self.splitStoryController presentModalViewController:loginViewController animated:YES];
     } else {
         [self.navigationController presentModalViewController:loginViewController animated:YES];
     }
         
+}
+
+- (void)showFirstTimeUser {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
+        [self.splitStoryController presentModalViewController:firstTimeUserViewController animated:YES];
+    } else {
+        [self.navigationController presentModalViewController:loginViewController animated:YES];
+    }
+    
 }
 
 - (void)showAdd {
@@ -227,7 +241,7 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // With some valid UIView *view:
-        NSArray *subviews = [[detailViewController.view subviews] copy];
+        NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
         for (UIView *subview in subviews) {
             if (subview.tag == 12) {
                 [subview removeFromSuperview];
@@ -236,7 +250,7 @@
         [subviews release];
         
         storyDetailViewController.view.tag = 12;
-        [detailViewController.view addSubview:storyDetailViewController.view];
+        [splitStoryDetailViewController.view addSubview:storyDetailViewController.view];
         [self adjustStoryDetailWebView];
 
         
@@ -255,7 +269,7 @@
 }
 
 - (void)adjustStoryDetailWebView {
-    if (UIInterfaceOrientationIsPortrait(detailViewController.interfaceOrientation)) {
+    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         storyDetailViewController.view.frame = CGRectMake(0,0,768,960);
     } else {
         storyDetailViewController.view.frame = CGRectMake(0,0,704,704);

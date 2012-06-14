@@ -74,7 +74,7 @@
     UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        appDelegate.detailViewController.navigationItem.titleView = titleLabel;
+        appDelegate.splitStoryDetailViewController.navigationItem.titleView = titleLabel;
     } else {
         self.navigationItem.titleView = titleLabel;
     }
@@ -513,9 +513,9 @@
         [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
         [appDelegate loadStoryDetailView];
 
-        if(appDelegate.detailViewController.masterPopoverController.popoverVisible) {
+        if(appDelegate.splitStoryDetailViewController.masterPopoverController.popoverVisible) {
             NSLog(@"popover visible");
-            [appDelegate.detailViewController.masterPopoverController dismissPopoverAnimated:YES];
+            [appDelegate.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
         }
     }
 }

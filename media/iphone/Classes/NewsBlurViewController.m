@@ -110,7 +110,7 @@
     
     // remove the right detail view in storySplitController
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-        NSArray *subviews = [[appDelegate.detailViewController.view subviews] copy];
+        NSArray *subviews = [[appDelegate.splitStoryDetailViewController.view subviews] copy];
         for (UIView *subview in subviews) {
             if (subview.tag == 12) {
                 [subview removeFromSuperview];
@@ -119,9 +119,9 @@
         [subviews release];
     }
     
-    appDelegate.detailViewController.navigationItem.titleView = nil;
-    appDelegate.detailViewController.navigationItem.title = @"NewsBlur";
-    appDelegate.detailViewController.navigationItem.rightBarButtonItem = nil;  
+    appDelegate.splitStoryDetailViewController.navigationItem.titleView = nil;
+    appDelegate.splitStoryDetailViewController.navigationItem.title = @"NewsBlur";
+    appDelegate.splitStoryDetailViewController.navigationItem.rightBarButtonItem = nil;  
 }
 
 - (void)viewDidAppear:(BOOL)animated {

@@ -11,6 +11,7 @@
 
 @class NewsBlurViewController;
 @class FeedDetailViewController;
+@class FirstTimeUserViewController;
 @class StoryDetailViewController;
 @class LoginViewController;
 @class AddSiteViewController;
@@ -26,12 +27,13 @@
 
     NewsBlurViewController *feedsViewController;
     FeedDetailViewController *feedDetailViewController;
+    FirstTimeUserViewController *firstTimeUserViewController;
     StoryDetailViewController *storyDetailViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
     OriginalStoryViewController *originalStoryViewController;
-    SplitStoryDetailViewController *detailViewController;
+    SplitStoryDetailViewController *splitStoryDetailViewController;
     
     NSString * activeUsername;
     BOOL isRiverView;
@@ -63,12 +65,13 @@
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *splitStoryDetailNavigationController;
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
+@property (nonatomic, retain) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic, retain) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, retain) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic, retain) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic, retain) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic, retain) IBOutlet OriginalStoryViewController *originalStoryViewController;
-@property (nonatomic, retain) IBOutlet SplitStoryDetailViewController *detailViewController;
+@property (nonatomic, retain) IBOutlet SplitStoryDetailViewController *splitStoryDetailViewController;
 
 @property (readwrite, retain) NSString * activeUsername;
 @property (nonatomic, readwrite) BOOL isRiverView;
@@ -94,6 +97,7 @@
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 
+- (void)showFirstTimeUser;
 - (void)showLogin;
 - (void)showAdd;
 - (void)showMoveSite;
