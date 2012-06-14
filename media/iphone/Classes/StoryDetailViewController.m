@@ -124,92 +124,37 @@
     NSString *customImgCssString, *universalImgCssString;
     // set up layout values based on iPad/iPhone
     
-    universalImgCssString = [NSString stringWithFormat:@"<style>"
-                             "body {"
-                             "  line-height: 1.2;"
-                             "  font-size: 15px;"
-                             "  font-family: 'Lucida Grande',Helvetica, Arial;"
-                             "  text-rendering: optimizeLegibility;"
-                             "  margin: 0;"
+    universalImgCssString = [NSString stringWithFormat:@
+                             "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" >"
+                             "<script>"
+                             "function init() {"
+                             "var a = document.getElementsByTagName('a');"
+                             "for (var i = 0, l = a.length; i < l; i++) {"
+                             "    if (a[i].href.indexOf('feedburner') != -1) {"
+                             "      a[i].className = 'NB-no-style';"
+                             "    } else {"
+                             "      var img = a[i].getElementsByTagName('img');"
+                             "      if(img.length) {"
+                             "          a[i].className='NB-contains-image';"
+                             "      }"
+                             "    }"
                              "}"
-                             "img {"
-                             "  max-width: 100%;"
-                             "  display: block;"
-                             "  width: auto;"
-                             "  height: auto;"
-                             "  margin: 1.5em 1em 1.5em 0;"
+                             "var img = document.getElementsByTagName('img');"
+                             "for (var i = 0, l = img.length; i < l; i++) {"
+                             "      if (img[i].height == 1) {"
+                             "          img[i].className = 'NB-tracker';"
+                             "      } else {"
+                             "          img[i].className = 'NB-image';"
+                             "      }"
                              "}"
-                             "blockquote {"
-                             "  background-color: #F0F0F0;"
-                             "  border-left: 1px solid #9B9B9B;"
-                             "  padding: .5em 2em;"
-                             "  margin: 1em 0;"
                              "}"
-                             "p {"
-                             "  margin: 1em 0"
-                             "}"
-                             ".NB-header {"
-                             "  font-size: 24px;"
-                             "  font-weight: 600;"
-                             "  background-color: #E0E0E0;"
-                             "  border-bottom: 1px solid #A0A0A0;"
-                             "  padding: 20px 24px 20px;"
-                             "  text-shadow: 1px 1px 0 #EFEFEF;"
-                             "  overflow: hidden;"
-                             "  max-width: none;"
-                             "}"
-                             ".NB-story {"
-                             "  margin: 20px 24px;"
-                             "}"
-                             ".NB-story-author {"
-                             "    color: #969696;"
-                             "    font-size: 10px;"
-                             "    text-transform: uppercase;"
-                             "    margin: 4px 8px 0px 0;"
-                             "    text-shadow: 0 1px 0 #F9F9F9;"
-                             "    float: left;"
-                             "}"
-                             ".NB-story-tags {"
-                             "  overflow: hidden;"
-                             "  line-height: 12px;"
-                             "  height: 14px;"
-                             "  padding: 5px 0 0 0;"
-                             "  text-transform: uppercase;"
-                             "}"
-                             ".NB-story-tag {"
-                             "    float: left;"
-                             "    font-weight: normal;"
-                             "    font-size: 9px;"
-                             "    padding: 0px 4px 0px;"
-                             "    margin: 0 4px 2px 0;"
-                             "    background-color: #C6CBC3;"
-                             "    color: #505050;"
-                             "    text-shadow: 0 1px 0 #E7E7E7;"
-                             "    border-radius: 4px;"
-                             "    -moz-border-radius: 4px;"
-                             "    -webkit-border-radius: 4px;"
-                             "}"
-                             ".NB-story-date {"
-                             "  font-size: 11px;"
-                             "  color: #454D6C;"
-                             "}"
-                             ".NB-story-title {"
-                             "  clear: left;"
-                             "  margin: 4px 0 4px;"
-                             "}"
-                             "ins {"
-                             "  text-decoration: none;"
-                             "}"
-                             "del {"
-                             "  display: none;"
-                             "}"
-                             "</style>"
+                             "</script>"
                              "<meta name=\"viewport\" content=\"width=device-width\"/>"];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         customImgCssString = [NSString stringWithFormat:@"<style>"
                               "h1, h2, h3, h4, h5, h6, div, table, span, pre, code, img {"
-                              "  max-width: 696px;"
+                              "  max-width: 588px;"
                               "}"
                               "</style>"];
 
@@ -254,16 +199,22 @@
                              [appDelegate.activeStory objectForKey:@"story_title"],
                              story_author,
                              story_tags];
-    NSString *htmlString = [NSString stringWithFormat:@"%@ %@ %@ <div class=\"NB-story\">%@</div>",
-                            universalImgCssString, customImgCssString, storyHeader, 
-                            [appDelegate.activeStory objectForKey:@"story_content"]];
+    NSString *htmlString = [NSString stringWithFormat:@"<body onload='init()'>%@ <div class=\"NB-story\">%@</div> %@ %@</body>",
+                             storyHeader, 
+                            [appDelegate.activeStory objectForKey:@"story_content"],
+                            universalImgCssString, customImgCssString];
+    NSLog(@"%@", [appDelegate.activeStory objectForKey:@"story_content"]);
     NSString *feed_link = [[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
                                                                 [appDelegate.activeStory 
                                                                  objectForKey:@"story_feed_id"]]] 
                            objectForKey:@"feed_link"];
 
+    NSString *path = [[NSBundle mainBundle] bundlePath];
+    NSURL *baseURL = [NSURL fileURLWithPath:path];
+    
     [webView loadHTMLString:htmlString
-                    baseURL:[NSURL URLWithString:feed_link]];
+                    //baseURL:[NSURL URLWithString:feed_link]];
+                    baseURL:baseURL];
     
     NSDictionary *feed = [appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
                                                               [appDelegate.activeStory 
@@ -479,7 +430,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)showOriginalSubview:(id)sender {
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory 
                                        objectForKey:@"story_permalink"]];
-    [appDelegate showOriginalStory:url fromOriginalButton: YES];
+    [appDelegate showOriginalStory:url];
 }
 
 @end

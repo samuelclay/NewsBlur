@@ -89,8 +89,8 @@
     
     [window makeKeyAndVisible];
     
-//    [feedsViewController fetchFeedList:YES];
-    [self showFirstTimeUser];
+    [feedsViewController fetchFeedList:YES];
+//    [self showFirstTimeUser];
 
 	return YES;
 }
@@ -310,13 +310,10 @@
     [label release];
 }
 
-- (void)showOriginalStory:(NSURL *)url
-    fromOriginalButton:(BOOL)fromOriginalButton {
-    if (fromOriginalButton) {
-        [MBProgressHUD hideHUDForView:originalStoryViewController.view animated:YES];
-        MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:originalStoryViewController.view animated:YES];
-        HUD.labelText = @"On its way...";
-    }
+- (void)showOriginalStory:(NSURL *)url {
+    [MBProgressHUD hideHUDForView:originalStoryViewController.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:originalStoryViewController.view animated:YES];
+    HUD.labelText = @"On its way...";
     self.activeOriginalStoryURL = url;
     UINavigationController *navController = self.navigationController;
     [navController presentModalViewController:originalStoryViewController animated:YES];
