@@ -511,28 +511,17 @@
         },
         
         show_last_unread_story: function() {
-            var $story_titles = this.$s.$story_titles;
-            var $current_story = $('.selected', $story_titles);
-            var $next_story;
             var unread_count = this.get_unread_count(true);
             
             // NEWSBLUR.log(['show_last_unread_story', unread_count, $current_story]);
             
             if (unread_count) {
-                var unread_stories_visible = $('.story:not(.read):visible', $story_titles).length;
-                if (unread_stories_visible >= unread_count) {
-                    // Choose the last unread story
-                    $next_story = $('.story:not(.read):visible:last', $story_titles);
-                }
+                var last_story = NEWSBLUR.assets.stories.get_last_unread_story(unread_count);
                 
-                if ($next_story && $next_story.length) {
+                if (last_story) {
                     this.counts['find_last_unread_on_page_of_feed_stories_load'] = 0;
-                    var story_id = $next_story.data('story_id');
-                    if (story_id) {
-                        var story = this.model.get_story(story_id);
-                        this.push_current_story_on_history();
-                        story.set('selected', true);
-                    }
+                    this.push_current_story_on_history();
+                    last_story.set('selected', true);
                 } else if (this.counts['find_last_unread_on_page_of_feed_stories_load'] < this.constants.FILL_OUT_PAGES && 
                            !this.model.flags['no_more_stories']) {
                     // Nothing up, nothing down, but still unread. Load 1 page then find it.

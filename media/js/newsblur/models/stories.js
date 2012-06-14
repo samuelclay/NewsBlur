@@ -140,16 +140,24 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // = Model Managers =
     // ==================
     
-    visible: function(score, unread_only) {
+    visible: function(score) {
+        score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
+        
+        return this.select(function(story) {
+            return story.score() >= score;
+        });
+    },
+    
+    visible_and_unread: function(score, include_active_story) {
         var active_story_id = this.active_story && this.active_story.id;
         score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
         
         return this.select(function(story) {
             var visible = story.score() >= score;
-            if (unread_only) {
-                return visible && (!story.get('read_status') || story.id == active_story_id);
-            }
-            return visible;
+            var same_story = include_active_story && story.id == active_story_id;
+            var read = !!story.get('read_status');
+            
+            return visible && (!read || same_story);
         });
     },
     
@@ -199,7 +207,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     get_next_unread_story: function(options) {
         options = options || {};
-        var visible_stories = this.visible(options.score, true);
+        var visible_stories = this.visible_and_unread(options.score, true);
         if (!visible_stories.length) return;
         
         if (!this.active_story) {
@@ -215,6 +223,14 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         } else if (current_index-1 >= 0) {
             return visible_stories[current_index-1];
         }
+    },
+    
+    get_last_unread_story: function(unread_count, options) {
+        options = options || {};
+        var visible_stories = this.visible_and_unread(options.score);
+        if (!visible_stories.length || visible_stories.length < unread_count) return;
+        
+        return _.last(visible_stories);
     },
     
     // ==========
