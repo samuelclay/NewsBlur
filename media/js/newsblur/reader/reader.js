@@ -465,8 +465,6 @@
         show_next_unread_story: function() {
             var unread_count = this.get_unread_count(true);
             
-            NEWSBLUR.log(['show_next_unread_story', unread_count]);
-            
             if (unread_count) {
                 var next_story = NEWSBLUR.assets.stories.get_next_unread_story();
                 
@@ -511,8 +509,6 @@
         
         show_last_unread_story: function() {
             var unread_count = this.get_unread_count(true);
-            
-            // NEWSBLUR.log(['show_last_unread_story', unread_count, $current_story]);
             
             if (unread_count) {
                 var last_story = NEWSBLUR.assets.stories.get_last_unread_story(unread_count);

@@ -109,8 +109,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 e.preventDefault();
                 this.mark_story_as_shared({'source': 'sideoption'});
             }, this);
-            $('.NB-sideoption-share-comments', $share).bind('keydown', 'ctrl+return', share);
-            $('.NB-sideoption-share-comments', $share).bind('keydown', 'meta+return', share);
+            $('.NB-sideoption-share-comments', $share).bind('keydown', 'ctrl+return,meta+return', share);
 
         }
     },
@@ -152,18 +151,12 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             tipsy.enable();
             tipsy.show();
 
-            $share_star.animate({
-                'opacity': 1
-            }, {
-                'duration': 850,
-                'queue': false,
-                'complete': function() {
-                    if (tipsy.enabled) {
-                        tipsy.hide();
-                        tipsy.disable();
-                    }
+            _.delay(function() {
+                if (tipsy.enabled) {
+                    tipsy.hide();
+                    tipsy.disable();
                 }
-            });
+            }, 850);
             // this.fetch_story_locations_in_feed_view({'reset_timer': true});
         }, this), _.bind(function(data) {
             var message = data && data.message || "Sorry, this story could not be shared. Probably a bug.";
