@@ -6,7 +6,7 @@ NEWSBLUR.Models.SocialSubscription = Backbone.Model.extend({
         }
         
         _.bindAll(this, 'on_change', 'on_remove');
-        this.bind('change', this.on_change);
+        // this.bind('change', this.on_change);
         this.bind('remove', this.on_remove);
         this.views = [];
     },

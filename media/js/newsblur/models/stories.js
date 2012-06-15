@@ -92,11 +92,11 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         this.read_story_delay = _.delay(_.bind(function() {
             if (delay || this.last_read_story_id == story.id || delay == 0) {
                 var mark_read_fn = NEWSBLUR.assets.mark_story_as_read;
-                var feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
+                var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
                 if (feed.is_social()) {
                     mark_read_fn = NEWSBLUR.assets.mark_social_story_as_read;
                 }
-                mark_read_fn.call(NEWSBLUR.assets, story.id, story.get('story_feed_id'), _.bind(function(read) {
+                mark_read_fn.call(NEWSBLUR.assets, story, feed, _.bind(function(read) {
                     this.update_read_count(story, {previously_read: read});
                 }, this));
                 story.set('read_status', 1);
@@ -119,17 +119,24 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
 
         var story_unread_counter  = NEWSBLUR.app.story_unread_counter;
         var unread_view           = NEWSBLUR.reader.get_unread_view_name();
-        var feed                  = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
+        var active_feed           = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
+        var story_feed            = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
         
         if (story.score() > 0) {
-            var count = Math.max(feed.get('ps') + (options.unread?1:-1), 0);
-            feed.set('ps', count, {instant: true});
+            var active_count = Math.max(active_feed.get('ps') + (options.unread?1:-1), 0);
+            var story_count = Math.max(story_feed.get('ps') + (options.unread?1:-1), 0);
+            active_feed.set('ps', active_count, {instant: true});
+            story_feed.set('ps', story_count, {instant: true});
         } else if (story.score() == 0) {
-            var count = Math.max(feed.get('nt') + (options.unread?1:-1), 0);
-            feed.set('nt', count, {instant: true});
+            var active_count = Math.max(active_feed.get('nt') + (options.unread?1:-1), 0);
+            var story_count = Math.max(story_feed.get('nt') + (options.unread?1:-1), 0);
+            active_feed.set('nt', active_count, {instant: true});
+            story_feed.set('nt', story_count, {instant: true});
         } else if (story.score() < 0) {
-            var count = Math.max(feed.get('ng') + (options.unread?1:-1), 0);
-            feed.set('ng', count, {instant: true});
+            var active_count = Math.max(active_feed.get('ng') + (options.unread?1:-1), 0);
+            var story_count = Math.max(story_feed.get('ng') + (options.unread?1:-1), 0);
+            active_feed.set('ng', active_count, {instant: true});
+            story_feed.set('ng', story_count, {instant: true});
         }
         
         if (story_unread_counter) {

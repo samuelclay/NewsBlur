@@ -106,22 +106,21 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
     },
     
-    mark_story_as_read: function(story_id, feed_id, callback) {
+    mark_story_as_read: function(story, feed, callback) {
         var self = this;
-        var story = this.get_story(story_id);
         var read = story.get('read_status');
         
         if (!story.get('read_status')) {
             story.set('read_status', 1);
             
             if (NEWSBLUR.Globals.is_authenticated) {
-                if (!(feed_id in this.queued_read_stories)) { this.queued_read_stories[feed_id] = []; }
-                this.queued_read_stories[feed_id].push(story_id);
-                // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story_id]);
+                if (!(feed.id in this.queued_read_stories)) { this.queued_read_stories[feed.id] = []; }
+                this.queued_read_stories[feed.id].push(story.id);
+                // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story.id]);
             
                 this.make_request('/reader/mark_story_as_read', {
-                    story_id: this.queued_read_stories[feed_id],
-                    feed_id: feed_id
+                    story_id: this.queued_read_stories[feed.id],
+                    feed_id: feed.id
                 }, null, null, {
                     'ajax_group': $.browser.msie ? 'rapid' : 'queue_clear',
                     'beforeSend': function() {
@@ -135,11 +134,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         $.isFunction(callback) && callback(read);
     },
     
-    mark_social_story_as_read: function(story_id, social_feed_id, callback) {
+    mark_social_story_as_read: function(story, social_feed, callback) {
         var self = this;
-        var story = this.get_story(story_id);
         var feed_id = story.get('story_feed_id');
-        var social_user_id = this.social_feeds.get(social_feed_id).get('user_id');
+        var social_user_id = social_feed.get('user_id');
         var read = story.get('read_status');
 
         if (!story.get('read_status')) {
@@ -152,8 +150,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 if (!(feed_id in this.queued_read_stories[social_user_id])) {
                     this.queued_read_stories[social_user_id][feed_id] = [];
                 }
-                this.queued_read_stories[social_user_id][feed_id].push(story_id);
-                // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story_id]);
+                this.queued_read_stories[social_user_id][feed_id].push(story.id);
+                // NEWSBLUR.log(['Marking Read', this.queued_read_stories, story.id]);
             
                 this.make_request('/reader/mark_social_stories_as_read', {
                     users_feeds_stories: $.toJSON(this.queued_read_stories)
