@@ -465,7 +465,7 @@
         show_next_unread_story: function() {
             var unread_count = this.get_unread_count(true);
             
-            // NEWSBLUR.log(['show_next_unread_story', unread_count, $current_story]);
+            NEWSBLUR.log(['show_next_unread_story', unread_count]);
             
             if (unread_count) {
                 var next_story = NEWSBLUR.assets.stories.get_next_unread_story();
@@ -3255,19 +3255,11 @@
             var total = 0;
             var $folder;
             feed_id = feed_id || this.active_feed;
+            var feed = this.model.get_feed(feed_id);
             
             if (feed_id == 'starred') {
                 // Umm, no. Not yet.
-            } else if (this.flags['river_view']) {
-                if (feed_id == 'river:') {
-                    $folder = this.$s.$feed_list;
-                } else {
-                    $folder = $('li.folder.NB-selected');
-                }
-                var counts = this.list_feeds_with_unreads_in_folder($folder, true, visible_only);
-                return _.reduce(counts, function(m, c) { return m + c; }, 0);
-            } else {
-                var feed = this.model.get_feed(feed_id);
+            } else if (feed) {
                 if (!visible_only) {
                     total = feed.get('ng') + feed.get('nt') + feed.get('ps');
                 } else {
@@ -3281,6 +3273,14 @@
                     }
                 }
                 return total;
+            } else if (this.flags['river_view']) {
+                if (feed_id == 'river:') {
+                    $folder = this.$s.$feed_list;
+                } else {
+                    $folder = $('li.folder.NB-selected');
+                }
+                var counts = this.list_feeds_with_unreads_in_folder($folder, true, visible_only);
+                return _.reduce(counts, function(m, c) { return m + c; }, 0);
             }
         },
         

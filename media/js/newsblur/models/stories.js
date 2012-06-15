@@ -93,7 +93,10 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
             if (delay || this.last_read_story_id == story.id || delay == 0) {
                 var mark_read_fn = NEWSBLUR.assets.mark_story_as_read;
                 var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
-                if (feed.is_social()) {
+                if (!feed) {
+                    feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
+                }
+                if (feed && feed.is_social()) {
                     mark_read_fn = NEWSBLUR.assets.mark_social_story_as_read;
                 }
                 mark_read_fn.call(NEWSBLUR.assets, story, feed, _.bind(function(read) {
@@ -122,6 +125,10 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         var active_feed           = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
         var story_feed            = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
         
+        if (!active_feed) {
+            // River of News does not have an active feed.
+            active_feed = story_feed;
+        }
         if (story.score() > 0) {
             var active_count = Math.max(active_feed.get('ps') + (options.unread?1:-1), 0);
             var story_count = Math.max(story_feed.get('ps') + (options.unread?1:-1), 0);
@@ -239,6 +246,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     get_next_unread_story: function(options) {
         options = options || {};
         var visible_stories = this.visible_and_unread(options.score, true);
+        console.log(["visible and unread", visible_stories, this, options.score]);
         if (!visible_stories.length) return;
         
         if (!this.active_story) {
