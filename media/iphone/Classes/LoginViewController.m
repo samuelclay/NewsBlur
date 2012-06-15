@@ -289,7 +289,8 @@
 
         [self.errorLabel setHidden:NO];
     } else {
-        [appDelegate reloadFeedsView:YES];
+        [appDelegate showFirstTimeUser];
+        //[appDelegate reloadFeedsView:YES];
     }
     
     [results release];    

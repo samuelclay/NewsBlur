@@ -79,6 +79,7 @@
 		433D24851582EEC800AE9E72 /* NewsBlurViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */; };
 		433D24861582EECA00AE9E72 /* OriginalStoryViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */; };
 		433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */; };
+		4362C9F5158BA0A600A044B0 /* logo_512.png in Resources */ = {isa = PBXBuildFile; fileRef = 4362C9F4158BA0A600A044B0 /* logo_512.png */; };
 		43801387158A4E22006C7E37 /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 43801386158A4E21006C7E37 /* style.css */; };
 		43B8F022156603180008733D /* AddSiteAutocompleteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */; };
 		43B8F023156603180008733D /* AddSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F019156603170008733D /* AddSiteViewController.xib */; };
@@ -268,6 +269,7 @@
 		433323CA158968ED0025064D /* FirstTimeUserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstTimeUserViewController.h; sourceTree = "<group>"; };
 		433323CB158968ED0025064D /* FirstTimeUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstTimeUserViewController.m; sourceTree = "<group>"; };
 		433323CC158968ED0025064D /* FirstTimeUserViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FirstTimeUserViewController.xib; path = Classes/FirstTimeUserViewController.xib; sourceTree = "<group>"; };
+		4362C9F4158BA0A600A044B0 /* logo_512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_512.png; sourceTree = "<group>"; };
 		43801386158A4E21006C7E37 /* style.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = style.css; sourceTree = "<group>"; };
 		43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteAutocompleteCell.xib; sourceTree = "<group>"; };
 		43B8F019156603170008733D /* AddSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteViewController.xib; sourceTree = "<group>"; };
@@ -679,6 +681,7 @@
 				4307BE721565EDF8007A932A /* line_items_icon.png */,
 				4307BE731565EDF8007A932A /* logo_114.png */,
 				4307BE741565EDF8007A932A /* logo_57.png */,
+				4362C9F4158BA0A600A044B0 /* logo_512.png */,
 				4307BE751565EDF8007A932A /* logo_background.png */,
 				4307BE761565EDF8007A932A /* logo_newsblur_512.png */,
 				4307BE771565EDF8007A932A /* logo_newsblur_blur.png */,
@@ -1279,6 +1282,7 @@
 				433323C5158963BB0025064D /* orange_button@2x.png in Resources */,
 				433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */,
 				43801387158A4E22006C7E37 /* style.css in Resources */,
+				4362C9F5158BA0A600A044B0 /* logo_512.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

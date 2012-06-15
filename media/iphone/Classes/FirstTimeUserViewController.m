@@ -9,12 +9,19 @@
 #import "FirstTimeUserViewController.h"
 #import "NewsBlurAppDelegate.h"
 
+#define WELCOME_BUTTON_TITLE @"LET'S GET STARTED"
+#define ADD_SITES_BUTTON_TITLE @"SKIP THIS STEP"
+#define ADD_FRIENDS_BUTTON_TITLE @"SKIP THIS STEP"
+#define ADD_NEWSBLUR_BUTTON_TITLE @"FINISH"
+
 @implementation FirstTimeUserViewController
 
-@synthesize categoriesView;
-@synthesize browseCategoriesButton;
+@synthesize appDelegate;
 @synthesize googleReaderButton;
-@synthesize addSitesButton;
+@synthesize welcomeView;
+@synthesize addSitesView;
+@synthesize addFriendsView;
+@synthesize addNewsBlurView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -27,17 +34,18 @@
 
 - (void)viewDidLoad
 {
+    currentStep = 0;
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
 }
 
 - (void)viewDidUnload
 {
-    [self setBrowseCategoriesButton:nil];
-    [self setCategoriesView:nil];
-    [self setBrowseCategoriesButton:nil];
     [self setGoogleReaderButton:nil];
-    [self setAddSitesButton:nil];
+    [self setWelcomeView:nil];
+    [self setAddSitesView:nil];
+    [self setAddFriendsView:nil];
+    [self setAddNewsBlurView:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -48,58 +56,52 @@
 	return YES;
 }
 
-- (IBAction)tapGoogleReaderButton {
-}
 
-- (IBAction)tapAddSitesButton {
-    
-}
-
-- (IBAction)tapCategoriesButton:(id)sender {
-    UIButton *categoryButton = (UIButton *)sender;
-    if (categoryButton.currentTitle == @"Go Back") {
-        [UIView animateWithDuration:0.5 
-                         animations:^{
-                             [UIView animateWithDuration:0.5 animations:^{
-                                 categoriesView.alpha = 0.0;
-                             }]; 
-                         }
-                         completion:^(BOOL finished) {
-                             [UIView animateWithDuration:0.5 animations:^{
-                                 [browseCategoriesButton setTitle:@"Browse Categories" forState:UIControlStateNormal];
-                                 categoriesView.hidden = YES;
-                                 browseCategoriesButton.frame = CGRectMake(277, 407, browseCategoriesButton.frame.size.width, browseCategoriesButton.frame.size.height);
-                                 googleReaderButton.alpha = 1.0;
-                                 addSitesButton.alpha = 1.0;
-                             }];
-                             
-                         }
-         ];
-    } else {
-        [UIView animateWithDuration:0.5 
-                         animations:^{
-                             browseCategoriesButton.frame = CGRectMake(20, 201, browseCategoriesButton.frame.size.width, browseCategoriesButton.frame.size.height);
-                             googleReaderButton.alpha = 0.0;
-                             addSitesButton.alpha = 0.0;
-                         }
-                         completion:^(BOOL finished) {
-                             categoriesView.hidden = NO;
-                             [UIView animateWithDuration:0.5 animations:^{
-                                 [browseCategoriesButton setTitle:@"Go Back" forState:UIControlStateNormal];
-                                 categoriesView.alpha = 1.0;
-                             }];   
-                         }
-         ];
-    }
-
-}
 
 - (void)dealloc {
-    [categoriesView release];
-    [browseCategoriesButton release];
     [googleReaderButton release];
-    [addSitesButton release];
+    [welcomeView release];
+    [addSitesView release];
+    [addFriendsView release];
+    [addNewsBlurView release];
     [super dealloc];
 }
 
+- (IBAction)tapNextButton:(id)sender {
+    currentStep++;
+    UIBarButtonItem *nextButton = (UIBarButtonItem *)sender;
+    if (currentStep == 1) {
+        nextButton.title = ADD_SITES_BUTTON_TITLE;
+        self.addSitesView.frame = CGRectMake(768, 44, 768, 960);
+        [self.view addSubview:addSitesView];
+        [UIView animateWithDuration:0.35 
+                         animations:^{
+                            self.welcomeView.frame = CGRectMake(-768, 44, 768, 960);   
+                            self.addSitesView.frame = CGRectMake(0, 44, 768, 960); 
+                         }];
+        
+    } else if (currentStep == 2) {
+        nextButton.title = ADD_FRIENDS_BUTTON_TITLE;
+        self.addFriendsView.frame = CGRectMake(768, 44, 768, 960);
+        [self.view addSubview:addFriendsView];
+        [UIView animateWithDuration:0.35 
+                         animations:^{
+                             self.addSitesView.frame = CGRectMake(-768, 44, 768, 960);   
+                             self.addFriendsView.frame = CGRectMake(0, 44, 768, 960); 
+                         }];
+    } else if (currentStep == 3) {
+        nextButton.title = ADD_NEWSBLUR_BUTTON_TITLE;
+        self.addNewsBlurView.frame = CGRectMake(768, 44, 768, 960);
+        [self.view addSubview:addNewsBlurView];
+        [UIView animateWithDuration:0.35 
+                         animations:^{
+                             self.addFriendsView.frame = CGRectMake(-768, 44, 768, 960);   
+                             self.addNewsBlurView.frame = CGRectMake(0, 44, 768, 960); 
+                         }];
+    } else if (currentStep == 4) {
+        NSLog(@"Calling appDeletage reload feeds");
+        [self dismissModalViewControllerAnimated:YES];
+        [appDelegate reloadFeedsView:YES];
+    }
+}
 @end

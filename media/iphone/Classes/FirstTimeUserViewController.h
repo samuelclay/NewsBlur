@@ -7,18 +7,24 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 
 @class NewsBlurAppDelegate;
 
-@interface FirstTimeUserViewController : UIViewController
+@interface FirstTimeUserViewController : UIViewController {
+    NewsBlurAppDelegate *appDelegate;
+    
+    int currentStep;
+}
 
-- (IBAction)tapGoogleReaderButton;
-- (IBAction)tapAddSitesButton;
-- (IBAction)tapCategoriesButton:(id)sender;
-
-@property (retain, nonatomic) IBOutlet UIView *categoriesView;
-@property (retain, nonatomic) IBOutlet UIButton *browseCategoriesButton;
+@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (retain, nonatomic) IBOutlet UIButton *googleReaderButton;
-@property (retain, nonatomic) IBOutlet UIButton *addSitesButton;
+@property (retain, nonatomic) IBOutlet UIView *welcomeView;
+@property (retain, nonatomic) IBOutlet UIView *addSitesView;
+@property (retain, nonatomic) IBOutlet UIView *addFriendsView;
+@property (retain, nonatomic) IBOutlet UIView *addNewsBlurView;
+
+- (IBAction)tapNextButton:(id)sender;
+- (IBAction)tapGoogleReaderButton;
 
 @end

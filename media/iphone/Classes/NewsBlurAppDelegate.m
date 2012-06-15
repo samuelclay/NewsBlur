@@ -88,10 +88,9 @@
     }
     
     [window makeKeyAndVisible];
-    
-    //[feedsViewController fetchFeedList:YES];
+    [feedsViewController fetchFeedList:YES];
+    // this is stubbed in to develop the first time user experience
     [self showFirstTimeUser];
-
 	return YES;
 }
 
@@ -156,13 +155,13 @@
 }
 
 - (void)showFirstTimeUser {
+    [loginViewController dismissModalViewControllerAnimated:YES];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
         [self.splitStoryController presentModalViewController:firstTimeUserViewController animated:YES];
     } else {
         [self.navigationController presentModalViewController:loginViewController animated:YES];
     }
-    
 }
 
 - (void)showAdd {
