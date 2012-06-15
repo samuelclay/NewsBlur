@@ -47,7 +47,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   $.make('div', { className: 'NB-feedchooser-info-counts'}),
                   $.make('div', { className: 'NB-feedchooser-info-sort'}, 'Auto-Selected By Popularity')
               ]),
-              NEWSBLUR.app.feed_list.make_feeds(),
+              this.make_feeds(),
               $.make('form', { className: 'NB-feedchooser-form' }, [
                   $.make('div', { className: 'NB-modal-submit' }, [
                       // $.make('div', { className: 'NB-modal-submit-or' }, 'or'),
@@ -69,33 +69,34 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
                 $.make('li', { className: 'NB-1' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Sites are updated up to 10x more often.'
+                  'Unlimited number of sites'
                 ]),
                 $.make('li', { className: 'NB-2' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Unlimited number of sites.'
+                  'Some sites are updated up to 10x more often'
                 ]),
                 $.make('li', { className: 'NB-3' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'River of News (reading by folder).'
+                  'River of News (reading by folder)'
                 ]),
                 $.make('li', { className: 'NB-4' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Access to future features like searching.'
+                  'First access to future features'
                 ]),
                 $.make('li', { className: 'NB-5' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You feed my poor, hungry dog for 6 days.',
+                  'You feed my poor, hungry dog for ',
+                  $.make('span', { className: 'NB-feedchooser-hungry-dog' }, '6 days'),
                   $.make('img', { className: 'NB-feedchooser-premium-poor-hungry-dog', src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/shiloh.jpg' })
                 ]),
                 $.make('li', { className: 'NB-6' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'You are supporting a solo indie developer.'
+                  'You are directly supporting a young startup'
                 ]),
                 $.make('li', { className: 'NB-7' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Choose how much you would like to pay.',
-                  $.make('div', { style: 'color: #490567' }, 'The only difference is happiness.')
+                  'Choose how much you would like to pay',
+                  $.make('div', { style: 'color: #490567' }, 'The only difference is happiness')
                 ])
               ]),
               $.make('div', { className: 'NB-modal-submit NB-modal-submit-paypal' }, [
@@ -166,20 +167,19 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     
     make_feeds: function() {
         var feeds = this.model.feeds;
-        this.feed_count = _.size(feeds);
+        this.feed_count = feeds.size();
         
-        var $feeds = $('#feed_list').clone(true).attr({
-            'id': 'NB-feedchooser-feeds',
-            'class': 'NB-feedlist NB-feedchooser unread_view_positive',
-            'style': ''
-        });
+        var $feeds = new NEWSBLUR.Views.FeedList({
+            feed_chooser: true
+        }).make_feeds().$el;
+        
         if ($feeds.data('sortable')) $feeds.data('sortable').disable();
         
         // Expand collapsed folders
-        $('.folder', $feeds).css({
+        $('.NB-folder-collapsed', $feeds).css({
             'display': 'block',
             'opacity': 1
-        });
+        }).removeClass('NB-folder-collapsed');
         
         // Pretend unfetched feeds are fine
         $('.NB-feed-unfetched', $feeds).removeClass('NB-feed-unfetched');
@@ -189,7 +189,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         
         return $feeds;
     },
-    
+
     resize_modal: function(previous_height) {
         var height = this.$modal.height() + 16;
         var parent_height = this.$modal.parent().height();
@@ -262,7 +262,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var $feeds = {};
         
         $('.feed', $feed_list).each(function() {
-            var feed_id = parseInt($(this).attr('data-id'), 10);
+            var feed_id = parseInt($(this).data('id'), 10);
             if (!(feed_id in $feeds)) {
                 $feeds[feed_id] = $([]);
             }
@@ -308,7 +308,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         var $feeds = $('.feed', this.$modal);
         var feeds = this.model.get_feeds();
         
-        if (!_.keys(feeds).length) {
+        if (!feeds.size()) {
             _.defer(_.bind(function() {
                 var $info = $('.NB-feedchooser-info', this.$modal);
                 $('.NB-feedchooser-info-counts', $info).hide();
@@ -322,10 +322,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         
         var active_feeds = feeds.any(function(feed) { return feed.get('active'); });
         if (!active_feeds) {
-            // Get feed subscribers
+            // Get feed subscribers bottom cut-off
             var min_subscribers = _.last(
               _.first(
-                _.pluck(_.select(this.model.get_feeds(), function(f) { return !f.has_exception; }), 'subs').sort(function(a,b) { 
+                _.map(feeds.select(function(f) { return !f.has_exception; }), function(f) { return f.get('subs'); }).sort(function(a,b) { 
                   return b-a; 
                 }), 
                 this.MAX_FEEDS
@@ -334,11 +334,11 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         
             // Decline everything
             var approve_feeds = [];
-            _.each(feeds, function(feed, feed_id) {
-                self.add_feed_to_decline(parseInt(feed_id, 10));
+            feeds.each(function(feed) {
+                self.add_feed_to_decline(parseInt(feed.id, 10));
             
                 if (feed.get('subs') >= min_subscribers) {
-                    approve_feeds.push(parseInt(feed_id, 10));
+                    approve_feeds.push(parseInt(feed.id, 10));
                 }
             });
         
@@ -358,15 +358,15 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             });
         } else {
             // Get active feeds
-            var active_feeds = _.pluck(_.select(feeds, function(feed) {
+            var active_feeds = feeds.chain().select(function(feed) {
                 return feed.get('active');
-            }), 'id');
+            }).pluck('id');
             this.approve_list = active_feeds;
             
             // Approve or decline
             var feeds = [];
             $feeds.each(function() {
-                var feed_id = parseInt($(this).attr('data-id'), 10);
+                var feed_id = parseInt($(this).data('id'), 10);
                 
                 if (_.contains(active_feeds, feed_id)) {
                     self.add_feed_to_approve(feed_id);
@@ -388,7 +388,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         this.model.save_feed_chooser(approve_list, function() {
             self.flags['has_saved'] = true;
             NEWSBLUR.reader.hide_feed_chooser_button();
-            NEWSBLUR.app.feed_list.fetch();
+            NEWSBLUR.assets.load_feeds();
             $.modal.close();
         });
     },
@@ -418,6 +418,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     choose_dollar_amount: function(plan) {
         var $value = $('.NB-feedchooser-dollar-value', this.$modal);
         var $input = $('input[name=a3]');
+        var $days = $('.NB-feedchooser-hungry-dog', this.$modal);
         
         this.plan = plan;
 
@@ -425,10 +426,13 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         $value.filter('.NB-'+plan).addClass('NB-selected');
         if (plan == 1) {
             $input.val(12);
+            $days.text('6 days');
         } else if (plan == 2) {
             $input.val(24);
+            $days.text('12 days');
         } else if (plan == 3) {
             $input.val(36);
+            $days.text('18 days');
         }
     },
     

@@ -421,7 +421,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     finish_import_from_google_reader: function() {
         var $loading = $('.NB-intro-imports-progress .NB-loading', this.$modal);
         
-        NEWSBLUR.app.feed_list.fetch(_.bind(function() {
+        NEWSBLUR.assets.load_feeds(_.bind(function() {
             $loading.removeClass('NB-active');
             this.advance_import_carousel(2);
         }, this));
@@ -451,7 +451,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             url: NEWSBLUR.URLs['opml-upload'],
             type: 'POST',
             success: function (data, status) {
-                NEWSBLUR.app.feed_list.fetch(function() {
+                NEWSBLUR.assets.load_feeds(function() {
                     $loading.removeClass('NB-active');
                     self.advance_import_carousel(2);
                 });
@@ -512,18 +512,18 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $button.addClass('NB-active');
             if (feed == 'blog') {
                 NEWSBLUR.assets.save_add_url(blog_url, "", function() {
-                    NEWSBLUR.app.feed_list.fetch();
+                    NEWSBLUR.assets.load_feeds();
                 }, {auto_active: false});
             } else if (feed == 'popular') {
                 NEWSBLUR.assets.follow_user(popular_username, function() {
-                    NEWSBLUR.reader.make_social_feeds();
+                    NEWSBLUR.app.feed_list.make_social_feeds();
                 });
             }
         } else {
             $button.removeClass('NB-active');
             if (feed == 'blog') {
                 NEWSBLUR.assets.delete_feed_by_url(blog_url, "", function() {
-                    NEWSBLUR.app.feed_list.fetch();
+                    NEWSBLUR.assets.load_feeds();
                 });
             } else if (feed == 'popular') {
                 NEWSBLUR.assets.unfollow_user(popular_username, function() {

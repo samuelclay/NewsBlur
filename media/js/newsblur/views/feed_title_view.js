@@ -15,8 +15,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     initialize: function() {
         _.bindAll(this, 'render', 'delete_feed');
-        this.model.bind('change', this.changed, this);
-        this.model.bind('change:updated', this.render_updated_time, this);
+        if (!this.options.feed_chooser) {
+            this.model.bind('change', this.changed, this);
+            this.model.bind('change:updated', this.render_updated_time, this);
+        }
         
         if (this.model.is_social() && !this.model.get('feed_title')) {
             var profile = NEWSBLUR.assets.user_profiles.get(this.model.get('user_id')) || {};
@@ -214,6 +216,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     // ==========
     
     open: function(e) {
+        if (this.options.feed_chooser) return;
         if (this.options.type != 'feed') return;
         
         if (this.model.get('has_exception') && this.model.get('exception_type') == 'feed') {
@@ -226,6 +229,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     show_manage_menu: function(e) {
+        if (this.options.feed_chooser) return;
         e.preventDefault();
         e.stopPropagation();
         // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);

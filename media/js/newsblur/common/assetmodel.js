@@ -262,9 +262,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.user_profiles.add(profiles);
     },
     
-    load_feeds: function(error_callback) {
+    load_feeds: function(callback, error_callback) {
         var self = this;
-        
+
         var pre_callback = function(feeds, subscriptions) {
             self.flags['favicons_fetching'] = self.feeds.any(function(feed) { return feed.get('favicons_fetching'); });
 
@@ -284,6 +284,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.flags['has_chosen_feeds'] = self.feeds.has_chosen_feeds();
             
             self.feeds.trigger('reset');
+            
+            callback && callback();
         };
         
         this.feeds.fetch({
