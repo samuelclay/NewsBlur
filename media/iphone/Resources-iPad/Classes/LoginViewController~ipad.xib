@@ -578,7 +578,7 @@
 					<object class="IBUIButton" id="972698797">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{134, 80}, {250, 50}}</string>
+						<string key="NSFrame">{{384, 80}, {250, 50}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="317891323"/>
@@ -589,8 +589,8 @@
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<double key="IBUIContentEdgeInsets.top">0.0</double>
 						<double key="IBUIContentEdgeInsets.bottom">0.0</double>
-						<double key="IBUIContentEdgeInsets.left">50</double>
-						<double key="IBUIContentEdgeInsets.right">0.0</double>
+						<double key="IBUIContentEdgeInsets.left">0.0</double>
+						<double key="IBUIContentEdgeInsets.right">50</double>
 						<double key="IBUITitleEdgeInsets.top">0.0</double>
 						<double key="IBUITitleEdgeInsets.bottom">0.0</double>
 						<double key="IBUITitleEdgeInsets.left">16</double>
@@ -617,7 +617,7 @@
 					<object class="IBUIButton" id="317891323">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{384, 80}, {250, 50}}</string>
+						<string key="NSFrame">{{134, 80}, {250, 50}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="567251921"/>
@@ -628,8 +628,8 @@
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<double key="IBUIContentEdgeInsets.top">0.0</double>
 						<double key="IBUIContentEdgeInsets.bottom">0.0</double>
-						<double key="IBUIContentEdgeInsets.left">0.0</double>
-						<double key="IBUIContentEdgeInsets.right">50</double>
+						<double key="IBUIContentEdgeInsets.left">50</double>
+						<double key="IBUIContentEdgeInsets.right">0.0</double>
 						<double key="IBUITitleEdgeInsets.top">0.0</double>
 						<double key="IBUITitleEdgeInsets.bottom">0.0</double>
 						<double key="IBUITitleEdgeInsets.left">16</double>
@@ -742,10 +742,9 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 			</object>
 			<object class="IBUIImageView" id="187380005">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<string key="NSFrameSize">{240, 128}</string>
-				<reference key="NSSuperview"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<bool key="IBUIUserInteractionEnabled">NO</bool>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -988,9 +987,9 @@
 							<reference ref="886045981"/>
 							<reference ref="787395549"/>
 							<reference ref="266033325"/>
-							<reference ref="972698797"/>
-							<reference ref="317891323"/>
 							<reference ref="567251921"/>
+							<reference ref="317891323"/>
+							<reference ref="972698797"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -1633,9 +1632,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>activityIndicator</string>
 							<string>appDelegate</string>
-							<string>authenticatingLabel</string>
 							<string>emailInput</string>
 							<string>emailLabel</string>
 							<string>errorLabel</string>
@@ -1655,9 +1652,7 @@
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>UIActivityIndicatorView</string>
 							<string>NewsBlurAppDelegate</string>
-							<string>UILabel</string>
 							<string>UITextField</string>
 							<string>UILabel</string>
 							<string>UILabel</string>
@@ -1680,9 +1675,7 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>activityIndicator</string>
 							<string>appDelegate</string>
-							<string>authenticatingLabel</string>
 							<string>emailInput</string>
 							<string>emailLabel</string>
 							<string>errorLabel</string>
@@ -1703,16 +1696,8 @@
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
-								<string key="name">activityIndicator</string>
-								<string key="candidateClassName">UIActivityIndicatorView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">authenticatingLabel</string>
-								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">emailInput</string>

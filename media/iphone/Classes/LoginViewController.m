@@ -35,6 +35,7 @@
 @synthesize emailLabel;
 @synthesize passwordOptionalLabel;
 
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
@@ -57,17 +58,17 @@
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
-            self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
-            self.logInView.frame = CGRectMake(902, 180, 500, 300); 
-            self.selectSignUpButton.frame = CGRectMake(134, 80, 250, 50);
-            self.selectLoginButton.frame = CGRectMake(384, 80, 250, 50);
+            self.logInView.frame = CGRectMake(134, 180, 500, 300); 
+            self.signUpView.frame = CGRectMake(902, 180, 500, 300); 
+            self.selectLoginButton.frame = CGRectMake(134, 80, 250, 50);
+            self.selectSignUpButton.frame = CGRectMake(384, 80, 250, 50);
             self.errorLabel.frame = CGRectMake(244, 180, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
         } else {
-            self.signUpView.frame = CGRectMake(134 + 128, 80, 500, 300); 
-            self.logInView.frame = CGRectMake(902 + 128, 80, 500, 300); 
-            self.selectSignUpButton.frame = CGRectMake(134 + 128, 20, 250, 50);
-            self.selectLoginButton.frame = CGRectMake(384 + 128, 20, 250, 50);
-            self.errorLabel.frame = CGRectMake(244 + 128, 180 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
+            self.logInView.frame = CGRectMake(134 + LANDSCAPE_MARGIN, 80, 500, 300); 
+            self.signUpView.frame = CGRectMake(902 + LANDSCAPE_MARGIN, 80, 500, 300); 
+            self.selectLoginButton.frame = CGRectMake(134 + LANDSCAPE_MARGIN, 20, 250, 50);
+            self.selectSignUpButton.frame = CGRectMake(384 + LANDSCAPE_MARGIN, 20, 250, 50);
+            self.errorLabel.frame = CGRectMake(244 + LANDSCAPE_MARGIN, 180 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
         } 
     }
 
@@ -108,19 +109,35 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    int signUpX, loginX;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)){
-            self.signUpView.frame = CGRectMake(self.signUpView.frame.origin.x - 128, 180, 500, 300); 
-            self.logInView.frame = CGRectMake(self.logInView.frame.origin.x - 128, 180, 500, 300);
-            self.selectSignUpButton.frame = CGRectMake(134, 80, 250, 50);
-            self.selectLoginButton.frame = CGRectMake(384, 80, 250, 50);
+            if (isOnSignUpScreen) {
+                loginX = -634;
+                signUpX = 134;
+            } else {
+                loginX = 134;
+                signUpX = 902;
+            }
+            self.logInView.frame = CGRectMake(loginX, 180, 500, 300);
+            self.signUpView.frame = CGRectMake(signUpX, 180, 500, 300); 
+            self.selectLoginButton.frame = CGRectMake(134, 80, 250, 50);
+            self.selectSignUpButton.frame = CGRectMake(384, 80, 250, 50);
             self.errorLabel.frame = CGRectMake(244, 180, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
         }else{
-            self.signUpView.frame = CGRectMake(self.signUpView.frame.origin.x + 128, 80, 500, 300); 
-            self.logInView.frame = CGRectMake(self.logInView.frame.origin.x + 128, 80, 500, 300);
-            self.selectSignUpButton.frame = CGRectMake(134 + 128, 80 - 60, 250, 50);
-            self.selectLoginButton.frame = CGRectMake(384 + 128, 80 - 60, 250, 50);
-            self.errorLabel.frame = CGRectMake(244 + 128, 180 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
+            if (isOnSignUpScreen) {
+                loginX = -634 + LANDSCAPE_MARGIN;
+                signUpX = 134 + LANDSCAPE_MARGIN;
+            } else {
+                loginX = 134 + LANDSCAPE_MARGIN;
+                signUpX = 902 + LANDSCAPE_MARGIN;
+            }
+
+            self.logInView.frame = CGRectMake(loginX, 80, 500, 300);
+            self.signUpView.frame = CGRectMake(signUpX, 80, 500, 300); 
+            self.selectLoginButton.frame = CGRectMake(134 + LANDSCAPE_MARGIN, 80 - 60, 250, 50);
+            self.selectSignUpButton.frame = CGRectMake(384 + LANDSCAPE_MARGIN, 80 - 60, 250, 50);
+            self.errorLabel.frame = CGRectMake(244 + LANDSCAPE_MARGIN, 180 - 100, self.errorLabel.frame.size.width, self.errorLabel.frame.size.height);
         }
 
     }
@@ -288,32 +305,34 @@
 #pragma mark iPad: Sign Up/Login Toggle
 
 - (IBAction)selectSignUp {
+    isOnSignUpScreen = YES;
     [self.errorLabel setHidden:YES];
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [UIView animateWithDuration:0.35 animations:^{
+            self.logInView.frame = CGRectMake(-634, 180, 500, 300);    
             self.signUpView.frame = CGRectMake(134, 180, 500, 300); 
-            self.logInView.frame = CGRectMake(902, 180, 500, 300);         
         }]; 
     } else {
         [UIView animateWithDuration:0.35 animations:^{
-            self.signUpView.frame = CGRectMake(134 + 128, 80, 500, 300); 
-            self.logInView.frame = CGRectMake(902 + 128, 80, 500, 300);         
+            self.logInView.frame = CGRectMake(-634 + LANDSCAPE_MARGIN, 80, 500, 300); 
+            self.signUpView.frame = CGRectMake(134 + LANDSCAPE_MARGIN, 80, 500, 300); 
         }]; 
     }
     
 }
 
 - (IBAction)selectLogin {
+    isOnSignUpScreen = NO;
     [self.errorLabel setHidden:YES];
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [UIView animateWithDuration:0.35 animations:^{
-            self.signUpView.frame = CGRectMake(-634, 180, 500, 300); 
-            self.logInView.frame = CGRectMake(134, 180, 500, 300);         
+            self.logInView.frame = CGRectMake(134, 180, 500, 300);   
+            self.signUpView.frame = CGRectMake(902, 180, 500, 300); 
         }];
     } else {
         [UIView animateWithDuration:0.35 animations:^{
-            self.signUpView.frame = CGRectMake(-634 + 128, 80, 500, 300); 
-            self.logInView.frame = CGRectMake(134 + 128, 80, 500, 300);         
+            self.logInView.frame = CGRectMake(134 + LANDSCAPE_MARGIN, 80, 500, 300);    
+            self.signUpView.frame = CGRectMake(902 + LANDSCAPE_MARGIN, 80, 500, 300); 
         }];
     }
 }

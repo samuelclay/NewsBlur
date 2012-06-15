@@ -10,12 +10,15 @@
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 
+#define LANDSCAPE_MARGIN 128
+
 @class NewsBlurAppDelegate;
 
 @interface LoginViewController : UIViewController 
 <ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
+    BOOL isOnSignUpScreen;
     UITextField *usernameInput;
     UITextField *passwordInput;
     UITextField *emailInput;
