@@ -23,8 +23,11 @@
 @property (retain, nonatomic) IBOutlet UIView *addSitesView;
 @property (retain, nonatomic) IBOutlet UIView *addFriendsView;
 @property (retain, nonatomic) IBOutlet UIView *addNewsBlurView;
+@property (retain, nonatomic) IBOutlet UIToolbar *toolbar;
+@property (retain, nonatomic) IBOutlet UIButton *toolbarTitle;
 
 - (IBAction)tapNextButton:(id)sender;
 - (IBAction)tapGoogleReaderButton;
+- (IBAction)tapCategoryButton:(id)sender;
 
 @end

@@ -22,6 +22,8 @@
 @synthesize addSitesView;
 @synthesize addFriendsView;
 @synthesize addNewsBlurView;
+@synthesize toolbar;
+@synthesize toolbarTitle;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -34,6 +36,7 @@
 
 - (void)viewDidLoad
 {
+
     currentStep = 0;
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
@@ -46,6 +49,8 @@
     [self setAddSitesView:nil];
     [self setAddFriendsView:nil];
     [self setAddNewsBlurView:nil];
+    [self setToolbar:nil];
+    [self setToolbarTitle:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -64,6 +69,8 @@
     [addSitesView release];
     [addFriendsView release];
     [addNewsBlurView release];
+    [toolbar release];
+    [toolbarTitle release];
     [super dealloc];
 }
 
@@ -71,6 +78,7 @@
     currentStep++;
     UIBarButtonItem *nextButton = (UIBarButtonItem *)sender;
     if (currentStep == 1) {
+        [toolbarTitle setTitle:@"Step 2 of 4" forState:normal];
         nextButton.title = ADD_SITES_BUTTON_TITLE;
         self.addSitesView.frame = CGRectMake(768, 44, 768, 960);
         [self.view addSubview:addSitesView];
@@ -81,6 +89,8 @@
                          }];
         
     } else if (currentStep == 2) {
+        [toolbarTitle setTitle:@"Step 3 of 4" forState:normal];
+
         nextButton.title = ADD_FRIENDS_BUTTON_TITLE;
         self.addFriendsView.frame = CGRectMake(768, 44, 768, 960);
         [self.view addSubview:addFriendsView];
@@ -90,6 +100,7 @@
                              self.addFriendsView.frame = CGRectMake(0, 44, 768, 960); 
                          }];
     } else if (currentStep == 3) {
+        [toolbarTitle setTitle:@"Step 4 of 4" forState:normal];
         nextButton.title = ADD_NEWSBLUR_BUTTON_TITLE;
         self.addNewsBlurView.frame = CGRectMake(768, 44, 768, 960);
         [self.view addSubview:addNewsBlurView];
@@ -103,5 +114,15 @@
         [self dismissModalViewControllerAnimated:YES];
         [appDelegate reloadFeedsView:YES];
     }
+}
+- (IBAction)tapCategoryButton:(id)sender {
+    UIButton *categoryButton = (UIButton *)sender;
+    if (categoryButton.selected) {
+        categoryButton.selected = NO;
+    } else {
+        categoryButton.selected = YES;
+    }
+
+    
 }
 @end

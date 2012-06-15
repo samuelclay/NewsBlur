@@ -93,6 +93,9 @@
 		43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F021156603170008733D /* StoryDetailViewController.xib */; };
 		43C1E6401583DA3F006874F1 /* SplitStoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C1E63E1583DA3F006874F1 /* SplitStoryDetailViewController.m */; };
 		43C1E6411583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */; };
+		43C95C3F158BCDD70086C69B /* 19-circle-check.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C3D158BCDD70086C69B /* 19-circle-check.png */; };
+		43C95C40158BCDD70086C69B /* 19-circle-check@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C3E158BCDD70086C69B /* 19-circle-check@2x.png */; };
+		43C95C42158BD13D0086C69B /* category_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C41158BD13D0086C69B /* category_selected_background.png */; };
 		78095E34128EF30C00230C8E /* ASIAuthenticationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E25128EF30C00230C8E /* ASIAuthenticationDialog.m */; };
 		78095E35128EF30D00230C8E /* ASIDownloadCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E28128EF30C00230C8E /* ASIDownloadCache.m */; };
 		78095E36128EF30D00230C8E /* ASIFormDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E2A128EF30C00230C8E /* ASIFormDataRequest.m */; };
@@ -284,6 +287,9 @@
 		43C1E63D1583DA3F006874F1 /* SplitStoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplitStoryDetailViewController.h; path = ../SplitStoryDetailViewController.h; sourceTree = "<group>"; };
 		43C1E63E1583DA3F006874F1 /* SplitStoryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SplitStoryDetailViewController.m; path = ../SplitStoryDetailViewController.m; sourceTree = "<group>"; };
 		43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "SplitStoryDetailViewController~ipad.xib"; sourceTree = "<group>"; };
+		43C95C3D158BCDD70086C69B /* 19-circle-check.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "19-circle-check.png"; sourceTree = "<group>"; };
+		43C95C3E158BCDD70086C69B /* 19-circle-check@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "19-circle-check@2x.png"; sourceTree = "<group>"; };
+		43C95C41158BD13D0086C69B /* category_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = category_selected_background.png; sourceTree = "<group>"; };
 		43D0451F1565BC150085F811 /* MainWindow~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow~ipad.xib"; path = "Resources-iPad/MainWindow~ipad.xib"; sourceTree = "<group>"; };
 		43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "NewsBlurViewController~ipad.xib"; path = "Resources-iPad/NewsBlurViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "FeedDetailViewController~ipad.xib"; path = "Resources-iPad/Classes/FeedDetailViewController~ipad.xib"; sourceTree = "<group>"; };
@@ -701,6 +707,9 @@
 		433323B5158901A40025064D /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				43C95C41158BD13D0086C69B /* category_selected_background.png */,
+				43C95C3D158BCDD70086C69B /* 19-circle-check.png */,
+				43C95C3E158BCDD70086C69B /* 19-circle-check@2x.png */,
 				433323C015895E280025064D /* orange_button.png */,
 				433323C4158963BB0025064D /* orange_button@2x.png */,
 				433323BC1589022C0025064D /* user.png */,
@@ -1283,6 +1292,9 @@
 				433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */,
 				43801387158A4E22006C7E37 /* style.css in Resources */,
 				4362C9F5158BA0A600A044B0 /* logo_512.png in Resources */,
+				43C95C3F158BCDD70086C69B /* 19-circle-check.png in Resources */,
+				43C95C40158BCDD70086C69B /* 19-circle-check@2x.png in Resources */,
+				43C95C42158BD13D0086C69B /* category_selected_background.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
