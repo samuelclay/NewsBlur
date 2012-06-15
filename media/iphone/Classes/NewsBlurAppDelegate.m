@@ -89,8 +89,8 @@
     
     [window makeKeyAndVisible];
     
-    [feedsViewController fetchFeedList:YES];
-//    [self showFirstTimeUser];
+    //[feedsViewController fetchFeedList:YES];
+    [self showFirstTimeUser];
 
 	return YES;
 }
