@@ -8,9 +8,11 @@
 
 #import "FirstTimeUserViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "ASIHTTPRequest.h"
 
 #define WELCOME_BUTTON_TITLE @"LET'S GET STARTED"
-#define ADD_SITES_BUTTON_TITLE @"SKIP THIS STEP"
+#define ADD_SITES_SKIP_BUTTON_TITLE @"SKIP THIS STEP"
+#define ADD_SITES_BUTTON_TITLE @"NEXT"
 #define ADD_FRIENDS_BUTTON_TITLE @"SKIP THIS STEP"
 #define ADD_NEWSBLUR_BUTTON_TITLE @"FINISH"
 
@@ -24,6 +26,8 @@
 @synthesize addNewsBlurView;
 @synthesize toolbar;
 @synthesize toolbarTitle;
+@synthesize nextButton;
+@synthesize categories;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -37,7 +41,9 @@
 - (void)viewDidLoad
 {
 
+    categories = [[NSMutableArray alloc] init];
     currentStep = 0;
+    importedGoogle = 0;
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
 }
@@ -51,6 +57,7 @@
     [self setAddNewsBlurView:nil];
     [self setToolbar:nil];
     [self setToolbarTitle:nil];
+    [self setNextButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -61,9 +68,8 @@
 	return YES;
 }
 
-
-
 - (void)dealloc {
+    [categories release];
     [googleReaderButton release];
     [welcomeView release];
     [addSitesView release];
@@ -71,15 +77,15 @@
     [addNewsBlurView release];
     [toolbar release];
     [toolbarTitle release];
+    [nextButton release];
     [super dealloc];
 }
 
-- (IBAction)tapNextButton:(id)sender {
+- (IBAction)tapNextButton {
     currentStep++;
-    UIBarButtonItem *nextButton = (UIBarButtonItem *)sender;
     if (currentStep == 1) {
         [toolbarTitle setTitle:@"Step 2 of 4" forState:normal];
-        nextButton.title = ADD_SITES_BUTTON_TITLE;
+        nextButton.title = ADD_SITES_SKIP_BUTTON_TITLE;
         self.addSitesView.frame = CGRectMake(768, 44, 768, 960);
         [self.view addSubview:addSitesView];
         [UIView animateWithDuration:0.35 
@@ -89,6 +95,7 @@
                          }];
         
     } else if (currentStep == 2) {
+        [self addCategories];
         [toolbarTitle setTitle:@"Step 3 of 4" forState:normal];
 
         nextButton.title = ADD_FRIENDS_BUTTON_TITLE;
@@ -115,14 +122,58 @@
         [appDelegate reloadFeedsView:YES];
     }
 }
+
 - (IBAction)tapCategoryButton:(id)sender {
     UIButton *categoryButton = (UIButton *)sender;
+    NSString *category = categoryButton.currentTitle;
+
     if (categoryButton.selected) {
         categoryButton.selected = NO;
+        [categories removeObject:category];
     } else {
+        [categories addObject: category];
         categoryButton.selected = YES;
     }
+    
+    if (categories.count || importedGoogle) {
+        nextButton.title = ADD_SITES_BUTTON_TITLE;
+    } else {
+        nextButton.title = ADD_SITES_SKIP_BUTTON_TITLE;
+    }
+}
 
+#pragma mark -
+#pragma mark Add Categories
+
+- (void)addCategories {
+    
+    // TO DO: curate the list of sites
+    
+    for (id key in categories) {
+        // add folder 
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_folder",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:key forKey:@"folder"]; 
+        [request setDelegate:self];
+        [request setDidFinishSelector:@selector(finishAddFolder:)];
+        [request setDidFailSelector:@selector(requestFailed:)];
+        [request startAsynchronous];
+        
+    }
     
 }
+
+- (void)finishAddFolder:(ASIHTTPRequest *)request {
+    NSLog(@"Successfully added category.");
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
+}
+
+
 @end
