@@ -32,9 +32,12 @@
 - (IBAction)tapNextButton;
 - (IBAction)tapGoogleReaderButton;
 - (IBAction)tapCategoryButton:(id)sender;
+- (IBAction)tapNewsBlurButton:(id)sender;
 
 - (void)addCategories;
+- (void)addedGoogleReader;
 - (void)finishAddFolder:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)addSite:(NSString *)siteUrl;
 
 @end

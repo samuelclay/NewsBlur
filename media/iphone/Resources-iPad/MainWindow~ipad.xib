@@ -78,6 +78,17 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
+			<object class="IBUIViewController" id="571684433">
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
+					<int key="IBUIStatusBarStyle">2</int>
+				</object>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
 			<object class="IBUIViewController" id="331182478">
 				<string key="IBUINibName">StoryDetailViewController</string>
 				<reference key="IBUISimulatedStatusBarMetrics" ref="750341349"/>
@@ -132,9 +143,12 @@
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
 			<object class="IBUIWindow" id="117978783">
-				<nil key="NSNextResponder"/>
+				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<string key="NSFrameSize">{768, 1024}</string>
+				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">1</int>
 					<bytes key="NSRGB">MSAxIDEAA</bytes>
@@ -337,6 +351,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">googleReaderViewController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="571684433"/>
+					</object>
+					<int key="connectionID">156</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">appDelegate</string>
 						<reference key="source" ref="943309135"/>
 						<reference key="destination" ref="664661524"/>
@@ -406,6 +428,22 @@
 						<reference key="destination" ref="664661524"/>
 					</object>
 					<int key="connectionID">149</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">appDelegate</string>
+						<reference key="source" ref="560953651"/>
+						<reference key="destination" ref="664661524"/>
+					</object>
+					<int key="connectionID">158</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">appDelegate</string>
+						<reference key="source" ref="571684433"/>
+						<reference key="destination" ref="664661524"/>
+					</object>
+					<int key="connectionID">157</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -534,6 +572,11 @@
 						<reference key="object" ref="560953651"/>
 						<reference key="parent" ref="0"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">155</int>
+						<reference key="object" ref="571684433"/>
+						<reference key="parent" ref="0"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -568,6 +611,8 @@
 					<string>146.IBPluginDependency</string>
 					<string>152.CustomClassName</string>
 					<string>152.IBPluginDependency</string>
+					<string>155.CustomClassName</string>
+					<string>155.IBPluginDependency</string>
 					<string>3.CustomClassName</string>
 					<string>3.IBPluginDependency</string>
 					<string>39.IBLastUsedUIStatusBarStylesToTargetRuntimesMap</string>
@@ -631,6 +676,8 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>FirstTimeUserViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>GoogleReaderViewController</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>NewsBlurAppDelegate</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSMutableDictionary">
@@ -668,7 +715,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">154</int>
+			<int key="maxID">158</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -989,9 +1036,148 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">FirstTimeUserViewController</string>
 					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>tapCategoryButton:</string>
+							<string>tapGoogleReaderButton</string>
+							<string>tapNextButton</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>tapCategoryButton:</string>
+							<string>tapGoogleReaderButton</string>
+							<string>tapNextButton</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">tapCategoryButton:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">tapGoogleReaderButton</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">tapNextButton</string>
+								<string key="candidateClassName">id</string>
+							</object>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>addFriendsView</string>
+							<string>addNewsBlurView</string>
+							<string>addSitesView</string>
+							<string>appDelegate</string>
+							<string>googleReaderButton</string>
+							<string>nextButton</string>
+							<string>toolbar</string>
+							<string>toolbarTitle</string>
+							<string>welcomeView</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIView</string>
+							<string>UIView</string>
+							<string>UIView</string>
+							<string>NewsBlurAppDelegate</string>
+							<string>UIButton</string>
+							<string>UIBarButtonItem</string>
+							<string>UIToolbar</string>
+							<string>UIButton</string>
+							<string>UIView</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>addFriendsView</string>
+							<string>addNewsBlurView</string>
+							<string>addSitesView</string>
+							<string>appDelegate</string>
+							<string>googleReaderButton</string>
+							<string>nextButton</string>
+							<string>toolbar</string>
+							<string>toolbarTitle</string>
+							<string>welcomeView</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addFriendsView</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addNewsBlurView</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">addSitesView</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">appDelegate</string>
+								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">googleReaderButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">nextButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">toolbar</string>
+								<string key="candidateClassName">UIToolbar</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">toolbarTitle</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">welcomeView</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+						</object>
+					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/FirstTimeUserViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">GoogleReaderViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">appDelegate</string>
+						<string key="NS.object.0">NewsBlurAppDelegate</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">appDelegate</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">appDelegate</string>
+							<string key="candidateClassName">NewsBlurAppDelegate</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/GoogleReaderViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1349,32 +1535,34 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addSiteViewController</string>
-							<string>detailViewController</string>
 							<string>feedDetailViewController</string>
 							<string>feedsViewController</string>
 							<string>firstTimeUserViewController</string>
+							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
 							<string>splitStoryController</string>
 							<string>splitStoryDetailNavigationController</string>
+							<string>splitStoryDetailViewController</string>
 							<string>storyDetailViewController</string>
 							<string>window</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>AddSiteViewController</string>
-							<string>SplitStoryDetailViewController</string>
 							<string>FeedDetailViewController</string>
 							<string>NewsBlurViewController</string>
 							<string>FirstTimeUserViewController</string>
+							<string>GoogleReaderViewController</string>
 							<string>LoginViewController</string>
 							<string>MoveSiteViewController</string>
 							<string>UINavigationController</string>
 							<string>OriginalStoryViewController</string>
 							<string>UISplitViewController</string>
 							<string>UINavigationController</string>
+							<string>SplitStoryDetailViewController</string>
 							<string>StoryDetailViewController</string>
 							<string>UIWindow</string>
 						</object>
@@ -1384,16 +1572,17 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addSiteViewController</string>
-							<string>detailViewController</string>
 							<string>feedDetailViewController</string>
 							<string>feedsViewController</string>
 							<string>firstTimeUserViewController</string>
+							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
 							<string>splitStoryController</string>
 							<string>splitStoryDetailNavigationController</string>
+							<string>splitStoryDetailViewController</string>
 							<string>storyDetailViewController</string>
 							<string>window</string>
 						</object>
@@ -1402,10 +1591,6 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">addSiteViewController</string>
 								<string key="candidateClassName">AddSiteViewController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">detailViewController</string>
-								<string key="candidateClassName">SplitStoryDetailViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">feedDetailViewController</string>
@@ -1418,6 +1603,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">firstTimeUserViewController</string>
 								<string key="candidateClassName">FirstTimeUserViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">googleReaderViewController</string>
+								<string key="candidateClassName">GoogleReaderViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">loginViewController</string>
@@ -1442,6 +1631,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">splitStoryDetailNavigationController</string>
 								<string key="candidateClassName">UINavigationController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">splitStoryDetailViewController</string>
+								<string key="candidateClassName">SplitStoryDetailViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">storyDetailViewController</string>

@@ -11,6 +11,7 @@
 #import "FeedDetailViewController.h"
 #import "StoryDetailViewController.h"
 #import "FirstTimeUserViewController.h"
+#import "GoogleReaderViewController.h"
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
 #import "MoveSiteViewController.h"
@@ -27,6 +28,7 @@
 @synthesize splitStoryController;
 @synthesize navigationController;
 @synthesize splitStoryDetailNavigationController;
+@synthesize googleReaderViewController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
 @synthesize firstTimeUserViewController;

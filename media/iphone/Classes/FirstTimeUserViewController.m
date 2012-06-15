@@ -142,6 +142,25 @@
     }
 }
 
+- (IBAction)tapNewsBlurButton:(id)sender {
+    UIButton *button = (UIButton *)sender;
+    button.selected = YES;
+    button.userInteractionEnabled = NO;
+    [self addSite:@"http://blog.newsblur.com/"];
+}
+
+#pragma mark -
+#pragma mark Import Google Reader
+
+- (IBAction)tapGoogleReaderButton {
+    [self presentModalViewController:appDelegate.googleReaderViewController animated:YES];
+}
+
+- (void)addedGoogleReader {
+    self.googleReaderButton.selected = YES;
+    self.googleReaderButton.userInteractionEnabled = NO;
+}
+
 #pragma mark -
 #pragma mark Add Categories
 
@@ -160,7 +179,6 @@
         [request setDidFinishSelector:@selector(finishAddFolder:)];
         [request setDidFailSelector:@selector(requestFailed:)];
         [request startAsynchronous];
-        
     }
     
 }
@@ -175,5 +193,21 @@
     NSLog(@"Error: %@", error);
 }
 
+#pragma mark -
+#pragma mark Add Site
+
+- (void)addSite:(NSString *)siteUrl {
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_url",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+
+    [request setPostValue:siteUrl forKey:@"url"]; 
+        
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(finishAddFolder:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request startAsynchronous];
+}
 
 @end

@@ -12,12 +12,14 @@
 @class NewsBlurViewController;
 @class FeedDetailViewController;
 @class FirstTimeUserViewController;
+@class GoogleReaderViewController;
 @class StoryDetailViewController;
 @class LoginViewController;
 @class AddSiteViewController;
 @class MoveSiteViewController;
 @class OriginalStoryViewController;
 @class SplitStoryDetailViewController;
+
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate> {
     UIWindow *window;
@@ -28,12 +30,14 @@
     NewsBlurViewController *feedsViewController;
     FeedDetailViewController *feedDetailViewController;
     FirstTimeUserViewController *firstTimeUserViewController;
+    GoogleReaderViewController *googleReaderViewController;
     StoryDetailViewController *storyDetailViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
     OriginalStoryViewController *originalStoryViewController;
     SplitStoryDetailViewController *splitStoryDetailViewController;
+
     
     NSString * activeUsername;
     BOOL isRiverView;
@@ -66,6 +70,7 @@
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, retain) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
+@property (nonatomic, retain) IBOutlet GoogleReaderViewController *googleReaderViewController;
 @property (nonatomic, retain) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, retain) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic, retain) IBOutlet AddSiteViewController *addSiteViewController;
