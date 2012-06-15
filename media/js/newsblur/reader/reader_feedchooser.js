@@ -45,7 +45,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                         'You can always change these.'
                     ]),
                   $.make('div', { className: 'NB-feedchooser-info-counts'}),
-                  $.make('div', { className: 'NB-feedchooser-info-sort'}, 'Auto-Selected By Popularity')
+                  $.make('div', { className: 'NB-feedchooser-info-sort'}, 'Auto-Selected By Popularity'),
+                  $.make('div', { className: 'NB-feedchooser-info-reset NB-splash-link'}, 'Reset to popular sites')
               ]),
               this.make_feeds(),
               $.make('form', { className: 'NB-feedchooser-form' }, [
@@ -281,7 +282,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         this.$feeds = $feeds;
     },
     
-    update_counts: function() {
+    update_counts: function(initial_load) {
         var $count = $('.NB-feedchooser-info-counts');
         var approved = this.approve_list.length;
         var $submit = $('.NB-modal-submit-save', this.$modal);
@@ -290,7 +291,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         $count.text(approved + '/' + Inflector.commas(this.feed_count));
         $count.toggleClass('NB-full', approved == this.MAX_FEEDS);
         $count.toggleClass('NB-error', approved > this.MAX_FEEDS);
-        $('.NB-feedchooser-info-sort', this.$modal).fadeOut(500);
+
+        if (!initial_load) {
+            this.hide_autoselected_label();
+        }
         if (approved > this.MAX_FEEDS) {
           $submit.addClass('NB-disabled').addClass('NB-modal-submit-grey').attr('disabled', true).val('Too many sites! Deselect ' + (
             difference == 1 ?
@@ -302,17 +306,18 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         }
     },
     
-    initial_load_feeds: function() {
+    initial_load_feeds: function(reset) {
         var start = new Date();
         var self = this;
         var $feeds = $('.feed', this.$modal);
         var feeds = this.model.get_feeds();
-        
+
         if (!feeds.size()) {
             _.defer(_.bind(function() {
                 var $info = $('.NB-feedchooser-info', this.$modal);
                 $('.NB-feedchooser-info-counts', $info).hide();
                 $('.NB-feedchooser-info-sort', $info).hide();
+                $('.NB-feedchooser-info-reset', $info).hide();
                 $('#NB-feedchooser-feeds').hide();
                 $('.NB-modal-submit-save').hide();
                 $('.NB-modal-submit-add').show();
@@ -321,7 +326,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         }
         
         var active_feeds = feeds.any(function(feed) { return feed.get('active'); });
-        if (!active_feeds) {
+        if (!active_feeds || reset) {
             // Get feed subscribers bottom cut-off
             var min_subscribers = _.last(
               _.first(
@@ -356,11 +361,13 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                     self.add_feed_to_approve(feed_id);
                 }
             });
+            
+            this.show_autoselected_label();
         } else {
             // Get active feeds
-            var active_feeds = feeds.chain().select(function(feed) {
+            var active_feeds = _.pluck(feeds.select(function(feed) {
                 return feed.get('active');
-            }).pluck('id');
+            }), 'id');
             this.approve_list = active_feeds;
             
             // Approve or decline
@@ -374,8 +381,23 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                     self.add_feed_to_decline(feed_id);
                 }
             });
+            
+            _.defer(_.bind(function() { this.hide_autoselected_label(); }, this));
         }
-        _.defer(_.bind(function() { this.update_counts(); }, this));
+        _.defer(_.bind(function() { this.update_counts(true); }, this));
+    },
+    
+    show_autoselected_label: function() {
+        $('.NB-feedchooser-info-reset', this.$modal).fadeOut(500, _.bind(function() {
+            $('.NB-feedchooser-info-sort', this.$modal).fadeIn(500);
+        }, this));
+    },
+    
+    hide_autoselected_label: function() {
+        $('.NB-feedchooser-info-sort', this.$modal).fadeOut(500, _.bind(function() {
+            $('.NB-feedchooser-info-sort', this.$modal).hide();
+            $('.NB-feedchooser-info-reset', this.$modal).fadeIn(500);
+        }, this));
     },
     
     save: function() {
@@ -467,6 +489,11 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         $.targetIs(e, { tagSelector: '.NB-stripe-button' }, _.bind(function($t, $p) {
             e.preventDefault();
             this.open_stripe_form();
+        }, this));
+        
+        $.targetIs(e, { tagSelector: '.NB-feedchooser-info-reset' }, _.bind(function($t, $p) {
+            e.preventDefault();
+            this.initial_load_feeds(true);
         }, this));
         
         $.targetIs(e, { tagSelector: '.NB-feedchooser-dollar-value' }, _.bind(function($t, $p) {

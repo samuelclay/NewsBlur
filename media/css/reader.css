@@ -6243,6 +6243,16 @@ form.opml_import_form input {
     text-transform: uppercase;
     text-shadow:1px 1px 0 #F6F6F6;
 }
+.NB-modal-feedchooser .NB-feedchooser-info-reset {
+    font-size: 12px;
+    line-height: 16px;
+    margin: 12px 0 0;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow:1px 1px 0 #F6F6F6;
+    display: none;
+    cursor: pointer;
+}
 .NB-modal-feedchooser .NB-feedchooser-info-counts.NB-full {
 /*    color: #5090D0;*/
 }
