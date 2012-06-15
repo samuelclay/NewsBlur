@@ -1,9 +1,8 @@
 NEWSBLUR.ReaderIntro = function(options) {
     var defaults = {};
-    var intro_page = this.model.preference('intro_page');
+    var intro_page = NEWSBLUR.assets.preference('intro_page');
     
     _.bindAll(this, 'close', 'start_import_from_google_reader', 'post_connect');
-    this.model   = NEWSBLUR.assets;
     this.options = $.extend({
       'page_number': intro_page && _.isNumber(intro_page) && intro_page <= 4 ? intro_page : 1
     }, defaults, options);
@@ -168,8 +167,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     
     fetch_friends: function(callback) {
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
-        this.model.fetch_friends(_.bind(function(data) {
-            this.profile = this.model.user_profile;
+        NEWSBLUR.assets.fetch_friends(_.bind(function(data) {
+            this.profile = NEWSBLUR.assets.user_profile;
             this.services = data.services;
             this.autofollow = data.autofollow;
             this.make_find_friends_and_services();
@@ -240,7 +239,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     disconnect: function(service) {
         var $service = $('.NB-friends-service-'+service, this.$modal);
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
-        this.model.disconnect_social_service(service, _.bind(function(data) {
+        NEWSBLUR.assets.disconnect_social_service(service, _.bind(function(data) {
             this.services = data.services;
             this.make_find_friends_and_services();
             this.make_profile_section();
@@ -261,7 +260,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         } else {
             this.fetch_friends();
         }
-        this.model.preference('has_found_friends', true);
+        NEWSBLUR.assets.preference('has_found_friends', true);
         NEWSBLUR.reader.check_hide_getting_started();
     },
     
@@ -283,12 +282,12 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       }
       var page_count = $('.NB-page', this.$modal).length;
       this.page_number = page_number;
-      this.model.preference('intro_page', page_number);
+      NEWSBLUR.assets.preference('intro_page', page_number);
       
       if (page_number == page_count) {
         $('.NB-tutorial-next-page-text', this.$modal).text('All Done ');
       } else if (page_number > page_count) {
-          this.model.preference('has_setup_feeds', true);
+          NEWSBLUR.assets.preference('has_setup_feeds', true);
           NEWSBLUR.reader.check_hide_getting_started();
           this.close(function() {
               NEWSBLUR.reader.open_dialog_after_feeds_loaded();
@@ -327,7 +326,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var $carousel = $('.carousel', this.$modal);
         $carousel.carousel('pause');
         if (!_.isNumber(page)) { 
-            if (_.size(this.model.feeds) && !this.options.force_import) {
+            if (NEWSBLUR.assets.feeds.size() && !this.options.force_import) {
                 page = 2;
                 $('.NB-intro-imports-sites', this.$modal).addClass('active');
             } else {
@@ -346,7 +345,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     },
     
     count_feeds: function() {
-        var feed_count = _.size(this.model.feeds);
+        var feed_count = NEWSBLUR.assets.feeds.size();
         
         $(".NB-intro-imports-sites h4", this.$modal).text([
             'You are subscribed to ',
@@ -355,7 +354,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         ].join(""));
 
         if (feed_count) {
-            this.model.preference('has_setup_feeds', true);
+            NEWSBLUR.assets.preference('has_setup_feeds', true);
             NEWSBLUR.reader.check_hide_getting_started();
         }
     },
@@ -415,7 +414,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             NEWSBLUR.reader.flags.importing_from_google_reader = false;
             this.advance_import_carousel(1);
             $loading.addClass('NB-active');
-            this.model.start_import_from_google_reader($.rescope(this.finish_import_from_google_reader, this));
+            NEWSBLUR.assets.start_import_from_google_reader($.rescope(this.finish_import_from_google_reader, this));
         }
     },
     
@@ -491,14 +490,14 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         if ($input.is(':checked')) {
             $button.addClass('NB-active');
             if (this.services.twitter.twitter_uid) {
-                this.model.follow_twitter_account(username);
+                NEWSBLUR.assets.follow_twitter_account(username);
             } else {
                 window.open('http://twitter.com/'+username, '_blank');
             }
         } else {
             $button.removeClass('NB-active');
             if (this.services.twitter.twitter_uid) {
-                this.model.unfollow_twitter_account(username);
+                NEWSBLUR.assets.unfollow_twitter_account(username);
             }
         }
     },
@@ -512,22 +511,22 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         if ($input.is(':checked')) {
             $button.addClass('NB-active');
             if (feed == 'blog') {
-                this.model.save_add_url(blog_url, "", function() {
+                NEWSBLUR.assets.save_add_url(blog_url, "", function() {
                     NEWSBLUR.app.feed_list.fetch();
                 }, {auto_active: false});
             } else if (feed == 'popular') {
-                this.model.follow_user(popular_username, function() {
+                NEWSBLUR.assets.follow_user(popular_username, function() {
                     NEWSBLUR.reader.make_social_feeds();
                 });
             }
         } else {
             $button.removeClass('NB-active');
             if (feed == 'blog') {
-                this.model.delete_feed_by_url(blog_url, "", function() {
+                NEWSBLUR.assets.delete_feed_by_url(blog_url, "", function() {
                     NEWSBLUR.app.feed_list.fetch();
                 });
             } else if (feed == 'popular') {
-                this.model.unfollow_user(popular_username, function() {
+                NEWSBLUR.assets.unfollow_user(popular_username, function() {
                     NEWSBLUR.app.feed_list.make_social_feeds();
                 });
             }

@@ -30,8 +30,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         // Binding directly instead of using event delegation. Need for speed.
         this.$el.bind('mouseenter', this.mouseenter);
         this.$el.bind('mouseleave', this.mouseleave);
-
-        this.model.story_view = this;
+        
+        if (!this.options.feed_floater) {
+            this.model.story_view = this;
+        }
     },
     
     // =============
@@ -176,6 +178,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             var $comments = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).render().el;
             this.$('.NB-feed-story-share-container,.NB-feed-story-comments').replaceWith($comments);
         }
+    },
+    
+    destroy: function() {
+        this.model.unbind(null, null, this);
+        this.remove();
     },
     
     // ============

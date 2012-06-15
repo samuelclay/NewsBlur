@@ -949,7 +949,7 @@
             
             if (!feed || (temp && !options.try_feed)) {
                 // Setup tryfeed views first, then come back here.
-                options.feed = options.feed.attributes;
+                options.feed = options.feed && options.feed.attributes;
                 return this.load_feed_in_tryfeed_view(feed_id, options);
             }
 
@@ -998,7 +998,8 @@
                 this.setup_mousemove_on_views();
                 
                 if (!options.silent) {
-                    var slug = _.string.words(_.string.clean(feed.get('feed_title').replace(/[^a-z0-9\. ]/ig, ''))).join('-').toLowerCase();
+                    var feed_title = feed.get('feed_title') || '';
+                    var slug = _.string.words(_.string.clean(feed_title.replace(/[^a-z0-9\. ]/ig, ''))).join('-').toLowerCase();
                     var url = "site/" + feed.id + "/" + slug;
                     if (!_.string.include(window.location.pathname, url)) {
                         // console.log(["Navigating to url", url]);
@@ -3965,7 +3966,7 @@
                 feed_id      : feed_id,
                 feed_title   : options.feed && options.feed.feed_title,
                 temp         : true
-            }, options.feed.attributes);
+            }, options.feed && options.feed.attributes);
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
             this.reset_feed();

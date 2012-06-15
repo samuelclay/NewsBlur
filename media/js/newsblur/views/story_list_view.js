@@ -105,14 +105,20 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             var $story = story.story_view.$el;
             $header = $('.NB-feed-story-header-feed', $story);
             var $new_header = $header.clone();
-            
+            if (this.feed_title_floater) this.feed_title_floater.destroy();
+            this.feed_title_floater = new NEWSBLUR.Views.StoryDetailView({
+                feed_floater: true,
+                model: story, 
+                el: $new_header
+            });
+
             $feed_floater.html($new_header);
             this.cache.feed_title_floater_feed_id = story.get('story_feed_id');
             var feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
             $feed_floater.toggleClass('NB-inverse', feed.is_light());
             $feed_floater.width($header.outerWidth());
         } else if (!story) {
-            $feed_floater.empty();
+            if (this.feed_title_floater) this.feed_title_floater.destroy();
             this.cache.feed_title_floater_feed_id = null;
         }
           
