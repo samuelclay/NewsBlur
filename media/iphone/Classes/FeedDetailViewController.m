@@ -452,11 +452,11 @@
     cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"dislike.png"];
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"like.png"];
     } else if (score == 0) {
         cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_yellow.png"];
     } else if (score < 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"like.png"];
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"dislike.png"];
     }
     
     // River view
