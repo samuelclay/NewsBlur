@@ -167,7 +167,6 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
     if  (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        NSLog(@"in it");
         if(textField == usernameInput) {
             [passwordInput becomeFirstResponder];
         } else if (textField == passwordInput) {

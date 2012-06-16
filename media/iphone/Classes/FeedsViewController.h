@@ -14,7 +14,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface NewsBlurViewController : BaseViewController 
+@interface FeedsViewController : BaseViewController 
 		   <UITableViewDelegate, UITableViewDataSource, 
             UIAlertViewDelegate, PullToRefreshViewDelegate,
             ASIHTTPRequestDelegate, NSCacheDelegate> {

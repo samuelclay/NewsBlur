@@ -153,10 +153,10 @@
 #pragma mark Import Google Reader
 
 - (IBAction)tapGoogleReaderButton {
-    [self presentModalViewController:appDelegate.googleReaderViewController animated:YES];
+    [appDelegate showGoogleReaderAuthentication];
 }
 
-- (void)addedGoogleReader {
+- (void)selectGoogleReaderButton {
     self.googleReaderButton.selected = YES;
     self.googleReaderButton.userInteractionEnabled = NO;
 }

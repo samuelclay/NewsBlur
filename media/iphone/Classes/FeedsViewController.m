@@ -6,7 +6,7 @@
 //  Copyright NewsBlur 2010. All rights reserved.
 //
 
-#import "NewsBlurViewController.h"
+#import "FeedsViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "SplitStoryDetailViewController.h"
 #import "FeedTableCell.h"
@@ -19,7 +19,7 @@
 
 #define kTableViewRowHeight 40;
 
-@implementation NewsBlurViewController
+@implementation FeedsViewController
 
 @synthesize appDelegate;
 
@@ -366,7 +366,7 @@
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
             NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-            int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+            int maxScore = [FeedsViewController computeMaxScoreForFeed:feed];
             
             if (!self.viewShowingAllFeeds ||
                 (self.viewShowingAllFeeds && ![self.stillVisibleFeeds objectForKey:feedIdStr])) {
@@ -647,7 +647,7 @@
             NSNumber *feedId = [originalFolder objectAtIndex:f];
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
             NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-            int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+            int maxScore = [FeedsViewController computeMaxScoreForFeed:feed];
             
 //            if (s == 9) {
 //                NSLog(@"MaxScore: %d for %@ (%@/%@/%@). Visible: %@", maxScore, 
@@ -691,7 +691,7 @@
     
     for (id feedIdStr in [self.stillVisibleFeeds allKeys]) {
         NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-        int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+        int maxScore = [FeedsViewController computeMaxScoreForFeed:feed];
         if (previousLevel != newLevel && maxScore < newLevel) {
             [deleteIndexPaths addObject:[self.stillVisibleFeeds objectForKey:feedIdStr]];
             [self.stillVisibleFeeds removeObjectForKey:feedIdStr];
@@ -740,7 +740,7 @@
                 NSNumber *location = [NSNumber numberWithInt:f];
                 [feedLocations addObject:location];
             } else {
-                int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+                int maxScore = [FeedsViewController computeMaxScoreForFeed:feed];
 //                NSLog(@"Computing score for %@: %d in %d (markVisible: %d)", 
 //                        [feed objectForKey:@"feed_title"], maxScore, appDelegate.selectedIntelligence, markVisible);
                 if (maxScore >= appDelegate.selectedIntelligence) {

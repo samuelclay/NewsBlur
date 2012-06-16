@@ -56,15 +56,17 @@
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     NSString *URLString = [[request URL] absoluteString];
-    NSLog(@"IN IT!@!!!");
-    NSLog(@"%@", URLString);
+
     if ([URLString isEqualToString:@"http://www.newsblur.com/"]) {
          [self dismissModalViewControllerAnimated:YES];
-         [appDelegate.firstTimeUserViewController addedGoogleReader];
+         [appDelegate addedGoogleReader];
          return NO;
     }
 
     return YES;
 }
 
+- (IBAction)tapCancelButton:(id)sender {
+    [self dismissModalViewControllerAnimated:YES];
+}
 @end

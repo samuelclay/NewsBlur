@@ -12,7 +12,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
-		28D7ACF80DDB3853001CB0EB /* NewsBlurViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */; };
+		28D7ACF80DDB3853001CB0EB /* FeedsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* FeedsViewController.m */; };
 		4307BE8C1565EDF8007A932A /* add_button.png in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE521565EDF8007A932A /* add_button.png */; };
 		4307BE8E1565EDF8007A932A /* add_button@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE531565EDF8007A932A /* add_button@2x.png */; };
 		4307BE901565EDF8007A932A /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE541565EDF8007A932A /* arrow.png */; };
@@ -76,7 +76,7 @@
 		433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045241565BC150085F811 /* LoginViewController~ipad.xib */; };
 		433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D0451F1565BC150085F811 /* MainWindow~ipad.xib */; };
 		433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */; };
-		433D24851582EEC800AE9E72 /* NewsBlurViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */; };
+		433D24851582EEC800AE9E72 /* FeedsViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045201565BC150085F811 /* FeedsViewController~ipad.xib */; };
 		433D24861582EECA00AE9E72 /* OriginalStoryViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */; };
 		433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */; };
 		4362C9F5158BA0A600A044B0 /* logo_512.png in Resources */ = {isa = PBXBuildFile; fileRef = 4362C9F4158BA0A600A044B0 /* logo_512.png */; };
@@ -88,7 +88,7 @@
 		43B8F026156603180008733D /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01C156603170008733D /* LoginViewController.xib */; };
 		43B8F027156603180008733D /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01D156603170008733D /* MainWindow.xib */; };
 		43B8F028156603180008733D /* MoveSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01E156603170008733D /* MoveSiteViewController.xib */; };
-		43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01F156603170008733D /* NewsBlurViewController.xib */; };
+		43B8F029156603180008733D /* FeedsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01F156603170008733D /* FeedsViewController.xib */; };
 		43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F020156603170008733D /* OriginalStoryViewController.xib */; };
 		43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F021156603170008733D /* StoryDetailViewController.xib */; };
 		43C1E6401583DA3F006874F1 /* SplitStoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C1E63E1583DA3F006874F1 /* SplitStoryDetailViewController.m */; };
@@ -213,8 +213,8 @@
 		1D6058910D05DD3D006BFB54 /* NewsBlur.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewsBlur.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		28D7ACF60DDB3853001CB0EB /* NewsBlurViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsBlurViewController.h; sourceTree = "<group>"; };
-		28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = NewsBlurViewController.m; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 1; };
+		28D7ACF60DDB3853001CB0EB /* FeedsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; path = FeedsViewController.h; sourceTree = "<group>"; };
+		28D7ACF70DDB3853001CB0EB /* FeedsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = FeedsViewController.m; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 1; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsBlur_Prefix.pch; sourceTree = "<group>"; };
 		4307BE521565EDF8007A932A /* add_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add_button.png; sourceTree = "<group>"; };
@@ -284,7 +284,7 @@
 		43B8F01C156603170008733D /* LoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
 		43B8F01D156603170008733D /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		43B8F01E156603170008733D /* MoveSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MoveSiteViewController.xib; sourceTree = "<group>"; };
-		43B8F01F156603170008733D /* NewsBlurViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsBlurViewController.xib; sourceTree = "<group>"; };
+		43B8F01F156603170008733D /* FeedsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedsViewController.xib; sourceTree = "<group>"; };
 		43B8F020156603170008733D /* OriginalStoryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OriginalStoryViewController.xib; sourceTree = "<group>"; };
 		43B8F021156603170008733D /* StoryDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoryDetailViewController.xib; sourceTree = "<group>"; };
 		43C1E63D1583DA3F006874F1 /* SplitStoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplitStoryDetailViewController.h; path = ../SplitStoryDetailViewController.h; sourceTree = "<group>"; };
@@ -298,7 +298,7 @@
 		43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = GoogleReaderViewController.xib; path = Classes/GoogleReaderViewController.xib; sourceTree = "<group>"; };
 		43C95C4A158BF8810086C69B /* google_reader_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = google_reader_selected_background.png; sourceTree = "<group>"; };
 		43D0451F1565BC150085F811 /* MainWindow~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow~ipad.xib"; path = "Resources-iPad/MainWindow~ipad.xib"; sourceTree = "<group>"; };
-		43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "NewsBlurViewController~ipad.xib"; path = "Resources-iPad/NewsBlurViewController~ipad.xib"; sourceTree = "<group>"; };
+		43D045201565BC150085F811 /* FeedsViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "FeedsViewController~ipad.xib"; path = "Resources-iPad/FeedsViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "FeedDetailViewController~ipad.xib"; path = "Resources-iPad/Classes/FeedDetailViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "StoryDetailViewController~ipad.xib"; path = "Resources-iPad/Classes/StoryDetailViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045231565BC150085F811 /* FeedDetailTableCell~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "FeedDetailTableCell~ipad.xib"; path = "Resources-iPad/Classes/FeedDetailTableCell~ipad.xib"; sourceTree = "<group>"; };
@@ -566,8 +566,8 @@
 				784B50EB127E3F68008F90EA /* LoginViewController.m */,
 				FF2D8CE214893BBF00057B80 /* MoveSiteViewController.h */,
 				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
-				28D7ACF60DDB3853001CB0EB /* NewsBlurViewController.h */,
-				28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */,
+				28D7ACF60DDB3853001CB0EB /* FeedsViewController.h */,
+				28D7ACF70DDB3853001CB0EB /* FeedsViewController.m */,
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
 				43C1E63D1583DA3F006874F1 /* SplitStoryDetailViewController.h */,
@@ -742,7 +742,7 @@
 				43B8F01C156603170008733D /* LoginViewController.xib */,
 				43B8F01D156603170008733D /* MainWindow.xib */,
 				43B8F01E156603170008733D /* MoveSiteViewController.xib */,
-				43B8F01F156603170008733D /* NewsBlurViewController.xib */,
+				43B8F01F156603170008733D /* FeedsViewController.xib */,
 				43B8F020156603170008733D /* OriginalStoryViewController.xib */,
 				43B8F021156603170008733D /* StoryDetailViewController.xib */,
 			);
@@ -763,7 +763,7 @@
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
 				43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */,
-				43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */,
+				43D045201565BC150085F811 /* FeedsViewController~ipad.xib */,
 				43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
 				43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */,
@@ -1278,7 +1278,7 @@
 				43B8F026156603180008733D /* LoginViewController.xib in Resources */,
 				43B8F027156603180008733D /* MainWindow.xib in Resources */,
 				43B8F028156603180008733D /* MoveSiteViewController.xib in Resources */,
-				43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */,
+				43B8F029156603180008733D /* FeedsViewController.xib in Resources */,
 				43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */,
 				43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */,
 				433D247E1582EEB400AE9E72 /* AddSiteAutocompleteCell~ipad.xib in Resources */,
@@ -1288,7 +1288,7 @@
 				433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */,
 				433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */,
 				433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */,
-				433D24851582EEC800AE9E72 /* NewsBlurViewController~ipad.xib in Resources */,
+				433D24851582EEC800AE9E72 /* FeedsViewController~ipad.xib in Resources */,
 				433D24861582EECA00AE9E72 /* OriginalStoryViewController~ipad.xib in Resources */,
 				433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */,
 				43C1E6411583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib in Resources */,
@@ -1320,7 +1320,7 @@
 			files = (
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */,
-				28D7ACF80DDB3853001CB0EB /* NewsBlurViewController.m in Sources */,
+				28D7ACF80DDB3853001CB0EB /* FeedsViewController.m in Sources */,
 				78FC34F711CA94900055C312 /* NSObject+SBJSON.m in Sources */,
 				78FC34F811CA94900055C312 /* NSString+SBJSON.m in Sources */,
 				78FC34F911CA94900055C312 /* SBJSON.m in Sources */,

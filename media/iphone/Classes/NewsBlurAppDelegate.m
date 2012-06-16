@@ -7,7 +7,7 @@
 //
 
 #import "NewsBlurAppDelegate.h"
-#import "NewsBlurViewController.h"
+#import "FeedsViewController.h"
 #import "FeedDetailViewController.h"
 #import "StoryDetailViewController.h"
 #import "FirstTimeUserViewController.h"
@@ -163,6 +163,15 @@
     } else {
         [self.navigationController presentModalViewController:loginViewController animated:YES];
     }
+}
+
+- (void)showGoogleReaderAuthentication {
+    googleReaderViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [firstTimeUserViewController presentModalViewController:googleReaderViewController animated:YES];
+}
+
+- (void)addedGoogleReader {
+    [firstTimeUserViewController selectGoogleReaderButton];
 }
 
 - (void)showAdd {
