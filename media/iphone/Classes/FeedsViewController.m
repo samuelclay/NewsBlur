@@ -91,11 +91,11 @@
         }
     }
 
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"dislike.png"] 
                      forSegmentAtIndex:0];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] 
                      forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"like.png"] 
                      forSegmentAtIndex:2];
     [self.intelligenceControl addTarget:self
                                  action:@selector(selectIntelligence)

@@ -99,9 +99,9 @@
         [self.storyTitlesTable endUpdates];
     }
     [appDelegate setRecentlyReadStories:[NSMutableArray array]];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_red.png"] forSegmentAtIndex:0];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"dislike.png"] forSegmentAtIndex:0];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] forSegmentAtIndex:2];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"like.png"] forSegmentAtIndex:2];
     [self.intelligenceControl addTarget:self
                          action:@selector(selectIntelligence)
                forControlEvents:UIControlEventValueChanged];
@@ -452,11 +452,11 @@
     cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_green.png"];
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"dislike.png"];
     } else if (score == 0) {
         cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_yellow.png"];
     } else if (score < 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_red.png"];
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"like.png"];
     }
     
     // River view

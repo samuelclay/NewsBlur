@@ -184,7 +184,8 @@
 }
 
 - (void)finishAddFolder:(ASIHTTPRequest *)request {
-    NSLog(@"Successfully added category.");
+
+    NSLog(@"Successfully added.");
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
