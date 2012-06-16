@@ -11,7 +11,6 @@
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
 #import "SplitStoryDetailViewController.h"
-#import "PullToRefreshView.h"
 #import "ASIFormDataRequest.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
@@ -33,10 +32,8 @@
 @synthesize appDelegate;
 @synthesize feedPage;
 @synthesize pageFetching;
-@synthesize pageRefreshing;
 @synthesize pageFinished;
 @synthesize intelligenceControl;
-@synthesize pull;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -46,12 +43,6 @@
 }
 
 - (void)viewDidLoad {
-	pull = [[PullToRefreshView alloc] initWithScrollView:self.storyTitlesTable];
-    [pull setDelegate:self];
-    [self.storyTitlesTable addSubview:pull];
-    
-
-    
     [super viewDidLoad];
 }
 
@@ -108,20 +99,7 @@
     [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
     
 	[super viewWillAppear:animated];
-    
-    BOOL pullFound = NO;
-    for (UIView *view in self.storyTitlesTable.subviews) {
-        if ([view isKindOfClass:[PullToRefreshView class]]) {
-            pullFound = YES;
-            if (appDelegate.isRiverView) {
-                [view removeFromSuperview];
-            }
-        }
-    }
-    if (!appDelegate.isRiverView && !pullFound) {
-        [self.storyTitlesTable addSubview:pull];
-    }
-    
+        
     if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"Everything"]) {
         settingsButton.enabled = NO;
     } else {
@@ -132,7 +110,6 @@
 - (void)viewDidAppear:(BOOL)animated {
 //    [[storyTitlesTable cellForRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow]] setSelected:NO]; // TODO: DESELECT CELL --- done, see line below:
     [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
-    [pull refreshLastUpdatedDate];
     
 	[super viewDidAppear:animated];
 }
@@ -146,7 +123,6 @@
     [stories release];
     [appDelegate release];
     [intelligenceControl release];
-    [pull release];
     [super dealloc];
 }
 
@@ -156,7 +132,6 @@
 - (void)resetFeedDetail {
     self.pageFetching = NO;
     self.pageFinished = NO;
-    self.pageRefreshing = NO;
     self.feedPage = 1;
 }
 
@@ -221,7 +196,6 @@
         return;
     }
     
-    [pull finishedLoading];
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [NSMutableArray array];
     if ([appDelegate.activeFeedStories count]) {
@@ -390,16 +364,11 @@
 #pragma mark -
 #pragma mark Table View - Feed List
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (self.pageRefreshing) {
-        // Refreshing feed
-        return 1;
-    } else {    
-        int storyCount = [[appDelegate activeFeedStoryLocations] count];
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section { 
+    int storyCount = [[appDelegate activeFeedStoryLocations] count];
 
-        // The +1 is for the finished/loading bar.
-        return storyCount + 1;
-    }
+    // The +1 is for the finished/loading bar.
+    return storyCount + 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
@@ -871,64 +840,6 @@
 
 - (void)openMoveView {
     [appDelegate showMoveSite];
-}
-
-#pragma mark -
-#pragma mark PullToRefresh
-
-// called when the user pulls-to-refresh
-- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {    
-    if (appDelegate.isRiverView) {
-        [pull finishedLoading];
-        return;
-    }
-    
-    NSString *urlString = [NSString 
-                           stringWithFormat:@"http://%@/reader/refresh_feed/%@", 
-                           NEWSBLUR_URL,
-                           [appDelegate.activeFeed objectForKey:@"id"]];
-    [self cancelRequests];
-    __block ASIHTTPRequest *request = [self requestWithURL:urlString];
-    [request setDelegate:self];
-    [request setResponseEncoding:NSUTF8StringEncoding];
-    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-    [request setDidFinishSelector:@selector(finishedRefreshingFeed:)];
-    [request setDidFailSelector:@selector(failRefreshingFeed:)];
-    [request setTimeOutSeconds:60];
-    [request startAsynchronous];
-    
-    [appDelegate setStories:nil];
-    self.feedPage = 1;
-    self.pageFetching = YES;
-    self.pageRefreshing = YES;
-    [self.storyTitlesTable reloadData];
-    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
-}
-
-- (void)finishedRefreshingFeed:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
-    [pull finishedLoading];
-    self.pageRefreshing = NO;
-    [self renderStories:[results objectForKey:@"stories"]];
-    
-    [results release];
-}
-
-- (void)failRefreshingFeed:(ASIHTTPRequest *)request {
-    NSLog(@"Fail: %@", request);
-    self.pageRefreshing = NO;
-    [self informError:[request error]];
-    [pull finishedLoading];
-    [self fetchFeedDetail:1 withCallback:nil];
-}
-
-// called when the date shown needs to be updated, optional
-- (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
-//    NSLog(@"Updated; %@", [appDelegate.activeFeed objectForKey:@"updated_seconds_ago"]);
-    int seconds = -1 * [[appDelegate.activeFeed objectForKey:@"updated_seconds_ago"] intValue];
-    return [[[NSDate alloc] initWithTimeIntervalSinceNow:seconds] autorelease];
 }
 
 

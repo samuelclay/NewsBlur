@@ -8,20 +8,18 @@
 
 #import <UIKit/UIKit.h>
 #import "ASIHTTPRequest.h"
-#import "PullToRefreshView.h"
 #import "BaseViewController.h"
 
 @class NewsBlurAppDelegate;
 
 @interface FeedDetailViewController : BaseViewController 
-<UITableViewDelegate, UITableViewDataSource, PullToRefreshViewDelegate,
+<UITableViewDelegate, UITableViewDataSource, 
  UIActionSheetDelegate, UIAlertViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSArray * stories;
     int feedPage;
     BOOL pageFetching;
-    BOOL pageRefreshing;
     BOOL pageFinished;
                
     UITableView * storyTitlesTable;
@@ -29,7 +27,6 @@
     UISlider * feedScoreSlider;
     UIBarButtonItem * feedMarkReadButton;
     UISegmentedControl * intelligenceControl;
-    PullToRefreshView *pull;
 }
 
 - (void)resetFeedDetail;
@@ -43,10 +40,6 @@
 - (IBAction)selectIntelligence;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
 - (void)checkScroll;
-- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
-- (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
-- (void)finishedRefreshingFeed:(ASIHTTPRequest *)request;
-- (void)failRefreshingFeed:(ASIHTTPRequest *)request;
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender;
 - (IBAction)doOpenSettingsActionSheet;
@@ -62,7 +55,6 @@
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * feedMarkReadButton;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * settingsButton;
 @property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
-@property (nonatomic, retain) PullToRefreshView *pull;
 
 @property (nonatomic, retain) NSArray * stories;
 @property (nonatomic, readwrite) int feedPage;
