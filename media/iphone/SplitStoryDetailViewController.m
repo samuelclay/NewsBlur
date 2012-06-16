@@ -31,8 +31,15 @@
 
 - (void)viewDidLoad
 {
+
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    if (self.masterPopoverController) {
+        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
+    }
 }
 
 - (void)viewDidUnload
@@ -56,7 +63,7 @@
 {
     barButtonItem.title = NSLocalizedString(@"NewsBlur", @"NewsBlur");
     [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
-    self.masterPopoverController = popoverController;
+    self.masterPopoverController = popoverController;    
 }
 
 - (void)splitViewController:(UISplitViewController *)splitController willShowViewController:(UIViewController *)viewController invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem
