@@ -38,9 +38,10 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     if (self.masterPopoverController) {
-        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
+        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
 }
+
 
 - (void)viewDidUnload
 {
@@ -57,13 +58,20 @@
     [appDelegate adjustStoryDetailWebView]; 
 }
 
+- (void)showPopover {
+    if (self.masterPopoverController) {
+        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) inView:self.view
+                                    permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    }
+}
+
 #pragma mark - Split view
 
 - (void)splitViewController:(UISplitViewController *)splitController willHideViewController:(UIViewController *)viewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)popoverController
 {
     barButtonItem.title = NSLocalizedString(@"NewsBlur", @"NewsBlur");
     [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
-    self.masterPopoverController = popoverController;    
+    self.masterPopoverController = popoverController;   
 }
 
 - (void)splitViewController:(UISplitViewController *)splitController willShowViewController:(UIViewController *)viewController invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem

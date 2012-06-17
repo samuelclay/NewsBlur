@@ -18,4 +18,6 @@
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
 
+- (void)showPopover;
+
 @end

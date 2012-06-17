@@ -107,6 +107,7 @@
 - (void)addedGoogleReader;
 - (void)showLogin;
 - (void)showAdd;
+- (void)showPopover;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
 - (void)loadRiverFeedDetailView;

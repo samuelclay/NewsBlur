@@ -174,6 +174,12 @@
     [firstTimeUserViewController selectGoogleReaderButton];
 }
 
+- (void)showPopover {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [splitStoryDetailViewController showPopover];
+    }
+}
+
 - (void)showAdd {
     UINavigationController *navController = self.navigationController;
     [addSiteViewController initWithNibName:nil bundle:nil];

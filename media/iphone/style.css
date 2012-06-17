@@ -31,7 +31,7 @@ img.NB-image {
 }
 
 .NB-no-style img {
-    margin: 1em;
+    margin: 0 1em 0 0;
     display: inline-block;
     border: 0;
     background: none;
