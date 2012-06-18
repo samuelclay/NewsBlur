@@ -784,6 +784,8 @@
                 'fetched_feeds': 0
             });
             
+            this.flags['has_unfetched_feeds'] = NEWSBLUR.assets.feeds.has_unfetched_feeds();
+            
             if (this.flags['has_unfetched_feeds']) {
                 var counts = this.model.count_unfetched_feeds();
                 this.counts['unfetched_feeds'] = counts['unfetched_feeds'];
@@ -3512,7 +3514,6 @@
             this.flags['refresh_inline_feed_delay'] = false;
             this.flags['pause_feed_refreshing'] = false;
             this.check_feed_fetch_progress();
-            // this.count_collapsed_unread_stories();
         },
         
         // ===================

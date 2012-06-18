@@ -337,7 +337,7 @@ class UserSubscription(models.Model):
         
         # if not silent:
         #     logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
-            
+
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']

@@ -104,7 +104,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         ', {
           depth         : this.options.depth,
           folder_title  : this.options.folder_title,
-          is_collapsed  : this.options.collapsed,
+          is_collapsed  : this.options.collapsed && !this.options.feed_chooser,
           root          : this.options.root
         });
 

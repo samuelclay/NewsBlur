@@ -157,6 +157,12 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
         });
     },
     
+    has_unfetched_feeds: function() {
+        return this.any(function(feed) {
+            return feed.get('not_yet_fetched');
+        });
+    },
+    
     // ==========
     // = Events =
     // ==========

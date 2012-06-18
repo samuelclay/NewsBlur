@@ -349,8 +349,9 @@ class Dispatcher:
                     
                     if ret_entries.get(ENTRY_NEW) or self.options['force']:
                         start = time.time()
-                        if not feed.known_good:
+                        if not feed.known_good or not feed.fetched_once:
                             feed.known_good = True
+                            feed.fetched_once = True
                             feed = feed.save()
                         MUserStory.delete_old_stories(feed_id=feed.pk)
                         try:
@@ -478,12 +479,12 @@ class Dispatcher:
         logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
                       feed.title[:30], stories_db.count(), user_subs.count(),
                       feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))
-                                    
+
         for sub in user_subs:
             if not sub.needs_unread_recalc:
                 sub.needs_unread_recalc = True
                 sub.save()
-            
+        
         self.calculate_feed_scores_with_stories(user_subs, stories_db)
     
     @timelimit(10)
