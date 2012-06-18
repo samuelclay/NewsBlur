@@ -12,6 +12,7 @@
 @class FeedsViewController;
 @class FeedDetailViewController;
 @class FirstTimeUserViewController;
+@class FontSettingsViewController;
 @class GoogleReaderViewController;
 @class StoryDetailViewController;
 @class LoginViewController;
@@ -28,6 +29,7 @@
     UINavigationController *splitStoryDetailNavigationController;
 
     FeedsViewController *feedsViewController;
+    FontSettingsViewController *fontSettingsViewController;
     FeedDetailViewController *feedDetailViewController;
     FirstTimeUserViewController *firstTimeUserViewController;
     GoogleReaderViewController *googleReaderViewController;
@@ -77,6 +79,7 @@
 @property (nonatomic, retain) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic, retain) IBOutlet OriginalStoryViewController *originalStoryViewController;
 @property (nonatomic, retain) IBOutlet SplitStoryDetailViewController *splitStoryDetailViewController;
+@property (nonatomic, retain) IBOutlet FontSettingsViewController *fontSettingsViewController;
 
 @property (readwrite, retain) NSString * activeUsername;
 @property (nonatomic, readwrite) BOOL isRiverView;

@@ -9,6 +9,7 @@
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailViewController.h"
+#import "FontSettingsViewController.h"
 #import "SplitStoryDetailViewController.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
@@ -28,6 +29,7 @@
 @synthesize activity;
 @synthesize loadingIndicator;
 @synthesize feedTitleGradient;
+@synthesize popoverController;
 
 #pragma mark -
 #pragma mark View boilerplate
@@ -51,6 +53,7 @@
     [activity release];
     [loadingIndicator release];
     [feedTitleGradient release];
+    [popoverController release];
     [super dealloc];
 }
 
@@ -155,6 +158,10 @@
         customImgCssString = [NSString stringWithFormat:@"<style>"
                               "h1, h2, h3, h4, h5, h6, div, table, span, pre, code, img {"
                               "  max-width: 588px;"
+                              "}"
+                              "h1, h2, h3, h4, h5, h6, div, table, span, pre, code {"
+
+                              "  overflow: auto;"
                               "}"
                               "</style>"];
 
@@ -434,6 +441,33 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                                  cache:NO];
         [UIView commitAnimations];
     }
+}
+
+- (IBAction)toggleFontSize:(id)sender {
+    if (popoverController == nil) {
+        popoverController = [[UIPopoverController alloc]
+                           initWithContentViewController:appDelegate.fontSettingsViewController];
+        
+        popoverController.delegate=self;
+    }
+    
+    [popoverController presentPopoverFromBarButtonItem:sender
+                              permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+
+}
+
+- (void)setFontSize:(float)fontSize {
+    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.webkitTextSizeAdjust= '%f%%'", 
+                          fontSize];
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    [jsString release];
+}
+
+- (void)setFontStyle:(NSString *)fontStyle {
+    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.fontFamily= '%@'", 
+                          fontStyle];
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    [jsString release];
 }
 
 - (void)showOriginalSubview:(id)sender {

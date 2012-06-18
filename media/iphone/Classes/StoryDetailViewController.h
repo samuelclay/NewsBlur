@@ -10,7 +10,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface StoryDetailViewController : UIViewController {
+@interface StoryDetailViewController : UIViewController <UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;
@@ -22,6 +22,8 @@
     UIBarButtonItem *activity;
     
     UIActivityIndicatorView *loadingIndicator;
+    
+    IBOutlet UIPopoverController *popoverController;
 }
 
 @property (nonatomic, retain) NSString *activeStoryId;
@@ -36,13 +38,18 @@
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UIView *feedTitleGradient;
 
+@property (retain,nonatomic) UIPopoverController *popoverController;
+
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;
 - (void)showStory;
 - (void)showOriginalSubview:(id)sender;
 - (IBAction)doNextUnreadStory;
 - (IBAction)doPreviousStory;
+- (IBAction)toggleFontSize:(id)sender;
 - (void)markedAsRead;
 - (void)setActiveStory;
+- (void)setFontSize:(float)fontSize;
+- (void)setFontStyle:(NSString *)fontStyle;
 
 @end

@@ -1,6 +1,6 @@
 body {
     line-height: 1.6;
-    font-size: 15px;
+    font-size: 17px;
     font-family: 'Lucida Grande', Helvetica, Arial;
     text-rendering: optimizeLegibility;
     margin: 0;
@@ -51,8 +51,8 @@ p {
 }
 
 .NB-header {
-    font-size: 24px;
-    line-height: 28px;
+    font-size: 1.5em;
+    line-height: 1.6em;
     font-weight: 600;
     background-color: #E0E0E0;
     border-bottom: 1px solid #A0A0A0;
@@ -86,6 +86,7 @@ p {
 
 .NB-story-tag {
     float: left;
+    font-size: 10px;
     font-weight: normal;
     font-size: 9px;
     padding: 0px 4px 0px;

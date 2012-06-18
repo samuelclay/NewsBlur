@@ -37,9 +37,10 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    if (self.masterPopoverController) {
-        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    }
+    // messes up on FTUX, must put in a state test
+    //    if (self.masterPopoverController) {
+    //        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    //    }
 }
 
 

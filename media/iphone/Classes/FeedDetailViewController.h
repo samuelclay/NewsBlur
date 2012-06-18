@@ -59,7 +59,6 @@
 @property (nonatomic, retain) NSArray * stories;
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
-@property (nonatomic, readwrite) BOOL pageRefreshing;
 @property (nonatomic, readwrite) BOOL pageFinished;
 
 @end

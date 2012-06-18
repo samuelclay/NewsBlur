@@ -32,6 +32,7 @@
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
 @synthesize firstTimeUserViewController;
+@synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
 @synthesize loginViewController;
 @synthesize addSiteViewController;

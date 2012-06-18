@@ -85,6 +85,8 @@
 		435826C4158C0CFD00CC9797 /* like.png in Resources */ = {isa = PBXBuildFile; fileRef = 435826C0158C0CFD00CC9797 /* like.png */; };
 		435826C5158C0CFD00CC9797 /* like@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 435826C1158C0CFD00CC9797 /* like@2x.png */; };
 		4362C9F5158BA0A600A044B0 /* logo_512.png in Resources */ = {isa = PBXBuildFile; fileRef = 4362C9F4158BA0A600A044B0 /* logo_512.png */; };
+		43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */; };
+		43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */; };
 		43801387158A4E22006C7E37 /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 43801386158A4E21006C7E37 /* style.css */; };
 		43B8F022156603180008733D /* AddSiteAutocompleteCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */; };
 		43B8F023156603180008733D /* AddSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F019156603170008733D /* AddSiteViewController.xib */; };
@@ -286,6 +288,9 @@
 		435826C0158C0CFD00CC9797 /* like.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = like.png; sourceTree = "<group>"; };
 		435826C1158C0CFD00CC9797 /* like@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "like@2x.png"; sourceTree = "<group>"; };
 		4362C9F4158BA0A600A044B0 /* logo_512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_512.png; sourceTree = "<group>"; };
+		43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; path = FontSettingsViewController.h; sourceTree = "<group>"; };
+		43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontSettingsViewController.m; sourceTree = "<group>"; };
+		43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontSettingsViewController.xib; path = Classes/FontSettingsViewController.xib; sourceTree = "<group>"; };
 		43801386158A4E21006C7E37 /* style.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = style.css; sourceTree = "<group>"; };
 		43B8F018156603170008733D /* AddSiteAutocompleteCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteAutocompleteCell.xib; sourceTree = "<group>"; };
 		43B8F019156603170008733D /* AddSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddSiteViewController.xib; sourceTree = "<group>"; };
@@ -586,6 +591,8 @@
 				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 				FFE5322D144C8AC300ACFDE0 /* Utilities.h */,
 				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
+				43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */,
+				43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -774,6 +781,7 @@
 				43D045231565BC150085F811 /* FeedDetailTableCell~ipad.xib */,
 				43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */,
 				433323CC158968ED0025064D /* FirstTimeUserViewController.xib */,
+				43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */,
 				43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */,
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
@@ -1327,6 +1335,7 @@
 				435826C3158C0CFD00CC9797 /* dislike@2x.png in Resources */,
 				435826C4158C0CFD00CC9797 /* like.png in Resources */,
 				435826C5158C0CFD00CC9797 /* like@2x.png in Resources */,
+				43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1437,6 +1446,7 @@
 				433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */,
 				43C95C48158BEC450086C69B /* GoogleReaderViewController.m in Sources */,
 				430AD52D158D62A40092E1CF /* storyDetailView.js in Sources */,
+				43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
