@@ -122,6 +122,7 @@
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
 - (void)closeOriginalStory;
+- (void)changeActiveFeedDetailRow:(int)rowIndex;
 
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;

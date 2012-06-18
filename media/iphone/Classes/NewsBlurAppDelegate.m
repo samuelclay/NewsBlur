@@ -247,6 +247,10 @@
     //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
 }
 
+- (void)changeActiveFeedDetailRow:(int)rowIndex {
+    [feedDetailViewController changeActiveFeedDetailRow:rowIndex];
+}
+
 - (void)loadStoryDetailView {
     NSString *feedTitle;
     if (self.isRiverView) {

@@ -219,7 +219,7 @@
                             [appDelegate.activeStory objectForKey:@"story_content"],
                             sharingHtmlString
                             ];
-    NSLog(@"%@", [appDelegate.activeStory objectForKey:@"story_content"]);
+    //NSLog(@"%@", [appDelegate.activeStory objectForKey:@"story_content"]);
 //    NSString *feed_link = [[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
 //                                                                [appDelegate.activeStory 
 //                                                                 objectForKey:@"story_feed_id"]]] 
@@ -402,7 +402,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [self showStory];
         [self markStoryAsRead];
         [self setNextPreviousButtons];
-        
+        [appDelegate changeActiveFeedDetailRow:nextIndex];
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:.5];
         [UIView setAnimationBeginsFromCurrentState:NO];
@@ -428,6 +428,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         }
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                      objectAtIndex:previousIndex]];
+        [appDelegate changeActiveFeedDetailRow:previousIndex];
         [self setActiveStory];
         [self showStory];
         [self markStoryAsRead];

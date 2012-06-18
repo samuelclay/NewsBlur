@@ -445,19 +445,7 @@
         cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
         cell.storyUnreadIndicator.alpha = 1;
     } else {
-        // Read story
-        cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
-        cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
-        cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:0.5];
-        cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-        cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
-        cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
-        cell.storyUnreadIndicator.alpha = 0.15f;
-//        cell.feedTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
-//        cell.feedTitle.textColor = [UIColor blackColor];
-//        cell.feedTitle.shadowColor = nil;
-//        cell.feedFavicon.alpha = 0.5f;
-        cell.feedGradient.alpha = 0.25f;
+        [self changeRowStyleToRead:cell];
     }
 
 	return cell;
@@ -466,17 +454,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < [appDelegate.activeFeedStoryLocations count]) {
         
-        FeedDetailTableCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
+        [self changeRowStyleToRead:cell];
        
-        cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
-        cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
-        cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:0.5];
-        cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-        cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
-        cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
-        cell.storyUnreadIndicator.alpha = 0.15f;
-        cell.feedGradient.alpha = 0.25f;
-        
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:location]];
         [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
@@ -486,7 +466,19 @@
             NSLog(@"popover visible");
             [appDelegate.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
         }
+
     }
+}
+
+- (void)changeRowStyleToRead:(FeedDetailTableCell *)cell {
+    cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
+    cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
+    cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:0.5];
+    cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+    cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
+    cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
+    cell.storyUnreadIndicator.alpha = 0.15f;
+    cell.feedGradient.alpha = 0.25f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -840,6 +832,26 @@
 
 - (void)openMoveView {
     [appDelegate showMoveSite];
+}
+
+- (void)changeActiveFeedDetailRow:(int)rowIndex {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
+    NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:rowIndex - 1 inSection:0];
+
+    [storyTitlesTable selectRowAtIndexPath:indexPath animated:YES  scrollPosition:UITableViewScrollPositionNone];
+    
+    FeedDetailTableCell *cell = (FeedDetailTableCell *) [storyTitlesTable cellForRowAtIndexPath:indexPath];
+    // check to see if the cell is completely visible
+    CGRect cellRect = [storyTitlesTable rectForRowAtIndexPath:indexPath];
+    
+    cellRect = [storyTitlesTable convertRect:cellRect toView:storyTitlesTable.superview];
+    
+    BOOL completelyVisible = CGRectContainsRect(storyTitlesTable.frame, cellRect);
+    
+    [self changeRowStyleToRead:cell];
+    if (!completelyVisible) {
+        [storyTitlesTable scrollToRowAtIndexPath:offsetIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    }
 }
 
 
