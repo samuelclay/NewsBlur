@@ -151,6 +151,7 @@
     }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [appDelegate hideFeedsMenu];
 }
 
 @end

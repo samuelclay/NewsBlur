@@ -43,6 +43,7 @@
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
 
+- (void)dismissFeedsMenu;
 - (IBAction)showMenuButton;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;

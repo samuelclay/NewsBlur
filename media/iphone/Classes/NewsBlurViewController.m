@@ -134,10 +134,14 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     //[appDelegate showNavigationBar:YES];
-    if( popoverController.isPopoverVisible) {
+    [self dismissFeedsMenu];
+    [super viewWillDisappear:animated];
+}
+
+- (void)dismissFeedsMenu {
+    if (popoverController.isPopoverVisible) {
         [popoverController dismissPopoverAnimated:NO];
     }
-    [super viewWillDisappear:animated];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

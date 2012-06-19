@@ -155,8 +155,12 @@
 }
 
 - (void)hideFeedsMenu {
-    UINavigationController *navController = self.navigationController;
-    [navController dismissModalViewControllerAnimated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [feedsViewController dismissFeedsMenu];
+    } else {
+        UINavigationController *navController = self.navigationController;
+        [navController dismissModalViewControllerAnimated:YES];
+    }
 }
 
 - (void)showAdd {
