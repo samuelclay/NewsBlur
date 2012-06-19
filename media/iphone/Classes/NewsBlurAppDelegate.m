@@ -9,6 +9,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "FeedsViewController.h"
 #import "FeedDetailViewController.h"
+#import "FeedsMenuViewController.h"
 #import "StoryDetailViewController.h"
 #import "FirstTimeUserViewController.h"
 #import "GoogleReaderViewController.h"
@@ -30,6 +31,7 @@
 @synthesize splitStoryDetailNavigationController;
 @synthesize googleReaderViewController;
 @synthesize feedsViewController;
+@synthesize feedsMenuViewController;
 @synthesize feedDetailViewController;
 @synthesize firstTimeUserViewController;
 @synthesize fontSettingsViewController;
@@ -105,6 +107,7 @@
 - (void)dealloc {
     NSLog(@"Dealloc on AppDelegate");
     [feedsViewController release];
+    [feedsMenuViewController release];
     [feedDetailViewController release];
     [storyDetailViewController release];
     [loginViewController release];
@@ -144,6 +147,54 @@
 }
 
 #pragma mark -
+#pragma mark FeedsView
+
+- (void)showFeedsMenu {
+    UINavigationController *navController = self.navigationController;
+
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//        addSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+//        [navController presentModalViewController:addSiteViewController animated:YES];
+//        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); //it's important to do this after presentModalViewController
+//        addSiteViewController.view.superview.center = self.view.center;
+    } else {
+        [navController presentModalViewController:feedsMenuViewController animated:YES];
+    }
+    
+}
+
+- (void)hideFeedsMenu {
+    UINavigationController *navController = self.navigationController;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        //        addSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+        //        [navController presentModalViewController:addSiteViewController animated:YES];
+        //        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); //it's important to do this after presentModalViewController
+        //        addSiteViewController.view.superview.center = self.view.center;
+    } else {
+        [navController dismissModalViewControllerAnimated:YES];
+    }
+}
+
+- (void)showAdd {
+    UINavigationController *navController = self.navigationController;
+    [navController dismissModalViewControllerAnimated:NO];
+    [addSiteViewController initWithNibName:nil bundle:nil];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        addSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+        [navController presentModalViewController:addSiteViewController animated:YES];
+        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); //it's important to do this after presentModalViewController
+        addSiteViewController.view.superview.center = self.view.center;
+    } else {
+        [navController presentModalViewController:addSiteViewController animated:YES];
+    }
+    
+    [addSiteViewController reload];
+}
+
+#pragma mark -
 #pragma mark Views
 
 - (void)showLogin {
@@ -151,6 +202,7 @@
         [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
         [self.splitStoryController presentModalViewController:loginViewController animated:YES];
     } else {
+        [feedsMenuViewController dismissModalViewControllerAnimated:NO];
         [self.navigationController presentModalViewController:loginViewController animated:YES];
     }
         
@@ -179,22 +231,6 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [splitStoryDetailViewController showPopover];
     }
-}
-
-- (void)showAdd {
-    UINavigationController *navController = self.navigationController;
-    [addSiteViewController initWithNibName:nil bundle:nil];
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        addSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-        [navController presentModalViewController:addSiteViewController animated:YES];
-        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); //it's important to do this after presentModalViewController
-        addSiteViewController.view.superview.center = self.view.center;
-    } else {
-        [navController presentModalViewController:addSiteViewController animated:YES];
-    }
-    
-    [addSiteViewController reload];
 }
 
 - (void)showMoveSite {

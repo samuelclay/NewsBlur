@@ -26,7 +26,7 @@
 @synthesize feedTitlesTable;
 @synthesize feedViewToolbar;
 @synthesize feedScoreSlider;
-@synthesize logoutButton;
+@synthesize homeButton;
 @synthesize intelligenceControl;
 @synthesize activeFeedLocations;
 @synthesize visibleFeeds;
@@ -50,7 +50,10 @@
 }
 
 - (void)viewDidLoad {
-    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStylePlain target:self action:@selector(doLogoutButton)] autorelease];
+    
+    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStylePlain target:self action:@selector(showMenuButton)] autorelease];
+     
+     [self.navigationItem.leftBarButtonItem setImage:[UIImage imageNamed:@"53-house.png"]];
     [appDelegate showNavigationBar:NO];
     self.viewShowingAllFeeds = NO;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
@@ -158,7 +161,7 @@
     [feedTitlesTable release];
     [feedViewToolbar release];
     [feedScoreSlider release];
-    [logoutButton release];
+    [homeButton release];
     [intelligenceControl release];
     [activeFeedLocations release];
     [visibleFeeds release];
@@ -287,45 +290,12 @@
     [results release];
 }
 
-- (IBAction)doLogoutButton {
-    UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Logout", nil];
-    [logoutConfirm show];
-    [logoutConfirm setTag:1];
-    [logoutConfirm release];
+- (IBAction)showMenuButton {
+    [appDelegate showFeedsMenu];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 1) {
-        if (buttonIndex == 0) {
-            return;
-        } else {
-            NSLog(@"Logging out...");
-            NSString *urlS = [NSString stringWithFormat:@"http://%@/reader/logout?api=1",
-                              NEWSBLUR_URL];
-            NSURL *url = [NSURL URLWithString:urlS];
-            
-            __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-            [request setDelegate:self];
-            [request setResponseEncoding:NSUTF8StringEncoding];
-            [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-            [request setFailedBlock:^(void) {
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [self finishedWithError:request];
-            }];
-            [request setCompletionBlock:^(void) {
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [appDelegate showLogin];
-            }];
-            [request setTimeOutSeconds:30];
-            [request startAsynchronous];
-            
-            [ASIHTTPRequest setSessionCookies:nil];
-
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            HUD.labelText = @"Logging out...";
-        }
-    } else if (alertView.tag == 2) {
+    if (alertView.tag == 2) {
         if (buttonIndex == 0) {
             return;
         } else {

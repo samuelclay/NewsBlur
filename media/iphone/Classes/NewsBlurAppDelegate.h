@@ -11,6 +11,7 @@
 
 @class FeedsViewController;
 @class FeedDetailViewController;
+@class FeedsMenuViewController;
 @class FirstTimeUserViewController;
 @class FontSettingsViewController;
 @class GoogleReaderViewController;
@@ -29,6 +30,7 @@
     UINavigationController *splitStoryDetailNavigationController;
 
     FeedsViewController *feedsViewController;
+    FeedsMenuViewController *feedsMenuViewController;
     FontSettingsViewController *fontSettingsViewController;
     FeedDetailViewController *feedDetailViewController;
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -70,6 +72,7 @@
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *navigationController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *splitStoryDetailNavigationController;
 @property (nonatomic, retain) IBOutlet FeedsViewController *feedsViewController;
+@property (nonatomic, retain) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, retain) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic, retain) IBOutlet GoogleReaderViewController *googleReaderViewController;
@@ -109,6 +112,8 @@
 - (void)showGoogleReaderAuthentication;
 - (void)addedGoogleReader;
 - (void)showLogin;
+- (void)showFeedsMenu;
+- (void)hideFeedsMenu;
 - (void)showAdd;
 - (void)showPopover;
 - (void)showMoveSite;

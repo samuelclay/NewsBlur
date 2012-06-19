@@ -31,7 +31,7 @@
 	IBOutlet UITableView * feedTitlesTable;
 	IBOutlet UIToolbar * feedViewToolbar;
     IBOutlet UISlider * feedScoreSlider;
-    IBOutlet UIBarButtonItem * logoutButton;
+    IBOutlet UIBarButtonItem * homeButton;
     IBOutlet UISegmentedControl * intelligenceControl;
     IBOutlet UIBarButtonItem * sitesButton;
     IBOutlet UIBarButtonItem * addButton;
@@ -42,7 +42,7 @@
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
 
-- (IBAction)doLogoutButton;
+- (IBAction)showMenuButton;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
@@ -63,7 +63,7 @@
 @property (nonatomic, retain) IBOutlet UITableView *feedTitlesTable;
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem * logoutButton;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem * homeButton;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * sitesButton;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * addButton;
 @property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
