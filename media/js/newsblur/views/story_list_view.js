@@ -236,7 +236,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }, this));
 
         this.flags['feed_view_positions_calculated'] = true;
-        NEWSBLUR.log(['Feed view entirely loaded', NEWSBLUR.assets.stories.length + " stories", this.counts['feed_view_positions_timer']/1000 + " sec delay"]);
+        // NEWSBLUR.log(['Feed view entirely loaded', NEWSBLUR.assets.stories.length + " stories", this.counts['feed_view_positions_timer']/1000 + " sec delay"]);
         
         this.counts['feed_view_positions_timer'] = Math.max(this.counts['feed_view_positions_timer']*2, 1000);
         clearTimeout(this.flags['next_fetch']);

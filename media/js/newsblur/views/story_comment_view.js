@@ -101,7 +101,8 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
             this.remove_social_comment_reply_form();
         }, this));
         $('input', $form).focus();
-        // this.fetch_story_locations_in_feed_view();
+        
+        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
     },
     
     remove_social_comment_reply_form: function() {
@@ -118,7 +119,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         
         if (!comment_reply || comment_reply.length <= 1) {
             this.remove_social_comment_reply_form();
-            // this.fetch_story_locations_in_feed_view();
+            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
             return;
         }
         
@@ -133,7 +134,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                                       _.bind(function(data) {
             this.model.set(data.comment);
             this.render();
-            // this.fetch_story_locations_in_feed_view();
+            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }, this), _.bind(function(data) {
             var message = data && data.message || "Sorry, this reply could not be posted. Probably a bug.";
             if (!NEWSBLUR.Globals.is_authenticated) {
@@ -143,7 +144,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
             $submit.removeClass('NB-disabled').text('Post');
             $form.find('.NB-error').remove();
             $form.append($error);
-            // this.fetch_story_locations_in_feed_view();
+            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }, this));
     }
     

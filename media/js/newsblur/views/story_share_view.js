@@ -59,8 +59,10 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 }, {
                     'duration': 300,
                     'easing': 'easeInOutQuint',
-                    'queue': false
-                    // 'complete': _.bind(this.fetch_story_locations_in_feed_view, this, {'reset_timer': true})
+                    'queue': false,
+                    'complete': function() {
+                        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+                    }
                 });
                 $story_content.removeData('original_height');
             }
@@ -100,8 +102,10 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 }, {
                     'duration': 350,
                     'easing': 'easeInOutQuint',
-                    'queue': false
-                    // 'complete': _.bind(this.fetch_story_locations_in_feed_view, this, {'reset_timer': true})
+                    'queue': false,
+                    'complete': function() {
+                        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+                    }
                 }).data('original_height', original_height);
             }
             this.update_share_button_label();
@@ -109,7 +113,10 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 e.preventDefault();
                 this.mark_story_as_shared({'source': 'sideoption'});
             }, this);
-            $('.NB-sideoption-share-comments', $share).bind('keydown', 'ctrl+return,meta+return', share);
+            var $comments = $('.NB-sideoption-share-comments', $share);
+            $comments.unbind('keydown')
+                     .bind('keydown', 'ctrl+return', share)
+                     .bind('keydown', 'meta+return', share);
 
         }
     },
@@ -157,7 +164,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                     tipsy.disable();
                 }
             }, 850);
-            // this.fetch_story_locations_in_feed_view({'reset_timer': true});
+            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }, this), _.bind(function(data) {
             var message = data && data.message || "Sorry, this story could not be shared. Probably a bug.";
             if (!NEWSBLUR.Globals.is_authenticated) {

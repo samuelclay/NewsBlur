@@ -216,8 +216,10 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         var stories = NEWSBLUR.assets.stories;
         var $iframe = this.$el.contents();
         var prefetch_tries_left = 3;
-        this.cache['prefetch_iteration'] += 1;
         
+        if (!this.flags['iframe_loaded']) return;
+        
+        this.cache['prefetch_iteration'] += 1;
         NEWSBLUR.log(['Prefetching Original', !this.flags['iframe_fetching_story_locations'], !this.flags['iframe_story_locations_fetched']]);
         if (!this.flags['iframe_fetching_story_locations'] 
             && !this.flags['iframe_story_locations_fetched']) {
@@ -357,6 +359,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         });
         
         $.extend(this.flags, {
+            'iframe_loaded': false,
             'iframe_scroll_snapback_check': false,
             'iframe_view_not_busting': false,
             'iframe_fetching_story_locations': false,
@@ -375,6 +378,8 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         var self = this;
 
         this.unload_feed_iframe();
+        
+        this.flags['iframe_loaded'] = true;
         
         var page_url = '/reader/page/'+feed_id;
         if (NEWSBLUR.reader.flags['social_view']) {
