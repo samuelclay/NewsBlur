@@ -209,7 +209,7 @@
     [firstTimeUserViewController selectGoogleReaderButton];
 }
 
-- (void)showPopover {
+- (void)showMasterPopover {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [splitStoryDetailViewController showPopover];
     }

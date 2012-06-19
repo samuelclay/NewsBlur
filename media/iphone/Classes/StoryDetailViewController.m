@@ -75,6 +75,7 @@
     return YES;
 }
 
+
 - (void)viewWillAppear:(BOOL)animated {
 //    NSLog(@"Stories; %@ -- %@ (%d)", self.activeStoryId,  [appDelegate.activeStory objectForKey:@"id"], self.activeStoryId ==  [appDelegate.activeStory objectForKey:@"id"]);    
     id storyId = [appDelegate.activeStory objectForKey:@"id"];
@@ -390,6 +391,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          popToViewController:[appDelegate.navigationController.viewControllers 
                               objectAtIndex:0]  
          animated:YES];
+        [appDelegate showMasterPopover];
     } else {
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                      objectAtIndex:nextIndex]];
@@ -417,6 +419,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          popToViewController:[appDelegate.navigationController.viewControllers 
                               objectAtIndex:0]  
          animated:YES];
+        [appDelegate showMasterPopover];
     } else {
         int previousIndex = [appDelegate locationOfStoryId:previousStoryId];
         if (previousIndex == -1) {

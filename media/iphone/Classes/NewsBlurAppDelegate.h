@@ -116,6 +116,7 @@
 - (void)showFeedsMenu;
 - (void)hideFeedsMenu;
 - (void)showAdd;
+- (void)showMasterPopover;
 - (void)showPopover;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;

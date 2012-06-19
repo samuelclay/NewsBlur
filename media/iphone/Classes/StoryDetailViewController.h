@@ -39,6 +39,7 @@
 @property (nonatomic, retain) IBOutlet UIView *feedTitleGradient;
 @property (retain,nonatomic) UIPopoverController *popoverController;
 
+- (void)showPopover;
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;
 - (void)showStory;

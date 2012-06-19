@@ -64,11 +64,12 @@
     [appDelegate adjustStoryDetailWebView]; 
 }
 
-- (void)showPopover 
-{
+- (void)showPopover {
     if (self.masterPopoverController) {
-        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) inView:self.view
-                                    permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) 
+                                                      inView:self.view
+                                    permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                    animated:YES];
     }
 }
 
