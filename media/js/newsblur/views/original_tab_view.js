@@ -4,11 +4,12 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         _.bindAll(this, 'handle_scroll_feed_iframe', 'handle_mousemove_iframe_view', 'setup_events');
         this.cache = {
             iframe: {},
-            prefetch_iteration: 0,
+            prefetch_iteration: 0
+        };
+        this.flags = {
             iframe_fetching_story_locations: false,
             iframe_story_locations_fetched: false
         };
-        this.flags = {};
         this.locks = {
             iframe_buster_buster: false
         };
@@ -148,9 +149,9 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             
             
             if (!this.flags['iframe_view_not_busting']) {
-                var feed_id = this.active_feed;
+                var feed_id = NEWSBLUR.reader.active_feed;
                 _.delay(_.bind(function() {
-                    if (feed_id == this.active_feed) {
+                    if (feed_id == NEWSBLUR.reader.active_feed) {
                         this.flags['iframe_view_not_busting'] = true;
                     }
                 }, this), 200);
@@ -273,6 +274,8 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                     this.prefetch_story_locations_in_story_frame();
                 }
             }, this), 1000);
+        } else {
+            this.fetch_story_locations_in_story_frame();
         }
     },
     
@@ -291,8 +294,8 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         });
         
         NEWSBLUR.assets.stories.any(_.bind(function(story, i) {
-            if (story['story_feed_id'] == this.active_feed || 
-                "social:" + story['social_user_id'] == this.active_feed) {
+            if (story['story_feed_id'] == NEWSBLUR.reader.active_feed || 
+                "social:" + story['social_user_id'] == NEWSBLUR.reader.active_feed) {
                 var $story = this.find_story_in_feed_iframe(story, $iframe);
                 // NEWSBLUR.log(['Fetching story', i, story.get('story_title'), $story]);
             
@@ -303,9 +306,9 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                     clearInterval(self.flags['iframe_scroll_snapback_check']);
                     return true;
                 }
-            } else if (story && story['story_feed_id'] != this.active_feed &&
-                       "social:" + story['social_user_id'] != this.active_feed) {
-                NEWSBLUR.log(['Switched off iframe early', this.active_feed, story['story_feed_id'], story['social_user_id']]);
+            } else if (story && story['story_feed_id'] != NEWSBLUR.reader.active_feed &&
+                       "social:" + story['social_user_id'] != NEWSBLUR.reader.active_feed) {
+                NEWSBLUR.log(['Switched off iframe early', NEWSBLUR.reader.active_feed, story['story_feed_id'], story['social_user_id']]);
                 return true;
             }
         }, this));
@@ -315,12 +318,14 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
     // = Actions =
     // ===========
     
+    iframe_not_busting: function() {
+        this.flags['iframe_not_busting'] = true;
+    },
+    
     unload_feed_iframe: function() {
         var $taskbar_view_page = $('.NB-taskbar .task_view_page');
         $taskbar_view_page.removeClass('NB-task-return');
         
-        // REMOVE ME, this disabled the iframe buster buster
-        // NEWSBLUR.reader.flags['iframe_view_loaded'] = false;
         this.flags['iframe_story_locations_fetched'] = false;
         NEWSBLUR.reader.flags['iframe_prevented_from_loading'] = false;
         
@@ -332,7 +337,10 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         });
         
         $.extend(this.flags, {
-            'iframe_scroll_snapback_check': false
+            'iframe_scroll_snapback_check': false,
+            'iframe_view_not_busting': false,
+            'iframe_fetching_story_locations': false,
+            'iframe_story_locations_fetched': false
         });
         
         this.$el.removeAttr('src');
@@ -360,16 +368,9 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         
         this.$el.attr('src', page_url);
         this.enable_iframe_buster_buster();
-        if (NEWSBLUR.reader.flags['iframe_view_loaded']) {
-            NEWSBLUR.log(['Titles loaded, iframe loaded']);
-            var $iframe = this.$el.contents();
-            this.fetch_story_locations_in_story_frame($iframe);
-        } else {
-            NEWSBLUR.log(['Titles loaded, iframe NOT loaded -- prefetching now']);
-            _.delay(_.bind(function() {
-                this.prefetch_story_locations_in_story_frame();
-            }, this), 500);
-        }
+        _.delay(_.bind(function() {
+            this.prefetch_story_locations_in_story_frame();
+        }, this), 500);
 
         this.setup_events();
         this.$el.ready(function() {
@@ -430,7 +431,6 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
     
     setup_feed_page_iframe_load: function() {
         this.$el.load(_.bind(function() {
-            NEWSBLUR.reader.flags['iframe_view_loaded'] = true;
             this.disable_iframe_buster_buster();
             this.setup_events();
             if (NEWSBLUR.reader.flags['story_titles_loaded']) {
@@ -505,10 +505,10 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         this.locks.iframe_buster_buster = setInterval(function() {
             if (prevent_bust > 0) {
                 prevent_bust -= 2;
-                if (!self.flags['iframe_view_loaded'] && 
+                if (self.flags['iframe_story_locations_fetched'] && 
                     !self.flags['iframe_view_not_busting'] && 
                     _.contains(['page', 'story'], self.story_view) && 
-                    self.active_feed) {
+                    NEWSBLUR.reader.active_feed) {
                   $('.NB-feed-frame').attr('src', '');
                   window.top.location = '/reader/buster';
                   $('.task_view_feed').click();

@@ -28,8 +28,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:intelligence', this.render_header, this);
         
         // Binding directly instead of using event delegation. Need for speed.
-        this.$el.bind('mouseenter', this.mouseenter);
-        this.$el.bind('mouseleave', this.mouseleave);
+        // this.$el.bind('mouseenter', this.mouseenter);
+        // this.$el.bind('mouseleave', this.mouseleave);
         
         if (!this.options.feed_floater) {
             this.model.story_view = this;

@@ -5,19 +5,28 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     initialize: function() {
         this.collection.bind('reset', this.reset_flags, this);
         this.collection.bind('reset', this.render, this);
+        this.collection.bind('reset', this.reset_story_positions, this);
         this.collection.bind('add', this.add, this);
+        this.collection.bind('add', this.reset_story_positions, this);
         this.collection.bind('change:selected', this.show_correct_feed_in_feed_title_floater, this);
         this.$el.bind('mousemove', _.bind(this.handle_mousemove_feed_view, this));
-        // this.$el.scroll(_.bind(this.handle_scroll_feed_view, this));
+        this.$el.scroll(_.bind(this.handle_scroll_feed_view, this));
+        this.reset_flags();
     },
     
     reset_flags: function() {
         this.cache = {
             story_pane_position: null,
-            feed_title_floater_feed_id: null
+            feed_title_floater_feed_id: null,
+            feed_view_story_positions: {},
+            feed_view_story_positions_keys: []
         };
         this.flags = {
+            feed_view_images_loaded: {},
             mousemove_timeout: false
+        };
+        this.counts = {
+            feed_view_positions_timer: 0
         };
     },
     
@@ -162,11 +171,26 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     // = Positions =
     // =============
     
+    is_feed_loaded_for_location_fetch: function() {
+        var images_begun = _.keys(this.flags.feed_view_images_loaded).length;
+        if (images_begun) {
+            var images_loaded = _.keys(this.flags.feed_view_images_loaded).length && 
+                                _.all(_.values(this.flags.feed_view_images_loaded), _.identity);
+            return !!images_loaded;
+        }
+
+        return !!images_begun;
+    },
+    
     prefetch_story_locations_in_feed_view: function() {
         var self = this;
         var stories = NEWSBLUR.assets.stories;
         
-        // NEWSBLUR.log(['Prefetching', this.flags['feed_view_positions_calculated'], this.flags.feed_view_images_loaded, (_.keys(this.flags.feed_view_images_loaded).length > 0 || this.cache.feed_view_story_positions_keys.length > 0)]);
+        NEWSBLUR.log(['Prefetching', this.flags['feed_view_positions_calculated'], this.flags.feed_view_images_loaded, (_.keys(this.flags.feed_view_images_loaded).length > 0 || this.cache.feed_view_story_positions_keys.length > 0), _.keys(this.flags.feed_view_images_loaded).length,
+                                _.values(this.flags.feed_view_images_loaded), this.is_feed_loaded_for_location_fetch()]);
+
+        if (!NEWSBLUR.assets.stories.size()) return;
+        
         if (!this.flags['feed_view_positions_calculated']) {
             
             $.extend(this.cache, {
@@ -174,29 +198,26 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 'feed_view_story_positions_keys': []
             });
         
-            for (var s in stories) {
-                var story = stories[s];
-                // var $story = self.cache.feed_view_stories[story.id];
-                // this.determine_feed_view_story_position($story, story);
-                // NEWSBLUR.log(['Pre-fetching', $story, story.get('story_title'), this.flags.feed_view_images_loaded[story.id]]);
-                // if (!$story || !$story.length || this.flags['feed_view_positions_calculated']) break;
-            }
-        }
-        if ((_.keys(this.flags.feed_view_images_loaded).length > 0 ||
-             this.cache.feed_view_story_positions_keys.length > 0) &&
-            (this.flags.feed_view_images_loaded.length &&
-             _.all(_.values(this.flags.feed_view_images_loaded)))) {
+            NEWSBLUR.assets.stories.any(_.bind(function(story) {
+                NEWSBLUR.log(['Pre-fetching', story.get('story_title'), this.flags.feed_view_images_loaded[story.id]]);
+                this.determine_feed_view_story_position(story);
+                var $story = story.story_view.$el;
+                if (!$story || !$story.length || this.flags['feed_view_positions_calculated']) {
+                    return true;
+                }
+            }, this));
+            
+            setTimeout(_.bind(function() {
+                if (!this.flags['feed_view_positions_calculated']) {
+                    this.prefetch_story_locations_in_feed_view();
+                }
+            }, this), 2000);
+        } 
+        
+        if (this.is_feed_loaded_for_location_fetch()) {
             this.fetch_story_locations_in_feed_view({'reset_timer': true});
         } else {
-            // NEWSBLUR.log(['Still loading feed view...', _.keys(this.flags.feed_view_images_loaded).length, this.cache.feed_view_story_positions_keys.length, this.flags.feed_view_images_loaded]);
-        }
-        
-        if (!this.flags['feed_view_positions_calculated']) {
-            setTimeout(function() {
-                if (!self.flags['feed_view_positions_calculated']) {
-                    self.prefetch_story_locations_in_feed_view();
-                }
-            }, 2000);
+            NEWSBLUR.log(['Still loading feed view...', _.keys(this.flags.feed_view_images_loaded).length, this.cache.feed_view_story_positions_keys.length, this.flags.feed_view_images_loaded]);
         }
     },
     
@@ -211,14 +232,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             'feed_view_story_positions_keys': []
         });
 
-        for (var s in stories) {
-            var story = stories[s];
-            var $story = this.cache.feed_view_stories[story.id];
-            this.determine_feed_view_story_position($story, story);
-        }
+        NEWSBLUR.assets.stories.each(_.bind(function(story) {
+            this.determine_feed_view_story_position(story);
+        }, this));
 
         this.flags['feed_view_positions_calculated'] = true;
-        // NEWSBLUR.log(['Feed view entirely loaded', NEWSBLUR.assets.stories.length + " stories", this.counts['feed_view_positions_timer']/1000 + " sec delay"]);
+        NEWSBLUR.log(['Feed view entirely loaded', NEWSBLUR.assets.stories.length + " stories", this.counts['feed_view_positions_timer']/1000 + " sec delay"]);
         
         this.counts['feed_view_positions_timer'] = Math.max(this.counts['feed_view_positions_timer']*2, 1000);
         clearTimeout(this.flags['next_fetch']);
@@ -226,36 +245,69 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                                            this.counts['feed_view_positions_timer']);
     },
     
-    determine_feed_view_story_position: function($story, story) {
-        if ($story && $story.is(':visible')) {
+    determine_feed_view_story_position: function(story) {
+        var $story = story.story_view.$el;
+        if (story && $story.is(':visible')) {
             var position_original = parseInt($story.position().top, 10);
             var position_offset = parseInt($story.offsetParent().scrollTop(), 10);
             var position = position_original + position_offset;
             this.cache.feed_view_story_positions[position] = story;
             this.cache.feed_view_story_positions_keys.push(position);
             this.cache.feed_view_story_positions_keys.sort(function(a, b) { return a-b; });    
-            // NEWSBLUR.log(['Positioning story', position, $story, story, this.cache.feed_view_story_positions_keys]);
+            // NEWSBLUR.log(['Positioning story', position, story.get('story_title')]);
         }
     },
 
     check_feed_view_scrolled_to_bottom: function() {
-        var $story_titles = this.$s.$story_titles;
-        var $feed_view = this.$s.$feed_view;
-
-        if (!this.model.flags['no_more_stories']) {
-            console.log(["check_feed_view_scrolled_to_bottom"]);
-            var $last_story = $('.NB-feed-story', $feed_view).last();
-            var container_offset = $feed_view.position().top;
+        if (!NEWSBLUR.assets.flags['no_more_stories']) {
+            var last_story = NEWSBLUR.assets.stories.last();
+            var $last_story = last_story.story_view.$el;
+            var container_offset = this.$el.position().top;
             var full_height = ($last_story.offset() && $last_story.offset().top) + $last_story.height() - container_offset;
-            var visible_height = $feed_view.height();
-            var scroll_y = $feed_view.scrollTop();
+            var visible_height = this.$el.height();
+            var scroll_y = this.$el.scrollTop();
         
             // Fudge factor is simply because it looks better at 13 pixels off.
             if ((visible_height + 26) >= full_height) {
-                // NEWSBLUR.log(['Feed view scroll', full_height, container_offset, visible_height, scroll_y]);
-                this.load_page_of_feed_stories();
+                NEWSBLUR.log(['Feed view scroll', full_height, container_offset, visible_height, scroll_y]);
+                NEWSBLUR.reader.load_page_of_feed_stories();
             }
         }
+    },
+    
+    reset_story_positions: function() {
+        this.flags['feed_view_positions_calculated'] = false;
+        
+        this.flags.feed_view_images_loaded = {};
+
+        if (this.cache.story_pane_position == null) {
+            this.cache.story_pane_position = this.$el.offsetParent().offset().top;
+        }
+
+        NEWSBLUR.assets.stories.each(_.bind(function(story) {
+            var image_count = story.story_view.$('img').length;
+            if (!image_count) {
+                this.flags.feed_view_images_loaded[story.id] = true;
+            } else {
+                // Progressively load the images in each story, so that when one story
+                // loads, the position is calculated and the next story can calculate
+                // its position (after its own images are loaded).
+                this.flags.feed_view_images_loaded[story.id] = false;
+                (function(story, image_count) {
+                    story.story_view.$('img').load(function() {
+                        NEWSBLUR.log(['Loaded image', story.get('story_title'), image_count]);
+                        if (image_count == 1) {
+                            NEWSBLUR.app.story_list.flags.feed_view_images_loaded[story.id] = true;
+                        } else {
+                            image_count--;
+                        }
+                        return true;
+                    });
+                })(story, image_count);
+            }
+        }, this));
+        
+        this.prefetch_story_locations_in_feed_view();
     },
     
     // ==========
@@ -276,69 +328,49 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
 
         NEWSBLUR.reader.cache.mouse_position_y = e.pageY;
-        if (this.cache.story_pane_position == null) {
-            this.cache.story_pane_position = NEWSBLUR.reader.$s.$feed_stories.offsetParent().offset().top;
-        }
-        NEWSBLUR.reader.$s.$mouse_indicator.css('top', NEWSBLUR.reader.cache.mouse_position_y - this.cache.story_pane_position - 8);
+        NEWSBLUR.reader.$s.$mouse_indicator.css('top', NEWSBLUR.reader.cache.mouse_position_y - 8);
         
-        if (this.flags['mousemove_timeout']) {
+        if (this.flags['mousemove_timeout'] ||
+            NEWSBLUR.reader.flags['scrolling_by_selecting_story_title']) {
             return;
         }
         
-        setTimeout(function() {
-            self.flags['mousemove_timeout'] = false;
-        }, 30);
-        
-        // if (!this.flags['mousemove_timeout']
-        //     && !this.flags['switching_to_feed_view']
-        //     && !this.flags.scrolling_by_selecting_story_title 
-        //     && this.story_view != 'story') {
-        //     var from_top = this.cache.mouse_position_y + this.$s.$feed_stories.scrollTop();
-        //     var offset = this.cache.story_pane_position;
-        //     var position = from_top - offset;
-        //     var positions = this.cache.feed_view_story_positions_keys;
-        //     var closest = $.closest(position, positions);
-        //     var story = this.cache.feed_view_story_positions[positions[closest]];
-        //     this.flags['mousemove_timeout'] = true;
-        //     if (story == this.active_story) return;
-        //     // NEWSBLUR.log(['Mousemove feed view', from_top, closest, positions[closest]]);
-        //     NEWSBLUR.app.story_titles.scroll_to_selected_story(story);
+        var from_top = NEWSBLUR.reader.cache.mouse_position_y + NEWSBLUR.reader.$s.$feed_stories.scrollTop();
+        var offset = this.cache.story_pane_position;
+        var position = from_top - offset;
+        var positions = this.cache.feed_view_story_positions_keys;
+        var closest = $.closest(position, positions);
+        var story = this.cache.feed_view_story_positions[positions[closest]];
 
-        // }
+        if (!story) return;
+        if (!story.get('selected')) {
+            story.set('selected', true, {selected_by_scrolling: true, mouse: true, immediate: true});
+        }
     },
     
     handle_scroll_feed_view: function(elem, e) {
         var self = this;
+        var story_view = NEWSBLUR.reader.story_view;
         
-        // NEWSBLUR.log(['handle_scroll_feed_view', this.story_view, this.flags['switching_to_feed_view'], this.flags['scrolling_by_selecting_story_title']]);
-        if ((this.story_view == 'feed' ||
-             (this.story_view == 'page' && this.flags['page_view_showing_feed_view'])) &&
-            !this.flags['scrolling_by_selecting_story_title'] &&
+        // NEWSBLUR.log(['handle_scroll_feed_view', story_view, NEWSBLUR.reader.flags['switching_to_feed_view'], NEWSBLUR.reader.flags['scrolling_by_selecting_story_title']]);
+        if ((story_view == 'feed' ||
+             (story_view == 'page' && NEWSBLUR.reader.flags['page_view_showing_feed_view'])) &&
+            !NEWSBLUR.reader.flags['scrolling_by_selecting_story_title'] &&
             !NEWSBLUR.assets.preference('feed_view_single_story')) {
-            var from_top = this.cache.mouse_position_y + this.$s.$feed_stories.scrollTop();
+            var from_top = NEWSBLUR.reader.cache.mouse_position_y + this.$el.scrollTop();
             var offset = this.cache.story_pane_position;
             var position = from_top - offset;
             var positions = this.cache.feed_view_story_positions_keys;
             var closest = $.closest(position, positions);
             var story = this.cache.feed_view_story_positions[positions[closest]];
-            // NEWSBLUR.log(['Scroll feed view', from_top, e, closest, positions[closest], this.cache.feed_view_story_positions_keys, positions, self.cache]);
-            NEWSBLUR.app.story_titles.scroll_to_selected_story(story);
-            this.check_feed_view_scrolled_to_bottom();
-        }
-        
-        if ((this.flags.river_view || this.flags.social_view) &&
-            !NEWSBLUR.assets.preference('feed_view_single_story')) {
-            var story;
-            if (this.flags.scrolling_by_selecting_story_title) {
-                story = this.active_story;
-            } else {
-                var from_top = Math.max(1, this.$s.$feed_stories.scrollTop());
-                var positions = this.cache.feed_view_story_positions_keys;
-                var closest = $.closest(from_top, positions);
-                story = this.cache.feed_view_story_positions[positions[closest]];
+
+            if (!story) return;
+            // console.log(["Scroll Feed", from_top, offset, position, closest, story.get('story_title')]);
+            if (!story.get('selected')) {
+                story.set('selected', true, {selected_by_scrolling: true, mouse: true, immediate: true});
             }
-            
-            this.show_correct_feed_in_feed_title_floater(story);
+
+            this.check_feed_view_scrolled_to_bottom();
         }
     }
     
