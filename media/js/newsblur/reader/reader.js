@@ -117,6 +117,7 @@
             this.setup_howitworks_hovers();
             this.setup_interactions_module();
             this.setup_activities_module();
+            this.setup_unfetched_feed_check();
         },
 
         // ========
@@ -1966,32 +1967,6 @@
         // ==========================
         // = Story Pane - Feed View =
         // ==========================
-        
-        make_story_feed_entries: function(stories, first_load, options) {
-            var $feed_view = this.$s.$feed_view;
-            var $stories = this.$s.$feed_stories;
-            var self = this;
-            var unread_view = this.get_unread_view_score();
-            var river_same_feed;
-            var feed = this.model.get_feed(this.active_feed);
-            
-            options = options || {};
-            
-            if (first_load && !options.refresh_load) {
-                $('.NB-feed-story-endbar', $feed_view).remove();
-            }
-
-            for (var s in stories) {
-                // REMOVED
-                                
-            }
-            
-            if (!stories || !stories.length) {
-                // this.fetch_story_locations_in_feed_view({'reset_timer': true});
-            }
-            
-            if (first_load) NEWSBLUR.app.story_list.show_stories_preference_in_feed_view(true);
-        },
         
         apply_story_styling: function(reset_stories) {
             var $body = this.$s.$body;
@@ -4089,6 +4064,21 @@
                 $module.replaceWith(resp);
                 self.load_javascript_elements_on_page();
             }, $.noop);
+        },
+        
+        // ===================
+        // = Unfetched Feeds =
+        // ===================
+        
+        setup_unfetched_feed_check: function() {
+            this.locks.unfetched_feed_check = setInterval(_.bind(function() {
+                var unfetched_feeds = NEWSBLUR.assets.unfetched_feeds();
+                if (unfetched_feeds.length) {
+                    _.each(unfetched_feeds, _.bind(function(feed) {
+                        this.force_instafetch_stories(feed.id);
+                    }, this));
+                }
+            }, this), 60*10*1000);
         },
         
         // ==========

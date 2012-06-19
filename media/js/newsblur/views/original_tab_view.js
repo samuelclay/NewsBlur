@@ -613,7 +613,8 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
     toggle_selected_story: function(model, selected, options) {
         if (selected && 
             NEWSBLUR.reader.story_view == 'page' && 
-            !options.selected_in_original) {
+            !options.selected_in_original &&
+            !options.selected_by_scrolling) {
             var found = this.scroll_to_selected_story(model);
             NEWSBLUR.reader.switch_to_correct_view(found);
             if (!found) {

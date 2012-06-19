@@ -606,6 +606,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return counts;
     },
     
+    unfetched_feeds: function() {
+        return this.feeds.filter(function(feed) {
+            return feed.get('active') && !feed.get('fetched_once') && !feed.get('has_exception');
+        });
+    },
+    
     set_feed: function(feed_id, feed) {
         if (!feed) {
             feed = feed_id;
