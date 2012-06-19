@@ -18,6 +18,9 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         
         this.setup_events();
         this.collection.bind('change:selected', this.toggle_selected_story, this);
+        this.collection.bind('reset', this.fetch_story_locations_in_story_frame, this);
+        this.collection.bind('add', this.fetch_story_locations_in_story_frame, this);
+
     },
     
     setup_events: function() {
@@ -215,7 +218,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         var prefetch_tries_left = 3;
         this.cache['prefetch_iteration'] += 1;
         
-        NEWSBLUR.log(['Prefetching', !this.flags['iframe_fetching_story_locations'], !this.flags['iframe_story_locations_fetched']]);
+        NEWSBLUR.log(['Prefetching Original', !this.flags['iframe_fetching_story_locations'], !this.flags['iframe_story_locations_fetched']]);
         if (!this.flags['iframe_fetching_story_locations'] 
             && !this.flags['iframe_story_locations_fetched']) {
             // $iframe.unbind('scroll').scroll($.rescope(this.handle_scroll_feed_iframe, this));

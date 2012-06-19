@@ -186,7 +186,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var self = this;
         var stories = NEWSBLUR.assets.stories;
         
-        NEWSBLUR.log(['Prefetching', this.flags['feed_view_positions_calculated'], this.flags.feed_view_images_loaded, (_.keys(this.flags.feed_view_images_loaded).length > 0 || this.cache.feed_view_story_positions_keys.length > 0), _.keys(this.flags.feed_view_images_loaded).length,
+        NEWSBLUR.log(['Prefetching Feed', this.flags['feed_view_positions_calculated'], this.flags.feed_view_images_loaded, (_.keys(this.flags.feed_view_images_loaded).length > 0 || this.cache.feed_view_story_positions_keys.length > 0), _.keys(this.flags.feed_view_images_loaded).length,
                                 _.values(this.flags.feed_view_images_loaded), this.is_feed_loaded_for_location_fetch()]);
 
         if (!NEWSBLUR.assets.stories.size()) return;
@@ -199,7 +199,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             });
         
             NEWSBLUR.assets.stories.any(_.bind(function(story) {
-                NEWSBLUR.log(['Pre-fetching', story.get('story_title'), this.flags.feed_view_images_loaded[story.id]]);
                 this.determine_feed_view_story_position(story);
                 var $story = story.story_view.$el;
                 if (!$story || !$story.length || this.flags['feed_view_positions_calculated']) {
@@ -275,17 +274,19 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
     },
     
-    reset_story_positions: function() {
+    reset_story_positions: function(models) {
+        console.log(["reset_story_positions", models, arguments]);
+        models = (models && models.length && models) || NEWSBLUR.assets.stories;
         this.flags['feed_view_positions_calculated'] = false;
         
-        this.flags.feed_view_images_loaded = {};
+        // this.flags.feed_view_images_loaded = {};
 
         if (this.cache.story_pane_position == null) {
             this.cache.story_pane_position = this.$el.offsetParent().offset().top;
         }
 
-        NEWSBLUR.assets.stories.each(_.bind(function(story) {
-            var image_count = story.story_view.$('img').length;
+        models.each(_.bind(function(story) {
+            var image_count = story.story_view.$('.NB-feed-story-content img').length;
             if (!image_count) {
                 this.flags.feed_view_images_loaded[story.id] = true;
             } else {
@@ -294,9 +295,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 // its position (after its own images are loaded).
                 this.flags.feed_view_images_loaded[story.id] = false;
                 (function(story, image_count) {
-                    story.story_view.$('img').load(function() {
+                    story.story_view.$('.NB-feed-story-content img').load(function() {
                         NEWSBLUR.log(['Loaded image', story.get('story_title'), image_count]);
-                        if (image_count == 1) {
+                        if (image_count <= 1) {
                             NEWSBLUR.app.story_list.flags.feed_view_images_loaded[story.id] = true;
                         } else {
                             image_count--;

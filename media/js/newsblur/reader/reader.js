@@ -1023,20 +1023,9 @@
                 this.select_story_in_feed();
             }
             this.flags['story_titles_loaded'] = true;
-            if (!first_load) {
-                var stories_count = this.cache['iframe_story_positions_keys'].length;
-                NEWSBLUR.app.original_tab_view.fetch_story_locations_in_story_frame();
-                if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
-                    NEWSBLUR.app.story_list.reset_story_positions();
-                }
-            } else {
-                if (this.story_view == 'page') {
-                    _.delay(_.bind(function() {
-                        NEWSBLUR.app.original_tab_view.prefetch_story_locations_in_story_frame();
-                    }, this), 250);
-                } else if (this.story_view == 'feed') {
-                    NEWSBLUR.app.story_list.reset_story_positions();
-                } else if (this.story_view == 'story' && !this.counts['find_next_unread_on_page_of_feed_stories_load']) {
+            if (first_load) {
+                if (this.story_view == 'story' &&
+                    !this.counts['find_next_unread_on_page_of_feed_stories_load']) {
                     this.show_next_story(1);
                 }
                 
@@ -1144,7 +1133,6 @@
                 }
                 this.show_story_titles_above_intelligence_level({'animate': false});
                 this.flags['story_titles_loaded'] = true;
-                NEWSBLUR.app.story_list.reset_story_positions();
                 // this.scroll_story_titles_to_show_selected_story_title();
                 // this.fill_out_story_titles();
             }
@@ -1224,7 +1212,6 @@
                 }
                 // this.scroll_story_titles_to_show_selected_story_title();
                 // this.fill_out_story_titles();
-                NEWSBLUR.app.story_list.reset_story_positions();
                 this.hide_stories_progress_bar();
             }
         },
@@ -1343,7 +1330,6 @@
                 }
                 // this.scroll_story_titles_to_show_selected_story_title();
                 // this.fill_out_story_titles();
-                NEWSBLUR.app.story_list.reset_story_positions();
                 this.hide_stories_progress_bar();
                 
                 if (this.flags['showing_social_feed_in_tryfeed_view']) {
