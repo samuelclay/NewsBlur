@@ -14,7 +14,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface FeedsViewController : BaseViewController 
+@interface NewsBlurViewController : BaseViewController 
 		   <UITableViewDelegate, UITableViewDataSource, 
             UIAlertViewDelegate, PullToRefreshViewDelegate,
             ASIHTTPRequestDelegate, NSCacheDelegate> {
@@ -34,7 +34,6 @@
     IBOutlet UIBarButtonItem * homeButton;
     IBOutlet UISegmentedControl * intelligenceControl;
     IBOutlet UIBarButtonItem * sitesButton;
-    IBOutlet UIBarButtonItem * addButton;
 }
 
 - (void)returnToApp;
@@ -52,7 +51,6 @@
 - (void)redrawUnreadCounts;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (IBAction)doSwitchSitesUnread;
-- (IBAction)doAddButton;
 - (void)loadFavicons;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
@@ -65,7 +63,6 @@
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * homeButton;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * sitesButton;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem * addButton;
 @property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic, retain) NSMutableDictionary *visibleFeeds;
 @property (nonatomic, retain) NSMutableDictionary *stillVisibleFeeds;

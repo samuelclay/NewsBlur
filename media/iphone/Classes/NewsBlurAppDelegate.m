@@ -7,7 +7,7 @@
 //
 
 #import "NewsBlurAppDelegate.h"
-#import "FeedsViewController.h"
+#import "NewsBlurViewController.h"
 #import "FeedDetailViewController.h"
 #import "FeedsMenuViewController.h"
 #import "StoryDetailViewController.h"

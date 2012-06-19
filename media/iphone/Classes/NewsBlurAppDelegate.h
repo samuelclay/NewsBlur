@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 
-@class FeedsViewController;
+@class NewsBlurViewController;
 @class FeedDetailViewController;
 @class FeedsMenuViewController;
 @class FirstTimeUserViewController;
@@ -29,7 +29,7 @@
     UINavigationController *navigationController;
     UINavigationController *splitStoryDetailNavigationController;
 
-    FeedsViewController *feedsViewController;
+    NewsBlurViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
     FontSettingsViewController *fontSettingsViewController;
     FeedDetailViewController *feedDetailViewController;
@@ -71,7 +71,7 @@
 @property (nonatomic, retain) IBOutlet UISplitViewController *splitStoryController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *navigationController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *splitStoryDetailNavigationController;
-@property (nonatomic, retain) IBOutlet FeedsViewController *feedsViewController;
+@property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic, retain) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, retain) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
