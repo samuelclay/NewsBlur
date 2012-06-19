@@ -151,30 +151,12 @@
 
 - (void)showFeedsMenu {
     UINavigationController *navController = self.navigationController;
-
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        addSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-//        [navController presentModalViewController:addSiteViewController animated:YES];
-//        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); //it's important to do this after presentModalViewController
-//        addSiteViewController.view.superview.center = self.view.center;
-    } else {
-        [navController presentModalViewController:feedsMenuViewController animated:YES];
-    }
-    
+    [navController presentModalViewController:feedsMenuViewController animated:YES];
 }
 
 - (void)hideFeedsMenu {
     UINavigationController *navController = self.navigationController;
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        //        addSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-        //        [navController presentModalViewController:addSiteViewController animated:YES];
-        //        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); //it's important to do this after presentModalViewController
-        //        addSiteViewController.view.superview.center = self.view.center;
-    } else {
-        [navController dismissModalViewControllerAnimated:YES];
-    }
+    [navController dismissModalViewControllerAnimated:YES];
 }
 
 - (void)showAdd {

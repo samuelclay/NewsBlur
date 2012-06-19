@@ -10,6 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "SplitStoryDetailViewController.h"
 #import "FeedTableCell.h"
+#import "FeedsMenuViewController.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
@@ -36,6 +37,7 @@
 @synthesize pull;
 @synthesize lastUpdate;
 @synthesize imageCache;
+@synthesize popoverController;
 
 #pragma mark -
 #pragma mark Globals
@@ -132,6 +134,9 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     //[appDelegate showNavigationBar:YES];
+    if( popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+    }
     [super viewWillDisappear:animated];
 }
 
@@ -168,6 +173,7 @@
     [pull release];
     [lastUpdate release];
     [imageCache release];
+    [popoverController release];
     
     [super dealloc];
 }
@@ -288,7 +294,20 @@
 }
 
 - (IBAction)showMenuButton {
-    [appDelegate showFeedsMenu];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (popoverController == nil) {
+            popoverController = [[UIPopoverController alloc]
+                                 initWithContentViewController:appDelegate.feedsMenuViewController];
+            
+            popoverController.delegate = self;
+        }
+        
+        [popoverController setPopoverContentSize:CGSizeMake(200, 130)];
+        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];  
+    } else {
+        [appDelegate showFeedsMenu]; 
+    }
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

@@ -37,7 +37,6 @@
 @property (nonatomic, retain) UIActivityIndicatorView *loadingIndicator;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UIView *feedTitleGradient;
-
 @property (retain,nonatomic) UIPopoverController *popoverController;
 
 - (void)setNextPreviousButtons;

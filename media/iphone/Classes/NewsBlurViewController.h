@@ -17,7 +17,8 @@
 @interface NewsBlurViewController : BaseViewController 
 		   <UITableViewDelegate, UITableViewDataSource, 
             UIAlertViewDelegate, PullToRefreshViewDelegate,
-            ASIHTTPRequestDelegate, NSCacheDelegate> {
+            ASIHTTPRequestDelegate, NSCacheDelegate,
+            UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;
@@ -34,6 +35,7 @@
     IBOutlet UIBarButtonItem * homeButton;
     IBOutlet UISegmentedControl * intelligenceControl;
     IBOutlet UIBarButtonItem * sitesButton;
+    IBOutlet UIPopoverController *popoverController;
 }
 
 - (void)returnToApp;
@@ -71,5 +73,6 @@
 @property (nonatomic, retain) NSDate *lastUpdate;
 @property (nonatomic, retain) NSCache *imageCache;
 @property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
+@property (nonatomic, retain) UIPopoverController *popoverController;
 
 @end

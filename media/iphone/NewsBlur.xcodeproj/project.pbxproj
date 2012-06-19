@@ -771,11 +771,11 @@
 				43B8F019156603170008733D /* AddSiteViewController.xib */,
 				43B8F01A156603170008733D /* FeedDetailTableCell.xib */,
 				43B8F01B156603170008733D /* FeedDetailViewController.xib */,
+				439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */,
 				43B8F01C156603170008733D /* LoginViewController.xib */,
 				43B8F01D156603170008733D /* MainWindow.xib */,
 				43B8F01E156603170008733D /* MoveSiteViewController.xib */,
 				43B8F01F156603170008733D /* NewsBlurViewController.xib */,
-				439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */,
 				43B8F020156603170008733D /* OriginalStoryViewController.xib */,
 				43B8F021156603170008733D /* StoryDetailViewController.xib */,
 			);

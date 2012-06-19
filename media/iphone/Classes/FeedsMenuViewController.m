@@ -15,6 +15,8 @@
 
 @synthesize appDelegate;
 @synthesize menuOptions;
+@synthesize toolbar;
+@synthesize tableView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -32,10 +34,18 @@
     
     self.menuOptions = [[[NSArray alloc]
                         initWithObjects:@"Add Site", @"Add Folder", @"Logout", nil] autorelease];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        toolbar.hidden = YES;
+        tableView.frame = CGRectMake(0, 0, tableView.frame.size.width, tableView.frame.size.height + 44);
+    }
 }
 
 - (void)viewDidUnload
 {
+    toolbar = nil;
+    tableView = nil;
+
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -50,6 +60,8 @@
 - (void)dealloc {   
     [appDelegate release];
     [menuOptions release];
+    [toolbar release];
+    [tableView release];
     [super dealloc];
 }
 

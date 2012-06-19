@@ -23,7 +23,8 @@
 @class SplitStoryDetailViewController;
 
 
-@interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate> {
+@interface NewsBlurAppDelegate : BaseViewController 
+                                <UIApplicationDelegate>  {
     UIWindow *window;
     UISplitViewController *splitStoryController;
     UINavigationController *navigationController;

@@ -18,10 +18,14 @@
                                     UITableViewDataSource,
                                     UIAlertViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
+    IBOutlet UIToolbar *toolbar;
+    IBOutlet UITableView *tableView;
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) NSArray *menuOptions;
+@property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
+@property (retain, nonatomic) IBOutlet UITableView *tableView;
 
 - (IBAction)tapCancelButton:(UIBarButtonItem *)sender;
 
