@@ -681,7 +681,7 @@
 							<reference key="NSCustomColorSpace" ref="892872088"/>
 						</object>
 						<int key="IBUIBaselineAdjustment">1</int>
-						<float key="IBUIMinimumFontSize">17</float>
+						<float key="IBUIMinimumFontSize">16</float>
 						<int key="IBUINumberOfLines">2</int>
 						<int key="IBUITextAlignment">1</int>
 						<reference key="IBUIFontDescription" ref="491882177"/>
@@ -1857,6 +1857,85 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">FontSettingsViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>changeFontSize:</string>
+							<string>changeFontStyle:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>changeFontSize:</string>
+							<string>changeFontStyle:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">changeFontSize:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">changeFontStyle:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>largeFontSizeLabel</string>
+							<string>smallFontSizeLabel</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NewsBlurAppDelegate</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>largeFontSizeLabel</string>
+							<string>smallFontSizeLabel</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">appDelegate</string>
+								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">largeFontSizeLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">smallFontSizeLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/FontSettingsViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">GoogleReaderViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
@@ -2265,6 +2344,7 @@
 							<string>feedDetailViewController</string>
 							<string>feedsViewController</string>
 							<string>firstTimeUserViewController</string>
+							<string>fontSettingsViewController</string>
 							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
@@ -2282,6 +2362,7 @@
 							<string>FeedDetailViewController</string>
 							<string>FeedsViewController</string>
 							<string>FirstTimeUserViewController</string>
+							<string>FontSettingsViewController</string>
 							<string>GoogleReaderViewController</string>
 							<string>LoginViewController</string>
 							<string>MoveSiteViewController</string>
@@ -2302,6 +2383,7 @@
 							<string>feedDetailViewController</string>
 							<string>feedsViewController</string>
 							<string>firstTimeUserViewController</string>
+							<string>fontSettingsViewController</string>
 							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
@@ -2330,6 +2412,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">firstTimeUserViewController</string>
 								<string key="candidateClassName">FirstTimeUserViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">fontSettingsViewController</string>
+								<string key="candidateClassName">FontSettingsViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">googleReaderViewController</string>
@@ -2541,9 +2627,11 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 						</object>
@@ -2554,6 +2642,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2563,6 +2652,10 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">doPreviousStory</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">toggleFontSize:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>
@@ -2577,6 +2670,7 @@
 							<string>buttonNext</string>
 							<string>buttonPrevious</string>
 							<string>feedTitleGradient</string>
+							<string>popoverController</string>
 							<string>progressView</string>
 							<string>toolbar</string>
 							<string>webView</string>
@@ -2589,6 +2683,7 @@
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIView</string>
+							<string>UIPopoverController</string>
 							<string>UIProgressView</string>
 							<string>UIToolbar</string>
 							<string>UIWebView</string>
@@ -2604,6 +2699,7 @@
 							<string>buttonNext</string>
 							<string>buttonPrevious</string>
 							<string>feedTitleGradient</string>
+							<string>popoverController</string>
 							<string>progressView</string>
 							<string>toolbar</string>
 							<string>webView</string>
@@ -2633,6 +2729,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">feedTitleGradient</string>
 								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">popoverController</string>
+								<string key="candidateClassName">UIPopoverController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">progressView</string>

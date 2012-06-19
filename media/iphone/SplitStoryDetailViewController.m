@@ -36,13 +36,16 @@
 	// Do any additional setup after loading the view, typically from a nib.
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated 
+{
     // messes up on FTUX, must put in a state test
-    //    if (self.masterPopoverController) {
-    //        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    //    }
+//    if (self.masterPopoverController) {
+//        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) 
+//                                                      inView:self.view 
+//                                    permittedArrowDirections:UIPopoverArrowDirectionAny 
+//                                                    animated:YES];
+//    }
 }
-
 
 - (void)viewDidUnload
 {
@@ -55,11 +58,14 @@
 	return YES;
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation 
+                                         duration:(NSTimeInterval)duration 
+{
     [appDelegate adjustStoryDetailWebView]; 
 }
 
-- (void)showPopover {
+- (void)showPopover 
+{
     if (self.masterPopoverController) {
         [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) inView:self.view
                                     permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
@@ -68,14 +74,19 @@
 
 #pragma mark - Split view
 
-- (void)splitViewController:(UISplitViewController *)splitController willHideViewController:(UIViewController *)viewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)popoverController
+- (void)splitViewController:(UISplitViewController *)splitController 
+     willHideViewController:(UIViewController *)viewController 
+          withBarButtonItem:(UIBarButtonItem *)barButtonItem 
+       forPopoverController:(UIPopoverController *)popoverController
 {
-    barButtonItem.title = NSLocalizedString(@"NewsBlur", @"NewsBlur");
+    barButtonItem.title = NSLocalizedString(@"All Sites", @"All Sites");
     [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
     self.masterPopoverController = popoverController;   
 }
 
-- (void)splitViewController:(UISplitViewController *)splitController willShowViewController:(UIViewController *)viewController invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem
+- (void)splitViewController:(UISplitViewController *)splitController 
+     willShowViewController:(UIViewController *)viewController 
+  invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem
 {
     // Called when the view is shown again in the split view, invalidating the button and popover controller.
     [self.navigationItem setLeftBarButtonItem:nil animated:YES];

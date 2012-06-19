@@ -90,9 +90,9 @@
         [self.storyTitlesTable endUpdates];
     }
     [appDelegate setRecentlyReadStories:[NSMutableArray array]];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"dislike.png"] forSegmentAtIndex:0];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"thumbs_down.png"] forSegmentAtIndex:0];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"like.png"] forSegmentAtIndex:2];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"thumbs_up.png"] forSegmentAtIndex:2];
     [self.intelligenceControl addTarget:self
                          action:@selector(selectIntelligence)
                forControlEvents:UIControlEventValueChanged];
@@ -108,9 +108,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-//    [[storyTitlesTable cellForRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow]] setSelected:NO]; // TODO: DESELECT CELL --- done, see line below:
     [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
-    
 	[super viewDidAppear:animated];
 }
 
@@ -421,11 +419,11 @@
     cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"like.png"];
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"thumbs_up.png"];
     } else if (score == 0) {
         cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_yellow.png"];
     } else if (score < 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"dislike.png"];
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"thumbs_down.png"];
     }
     
     // River view
@@ -838,7 +836,9 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:rowIndex - 1 inSection:0];
 
-    [storyTitlesTable selectRowAtIndexPath:indexPath animated:YES  scrollPosition:UITableViewScrollPositionNone];
+    [storyTitlesTable selectRowAtIndexPath:indexPath 
+                                  animated:YES 
+                            scrollPosition:UITableViewScrollPositionNone];
     
     FeedDetailTableCell *cell = (FeedDetailTableCell *) [storyTitlesTable cellForRowAtIndexPath:indexPath];
     // check to see if the cell is completely visible
@@ -850,7 +850,9 @@
     
     [self changeRowStyleToRead:cell];
     if (!completelyVisible) {
-        [storyTitlesTable scrollToRowAtIndexPath:offsetIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        [storyTitlesTable scrollToRowAtIndexPath:offsetIndexPath 
+                                atScrollPosition:UITableViewScrollPositionTop 
+                                        animated:YES];
     }
 }
 

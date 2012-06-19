@@ -182,6 +182,7 @@
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [self updateButtons];
 }
+
 - (void)webViewDidFinishLoad:(UIWebView *)aWebView
 {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -189,6 +190,7 @@
     [self updateButtons];
     [self updateTitle:aWebView];
 }
+
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
@@ -199,17 +201,20 @@
         [self informError:error];   
     }
 }
+
 - (void)updateTitle:(UIWebView*)aWebView
 {
     NSString *pageTitleValue = [aWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
     self.pageTitle.text = [pageTitleValue stringByDecodingHTMLEntities];
 }
+
 - (void)updateAddress:(NSURLRequest*)request
 {
     NSURL *url = [request URL];
     self.pageUrl.text = [url absoluteString];
     [self loadAddress:nil];
 }
+
 - (void)updateButtons
 {
     self.forward.enabled = self.webView.canGoForward;
