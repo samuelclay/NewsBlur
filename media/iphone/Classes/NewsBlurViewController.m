@@ -111,20 +111,20 @@
                                       animated:YES scrollPosition:UITableViewScrollPositionMiddle];
     
     
-    // remove the right detail view in storySplitController
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-        NSArray *subviews = [[appDelegate.splitStoryDetailViewController.view subviews] copy];
-        for (UIView *subview in subviews) {
-            if (subview.tag == 12) {
-                [subview removeFromSuperview];
-            }
-        }
-        [subviews release];
-    }
-    
-    appDelegate.splitStoryDetailViewController.navigationItem.titleView = nil;
-    appDelegate.splitStoryDetailViewController.navigationItem.title = @"NewsBlur";
-    appDelegate.splitStoryDetailViewController.navigationItem.rightBarButtonItem = nil;  
+//    // remove the right detail view in storySplitController
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+//        NSArray *subviews = [[appDelegate.splitStoryDetailViewController.view subviews] copy];
+//        for (UIView *subview in subviews) {
+//            if (subview.tag == 12) {
+//                [subview removeFromSuperview];
+//            }
+//        }
+//        [subviews release];
+//    }
+//    
+//    appDelegate.splitStoryDetailViewController.navigationItem.titleView = nil;
+//    appDelegate.splitStoryDetailViewController.navigationItem.title = @"NewsBlur";
+//    appDelegate.splitStoryDetailViewController.navigationItem.rightBarButtonItem = nil;  
 }
 
 - (void)viewDidAppear:(BOOL)animated {

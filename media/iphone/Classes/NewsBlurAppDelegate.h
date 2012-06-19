@@ -44,8 +44,10 @@
     SplitStoryDetailViewController *splitStoryDetailViewController;
 
     
+
     NSString * activeUsername;
     BOOL isRiverView;
+    BOOL popoverHasFeedView;
     NSDictionary * activeFeed;
     NSString * activeFolder;
     NSArray * activeFolderFeeds;
@@ -87,6 +89,7 @@
 
 @property (readwrite, retain) NSString * activeUsername;
 @property (nonatomic, readwrite) BOOL isRiverView;
+@property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSString * activeFolder;
 @property (readwrite, retain) NSArray * activeFolderFeeds;
@@ -115,6 +118,7 @@
 - (void)showLogin;
 - (void)showFeedsMenu;
 - (void)hideFeedsMenu;
+- (void)pushFeedDetailToMasterPopover;
 - (void)showAdd;
 - (void)showMasterPopover;
 - (void)showPopover;

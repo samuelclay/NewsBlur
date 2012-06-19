@@ -44,6 +44,7 @@
 
 @synthesize activeUsername;
 @synthesize isRiverView;
+@synthesize popoverHasFeedView;
 @synthesize activeFeed;
 @synthesize activeFolder;
 @synthesize activeFolderFeeds;
@@ -216,6 +217,13 @@
 - (void)showMasterPopover {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [splitStoryDetailViewController showPopover];
+        NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
+        for (UIView *subview in subviews) {
+            if (subview.tag == 14) {
+                [subview removeFromSuperview];
+            }
+        }
+        [subviews release];
     }
 }
 
@@ -231,8 +239,6 @@
     } else {
         [navController presentModalViewController:moveSiteViewController animated:YES];
     }
-    
-    
 }
 
 - (void)reloadFeedsView:(BOOL)showLoader {
@@ -242,17 +248,74 @@
 }
 
 - (void)loadFeedDetailView {
-    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" style: UIBarButtonItemStyleBordered target: nil action: nil];
-    [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-    [newBackButton release];
-    UINavigationController *navController = self.navigationController;
-    [self setStories:nil];
-    [navController pushViewController:feedDetailViewController animated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && 
+        UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
+        // remove existing feedDetailViewController
+        NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
+        for (UIView *subview in subviews) {
+            if (subview.tag == 14) {
+                [subview removeFromSuperview];
+            }
+        }
+        [subviews release];
+        
+        feedDetailViewController.view.tag = 14;
+        [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
+        
+        [self adjustStoryDetailWebView];
+        [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
+    } else {
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" style: UIBarButtonItemStyleBordered target: nil action: nil];
+        [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+        [newBackButton release];
+        UINavigationController *navController = self.navigationController;
+        [self setStories:nil];
+        [navController pushViewController:feedDetailViewController animated:YES];
+        [self showNavigationBar:YES];
+        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+        //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
+        
+        popoverHasFeedView = YES;
+    }
+    
     [feedDetailViewController resetFeedDetail];
     [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
-    [self showNavigationBar:YES];
-    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
+}
+
+- (void)adjustStoryDetailWebView {
+    UINavigationController *navController = self.navigationController;
+
+    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
+        storyDetailViewController.view.frame = CGRectMake(0,0,768,600);
+        feedDetailViewController.view.frame = CGRectMake(0,600,768,360);
+        
+        if (popoverHasFeedView) {
+            [navController popViewControllerAnimated:NO];
+            popoverHasFeedView = NO;
+        }
+
+        [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
+        
+        
+    } else {
+        storyDetailViewController.view.frame = CGRectMake(0,0,704,704);
+        
+        // remove existing feedDetailViewController
+        NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
+        for (UIView *subview in subviews) {
+            if (subview.tag == 14) {
+                [subview removeFromSuperview];
+            }
+        }
+        [subviews release];
+        
+        if (!popoverHasFeedView) {
+            [navController pushViewController:feedDetailViewController animated:NO];
+            popoverHasFeedView = YES;
+        }
+
+    }
+    
 }
 
 - (void)loadRiverFeedDetailView {
@@ -306,17 +369,6 @@
         navController.navigationItem.hidesBackButton = YES;
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
-
-
-}
-
-- (void)adjustStoryDetailWebView {
-    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
-        storyDetailViewController.view.frame = CGRectMake(0,0,768,960);
-    } else {
-        storyDetailViewController.view.frame = CGRectMake(0,0,704,704);
-    }
-    
 }
 
 - (void)navigationController:(UINavigationController *)navController 
