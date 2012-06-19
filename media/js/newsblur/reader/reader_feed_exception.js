@@ -2,7 +2,7 @@ NEWSBLUR.ReaderFeedException = function(feed_id, options) {
     var defaults = {};
         
     this.options = $.extend({}, defaults, options);
-    this.model   = NEWSBLUR.AssetModel.reader();
+    this.model   = NEWSBLUR.assets;
     this.feed_id = feed_id;
     this.feed    = this.model.get_feed(feed_id);
 
@@ -33,8 +33,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     initialize_feed: function(feed_id) {
         var view_setting = this.model.view_setting(feed_id);
         NEWSBLUR.Modal.prototype.initialize_feed.call(this, feed_id);
-        $('input[name=feed_link]', this.$modal).val(this.feed.feed_link);
-        $('input[name=feed_address]', this.$modal).val(this.feed.feed_address);
+        $('input[name=feed_link]', this.$modal).val(this.feed.get('feed_link'));
+        $('input[name=feed_address]', this.$modal).val(this.feed.get('feed_address'));
         $('input[name=view_settings]', this.$modal).each(function() {
             if ($(this).val() == view_setting) {
                 $(this).attr('checked', true);
@@ -42,7 +42,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             }
         });
                 
-        if (this.feed.exception_type) {
+        if (this.feed.get('exception_type')) {
             this.$modal.removeClass('NB-modal-feed-settings');
         } else {
             this.$modal.addClass('NB-modal-feed-settings');
@@ -79,8 +79,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
-                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers))
+                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
+                    $.make('span', { className: 'NB-modal-feed-subscribers' },Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
                 ])
             ]),
             $.make('div', { className: 'NB-fieldset NB-exception-option NB-exception-option-view NB-modal-submit NB-settings-only' }, [
@@ -144,7 +144,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                             $.make('div', { className: 'NB-folder-icon' }),
                             'RSS/XML URL: '
                         ]),
-                        $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address NB-input', name: 'feed_address', value: this.feed['feed_address'] })
+                        $.make('input', { type: 'text', id: 'NB-exception-input-address', className: 'NB-exception-input-address NB-input', name: 'feed_address', value: this.feed.get('feed_address') })
                     ]),
                     (!this.options.social_feed && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
                         $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-green NB-modal-submit-address' }),
@@ -165,7 +165,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                             $.make('div', { className: 'NB-folder-icon' }),
                             'Website URL: '
                         ]),
-                        $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link NB-input', name: 'feed_link', value: this.feed['feed_link'] })
+                        $.make('input', { type: 'text', id: 'NB-exception-input-link', className: 'NB-exception-input-link NB-input', name: 'feed_link', value: this.feed.get('feed_link') })
                     ]),
                     (!this.options.social_feed && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
                         $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-green NB-modal-submit-link' }),
@@ -193,18 +193,18 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
       var $meta_retry = $('.NB-exception-option-retry .NB-exception-option-meta', this.$modal);
       var $meta_page = $('.NB-exception-option-page .NB-exception-option-meta', this.$modal);
       var $meta_feed = $('.NB-exception-option-feed .NB-exception-option-meta', this.$modal);
-      var is_400 = (400 <= this.feed.exception_code && this.feed.exception_code < 500);
+      var is_400 = (400 <= this.feed.get('exception_code') && this.feed.get('exception_code') < 500);
       
       if (!is_400) {
           $meta_retry.addClass('NB-exception-option-meta-recommended');
           $meta_retry.text('Recommended');
           return;
       }
-      if (this.feed.exception_type == 'feed') {
+      if (this.feed.get('exception_type') == 'feed') {
           $meta_page.addClass('NB-exception-option-meta-recommended');
           $meta_page.text('Recommended');
       }
-      if (this.feed.exception_type == 'page') {
+      if (this.feed.get('exception_type') == 'page') {
           if (is_400) {
               $meta_feed.addClass('NB-exception-option-meta-recommended');
               $meta_feed.text('Recommended');

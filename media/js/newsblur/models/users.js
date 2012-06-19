@@ -1,7 +1,5 @@
 NEWSBLUR.Models.User = Backbone.Model.extend({
     
-    // idAttribute: 'user_id',
-    
     get: function(attr) {
         var value = Backbone.Model.prototype.get.call(this, attr);
         if (attr == 'photo_url' && !value) {

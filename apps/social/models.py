@@ -807,6 +807,9 @@ class MSocialSubscription(mongo.Document):
         share_key = "S:%s:%s" % (story_feed_id, story_guid_hash)
         following_user_ids = r.sinter(friends_key, share_key)
         following_user_ids = [int(f) for f in following_user_ids]
+        if not following_user_ids:
+            return None
+
         social_subs = cls.objects.filter(user_id=user_id, subscription_user_id__in=following_user_ids)
         for social_sub in social_subs:
             social_sub.needs_unread_recalc = True

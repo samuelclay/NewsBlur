@@ -71,6 +71,7 @@
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};
     NEWSBLUR.Views = {};
+    NEWSBLUR.app = {};
   </script>
   
   {% include_stylesheets "common" %}
@@ -125,13 +126,15 @@
   {% block head_js %}
     {% include_javascripts "common" %}
   {% endblock head_js %}
+
+  <script type="text/javascript" charset="utf-8">
+    _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
+    _.extend(NEWSBLUR.Preferences['view_settings'], {% if user_profile.view_settings %}{{ user_profile.view_settings|safe }}{% else %}{}{% endif %});
+    _.extend(NEWSBLUR.Preferences['collapsed_folders'], {% if user_profile.collapsed_folders %}{{ user_profile.collapsed_folders|safe }}{% else %}[]{% endif %});
+  </script>
+
   {% block extra_head_js %}
   {% endblock extra_head_js %}
   
-  <script type="text/javascript" charset="utf-8">
-    $.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
-    $.extend(NEWSBLUR.Preferences['view_settings'], {% if user_profile.view_settings %}{{ user_profile.view_settings|safe }}{% else %}{}{% endif %});
-    $.extend(NEWSBLUR.Preferences['collapsed_folders'], {% if user_profile.collapsed_folders %}{{ user_profile.collapsed_folders|safe }}{% else %}[]{% endif %});
-  </script>
 </body>
 </html>

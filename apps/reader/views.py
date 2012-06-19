@@ -18,13 +18,12 @@ from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
 from mongoengine.queryset import OperationError
 from pymongo.helpers import OperationFailure
-from collections import defaultdict
 from operator import itemgetter
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
 from apps.analyzer.models import apply_classifier_authors, apply_classifier_tags
-from apps.analyzer.models import get_classifiers_for_user
+from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserStory, Feature
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
@@ -169,10 +168,10 @@ def autologin(request, username, secret):
 def load_feeds(request):
     user             = get_user(request)
     feeds            = {}
-    not_yet_fetched  = False
     include_favicons = request.REQUEST.get('include_favicons', False)
     flat             = request.REQUEST.get('flat', False)
     update_counts    = request.REQUEST.get('update_counts', False)
+    version          = int(request.REQUEST.get('v', 1))
     
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
@@ -196,8 +195,6 @@ def load_feeds(request):
         if update_counts:
             sub.calculate_feed_scores(silent=True)
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
-        if feeds[pk].get('not_yet_fetched'):
-            not_yet_fetched = True
         if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
             sub.feed.count_subscribers()
             sub.feed.schedule_feed_fetch_immediately()
@@ -205,11 +202,6 @@ def load_feeds(request):
             sub.feed.count_subscribers()
             sub.feed.schedule_feed_fetch_immediately()
             
-    if not_yet_fetched:
-        for f in feeds:
-            if 'not_yet_fetched' not in feeds[f]:
-                feeds[f]['not_yet_fetched'] = False
-
     starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     social_params = {
@@ -224,7 +216,7 @@ def load_feeds(request):
     user.profile.save()
     
     data = {
-        'feeds': feeds,
+        'feeds': feeds.values() if version == 2 else feeds,
         'social_feeds': social_feeds,
         'social_profile': social_profile,
         'folders': json.decode(folders.folders),
@@ -395,10 +387,16 @@ def load_single_feed(request, feed_id):
         logging.user(request, "~BR~FK~SBRedis is unavailable for shared stories.")
 
     # Get intelligence classifier for user
-    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id))
+    
+    classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
     classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, feed_id=feed_id))
     classifier_titles  = list(MClassifierTitle.objects(user_id=user.pk, feed_id=feed_id))
     classifier_tags    = list(MClassifierTag.objects(user_id=user.pk, feed_id=feed_id))
+    classifiers = get_classifiers_for_user(user, feed_id=feed_id, 
+                                           classifier_feeds=classifier_feeds, 
+                                           classifier_authors=classifier_authors, 
+                                           classifier_titles=classifier_titles,
+                                           classifier_tags=classifier_tags)
     
     checkpoint1 = time.time()
     
@@ -458,11 +456,6 @@ def load_single_feed(request, feed_id):
     # Intelligence
     feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []
     feed_authors = json.decode(feed.data.popular_authors) if feed.data.popular_authors else []
-    classifiers = get_classifiers_for_user(user, feed_id=feed_id, 
-                                           classifier_feeds=classifier_feeds, 
-                                           classifier_authors=classifier_authors, 
-                                           classifier_titles=classifier_titles,
-                                           classifier_tags=classifier_tags)
     
     if usersub:
         usersub.feed_opens += 1
@@ -648,29 +641,21 @@ def load_river_stories(request):
     # except OperationFailure:
     #     logging.info(" ***> Starred stories failure")
     #     starred_stories = {}
-    # 
+    
     # Intelligence classifiers for all feeds involved
-    def sort_by_feed(classifiers):
-        feed_classifiers = defaultdict(list)
-        for classifier in classifiers:
-            feed_classifiers[classifier.feed_id].append(classifier)
-        return feed_classifiers
-    classifiers = {}
-    # try:
-    if found_feed_ids:
-        classifier_feeds   = sort_by_feed(MClassifierFeed.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-        classifier_authors = sort_by_feed(MClassifierAuthor.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-        classifier_titles  = sort_by_feed(MClassifierTitle.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-        classifier_tags    = sort_by_feed(MClassifierTag.objects(user_id=user.pk, feed_id__in=found_feed_ids))
-
-        for feed_id in found_feed_ids:
-            classifiers[feed_id] = get_classifiers_for_user(user, feed_id=feed_id, 
-                                                            classifier_feeds=classifier_feeds[feed_id], 
-                                                            classifier_authors=classifier_authors[feed_id],
-                                                            classifier_titles=classifier_titles[feed_id],
-                                                            classifier_tags=classifier_tags[feed_id])
-    # except OperationFailure:
-    #     logging.info(" ***> Classifiers failure")
+    classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
+                                               feed_id__in=found_feed_ids))
+    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
+                                                   feed_id__in=found_feed_ids))
+    classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
+                                                 feed_id__in=found_feed_ids))
+    classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
+                                             feed_id__in=found_feed_ids))
+    classifiers = sort_classifiers_by_feed(user=user, feed_ids=found_feed_ids,
+                                           classifier_feeds=classifier_feeds,
+                                           classifier_authors=classifier_authors,
+                                           classifier_titles=classifier_titles,
+                                           classifier_tags=classifier_tags)
     
     # Just need to format stories
     for story in stories:
@@ -683,10 +668,10 @@ def load_river_stories(request):
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
         story['intelligence'] = {
-            'feed':   apply_classifier_feeds(classifier_feeds[story['story_feed_id']], story['story_feed_id']),
-            'author': apply_classifier_authors(classifier_authors[story['story_feed_id']], story),
-            'tags':   apply_classifier_tags(classifier_tags[story['story_feed_id']], story),
-            'title':  apply_classifier_titles(classifier_titles[story['story_feed_id']], story),
+            'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
+            'author': apply_classifier_authors(classifier_authors, story),
+            'tags':   apply_classifier_tags(classifier_tags, story),
+            'title':  apply_classifier_titles(classifier_titles, story),
         }
 
     diff = time.time() - start
@@ -849,7 +834,7 @@ def mark_story_as_unread(request):
     social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
                                                                story_feed_id=feed_id, 
                                                                story_guid_hash=story.guid_hash)
-    dirty_count = social_subs.count()
+    dirty_count = social_subs and social_subs.count()
     dirty_count = ("(%s social_subs)" % dirty_count) if dirty_count else ""
         
     m = MUserStory.objects(user_id=request.user.pk, feed_id=feed_id, story_id=story_id)
@@ -907,7 +892,6 @@ def add_url(request):
     code = 0
     url = request.POST['url']
     auto_active = is_true(request.POST.get('auto_active', True))
-    print auto_active
     
     if not url:
         code = -1
@@ -1108,7 +1092,7 @@ def feeds_trainer(request):
     for us in usersubs:
         if (not us.is_trained and us.feed.stories_last_month > 0) or feed_id:
             classifier = dict()
-            classifier['classifiers'] = get_classifiers_for_user(user, feed_id=us.feed_id)
+            classifier['classifiers'] = get_classifiers_for_user(user, feed_id=us.feed.pk)
             classifier['feed_id'] = us.feed_id
             classifier['stories_last_month'] = us.feed.stories_last_month
             classifier['num_subscribers'] = us.feed.num_subscribers

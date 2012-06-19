@@ -110,7 +110,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             $button.removeClass('NB-profile-badge-action-follow')
                 .addClass('NB-profile-badge-action-unfollow');
                 
-            NEWSBLUR.reader.make_social_feeds();
+            NEWSBLUR.app.feed_list.make_social_feeds();
         }, this));
     },
     
@@ -127,7 +127,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             $button.removeClass('NB-profile-badge-action-unfollow')
                 .addClass('NB-profile-badge-action-follow');
                 
-            NEWSBLUR.reader.make_social_feeds();
+            NEWSBLUR.app.feed_list.make_social_feeds();
         }, this));
     },
     

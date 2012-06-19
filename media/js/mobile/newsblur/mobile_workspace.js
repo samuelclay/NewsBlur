@@ -6,7 +6,7 @@
         // = Globals =
         // ===========
         
-        this.model      = NEWSBLUR.AssetModel.reader();
+        this.model      = NEWSBLUR.assets;
         this.story_view = 'page';
         this.pages      = {
             'feeds' : $('#NB-page-feeds'),
@@ -98,7 +98,7 @@
             if (feed.has_exception && feed.exception_type == 'feed') {
                 exception_class += ' NB-feed-exception';
             }
-            if (feed.not_yet_fetched && !feed.has_exception) {
+            if (!feed.fetched_once && !feed.has_exception) {
                 exception_class += ' NB-feed-unfetched';
             }
             

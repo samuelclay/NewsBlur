@@ -2,7 +2,7 @@ NEWSBLUR.ReaderGoodies = function(options) {
     var defaults = {};
     
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.runner();
 };
 

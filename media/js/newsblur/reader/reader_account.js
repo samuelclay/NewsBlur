@@ -8,7 +8,7 @@ NEWSBLUR.ReaderAccount = function(options) {
     };
         
     this.options = $.extend({}, defaults, options);
-    this.model   = NEWSBLUR.AssetModel.reader();
+    this.model   = NEWSBLUR.assets;
 
     this.runner();
 };

@@ -53,6 +53,7 @@ class UserSubscription(models.Model):
         feed['ng']         = self.unread_count_negative
         feed['active']     = self.active
         feed['feed_opens'] = self.feed_opens
+        feed['subscribed'] = True
         if classifiers:
             feed['classifiers'] = classifiers
         if not self.active and self.user.profile.is_premium:
@@ -167,7 +168,8 @@ class UserSubscription(models.Model):
                 'id': feed_id,
             }
             if not sub.feed.fetched_once or check_fetch_status:
-                feeds[feed_id]['not_yet_fetched'] = not sub.feed.fetched_once
+                feeds[feed_id]['fetched_once'] = sub.feed.fetched_once
+                feeds[feed_id]['not_yet_fetched'] = not sub.feed.fetched_once # Legacy. Dammit.
             if sub.feed.favicon_fetching:
                 feeds[feed_id]['favicon_fetching'] = True
             if sub.feed.has_feed_exception or sub.feed.has_page_exception:
@@ -299,7 +301,7 @@ class UserSubscription(models.Model):
         # if not silent:
         #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         
-        classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id))
+        classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id, social_user_id=0))
         classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
         classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
         classifier_tags    = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
@@ -335,7 +337,7 @@ class UserSubscription(models.Model):
         
         # if not silent:
         #     logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
-            
+
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']
@@ -580,7 +582,7 @@ class UserSubscriptionFolders(models.Model):
         self.save()
 
         if commit_delete:
-          UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
+            UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
           
         return deleted_folder
         

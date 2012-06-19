@@ -7,6 +7,7 @@
         $(document).ready(function() {
 
             NEWSBLUR.reader = new NEWSBLUR.Reader();
+            NEWSBLUR.reader.init();
 
         });
     </script>
@@ -420,17 +421,7 @@
 <div class="left-pane">
 
     <div class="left-north">
-      <div class="NB-feeds-header-dashboard">
-        <div class="NB-feeds-header-right">
-          <div class="NB-feeds-header-sites">&nbsp;</div>
-        </div>
-        <div class="NB-feeds-header-left">
-          <span class="NB-feeds-header-count NB-feeds-header-negative NB-empty">0</span>
-          <span class="NB-feeds-header-count NB-feeds-header-neutral NB-empty">0</span>
-          <span class="NB-feeds-header-count NB-feeds-header-positive NB-empty">0</span>
-        </div>
-        <div class="NB-feeds-header-home">Dashboard</div>
-      </div>
+      <div class="NB-feeds-header-dashboard"></div>
     </div>
     
     <div class="left-center">
@@ -542,7 +533,10 @@
     
 <div class="right-pane">
   
-    <div id="story_titles" class="right-north"></div>
+    <div id="story_titles" class="right-north">
+        <div class="NB-feedbar"></div>
+        <div class="NB-story-titles"></div>
+    </div>
     <div class="content-pane">
         <div id="story_taskbar" class="NB-taskbar-container content-north">
           <div class="NB-taskbar">
@@ -572,12 +566,6 @@
                       <div class="task_button_background"></div>
                       <div class="NB-task-image"></div>
                       <span class="NB-task-title">Story</span>
-                  </div>
-              </li>
-              <li class="task_button NB-task-feed-settings">
-                  <div class="NB-task-button-wrapper">
-                      <div class="task_button_background"></div>
-                      <div class="NB-task-image"></div>
                   </div>
               </li>
             </ul>

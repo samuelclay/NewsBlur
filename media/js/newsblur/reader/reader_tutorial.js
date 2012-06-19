@@ -6,7 +6,7 @@ NEWSBLUR.ReaderTutorial = function(options) {
     this.options = $.extend({
       'page_number': 1
     }, defaults, options);
-    this.model   = NEWSBLUR.AssetModel.reader();
+    this.model   = NEWSBLUR.assets;
 
     this.page_number = this.options.page_number;
     this.slider_value = 0;

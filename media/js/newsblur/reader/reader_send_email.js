@@ -4,7 +4,7 @@ NEWSBLUR.ReaderSendEmail = function(story_id, options) {
     _.bindAll(this, 'close', 'save_callback', 'error');
 
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.story_id = story_id;
     this.story = this.model.get_story(story_id);
     this.feed_id = this.story.story_feed_id;
@@ -38,7 +38,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             $.make('h2', { className: 'NB-modal-subtitle' }, [
                 $.make('div', { className: 'NB-modal-email-feed' }, [
                   $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
-                  $.make('div', { className: 'NB-modal-feed-title' }, this.feed.feed_title)
+                  $.make('div', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title'))
                 ]),
                 $.make('div', { className: 'NB-modal-email-story-title' }, this.story.story_title),
                 $.make('div', { className: 'NB-modal-email-story-permalink' }, this.story.story_permalink)

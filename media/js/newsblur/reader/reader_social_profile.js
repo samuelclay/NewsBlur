@@ -4,7 +4,7 @@ NEWSBLUR.ReaderSocialProfile = function(user_id, options) {
     };
         
     this.options = $.extend({}, defaults, options);
-    this.model   = NEWSBLUR.AssetModel.reader();
+    this.model   = NEWSBLUR.assets;
     this.profiles = new NEWSBLUR.Collections.Users();
     user_id = parseInt(_.string.ltrim(user_id, 'social:'), 10);
     console.log(["user_id", user_id]);

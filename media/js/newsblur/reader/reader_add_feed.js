@@ -6,7 +6,7 @@ NEWSBLUR.ReaderAddFeed = function(options) {
     };
     
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.runner();
 };
 
@@ -35,7 +35,7 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
             $.make('div', { className: 'NB-add-form' }, [
                 $.make('div', { className: 'NB-fieldset NB-add-add-url NB-modal-submit' }, [
                     $.make('h5', [
-                        $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model)),
+                        $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model, this.options.folder_title)),
                         'Add a new site'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -50,7 +50,7 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
                 ]),
                 $.make('div', { className: 'NB-fieldset NB-add-add-folder NB-modal-submit' }, [
                     $.make('h5', [
-                        $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model)),
+                        $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model, this.options.folder_title)),
                         'Add a new folder'
                     ]),
                     $.make('div', { className: 'NB-fieldset-fields' }, [
@@ -214,7 +214,7 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
         $submit.removeClass('NB-disabled');
         
         if (data.code > 0) {
-            NEWSBLUR.reader.load_feeds();
+            NEWSBLUR.assets.load_feeds();
             NEWSBLUR.reader.load_recommended_feed();
             NEWSBLUR.reader.handle_mouse_indicator_hover();
             $.modal.close();
@@ -251,7 +251,7 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
         $submit.removeClass('NB-disabled');
         
         if (data.code > 0) {
-            NEWSBLUR.reader.load_feeds();
+            NEWSBLUR.assets.load_feeds();
             _.defer(function() {
               NEWSBLUR.reader.open_add_feed_modal();
             });

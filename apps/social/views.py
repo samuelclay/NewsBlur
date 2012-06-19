@@ -12,7 +12,7 @@ from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MS
 from apps.social.models import MRequestInvite, MInteraction, MActivity
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
-from apps.analyzer.models import get_classifiers_for_user
+from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
 from apps.reader.models import MUserStory, UserSubscription
 from utils import json_functions as json
 from utils import log as logging
@@ -62,7 +62,7 @@ def load_social_stories(request, user_id, username=None):
     usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersubs_map.keys())))
     unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
-    unsub_feeds = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
+    unsub_feeds = [feed.canonical(include_favicon=False) for feed in unsub_feeds]
     date_delta = UNREAD_CUTOFF
     if socialsub and date_delta < socialsub.mark_read_date:
         date_delta = socialsub.mark_read_date
@@ -141,6 +141,13 @@ def load_social_stories(request, user_id, username=None):
             'title': apply_classifier_titles(classifier_titles, story),
         }
     
+    
+    classifiers = sort_classifiers_by_feed(user=user, feed_ids=story_feed_ids,
+                                           classifier_feeds=classifier_feeds,
+                                           classifier_authors=classifier_authors,
+                                           classifier_titles=classifier_titles,
+                                           classifier_tags=classifier_tags)
+                                           
     if socialsub:
         socialsub.feed_opens += 1
         socialsub.save()
@@ -148,7 +155,12 @@ def load_social_stories(request, user_id, username=None):
     end = time.time()
     logging.user(request, "~FCLoading shared stories: ~SB%s stories ~SN(%.2f sec)" % (len(stories), end-start))
     
-    return dict(stories=stories, user_profiles=user_profiles, feeds=unsub_feeds)
+    return {
+        "stories": stories, 
+        "user_profiles": user_profiles, 
+        "feeds": unsub_feeds, 
+        "classifiers": classifiers,
+    }
 
 @render_to('social/social_page.xhtml')
 def load_social_page(request, user_id, username=None):
@@ -250,6 +262,7 @@ def mark_story_as_shared(request):
     story = Feed.format_story(story)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)
     story = stories[0]
+    story['shared_comments'] = shared_story['comments'] or ""
     
     return {'code': code, 'story': story, 'user_profiles': profiles}
 

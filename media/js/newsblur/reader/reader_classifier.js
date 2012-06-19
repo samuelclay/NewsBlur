@@ -13,7 +13,7 @@ NEWSBLUR.ReaderClassifierTrainer = function(options) {
     this.trainer_iterator = -1;
     this.feed_id = null;
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.runner_trainer();
 };
 
@@ -33,7 +33,7 @@ NEWSBLUR.ReaderClassifierFeed = function(feed_id, options) {
     this.feed_id = feed_id;
     this.trainer_iterator = -1;
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.runner_feed();
 };
 
@@ -54,7 +54,7 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
     this.feed_id = feed_id;
     this.trainer_iterator = -1;
     this.options = $.extend({}, defaults, options);
-    this.model = NEWSBLUR.AssetModel.reader();
+    this.model = NEWSBLUR.assets;
     this.runner_story();
 };
 
@@ -164,8 +164,8 @@ var classifier_prototype = {
         this.feed_tags = trainer_data['feed_tags'];
         this.feed_authors = trainer_data['feed_authors'];
         this.user_classifiers = trainer_data['classifiers'];
-        this.feed_publishers = trainer_data['popular_publishers'];
-        this.feed.num_subscribers = trainer_data['num_subscribers'];
+        this.feed_publishers = new Backbone.Collection(trainer_data['popular_publishers']);
+        this.feed.set('num_subscribers', trainer_data['num_subscribers'], {silent: true});
         this.options.feed_loaded = true;
         
         if (!this.model.classifiers[this.feed_id]) {
@@ -242,8 +242,8 @@ var classifier_prototype = {
           this.feed_tags = this.model.get_feed_tags();
           this.feed_authors = this.model.get_feed_authors();
           $('.NB-modal-subtitle .NB-modal-feed-image', this.$modal).attr('src', $.favicon(this.feed));
-          $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed['feed_title']);
-          $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.commas(this.feed['num_subscribers']) + ' subscribers');
+          $('.NB-modal-subtitle .NB-modal-feed-title', this.$modal).html(this.feed.get('feed_title'));
+          $('.NB-modal-subtitle .NB-modal-feed-subscribers', this.$modal).html(Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true));
         }
     },
     
@@ -362,8 +362,8 @@ var classifier_prototype = {
                 (this.options['training'] && $.make('div', { className: 'NB-classifier-trainer-counts' })),
                 $.make('img', { className: 'NB-modal-feed-image feed_favicon', src: $.favicon(this.feed) }),
                 $.make('div', { className: 'NB-modal-feed-heading' }, [
-                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.feed_title),
-                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.commas(this.feed.num_subscribers) + Inflector.pluralize(' subscriber', this.feed.num_subscribers))
+                    $.make('span', { className: 'NB-modal-feed-title' }, this.feed.get('feed_title')),
+                    $.make('span', { className: 'NB-modal-feed-subscribers' }, Inflector.pluralize(' subscriber', this.feed.get('num_subscribers'), true))
                 ])
             ]),
             (this.options['feed_loaded'] &&
@@ -424,32 +424,32 @@ var classifier_prototype = {
         // NEWSBLUR.log(['Make Story', story, feed]);
         
         // HTML entities decoding.
-        story.story_title = $('<div/>').html(story.story_title).text();
+        story_title = _.string.trim($('<div/>').html(story.get('story_title')).text());
         
         this.$modal = $.make('div', { className: 'NB-modal-classifiers NB-modal' }, [
             $.make('h2', { className: 'NB-modal-title' }),
             (this.options['feed_loaded'] &&
                 $.make('form', { method: 'post' }, [
-                    (story.story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+                    (story_title && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Title'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                            $.make('input', { type: 'text', value: story.story_title, className: 'NB-classifier-title-highlight' }),
+                            $.make('input', { type: 'text', value: story_title, className: 'NB-classifier-title-highlight' }),
                             this.make_classifier('<span class="NB-classifier-title-placeholder">Highlight phrases to look for in future stories</span>', '', 'title'),
                             $.make('span',
-                                this.make_user_titles(story.story_title)
+                                this.make_user_titles(story_title)
                             )
                         ])
                     ])),
-                    (story.story_authors && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+                    (story.get('story_authors') && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Author'),
                         $.make('div', { className: 'NB-fieldset-fields NB-classifiers' },
-                            this.make_authors([story.story_authors])
+                            this.make_authors([story.get('story_authors')])
                         )
                     ])),
-                    (story.story_tags.length && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
+                    (story.get('story_tags').length && $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
                         $.make('h5', 'Story Categories &amp; Tags'),
                         $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
-                            this.make_tags(story.story_tags)
+                            this.make_tags(story.get('story_tags'))
                         )
                     ])),
                     $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
@@ -576,7 +576,7 @@ var classifier_prototype = {
     },
     
     make_publishers: function(publishers) {
-        var $publishers = _.map(publishers, _.bind(function(publisher) {
+        var $publishers = publishers.map(_.bind(function(publisher) {
             return this.make_publisher(publisher);
         }, this));
         
@@ -584,8 +584,8 @@ var classifier_prototype = {
     },
         
     make_publisher: function(publisher) {
-        var $publisher = this.make_classifier(_.string.truncate(publisher.feed_title, 50), 
-                                              publisher.id, 'feed', publisher.story_count, publisher);
+        var $publisher = this.make_classifier(_.string.truncate(publisher.get('feed_title'), 50), 
+                                              publisher.id, 'feed', publisher.get('story_count'), publisher);
         return $publisher;
     },
     
@@ -851,7 +851,7 @@ var classifier_prototype = {
     serialize_classifier: function() {
         var data = {};
         $('.NB-classifier', this.$modal).each(function() {
-            var value = $('.NB-classifier-input-like', this).val();
+            var value = _.string.trim($('.NB-classifier-input-like', this).val());
             if ($('.NB-classifier-input-like, .NB-classifier-input-dislike', this).is(':checked')) {
                 var name = $('input:checked', this).attr('name');
                 if (!data[name]) data[name] = [];
@@ -886,9 +886,9 @@ var classifier_prototype = {
         $save.addClass('NB-disabled').attr('disabled', true);
         
         this.update_opinions();
+        NEWSBLUR.assets.recalculate_story_scores(feed_id);
         this.model.save_classifier(data, function() {
             if (!keep_modal_open) {
-                NEWSBLUR.reader.recalculate_story_scores(feed_id);
                 NEWSBLUR.reader.force_feeds_refresh(null, true);
                 // NEWSBLUR.reader.force_feed_refresh();
                 // NEWSBLUR.reader.open_feed(self.feed_id, true);
