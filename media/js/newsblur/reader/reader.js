@@ -3267,15 +3267,9 @@
                 NEWSBLUR.app.story_titles.fill_out();
             }
             
-            if (this.story_view == 'feed' && !this.model.preference('feed_view_single_story')) {
-                if ($stories_show.filter(':visible').length != $stories_show.length
-                    || $stories_hide.filter(':visible').length != 0) {
-                    NEWSBLUR.log(['Show/Hide stories', $stories_show.filter(':visible').length, $stories_show.length, $stories_hide.filter(':visible').length, $stories_hide.length]);
-                    setTimeout(function() {
-                        NEWSBLUR.app.story_list.reset_story_positions();
-                    }, 500);
-                }
-            }
+            setTimeout(function() {
+                NEWSBLUR.app.story_list.reset_story_positions();
+            }, 500);
             
             if (options['animate'] && options['follow'] && 
                 ($stories_hide.length || $stories_show.length)) {

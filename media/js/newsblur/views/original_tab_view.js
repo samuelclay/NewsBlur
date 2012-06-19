@@ -18,8 +18,8 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         
         this.setup_events();
         this.collection.bind('change:selected', this.toggle_selected_story, this);
-        this.collection.bind('reset', this.fetch_story_locations_in_story_frame, this);
-        this.collection.bind('add', this.fetch_story_locations_in_story_frame, this);
+        this.collection.bind('reset', this.reset_story_positions, this);
+        this.collection.bind('add', this.reset_story_positions, this);
 
     },
     
@@ -297,8 +297,8 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         });
         
         NEWSBLUR.assets.stories.any(_.bind(function(story, i) {
-            if (story['story_feed_id'] == NEWSBLUR.reader.active_feed || 
-                "social:" + story['social_user_id'] == NEWSBLUR.reader.active_feed) {
+            if (story.get('story_feed_id') == NEWSBLUR.reader.active_feed || 
+                "social:" + story.get('social_user_id') == NEWSBLUR.reader.active_feed) {
                 var $story = this.find_story_in_feed_iframe(story, $iframe);
                 // NEWSBLUR.log(['Fetching story', i, story.get('story_title'), $story]);
             
@@ -309,12 +309,29 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                     clearInterval(self.flags['iframe_scroll_snapback_check']);
                     return true;
                 }
-            } else if (story && story['story_feed_id'] != NEWSBLUR.reader.active_feed &&
-                       "social:" + story['social_user_id'] != NEWSBLUR.reader.active_feed) {
-                NEWSBLUR.log(['Switched off iframe early', NEWSBLUR.reader.active_feed, story['story_feed_id'], story['social_user_id']]);
+            } else if (story && story.get('story_feed_id') != NEWSBLUR.reader.active_feed &&
+                       "social:" + story.get('social_user_id') != NEWSBLUR.reader.active_feed) {
+                NEWSBLUR.log(['Switched off iframe early', NEWSBLUR.reader.active_feed, story.get('story_feed_id'), story.get('social_user_id')]);
                 return true;
             }
         }, this));
+    },
+    
+    reset_story_positions: function(models) {
+        if (!models || !models.length) {
+            models = NEWSBLUR.assets.stories;
+        }
+        if (!models.length) return;
+        
+        this.flags['iframe_fetching_story_locations'] = false;
+        this.flags['iframe_story_locations_fetched'] = false;
+        
+        if (NEWSBLUR.reader.flags['story_titles_loaded']) {
+            NEWSBLUR.log(['iframe loaded, titles loaded (early)']);
+            this.fetch_story_locations_in_story_frame();
+        } else {
+            this.prefetch_story_locations_in_story_frame();
+        }
     },
     
     // ===========
@@ -353,6 +370,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
     },
     
     load_feed_iframe: function(feed_id) {
+        console.log(["load_feed_iframe", feed_id]);
         feed_id = feed_id || NEWSBLUR.reader.active_feed;
         var self = this;
 
@@ -384,7 +402,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                 });
             }, 50);
             self.flags['iframe_scroll_snapback_check'] = setInterval(function() {
-                // NEWSBLUR.log(['Checking scroll', self.iframe_scroll, self.flags.iframe_scroll_snap_back_prepared]);
+                NEWSBLUR.log(['Checking scroll', self.iframe_scroll, self.flags.iframe_scroll_snap_back_prepared]);
                 if (self.iframe_scroll && self.flags.iframe_scroll_snap_back_prepared) {
                     self.return_to_snapback_position();
                 } else {
@@ -438,7 +456,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             this.setup_events();
             if (NEWSBLUR.reader.flags['story_titles_loaded']) {
                 NEWSBLUR.log(['iframe loaded, titles loaded']);
-                this.fetch_story_locations_in_story_frame($iframe_contents);
+                this.fetch_story_locations_in_story_frame();
             }
             // try {
                 var $iframe_contents = this.$el.contents();
