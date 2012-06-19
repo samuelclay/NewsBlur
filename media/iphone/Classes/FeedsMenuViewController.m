@@ -16,7 +16,7 @@
 @synthesize appDelegate;
 @synthesize menuOptions;
 @synthesize toolbar;
-@synthesize tableView;
+@synthesize menuTableView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -37,14 +37,14 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         toolbar.hidden = YES;
-        tableView.frame = CGRectMake(0, 0, tableView.frame.size.width, tableView.frame.size.height + 44);
+        menuTableView.frame = CGRectMake(0, 0, menuTableView.frame.size.width, menuTableView.frame.size.height + 44);
     }
 }
 
 - (void)viewDidUnload
 {
     toolbar = nil;
-    tableView = nil;
+    menuTableView = nil;
 
     [super viewDidUnload];
     // Release any retained subviews of the main view.
@@ -61,7 +61,7 @@
     [appDelegate release];
     [menuOptions release];
     [toolbar release];
-    [tableView release];
+    [menuTableView release];
     [super dealloc];
 }
 
@@ -121,7 +121,7 @@
 {
     static NSString *CellIndentifier = @"Cell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier]; 
     
     if (cell == nil) {
         cell = [[[UITableViewCell alloc]
