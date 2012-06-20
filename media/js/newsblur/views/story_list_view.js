@@ -8,6 +8,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.collection.bind('reset', this.reset_story_positions, this);
         this.collection.bind('add', this.add, this);
         this.collection.bind('add', this.reset_story_positions, this);
+        this.collection.bind('no_more_stories', this.show_no_more_stories, this);
         this.$el.bind('mousemove', _.bind(this.handle_mousemove_feed_view, this));
         this.$el.scroll(_.bind(this.handle_scroll_feed_view, this));
         this.reset_flags();

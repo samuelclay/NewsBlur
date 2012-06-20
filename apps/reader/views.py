@@ -643,14 +643,20 @@ def load_river_stories(request):
     #     starred_stories = {}
     
     # Intelligence classifiers for all feeds involved
-    classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
-                                               feed_id__in=found_feed_ids))
-    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
+    if found_feed_ids:
+        classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
                                                    feed_id__in=found_feed_ids))
-    classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
+        classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
+                                                       feed_id__in=found_feed_ids))
+        classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
+                                                     feed_id__in=found_feed_ids))
+        classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
                                                  feed_id__in=found_feed_ids))
-    classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
-                                             feed_id__in=found_feed_ids))
+    else:
+        classifier_feeds = []
+        classifier_authors = []
+        classifier_titles = []
+        classifier_tags = []
     classifiers = sort_classifiers_by_feed(user=user, feed_ids=found_feed_ids,
                                            classifier_feeds=classifier_feeds,
                                            classifier_authors=classifier_authors,

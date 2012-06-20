@@ -66,7 +66,7 @@
             this.constants = {
               FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
               FILL_OUT_PAGES: 50,
-              RIVER_STORIES_FOR_STANDARD_ACCOUNT: 12
+              RIVER_STORIES_FOR_STANDARD_ACCOUNT: 5
             };
     
             // ==================
@@ -624,10 +624,16 @@
                 dir = '-';
             }
             // NEWSBLUR.log(['page_in_story', this.$s.$story_pane, direction, page_height, scroll_height]);
-            if (this.story_view == 'page') {
-                this.$s.$feed_iframe.scrollTo({top:dir+'='+scroll_height, left:'+=0'}, 230, {queue: false});
-            } else if (this.story_view == 'feed') {
-                this.$s.$feed_stories.scrollTo({top:dir+'='+scroll_height, left:'+=0'}, 230, {queue: false});
+            if (this.story_view == 'page' && !this.flags['page_view_showing_feed_view']) {
+                this.$s.$feed_iframe.scrollTo({
+                    top: dir+'='+scroll_height, 
+                    left:'+=0'
+                }, 230, {queue: false});
+            } else if (this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) {
+                this.$s.$feed_stories.scrollTo({
+                    top: dir+'='+scroll_height, 
+                    left:'+=0'
+                }, 230, {queue: false});
             }
         },
         
