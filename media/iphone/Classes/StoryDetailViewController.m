@@ -235,9 +235,9 @@
     self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed 
                                  withRect:CGRectMake(0, -1, 1024, 21)]; // 1024 hack for self.webView.frame.size.width
     
-    self.feedTitleGradient.tag = 12; // Not attached yet. Remove old gradients, first.
+    self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
     for (UIView *subview in self.webView.subviews) {
-        if (subview.tag == 12) {
+        if (subview.tag == FEED_TITLE_GRADIENT_TAG) {
             [subview removeFromSuperview];
         }
     }

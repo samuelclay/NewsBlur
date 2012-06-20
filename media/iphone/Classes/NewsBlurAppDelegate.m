@@ -224,7 +224,7 @@
         [splitStoryDetailViewController showPopover];
         NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
         for (UIView *subview in subviews) {
-            if (subview.tag == 14) {
+            if (subview.tag == FEED_DETAIL_VIEW_TAG) {
                 [subview removeFromSuperview];
             }
         }
@@ -259,13 +259,13 @@
         // remove existing feedDetailViewController
         NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
         for (UIView *subview in subviews) {
-            if (subview.tag == 14) {
+            if (subview.tag == FEED_DETAIL_VIEW_TAG || subview.tag == STORY_DETAIL_VIEW_TAG) {
                 [subview removeFromSuperview];
             }
         }
         [subviews release];
         
-        feedDetailViewController.view.tag = 14;
+        feedDetailViewController.view.tag = FEED_DETAIL_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
         
         [self adjustStoryDetailWebView];
@@ -294,13 +294,13 @@
         // remove existing feedDetailViewController
         NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
         for (UIView *subview in subviews) {
-            if (subview.tag == 14) {
+            if (subview.tag == FEED_DETAIL_VIEW_TAG) {
                 [subview removeFromSuperview];
             }
         }
         [subviews release];
         
-        feedDetailViewController.view.tag = 14;
+        feedDetailViewController.view.tag = FEED_DETAIL_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
         
         [self adjustStoryDetailWebView];
@@ -348,7 +348,7 @@
         // remove existing feedDetailViewController
         NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
         for (UIView *subview in subviews) {
-            if (subview.tag == 14) {
+            if (subview.tag == FEED_DETAIL_VIEW_TAG) {
                 [subview removeFromSuperview];
             }
         }
@@ -396,13 +396,13 @@
         // With some valid UIView *view:
         NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
         for (UIView *subview in subviews) {
-            if (subview.tag == 12) {
+            if (subview.tag == STORY_DETAIL_VIEW_TAG) {
                 [subview removeFromSuperview];
             }
         }
         [subviews release];
         
-        storyDetailViewController.view.tag = 12;
+        storyDetailViewController.view.tag = STORY_DETAIL_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:storyDetailViewController.view];
         [self adjustStoryDetailWebView];
 

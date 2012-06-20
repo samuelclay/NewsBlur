@@ -115,7 +115,7 @@
 //    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
 //        NSArray *subviews = [[appDelegate.splitStoryDetailViewController.view subviews] copy];
 //        for (UIView *subview in subviews) {
-//            if (subview.tag == 12) {
+//            if (subview.tag == STORY_DETAIL_VIEW_TAG) {
 //                [subview removeFromSuperview];
 //            }
 //        }

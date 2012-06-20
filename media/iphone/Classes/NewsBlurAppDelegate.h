@@ -9,6 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 
+#define FEED_DETAIL_VIEW_TAG 1000001
+#define STORY_DETAIL_VIEW_TAG 1000002
+#define FEED_TITLE_GRADIENT_TAG 100003
+
 @class NewsBlurViewController;
 @class FeedDetailViewController;
 @class FeedsMenuViewController;
