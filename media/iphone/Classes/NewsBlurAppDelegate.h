@@ -12,10 +12,12 @@
 #define FEED_DETAIL_VIEW_TAG 1000001
 #define STORY_DETAIL_VIEW_TAG 1000002
 #define FEED_TITLE_GRADIENT_TAG 100003
+#define FEED_DASHBOARD_VIEW_TAG 100004
 
 @class NewsBlurViewController;
 @class FeedDetailViewController;
 @class FeedsMenuViewController;
+@class FeedDashboardViewController;
 @class FirstTimeUserViewController;
 @class FontSettingsViewController;
 @class GoogleReaderViewController;
@@ -36,6 +38,7 @@
 
     NewsBlurViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
+    FeedDashboardViewController *feedDashboardViewController;
     FontSettingsViewController *fontSettingsViewController;
     FeedDetailViewController *feedDetailViewController;
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -81,6 +84,7 @@
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *splitStoryDetailNavigationController;
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic, retain) IBOutlet FeedsMenuViewController *feedsMenuViewController;
+@property (nonatomic, retain) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, retain) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic, retain) IBOutlet GoogleReaderViewController *googleReaderViewController;
@@ -132,7 +136,7 @@
 - (void)loadFeedDetailView;
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
-- (void)adjustStoryDetailWebView;
+- (void)adjustStoryDetailWebView:(BOOL)init;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)hideNavigationBar:(BOOL)animated;
 - (void)showNavigationBar:(BOOL)animated;
@@ -141,6 +145,7 @@
 - (void)closeOriginalStory;
 - (void)changeActiveFeedDetailRow:(int)rowIndex;
 - (void)dragFeedDetailView:(float)y;
+- (void)hideStoryDetailView;
 
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;

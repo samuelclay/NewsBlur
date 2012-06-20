@@ -9,6 +9,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
 #import "FeedDetailViewController.h"
+#import "FeedDashboardViewController.h"
 #import "FeedsMenuViewController.h"
 #import "StoryDetailViewController.h"
 #import "FirstTimeUserViewController.h"
@@ -33,6 +34,7 @@
 @synthesize feedsViewController;
 @synthesize feedsMenuViewController;
 @synthesize feedDetailViewController;
+@synthesize feedDashboardViewController;
 @synthesize firstTimeUserViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
@@ -96,7 +98,7 @@
     
     // TODO make it a user setting to persist on app close
     // set default x coordinate for feedDetailY
-    self.feedDetailPortraitYCoordinate = 700;
+    self.feedDetailPortraitYCoordinate = 600;
     
     [window makeKeyAndVisible];
     [feedsViewController fetchFeedList:YES];
@@ -257,18 +259,15 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && 
         UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         // remove existing feedDetailViewController
-        NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
-        for (UIView *subview in subviews) {
-            if (subview.tag == FEED_DETAIL_VIEW_TAG || subview.tag == STORY_DETAIL_VIEW_TAG) {
-                [subview removeFromSuperview];
-            }
-        }
-        [subviews release];
+        [self hideStoryDetailView];
+        
+        feedDashboardViewController.view.tag = FEED_DASHBOARD_VIEW_TAG;
+        [splitStoryDetailViewController.view addSubview:feedDashboardViewController.view];
         
         feedDetailViewController.view.tag = FEED_DETAIL_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
         
-        [self adjustStoryDetailWebView];
+        [self adjustStoryDetailWebView:YES];
         [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
     } else {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" style: UIBarButtonItemStyleBordered target: nil action: nil];
@@ -287,23 +286,30 @@
     [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
 }
 
+- (void)hideStoryDetailView {
+    NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
+    for (UIView *subview in subviews) {
+        if (subview.tag == FEED_DETAIL_VIEW_TAG || subview.tag == STORY_DETAIL_VIEW_TAG || subview.tag == FEED_DASHBOARD_VIEW_TAG) {
+            [subview removeFromSuperview];
+        }
+    }
+    [subviews release];
+}
+
 - (void)loadRiverFeedDetailView {
     [self setStories:nil];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && 
         UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         // remove existing feedDetailViewController
-        NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
-        for (UIView *subview in subviews) {
-            if (subview.tag == FEED_DETAIL_VIEW_TAG) {
-                [subview removeFromSuperview];
-            }
-        }
-        [subviews release];
+        [self hideStoryDetailView];
+        
+        feedDashboardViewController.view.tag = FEED_DASHBOARD_VIEW_TAG;
+        [splitStoryDetailViewController.view addSubview:feedDashboardViewController.view];
         
         feedDetailViewController.view.tag = FEED_DETAIL_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
         
-        [self adjustStoryDetailWebView];
+        [self adjustStoryDetailWebView:YES];
         [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
     } else {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" style: UIBarButtonItemStyleBordered target: nil action: nil];
@@ -320,11 +326,31 @@
     [feedDetailViewController fetchRiverPage:1 withCallback:nil];
 }
 
-- (void)adjustStoryDetailWebView {
+- (void)adjustStoryDetailWebView:(BOOL)init {
     UINavigationController *navController = self.navigationController;
 
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         NSLog(@"The feedDetailPortraitYCoordinate in adjustStoryDetailWebView is: %i", self.feedDetailPortraitYCoordinate);
+        
+        if (init) {
+            feedDashboardViewController.view.frame = CGRectMake(0,
+                                                                0,
+                                                                768,
+                                                                self.feedDetailPortraitYCoordinate);
+        } else {
+            storyDetailViewController.view.frame = CGRectMake(0,
+                                                              0,
+                                                              768,
+                                                              self.feedDetailPortraitYCoordinate);
+            NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
+            for (UIView *subview in subviews) {
+                if (subview.tag == FEED_DASHBOARD_VIEW_TAG) {
+                    [subview removeFromSuperview];
+                }
+            }
+            [subviews release];
+        }
+        
         storyDetailViewController.view.frame = CGRectMake(0,
                                                           0,
                                                           768,
@@ -343,7 +369,18 @@
         
         
     } else {
-        storyDetailViewController.view.frame = CGRectMake(0,0,704,704);
+        if (init) {
+            feedDashboardViewController.view.frame = CGRectMake(0,0,704,704);  
+        } else {
+            storyDetailViewController.view.frame = CGRectMake(0,0,704,704);
+            NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
+            for (UIView *subview in subviews) {
+                if (subview.tag == FEED_DASHBOARD_VIEW_TAG) {
+                    [subview removeFromSuperview];
+                }
+            }
+            [subviews release];
+        }
         
         // remove existing feedDetailViewController
         NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
@@ -372,6 +409,11 @@
                                                               0, 
                                                               768, 
                                                               self.feedDetailPortraitYCoordinate);
+            feedDashboardViewController.view.frame = CGRectMake(0,
+                                                              0, 
+                                                              768, 
+                                                              self.feedDetailPortraitYCoordinate);
+
             feedDetailViewController.view.frame = CGRectMake(0, 
                                                              self.feedDetailPortraitYCoordinate, 
                                                              768, 
@@ -404,7 +446,7 @@
         
         storyDetailViewController.view.tag = STORY_DETAIL_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:storyDetailViewController.view];
-        [self adjustStoryDetailWebView];
+        [self adjustStoryDetailWebView:NO];
 
         
     } else{

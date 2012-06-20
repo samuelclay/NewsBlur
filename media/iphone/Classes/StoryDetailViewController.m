@@ -392,6 +392,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                               objectAtIndex:0]  
          animated:YES];
         [appDelegate showMasterPopover];
+        [appDelegate hideStoryDetailView];
     } else {
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                      objectAtIndex:nextIndex]];
@@ -420,6 +421,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                               objectAtIndex:0]  
          animated:YES];
         [appDelegate showMasterPopover];
+        [appDelegate hideStoryDetailView];
     } else {
         int previousIndex = [appDelegate locationOfStoryId:previousStoryId];
         if (previousIndex == -1) {
