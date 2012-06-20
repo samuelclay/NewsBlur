@@ -20,12 +20,12 @@
     UIBarButtonItem *buttonPrevious;
     UIBarButtonItem *buttonNext;
     UIBarButtonItem *activity;
-    
     UIActivityIndicatorView *loadingIndicator;
-    
     IBOutlet UIPopoverController *popoverController;
 }
 
+@property (nonatomic, retain) UIActivityIndicatorView *loadingIndicator;
+@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) NSString *activeStoryId;
 @property (nonatomic, retain) IBOutlet UIProgressView *progressView;
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
@@ -34,8 +34,6 @@
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonNext;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *activity;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonAction;
-@property (nonatomic, retain) UIActivityIndicatorView *loadingIndicator;
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UIView *feedTitleGradient;
 @property (retain,nonatomic) UIPopoverController *popoverController;
 

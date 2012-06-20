@@ -18,13 +18,13 @@
 
 @implementation StoryDetailViewController
 
-@synthesize activeStoryId;
 @synthesize appDelegate;
+@synthesize activeStoryId;
 @synthesize progressView;
 @synthesize webView;
 @synthesize toolbar;
-@synthesize buttonNext;
 @synthesize buttonPrevious;
+@synthesize buttonNext;
 @synthesize buttonAction;
 @synthesize activity;
 @synthesize loadingIndicator;
@@ -173,8 +173,8 @@
    sharingHtmlString      = [NSString stringWithFormat:@
     "<div class='NB-share-header'></div>"
     "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-    "<a class='NB-share-button' href='share://share'><span class='NB-share-icon'></span>Share Story</a>"
-    "<a class='NB-save-button' href='save://save'><span class='NB-save-icon'></span>Save Story</a>"
+    "<a class='NB-share-button' href='share://share'><span class='NB-share-icon'></span>Share this story</a>"
+    "<a class='NB-save-button' href='save://save'><span class='NB-save-icon'></span>Save this story</a>"
                         "</div></div>"];
     NSString *story_author      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {

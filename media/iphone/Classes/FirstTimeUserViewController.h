@@ -28,6 +28,7 @@
 @property (retain, nonatomic) IBOutlet UIToolbar *toolbar;
 @property (retain, nonatomic) IBOutlet UIButton *toolbarTitle;
 @property (retain, nonatomic) IBOutlet UIBarButtonItem *nextButton;
+@property (retain, nonatomic) IBOutlet UIImageView *logo;
 
 - (IBAction)tapNextButton;
 - (IBAction)tapGoogleReaderButton;
@@ -39,5 +40,6 @@
 - (void)finishAddFolder:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)addSite:(NSString *)siteUrl;
+- (void)rotateLogo;
 
 @end

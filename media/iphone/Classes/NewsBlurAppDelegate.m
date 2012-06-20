@@ -95,7 +95,7 @@
     
     [window makeKeyAndVisible];
     [feedsViewController fetchFeedList:YES];
-
+    //[self showFirstTimeUser];
 	return YES;
 }
 
@@ -248,6 +248,42 @@
 }
 
 - (void)loadFeedDetailView {
+    [self setStories:nil];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && 
+        UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
+        // remove existing feedDetailViewController
+        NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
+        for (UIView *subview in subviews) {
+            if (subview.tag == 14) {
+                [subview removeFromSuperview];
+            }
+        }
+        [subviews release];
+        
+        feedDetailViewController.view.tag = 14;
+        [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
+        
+        [self adjustStoryDetailWebView];
+        [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
+    } else {
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" style: UIBarButtonItemStyleBordered target: nil action: nil];
+        [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+        [newBackButton release];
+        UINavigationController *navController = self.navigationController;        
+        [navController pushViewController:feedDetailViewController animated:YES];
+        [self showNavigationBar:YES];
+        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+        //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
+        
+        popoverHasFeedView = YES;
+    }
+    
+    [feedDetailViewController resetFeedDetail];
+    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+}
+
+- (void)loadRiverFeedDetailView {
+    [self setStories:nil];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && 
         UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         // remove existing feedDetailViewController
@@ -269,17 +305,14 @@
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
         [newBackButton release];
         UINavigationController *navController = self.navigationController;
-        [self setStories:nil];
         [navController pushViewController:feedDetailViewController animated:YES];
         [self showNavigationBar:YES];
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
         //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
-        
-        popoverHasFeedView = YES;
     }
     
     [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+    [feedDetailViewController fetchRiverPage:1 withCallback:nil];
 }
 
 - (void)adjustStoryDetailWebView {
@@ -316,20 +349,6 @@
 
     }
     
-}
-
-- (void)loadRiverFeedDetailView {
-    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" style: UIBarButtonItemStyleBordered target: nil action: nil];
-    [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-    [newBackButton release];
-    UINavigationController *navController = self.navigationController;
-    [self setStories:nil];
-    [navController pushViewController:feedDetailViewController animated:YES];
-    [feedDetailViewController resetFeedDetail];
-    [feedDetailViewController fetchRiverPage:1 withCallback:nil];
-    [self showNavigationBar:YES];
-    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
 }
 
 - (void)changeActiveFeedDetailRow:(int)rowIndex {

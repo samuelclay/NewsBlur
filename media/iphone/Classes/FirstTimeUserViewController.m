@@ -27,6 +27,7 @@
 @synthesize toolbar;
 @synthesize toolbarTitle;
 @synthesize nextButton;
+@synthesize logo;
 @synthesize categories;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -40,7 +41,6 @@
 
 - (void)viewDidLoad
 {
-
     categories = [[NSMutableArray alloc] init];
     currentStep = 0;
     importedGoogle = 0;
@@ -58,9 +58,14 @@
     [self setToolbar:nil];
     [self setToolbarTitle:nil];
     [self setNextButton:nil];
+    [self setLogo:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [self rotateLogo];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -78,6 +83,7 @@
     [toolbar release];
     [toolbarTitle release];
     [nextButton release];
+    [logo release];
     [super dealloc];
 }
 
@@ -184,12 +190,10 @@
 }
 
 - (void)finishAddFolder:(ASIHTTPRequest *)request {
-
     NSLog(@"Successfully added.");
 }
 
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
+- (void)requestFailed:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
 }
@@ -209,6 +213,23 @@
     [request setDidFinishSelector:@selector(finishAddFolder:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
+}
+
+- (void)rotateLogo {
+    // Setup the animation
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:(NSTimeInterval)60.0];
+    [UIView setAnimationCurve:UIViewAnimationCurveLinear];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+    
+    NSLog(@"%f", M_PI);
+    
+    // The transform matrix
+    CGAffineTransform transform = CGAffineTransformMakeRotation(3.14);
+    self.logo.transform = transform;
+    
+    // Commit the changes
+    [UIView commitAnimations];
 }
 
 @end
