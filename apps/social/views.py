@@ -505,7 +505,10 @@ def shared_stories_rss_feed(request, user_id, username):
     social_profile = MSocialProfile.objects.get(user_id=user_id)
 
     data = {}
-    data['title'] = social_profile.blog_title
+    if social_profile.blog_title != "":
+        data['title'] = social_profile.blog_title
+    else:
+        data['title'] = "%s Shared Stories Blog" % user.username
     link = reverse('shared-stories-public', kwargs={'username': user.username})
     data['link'] = "http://www.newsblur.com/%s" % link
     data['description'] = "Stories shared by %s on NewsBlur." % user.username
