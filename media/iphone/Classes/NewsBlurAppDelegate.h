@@ -57,6 +57,7 @@
     NSDictionary * activeStory;
     NSURL * activeOriginalStoryURL;
     
+    int feedDetailPortraitYCoordinate;
     int storyCount;
     int originalStoryCount;
     NSInteger selectedIntelligence;
@@ -98,6 +99,7 @@
 @property (readwrite, retain) NSMutableArray * activeFeedStoryLocationIds;
 @property (readwrite, retain) NSDictionary * activeStory;
 @property (readwrite, retain) NSURL * activeOriginalStoryURL;
+@property (readwrite) int feedDetailPortraitYCoordinate;
 @property (readwrite) int storyCount;
 @property (readwrite) int originalStoryCount;
 @property (readwrite) int visibleUnreadCount;
@@ -134,6 +136,7 @@
 - (void)showOriginalStory:(NSURL *)url;
 - (void)closeOriginalStory;
 - (void)changeActiveFeedDetailRow:(int)rowIndex;
+- (void)dragFeedDetailView:(float)y;
 
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;

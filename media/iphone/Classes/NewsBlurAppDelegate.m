@@ -42,6 +42,7 @@
 @synthesize originalStoryViewController;
 @synthesize splitStoryDetailViewController;
 
+@synthesize feedDetailPortraitYCoordinate;
 @synthesize activeUsername;
 @synthesize isRiverView;
 @synthesize popoverHasFeedView;
@@ -92,6 +93,10 @@
         navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
         [window addSubview:navigationController.view];
     }
+    
+    // TODO make it a user setting to persist on app close
+    // set default x coordinate for feedDetailY
+    self.feedDetailPortraitYCoordinate = 700;
     
     [window makeKeyAndVisible];
     [feedsViewController fetchFeedList:YES];
@@ -319,8 +324,15 @@
     UINavigationController *navController = self.navigationController;
 
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
-        storyDetailViewController.view.frame = CGRectMake(0,0,768,600);
-        feedDetailViewController.view.frame = CGRectMake(0,600,768,360);
+        NSLog(@"The feedDetailPortraitYCoordinate in adjustStoryDetailWebView is: %i", self.feedDetailPortraitYCoordinate);
+        storyDetailViewController.view.frame = CGRectMake(0,
+                                                          0,
+                                                          768,
+                                                          self.feedDetailPortraitYCoordinate);
+        feedDetailViewController.view.frame = CGRectMake(0,
+                                                         self.feedDetailPortraitYCoordinate,
+                                                         768,
+                                                         960 - self.feedDetailPortraitYCoordinate);
         
         if (popoverHasFeedView) {
             [navController popViewControllerAnimated:NO];
@@ -348,7 +360,24 @@
         }
 
     }
-    
+}
+
+- (void)dragFeedDetailView:(float)y {
+    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
+
+        if(y < 800 && y > 200) {
+            NSLog(@"drag y is %f", y);
+            self.feedDetailPortraitYCoordinate = y;
+            storyDetailViewController.view.frame = CGRectMake(0,
+                                                              0, 
+                                                              768, 
+                                                              self.feedDetailPortraitYCoordinate);
+            feedDetailViewController.view.frame = CGRectMake(0, 
+                                                             self.feedDetailPortraitYCoordinate, 
+                                                             768, 
+                                                             960 - self.feedDetailPortraitYCoordinate);
+        }
+    }
 }
 
 - (void)changeActiveFeedDetailRow:(int)rowIndex {

@@ -476,4 +476,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate showOriginalStory:url];
 }
 
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    UITouch *theTouch = [touches anyObject];
+    CGPoint touchLocation = [theTouch locationInView:self.view];
+    CGFloat y = touchLocation.y;
+    [appDelegate dragFeedDetailView:y];        
+}
+
 @end
