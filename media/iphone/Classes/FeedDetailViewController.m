@@ -90,9 +90,9 @@
         [self.storyTitlesTable endUpdates];
     }
     [appDelegate setRecentlyReadStories:[NSMutableArray array]];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"thumbs_down.png"] forSegmentAtIndex:0];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"thumbs_up.png"] forSegmentAtIndex:2];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_all.png"] forSegmentAtIndex:0];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_yellow_green.png"] forSegmentAtIndex:1];
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] forSegmentAtIndex:2];
     [self.intelligenceControl addTarget:self
                          action:@selector(selectIntelligence)
                forControlEvents:UIControlEventValueChanged];
@@ -419,11 +419,11 @@
     cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"thumbs_up.png"];
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_green.png"];
     } else if (score == 0) {
         cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_yellow.png"];
     } else if (score < 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"thumbs_down.png"];
+        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_red.png"];
     }
     
     // River view
@@ -833,13 +833,8 @@
 }
 
 - (void)changeActiveFeedDetailRow {
-    int rowIndex = 0;
-    for(int i = 0; i < appDelegate.activeFeedStoryLocationIds.count; i++) {
-        if ([appDelegate.activeFeedStoryLocationIds objectAtIndex:i] == [appDelegate.activeStory objectForKey:@"id"]) {
-            rowIndex = i;
-        }
-    }
-    
+    int rowIndex = [appDelegate locationOfActiveStory];
+                    
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:rowIndex - 1 inSection:0];
 

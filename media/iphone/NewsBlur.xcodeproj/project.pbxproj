@@ -93,6 +93,10 @@
 		437AA8C015929DFA005463F5 /* storyDetailView.css in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8BF15929DFA005463F5 /* storyDetailView.css */; };
 		437AA8C115929FFF005463F5 /* zepto.js in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8B815929D51005463F5 /* zepto.js */; };
 		437AA8C215929FFF005463F5 /* storyDetailView.js in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8BD15929DA7005463F5 /* storyDetailView.js */; };
+		437AA8C51592F8D2005463F5 /* bullets_all.png in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C31592F8D2005463F5 /* bullets_all.png */; };
+		437AA8C61592F8D2005463F5 /* bullets_yellow_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C41592F8D2005463F5 /* bullets_yellow_green.png */; };
+		437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8C8159394E2005463F5 /* ShareViewController.m */; };
+		437AA8CB159394E2005463F5 /* ShareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C9159394E2005463F5 /* ShareViewController.xib */; };
 		439DAB201590DA350019B0EB /* FeedsMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */; };
 		439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */; };
 		439DAB281590E6720019B0EB /* 53-house.png in Resources */ = {isa = PBXBuildFile; fileRef = 439DAB261590E6720019B0EB /* 53-house.png */; };
@@ -305,6 +309,11 @@
 		437AA8B815929D51005463F5 /* zepto.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = zepto.js; sourceTree = "<group>"; };
 		437AA8BD15929DA7005463F5 /* storyDetailView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = storyDetailView.js; sourceTree = "<group>"; };
 		437AA8BF15929DFA005463F5 /* storyDetailView.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = storyDetailView.css; sourceTree = "<group>"; };
+		437AA8C31592F8D2005463F5 /* bullets_all.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bullets_all.png; sourceTree = "<group>"; };
+		437AA8C41592F8D2005463F5 /* bullets_yellow_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bullets_yellow_green.png; sourceTree = "<group>"; };
+		437AA8C7159394E2005463F5 /* ShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
+		437AA8C8159394E2005463F5 /* ShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
+		437AA8C9159394E2005463F5 /* ShareViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ShareViewController.xib; path = Classes/ShareViewController.xib; sourceTree = "<group>"; };
 		439DAB1D1590DA350019B0EB /* FeedsMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedsMenuViewController.h; sourceTree = "<group>"; };
 		439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedsMenuViewController.m; sourceTree = "<group>"; };
 		439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FeedsMenuViewController.xib; path = ../Classes/FeedsMenuViewController.xib; sourceTree = "<group>"; };
@@ -607,6 +616,8 @@
 				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
+				437AA8C7159394E2005463F5 /* ShareViewController.h */,
+				437AA8C8159394E2005463F5 /* ShareViewController.m */,
 				43C1E63D1583DA3F006874F1 /* SplitStoryDetailViewController.h */,
 				43C1E63E1583DA3F006874F1 /* SplitStoryDetailViewController.m */,
 				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
@@ -704,6 +715,8 @@
 		4307BE511565EDF8007A932A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				437AA8C31592F8D2005463F5 /* bullets_all.png */,
+				437AA8C41592F8D2005463F5 /* bullets_yellow_green.png */,
 				439DAB261590E6720019B0EB /* 53-house.png */,
 				439DAB271590E6720019B0EB /* 53-house@2x.png */,
 				435826BE158C0CFD00CC9797 /* thumbs_down.png */,
@@ -817,6 +830,7 @@
 				43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
 				43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */,
+				437AA8C9159394E2005463F5 /* ShareViewController.xib */,
 			);
 			name = "Resources-iPad";
 			sourceTree = "<group>";
@@ -1369,6 +1383,9 @@
 				439DAB291590E6720019B0EB /* 53-house@2x.png in Resources */,
 				437AA8AE15922D13005463F5 /* FeedDashboardViewController.xib in Resources */,
 				437AA8C015929DFA005463F5 /* storyDetailView.css in Resources */,
+				437AA8C51592F8D2005463F5 /* bullets_all.png in Resources */,
+				437AA8C61592F8D2005463F5 /* bullets_yellow_green.png in Resources */,
+				437AA8CB159394E2005463F5 /* ShareViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1483,6 +1500,7 @@
 				437AA8AD15922D13005463F5 /* FeedDashboardViewController.m in Sources */,
 				437AA8B915929D51005463F5 /* zepto.js in Sources */,
 				437AA8BE15929DA7005463F5 /* storyDetailView.js in Sources */,
+				437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

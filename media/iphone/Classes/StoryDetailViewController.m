@@ -77,7 +77,6 @@
 
 
 - (void)viewWillAppear:(BOOL)animated {
-//    NSLog(@"Stories; %@ -- %@ (%d)", self.activeStoryId,  [appDelegate.activeStory objectForKey:@"id"], self.activeStoryId ==  [appDelegate.activeStory objectForKey:@"id"]);    
     id storyId = [appDelegate.activeStory objectForKey:@"id"];
     if (self.activeStoryId != storyId) {
         [appDelegate pushReadStory:storyId];
@@ -123,25 +122,19 @@
 #pragma mark Story layout
 
 - (void)showStory {
-//    NSLog(@"Loaded Story view: %@", appDelegate.activeStory);
-
     NSString *customImgCssString, *universalImgCssString, *sharingHtmlString;
-    // set up layout values based on iPad/iPhone
-    
+    // set up layout values based on iPad/iPhone    
     universalImgCssString = [NSString stringWithFormat:@
-
                              "<script src=\"zepto.js\"></script>"
                              "<script src=\"storyDetailView.js\"></script>"
                              "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
                              "<meta name=\"viewport\" content=\"width=device-width\"/>"];
-    
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         customImgCssString = [NSString stringWithFormat:@"<style>"
                               "h1, h2, h3, h4, h5, h6, div, table, span, pre, code, img {"
                               "  max-width: 588px;"
                               "}"
                               "</style>"];
-
     } else {
         customImgCssString = [NSString stringWithFormat:@"<style>"
                               "h1, h2, h3, h4, h5, h6, div, table, span, pre, code, img {"
@@ -189,19 +182,15 @@
                              [appDelegate.activeStory objectForKey:@"story_title"],
                              story_author,
                              story_tags];
-    NSString *htmlString = [NSString stringWithFormat:@"<html><head>%@ %@</head><body onload='init()'>%@<div class=\"NB-story\">%@ </div>%@</body></html>",
+    NSString *htmlString = [NSString stringWithFormat:@"<html><head>%@ %@</head><body onload='init()'>%@<div class=\"NB-story\">%@ </div></body></html>",
                             universalImgCssString, 
                             customImgCssString,
                             storyHeader, 
-                            [appDelegate.activeStory objectForKey:@"story_content"],
-                            sharingHtmlString
+                            [appDelegate.activeStory objectForKey:@"story_content"]//,
+                            //sharingHtmlString
                             ];
-    NSLog(@"%@", htmlString);
-//    NSString *feed_link = [[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
-//                                                                [appDelegate.activeStory 
-//                                                                 objectForKey:@"story_feed_id"]]] 
-//                           objectForKey:@"feed_link"];
 
+    NSLog(@"\n\n\n\nstory content\n\n\n%@<div class=\"NB-story\">%@</div>\n\n\n", storyHeader, [appDelegate.activeStory objectForKey:@"story_content"]);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -316,7 +305,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
     float progress = (total - unreads) / total;
-    NSLog(@"Total: %f / %f = %f", unreads, total, progress);
     [progressView setProgress:progress];
 }
 
@@ -349,8 +337,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     int nextIndex = [appDelegate indexOfNextStory];
     int unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
-    
-    NSLog(@"doNextUnreadStory: %d/%d", nextIndex, unreadCount);
     
     if (self.appDelegate.feedDetailViewController.pageFetching) {
         return;
@@ -450,6 +436,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           fontStyle];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     [jsString release];
+}
+
+- (IBAction)doShareButton:(id)sender {
+    [appDelegate showShareView];
 }
 
 - (void)showOriginalSubview:(id)sender {

@@ -49,5 +49,6 @@
 - (void)setActiveStory;
 - (void)setFontSize:(float)fontSize;
 - (void)setFontStyle:(NSString *)fontStyle;
+- (IBAction)doShareButton:(id)sender;
 
 @end

@@ -19,6 +19,7 @@
 #import "MoveSiteViewController.h"
 #import "OriginalStoryViewController.h"
 #import "SplitStoryDetailViewController.h"
+#import "ShareViewController.h"
 #import "MBProgressHUD.h"
 #import "Utilities.h"
 #import "StringHelper.h"
@@ -296,6 +297,85 @@
     [subviews release];
 }
 
+- (void)showShareView {
+    [splitStoryDetailViewController.view addSubview:shareViewController.view];
+    
+    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
+        
+        shareViewController.view.frame = CGRectMake(0, 
+                                                    960, 
+                                                    768, 
+                                                    0);
+
+        
+        [UIView animateWithDuration:0.35 animations:^{
+            shareViewController.view.frame = CGRectMake(0, 
+                                                        (960 - SHARE_MODAL_HEIGHT), 
+                                                        768, 
+                                                        SHARE_MODAL_HEIGHT + 44);
+
+            
+            NSLog(@"The value is %i", (960 - self.feedDetailPortraitYCoordinate) > SHARE_MODAL_HEIGHT);
+            if ((960 - self.feedDetailPortraitYCoordinate) > SHARE_MODAL_HEIGHT) {
+                feedDetailViewController.view.frame = CGRectMake(0,
+                                                                 (960 - SHARE_MODAL_HEIGHT + 44), 
+                                                                 768, 
+                                                                 SHARE_MODAL_HEIGHT);
+                storyDetailViewController.view.frame = CGRectMake(0,
+                                                                  0,
+                                                                  768,
+                                                                  (960 - SHARE_MODAL_HEIGHT + 44));
+            }
+
+
+        }
+         completion:^(BOOL finished) {
+             if ((960 - self.feedDetailPortraitYCoordinate) < SHARE_MODAL_HEIGHT) {
+                 storyDetailViewController.view.frame = CGRectMake(0,
+                                                                   0,
+                                                                   768,
+                                                                   (960 - SHARE_MODAL_HEIGHT + 44));
+             }
+         }]; 
+    }
+}
+
+- (void)hideShareView {
+    [splitStoryDetailViewController.view addSubview:shareViewController.view];
+    
+    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
+        if ((960 - self.feedDetailPortraitYCoordinate) < SHARE_MODAL_HEIGHT) {
+            storyDetailViewController.view.frame = CGRectMake(0,
+                                                              0,
+                                                              768,
+                                                              self.feedDetailPortraitYCoordinate);
+        }
+                
+        [UIView animateWithDuration:0.35 animations:^{
+            shareViewController.view.frame = CGRectMake(0, 
+                                                        960, 
+                                                        768, 
+                                                        0);
+            feedDetailViewController.view.frame = CGRectMake(0,
+                                                             self.feedDetailPortraitYCoordinate,
+                                                             768,
+                                                             960 - self.feedDetailPortraitYCoordinate); 
+            
+            storyDetailViewController.view.frame = CGRectMake(0,
+                                                              0,
+                                                              768,
+                                                              self.feedDetailPortraitYCoordinate);
+            feedDetailViewController.view.frame = CGRectMake(0,
+                                                             self.feedDetailPortraitYCoordinate,
+                                                             768,
+                                                             960 - self.feedDetailPortraitYCoordinate);
+        }]; 
+        
+        
+    }
+    
+}
+
 - (void)loadRiverFeedDetailView {
     [self setStories:nil];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && 
@@ -415,7 +495,6 @@
                                                               0, 
                                                               768, 
                                                               self.feedDetailPortraitYCoordinate);
-
             feedDetailViewController.view.frame = CGRectMake(0, 
                                                              self.feedDetailPortraitYCoordinate, 
                                                              768, 

@@ -43,7 +43,7 @@ img.NB-large-image {
 img.NB-small-image {
     background: #fff;
     max-width: 574px !important;
-    margin: 0 20px 20px 0;
+    margin: 0 20px 10px 0  !important;
     padding: 5px;
     display: block !important;
     width: auto;
@@ -63,8 +63,11 @@ h1, h2, h3, h4, h5, h6, div, table, span, pre, code, img {
   max-width: 588px;
 }
 
+div {
+  width: auto !important;
+}
+
 p {
-    clear: both;
     margin: 0px 0px 20px 0;
 }
 
@@ -101,22 +104,21 @@ small {
 .NB-story-tags {
     overflow: hidden;
     line-height: 12px;
-    height: 14px;
     padding: 5px 0 0 0;
     text-transform: uppercase;
 }
 
 .NB-story-tag {
-    float: left;
-    font-size: 10px;
-    font-weight: normal;
-    font-size: 9px;
-    padding: 0px 4px 0px;
-    margin: 0px 4px 2px 0;
-    background-color: #C6CBC3;
-    color: #505050;
-    text-shadow: 0 1px 0 #E7E7E7;
-    -webkit-border-radius: 4px;
+  float: left;
+  font-size: 10px;
+  font-weight: normal;
+  font-size: 9px;
+  padding: 0px 4px 0px;
+  margin: 0px 4px 4px 0;
+  background-color: #C6CBC3;
+  color: #505050;
+  text-shadow: 0 1px 0 #E7E7E7;
+  -webkit-border-radius: 4px;
 }
 
 .NB-story-date {

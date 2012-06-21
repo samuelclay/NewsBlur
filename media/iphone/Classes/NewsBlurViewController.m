@@ -94,11 +94,11 @@
         }
     }
 
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"thumbs_down.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_all.png"] 
                      forSegmentAtIndex:0];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_yellow.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_yellow_green.png"] 
                      forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"thumbs_up.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] 
                      forSegmentAtIndex:2];
     [self.intelligenceControl addTarget:self
                                  action:@selector(selectIntelligence)
@@ -109,22 +109,6 @@
     
     [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
                                       animated:YES scrollPosition:UITableViewScrollPositionMiddle];
-    
-    
-//    // remove the right detail view in storySplitController
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-//        NSArray *subviews = [[appDelegate.splitStoryDetailViewController.view subviews] copy];
-//        for (UIView *subview in subviews) {
-//            if (subview.tag == STORY_DETAIL_VIEW_TAG) {
-//                [subview removeFromSuperview];
-//            }
-//        }
-//        [subviews release];
-//    }
-//    
-//    appDelegate.splitStoryDetailViewController.navigationItem.titleView = nil;
-//    appDelegate.splitStoryDetailViewController.navigationItem.title = @"NewsBlur";
-//    appDelegate.splitStoryDetailViewController.navigationItem.rightBarButtonItem = nil;  
 }
 
 - (void)viewDidAppear:(BOOL)animated {

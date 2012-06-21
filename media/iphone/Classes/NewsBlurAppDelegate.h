@@ -13,6 +13,7 @@
 #define STORY_DETAIL_VIEW_TAG 1000002
 #define FEED_TITLE_GRADIENT_TAG 100003
 #define FEED_DASHBOARD_VIEW_TAG 100004
+#define SHARE_MODAL_HEIGHT 300
 
 @class NewsBlurViewController;
 @class FeedDetailViewController;
@@ -22,6 +23,7 @@
 @class FontSettingsViewController;
 @class GoogleReaderViewController;
 @class StoryDetailViewController;
+@class ShareViewController;
 @class LoginViewController;
 @class AddSiteViewController;
 @class MoveSiteViewController;
@@ -44,6 +46,7 @@
     FirstTimeUserViewController *firstTimeUserViewController;
     GoogleReaderViewController *googleReaderViewController;
     StoryDetailViewController *storyDetailViewController;
+    ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
@@ -94,6 +97,7 @@
 @property (nonatomic, retain) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic, retain) IBOutlet OriginalStoryViewController *originalStoryViewController;
 @property (nonatomic, retain) IBOutlet SplitStoryDetailViewController *splitStoryDetailViewController;
+@property (nonatomic, retain) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic, retain) IBOutlet FontSettingsViewController *fontSettingsViewController;
 
 @property (readwrite, retain) NSString * activeUsername;
@@ -146,6 +150,8 @@
 - (void)changeActiveFeedDetailRow;
 - (void)dragFeedDetailView:(float)y;
 - (void)hideStoryDetailView;
+- (void)showShareView;
+- (void)hideShareView;
 
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;

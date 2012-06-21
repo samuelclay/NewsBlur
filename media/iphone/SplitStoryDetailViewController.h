@@ -12,7 +12,6 @@
 
 @interface SplitStoryDetailViewController : UIViewController <UISplitViewControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
-    
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
