@@ -10,7 +10,7 @@ from utils import jammit
 # ===================
 
 ADMINS       = (
-    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
+    ('Samuel Clay', 'samuel@newsblur.com'),
 )
 
 SERVER_EMAIL = 'server@newsblur.com'

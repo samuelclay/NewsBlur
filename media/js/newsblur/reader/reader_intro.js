@@ -461,7 +461,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 self.advance_import_carousel(0);
                 $loading.removeClass('NB-active');
                 NEWSBLUR.log(['Error', data, status, e]);
-                $error.text("There was a problem uploading your OPML file. Try e-mailing it to samuel@ofbrooklyn.com.");
+                $error.text("There was a problem uploading your OPML file. Try e-mailing it to samuel@newsblur.com.");
                 $error.slideDown(300);
             },
             data: formData,

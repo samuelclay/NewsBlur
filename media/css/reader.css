@@ -7173,7 +7173,6 @@ form.opml_import_form input {
   margin: 12px 0;
 }
 .NB-static-api table {
-  width: 600px;
   border-spacing: 0 0;
   margin: 24px 0 12px 20px;
   background: transparent url('/media/embed/reader/static_bullet_white.png') no-repeat 0 0;
@@ -7192,7 +7191,6 @@ form.opml_import_form input {
   white-space: nowrap;
 /*  border-bottom: 1px solid #F6F6f6;*/
 }
-<<<<<<< HEAD
 .NB-static-api table td:last-child {
   border-right: none;
 }
@@ -7443,7 +7441,6 @@ form.opml_import_form input {
         margin-bottom: 54px;
     }
 }
-<<<<<<< HEAD
 
 /* ================= */
 /* = Friends Modal = */
