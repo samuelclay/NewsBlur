@@ -902,6 +902,12 @@ class MSharedStory(mongo.Document):
         share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
         r.srem(share_key, self.user_id)
 
+        comment_key = "C:%s:%s" % (self.story_feed_id, self.guid_hash)
+        r.srem(comment_key, self.user_id)
+        
+        MActivity.remove_shared_story(user_id=self.user_id, story_feed_id=self.story_feed_id,
+                                      story_id=self.story_guid)
+
         super(MSharedStory, self).delete(*args, **kwargs)
     
     def set_source_user_id(self, source_user_id, original_comments=None):
@@ -1578,3 +1584,17 @@ class MActivity(mongo.Document):
         if share_date:
             a.date = share_date
             a.save()
+
+    @classmethod
+    def remove_shared_story(cls, user_id, story_feed_id, story_id):
+        try:
+            a = cls.objects.get(user_id=user_id,
+                                with_user_id=user_id,
+                                category='sharedstory',
+                                feed_id=story_feed_id,
+                                content_id=story_id)
+        except cls.DoesNotExist:
+            return
+        
+        a.delete()
+        

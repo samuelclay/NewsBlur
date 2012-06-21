@@ -238,6 +238,26 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
     
+    mark_story_as_unshared: function(story_id, feed_id, callback, error_callback) {
+        var pre_callback = _.bind(function(data) {
+            if (data.user_profiles) {
+                this.add_user_profiles(data.user_profiles);
+            }
+            var story = this.get_story(story_id);
+            story.set(data.story);
+            callback(data);
+        }, this);
+        
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/social/unshare_story', {
+                story_id: story_id,
+                feed_id: feed_id
+            }, pre_callback, error_callback);
+        } else {
+            error_callback();
+        }
+    },
+    
     save_comment_reply: function(story_id, story_feed_id, comment_user_id, reply_comments, original_message, callback, error_callback) {
         var pre_callback = _.bind(function(data) {
             if (data.user_profiles) {

@@ -248,11 +248,9 @@ def mark_story_as_shared(request):
         logging.user(request, "~FCSharing ~FM%s: ~SB~FB%s" % (story.story_title[:20], comments[:30]))
     else:
         shared_story = shared_story[0]
-        # original_comments = shared_story.comments
         shared_story.comments = comments
         shared_story.has_comments = bool(comments)
         shared_story.save()
-        # shared_story.set_source_user_id(source_user_id, original_comments=original_comments)
         logging.user(request, "~FCUpdating shared story ~FM%s: ~SB~FB%s" % (
                      story.story_title[:20], comments[:30]))
     
@@ -266,6 +264,41 @@ def mark_story_as_shared(request):
     
     return {'code': code, 'story': story, 'user_profiles': profiles}
 
+@ajax_login_required
+@json.json_view
+def mark_story_as_unshared(request):
+    feed_id  = int(request.POST['feed_id'])
+    story_id = request.POST['story_id']
+    
+    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
+    if not story:
+        return {'code': -1, 'message': 'Story not found. Reload this site.'}
+        
+    try:
+        shared_story = MSharedStory.objects.get(user_id=request.user.pk, 
+                                                   story_feed_id=feed_id, 
+                                                   story_guid=story_id)
+    except MSharedStory.DoesNotExist:
+        return {'code': -1, 'message': 'Shared story not found.'}
+    
+    socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
+    for socialsub in socialsubs:
+        socialsub.needs_unread_recalc = True
+        socialsub.save()
+    logging.user(request, "~FC~SKUn-sharing ~FM%s: ~SB~FB%s" % (shared_story.story_title[:20],
+                                                                shared_story.comments[:30]))
+    shared_story.delete()
+    
+    story.count_comments()
+    
+    story = Feed.format_story(story)
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], 
+                                                                        request.user, 
+                                                                        check_all=True)
+    story = stories[0]
+    
+    return {'code': 1, 'message': "Story unshared.", 'story': story, 'user_profiles': profiles}
+    
 @ajax_login_required
 @json.json_view
 def save_comment_reply(request):

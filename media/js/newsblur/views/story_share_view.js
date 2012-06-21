@@ -3,6 +3,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     events: {
         "click .NB-feed-story-share"            : "toggle_feed_story_share_dialog",
         "click .NB-sideoption-share-save"       : "mark_story_as_shared",
+        "click .NB-sideoption-share-unshare"    : "mark_story_as_unshared",
         "keyup .NB-sideoption-share-comments"   : "update_share_button_label"
     },
     
@@ -26,6 +27,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             <div class="NB-sideoption-share-title">Comments:</div>\
             <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
             <div class="NB-menu-manage-story-share-save NB-modal-submit-green NB-sideoption-share-save NB-modal-submit-button">Share</div>\
+            <div class="NB-menu-manage-story-share-unshare NB-modal-submit-grey NB-sideoption-share-unshare NB-modal-submit-button">Delete share</div>\
         </div>\
     </div>\
     '),
@@ -38,6 +40,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $story_content = this.$('.NB-feed-story-content');
         var $comment_input = this.$('.NB-sideoption-share-comments');
         var $story_comments = this.$('.NB-feed-story-comments');
+        var $unshare_button = this.$('.NB-sideoption-share-unshare');
         
         if (options.close ||
             ($sideoption.hasClass('NB-active') && !options.resize_open)) {
@@ -69,6 +72,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         } else {
             // Open/resize
             $sideoption.addClass('NB-active');
+            $unshare_button.toggleClass('NB-hidden', !this.model.get("shared"));
             var $share_clone = $share.clone();
             var full_height = $share_clone.css({
                 'height': 'auto',
@@ -123,31 +127,58 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     
     mark_story_as_shared: function(options) {
         options = options || {};
-        var $share_star = this.model.story_title_view.$('.NB-storytitles-share');
         var $share_button = this.$('.NB-sideoption-share-save');
         var $share_button_menu = $('.NB-menu-manage-story-share-save');
         var $share_menu = $share_button_menu.closest('.NB-sideoption-share');
-        var $share_sideoption = this.model.story_view.$('.NB-feed-story-share .NB-sideoption-title');
         var $comments_sideoptions = this.$('.NB-sideoption-share-comments');
         var $comments_menu = $('.NB-sideoption-share-comments', $share_menu);
         var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
-        var feed = NEWSBLUR.reader.model.get_feed(NEWSBLUR.reader.active_feed);
+        var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
         var source_user_id = feed && feed.get('user_id');
         
-        this.model.set("shared", true);
         $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
         $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
-        NEWSBLUR.assets.mark_story_as_shared(this.model.id, this.model.get('story_feed_id'), comments, source_user_id, _.bind(function() {
-            this.toggle_feed_story_share_dialog({'close': true});
-            NEWSBLUR.reader.hide_confirm_story_share_menu_item(true);
-            $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
-            $share_sideoption.text('Shared').closest('.NB-sideoption');
-            this.model.story_view.$el.addClass('NB-story-shared');
-            $comments_menu.val(comments);
-            $comments_sideoptions.val(comments);
-            this.model.story_view.render_comments();
-            
-            $share_star.attr({'title': 'Shared!'});
+        NEWSBLUR.assets.mark_story_as_shared(this.model.id, this.model.get('story_feed_id'), comments, source_user_id, _.bind(this.post_share_story, this, true), _.bind(function(data) {
+            this.post_share_error(data, true);
+        }, this));
+        
+        NEWSBLUR.reader.blur_to_page();
+    },
+    
+    mark_story_as_unshared: function(options) {
+        options = options || {};
+        var $unshare_button = this.$('.NB-sideoption-share-unshare');
+        var $unshare_button_menu = $('.NB-menu-manage-story-share-unshare');
+        var $share_menu = $unshare_button_menu.closest('.NB-sideoption-share');
+        
+        $unshare_button.addClass('NB-saving').addClass('NB-disabled').text('Deleting...');
+        NEWSBLUR.assets.mark_story_as_unshared(this.model.id, this.model.get('story_feed_id'), _.bind(this.post_share_story, this, false), _.bind(function(data) {
+            this.post_share_error(data, false);
+        }, this));
+        
+        NEWSBLUR.reader.blur_to_page();
+    },
+    
+    post_share_story: function(shared) {
+        this.model.set("shared", shared);
+
+        var $share_star = this.model.story_title_view.$('.NB-storytitles-share');
+        var $share_button = this.$('.NB-sideoption-share-save');
+        var $unshare_button = this.$('.NB-sideoption-share-unshare');
+        var $share_sideoption = this.model.story_view.$('.NB-feed-story-share .NB-sideoption-title');
+        var $comments_sideoptions = this.$('.NB-sideoption-share-comments');
+        var shared_text = this.model.get('shared') ? 'Shared' : 'Unshared';
+        
+        this.toggle_feed_story_share_dialog({'close': true});
+        NEWSBLUR.reader.hide_confirm_story_share_menu_item(true);
+        $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
+        $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text('Delete Share');
+        $share_sideoption.text(shared_text).closest('.NB-sideoption');
+        this.model.story_view.$el.toggleClass('NB-story-shared', this.model.get('shared'));
+        this.model.story_view.render_comments();
+        
+        if (this.model.get('shared')) {
+            $share_star.attr({'title': shared_text + '!'});
             $share_star.tipsy({
                 gravity: 'sw',
                 fade: true,
@@ -164,25 +195,34 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                     tipsy.disable();
                 }
             }, 850);
-            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-        }, this), _.bind(function(data) {
-            var message = data && data.message || "Sorry, this story could not be shared. Probably a bug.";
-            if (!NEWSBLUR.Globals.is_authenticated) {
-                message = "You need to be logged in to share a story.";
-            }
-            var $error = $.make('div', { className: 'NB-error' }, message);
-            $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
-            $share_button.siblings('.NB-error').remove();
-            $share_button.after($error);
-            if ($share_button_menu.length) {
-                $share_button_menu.removeClass('NB-disabled').text('Share');
-                $share_button_menu.siblings('.NB-error').remove();
-                $share_button_menu.after($error.clone());
-            }
-            this.toggle_feed_story_share_dialog({'resize_open': true});
-        }, this));
+        }
         
-        NEWSBLUR.reader.blur_to_page();
+        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+    },
+    
+    post_share_error: function(data, shared) {
+        var $share_button = this.$('.NB-sideoption-share-save');
+        var $unshare_button = this.$('.NB-sideoption-share-unshare');
+        var $share_button_menu = $('.NB-menu-manage-story-share-save');
+        var message = data && data.message || ("Sorry, this story could not be " + (shared ? "" : "un") + "shared. Probably a bug.");
+        console.log(["post_share_error", data, shared, message]);
+        
+        if (!NEWSBLUR.Globals.is_authenticated) {
+            message = "You need to be logged in to share a story.";
+        }
+        var $error = $.make('div', { className: 'NB-error' }, message);
+        
+        $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
+        $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text('Delete Share');
+        $share_button.siblings('.NB-error').remove();
+        $share_button.after($error);
+        
+        if ($share_button_menu.length) {
+            $share_button_menu.removeClass('NB-disabled').text('Share');
+            $share_button_menu.siblings('.NB-error').remove();
+            $share_button_menu.after($error.clone());
+        }
+        this.toggle_feed_story_share_dialog({'resize_open': true});
     },
     
     update_share_button_label: function() {
