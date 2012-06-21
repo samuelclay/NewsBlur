@@ -143,7 +143,7 @@
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
 - (void)closeOriginalStory;
-- (void)changeActiveFeedDetailRow:(int)rowIndex;
+- (void)changeActiveFeedDetailRow;
 - (void)dragFeedDetailView:(float)y;
 - (void)hideStoryDetailView;
 

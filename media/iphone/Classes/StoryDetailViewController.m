@@ -129,30 +129,10 @@
     // set up layout values based on iPad/iPhone
     
     universalImgCssString = [NSString stringWithFormat:@
-                             "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" >"
-                             "<script>"
-                             "function init() {"
-                             "var a = document.getElementsByTagName('a');"
-                             "for (var i = 0, l = a.length; i < l; i++) {"
-                             "    if (a[i].href.indexOf('feedburner') != -1) {"
-                             "      a[i].className = 'NB-no-style';"
-                             "    } else {"
-                             "      var img = a[i].getElementsByTagName('img');"
-                             "      if(img.length) {"
-                             "          a[i].className='NB-contains-image';"
-                             "      }"
-                             "    }"
-                             "}"
-                             "var img = document.getElementsByTagName('img');"
-                             "for (var i = 0, l = img.length; i < l; i++) {"
-                             "      if (img[i].height == 1) {"
-                             "          img[i].className = 'NB-tracker';"
-                             "      } else {"
-                             "          img[i].className = 'NB-image';"
-                             "      }"
-                             "}"
-                             "}"
-                             "</script>"
+
+                             "<script src=\"zepto.js\"></script>"
+                             "<script src=\"storyDetailView.js\"></script>"
+                             "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
                              "<meta name=\"viewport\" content=\"width=device-width\"/>"];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -216,7 +196,7 @@
                             [appDelegate.activeStory objectForKey:@"story_content"],
                             sharingHtmlString
                             ];
-    //NSLog(@"%@", [appDelegate.activeStory objectForKey:@"story_content"]);
+    NSLog(@"%@", htmlString);
 //    NSString *feed_link = [[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
 //                                                                [appDelegate.activeStory 
 //                                                                 objectForKey:@"story_feed_id"]]] 
@@ -401,7 +381,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [self showStory];
         [self markStoryAsRead];
         [self setNextPreviousButtons];
-        [appDelegate changeActiveFeedDetailRow:nextIndex];
+        [appDelegate changeActiveFeedDetailRow];
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:.5];
         [UIView setAnimationBeginsFromCurrentState:NO];
@@ -429,7 +409,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         }
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                      objectAtIndex:previousIndex]];
-        [appDelegate changeActiveFeedDetailRow:previousIndex];
+        [appDelegate changeActiveFeedDetailRow];
         [self setActiveStory];
         [self showStory];
         [self markStoryAsRead];

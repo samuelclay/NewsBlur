@@ -261,11 +261,11 @@
         // remove existing feedDetailViewController
         [self hideStoryDetailView];
         
-        feedDashboardViewController.view.tag = FEED_DASHBOARD_VIEW_TAG;
-        [splitStoryDetailViewController.view addSubview:feedDashboardViewController.view];
-        
         feedDetailViewController.view.tag = FEED_DETAIL_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
+        
+        feedDashboardViewController.view.tag = FEED_DASHBOARD_VIEW_TAG;
+        [splitStoryDetailViewController.view addSubview:feedDashboardViewController.view];
         
         [self adjustStoryDetailWebView:YES];
         [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
@@ -302,12 +302,14 @@
         UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         // remove existing feedDetailViewController
         [self hideStoryDetailView];
+
+        feedDetailViewController.view.tag = FEED_DETAIL_VIEW_TAG;
+        [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
         
         feedDashboardViewController.view.tag = FEED_DASHBOARD_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:feedDashboardViewController.view];
         
-        feedDetailViewController.view.tag = FEED_DETAIL_VIEW_TAG;
-        [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
+
         
         [self adjustStoryDetailWebView:YES];
         [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
@@ -402,7 +404,7 @@
 - (void)dragFeedDetailView:(float)y {
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
 
-        if(y < 800 && y > 200) {
+        if(y < 785 && y > 200) {
             NSLog(@"drag y is %f", y);
             self.feedDetailPortraitYCoordinate = y;
             storyDetailViewController.view.frame = CGRectMake(0,
@@ -422,8 +424,8 @@
     }
 }
 
-- (void)changeActiveFeedDetailRow:(int)rowIndex {
-    [feedDetailViewController changeActiveFeedDetailRow:rowIndex];
+- (void)changeActiveFeedDetailRow {
+    [feedDetailViewController changeActiveFeedDetailRow];
 }
 
 - (void)loadStoryDetailView {

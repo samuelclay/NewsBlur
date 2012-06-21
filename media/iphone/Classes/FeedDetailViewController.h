@@ -47,7 +47,7 @@
 - (void)deleteSite;
 - (void)deleteFolder;
 - (void)openMoveView;
-- (void)changeActiveFeedDetailRow:(int)rowIndex;
+- (void)changeActiveFeedDetailRow;
 - (void)changeRowStyleToRead:(UITableViewCell *)cell;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;

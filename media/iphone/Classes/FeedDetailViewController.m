@@ -832,7 +832,14 @@
     [appDelegate showMoveSite];
 }
 
-- (void)changeActiveFeedDetailRow:(int)rowIndex {
+- (void)changeActiveFeedDetailRow {
+    int rowIndex = 0;
+    for(int i = 0; i < appDelegate.activeFeedStoryLocationIds.count; i++) {
+        if ([appDelegate.activeFeedStoryLocationIds objectAtIndex:i] == [appDelegate.activeStory objectForKey:@"id"]) {
+            rowIndex = i;
+        }
+    }
+    
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     NSIndexPath *offsetIndexPath = [NSIndexPath indexPathForRow:rowIndex - 1 inSection:0];
 

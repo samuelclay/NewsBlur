@@ -17,57 +17,75 @@ a {
     display: inline-block;
 }
 
-.NB-contains-image { 
+a.NB-contains-image { 
     display: block;
 }
 
-.NB-tracker { }
+img.NB-tracker { 
 
-.NB-contains-image img,
-img.NB-image {
-    max-width: 578px !important;
-    margin: 1.5em auto;
+}
+
+img {
+    max-width: 574px !important;
+    margin: 0 auto;
+}
+
+img.NB-large-image {
+    max-width: 574px !important;
+    margin: 0 auto 20px !important;
+    padding: 5px;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    background: #fff;
+}
+
+img.NB-small-image {
+    background: #fff;
+    max-width: 574px !important;
+    margin: 0 20px 20px 0;
     padding: 5px;
     display: block !important;
     width: auto;
     height: auto;
-    box-shadow: 0 0 6px 0.2px #999
+    float: left;
 }
 
-.NB-no-style img {
-    margin: 0 1em 0 0;
-    display: inline-block;
-    border: 0;
-    background: none;
-    box-shadow: none;
-}
 
 blockquote {
     background-color: #F0F0F0;
     border-left: 1px solid #9B9B9B;
     padding: .5em 2em;
-    margin: 1.5em 0 1.5em 1.5em;
+    margin: 0 0 20px 20px;
+}
+
+h1, h2, h3, h4, h5, h6, div, table, span, pre, code, img {  
+  max-width: 588px;
 }
 
 p {
     clear: both;
-    margin: 1em 0;
+    margin: 0px 0px 20px 0;
+}
+
+small {
+    font-size: 11px;
 }
 
 .NB-header {
-    font-size: 1.5em;
-    line-height: 1.6em;
-    font-weight: 600;
-    background-color: #E0E0E0;
-    border-bottom: 1px solid #A0A0A0;
-    padding: 20px 90px 20px;
-    text-shadow: 1px 1px 0 #EFEFEF;
-    overflow: hidden;
-    max-width: none;
+  font-size: 22px;
+  line-height: 29px;
+  font-weight: 600;
+  background-color: #E0E0E0;
+  border-bottom: 1px solid #A0A0A0;
+  padding: 15px 90px;
+  text-shadow: 1px 1px 0 #EFEFEF;
+  overflow: hidden;
+  max-width: none;
 }
 
 .NB-story {
-    margin: 24px 90px;
+    margin: 30px 90px;
 }
 
 .NB-story-author {
@@ -102,13 +120,14 @@ p {
 }
 
 .NB-story-date {
-    font-size: 11px;
-    color: #454D6C;
+  font-size: 11px;
+  color: #454D6C;
+  line-height: 13px;
 }
 
 .NB-story-title {
     clear: left;
-    margin: 4px 0 4px;
+    margin: 8px 0 4px;
 }
 
 ins {
