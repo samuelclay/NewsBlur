@@ -25,7 +25,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
             ]),
             $.make('div', { className: 'NB-story-comment-author-container' }, [
                 (this.model.get('source_user_id') && $.make('div', { className: 'NB-story-comment-reshares' }, [
-                    NEWSBLUR.Views.ProfileThumb.create(this.model.get('source_user_id'))
+                    NEWSBLUR.Views.ProfileThumb.create(this.model.get('source_user_id')).render().el
                 ])),
                 $.make('div', { className: 'NB-story-comment-username' }, this.user.get('username')),
                 $.make('div', { className: 'NB-story-comment-date' }, this.model.get('shared_date') + ' ago'),

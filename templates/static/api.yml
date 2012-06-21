@@ -437,6 +437,10 @@
       short_desc: "Get all public comments on a shared story."
       long_desc: 
         - "Get all public comments on a shared story."
+        - >
+          If you want comments from friends, they are already attached to the 
+          story from either <code>reader/feed/:id</code> or 
+          <code>/social/stories/:user_id</code>.
       params:
         - key: story_id
           desc: "ID of shared story."
