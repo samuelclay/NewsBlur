@@ -7,15 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 
-@class NewsBlurAppDelegate;
-
-@interface ShareViewController : UIViewController {
+@interface ShareViewController : UIViewController <ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
 
+@property (retain, nonatomic) IBOutlet UITextView *commentField;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 
 - (IBAction)doCancelButton:(id)sender;
+- (IBAction)doToggleButton:(id)sender;
+- (IBAction)doShareThisStory:(id)sender;
 
 @end

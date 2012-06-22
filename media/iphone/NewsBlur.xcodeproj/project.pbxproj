@@ -119,6 +119,10 @@
 		43C95C48158BEC450086C69B /* GoogleReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C95C46158BEC440086C69B /* GoogleReaderViewController.m */; };
 		43C95C49158BEC450086C69B /* GoogleReaderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */; };
 		43C95C4B158BF8810086C69B /* google_reader_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C4A158BF8810086C69B /* google_reader_selected_background.png */; };
+		43CF31AF1593B84000296407 /* 32-Twitter.png in Resources */ = {isa = PBXBuildFile; fileRef = 43CF31AE1593B84000296407 /* 32-Twitter.png */; };
+		43CF31B21593BA4800296407 /* 32-Twitter-Green.png in Resources */ = {isa = PBXBuildFile; fileRef = 43CF31B11593BA4800296407 /* 32-Twitter-Green.png */; };
+		43CF31B51593BC1500296407 /* 208-facebook-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 43CF31B31593BC1500296407 /* 208-facebook-green.png */; };
+		43CF31B61593BC1500296407 /* 208-facebook.png in Resources */ = {isa = PBXBuildFile; fileRef = 43CF31B41593BC1500296407 /* 208-facebook.png */; };
 		78095E34128EF30C00230C8E /* ASIAuthenticationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E25128EF30C00230C8E /* ASIAuthenticationDialog.m */; };
 		78095E35128EF30D00230C8E /* ASIDownloadCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E28128EF30C00230C8E /* ASIDownloadCache.m */; };
 		78095E36128EF30D00230C8E /* ASIFormDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E2A128EF30C00230C8E /* ASIFormDataRequest.m */; };
@@ -339,6 +343,10 @@
 		43C95C46158BEC440086C69B /* GoogleReaderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoogleReaderViewController.m; sourceTree = "<group>"; };
 		43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = GoogleReaderViewController.xib; path = Classes/GoogleReaderViewController.xib; sourceTree = "<group>"; };
 		43C95C4A158BF8810086C69B /* google_reader_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = google_reader_selected_background.png; sourceTree = "<group>"; };
+		43CF31AE1593B84000296407 /* 32-Twitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "32-Twitter.png"; sourceTree = "<group>"; };
+		43CF31B11593BA4800296407 /* 32-Twitter-Green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "32-Twitter-Green.png"; sourceTree = "<group>"; };
+		43CF31B31593BC1500296407 /* 208-facebook-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "208-facebook-green.png"; sourceTree = "<group>"; };
+		43CF31B41593BC1500296407 /* 208-facebook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "208-facebook.png"; sourceTree = "<group>"; };
 		43D0451F1565BC150085F811 /* MainWindow~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow~ipad.xib"; path = "Resources-iPad/MainWindow~ipad.xib"; sourceTree = "<group>"; };
 		43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "NewsBlurViewController~ipad.xib"; path = "Resources-iPad/NewsBlurViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "FeedDetailViewController~ipad.xib"; path = "Resources-iPad/Classes/FeedDetailViewController~ipad.xib"; sourceTree = "<group>"; };
@@ -715,6 +723,10 @@
 		4307BE511565EDF8007A932A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				43CF31B31593BC1500296407 /* 208-facebook-green.png */,
+				43CF31B41593BC1500296407 /* 208-facebook.png */,
+				43CF31B11593BA4800296407 /* 32-Twitter-Green.png */,
+				43CF31AE1593B84000296407 /* 32-Twitter.png */,
 				437AA8C31592F8D2005463F5 /* bullets_all.png */,
 				437AA8C41592F8D2005463F5 /* bullets_yellow_green.png */,
 				439DAB261590E6720019B0EB /* 53-house.png */,
@@ -1386,6 +1398,10 @@
 				437AA8C51592F8D2005463F5 /* bullets_all.png in Resources */,
 				437AA8C61592F8D2005463F5 /* bullets_yellow_green.png in Resources */,
 				437AA8CB159394E2005463F5 /* ShareViewController.xib in Resources */,
+				43CF31AF1593B84000296407 /* 32-Twitter.png in Resources */,
+				43CF31B21593BA4800296407 /* 32-Twitter-Green.png in Resources */,
+				43CF31B51593BC1500296407 /* 208-facebook-green.png in Resources */,
+				43CF31B61593BC1500296407 /* 208-facebook.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -188,7 +188,8 @@
         
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+                             initWithDictionary:[responseString JSONValue]];    
+
     if (!appDelegate.isRiverView && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
         [results release];
         return;
