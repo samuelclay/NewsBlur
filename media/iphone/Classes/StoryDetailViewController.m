@@ -275,21 +275,7 @@
             }
             [self.webView insertSubview:feedTitleGradient aboveSubview:theScrollView];
             [theScrollView setContentOffset:CGPointMake(0, appDelegate.isRiverView ? -19 : -9) animated:NO];
-            
-            // Such a fucking hack. This hides the top shadow of the scroll view
-            // so the gradient doesn't look like ass when the view is dragged down.
-            NSArray *wsv = [NSArray arrayWithArray:[theScrollView subviews]];
-            [[wsv objectAtIndex:7] setHidden:YES]; // Scroll to header
-            [[wsv objectAtIndex:9] setHidden:YES]; // Scroll to header
-            [[wsv objectAtIndex:3] setHidden:YES]; // Scroll to header
-            [[wsv objectAtIndex:5] setHidden:YES]; // Scroll to header
-//            UIImageView *topShadow = [[UIImageView alloc] initWithImage:[[wsv objectAtIndex:9] image]];
-//            topShadow.frame = [[wsv objectAtIndex:9] frame];
-//            [self.webView addSubview:topShadow];
-//            [self.webView addSubview:[wsv objectAtIndex:9]];
-            // Oh my god, the above code is beyond hack. It's evil. And it's going
-            // to break, I swear to god. This shit deserves scorn.
-            
+                        
             break;
         }
     }
