@@ -121,12 +121,58 @@
 #pragma mark -
 #pragma mark Story layout
 
+- (NSString *)getComments {
+    NSString *comments = @"";
+    
+    if ([appDelegate.activeStory objectForKey:@"comments"]) {
+        NSArray *comments_array = [appDelegate.activeStory objectForKey:@"comments"];
+        if ([comments_array count] > 0) {
+            
+            comments = [comments stringByAppendingString:[NSString stringWithFormat:@
+                                                          "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
+                                                          "<div class=\"NB-story-comments-shares-teaser\">"
+                                                          "<div class=\"NB-right\">Shared by <b>4</b> people</div>"
+                                                          "<div class=\"NB-story-share-label\">Shared by: </div>"
+                                                          "<div class=\"NB-story-share-profiles NB-story-share-profiles-friends\">"
+                                                          "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\" original-title=\"popular\"><img src=\"http://f.cl.ly/items/0L3E37240r1O1V140k2q/popular.jpg\"></div></div>"
+                                                          "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\" original-title=\"roy\"><img src=\"http://a0.twimg.com/profile_images/1220963194/32457_608147485418_1702670_35737586_6975021_n_normal.jpg\"></div></div>"
+                                                          "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\" original-title=\"samuel\"><img src=\"http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_normal.jpg\"></div></div>"
+                                                          "</div></div></div>"]];
+            
+            for (int i = 0; i < comments_array.count; i++) {
+                NSDictionary *comment_dict = [comments_array objectAtIndex:i];
+                NSString *comment = [NSString stringWithFormat:@
+                                     "<div class=\"NB-story-comment\"><div>"
+                                     "<img class=\"NB-user-avatar NB-story-comment-reply-photo\" src=\"%@\" />"
+                                     "<div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
+                                     "<div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@</div>"
+                                     "<div class=\"NB-story-comment-reply-content\">%@</div>"
+                                     "</div></div>",
+                                     [comment_dict objectForKey:@"user_id"],
+                                     [comment_dict objectForKey:@"user_id"],
+                                     [comment_dict objectForKey:@"shared_date"],
+                                     [comment_dict objectForKey:@"comments"]];
+                comments = [comments stringByAppendingString:comment];
+            }
+        }
+    }
+    return comments;
+}
 - (void)showStory {
+    
+    for (id key in appDelegate.activeStory) {
+        
+        NSLog(@"key is: %@  value: %@", key, [appDelegate.activeStory objectForKey:key]);
+    }
+    
+    NSString *commentsString = [self getComments];    
+
     NSString *customImgCssString, *universalImgCssString, *sharingHtmlString;
     // set up layout values based on iPad/iPhone    
     universalImgCssString = [NSString stringWithFormat:@
                              "<script src=\"zepto.js\"></script>"
                              "<script src=\"storyDetailView.js\"></script>"
+                             "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
                              "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
                              "<meta name=\"viewport\" content=\"width=device-width\"/>"];
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -182,11 +228,18 @@
                              [appDelegate.activeStory objectForKey:@"story_title"],
                              story_author,
                              story_tags];
-    NSString *htmlString = [NSString stringWithFormat:@"<html><head>%@ %@</head><body onload='init()'>%@<div class=\"NB-story\">%@ </div>%@</body></html>",
+    NSString *htmlString = [NSString stringWithFormat:@
+                            "<html><head>%@ %@</head>"
+                            "<body id=\"story_pane\">%@"
+                            "<div class=\"NB-story\">%@ </div>"
+                            "<div class=\"NB-feed-story-comments\">%@</div>" // comments
+                            "%@" // share
+                            "</body></html>",
                             universalImgCssString, 
                             customImgCssString,
                             storyHeader, 
                             [appDelegate.activeStory objectForKey:@"story_content"],
+                            commentsString,
                             sharingHtmlString
                             ];
 

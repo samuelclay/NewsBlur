@@ -48,6 +48,7 @@
 - (void)markedAsRead;
 - (void)setActiveStory;
 - (void)setFontSize:(float)fontSize;
+- (NSString *)getComments;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (IBAction)doShareButton:(id)sender;
 

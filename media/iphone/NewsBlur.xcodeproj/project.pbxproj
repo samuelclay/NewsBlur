@@ -123,6 +123,7 @@
 		43CF31B21593BA4800296407 /* 32-Twitter-Green.png in Resources */ = {isa = PBXBuildFile; fileRef = 43CF31B11593BA4800296407 /* 32-Twitter-Green.png */; };
 		43CF31B51593BC1500296407 /* 208-facebook-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 43CF31B31593BC1500296407 /* 208-facebook-green.png */; };
 		43CF31B61593BC1500296407 /* 208-facebook.png in Resources */ = {isa = PBXBuildFile; fileRef = 43CF31B41593BC1500296407 /* 208-facebook.png */; };
+		43E8856015951F930032022E /* reader.css in Resources */ = {isa = PBXBuildFile; fileRef = 43E8855F15951F930032022E /* reader.css */; };
 		78095E34128EF30C00230C8E /* ASIAuthenticationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E25128EF30C00230C8E /* ASIAuthenticationDialog.m */; };
 		78095E35128EF30D00230C8E /* ASIDownloadCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E28128EF30C00230C8E /* ASIDownloadCache.m */; };
 		78095E36128EF30D00230C8E /* ASIFormDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E2A128EF30C00230C8E /* ASIFormDataRequest.m */; };
@@ -357,6 +358,7 @@
 		43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "AddSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/AddSiteViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "AddSiteAutocompleteCell~ipad.xib"; path = "Resources-iPad/Classes/AddSiteAutocompleteCell~ipad.xib"; sourceTree = "<group>"; };
 		43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MoveSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/MoveSiteViewController~ipad.xib"; sourceTree = "<group>"; };
+		43E8855F15951F930032022E /* reader.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = reader.css; sourceTree = "<group>"; };
 		78095E24128EF30C00230C8E /* ASIAuthenticationDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIAuthenticationDialog.h; sourceTree = "<group>"; };
 		78095E25128EF30C00230C8E /* ASIAuthenticationDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIAuthenticationDialog.m; sourceTree = "<group>"; };
 		78095E26128EF30C00230C8E /* ASICacheDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASICacheDelegate.h; sourceTree = "<group>"; };
@@ -651,6 +653,7 @@
 			children = (
 				437AA8B815929D51005463F5 /* zepto.js */,
 				437AA8BF15929DFA005463F5 /* storyDetailView.css */,
+				43E8855F15951F930032022E /* reader.css */,
 				437AA8BD15929DA7005463F5 /* storyDetailView.js */,
 				1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */,
 				1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */,
@@ -1402,6 +1405,7 @@
 				43CF31B21593BA4800296407 /* 32-Twitter-Green.png in Resources */,
 				43CF31B51593BC1500296407 /* 208-facebook-green.png in Resources */,
 				43CF31B61593BC1500296407 /* 208-facebook.png in Resources */,
+				43E8856015951F930032022E /* reader.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
