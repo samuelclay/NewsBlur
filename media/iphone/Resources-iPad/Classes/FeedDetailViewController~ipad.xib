@@ -1467,6 +1467,7 @@
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
+							<string>shareViewController</string>
 							<string>splitStoryController</string>
 							<string>splitStoryDetailNavigationController</string>
 							<string>splitStoryDetailViewController</string>
@@ -1487,6 +1488,7 @@
 							<string>MoveSiteViewController</string>
 							<string>UINavigationController</string>
 							<string>OriginalStoryViewController</string>
+							<string>ShareViewController</string>
 							<string>UISplitViewController</string>
 							<string>UINavigationController</string>
 							<string>SplitStoryDetailViewController</string>
@@ -1510,6 +1512,7 @@
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
+							<string>shareViewController</string>
 							<string>splitStoryController</string>
 							<string>splitStoryDetailNavigationController</string>
 							<string>splitStoryDetailViewController</string>
@@ -1565,6 +1568,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">originalStoryViewController</string>
 								<string key="candidateClassName">OriginalStoryViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">shareViewController</string>
+								<string key="candidateClassName">ShareViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">splitStoryController</string>
@@ -1864,6 +1871,85 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">ShareViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doCancelButton:</string>
+							<string>doShareThisStory:</string>
+							<string>doToggleButton:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doCancelButton:</string>
+							<string>doShareThisStory:</string>
+							<string>doToggleButton:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">doCancelButton:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">doShareThisStory:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">doToggleButton:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>commentField</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NewsBlurAppDelegate</string>
+							<string>UITextView</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>commentField</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">appDelegate</string>
+								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">commentField</string>
+								<string key="candidateClassName">UITextView</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/ShareViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">SplitStoryDetailViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="outlets">
@@ -1891,10 +1977,12 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>doShareButton:</string>
 							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -1906,6 +1994,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>doShareButton:</string>
 							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -1916,6 +2005,10 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">doPreviousStory</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">doShareButton:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">

@@ -1,5 +1,4 @@
 Zepto(function($) {
-
     $('img').each(function() {
         setImage(this);
     });

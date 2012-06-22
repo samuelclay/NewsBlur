@@ -146,8 +146,8 @@
    sharingHtmlString      = [NSString stringWithFormat:@
     "<div class='NB-share-header'></div>"
     "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-    "<a class='NB-share-button' href='share://share'><span class='NB-share-icon'></span>Share this story</a>"
-    "<a class='NB-save-button' href='save://save'><span class='NB-save-icon'></span>Save this story</a>"
+    "<a class='NB-share-button' href='nb-share://share-link'><span class='NB-share-icon'></span>Share this story</a>"
+//    "<a class='NB-save-button' href='save://save'><span class='NB-save-icon'></span>Save this story</a>"
                         "</div></div>"];
     NSString *story_author      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
@@ -182,12 +182,12 @@
                              [appDelegate.activeStory objectForKey:@"story_title"],
                              story_author,
                              story_tags];
-    NSString *htmlString = [NSString stringWithFormat:@"<html><head>%@ %@</head><body onload='init()'>%@<div class=\"NB-story\">%@ </div></body></html>",
+    NSString *htmlString = [NSString stringWithFormat:@"<html><head>%@ %@</head><body onload='init()'>%@<div class=\"NB-story\">%@ </div>%@</body></html>",
                             universalImgCssString, 
                             customImgCssString,
                             storyHeader, 
-                            [appDelegate.activeStory objectForKey:@"story_content"]//,
-                            //sharingHtmlString
+                            [appDelegate.activeStory objectForKey:@"story_content"],
+                            sharingHtmlString
                             ];
 
     NSLog(@"\n\n\n\nstory content\n\n\n%@<div class=\"NB-story\">%@</div>\n\n\n", storyHeader, [appDelegate.activeStory objectForKey:@"story_content"]);
@@ -260,10 +260,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType {
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         NSURL *url = [request URL];
-        [appDelegate showOriginalStory:url];
-        return NO;
+        if ([[url absoluteString] isEqualToString: @"nb-share://share-link"]) {
+            [appDelegate showShareView];
+            return NO;
+        } else {
+            [appDelegate showOriginalStory:url];
+            return NO;
+        }
     }
-    
     return YES;
 }
 
