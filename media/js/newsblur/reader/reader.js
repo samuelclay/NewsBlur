@@ -2698,7 +2698,7 @@
             });
             
             // Hide menu on esc.
-            $('input,textarea', $manage_menu_container).bind('keydown', 'esc', function(e) {
+            $('input,textarea', $manage_menu_container).bind('keydown.manage_menu', 'esc', function(e) {
                 e.preventDefault();
                 self.flags['showing_confirm_input_on_manage_menu'] = false;
                 self.hide_manage_menu(type, $item, true);

@@ -476,7 +476,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                 var $iframe_contents = this.$el.contents();
                 $iframe_contents.find('a')
                     .unbind('click.NB-taskbar')
-                    .bind('click.NB-taskbar', function(e) {
+                    .bind('click.NB-taskbar', _.bind(function(e) {
                     var href = $(this).attr('href');
                     if (href.indexOf('#') == 0) {
                         e.preventDefault();
@@ -493,7 +493,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                         return false;
                     }
                     this.taskbar_show_return_to_page();
-                });
+                }, this));
             // } catch(e) {
             //     // Not on local domain. Ignore.
             // }

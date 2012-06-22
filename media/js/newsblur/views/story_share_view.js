@@ -118,9 +118,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 this.mark_story_as_shared({'source': 'sideoption'});
             }, this);
             var $comments = $('.NB-sideoption-share-comments', $share);
-            $comments.unbind('keydown')
-                     .bind('keydown', 'ctrl+return', share)
-                     .bind('keydown', 'meta+return', share);
+            $comments.unbind('keydown.story_share')
+                     .bind('keydown.story_share', 'ctrl+return', share)
+                     .bind('keydown.story_share', 'meta+return', share);
 
         }
     },

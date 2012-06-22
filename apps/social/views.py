@@ -229,7 +229,10 @@ def mark_story_as_shared(request):
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
-        return {'code': -1, 'message': 'Story not found. Reload this site.'}
+        return {
+            'code': -1, 
+            'message': 'The original story is gone. This would be a nice bug to fix. Speak up.'
+        }
     
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 

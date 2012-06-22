@@ -5005,6 +5005,14 @@ form.opml_import_form input {
   text-align: center;
   width: 95%;
 }
+.NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-story-share-unshare {
+  width: 95%;
+  text-align: center;
+  margin-bottom: 0;
+}
+.NB-menu-manage .NB-menu-manage-confirm .NB-sideoption-share-comments {
+    height: 28px;
+}
 .NB-menu-manage .NB-menu-manage-confirm .NB-add-folders {
     float: left;
 }
