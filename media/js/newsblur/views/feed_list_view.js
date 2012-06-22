@@ -177,11 +177,15 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         
         if (options.$feed) {
             feed_view = _.detect(model.views, function(view) {
+                console.log(["feed_view 1", view.el == options.$feed[0]]);
                 return view.el == options.$feed[0];
             });
         }
         if (!feed_view) {
-            feed_view = model.views[0];
+            feed_view = _.detect(model.views, _.bind(function(view) {
+                console.log(["feed_view 2", view.$el.closest(this.$s.$feed_lists).length]);
+                return !!view.$el.closest(this.$s.$feed_lists).length;
+            }, this));
         }
         
         if (feed_view) {
@@ -195,10 +199,10 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         // console.log(["scroll_to_show_selected_feed", feed_view, feed_view.$el, is_feed_visible]);
 
         if (!is_feed_visible) {
-            var container_offset = $feed_lists.position().top;
             var scroll = feed_view.$el.position().top;
             var container = $feed_lists.scrollTop();
             var height = $feed_lists.outerHeight();
+            console.log(["scroll feed list", scroll, container, height]);
             $feed_lists.scrollTop(scroll+container-height/5);
         }        
     },

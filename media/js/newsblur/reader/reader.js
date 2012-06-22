@@ -1266,7 +1266,7 @@
             
             this.iframe_scroll = null;
             this.flags['opening_feed'] = true;
-            feed.set('selected', true);
+            feed.set('selected', true, options);
             this.make_feed_title_in_stories(feed.id);
             this.$s.$body.addClass('NB-view-river');
             this.flags.social_view = true;
