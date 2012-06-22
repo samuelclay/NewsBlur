@@ -6,24 +6,25 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class Database extends SQLiteOpenHelper {
+public class BlurDatabase extends SQLiteOpenHelper {
 
 	private final String TEXT = " text";
 	private final String INTEGER = " integer";
 	private final static String TAG = "DatabaseHelper";
-
+	private final static String DB_NAME = "blur.db";
+	private final static int VERSION = 1;
 	
-	public Database(Context context, String name, CursorFactory factory, int version) {
-		super(context, name, factory, version);
+	public BlurDatabase(Context context) {
+		super(context, DB_NAME, null, VERSION);
 		Log.d(TAG, "Initiating database");
 	}
 	
-	private final String FOLDER_SQL = "CREATE TABLE " + Constants.FOLDER_TABLE + " IF NOT EXISTS (" +
+	private final String FOLDER_SQL = "CREATE TABLE " + Constants.FOLDER_TABLE + " (" +
 		Constants.FOLDER_ID + TEXT + ", " +
 		Constants.FOLDER_NAME + TEXT + 
 		")";
 	
-	private final String FEED_SQL = "CREATE TABLE " + Constants.FEED_TABLE + " IF NOT EXISTS (" +
+	private final String FEED_SQL = "CREATE TABLE " + Constants.FEED_TABLE + " (" +
 		Constants.FEED_ID + INTEGER + ", " +
 		Constants.FEED_ACTIVE + TEXT + ", " +
 		Constants.FEED_ADDRESS + TEXT + ", " + 
@@ -35,7 +36,7 @@ public class Database extends SQLiteOpenHelper {
 		Constants.FEED_UPDATED_SECONDS +
 		")";
 	
-	private final String STORY_SQL = "CREATE TABLE " + Constants.STORY_TABLE + " IF NOT EXISTS (" +
+	private final String STORY_SQL = "CREATE TABLE " + Constants.STORY_TABLE + " (" +
 		Constants.STORY_AUTHORS + TEXT + ", " +
 		Constants.STORY_CONTENT + TEXT + ", " +
 		Constants.STORY_DATE + TEXT + ", " +
@@ -50,7 +51,7 @@ public class Database extends SQLiteOpenHelper {
 		Constants.STORY_TITLE + TEXT + 
 		")";
 	
-	private final String CLASSIFIER_SQL = "CREATE TABLE " + Constants.CLASSIFIER_TABLE + " IF NOT EXISTS (" +
+	private final String CLASSIFIER_SQL = "CREATE TABLE " + Constants.CLASSIFIER_TABLE + " (" +
 		Constants.CLASSIFIER_ID + TEXT + ", " +
 		Constants.CLASSIFIER_KEY + TEXT + ", " + 
 		Constants.CLASSIFIER_TYPE + TEXT + ", " +

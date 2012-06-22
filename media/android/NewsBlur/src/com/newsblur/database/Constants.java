@@ -6,11 +6,11 @@ public class Constants {
 	
 	public static String FOLDER_TABLE = "folders";
 	public static String FOLDER_ID = BaseColumns._ID;
-	public static String FOLDER_NAME = "name";
+	public static String FOLDER_NAME = "folder_name";
 	
 	public static String FEED_TABLE = "feeds";
 	public static String FEED_ID = BaseColumns._ID;
-	public static String FEED_TITLE = "name";
+	public static String FEED_TITLE = "feed_name";
 	public static String FEED_LINK = "link";
 	public static String FEED_ADDRESS = "address";
 	public static String FEED_SUBSCRIBERS = "subscribers";
@@ -38,7 +38,5 @@ public class Constants {
 	public static String STORY_INTELLIGENCE_TITLE = "intelligence_title";
 	public static String STORY_READ = "read";
 	public static String STORY_FEED_ID = "feed_id";
-	
-	
 
 }
