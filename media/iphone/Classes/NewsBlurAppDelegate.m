@@ -101,7 +101,7 @@
     
     // TODO make it a user setting to persist on app close
     // set default x coordinate for feedDetailY
-    self.feedDetailPortraitYCoordinate = 600;
+    self.feedDetailPortraitYCoordinate = 960;
     
     [window makeKeyAndVisible];
     [feedsViewController fetchFeedList:YES];
@@ -421,9 +421,7 @@
 - (void)adjustStoryDetailWebView:(BOOL)init:(BOOL)checkLayout {
     UINavigationController *navController = self.navigationController;
 
-    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
-        NSLog(@"The feedDetailPortraitYCoordinate in adjustStoryDetailWebView is: %i", self.feedDetailPortraitYCoordinate);
-        
+    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {        
         if( (960 - self.feedDetailPortraitYCoordinate) < 44 ) {
             feedDetailViewController.view.frame = CGRectMake(0, 
                                                              self.feedDetailPortraitYCoordinate + (44 - (960 - self.feedDetailPortraitYCoordinate)), 
@@ -434,7 +432,6 @@
                                                              self.feedDetailPortraitYCoordinate, 
                                                              768, 
                                                              960 - self.feedDetailPortraitYCoordinate);
-            
         }
         
         // the storyDetailView is full screen

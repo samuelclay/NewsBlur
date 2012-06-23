@@ -8,11 +8,14 @@
 
 #import "ShareViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "StoryDetailViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
 
 @implementation ShareViewController
 
+@synthesize siteFavicon;
+@synthesize siteInformation;
 @synthesize commentField;
 @synthesize appDelegate;
 
@@ -38,23 +41,42 @@
 - (void)viewDidUnload
 {
     [self setCommentField:nil];
+    [self setSiteInformation:nil];
+    [self setSiteFavicon:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
+
+
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	return YES;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    NSString *siteInfoString = [NSString stringWithFormat:@"%@: %@",
+                                [appDelegate.activeFeed objectForKey:@"feed_title"],
+                                [appDelegate.activeStory objectForKey:@"story_title"]];
+    
+    [self.siteInformation setText:siteInfoString];
+}
+
 - (void)dealloc {
     [appDelegate release];
     [commentField release];
+    [siteInformation release];
+    [siteFavicon release];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dealloc];
 }
 
 - (IBAction)doCancelButton:(id)sender {
+    [commentField resignFirstResponder];
     [appDelegate hideShareView];
 }
 
@@ -82,8 +104,12 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:feedIdStr forKey:@"feed_id"]; 
-    [request setPostValue:storyIdStr forKey:@"story_id"]; 
-    [request setPostValue:@"Hello World" forKey:@"comments"]; 
+    [request setPostValue:storyIdStr forKey:@"story_id"];
+
+    NSString *comments = commentField.text;
+    if (comments) {
+        [request setPostValue:comments forKey:@"comments"]; 
+    }
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishAddComment:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -93,12 +119,61 @@
 - (void)finishAddComment:(ASIHTTPRequest *)request {
     NSLog(@"%@", [request responseString]);
     NSLog(@"Successfully added.");
+    [commentField resignFirstResponder];
     [appDelegate hideShareView];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
+}
+
+-(void)keyboardWillHide:(NSNotification*)notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
+    
+    CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    
+    CGRect shareViewFrame = self.view.frame;
+    CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.view.frame;
+    
+    NSLog(@"Keyboard y is %f", keyboardFrame.size.height);
+    shareViewFrame.origin.y = shareViewFrame.origin.y + keyboardFrame.size.height;
+    storyDetailViewFrame.size.height = storyDetailViewFrame.size.height + keyboardFrame.size.height;
+    
+    [UIView animateWithDuration:duration 
+                          delay:0 
+                        options:UIViewAnimationOptionBeginFromCurrentState | curve 
+                     animations:^{
+        self.view.frame = shareViewFrame;
+        appDelegate.storyDetailViewController.view.frame = storyDetailViewFrame;
+    } completion:nil];
+}
+
+-(void)keyboardWillShow:(NSNotification*)notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
+    
+    CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    
+    CGRect shareViewFrame = self.view.frame;
+    CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.view.frame;
+    
+    NSLog(@"Keyboard y is %f", keyboardFrame.size.height);
+    shareViewFrame.origin.y = shareViewFrame.origin.y - keyboardFrame.size.height;
+    storyDetailViewFrame.size.height = storyDetailViewFrame.size.height - keyboardFrame.size.height;
+    
+    [UIView animateWithDuration:duration 
+                          delay:0 
+                        options:UIViewAnimationOptionBeginFromCurrentState | curve 
+                     animations:^{
+                         self.view.frame = shareViewFrame;
+                         appDelegate.storyDetailViewController.view.frame = storyDetailViewFrame;
+                     } completion:nil];
 }
 
 @end
