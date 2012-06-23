@@ -488,23 +488,38 @@
 
 - (void)dragFeedDetailView:(float)y {
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
+        y = y + 20;
+        
+        if(y > 955) {
+            self.feedDetailPortraitYCoordinate = 960;
 
-        if(y < 785 && y > 200) {
-            NSLog(@"drag y is %f", y);
+        } else if(y < 950 && y > 200) {
             self.feedDetailPortraitYCoordinate = y;
-            storyDetailViewController.view.frame = CGRectMake(0,
-                                                              0, 
-                                                              768, 
-                                                              self.feedDetailPortraitYCoordinate);
-            feedDashboardViewController.view.frame = CGRectMake(0,
-                                                              0, 
-                                                              768, 
-                                                              self.feedDetailPortraitYCoordinate);
+        }
+        
+        storyDetailViewController.view.frame = CGRectMake(0,
+                                                          0, 
+                                                          768, 
+                                                          self.feedDetailPortraitYCoordinate);
+        feedDashboardViewController.view.frame = CGRectMake(0,
+                                                            0, 
+                                                            768, 
+                                                            self.feedDetailPortraitYCoordinate);
+        if( (960 - self.feedDetailPortraitYCoordinate) < 44 ) {
+            feedDetailViewController.view.frame = CGRectMake(0, 
+                                                             self.feedDetailPortraitYCoordinate + (44 - (960 - self.feedDetailPortraitYCoordinate)), 
+                                                             768, 
+                                                             960 - self.feedDetailPortraitYCoordinate);
+
+        } else {
             feedDetailViewController.view.frame = CGRectMake(0, 
                                                              self.feedDetailPortraitYCoordinate, 
                                                              768, 
                                                              960 - self.feedDetailPortraitYCoordinate);
+
         }
+        NSLog(@"960 - self.feedDetailPortraitYCoordinate %i", (960 - self.feedDetailPortraitYCoordinate));
+        
     }
 }
 

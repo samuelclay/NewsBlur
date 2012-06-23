@@ -111,8 +111,7 @@
     [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
     
     UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] 
-                                      initWithTitle:@"Refresh" 
-                                      style:UIBarButtonItemStyleBordered 
+                                      initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
                                       target:self 
                                       action:@selector(instafetchFeed:)
                                       ];
