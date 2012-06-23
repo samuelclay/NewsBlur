@@ -98,8 +98,9 @@
                                        target:self 
                                        action:@selector(showOriginalSubview:)
                                        ];
+        
     if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
-        appDelegate.splitStoryDetailViewController.navigationItem.rightBarButtonItem = originalButton;  
+        appDelegate.splitStoryDetailViewController.navigationItem.rightBarButtonItem = originalButton; 
     } else {
         self.navigationItem.rightBarButtonItem = originalButton;   
     }

@@ -109,6 +109,20 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
+    
+    UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] 
+                                      initWithTitle:@"Refresh" 
+                                      style:UIBarButtonItemStyleBordered 
+                                      target:self 
+                                      action:@selector(instafetchFeed:)
+                                      ];
+    if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
+        self.navigationItem.rightBarButtonItem = refreshButton;   
+    } else {
+        //self.navigationItem.rightBarButtonItem = originalButton;   
+    }
+    [refreshButton release];
+    
 	[super viewDidAppear:animated];
 }
 
@@ -888,5 +902,49 @@
     }
 }
 
+
+#pragma mark -
+#pragma mark instafetchFeed
+
+// called when the user taps refresh button
+
+- (void)instafetchFeed:(id)sender {
+    NSLog(@"Instafetch");
+    
+    NSString *urlString = [NSString 
+                           stringWithFormat:@"http://%@/reader/refresh_feed/%@", 
+                           NEWSBLUR_URL,
+                           [appDelegate.activeFeed objectForKey:@"id"]];
+    [self cancelRequests];
+    __block ASIHTTPRequest *request = [self requestWithURL:urlString];
+    [request setDelegate:self];
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setDidFinishSelector:@selector(finishedRefreshingFeed:)];
+    [request setDidFailSelector:@selector(failRefreshingFeed:)];
+    [request setTimeOutSeconds:60];
+    [request startAsynchronous];
+    
+    [appDelegate setStories:nil];
+    self.feedPage = 1;
+    self.pageFetching = YES;
+    [self.storyTitlesTable reloadData];
+    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+}
+
+- (void)finishedRefreshingFeed:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+
+    [self renderStories:[results objectForKey:@"stories"]];    
+    [results release];
+}
+
+- (void)failRefreshingFeed:(ASIHTTPRequest *)request {
+    NSLog(@"Fail: %@", request);
+    [self informError:[request error]];
+    [self fetchFeedDetail:1 withCallback:nil];
+}
 
 @end
