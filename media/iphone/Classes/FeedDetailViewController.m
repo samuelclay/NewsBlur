@@ -210,7 +210,36 @@
     } else {
         confirmedNewStories = [[newStories copy] autorelease];
     }
+    
+    // Adding new user profiles to appDelegate.activeFeedUserProfiles
+    NSArray *newUserProfiles = [results objectForKey:@"user_profiles"];
+    if ([newUserProfiles count]){
+        NSMutableArray *confirmedNewUserProfiles = [NSMutableArray array];
+        if ([appDelegate.activeFeedUserProfiles count]) {
+            NSMutableSet *userProfileIds = [NSMutableSet set];
+            for (id userProfile in appDelegate.activeFeedUserProfiles) {
+                [userProfileIds addObject:[userProfile objectForKey:@"id"]];
+            }
+            for (id userProfile in newUserProfiles) {
+                if (![userProfileIds containsObject:[userProfile objectForKey:@"id"]]) {
+                    [confirmedNewUserProfiles addObject:userProfile];
+                }
+            }
+        } else {
+            confirmedNewUserProfiles = [[newUserProfiles copy] autorelease];
+        }
+        
+        if (self.feedPage == 1) {
+            [appDelegate setFeedUserProfiles:confirmedNewUserProfiles];
+        } else if (newUserProfiles.count > 0) {        
+            [appDelegate addFeedUserProfiles:confirmedNewUserProfiles];
+        }
+        
+        NSLog(@"# of user profiles added: %i", appDelegate.activeFeedUserProfiles.count);
+    }
+    
     [self renderStories:confirmedNewStories];
+    
     
     [results release];
 }

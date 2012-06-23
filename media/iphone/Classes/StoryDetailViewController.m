@@ -123,7 +123,7 @@
 
 - (NSString *)getComments {
     NSString *comments = @"";
-    
+        
     if ([appDelegate.activeStory objectForKey:@"comments"]) {
         NSArray *comments_array = [appDelegate.activeStory objectForKey:@"comments"];
         if ([comments_array count] > 0) {
@@ -131,33 +131,81 @@
             comments = [comments stringByAppendingString:[NSString stringWithFormat:@
                                                           "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
                                                           "<div class=\"NB-story-comments-shares-teaser\">"
-                                                          "<div class=\"NB-right\">Shared by <b>4</b> people</div>"
+                                                          "<div class=\"NB-right\">Shared by <b>%@</b> people</div>"
                                                           "<div class=\"NB-story-share-label\">Shared by: </div>"
                                                           "<div class=\"NB-story-share-profiles NB-story-share-profiles-friends\">"
                                                           "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\" original-title=\"popular\"><img src=\"http://f.cl.ly/items/0L3E37240r1O1V140k2q/popular.jpg\"></div></div>"
                                                           "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\" original-title=\"roy\"><img src=\"http://a0.twimg.com/profile_images/1220963194/32457_608147485418_1702670_35737586_6975021_n_normal.jpg\"></div></div>"
                                                           "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\" original-title=\"samuel\"><img src=\"http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_normal.jpg\"></div></div>"
-                                                          "</div></div></div>"]];
+                                                          "</div></div></div>",
+                                                          [appDelegate.activeStory objectForKey:@"comment_count"]
+                                                          ]];
             
             for (int i = 0; i < comments_array.count; i++) {
                 NSDictionary *comment_dict = [comments_array objectAtIndex:i];
+                NSDictionary *user = [self getUser:[[comment_dict objectForKey:@"user_id"] intValue]];
                 NSString *comment = [NSString stringWithFormat:@
                                      "<div class=\"NB-story-comment\"><div>"
-                                     "<img class=\"NB-user-avatar NB-story-comment-reply-photo\" src=\"%@\" />"
-                                     "<div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
-                                     "<div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@</div>"
-                                     "<div class=\"NB-story-comment-reply-content\">%@</div>"
+            
+                                     "<div class=\"NB-user-avatar\"><img src=\"%@\" /></div>"
+                                     
+                                     "<div class=\"NB-story-comment-author-container\">"
+                                     "<div class=\"NB-story-comment-username\">%@</div>"
+                                     "<div class=\"NB-story-comment-date\">%@</div>"
+                                     "<div class=\"NB-story-comment-reply-button\"><div class=\"NB-story-comment-reply-button-wrapper\">"
+                                     "<a href=\"nb-share://share-link\">reply</a>"
+                                     "</div></div>"
+                                     "</div>"
+
+                                     "<div class=\"NB-story-comment-content\">%@</div>"
+                                     "%@"
                                      "</div></div>",
-                                     [comment_dict objectForKey:@"user_id"],
-                                     [comment_dict objectForKey:@"user_id"],
+                                     [user objectForKey:@"photo_url"],
+                                     [user objectForKey:@"username"],
                                      [comment_dict objectForKey:@"shared_date"],
-                                     [comment_dict objectForKey:@"comments"]];
+                                     [comment_dict objectForKey:@"comments"],
+                                     [self getReplies:[comment_dict objectForKey:@"replies"]]];
                 comments = [comments stringByAppendingString:comment];
             }
         }
     }
     return comments;
 }
+
+- (NSString *)getReplies:(NSArray *)replies {
+    NSString *repliesString = @"";
+    if (replies.count > 0) {
+        repliesString = [repliesString stringByAppendingString:@"<div class=\"NB-story-comment-replies\">"];
+        for (int i = 0; i < replies.count; i++) {
+            NSDictionary *reply_dict = [replies objectAtIndex:i];
+            NSDictionary *user = [self getUser:[[reply_dict objectForKey:@"user_id"] intValue]];
+            NSString *reply = [NSString stringWithFormat:@
+                                "<div class=\"NB-story-comment-reply\">"
+                                "<img class=\"NB-user-avatar NB-story-comment-reply-photo\" src=\"%@\" />"
+                                "<div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
+                                "<div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@</div>"
+                                "<div class=\"NB-story-comment-reply-content\">%@</div>"
+                                "</div>",
+                               [user objectForKey:@"photo_url"],
+                               [user objectForKey:@"username"],  
+                               [reply_dict objectForKey:@"publish_date"],
+                               [reply_dict objectForKey:@"comments"]];
+            repliesString = [repliesString stringByAppendingString:reply];
+        }
+        repliesString = [repliesString stringByAppendingString:@"</div>"];
+    }
+    return repliesString;
+}
+
+- (NSDictionary *)getUser:(int)user_id {
+    for (int i = 0; i < appDelegate.activeFeedUserProfiles.count; i++) {
+        if ([[[appDelegate.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"] intValue] == user_id) {
+            return [appDelegate.activeFeedUserProfiles objectAtIndex:i];
+        }
+    }
+    return nil;
+}
+
 - (void)showStory {
     
     for (id key in appDelegate.activeStory) {

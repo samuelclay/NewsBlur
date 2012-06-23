@@ -149,6 +149,16 @@ del {
     display: none;
 }
 
+/* Comments */
+
+#story_pane .NB-story-comment .NB-story-comment-content {
+    float: none;
+}
+
+#story_pane .NB-story-comment .NB-story-comment-reply-button-wrapper a {
+    color: #fff;
+}
+
 /* Sharing */
 
 .NB-share-button,

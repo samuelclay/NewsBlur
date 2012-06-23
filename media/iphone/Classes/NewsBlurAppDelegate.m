@@ -39,6 +39,7 @@
 @synthesize firstTimeUserViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
+@synthesize shareViewController;
 @synthesize loginViewController;
 @synthesize addSiteViewController;
 @synthesize moveSiteViewController;
@@ -55,6 +56,7 @@
 @synthesize activeFeedStories;
 @synthesize activeFeedStoryLocations;
 @synthesize activeFeedStoryLocationIds;
+@synthesize activeFeedUserProfiles;
 @synthesize activeStory;
 @synthesize storyCount;
 @synthesize visibleUnreadCount;
@@ -257,6 +259,8 @@
 
 - (void)loadFeedDetailView {
     [self setStories:nil];
+    [self setFeedUserProfiles:nil];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && 
         UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         // remove existing feedDetailViewController
@@ -378,6 +382,7 @@
 
 - (void)loadRiverFeedDetailView {
     [self setStories:nil];
+    [self setFeedUserProfiles:nil];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && 
         UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         // remove existing feedDetailViewController
@@ -733,6 +738,14 @@
     self.recentlyReadStories = [NSMutableArray array];
     self.recentlyReadFeeds = [NSMutableSet set];
     [self calculateStoryLocations];
+}
+
+- (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue{
+    self.activeFeedUserProfiles = activeFeedUserProfilesValue;
+}
+
+- (void)addFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue {
+    self.activeFeedUserProfiles = [self.activeFeedUserProfiles arrayByAddingObjectsFromArray:activeFeedUserProfilesValue];
 }
 
 - (void)markActiveStoryRead {

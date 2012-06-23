@@ -49,6 +49,8 @@
 - (void)setActiveStory;
 - (void)setFontSize:(float)fontSize;
 - (NSString *)getComments;
+- (NSString *)getReplies:(NSArray *)replies;
+- (NSDictionary *)getUser:(int)user_id;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (IBAction)doShareButton:(id)sender;
 

@@ -62,6 +62,7 @@
     NSString * activeFolder;
     NSArray * activeFolderFeeds;
     NSArray * activeFeedStories;
+    NSArray * activeFeedUserProfiles;
     NSMutableArray * activeFeedStoryLocations;
     NSMutableArray * activeFeedStoryLocationIds;
     NSDictionary * activeStory;
@@ -107,6 +108,7 @@
 @property (readwrite, retain) NSString * activeFolder;
 @property (readwrite, retain) NSArray * activeFolderFeeds;
 @property (readwrite, retain) NSArray * activeFeedStories;
+@property (readwrite, retain) NSArray * activeFeedUserProfiles;
 @property (readwrite, retain) NSMutableArray * activeFeedStoryLocations;
 @property (readwrite, retain) NSMutableArray * activeFeedStoryLocationIds;
 @property (readwrite, retain) NSDictionary * activeStory;
@@ -162,7 +164,9 @@
 - (int)locationOfStoryId:(id)storyId;
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue;
+- (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
 - (void)addStories:(NSArray *)stories;
+- (void)addFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
 - (int)unreadCount;
 - (int)unreadCountForFeed:(NSString *)feedId;
 - (int)unreadCountForFolder:(NSString *)folderName;
