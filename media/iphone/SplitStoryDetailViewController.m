@@ -61,7 +61,7 @@
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation 
                                          duration:(NSTimeInterval)duration 
 {
-    [appDelegate adjustStoryDetailWebView:NO]; 
+    [appDelegate adjustStoryDetailWebView:NO:YES]; 
 }
 
 - (void)showPopover {
