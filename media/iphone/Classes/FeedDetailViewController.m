@@ -108,7 +108,7 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
+    //[self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
     
     UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] 
                                       initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh

@@ -1,6 +1,3 @@
-/* Disable certain interactions on touch devices */
-body { -webkit-touch-callout: none; -webkit-text-size-adjust: none; -webkit-user-select: none; -webkit-highlight: none; -webkit-tap-highlight-color: rgba(0,0,0,0); }
-
 body {
     line-height: 1.6;
     font-size: 17px;
@@ -16,8 +13,6 @@ h1, h2, h3, h4, h5, h6, div, table, span, pre, code {
 
 a {
     text-decoration: none;
-    color: #308ab8;
-    display: inline-block;
 }
 
 blockquote {
@@ -69,29 +64,31 @@ small {
 }
 
 .NB-story img {
-    max-width: 574px !important;
+    max-width: 572px !important;
     margin: 0 auto;
 }
 
 .NB-story img.NB-large-image {
-    max-width: 574px !important;
     margin: 0 auto 20px !important;
     padding: 5px;
     display: block !important;
     width: auto !important;
     height: auto !important;
     background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
 .NB-story img.NB-small-image {
-    background: #fff;
-    max-width: 574px !important;
+    max-width: 572px !important;
     margin: 0 20px 10px 0  !important;
     padding: 5px;
     display: block !important;
     width: auto;
     height: auto;
-    float: left;
+    display: inline-block;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
 .NB-feed-story-comments {
@@ -152,6 +149,16 @@ del {
 
 /* Comments */
 
+/* Disable certain interactions on touch devices */
+#story_pane .NB-story-comment { 
+    -webkit-touch-callout: none; 
+    -webkit-text-size-adjust: none; 
+    -webkit-user-select: none; 
+    -webkit-highlight: none; 
+    -webkit-tap-highlight-color: rgba(0,0,0,0); 
+}
+
+
 #story_pane .NB-story-comment .NB-story-comment-content {
     float: none;
 }
@@ -161,6 +168,14 @@ del {
 }
 
 /* Sharing */
+
+.NB-share-wrapper { 
+    -webkit-touch-callout: none; 
+    -webkit-text-size-adjust: none; 
+    -webkit-user-select: none; 
+    -webkit-highlight: none; 
+    -webkit-tap-highlight-color: rgba(0,0,0,0); 
+}
 
 .NB-share-button,
 .NB-save-button {

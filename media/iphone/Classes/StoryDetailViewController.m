@@ -122,53 +122,108 @@
 #pragma mark -
 #pragma mark Story layout
 
-- (NSString *)getComments {
-    NSString *comments = @"";
+- (NSString *)getAvatars:(BOOL)areFriends {
+    NSString *avatarString = @"";
+    NSArray *share_user_ids;
+    if (areFriends) {
+        NSMutableArray *friends = [appDelegate.activeStory objectForKey:@"share_user_ids"];
+        NSArray *all_share_user_ids = [appDelegate.activeStory objectForKey:@"share_user_ids"];
+        NSArray *all_shared_by_public = [appDelegate.activeStory objectForKey:@"shared_by_public"];
         
-    if ([appDelegate.activeStory objectForKey:@"comments"]) {
-        NSArray *comments_array = [appDelegate.activeStory objectForKey:@"comments"];
-        if ([comments_array count] > 0) {
-            
-            comments = [comments stringByAppendingString:[NSString stringWithFormat:@
-                                                          "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
-                                                          "<div class=\"NB-story-comments-shares-teaser\">"
-                                                          "<div class=\"NB-right\">Shared by <b>%@</b> people</div>"
-                                                          "<div class=\"NB-story-share-label\">Shared by: </div>"
-                                                          "<div class=\"NB-story-share-profiles NB-story-share-profiles-friends\">"
-                                                          "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\" original-title=\"popular\"><img src=\"http://f.cl.ly/items/0L3E37240r1O1V140k2q/popular.jpg\"></div></div>"
-                                                          "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\" original-title=\"roy\"><img src=\"http://a0.twimg.com/profile_images/1220963194/32457_608147485418_1702670_35737586_6975021_n_normal.jpg\"></div></div>"
-                                                          "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\" original-title=\"samuel\"><img src=\"http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_normal.jpg\"></div></div>"
-                                                          "</div></div></div>",
-                                                          [appDelegate.activeStory objectForKey:@"comment_count"]
-                                                          ]];
-            
-            for (int i = 0; i < comments_array.count; i++) {
-                NSDictionary *comment_dict = [comments_array objectAtIndex:i];
-                NSDictionary *user = [self getUser:[[comment_dict objectForKey:@"user_id"] intValue]];
-                NSString *comment = [NSString stringWithFormat:@
-                                     "<div class=\"NB-story-comment\"><div>"
-            
-                                     "<div class=\"NB-user-avatar\"><img src=\"%@\" /></div>"
-                                     
-                                     "<div class=\"NB-story-comment-author-container\">"
-                                     "<div class=\"NB-story-comment-username\">%@</div>"
-                                     "<div class=\"NB-story-comment-date\">%@</div>"
-                                     "<div class=\"NB-story-comment-reply-button\"><div class=\"NB-story-comment-reply-button-wrapper\">"
-                                     "<a href=\"nb-share://share-link\">reply</a>"
-                                     "</div></div>"
-                                     "</div>"
-
-                                     "<div class=\"NB-story-comment-content\">%@</div>"
-                                     "%@"
-                                     "</div></div>",
-                                     [user objectForKey:@"photo_url"],
-                                     [user objectForKey:@"username"],
-                                     [comment_dict objectForKey:@"shared_date"],
-                                     [comment_dict objectForKey:@"comments"],
-                                     [self getReplies:[comment_dict objectForKey:@"replies"]]];
-                comments = [comments stringByAppendingString:comment];
+        for (int i = 0; i < all_share_user_ids.count; i++) {
+            for (int j = 0; j < all_shared_by_public.count; j++) {
+                if ([[all_share_user_ids objectAtIndex:i] intValue] == [[all_shared_by_public objectAtIndex:j] intValue]) {
+                    [friends removeObject:[all_share_user_ids objectAtIndex:i]];
+                    break;
+                }
             }
         }
+
+        share_user_ids = [NSArray arrayWithArray:friends];
+        
+        // only if your friends are sharing to do you see the shared label
+        if ([share_user_ids count]) {
+            avatarString = [avatarString stringByAppendingString:@
+                            "<div class=\"NB-story-share-label\">Shared by: </div>"
+                            "<div class=\"NB-story-share-profiles NB-story-share-profiles-friends\">"];
+        }
+    } else {
+        share_user_ids = [appDelegate.activeStory objectForKey:@"shared_by_public"];
+    }
+    
+    for (int i = 0; i < share_user_ids.count; i++) {
+        NSDictionary *user = [self getUser:[[share_user_ids objectAtIndex:i] intValue]];
+        NSString *avatar = [NSString stringWithFormat:@
+                            "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\">"
+                            "<img src=\"%@\">"
+                            "</div></div>",
+                            [user objectForKey:@"photo_url"]];
+        avatarString = [avatarString stringByAppendingString:avatar];
+    }
+    
+    if (areFriends && [share_user_ids count]) {
+        avatarString = [avatarString stringByAppendingString:@"</div"];
+    }
+    
+    return avatarString;
+}
+
+- (NSString *)getComments {
+    NSString *comments = @"";
+    int share_count = [[appDelegate.activeStory objectForKey:@"share_count"] intValue];
+    
+    if (share_count) {
+        NSArray *comments_array = [appDelegate.activeStory objectForKey:@"comments"];            
+        comments = [comments stringByAppendingString:[NSString stringWithFormat:@
+                                                      "<div class=\"NB-feed-story-comments\">"
+                                                      "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
+                                                      "<div class=\"NB-story-comments-shares-teaser\">"
+                                                      
+                                                      "<div class=\"NB-right\">Shared by <b>%@</div>"
+                                                      
+                                                      "<div class=\"NB-story-share-profiles NB-story-share-profiles-public\">"
+                                                      "%@"
+                                                      "</div>"
+                                                      
+
+                                                      "%@"
+                                                      
+                                                      "</div></div>",
+                                                      [[appDelegate.activeStory objectForKey:@"share_count"] intValue] == 1
+                                                        ? [NSString stringWithFormat:@"1 person"] : 
+                                                        [NSString stringWithFormat:@"%@ people", [appDelegate.activeStory objectForKey:@"share_count"]],
+                                                      [self getAvatars:NO],
+                                                      [self getAvatars:YES]
+                                                      ]];
+        
+        for (int i = 0; i < comments_array.count; i++) {
+            NSDictionary *comment_dict = [comments_array objectAtIndex:i];
+            NSDictionary *user = [self getUser:[[comment_dict objectForKey:@"user_id"] intValue]];
+            NSString *comment = [NSString stringWithFormat:@
+                                 "<div class=\"NB-story-comment\"><div>"
+        
+                                 "<div class=\"NB-user-avatar\"><img src=\"%@\" /></div>"
+                                 
+                                 "<div class=\"NB-story-comment-author-container\">"
+                                 "<div class=\"NB-story-comment-username\">%@</div>"
+                                 "<div class=\"NB-story-comment-date\">%@</div>"
+                                 "<div class=\"NB-story-comment-reply-button\"><div class=\"NB-story-comment-reply-button-wrapper\">"
+                                 "<a href=\"nb-share://share-link\">reply</a>"
+                                 "</div></div>"
+                                 "</div>"
+
+                                 "<div class=\"NB-story-comment-content\">%@</div>"
+                                 "%@"
+                                 "</div></div>",
+                                 [user objectForKey:@"photo_url"],
+                                 [user objectForKey:@"username"],
+                                 [comment_dict objectForKey:@"shared_date"],
+                                 [comment_dict objectForKey:@"comments"],
+                                 [self getReplies:[comment_dict objectForKey:@"replies"]]];
+            comments = [comments stringByAppendingString:comment];
+        }
+        comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
+
     }
     return comments;
 }
@@ -281,7 +336,7 @@
                             "<html><head>%@ %@</head>"
                             "<body id=\"story_pane\">%@"
                             "<div class=\"NB-story\">%@ </div>"
-                            "<div class=\"NB-feed-story-comments\">%@</div>" // comments
+                            "%@" // comments
                             "%@" // share
                             "</body></html>",
                             universalImgCssString, 
@@ -292,7 +347,7 @@
                             sharingHtmlString
                             ];
 
-    NSLog(@"\n\n\n\nstory content\n\n\n%@<div class=\"NB-story\">%@</div>\n\n\n", storyHeader, [appDelegate.activeStory objectForKey:@"story_content"]);
+//    NSLog(@"\n\n\n\nstory content\n\n\n%@<div class=\"NB-story\">%@</div>\n\n\n", storyHeader, [appDelegate.activeStory objectForKey:@"story_content"]);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     

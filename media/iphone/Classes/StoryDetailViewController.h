@@ -44,14 +44,16 @@
 - (void)showOriginalSubview:(id)sender;
 - (IBAction)doNextUnreadStory;
 - (IBAction)doPreviousStory;
-- (IBAction)toggleFontSize:(id)sender;
+
 - (void)markedAsRead;
 - (void)setActiveStory;
+- (IBAction)toggleFontSize:(id)sender;
+- (void)setFontStyle:(NSString *)fontStyle;
 - (void)setFontSize:(float)fontSize;
 - (NSString *)getComments;
 - (NSString *)getReplies:(NSArray *)replies;
+- (NSString *)getAvatars:(BOOL)areFriends;
 - (NSDictionary *)getUser:(int)user_id;
-- (void)setFontStyle:(NSString *)fontStyle;
 - (IBAction)doShareButton:(id)sender;
 
 @end
