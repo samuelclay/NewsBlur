@@ -240,10 +240,13 @@ def load_feed_favicons(request):
 def load_feeds_flat(request):
     user = request.user
     include_favicons = request.REQUEST.get('include_favicons', False)
+    update_counts    = request.REQUEST.get('update_counts', False)
+    
     feeds = {}
     iphone_version = "1.2"
     
     if include_favicons == 'false': include_favicons = False
+    if update_counts == 'false': update_counts = False
     
     if not user.is_authenticated():
         return HttpResponseForbidden()
@@ -285,7 +288,23 @@ def load_feeds_flat(request):
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
-    data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username, iphone_version=iphone_version)
+    
+    social_params = {
+        'user_id': user.pk,
+        'include_favicon': include_favicons,
+        'update_counts': update_counts,
+    }
+    social_feeds = MSocialSubscription.feeds(**social_params)
+    social_profile = MSocialProfile.profile(user.pk)
+    
+    data = {
+        "flat_folders": flat_folders, 
+        "feeds": feeds,
+        "social_feeds": social_feeds,
+        "social_profile": social_profile,
+        "user": user.username,
+        "iphone_version": iphone_version,
+    }
     return data
 
 @ratelimit(minutes=1, requests=20)
