@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="newsblur">NewsBlur</string>
+    
+    <string name="login_username_hint">username</string>
+    <string name="login_password_hint">password</string>
+    <string name="login_button_login">Log In</string>
+    <string name="login_button_signup">Sign Up</string>
+    
     <string name="hello">Hello World!</string>
-    <string name="app_name">NewsBlur</string>
+    
+    <string name="description_login_button">Press to log in.</string>
+    <string name="description_login_logo">NewsBlur Logo</string>
+    <string name="description_signup_button">Press to sign up</string>
+    
+    
+    
+    
 
 </resources>
