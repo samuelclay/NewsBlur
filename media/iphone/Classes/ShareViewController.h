@@ -23,6 +23,8 @@
 - (IBAction)doCancelButton:(id)sender;
 - (IBAction)doToggleButton:(id)sender;
 - (IBAction)doShareThisStory:(id)sender;
+@property (retain, nonatomic) IBOutlet UIButton *facebookButton;
+@property (retain, nonatomic) IBOutlet UIButton *twitterButton;
 
 
 

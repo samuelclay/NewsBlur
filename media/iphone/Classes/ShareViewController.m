@@ -14,6 +14,8 @@
 #import "ASIHTTPRequest.h"
 
 @implementation ShareViewController
+@synthesize facebookButton;
+@synthesize twitterButton;
 
 @synthesize siteFavicon;
 @synthesize siteInformation;
@@ -37,6 +39,19 @@
     commentField.layer.borderWidth = 1.0f;
     commentField.layer.cornerRadius = 8;
     commentField.layer.borderColor = [[UIColor grayColor] CGColor];
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    NSLog(@"facebook %d", [userPreferences integerForKey:@"shareToFacebook"]);
+    NSLog(@"twitter %d", [userPreferences integerForKey:@"shareToTwitter"]);
+    
+    if ([userPreferences integerForKey:@"shareToFacebook"]){
+        facebookButton.selected = YES;
+    }
+    
+    if ([userPreferences integerForKey:@"shareToTwitter"]){
+        twitterButton.selected = YES;
+    }
 }
 
 - (void)viewDidUnload
@@ -44,6 +59,8 @@
     [self setCommentField:nil];
     [self setSiteInformation:nil];
     [self setSiteFavicon:nil];
+    [self setFacebookButton:nil];
+    [self setTwitterButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -88,6 +105,8 @@
     [siteInformation release];
     [siteFavicon release];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [facebookButton release];
+    [twitterButton release];
     [super dealloc];
 }
 
@@ -98,12 +117,27 @@
 
 - (IBAction)doToggleButton:(id)sender {
     UIButton *button = (UIButton *)sender;
-    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if (button.selected) {
         button.selected = NO;
+        if ([[button currentTitle] isEqualToString: @"Facebook"]) {
+            [userPreferences setInteger:0 forKey:@"shareToFacebook"];
+        } else if ([[button currentTitle] isEqualToString: @"Twitter"]) {
+            [userPreferences setInteger:0 forKey:@"shareToTwitter"];
+        }
     } else {
         button.selected = YES;
+        if ([[button currentTitle] isEqualToString: @"Facebook"]) {
+            [userPreferences setInteger:1 forKey:@"shareToFacebook"];
+        } else if ([[button currentTitle] isEqualToString: @"Twitter"]) {
+            [userPreferences setInteger:1 forKey:@"shareToTwitter"];
+        }
     }
+    
+    [userPreferences synchronize];
+    NSLog(@"facebook %d", [userPreferences integerForKey:@"shareToFacebook"]);
+    NSLog(@"twitter %d", [userPreferences integerForKey:@"shareToTwitter"]);
+
 }
 
 - (IBAction)doShareThisStory:(id)sender {

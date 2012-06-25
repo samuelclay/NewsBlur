@@ -99,9 +99,14 @@
         [window addSubview:navigationController.view];
     }
     
-    // TODO make it a user setting to persist on app close
-    // set default x coordinate for feedDetailY
-    self.feedDetailPortraitYCoordinate = 960;
+    // set default x coordinate for feedDetailY from saved preferences
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSInteger savedFeedDetailPortraitYCoordinate = [userPreferences integerForKey:@"feedDetailPortraitYCoordinate"];
+    if (savedFeedDetailPortraitYCoordinate) {
+        self.feedDetailPortraitYCoordinate = savedFeedDetailPortraitYCoordinate;
+    } else {
+        self.feedDetailPortraitYCoordinate = 960;
+    }
     
     [window makeKeyAndVisible];
     [feedsViewController fetchFeedList:YES];
@@ -498,16 +503,19 @@
 }
 
 - (void)dragFeedDetailView:(float)y {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         y = y + 20;
         
         if(y > 955) {
             self.feedDetailPortraitYCoordinate = 960;
-
         } else if(y < 950 && y > 200) {
             self.feedDetailPortraitYCoordinate = y;
         }
         
+        [userPreferences setInteger:self.feedDetailPortraitYCoordinate forKey:@"feedDetailPortraitYCoordinate"];
+        [userPreferences synchronize];
         [self adjustStoryDetailWebView:NO:YES];        
     }
 }
