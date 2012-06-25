@@ -237,10 +237,14 @@
     }
     appDelegate.dictFolders = [results objectForKey:@"flat_folders"];
     appDelegate.dictFeeds = [results objectForKey:@"feeds"];
+
+    
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     
     appDelegate.dictFoldersArray = [NSMutableArray array];
+    
+    [appDelegate.dictFoldersArray addObject:@"Blurblogs"]; 
     for (id f in appDelegate.dictFolders) {
         [appDelegate.dictFoldersArray addObject:f];
         NSArray *folder = [appDelegate.dictFolders objectForKey:f];
@@ -256,9 +260,25 @@
         [sortedFolders setValue:sortedArray forKey:f];
     }
     
+    // Set up social feeds
+    appDelegate.socialFeedsArray = [results objectForKey:@"social_feeds"];
+    NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
+    NSMutableDictionary *socialDict = [[NSMutableDictionary alloc] init];
+    
+    for (int i = 0; i < appDelegate.socialFeedsArray.count; i++) {
+        NSString *userKey = [NSString stringWithFormat:@"%@", 
+                             [[appDelegate.socialFeedsArray objectAtIndex:i] objectForKey:@"user_id"]];
+        [socialFolder addObject: [[appDelegate.socialFeedsArray objectAtIndex:i] objectForKey:@"user_id"]];
+        [socialDict setObject:[appDelegate.socialFeedsArray objectAtIndex:i] 
+                       forKey:userKey];
+    }
+    appDelegate.dictSocialFeeds = socialDict;
+ 
+    [sortedFolders setValue:socialFolder forKey:@"Blurblogs"];    
+       
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
-    NSLog(@"Folders: %@, Array: %@", appDelegate.dictFolders, appDelegate.dictFoldersArray);
+
     [self calculateFeedLocations:YES];
     [self.feedTitlesTable reloadData];
     
@@ -395,22 +415,36 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
                      cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSDictionary *feed;
     static NSString *FeedCellIdentifier = @"FeedCellIdentifier";
     
     FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];    
     if (cell == nil) {
         cell = [[[FeedTableCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:@"FeedCellIdentifier"] autorelease];
         cell.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-        
     }
     
+    
+    // get the folder name
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+  
+    // get all the feeds
     NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
     NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+    
+    // get the location
     int location = [[activeFolderFeeds objectAtIndex:indexPath.row] intValue];
     id feedId = [feeds objectAtIndex:location];
+    
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+//    NSLog(@"********Folder name is %@", folderName); 
+//    NSLog(@"feedIdStr name is %@", feedIdStr);
+    
+    if ([folderName isEqualToString:@"Blurblogs"]) {
+        feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
+    } else {
+        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    }
     
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.feedFavicon   = [Utilities getImage:feedIdStr];
@@ -423,13 +457,19 @@
 
 - (void)tableView:(UITableView *)tableView 
         didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSDictionary *feed;
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
     NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
     int location = [[activeFolderFeeds objectAtIndex:indexPath.row] intValue];
     id feedId = [feeds objectAtIndex:location];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    
+    if ([folderName isEqualToString:@"Blurblogs"]) {
+        feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
+    } else {
+        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    }
     
     // If all feeds are already showing, no need to remember this one.
     if (!self.viewShowingAllFeeds) {
@@ -693,18 +733,25 @@
 }
 
 - (void)calculateFeedLocations:(BOOL)markVisible {
+    NSDictionary *feed = [[NSDictionary alloc] init]; 
     self.activeFeedLocations = [NSMutableDictionary dictionary];
     if (markVisible) {
         self.visibleFeeds = [NSMutableDictionary dictionary];
     }
+    
     for (NSString *folderName in appDelegate.dictFoldersArray) {
         NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
         NSMutableArray *feedLocations = [NSMutableArray array];
         for (int f=0; f < [folder count]; f++) {
             id feedId = [folder objectAtIndex:f];
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-            NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
             
+            if ([folderName isEqualToString:@"Blurblogs"]){
+                feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
+            } else {
+                feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+            }                
+
             if (self.viewShowingAllFeeds) {
                 NSNumber *location = [NSNumber numberWithInt:f];
                 [feedLocations addObject:location];
@@ -723,6 +770,7 @@
         }
         [self.activeFeedLocations setObject:feedLocations forKey:folderName];
     }
+//    NSLog(@"Active feed locations %@", self.activeFeedLocations);
 }
 
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed {

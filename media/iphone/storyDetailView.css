@@ -2,6 +2,7 @@ body {
     text-rendering: optimizeLegibility;
     margin: 0;
     background: #f6f6f6;
+    -webkit-text-size-adjust: none; 
 }
 
 .NB-story-author {
@@ -173,7 +174,7 @@ del {
 /* Disable certain interactions on touch devices */
 #story_pane .NB-story-comment { 
     -webkit-touch-callout: none; 
-    -webkit-text-size-adjust: none; 
+
     -webkit-user-select: none; 
     -webkit-highlight: none; 
     -webkit-tap-highlight-color: rgba(0,0,0,0); 

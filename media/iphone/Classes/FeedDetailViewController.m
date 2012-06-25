@@ -151,6 +151,8 @@
 }
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
+    NSString *theFeedDetailURL;
+    
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
         self.pageFetching = YES;
@@ -160,10 +162,18 @@
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
         }
         
-        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/feed/%@?page=%d", 
-                                      NEWSBLUR_URL,
-                                      [appDelegate.activeFeed objectForKey:@"id"],
-                                      self.feedPage];
+        if([appDelegate.activeFeed objectForKey:@"username"]){
+            theFeedDetailURL = [NSString stringWithFormat:@"http://%@/social/stories/%@?page=%d", 
+                                NEWSBLUR_URL,
+                                [appDelegate.activeFeed objectForKey:@"user_id"],
+                                self.feedPage];
+
+        } else {
+            theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/feed/%@?page=%d", 
+                                NEWSBLUR_URL,
+                                [appDelegate.activeFeed objectForKey:@"id"],
+                                self.feedPage];
+        }
         
         [self cancelRequests];
         __block ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];

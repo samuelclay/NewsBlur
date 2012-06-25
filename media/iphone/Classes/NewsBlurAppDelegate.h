@@ -79,7 +79,9 @@
     
 	NSDictionary * dictFolders;
     NSDictionary * dictFeeds;
+    NSDictionary * dictSocialFeeds;
     NSMutableArray * dictFoldersArray;
+    NSMutableArray * socialFeedsArray;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -124,7 +126,9 @@
 
 @property (nonatomic, retain) NSDictionary *dictFolders;
 @property (nonatomic, retain) NSDictionary *dictFeeds;
+@property (nonatomic, retain) NSDictionary *dictSocialFeeds;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
+@property (nonatomic, retain) NSMutableArray *socialFeedsArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 
@@ -153,6 +157,7 @@
 - (void)hideStoryDetailView;
 - (void)showShareView;
 - (void)hideShareView;
+- (BOOL)isSocialFeed;
 
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;

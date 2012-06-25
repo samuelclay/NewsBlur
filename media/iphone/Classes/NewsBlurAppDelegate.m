@@ -69,7 +69,9 @@
 
 @synthesize dictFolders;
 @synthesize dictFeeds;
+@synthesize dictSocialFeeds;
 @synthesize dictFoldersArray;
+@synthesize socialFeedsArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
@@ -148,7 +150,9 @@
     
     [dictFolders release];
     [dictFeeds release];
+    [dictSocialFeeds release];
     [dictFoldersArray release];
+    [socialFeedsArray release];
     
     [super dealloc];
 }
