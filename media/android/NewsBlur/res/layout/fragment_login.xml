@@ -26,7 +26,7 @@
 
     <Button
         android:id="@+id/signup_button"
-        android:layout_width="100dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
@@ -37,7 +37,7 @@
 
     <Button
         android:id="@+id/login_button"
-        android:layout_width="100dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginTop="60dp"
