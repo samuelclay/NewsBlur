@@ -18,10 +18,12 @@
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) IBOutlet UILabel *smallFontSizeLabel;
-@property (nonatomic, retain) IBOutlet UILabel *largeFontSizeLabel;
+@property (retain, nonatomic) IBOutlet UISegmentedControl *fontStyleSegment;
+@property (retain, nonatomic) IBOutlet UISegmentedControl *fontSizeSgement;
 
 - (IBAction)changeFontStyle:(id)sender;
 - (IBAction)changeFontSize:(id)sender;
+- (void)setSanSerif;
+- (void)setSerif;
 
 @end

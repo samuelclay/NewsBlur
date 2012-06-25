@@ -1,11 +1,73 @@
 body {
-    line-height: 1.6;
-    font-size: 17px;
-    font-family: 'Lucida Grande', Helvetica, Arial;
     text-rendering: optimizeLegibility;
     margin: 0;
     background: #f6f6f6;
 }
+
+.NB-story-author {
+    color: #969696;
+    text-transform: uppercase;
+    margin: 4px 8px 0px 0;
+    text-shadow: 0 1px 0 #F9F9F9;
+    float: left;
+}
+
+.NB-story-tags {
+    overflow: hidden;
+    padding: 5px 0 0 0;
+    text-transform: uppercase;
+}
+
+.NB-story-tag {
+    float: left;
+    font-weight: normal;
+    padding: 0px 4px 0px;
+    margin: 0px 4px 4px 0;
+    background-color: #C6CBC3;
+    color: #505050;
+    text-shadow: 0 1px 0 #E7E7E7;
+    -webkit-border-radius: 4px;
+}
+
+.NB-story-date {
+    color: #454D6C;
+}
+
+/* FONT RENDERING */
+
+body {
+    line-height: 1.6em;
+    font-size: 16px;
+}
+
+.NB-san-serif {
+    font-family: Helvetica;
+}
+
+.NB-serif {
+    font-family: georgia;
+}
+
+
+.NB-story-author {
+    font-size: 10px;
+    line-height: 12px
+}
+
+.NB-story-tags {
+    line-height: 12px;
+}
+
+.NB-story-tag {
+    font-size: 9px;
+}
+
+.NB-story-date {
+    font-size: 11px;
+    line-height: 13px;
+}
+
+/* END: FONT RENDERING */
 
 h1, h2, h3, h4, h5, h6, div, table, span, pre, code {
     overflow: auto;
@@ -23,11 +85,11 @@ blockquote {
 }
 
 h1, h2, h3, h4, h5, h6, div, table, span, pre, code, img {  
-  max-width: 588px;
+    max-width: 588px;
 }
 
 div {
-  width: auto !important;
+    width: auto !important;
 }
 
 p {
@@ -40,15 +102,15 @@ small {
 }
 
 .NB-header {
-  font-size: 22px;
-  line-height: 29px;
-  font-weight: 600;
-  background-color: #E0E0E0;
-  border-bottom: 1px solid #A0A0A0;
-  padding: 15px 90px;
-  text-shadow: 1px 1px 0 #EFEFEF;
-  overflow: hidden;
-  max-width: none;
+    font-size: 22px;
+    line-height: 1.1em;
+    font-weight: 600;
+    background-color: #E0E0E0;
+    border-bottom: 1px solid #A0A0A0;
+    padding: 15px 90px;
+    text-shadow: 1px 1px 0 #EFEFEF;
+    overflow: hidden;
+    max-width: none;
 }
 
 .NB-story {
@@ -57,10 +119,6 @@ small {
 
 .NB-story a.NB-contains-image { 
     display: block;
-}
-
-.NB-story img.NB-tracker { 
-    
 }
 
 .NB-story img {
@@ -95,44 +153,6 @@ small {
 .NB-feed-story-comments {
     clear: both;
     margin: 30px 90px !important;
-}
-
-
-
-.NB-story-author {
-    color: #969696;
-    font-size: 10px;
-    text-transform: uppercase;
-    margin: 4px 8px 0px 0;
-    text-shadow: 0 1px 0 #F9F9F9;
-    float: left;
-    line-height: 12px
-}
-
-.NB-story-tags {
-    overflow: hidden;
-    line-height: 12px;
-    padding: 5px 0 0 0;
-    text-transform: uppercase;
-}
-
-.NB-story-tag {
-  float: left;
-  font-size: 10px;
-  font-weight: normal;
-  font-size: 9px;
-  padding: 0px 4px 0px;
-  margin: 0px 4px 4px 0;
-  background-color: #C6CBC3;
-  color: #505050;
-  text-shadow: 0 1px 0 #E7E7E7;
-  -webkit-border-radius: 4px;
-}
-
-.NB-story-date {
-  font-size: 11px;
-  color: #454D6C;
-  line-height: 13px;
 }
 
 .NB-story-title {

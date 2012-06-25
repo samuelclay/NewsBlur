@@ -98,15 +98,23 @@
                                        target:self 
                                        action:@selector(showOriginalSubview:)
                                        ];
+    
+    UIBarButtonItem *fontSettingsButton = [[UIBarButtonItem alloc] 
+                                       initWithTitle:@"Aa" 
+                                       style:UIBarButtonItemStyleBordered 
+                                       target:self 
+                                       action:@selector(toggleFontSize:)
+                                       ];
         
     if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
-        appDelegate.splitStoryDetailViewController.navigationItem.rightBarButtonItem = originalButton; 
+        appDelegate.splitStoryDetailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
     } else {
-        self.navigationItem.rightBarButtonItem = originalButton;   
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
     }
 
     [originalButton release];
-    
+    [fontSettingsButton release];
+
 	[super viewDidAppear:animated];
 }
 
@@ -117,6 +125,7 @@
         self.activeStoryId = nil;
         [webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@""]];
     }
+    [popoverController dismissPopoverAnimated:YES];
 }
 
 #pragma mark -
@@ -162,7 +171,7 @@
     }
     
     if (areFriends && [share_user_ids count]) {
-        avatarString = [avatarString stringByAppendingString:@"</div"];
+        avatarString = [avatarString stringByAppendingString:@"</div>"];
     }
     
     return avatarString;
@@ -170,7 +179,6 @@
 
 - (NSString *)getComments {
     NSString *comments = @"";
-    NSLog(@"the sharecount is %@", [appDelegate.activeStory objectForKey:@"share_count"]);
     if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null]) {
         NSArray *comments_array = [appDelegate.activeStory objectForKey:@"comments"];            
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@
@@ -183,10 +191,9 @@
                                                       "<div class=\"NB-story-share-profiles NB-story-share-profiles-public\">"
                                                       "%@"
                                                       "</div>"
-                                                      
-
+                                            
                                                       "%@"
-                                                      
+                                                    
                                                       "</div></div>",
                                                       [[appDelegate.activeStory objectForKey:@"share_count"] intValue] == 1
                                                         ? [NSString stringWithFormat:@"1 person"] : 
@@ -194,8 +201,9 @@
                                                       [self getAvatars:NO],
                                                       [self getAvatars:YES]
                                                       ]];
-        
+
         for (int i = 0; i < comments_array.count; i++) {
+            
             NSDictionary *comment_dict = [comments_array objectAtIndex:i];
             NSDictionary *user = [self getUser:[[comment_dict objectForKey:@"user_id"] intValue]];
             NSString *comment = [NSString stringWithFormat:@
@@ -222,7 +230,6 @@
             comments = [comments stringByAppendingString:comment];
         }
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
-
     }
     return comments;
 }
@@ -262,15 +269,17 @@
 }
 
 - (void)showStory {
+    NSString *commentsString = [self getComments];    
+    NSString *customImgCssString, *universalImgCssString, *sharingHtmlString;
+    NSString *customBodyClass = @"";
     
-    for (id key in appDelegate.activeStory) {
-        
-        NSLog(@"key is: %@  value: %@", key, [appDelegate.activeStory objectForKey:key]);
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
+    if ([userPreferences stringForKey:@"fontStyle"]){
+        customBodyClass = [customBodyClass stringByAppendingString:[userPreferences stringForKey:@"fontStyle"]];
+    } else {
+        customBodyClass = [customBodyClass stringByAppendingString:@"NB-san-serif"];
     }
     
-    NSString *commentsString = [self getComments];    
-
-    NSString *customImgCssString, *universalImgCssString, *sharingHtmlString;
     // set up layout values based on iPad/iPhone    
     universalImgCssString = [NSString stringWithFormat:@
                              "<script src=\"zepto.js\"></script>"
@@ -333,20 +342,21 @@
                              story_tags];
     NSString *htmlString = [NSString stringWithFormat:@
                             "<html><head>%@ %@</head>"
-                            "<body id=\"story_pane\">%@"
+                            "<body id=\"story_pane\" class=\"%@\">%@"
                             "<div class=\"NB-story\">%@ </div>"
                             "%@" // comments
                             "%@" // share
                             "</body></html>",
                             universalImgCssString, 
                             customImgCssString,
+                            customBodyClass,
                             storyHeader, 
                             [appDelegate.activeStory objectForKey:@"story_content"],
                             commentsString,
                             sharingHtmlString
                             ];
 
-//    NSLog(@"\n\n\n\nstory content\n\n\n%@<div class=\"NB-story\">%@</div>\n\n\n", storyHeader, [appDelegate.activeStory objectForKey:@"story_content"]);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -414,9 +424,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
+    if ([userPreferences integerForKey:@"fontSize"]){
+        [self setFontSize:[userPreferences integerForKey:@"fontSize"]];
+    }
+
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
+    if ([userPreferences integerForKey:@"fontSize"]){
+        [self setFontSize:[userPreferences integerForKey:@"fontSize"]];
+    }
 }
 
 #pragma mark -
@@ -571,13 +590,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)setFontSize:(float)fontSize {
-    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.webkitTextSizeAdjust= '%f%%'", 
+    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.fontSize= '%fpx'", 
                           fontSize];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     [jsString release];
 }
 
 - (void)setFontStyle:(NSString *)fontStyle {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    if ([fontStyle isEqualToString:@"Helvetica"]) {
+        [userPreferences setObject:@"NB-san-serif" forKey:@"fontStyle"];
+    } else {
+        [userPreferences setObject:@"NB-serif" forKey:@"fontStyle"];
+    }
+    [userPreferences synchronize];
+    
     NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.fontFamily= '%@'", 
                           fontStyle];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];

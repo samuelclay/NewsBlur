@@ -612,6 +612,8 @@
 				437AA8AB15922D13005463F5 /* FeedDashboardViewController.m */,
 				439DAB1D1590DA350019B0EB /* FeedsMenuViewController.h */,
 				439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */,
+				43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */,
+				43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */,
 				28D7ACF60DDB3853001CB0EB /* NewsBlurViewController.h */,
 				28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */,
 				FFCE7AE513D49165009A98F6 /* FeedTableCell.h */,
@@ -634,8 +636,6 @@
 				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 				FFE5322D144C8AC300ACFDE0 /* Utilities.h */,
 				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
-				43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */,
-				43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";

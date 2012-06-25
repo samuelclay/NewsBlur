@@ -134,10 +134,9 @@
 - (void)showLogin;
 - (void)showFeedsMenu;
 - (void)hideFeedsMenu;
-- (void)pushFeedDetailToMasterPopover;
+
 - (void)showAdd;
 - (void)showMasterPopover;
-- (void)showPopover;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
 - (void)loadRiverFeedDetailView;

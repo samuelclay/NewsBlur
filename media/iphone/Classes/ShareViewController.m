@@ -35,20 +35,14 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    
     commentField.layer.borderWidth = 1.0f;
     commentField.layer.cornerRadius = 8;
     commentField.layer.borderColor = [[UIColor grayColor] CGColor];
     
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
-    NSLog(@"facebook %d", [userPreferences integerForKey:@"shareToFacebook"]);
-    NSLog(@"twitter %d", [userPreferences integerForKey:@"shareToTwitter"]);
-    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
     if ([userPreferences integerForKey:@"shareToFacebook"]){
         facebookButton.selected = YES;
     }
-    
     if ([userPreferences integerForKey:@"shareToTwitter"]){
         twitterButton.selected = YES;
     }
@@ -133,18 +127,10 @@
             [userPreferences setInteger:1 forKey:@"shareToTwitter"];
         }
     }
-    
     [userPreferences synchronize];
-    NSLog(@"facebook %d", [userPreferences integerForKey:@"shareToFacebook"]);
-    NSLog(@"twitter %d", [userPreferences integerForKey:@"shareToTwitter"]);
-
 }
 
-- (IBAction)doShareThisStory:(id)sender {
-    for (id key in appDelegate.activeStory) {
-        NSLog(@"Key in appDelegate.activeStory is %@" , key);
-    }
-    
+- (IBAction)doShareThisStory:(id)sender {    
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
                            NEWSBLUR_URL];
     
@@ -189,7 +175,7 @@
     CGRect shareViewFrame = self.view.frame;
     CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.view.frame;
     
-    NSLog(@"Keyboard y is %f", keyboardFrame.size.height);
+    //NSLog(@"Keyboard y is %f", keyboardFrame.size.height);
     shareViewFrame.origin.y = shareViewFrame.origin.y + keyboardFrame.size.height;
     storyDetailViewFrame.size.height = storyDetailViewFrame.size.height + keyboardFrame.size.height;
     
@@ -213,7 +199,7 @@
     CGRect shareViewFrame = self.view.frame;
     CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.view.frame;
     
-    NSLog(@"Keyboard y is %f", keyboardFrame.size.height);
+    //NSLog(@"Keyboard y is %f", keyboardFrame.size.height);
     shareViewFrame.origin.y = shareViewFrame.origin.y - keyboardFrame.size.height;
     storyDetailViewFrame.size.height = storyDetailViewFrame.size.height - keyboardFrame.size.height;
     

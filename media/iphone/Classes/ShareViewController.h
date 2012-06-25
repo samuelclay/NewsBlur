@@ -18,14 +18,12 @@
 @property (retain, nonatomic) IBOutlet UILabel *siteInformation;
 @property (retain, nonatomic) IBOutlet UITextView *commentField;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (retain, nonatomic) IBOutlet UIButton *facebookButton;
+@property (retain, nonatomic) IBOutlet UIButton *twitterButton;
 
 - (void)setSiteInfo;
 - (IBAction)doCancelButton:(id)sender;
 - (IBAction)doToggleButton:(id)sender;
 - (IBAction)doShareThisStory:(id)sender;
-@property (retain, nonatomic) IBOutlet UIButton *facebookButton;
-@property (retain, nonatomic) IBOutlet UIButton *twitterButton;
-
-
 
 @end

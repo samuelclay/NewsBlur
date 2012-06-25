@@ -15,7 +15,6 @@ Zepto(function($) {
         $img.parent().addClass('NB-contains-image')
       }
       var width = $(img).width();
-      console.log('width is' + width);
       if ($(img).attr('src').indexOf('feedburner') != -1) {
           $(img).addClass('NB-feedburner');
       } else if (width > 300) {

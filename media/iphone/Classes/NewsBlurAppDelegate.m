@@ -438,7 +438,7 @@
         
         // the storyDetailView is full screen
         if (self.feedDetailPortraitYCoordinate == 960) {
-            storyDetailViewController.view.frame = CGRectMake(0,0,storyDetailViewController.view.frame.size.width, 960);
+            storyDetailViewController.view.frame = CGRectMake(0, 0, 768, 960);
             feedDashboardViewController.view.frame = CGRectMake(0,
                                                                 0,
                                                                 storyDetailViewController.view.frame.size.width,
