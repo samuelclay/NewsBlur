@@ -170,9 +170,8 @@
 
 - (NSString *)getComments {
     NSString *comments = @"";
-    int share_count = [[appDelegate.activeStory objectForKey:@"share_count"] intValue];
-    
-    if (share_count) {
+    NSLog(@"the sharecount is %@", [appDelegate.activeStory objectForKey:@"share_count"]);
+    if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null]) {
         NSArray *comments_array = [appDelegate.activeStory objectForKey:@"comments"];            
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@
                                                       "<div class=\"NB-feed-story-comments\">"

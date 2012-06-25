@@ -10,6 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "StoryDetailViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "Utilities.h"
 #import "ASIHTTPRequest.h"
 
 @implementation ShareViewController
@@ -48,6 +49,25 @@
     // e.g. self.myOutlet = nil;
 }
 
+- (void)setSiteInfo {
+    [self.siteInformation setNumberOfLines:2];
+    
+    NSString *siteInfoString = [NSString stringWithFormat:@"%@: %@",
+                                [appDelegate.activeFeed objectForKey:@"feed_title"],
+                                [appDelegate.activeStory objectForKey:@"story_title"]];
+    
+    [self.siteInformation setText:siteInfoString];
+    
+    // vertical align label    
+    CGRect resizedLabel = [self.siteInformation textRectForBounds:self.siteInformation.bounds limitedToNumberOfLines:2];
+    CGRect newResizedLabelFrame = self.siteInformation.frame;    
+    newResizedLabelFrame.size.height = resizedLabel.size.height;
+    self.siteInformation.frame = newResizedLabelFrame;
+    
+    // adding in favicon
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    [siteFavicon setImage:[Utilities getImage:feedIdStr]];
+}
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -59,11 +79,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     
-    NSString *siteInfoString = [NSString stringWithFormat:@"%@: %@",
-                                [appDelegate.activeFeed objectForKey:@"feed_title"],
-                                [appDelegate.activeStory objectForKey:@"story_title"]];
-    
-    [self.siteInformation setText:siteInfoString];
+
 }
 
 - (void)dealloc {

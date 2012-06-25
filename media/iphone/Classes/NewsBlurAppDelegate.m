@@ -313,6 +313,7 @@
 - (void)showShareView {
     [splitStoryDetailViewController.view addSubview:shareViewController.view];
     
+    [shareViewController setSiteInfo];
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         
         shareViewController.view.frame = CGRectMake(0, 
@@ -353,9 +354,7 @@
     }
 }
 
-- (void)hideShareView {
-    [splitStoryDetailViewController.view addSubview:shareViewController.view];
-    
+- (void)hideShareView {    
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         if ((960 - self.feedDetailPortraitYCoordinate) < SHARE_MODAL_HEIGHT) {
             storyDetailViewController.view.frame = CGRectMake(0,
@@ -383,8 +382,6 @@
                                                              768,
                                                              960 - self.feedDetailPortraitYCoordinate);
         }]; 
-        
-        
     }
     
 }

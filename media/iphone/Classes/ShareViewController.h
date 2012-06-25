@@ -19,6 +19,7 @@
 @property (retain, nonatomic) IBOutlet UITextView *commentField;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 
+- (void)setSiteInfo;
 - (IBAction)doCancelButton:(id)sender;
 - (IBAction)doToggleButton:(id)sender;
 - (IBAction)doShareThisStory:(id)sender;
