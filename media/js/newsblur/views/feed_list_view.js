@@ -200,7 +200,6 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             var scroll = feed_view.$el.position().top;
             var container = $feed_lists.scrollTop();
             var height = $feed_lists.outerHeight();
-            console.log(["scroll feed list", scroll, container, height]);
             $feed_lists.scrollTop(scroll+container-height/5);
         }        
     },

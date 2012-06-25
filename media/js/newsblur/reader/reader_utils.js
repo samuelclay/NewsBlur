@@ -17,6 +17,41 @@ NEWSBLUR.utils = {
       return score;
     },
     
+    generate_shadow: _.memoize(function(feed) {
+        if (!feed) return '';
+        var color = feed.get('favicon_color');
+        
+        if (!color) {
+            return '0 1px 0 #222';
+        }
+        
+        var r = parseInt(color.substr(0, 2), 16);
+        var g = parseInt(color.substr(2, 2), 16);
+        var b = parseInt(color.substr(4, 2), 16);
+        
+        if (feed.is_light()) {
+            return [
+                '0 1px 0 ',
+                'rgb(',
+                [r+35, g+35, b+35].join(','),
+                ')'
+            ].join('');
+        } else {
+            return [
+                '0 1px 0 ',
+                'rgb(',
+                [
+                    parseInt(r*(6/8), 10),
+                    parseInt(g*(6/8), 10),
+                    parseInt(b*(6/8), 10)
+                ].join(','),
+                ')'
+            ].join('');
+        }
+    }, function(feed) {
+        return "" + feed.id;
+    }),
+    
     generate_gradient: _.memoize(function(feed, type) {
         if (!feed) return '';
         var color = feed.get('favicon_color');
@@ -26,7 +61,7 @@ NEWSBLUR.utils = {
         var g = parseInt(color.substr(2, 2), 16);
         var b = parseInt(color.substr(4, 2), 16);
         
-        if (type == 'border' || (type == 'shadow' && !feed.is_light())) {
+        if (type == 'border') {
             return [
                 (type == 'border' ? '1px solid ' : '') + 'rgb(',
                 [
@@ -34,12 +69,6 @@ NEWSBLUR.utils = {
                     parseInt(g*(6/8), 10),
                     parseInt(b*(6/8), 10)
                 ].join(','),
-                ')'
-            ].join('');
-        } else if (type == 'shadow') {
-            return [
-                'rgb(',
-                [r+35, g+35, b+35].join(','),
                 ')'
             ].join('');
         } else if (type == 'webkit') {

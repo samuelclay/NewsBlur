@@ -391,7 +391,6 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
     },
     
     load_feed_iframe: function(feed_id) {
-        console.log(["load_feed_iframe", feed_id]);
         feed_id = feed_id || NEWSBLUR.reader.active_feed;
         var self = this;
 
@@ -431,11 +430,10 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                 });
             }, 50);
             self.flags['iframe_scroll_snapback_check'] = setInterval(function() {
-                NEWSBLUR.log(['Checking scroll', self.iframe_scroll, self.flags.iframe_scroll_snap_back_prepared, self.flags['iframe_scroll_snapback_check']]);
+                // NEWSBLUR.log(['Checking scroll', self.iframe_scroll, self.flags.iframe_scroll_snap_back_prepared, self.flags['iframe_scroll_snapback_check']]);
                 if (self.iframe_scroll && self.flags.iframe_scroll_snap_back_prepared) {
                     self.return_to_snapback_position();
                 } else {
-                    console.log(["clearing scroll"]);
                     clearInterval(self.flags['iframe_scroll_snapback_check']);
                 }
             }, 500);

@@ -73,8 +73,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             feed             : NEWSBLUR.reader.flags.river_view && this.feed,
             tag              : _.first(this.model.get("story_tags")),
             title            : this.make_story_title(),
-            authors_score    : this.classifiers.authors[this.model.get('story_authors')],
-            tags_score       : this.classifiers.tags,
+            authors_score    : this.classifiers && this.classifiers.authors[this.model.get('story_authors')],
+            tags_score       : this.classifiers && this.classifiers.tags,
             options          : this.options
         };
     },
@@ -98,7 +98,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <% if (story.get("story_tags", []).length) { %>\
                     <div class="NB-feed-story-tags">\
                         <% _.each(story.get("story_tags"), function(tag) { %>\
-                            <div class="NB-feed-story-tag <% if (tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
+                            <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
                                 <%= tag %>\
                             </div>\
                         <% }) %>\
@@ -156,7 +156,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         $header.css('background-image', NEWSBLUR.utils.generate_gradient(this.feed, 'moz'));
         $header.css('borderTop',        NEWSBLUR.utils.generate_gradient(this.feed, 'border'));
         $header.css('borderBottom',     NEWSBLUR.utils.generate_gradient(this.feed, 'border'));
-        $header.css('textShadow',       '0 1px 0 ' + NEWSBLUR.utils.generate_gradient(this.feed, 'shadow'));
+        $header.css('textShadow',       NEWSBLUR.utils.generate_shadow(this.feed));
     },
     
     make_story_title: function() {
