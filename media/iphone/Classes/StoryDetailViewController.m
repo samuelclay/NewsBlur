@@ -175,7 +175,7 @@
                                                       "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
                                                       "<div class=\"NB-story-comments-shares-teaser\">"
                                                       
-                                                      "<div class=\"NB-right\">Shared by <b>%@</div>"
+                                                      "<div class=\"NB-right\">Shared by %@</div>"
                                                       
                                                       "<div class=\"NB-story-share-profiles NB-story-share-profiles-public\">"
                                                       "%@"
@@ -207,7 +207,7 @@
                          "<div class=\"NB-user-avatar\"><img src=\"%@\" /></div>"
                          "<div class=\"NB-story-comment-author-container\">"
                          "<div class=\"NB-story-comment-username\">%@</div>"
-                         "<div class=\"NB-story-comment-date\">%@</div>"
+                         "<div class=\"NB-story-comment-date\">%@ ago</div>"
                          "<div class=\"NB-story-comment-reply-button\"><div class=\"NB-story-comment-reply-button-wrapper\">"
                          "<a href=\"http://ios.newsblur.com/reply/%@/%@\">reply</a>"
                          "</div></div>"
@@ -237,7 +237,7 @@
                                 "<div class=\"NB-story-comment-reply\">"
                                 "<img class=\"NB-user-avatar NB-story-comment-reply-photo\" src=\"%@\" />"
                                 "<div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
-                                "<div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@</div>"
+                                "<div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
                                 "<div class=\"NB-story-comment-reply-content\">%@</div>"
                                 "</div>",
                                [user objectForKey:@"photo_url"],
@@ -280,13 +280,12 @@
                              "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
                              "<meta name=\"viewport\" content=\"width=device-width\"/>"];
 
-    
    sharingHtmlString      = [NSString stringWithFormat:@
-    "<div class='NB-share-header'></div>"
-    "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-    "<a class='NB-share-button' href='http://ios.newsblur.com/share'><span class='NB-share-icon'></span>Share this story</a>"
-    "<a class='NB-save-button' href='save://save'><span class='NB-save-icon'></span>Save this story</a>"
-                        "</div></div>"];
+                            "<div class='NB-share-header'></div>"
+                            "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
+                            "<div class='NB-share-button'><span class='NB-share-icon'></span>Share this story</div>"
+                            "<div class='NB-save-button'><span class='NB-save-icon'></span>Save this story</div>"
+                            "</div></div>"];
     NSString *story_author      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
         NSString *author = [NSString stringWithFormat:@"%@",
@@ -335,7 +334,7 @@
                             sharingHtmlString
                             ];
 
-    //NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -389,32 +388,34 @@
 - (BOOL)webView:(UIWebView *)webView 
 shouldStartLoadWithRequest:(NSURLRequest *)request 
  navigationType:(UIWebViewNavigationType)navigationType {
-    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-        NSURL *url = [request URL];
-        NSArray *urlComponents = [url pathComponents];
-        NSString *action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
-        if ([[url host] isEqualToString: @"ios.newsblur.com"]){
-            if ([action isEqualToString:@"reply"]) {
-                NSArray *comments = [appDelegate.activeStory objectForKey:@"comments"];
-                for (int i = 0; i < comments.count; i++) {
-                    NSString *userId = [NSString stringWithFormat:@"%@", 
-                                         [[comments objectAtIndex:i] objectForKey:@"user_id"]];
-                    if([userId isEqualToString:[NSString stringWithFormat:@"%@", 
-                                                [urlComponents objectAtIndex:2]]]){
-                        appDelegate.activeComment = [comments objectAtIndex:i];
-                    }
+    NSURL *url = [request URL];
+    NSArray *urlComponents = [url pathComponents];
+    NSString *action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
+    // HACK: Using ios.newsblur.com to intercept the javascript share, reply, and edit events.
+    // the pathComponents do not work correctly unless it is a correctly formed url
+    // Is there a better way?  Someone show me the light
+    if ([[url host] isEqualToString: @"ios.newsblur.com"]){
+        if ([action isEqualToString:@"reply"]) {
+            NSArray *comments = [appDelegate.activeStory objectForKey:@"comments"];
+            for (int i = 0; i < comments.count; i++) {
+                NSString *userId = [NSString stringWithFormat:@"%@", 
+                                    [[comments objectAtIndex:i] objectForKey:@"user_id"]];
+                if([userId isEqualToString:[NSString stringWithFormat:@"%@", 
+                                            [urlComponents objectAtIndex:2]]]){
+                    appDelegate.activeComment = [comments objectAtIndex:i];
                 }
-                [appDelegate showShareView:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]
-                               setUsername:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:3]]];
-                return NO;
-            } else if ([action isEqualToString:@"share"]) {
-                [appDelegate showShareView:nil setUsername:nil];
-                return NO; 
             }
-        } else {
-            [appDelegate showOriginalStory:url];
+            [appDelegate showShareView:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]
+                           setUsername:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:3]]];
             return NO;
+        } else if ([action isEqualToString:@"share"]) {
+            [appDelegate showShareView:nil setUsername:nil];
+            return NO; 
         }
+    }
+    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+        [appDelegate showOriginalStory:url];
+        return NO;
     }
     return YES;
 }

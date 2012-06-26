@@ -104,7 +104,7 @@ small {
 
 .NB-header {
     font-size: 22px;
-    line-height: 1.1em;
+    line-height: 1.2em;
     font-weight: 600;
     background-color: #E0E0E0;
     border-bottom: 1px solid #A0A0A0;
@@ -223,8 +223,8 @@ del {
   	margin: 30px 30px 30px 0;
 }
 
-.NB-share-button:hover,
-.NB-save-button:hover {
+.NB-share-button.active,
+.NB-save-button.active {
   	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ffffff) );
   	background:-moz-linear-gradient( center top, #dfdfdf 5%, #ffffff 100% );
   	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ffffff');

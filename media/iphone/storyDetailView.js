@@ -9,7 +9,6 @@ Zepto(function($) {
     
     function setImage(img) {
       var $img = $(img);
-              console.log($img.parent().attr('href'));
       if ($img.parent().attr('href')) {
 
         $img.parent().addClass('NB-contains-image')
@@ -27,5 +26,27 @@ Zepto(function($) {
           $(img).addClass('NB-tracker');
       }
     }
+    
 })
 
+window.onload = load;
+
+function load() {  
+  //document.getElementsByClassName('NB-share-button')[0].addEventListener("mousedown", touchStart, false);
+  document.getElementsByClassName('NB-share-button')[0].addEventListener("touchstart", touchStart, false);
+  //document.getElementsByClassName('NB-share-button')[0].addEventListener("mouseup", touchEnd, false);
+  document.getElementsByClassName('NB-share-button')[0].addEventListener("touchend", touchEnd, false);
+} 
+
+function touchStart(e) {
+  var original_class = e.target.getAttribute("class");
+  e.target.setAttribute("class", original_class + " active");
+  return false;
+}
+
+function touchEnd(e) {
+  var original_class = e.target.getAttribute("class");
+  e.target.setAttribute("class", original_class.replace('active', ''));
+  window.location = "http://ios.newsblur.com/share";  
+  return false;
+}
