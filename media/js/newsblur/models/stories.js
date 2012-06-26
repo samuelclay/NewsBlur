@@ -86,11 +86,10 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
             return;
         }
 
-        this.last_read_story_id = story.id;
         clearTimeout(this.read_story_delay);
         
         this.read_story_delay = _.delay(_.bind(function() {
-            if (delay || this.last_read_story_id == story.id || delay == 0) {
+            if (!delay || (delay && this.active_story.id == story.id)) {
                 var mark_read_fn = NEWSBLUR.assets.mark_story_as_read;
                 var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
                 if (!feed) {

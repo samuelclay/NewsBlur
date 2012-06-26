@@ -889,7 +889,6 @@
                 'prefetch_last_story': 0,
                 'prefetch_iteration': 0,
                 'feed_title_floater_story_id': null,
-                'last_read_story_id': null,
                 '$feed_in_social_feed_list': {}
             });
             
