@@ -1,48 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/login_viewswitcher"
     android:layout_width="match_parent"
     android:layout_height="fill_parent" >
 
-    <EditText
-        android:id="@+id/login_username"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/login_username_hint"
-        android:inputType="textEmailAddress"
-        android:textSize="22dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent" >
 
-    <EditText
-        android:id="@+id/login_password"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/login_username"
-        android:layout_marginTop="40dp"
-        android:hint="@string/login_password_hint"
-        android:imeOptions="actionDone"
-        android:inputType="textPassword"
-        android:nextFocusDown="@+id/login_button"
-        android:textSize="22dp" />
+        <EditText
+            android:id="@+id/login_username"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/login_username_hint"
+            android:inputType="textEmailAddress"
+            android:textSize="22dp" />
 
-    <Button
-        android:id="@+id/signup_button"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="40dp"
-        android:contentDescription="@string/description_signup_button"
-        android:text="@string/login_button_signup" />
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/login_username"
+            android:layout_marginTop="40dp"
+            android:hint="@string/login_password_hint"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:nextFocusDown="@+id/login_button"
+            android:textSize="22dp" />
 
-    <Button
-        android:id="@+id/login_button"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="40dp"
-        android:layout_alignParentBottom="true"
-        android:contentDescription="@string/description_login_button"
-        android:text="@string/login_button_login" />
+        <Button
+            android:id="@+id/signup_button"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="40dp"
+            android:layout_marginTop="60dp"
+            android:contentDescription="@string/description_signup_button"
+            android:text="@string/login_button_signup" />
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="40dp"
+            android:layout_marginTop="60dp"
+            android:contentDescription="@string/description_login_button"
+            android:text="@string/login_button_login" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/login_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/login_status_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="logging in..." />
+    </RelativeLayout>
+
+</ViewSwitcher>

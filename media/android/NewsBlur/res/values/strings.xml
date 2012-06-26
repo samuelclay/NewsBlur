@@ -7,6 +7,7 @@
     <string name="login_password_hint">password</string>
     <string name="login_button_login">Log In</string>
     <string name="login_button_signup">Sign Up</string>
+    <string name="login_message_error">There was problem connecting to NewsBlur. Check your internet connection.</string>
     
     <string name="hello">Hello World!</string>
     
