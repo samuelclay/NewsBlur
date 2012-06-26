@@ -54,7 +54,7 @@
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
-    if (appDelegate.isRiverView) {
+    if (appDelegate.isRiverView || appDelegate.isSocialView) {
         self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.storyTitlesTable.separatorColor = [UIColor clearColor];
     } else {
@@ -161,8 +161,7 @@
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
         }
-        
-        if([appDelegate.activeFeed objectForKey:@"username"]){
+        if (appDelegate.isSocialView) {
             theFeedDetailURL = [NSString stringWithFormat:@"http://%@/social/stories/%@?page=%d", 
                                 NEWSBLUR_URL,
                                 [appDelegate.activeFeed objectForKey:@"user_id"],
@@ -211,11 +210,21 @@
         
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];    
-
-    if (!appDelegate.isRiverView && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
+                             initWithDictionary:[responseString JSONValue]];
+    
+    if (!(appDelegate.isRiverView || appDelegate.isSocialView) && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
         [results release];
         return;
+    }
+    
+    if ([appDelegate isSocialView]) {
+        NSArray *newFeeds = [results objectForKey:@"feeds"];
+        for (int i = 0; i < newFeeds.count; i++){
+            NSString *feedKey = [NSString stringWithFormat:@"%@", [[newFeeds objectAtIndex:i] objectForKey:@"id"]];
+            [appDelegate.dictActiveFeeds setObject:[newFeeds objectAtIndex:i] 
+                      forKey:feedKey];
+        }
+
     }
     
     NSArray *newStories = [results objectForKey:@"stories"];
@@ -425,8 +434,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView 
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier;
-
-    if (appDelegate.isRiverView) {
+    NSDictionary *feed ;
+    
+    if (appDelegate.isRiverView || appDelegate.isSocialView) {
         cellIdentifier = @"FeedRiverDetailCellIdentifier";
     } else {
         cellIdentifier = @"FeedDetailCellIdentifier";
@@ -440,8 +450,8 @@
                                                    options:nil];
         for (id oneObject in nib) {
             if ([oneObject isKindOfClass:[FeedDetailTableCell class]]) {
-                if (([(FeedDetailTableCell *)oneObject tag] == 0 && !appDelegate.isRiverView) ||
-                    ([(FeedDetailTableCell *)oneObject tag] == 1 && appDelegate.isRiverView)) {
+                if (([(FeedDetailTableCell *)oneObject tag] == 0 && !(appDelegate.isRiverView || appDelegate.isSocialView)) ||
+                    ([(FeedDetailTableCell *)oneObject tag] == 1 && (appDelegate.isRiverView || appDelegate.isSocialView))) {
                     cell = (FeedDetailTableCell *)oneObject;
                     break;
                 }
@@ -455,9 +465,19 @@
     }
     
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
+    
     id feedId = [story objectForKey:@"story_feed_id"];
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+    
+    if ([appDelegate isSocialView]) {
+        feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
+        // this is to catch when a user is already subscribed
+        if (!feed) {
+            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+        }
+    } else {
+        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    }
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
         cell.storyAuthor.text = [[story objectForKey:@"story_authors"] 
@@ -479,13 +499,13 @@
         cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_red.png"];
     }
     
-    // River view
-    if (appDelegate.isRiverView && cell) {
+    // River view gradient
+    if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
         UIView *gradientView = [appDelegate makeFeedTitleGradient:feed 
                                 withRect:CGRectMake(0, 0, cell.frame.size.width, 21)];
         [cell.feedGradient addSubview:gradientView];
     }
-            
+    
     if (!isStoryRead) {
         // Unread story
         cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
@@ -513,8 +533,8 @@
         [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
         [appDelegate loadStoryDetailView];
 
+        // hides the popover in iPad portrait mode
         if(appDelegate.splitStoryDetailViewController.masterPopoverController.popoverVisible) {
-            NSLog(@"popover visible");
             [appDelegate.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
         }
 
@@ -537,7 +557,7 @@
         if (self.pageFinished) return 16;
         else return kTableViewRowHeight;
     } else {
-        if (appDelegate.isRiverView) {
+        if (appDelegate.isRiverView || appDelegate.isSocialView) {
             return kTableViewRiverRowHeight;
         } else {
             return kTableViewRowHeight;

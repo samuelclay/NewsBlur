@@ -71,6 +71,7 @@
 
 @synthesize dictFolders;
 @synthesize dictFeeds;
+@synthesize dictActiveFeeds;
 @synthesize dictSocialFeeds;
 @synthesize dictFoldersArray;
 
@@ -149,6 +150,7 @@
     [readStories release];
     
     [dictFolders release];
+    [dictActiveFeeds release];
     [dictFeeds release];
     [dictSocialFeeds release];
     [dictFoldersArray release];
@@ -984,7 +986,7 @@
 
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect {
     UIView *gradientView;
-    if (self.isRiverView) {
+    if (self.isRiverView || self.isSocialView) {
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:rect
                         startColor:[feed objectForKey:@"favicon_color"] 

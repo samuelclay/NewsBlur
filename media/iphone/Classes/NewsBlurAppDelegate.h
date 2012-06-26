@@ -79,6 +79,7 @@
     
 	NSDictionary * dictFolders;
     NSDictionary * dictFeeds;
+    NSMutableDictionary * dictActiveFeeds;
     NSDictionary * dictSocialFeeds;
     NSMutableArray * dictFoldersArray;
 }
@@ -127,6 +128,7 @@
 
 @property (nonatomic, retain) NSDictionary *dictFolders;
 @property (nonatomic, retain) NSDictionary *dictFeeds;
+@property (nonatomic, retain) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic, retain) NSDictionary *dictSocialFeeds;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 

@@ -247,6 +247,7 @@
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
     NSMutableDictionary *socialDict = [[NSMutableDictionary alloc] init];
+    appDelegate.dictActiveFeeds = [[NSMutableDictionary alloc] init];
     
     for (int i = 0; i < socialFeedsArray.count; i++) {
         NSString *userKey = [NSString stringWithFormat:@"%@", 
@@ -491,10 +492,12 @@
     id feedId = [feeds objectAtIndex:location];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     
-    if ([folderName isEqualToString:@""]) {
+    if ([appDelegate isSocialFeed:feedIdStr]) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
+        appDelegate.isSocialView = YES;
     } else {
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+        appDelegate.isSocialView = NO;
     }
     
     // If all feeds are already showing, no need to remember this one.

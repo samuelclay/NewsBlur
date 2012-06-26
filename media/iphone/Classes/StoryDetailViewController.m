@@ -357,7 +357,7 @@
     for (NSObject *aSubView in [self.webView subviews]) {
         if ([aSubView isKindOfClass:[UIScrollView class]]) {
             UIScrollView * theScrollView = (UIScrollView *)aSubView;
-            if (appDelegate.isRiverView) {
+            if (appDelegate.isRiverView || appDelegate.isSocialView) {
                 theScrollView.contentInset = UIEdgeInsetsMake(19, 0, 0, 0);
                 theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(24, 0, 5, 0);
             } else {
@@ -365,7 +365,7 @@
                 theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(14, 0, 5, 0);
             }
             [self.webView insertSubview:feedTitleGradient aboveSubview:theScrollView];
-            [theScrollView setContentOffset:CGPointMake(0, appDelegate.isRiverView ? -19 : -9) animated:NO];
+            [theScrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView || appDelegate.isSocialView) ? -19 : -9) animated:NO];
                         
             break;
         }
