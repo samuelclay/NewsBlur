@@ -68,17 +68,15 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     scroll_to_selected_story: function(story, options) {
         options = options || {};
         if (!story || !story.story_view) return;
-
-        if (!options.immediate) {
-            clearTimeout(NEWSBLUR.reader.locks.scrolling);
-            NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
-        }
         var $story = story.story_view.$el;
-        
+
+        if (!NEWSBLUR.assets.preference('animations')) options.immediate = true;
         if (options.scroll_to_comments) {
             $story = $('.NB-feed-story-comments', $story);
         }
         
+        clearTimeout(NEWSBLUR.reader.locks.scrolling);
+        NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
         this.$el.scrollable().stop();
         this.$el.scrollTo($story, { 
             duration: options.immediate ? 0 : 340,
@@ -87,8 +85,6 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             offset: options.scroll_offset || 0,
             queue: false, 
             onAfter: function() {
-                if (options.immediate) return;
-
                 NEWSBLUR.reader.locks.scrolling = setTimeout(function() {
                     NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = false;
                 }, 100);
