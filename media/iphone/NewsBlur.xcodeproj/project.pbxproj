@@ -88,8 +88,6 @@
 		43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */; };
 		437AA8AD15922D13005463F5 /* FeedDashboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8AB15922D13005463F5 /* FeedDashboardViewController.m */; };
 		437AA8AE15922D13005463F5 /* FeedDashboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8AC15922D13005463F5 /* FeedDashboardViewController.xib */; };
-		437AA8B915929D51005463F5 /* zepto.js in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8B815929D51005463F5 /* zepto.js */; };
-		437AA8BE15929DA7005463F5 /* storyDetailView.js in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8BD15929DA7005463F5 /* storyDetailView.js */; };
 		437AA8C015929DFA005463F5 /* storyDetailView.css in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8BF15929DFA005463F5 /* storyDetailView.css */; };
 		437AA8C115929FFF005463F5 /* zepto.js in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8B815929D51005463F5 /* zepto.js */; };
 		437AA8C215929FFF005463F5 /* storyDetailView.js in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8BD15929DA7005463F5 /* storyDetailView.js */; };
@@ -381,7 +379,7 @@
 		78095EC6128F30B500230C8E /* OriginalStoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OriginalStoryViewController.h; sourceTree = "<group>"; };
 		78095EC7128F30B500230C8E /* OriginalStoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = OriginalStoryViewController.m; sourceTree = "<group>"; };
 		7842ECF511D44A530066CF9D /* StoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryDetailViewController.h; sourceTree = "<group>"; };
-		7842ECF611D44A530066CF9D /* StoryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = StoryDetailViewController.m; sourceTree = "<group>"; };
+		7842ECF611D44A530066CF9D /* StoryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = StoryDetailViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailTableCell.h; sourceTree = "<group>"; };
 		7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailTableCell.m; sourceTree = "<group>"; };
 		784B50EA127E3F68008F90EA /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
@@ -1518,8 +1516,6 @@
 				43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */,
 				439DAB201590DA350019B0EB /* FeedsMenuViewController.m in Sources */,
 				437AA8AD15922D13005463F5 /* FeedDashboardViewController.m in Sources */,
-				437AA8B915929D51005463F5 /* zepto.js in Sources */,
-				437AA8BE15929DA7005463F5 /* storyDetailView.js in Sources */,
 				437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

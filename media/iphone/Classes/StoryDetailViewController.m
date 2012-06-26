@@ -166,7 +166,9 @@
 
 - (NSString *)getComments {
     NSString *comments = @"";
-    if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null]) {
+    NSLog(@"the comment string is %@", [appDelegate.activeStory objectForKey:@"share_count"]);
+    NSLog(@"appDelegate.activeStory is %@", appDelegate.activeStory);
+    if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] && [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
         NSArray *comments_array = [appDelegate.activeStory objectForKey:@"comments"];            
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@
                                                       "<div class=\"NB-feed-story-comments\">"
@@ -190,37 +192,38 @@
                                                       ]];
 
         for (int i = 0; i < comments_array.count; i++) {
-            
-            NSDictionary *comment_dict = [comments_array objectAtIndex:i];
-            NSDictionary *user = [self getUser:[[comment_dict objectForKey:@"user_id"] intValue]];
-            NSString *comment = [NSString stringWithFormat:@
-                                 "<div class=\"NB-story-comment\"><div>"
-        
-                                 "<div class=\"NB-user-avatar\"><img src=\"%@\" /></div>"
-                                 
-                                 "<div class=\"NB-story-comment-author-container\">"
-                                 "<div class=\"NB-story-comment-username\">%@</div>"
-                                 "<div class=\"NB-story-comment-date\">%@</div>"
-                                 "<div class=\"NB-story-comment-reply-button\"><div class=\"NB-story-comment-reply-button-wrapper\">"
-                                 "<a href=\"http://ios.newsblur.com/reply/%@/%@\">reply</a>"
-                                 "</div></div>"
-                                 "</div>"
-
-                                 "<div class=\"NB-story-comment-content\">%@</div>"
-                                 "%@"
-                                 "</div></div>",
-                                 [user objectForKey:@"photo_url"],
-                                 [user objectForKey:@"username"],
-                                 [comment_dict objectForKey:@"shared_date"],
-                                 [comment_dict objectForKey:@"user_id"],
-                                 [user objectForKey:@"username"],
-                                 [comment_dict objectForKey:@"comments"],
-                                 [self getReplies:[comment_dict objectForKey:@"replies"]]];
+            NSString *comment = [self getComment:[comments_array objectAtIndex:i]];
             comments = [comments stringByAppendingString:comment];
         }
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
     }
     return comments;
+}
+
+- (NSString *)getComment:(NSDictionary *)commentDict {
+    NSDictionary *user = [self getUser:[[commentDict objectForKey:@"user_id"] intValue]];
+    NSString *comment = [NSString stringWithFormat:@
+                         "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\"><div>"
+                         "<div class=\"NB-user-avatar\"><img src=\"%@\" /></div>"
+                         "<div class=\"NB-story-comment-author-container\">"
+                         "<div class=\"NB-story-comment-username\">%@</div>"
+                         "<div class=\"NB-story-comment-date\">%@</div>"
+                         "<div class=\"NB-story-comment-reply-button\"><div class=\"NB-story-comment-reply-button-wrapper\">"
+                         "<a href=\"http://ios.newsblur.com/reply/%@/%@\">reply</a>"
+                         "</div></div>"
+                         "</div>"
+                         "<div class=\"NB-story-comment-content\">%@</div>"
+                         "%@"
+                         "</div></div>",
+                         [commentDict objectForKey:@"user_id"],
+                         [user objectForKey:@"photo_url"],
+                         [user objectForKey:@"username"],
+                         [commentDict objectForKey:@"shared_date"],
+                         [commentDict objectForKey:@"user_id"],
+                         [user objectForKey:@"username"],
+                         [commentDict objectForKey:@"comments"],
+                         [self getReplies:[commentDict objectForKey:@"replies"]]];
+    return comment;
 }
 
 - (NSString *)getReplies:(NSArray *)replies {
@@ -259,7 +262,7 @@
 
 - (void)showStory {
     NSString *commentsString = [self getComments];    
-    NSString *customImgCssString, *universalImgCssString, *sharingHtmlString;
+    NSString *headerString, *sharingHtmlString;
     NSString *customBodyClass = @"";
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
@@ -270,25 +273,13 @@
     }
     
     // set up layout values based on iPad/iPhone    
-    universalImgCssString = [NSString stringWithFormat:@
+    headerString = [NSString stringWithFormat:@
                              "<script src=\"zepto.js\"></script>"
                              "<script src=\"storyDetailView.js\"></script>"
                              "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
                              "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
                              "<meta name=\"viewport\" content=\"width=device-width\"/>"];
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        customImgCssString = [NSString stringWithFormat:@"<style>"
-                              "h1, h2, h3, h4, h5, h6, div, table, span, pre, code, img {"
-                              "  max-width: 588px;"
-                              "}"
-                              "</style>"];
-    } else {
-        customImgCssString = [NSString stringWithFormat:@"<style>"
-                              "h1, h2, h3, h4, h5, h6, div, table, span, pre, code, img {"
-                              "  max-width: 296px;"
-                              "}"
-                              "</style>"];
-    }
+
     
    sharingHtmlString      = [NSString stringWithFormat:@
     "<div class='NB-share-header'></div>"
@@ -330,14 +321,13 @@
                              story_author,
                              story_tags];
     NSString *htmlString = [NSString stringWithFormat:@
-                            "<html><head>%@ %@</head>"
+                            "<html><head>%@</head>"
                             "<body id=\"story_pane\" class=\"%@\">%@"
                             "<div class=\"NB-story\">%@ </div>"
-                            "%@" // comments
+                            "<div id=\"NB-comments-wrapper\">%@</div>" // comments
                             "%@" // share
                             "</body></html>",
-                            universalImgCssString, 
-                            customImgCssString,
+                            headerString, 
                             customBodyClass,
                             storyHeader, 
                             [appDelegate.activeStory objectForKey:@"story_content"],
@@ -345,7 +335,7 @@
                             sharingHtmlString
                             ];
 
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    //NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -498,6 +488,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [request setDelegate:self];
         [request startAsynchronous];
     }
+}
+
+- (void)refreshComments {
+    NSString *commentsString = [self getComments];    
+    NSString *jsString = [[NSString alloc] initWithFormat:@
+                          "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
+                          commentsString];
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    [jsString release];
+    
 }
 
 - (void)markedAsRead {

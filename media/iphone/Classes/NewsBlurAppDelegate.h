@@ -159,7 +159,7 @@
 - (void)hideStoryDetailView;
 - (void)showShareView:(NSString *)userId setUsername:(NSString *)username;
 - (void)hideShareView;
-- (BOOL)isSocialFeed;
+- (void)refreshComments;
 
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;

@@ -44,15 +44,16 @@
 - (IBAction)doNextUnreadStory;
 - (IBAction)doPreviousStory;
 
+- (void)refreshComments;
 - (void)markedAsRead;
 - (void)setActiveStory;
 - (IBAction)toggleFontSize:(id)sender;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)setFontSize:(float)fontSize;
 - (NSString *)getComments;
+- (NSString *)getComment:(NSDictionary *)commentDict;
 - (NSString *)getReplies:(NSArray *)replies;
 - (NSString *)getAvatars:(BOOL)areFriends;
 - (NSDictionary *)getUser:(int)user_id;
-- (IBAction)doShareButton:(id)sender;
 
 @end

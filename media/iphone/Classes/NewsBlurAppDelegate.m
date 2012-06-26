@@ -397,6 +397,10 @@
     
 }
 
+- (void)refreshComments {
+    [storyDetailViewController refreshComments];
+}
+
 - (void)loadRiverFeedDetailView {
     [self setStories:nil];
     [self setFeedUserProfiles:nil];

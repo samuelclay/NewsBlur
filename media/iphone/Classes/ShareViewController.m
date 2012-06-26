@@ -11,6 +11,7 @@
 #import "StoryDetailViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Utilities.h"
+#import "JSON.h"
 #import "ASIHTTPRequest.h"
 
 @implementation ShareViewController
@@ -200,6 +201,13 @@
     NSLog(@"Successfully added.");
     [commentField resignFirstResponder];
     [appDelegate hideShareView];
+    
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    appDelegate.activeStory = [results objectForKey:@"story"];
+    [results release];
+    [appDelegate refreshComments];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
