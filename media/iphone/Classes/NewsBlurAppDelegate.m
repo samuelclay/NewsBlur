@@ -408,7 +408,7 @@
     }
     return NO;
 }
-q
+
 - (void)loadRiverFeedDetailView {
     [self setStories:nil];
     [self setFeedUserProfiles:nil];

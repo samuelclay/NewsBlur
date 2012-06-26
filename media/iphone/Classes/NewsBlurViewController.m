@@ -237,32 +237,13 @@
     if (appDelegate.feedsViewController.view.window) {
         [appDelegate setTitle:[results objectForKey:@"user"]];
     }
-    appDelegate.dictFolders = [results objectForKey:@"flat_folders"];
-    appDelegate.dictFeeds = [results objectForKey:@"feeds"];
-
-    
+        
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     
-    appDelegate.dictFoldersArray = [NSMutableArray array];
+
     
-    [appDelegate.dictFoldersArray addObject:@""]; 
-    for (id f in appDelegate.dictFolders) {
-        [appDelegate.dictFoldersArray addObject:f];
-        NSArray *folder = [appDelegate.dictFolders objectForKey:f];
-        sortedArray = [folder sortedArrayUsingComparator:^NSComparisonResult(id id1, id id2) {
-            NSString *feedTitleA = [[appDelegate.dictFeeds 
-                                     objectForKey:[NSString stringWithFormat:@"%@", id1]] 
-                                    objectForKey:@"feed_title"];
-            NSString *feedTitleB = [[appDelegate.dictFeeds 
-                                     objectForKey:[NSString stringWithFormat:@"%@", id2]] 
-                                    objectForKey:@"feed_title"];
-            return [feedTitleA caseInsensitiveCompare:feedTitleB];
-        }];
-        [sortedFolders setValue:sortedArray forKey:f];
-    }
-    
-    // Set up social feeds
+    // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
     NSMutableDictionary *socialDict = [[NSMutableDictionary alloc] init];
@@ -276,9 +257,44 @@
     }
     appDelegate.dictSocialFeeds = socialDict;
     [self loadAvatars];
+
+    // set up dictFolders
+    NSMutableDictionary * allFolders = [results objectForKey:@"flat_folders"];
+    [allFolders setValue:socialFolder forKey:@""]; 
+    appDelegate.dictFolders = allFolders;
     
-    [sortedFolders setValue:socialFolder forKey:@""];    
-       
+    // set up dictFeeds
+    appDelegate.dictFeeds = [results objectForKey:@"feeds"];
+
+    // sort all the folders
+    appDelegate.dictFoldersArray = [NSMutableArray array];
+    for (id f in appDelegate.dictFolders) {
+        [appDelegate.dictFoldersArray addObject:f];
+        NSArray *folder = [appDelegate.dictFolders objectForKey:f];
+        sortedArray = [folder sortedArrayUsingComparator:^NSComparisonResult(id id1, id id2) {
+            NSString *feedTitleA;
+            NSString *feedTitleB;
+            
+            if ([appDelegate isSocialFeed:[NSString stringWithFormat:@"%@", id1]]) {
+                feedTitleA = [[appDelegate.dictSocialFeeds 
+                               objectForKey:[NSString stringWithFormat:@"%@", id1]] 
+                              objectForKey:@"feed_title"];
+                feedTitleB = [[appDelegate.dictSocialFeeds 
+                               objectForKey:[NSString stringWithFormat:@"%@", id2]] 
+                              objectForKey:@"feed_title"];
+            } else {
+                feedTitleA = [[appDelegate.dictFeeds 
+                                         objectForKey:[NSString stringWithFormat:@"%@", id1]] 
+                                        objectForKey:@"feed_title"];
+                feedTitleB = [[appDelegate.dictFeeds 
+                                         objectForKey:[NSString stringWithFormat:@"%@", id2]] 
+                                        objectForKey:@"feed_title"];
+            }
+            return [feedTitleA caseInsensitiveCompare:feedTitleB];
+        }];
+        [sortedFolders setValue:sortedArray forKey:f];
+    }
+    
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
 
@@ -450,7 +466,7 @@
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     
-    if ([folderName isEqualToString:@""]) {
+    if ([appDelegate isSocialFeed:feedIdStr]) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
         cell.feedFavicon = [Utilities getImage:feedIdStr];
     } else {
@@ -683,7 +699,13 @@
         for (int f=0; f < [originalFolder count]; f++) {
             NSNumber *feedId = [originalFolder objectAtIndex:f];
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-            NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+            NSDictionary *feed;
+            
+            if ([appDelegate isSocialFeed:feedIdStr]) {
+                feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr]; 
+            } else {
+                feed = [appDelegate.dictFeeds objectForKey:feedIdStr]; 
+            }
             int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
             
 //            if (s == 9) {
@@ -727,7 +749,13 @@
     }
     
     for (id feedIdStr in [self.stillVisibleFeeds allKeys]) {
-        NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+        NSDictionary *feed;
+        if ([appDelegate isSocialFeed:feedIdStr]) {
+            feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
+        } else {
+            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+        }
+
         int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
         if (previousLevel != newLevel && maxScore < newLevel) {
             [deleteIndexPaths addObject:[self.stillVisibleFeeds objectForKey:feedIdStr]];
