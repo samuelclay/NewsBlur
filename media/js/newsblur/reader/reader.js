@@ -1046,7 +1046,7 @@
             var $original_tabs = $('.task_view_page, .task_view_story');
             var $page_tab = $('.task_view_page');
             view = view || this.model.view_setting(feed_id);
-            
+
             if (feed && feed.get('disabled_page')) {
                 view = 'feed';
                 $original_tabs.addClass('NB-disabled-page')
@@ -1077,7 +1077,7 @@
             if (feed_id == 'starred') {
                 $page_tab.addClass('NB-disabled-page').addClass('NB-disabled');
             }
-          
+
             this.story_view = view;
         },
         
@@ -1276,8 +1276,9 @@
             this.$s.$body.addClass('NB-view-river');
             this.flags.social_view = true;
             
-            var explicit_view_setting = this.model.view_setting(this.active_feed);
-            this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
+            this.set_correct_story_view_for_feed(this.active_feed);
+            
+            // TODO: Only make feed the default for blurblogs, not overriding an explicit pref.
             this.switch_taskbar_view('feed');
             this.setup_mousemove_on_views();
             
