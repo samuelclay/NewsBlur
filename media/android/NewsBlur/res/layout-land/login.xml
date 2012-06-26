@@ -7,30 +7,30 @@
 
     <ImageView
         android:id="@+id/login_logo"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginRight="15dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
         android:contentDescription="@string/description_login_logo"
         android:src="@drawable/logo" />
 
     <TextView
         android:id="@+id/login_logo_title"
         android:layout_width="wrap_content"
-        android:layout_height="80dp"
+        android:layout_height="60dp"
         android:layout_alignBaseline="@+id/login_logo"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="15dp"
         android:layout_toRightOf="@+id/login_logo"
         android:gravity="center"
         android:text="@string/newsblur"
         android:textColor="@color/white"
-        android:textSize="40dp"
+        android:textSize="30dp"
         android:textStyle="bold" />
 
     <FrameLayout
         android:id="@+id/login_container"
         android:layout_width="280dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/login_logo" />
 

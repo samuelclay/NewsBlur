@@ -36,8 +36,6 @@ public class LoginFragment extends Fragment implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		apiManager = new APIManager(getActivity().getApplicationContext());
 	}
-	
-
 
 	@Override
 	public void onClick(View viewClicked) {
@@ -45,8 +43,7 @@ public class LoginFragment extends Fragment implements OnClickListener {
 		case R.id.login_button: 
 			new LoginTask().execute(username.getText().toString(), password.getText().toString());
 		}
-	}
-		
+	}	
 
 	private class LoginTask extends AsyncTask<String, Void, Boolean> {
 
