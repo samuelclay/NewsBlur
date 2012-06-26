@@ -2,7 +2,7 @@ package com.newsblur.database;
 
 import android.provider.BaseColumns;
 
-public class Constants {
+public class DatabaseConstants {
 	
 	public static String FOLDER_TABLE = "folders";
 	public static String FOLDER_ID = BaseColumns._ID;

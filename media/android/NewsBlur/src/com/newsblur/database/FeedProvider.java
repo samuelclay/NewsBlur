@@ -53,25 +53,25 @@ public class FeedProvider extends ContentProvider {
 			// Inserting a folder
 			case ALL_FOLDERS:
 				db.beginTransaction();
-				db.insert(Constants.FOLDER_TABLE, null, values);
+				db.insert(DatabaseConstants.FOLDER_TABLE, null, values);
 				db.setTransactionSuccessful();
 				db.endTransaction();
-				resultUri = uri.buildUpon().appendPath(values.getAsString(Constants.FOLDER_ID)).build();
+				resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FOLDER_ID)).build();
 			break;
 		
 			// Inserting a feed
 			case ALL_FEEDS:
 				db.beginTransaction();
-				db.insert(Constants.FEED_TABLE, null, values);
+				db.insert(DatabaseConstants.FEED_TABLE, null, values);
 				db.setTransactionSuccessful();
 				db.endTransaction();
-				resultUri = uri.buildUpon().appendPath(values.getAsString(Constants.FEED_ID)).build();
+				resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_ID)).build();
 				break;
 	
 			// Inserting a story	
 			case SPECIFIC_FEED:
 				db.beginTransaction();
-				db.insert(Constants.STORY_TABLE, null, values);
+				db.insert(DatabaseConstants.STORY_TABLE, null, values);
 				db.setTransactionSuccessful();
 				db.endTransaction();
 				break;			
@@ -96,13 +96,13 @@ public class FeedProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 			// Inserting a feed
 			case ALL_FEEDS:
-				cursor = db.rawQuery(Constants.FEED_TABLE, null);
+				cursor = db.rawQuery(DatabaseConstants.FEED_TABLE, null);
 				break;
 			// Inserting a story	
 			case SPECIFIC_FEED:
-				selection = Constants.FEED_ID + " = ?";
+				selection = DatabaseConstants.FEED_ID + " = ?";
 				selectionArgs = new String[] { uri.getLastPathSegment() };
-				cursor = db.query(Constants.FEED_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
+				cursor = db.query(DatabaseConstants.FEED_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
 				break;
 		}
 		return cursor;

@@ -19,43 +19,43 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		Log.d(TAG, "Initiating database");
 	}
 	
-	private final String FOLDER_SQL = "CREATE TABLE " + Constants.FOLDER_TABLE + " (" +
-		Constants.FOLDER_ID + TEXT + ", " +
-		Constants.FOLDER_NAME + TEXT + 
+	private final String FOLDER_SQL = "CREATE TABLE " + DatabaseConstants.FOLDER_TABLE + " (" +
+		DatabaseConstants.FOLDER_ID + TEXT + ", " +
+		DatabaseConstants.FOLDER_NAME + TEXT + 
 		")";
 	
-	private final String FEED_SQL = "CREATE TABLE " + Constants.FEED_TABLE + " (" +
-		Constants.FEED_ID + INTEGER + ", " +
-		Constants.FEED_ACTIVE + TEXT + ", " +
-		Constants.FEED_ADDRESS + TEXT + ", " + 
-		Constants.FEED_FAVICON_COLOUR + TEXT + ", " +
-		Constants.FEED_FAVICON_FADE + TEXT + ", " + 
-		Constants.FEED_LINK + TEXT + ", " + 
-		Constants.FEED_SUBSCRIBERS + TEXT + ", " +
-		Constants.FEED_TITLE + TEXT + ", " + 
-		Constants.FEED_UPDATED_SECONDS +
+	private final String FEED_SQL = "CREATE TABLE " + DatabaseConstants.FEED_TABLE + " (" +
+		DatabaseConstants.FEED_ID + INTEGER + ", " +
+		DatabaseConstants.FEED_ACTIVE + TEXT + ", " +
+		DatabaseConstants.FEED_ADDRESS + TEXT + ", " + 
+		DatabaseConstants.FEED_FAVICON_COLOUR + TEXT + ", " +
+		DatabaseConstants.FEED_FAVICON_FADE + TEXT + ", " + 
+		DatabaseConstants.FEED_LINK + TEXT + ", " + 
+		DatabaseConstants.FEED_SUBSCRIBERS + TEXT + ", " +
+		DatabaseConstants.FEED_TITLE + TEXT + ", " + 
+		DatabaseConstants.FEED_UPDATED_SECONDS +
 		")";
 	
-	private final String STORY_SQL = "CREATE TABLE " + Constants.STORY_TABLE + " (" +
-		Constants.STORY_AUTHORS + TEXT + ", " +
-		Constants.STORY_CONTENT + TEXT + ", " +
-		Constants.STORY_DATE + TEXT + ", " +
-		Constants.STORY_FEED_ID + INTEGER + ", " +
-		Constants.STORY_ID + TEXT + ", " +
-		Constants.STORY_INTELLIGENCE_AUTHORS + INTEGER + ", " +
-		Constants.STORY_INTELLIGENCE_FEED + INTEGER + ", " + 
-		Constants.STORY_INTELLIGENCE_TAGS + INTEGER + ", " +
-		Constants.STORY_INTELLIGENCE_TITLE + INTEGER + ", " +
-		Constants.STORY_PERMALINK + TEXT + ", " + 
-		Constants.STORY_READ + TEXT + ", " +
-		Constants.STORY_TITLE + TEXT + 
+	private final String STORY_SQL = "CREATE TABLE " + DatabaseConstants.STORY_TABLE + " (" +
+		DatabaseConstants.STORY_AUTHORS + TEXT + ", " +
+		DatabaseConstants.STORY_CONTENT + TEXT + ", " +
+		DatabaseConstants.STORY_DATE + TEXT + ", " +
+		DatabaseConstants.STORY_FEED_ID + INTEGER + ", " +
+		DatabaseConstants.STORY_ID + TEXT + ", " +
+		DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + INTEGER + ", " +
+		DatabaseConstants.STORY_INTELLIGENCE_FEED + INTEGER + ", " + 
+		DatabaseConstants.STORY_INTELLIGENCE_TAGS + INTEGER + ", " +
+		DatabaseConstants.STORY_INTELLIGENCE_TITLE + INTEGER + ", " +
+		DatabaseConstants.STORY_PERMALINK + TEXT + ", " + 
+		DatabaseConstants.STORY_READ + TEXT + ", " +
+		DatabaseConstants.STORY_TITLE + TEXT + 
 		")";
 	
-	private final String CLASSIFIER_SQL = "CREATE TABLE " + Constants.CLASSIFIER_TABLE + " (" +
-		Constants.CLASSIFIER_ID + TEXT + ", " +
-		Constants.CLASSIFIER_KEY + TEXT + ", " + 
-		Constants.CLASSIFIER_TYPE + TEXT + ", " +
-		Constants.CLASSIFIER_VALUE + TEXT +
+	private final String CLASSIFIER_SQL = "CREATE TABLE " + DatabaseConstants.CLASSIFIER_TABLE + " (" +
+		DatabaseConstants.CLASSIFIER_ID + TEXT + ", " +
+		DatabaseConstants.CLASSIFIER_KEY + TEXT + ", " + 
+		DatabaseConstants.CLASSIFIER_TYPE + TEXT + ", " +
+		DatabaseConstants.CLASSIFIER_VALUE + TEXT +
 		")";
 	
 	@Override

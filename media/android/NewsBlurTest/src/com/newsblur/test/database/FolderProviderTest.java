@@ -7,7 +7,7 @@ import android.test.ProviderTestCase2;
 import android.test.mock.MockContentResolver;
 
 import com.newsblur.database.BlurDatabase;
-import com.newsblur.database.Constants;
+import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Folder;
 
@@ -41,7 +41,7 @@ public class FolderProviderTest extends ProviderTestCase2<FeedProvider> {
 		
 		Uri uri = contentResolver.insert(FeedProvider.FOLDERS_URI, testFolder.values);
 		SQLiteDatabase db = dbHelper.getReadableDatabase();
-		Cursor rawQuery = db.rawQuery("SELECT * FROM " + Constants.FOLDER_TABLE, null);
+		Cursor rawQuery = db.rawQuery("SELECT * FROM " + DatabaseConstants.FOLDER_TABLE, null);
 		
 		assertEquals(1, rawQuery.getCount());
 		assertEquals("1", uri.getLastPathSegment());
