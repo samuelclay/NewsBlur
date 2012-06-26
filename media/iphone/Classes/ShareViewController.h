@@ -20,10 +20,13 @@
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (retain, nonatomic) IBOutlet UIButton *facebookButton;
 @property (retain, nonatomic) IBOutlet UIButton *twitterButton;
+@property (retain, nonatomic) IBOutlet UIBarButtonItem *submitButton;
+@property (retain, nonatomic) IBOutlet UIBarButtonItem *toolbarTitle;
 
-- (void)setSiteInfo;
+- (void)setSiteInfo:(NSString *)userId setUsername:(NSString *)username;
 - (IBAction)doCancelButton:(id)sender;
 - (IBAction)doToggleButton:(id)sender;
 - (IBAction)doShareThisStory:(id)sender;
+- (IBAction)doReplyToComment:(id)sender;
 
 @end

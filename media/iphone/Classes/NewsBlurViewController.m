@@ -442,12 +442,16 @@
     
     if ([folderName isEqualToString:@"Blurblogs"]) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
+        NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
+        NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+        UIImage *favicon = [UIImage imageWithData:imageData];
+        cell.feedFavicon = favicon;
     } else {
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+        cell.feedFavicon = [Utilities getImage:feedIdStr];
     }
     
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
-    cell.feedFavicon   = [Utilities getImage:feedIdStr];
     cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
     cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];
     cell.negativeCount = [[feed objectForKey:@"ng"] intValue];

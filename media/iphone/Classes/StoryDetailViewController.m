@@ -134,22 +134,9 @@
 - (NSString *)getAvatars:(BOOL)areFriends {
     NSString *avatarString = @"";
     NSArray *share_user_ids;
-    if (areFriends) {
-        NSMutableArray *friends = [appDelegate.activeStory objectForKey:@"share_user_ids"];
-        NSArray *all_share_user_ids = [appDelegate.activeStory objectForKey:@"share_user_ids"];
-        NSArray *all_shared_by_public = [appDelegate.activeStory objectForKey:@"shared_by_public"];
-        
-        for (int i = 0; i < all_share_user_ids.count; i++) {
-            for (int j = 0; j < all_shared_by_public.count; j++) {
-                if ([[all_share_user_ids objectAtIndex:i] intValue] == [[all_shared_by_public objectAtIndex:j] intValue]) {
-                    [friends removeObject:[all_share_user_ids objectAtIndex:i]];
-                    break;
-                }
-            }
-        }
+    if (areFriends) {        
+        share_user_ids = [appDelegate.activeStory objectForKey:@"shared_by_friends"];
 
-        share_user_ids = [NSArray arrayWithArray:friends];
-        
         // only if your friends are sharing to do you see the shared label
         if ([share_user_ids count]) {
             avatarString = [avatarString stringByAppendingString:@
@@ -172,8 +159,8 @@
     
     if (areFriends && [share_user_ids count]) {
         avatarString = [avatarString stringByAppendingString:@"</div>"];
+        
     }
-    
     return avatarString;
 }
 
@@ -215,7 +202,7 @@
                                  "<div class=\"NB-story-comment-username\">%@</div>"
                                  "<div class=\"NB-story-comment-date\">%@</div>"
                                  "<div class=\"NB-story-comment-reply-button\"><div class=\"NB-story-comment-reply-button-wrapper\">"
-                                 "<a href=\"nb-share://share-link\">reply</a>"
+                                 "<a href=\"http://ios.newsblur.com/reply/%@/%@\">reply</a>"
                                  "</div></div>"
                                  "</div>"
 
@@ -225,6 +212,8 @@
                                  [user objectForKey:@"photo_url"],
                                  [user objectForKey:@"username"],
                                  [comment_dict objectForKey:@"shared_date"],
+                                 [comment_dict objectForKey:@"user_id"],
+                                 [user objectForKey:@"username"],
                                  [comment_dict objectForKey:@"comments"],
                                  [self getReplies:[comment_dict objectForKey:@"replies"]]];
             comments = [comments stringByAppendingString:comment];
@@ -304,7 +293,7 @@
    sharingHtmlString      = [NSString stringWithFormat:@
     "<div class='NB-share-header'></div>"
     "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-    "<a class='NB-share-button' href='nb-share://share-link'><span class='NB-share-icon'></span>Share this story</a>"
+    "<a class='NB-share-button' href='http://ios.newsblur.com/share'><span class='NB-share-icon'></span>Share this story</a>"
 //    "<a class='NB-save-button' href='save://save'><span class='NB-save-icon'></span>Save this story</a>"
                         "</div></div>"];
     NSString *story_author      = @"";
@@ -412,9 +401,26 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType {
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         NSURL *url = [request URL];
-        if ([[url absoluteString] isEqualToString: @"nb-share://share-link"]) {
-            [appDelegate showShareView];
-            return NO;
+        NSArray *urlComponents = [url pathComponents];
+        NSString *action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
+        if ([[url host] isEqualToString: @"ios.newsblur.com"]){
+            if ([action isEqualToString:@"reply"]) {
+                NSArray *comments = [appDelegate.activeStory objectForKey:@"comments"];
+                for (int i = 0; i < comments.count; i++) {
+                    NSString *userId = [NSString stringWithFormat:@"%@", 
+                                         [[comments objectAtIndex:i] objectForKey:@"user_id"]];
+                    if([userId isEqualToString:[NSString stringWithFormat:@"%@", 
+                                                [urlComponents objectAtIndex:2]]]){
+                        appDelegate.activeComment = [comments objectAtIndex:i];
+                    }
+                }
+                [appDelegate showShareView:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]
+                               setUsername:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:3]]];
+                return NO;
+            } else if ([action isEqualToString:@"share"]) {
+                [appDelegate showShareView:nil setUsername:nil];
+                return NO; 
+            }
         } else {
             [appDelegate showOriginalStory:url];
             return NO;
@@ -609,10 +615,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           fontStyle];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     [jsString release];
-}
-
-- (IBAction)doShareButton:(id)sender {
-    [appDelegate showShareView];
 }
 
 - (void)showOriginalSubview:(id)sender {

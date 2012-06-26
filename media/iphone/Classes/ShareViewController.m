@@ -16,6 +16,8 @@
 @implementation ShareViewController
 @synthesize facebookButton;
 @synthesize twitterButton;
+@synthesize submitButton;
+@synthesize toolbarTitle;
 
 @synthesize siteFavicon;
 @synthesize siteInformation;
@@ -55,31 +57,12 @@
     [self setSiteFavicon:nil];
     [self setFacebookButton:nil];
     [self setTwitterButton:nil];
+    [self setSubmitButton:nil];
+    [self setToolbarTitle:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
-
-- (void)setSiteInfo {
-    [self.siteInformation setNumberOfLines:2];
-    
-    NSString *siteInfoString = [NSString stringWithFormat:@"%@: %@",
-                                [appDelegate.activeFeed objectForKey:@"feed_title"],
-                                [appDelegate.activeStory objectForKey:@"story_title"]];
-    
-    [self.siteInformation setText:siteInfoString];
-    
-    // vertical align label    
-    CGRect resizedLabel = [self.siteInformation textRectForBounds:self.siteInformation.bounds limitedToNumberOfLines:2];
-    CGRect newResizedLabelFrame = self.siteInformation.frame;    
-    newResizedLabelFrame.size.height = resizedLabel.size.height;
-    self.siteInformation.frame = newResizedLabelFrame;
-    
-    // adding in favicon
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-    [siteFavicon setImage:[Utilities getImage:feedIdStr]];
-}
-
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -89,8 +72,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    
-
 }
 
 - (void)dealloc {
@@ -101,6 +82,8 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [facebookButton release];
     [twitterButton release];
+    [submitButton release];
+    [toolbarTitle release];
     [super dealloc];
 }
 
@@ -130,6 +113,37 @@
     [userPreferences synchronize];
 }
 
+- (void)setSiteInfo:(NSString *)userId setUsername:(NSString *)username {
+    if (userId) {
+        [toolbarTitle setTitle:@"Reply"];
+        [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
+        [submitButton setAction:(@selector(doReplyToComment:))];
+    } else {
+        [toolbarTitle setTitle:@"Share"];
+        [submitButton setTitle:@"Share this story"];
+        [submitButton setAction:(@selector(doShareThisStory:))];
+    }
+    [self.siteInformation setNumberOfLines:2];
+    
+    NSString *siteInfoString = [NSString stringWithFormat:@"%@: %@",
+                                [appDelegate.activeFeed objectForKey:@"feed_title"],
+                                [appDelegate.activeStory objectForKey:@"story_title"]];
+    
+    [self.siteInformation setText:siteInfoString];
+    
+    // vertical align label    
+    CGRect resizedLabel = [self.siteInformation textRectForBounds:self.siteInformation.bounds limitedToNumberOfLines:2];
+    CGRect newResizedLabelFrame = self.siteInformation.frame;    
+    newResizedLabelFrame.size.height = resizedLabel.size.height;
+    self.siteInformation.frame = newResizedLabelFrame;
+    
+    // adding in favicon
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    [siteFavicon setImage:[Utilities getImage:feedIdStr]];
+}
+
+
+
 - (IBAction)doShareThisStory:(id)sender {    
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
                            NEWSBLUR_URL];
@@ -143,7 +157,7 @@
     [request setPostValue:storyIdStr forKey:@"story_id"];
 
     NSString *comments = commentField.text;
-    if (comments) {
+    if ([comments length]) {
         [request setPostValue:comments forKey:@"comments"]; 
     }
     [request setDelegate:self];
@@ -151,6 +165,35 @@
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
 }
+
+- (IBAction)doReplyToComment:(id)sender {
+    NSString *comments = commentField.text;
+    if ([comments length] == 0) {
+        NSLog(@"NO COMMENTS");
+        return;
+    }
+    
+    NSLog(@"REPLY TO COMMENT, %@", appDelegate.activeComment);
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/save_comment_reply",
+                           NEWSBLUR_URL];
+    
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:feedIdStr forKey:@"story_feed_id"]; 
+    [request setPostValue:storyIdStr forKey:@"story_id"];
+    [request setPostValue:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
+    [request setPostValue:commentField.text forKey:@"reply_comments"]; 
+    
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(finishAddComment:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request startAsynchronous];
+}
+
+
 
 - (void)finishAddComment:(ASIHTTPRequest *)request {
     NSLog(@"%@", [request responseString]);

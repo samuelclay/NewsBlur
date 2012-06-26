@@ -13,7 +13,7 @@
 #define STORY_DETAIL_VIEW_TAG 1000002
 #define FEED_TITLE_GRADIENT_TAG 100003
 #define FEED_DASHBOARD_VIEW_TAG 100004
-#define SHARE_MODAL_HEIGHT 300
+#define SHARE_MODAL_HEIGHT 225
 
 @class NewsBlurViewController;
 @class FeedDetailViewController;
@@ -60,6 +60,7 @@
     BOOL popoverHasFeedView;
     NSDictionary * activeFeed;
     NSString * activeFolder;
+    NSDictionary * activeComment;
     NSArray * activeFolderFeeds;
     NSArray * activeFeedStories;
     NSArray * activeFeedUserProfiles;
@@ -108,6 +109,7 @@
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSString * activeFolder;
+@property (readwrite, retain) NSDictionary * activeComment;
 @property (readwrite, retain) NSArray * activeFolderFeeds;
 @property (readwrite, retain) NSArray * activeFeedStories;
 @property (readwrite, retain) NSArray * activeFeedUserProfiles;
@@ -155,7 +157,7 @@
 - (void)changeActiveFeedDetailRow;
 - (void)dragFeedDetailView:(float)y;
 - (void)hideStoryDetailView;
-- (void)showShareView;
+- (void)showShareView:(NSString *)userId setUsername:(NSString *)username;
 - (void)hideShareView;
 - (BOOL)isSocialFeed;
 

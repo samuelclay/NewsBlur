@@ -50,6 +50,7 @@
 @synthesize activeUsername;
 @synthesize isRiverView;
 @synthesize popoverHasFeedView;
+@synthesize activeComment;
 @synthesize activeFeed;
 @synthesize activeFolder;
 @synthesize activeFolderFeeds;
@@ -319,10 +320,11 @@
     [subviews release];
 }
 
-- (void)showShareView {
+- (void)showShareView:(NSString *)userId 
+          setUsername:(NSString *)username {
     [splitStoryDetailViewController.view addSubview:shareViewController.view];
     
-    [shareViewController setSiteInfo];
+    [shareViewController setSiteInfo:userId setUsername:username];
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
         
         shareViewController.view.frame = CGRectMake(0, 
