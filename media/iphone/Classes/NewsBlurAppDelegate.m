@@ -286,7 +286,7 @@
         feedDashboardViewController.view.tag = FEED_DASHBOARD_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:feedDashboardViewController.view];
         
-        [self adjustStoryDetailWebView:YES:YES];
+        [self adjustStoryDetailWebView:YES shouldCheckLayout:YES];
         [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
     } else {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
@@ -411,7 +411,7 @@
         [self hideStoryDetailView];
         feedDashboardViewController.view.tag = FEED_DASHBOARD_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:feedDashboardViewController.view];
-        [self adjustStoryDetailWebView:YES:YES];
+        [self adjustStoryDetailWebView:YES shouldCheckLayout:YES];
         [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
     } else {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
@@ -430,7 +430,7 @@
     [feedDetailViewController fetchRiverPage:1 withCallback:nil];
 }
 
-- (void)adjustStoryDetailWebView:(BOOL)init:(BOOL)checkLayout {
+- (void)adjustStoryDetailWebView:(BOOL)init shouldCheckLayout:(BOOL)checkLayout {
     UINavigationController *navController = self.navigationController;
 
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {        
@@ -453,7 +453,7 @@
                                                                 0,
                                                                 storyDetailViewController.view.frame.size.width,
                                                                 960);
-            if(checkLayout) {
+            if (checkLayout) {
                 // move the feedDetialViewController to the subview
                 if (!popoverHasFeedView) {
                     [navController pushViewController:feedDetailViewController animated:NO];
@@ -478,7 +478,7 @@
                                                                     self.feedDetailPortraitYCoordinate);
             }
             
-            if(checkLayout) {
+            if (checkLayout) {
                 //remove the feedDetailView from the popover
                 if (popoverHasFeedView) {
                     [navController popViewControllerAnimated:NO];
@@ -502,7 +502,7 @@
             [subviews release];
         }
                 
-        if(checkLayout) {
+        if (checkLayout) {
             if (!popoverHasFeedView) {
                 [navController pushViewController:feedDetailViewController animated:NO];
                 popoverHasFeedView = YES;
@@ -526,7 +526,7 @@
         
         [userPreferences setInteger:self.feedDetailPortraitYCoordinate forKey:@"feedDetailPortraitYCoordinate"];
         [userPreferences synchronize];
-        [self adjustStoryDetailWebView:NO:YES];        
+        [self adjustStoryDetailWebView:NO shouldCheckLayout:YES];        
     }
 }
 
@@ -554,7 +554,7 @@
         
         storyDetailViewController.view.tag = STORY_DETAIL_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:storyDetailViewController.view];
-        [self adjustStoryDetailWebView:NO:NO];        
+        [self adjustStoryDetailWebView:NO shouldCheckLayout:NO];        
     } else{
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
