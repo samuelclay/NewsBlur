@@ -399,6 +399,16 @@
     [storyDetailViewController refreshComments];
 }
 
+- (BOOL)isSocialFeed:(NSString *)feedIdStr {
+    if ([feedIdStr length] > 6) {
+        NSString *feedIdSubStr = [feedIdStr substringToIndex:6];
+        if ([feedIdSubStr isEqualToString:@"social"]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+q
 - (void)loadRiverFeedDetailView {
     [self setStories:nil];
     [self setFeedUserProfiles:nil];

@@ -158,6 +158,7 @@
 - (void)showShareView:(NSString *)userId setUsername:(NSString *)username;
 - (void)hideShareView;
 - (void)refreshComments;
+- (BOOL)isSocialFeed:(NSString *)feedIdStr;
 
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;

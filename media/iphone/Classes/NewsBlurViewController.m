@@ -344,6 +344,7 @@
 
 - (IBAction)doSwitchSitesUnread {
     self.viewShowingAllFeeds = !self.viewShowingAllFeeds;
+    NSDictionary *feed;
     
     if (self.viewShowingAllFeeds) {
         [self.sitesButton setImage:[UIImage imageNamed:@"ellipses_half.png"]];
@@ -371,7 +372,12 @@
             id feedId = [originalFolder objectAtIndex:location];
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-            NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+            if ([appDelegate isSocialFeed:feedIdStr]) {
+                feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
+            } else {
+                feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+            }
+             
             int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
             
             if (!self.viewShowingAllFeeds ||
@@ -413,7 +419,6 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    NSLog(@"numberOfSectionsInTableView %i", [appDelegate.dictFoldersArray count]);
     return [appDelegate.dictFoldersArray count];
 }
 
@@ -556,11 +561,13 @@
     [customView addSubview:folderImageView];
     [folderImageView release];
 
-    UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
-    UIImageView *disclosureImageView = [[UIImageView alloc] initWithImage:disclosureImage];
-    disclosureImageView.frame = CGRectMake(customView.frame.size.width - 20, disclosureImageViewY, 9.0, 14.0);
-    [customView addSubview:disclosureImageView];
-    [disclosureImageView release];
+    if (section != 0) {    
+        UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
+        UIImageView *disclosureImageView = [[UIImageView alloc] initWithImage:disclosureImage];
+        disclosureImageView.frame = CGRectMake(customView.frame.size.width - 20, disclosureImageViewY, 9.0, 14.0);
+        [customView addSubview:disclosureImageView];
+        [disclosureImageView release];
+    }
 
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
@@ -571,13 +578,17 @@
     
     [invisibleHeaderButton addTarget:self action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
     [invisibleHeaderButton addTarget:self action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpInside];
-    [invisibleHeaderButton addTarget:self action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpOutside];
+    [invisibleHeaderButton addTarget:self action:@selector(sectionUntappedOutside:) forControlEvents:UIControlEventTouchUpOutside];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     return customView;
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
+    // current position of social header
+    if (button.tag == 0) { 
+        return;
+    }
     button.backgroundColor =[UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0];
 }
 - (IBAction)sectionUntapped:(UIButton *)button {
@@ -585,6 +596,10 @@
                    dispatch_get_current_queue(), ^{
         button.backgroundColor = [UIColor clearColor];
    });
+}
+
+- (IBAction)sectionUntappedOutside:(UIButton *)button {
+    button.backgroundColor = [UIColor clearColor];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -600,6 +615,10 @@
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {
+    // current position of social header
+    if (button.tag == 0) { 
+        return;
+    }
     
     appDelegate.readStories = [NSMutableArray array];
     appDelegate.isRiverView = YES;
@@ -825,7 +844,6 @@
             } else {
                 imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
             }
-            NSLog(@"imageURL is %@", imageURL);
             
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
             UIImage *faviconImage = [UIImage imageWithData:imageData];

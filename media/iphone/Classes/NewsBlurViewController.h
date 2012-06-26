@@ -51,6 +51,7 @@
 - (void)calculateFeedLocations:(BOOL)markVisible;
 - (IBAction)sectionTapped:(UIButton *)button;
 - (IBAction)sectionUntapped:(UIButton *)button;
+- (IBAction)sectionUntappedOutside:(UIButton *)button;
 - (void)redrawUnreadCounts;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (IBAction)doSwitchSitesUnread;
