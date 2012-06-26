@@ -285,7 +285,7 @@
     "<div class='NB-share-header'></div>"
     "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
     "<a class='NB-share-button' href='http://ios.newsblur.com/share'><span class='NB-share-icon'></span>Share this story</a>"
-//    "<a class='NB-save-button' href='save://save'><span class='NB-save-icon'></span>Save this story</a>"
+    "<a class='NB-save-button' href='save://save'><span class='NB-save-icon'></span>Save this story</a>"
                         "</div></div>"];
     NSString *story_author      = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
