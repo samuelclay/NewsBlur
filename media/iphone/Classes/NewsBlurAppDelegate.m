@@ -49,6 +49,7 @@
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize activeUsername;
 @synthesize isRiverView;
+@synthesize isSocialView;
 @synthesize popoverHasFeedView;
 @synthesize activeComment;
 @synthesize activeFeed;
@@ -72,7 +73,6 @@
 @synthesize dictFeeds;
 @synthesize dictSocialFeeds;
 @synthesize dictFoldersArray;
-@synthesize socialFeedsArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
@@ -124,7 +124,6 @@
 }
 
 - (void)dealloc {
-    NSLog(@"Dealloc on AppDelegate");
     [feedsViewController release];
     [feedsMenuViewController release];
     [feedDetailViewController release];
@@ -153,8 +152,7 @@
     [dictFeeds release];
     [dictSocialFeeds release];
     [dictFoldersArray release];
-    [socialFeedsArray release];
-    
+
     [super dealloc];
 }
 

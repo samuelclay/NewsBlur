@@ -51,8 +51,11 @@
 }
 
 - (void)viewDidLoad {
-    
-    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Home" style:UIBarButtonItemStylePlain target:self action:@selector(showMenuButton)] autorelease];
+    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Home" 
+                                                                              style:UIBarButtonItemStylePlain 
+                                                                             target:self 
+                                                                             action:@selector(showMenuButton)] 
+                                             autorelease];
      
      [self.navigationItem.leftBarButtonItem setImage:[UIImage imageNamed:@"53-house.png"]];
     [appDelegate showNavigationBar:NO];
@@ -179,7 +182,6 @@
 }
 
 - (void)fetchFeedList:(BOOL)showLoader {
-//    NSLog(@"fetchFeedList: %d %d %@", showLoader, appDelegate.navigationController.topViewController == appDelegate.feedsViewController, [appDelegate activeFeed]);
     if (showLoader && appDelegate.navigationController.topViewController == appDelegate.feedsViewController) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -230,7 +232,7 @@
     self.visibleFeeds = [NSMutableDictionary dictionary];
     [pull finishedLoading];
     [self loadFavicons];
-    
+
     appDelegate.activeUsername = [results objectForKey:@"user"];
     if (appDelegate.feedsViewController.view.window) {
         [appDelegate setTitle:[results objectForKey:@"user"]];
@@ -244,7 +246,7 @@
     
     appDelegate.dictFoldersArray = [NSMutableArray array];
     
-    [appDelegate.dictFoldersArray addObject:@"Blurblogs"]; 
+    [appDelegate.dictFoldersArray addObject:@""]; 
     for (id f in appDelegate.dictFolders) {
         [appDelegate.dictFoldersArray addObject:f];
         NSArray *folder = [appDelegate.dictFolders objectForKey:f];
@@ -261,26 +263,29 @@
     }
     
     // Set up social feeds
-    appDelegate.socialFeedsArray = [results objectForKey:@"social_feeds"];
+    NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
     NSMutableDictionary *socialDict = [[NSMutableDictionary alloc] init];
     
-    for (int i = 0; i < appDelegate.socialFeedsArray.count; i++) {
+    for (int i = 0; i < socialFeedsArray.count; i++) {
         NSString *userKey = [NSString stringWithFormat:@"%@", 
-                             [[appDelegate.socialFeedsArray objectAtIndex:i] objectForKey:@"user_id"]];
-        [socialFolder addObject: [[appDelegate.socialFeedsArray objectAtIndex:i] objectForKey:@"user_id"]];
-        [socialDict setObject:[appDelegate.socialFeedsArray objectAtIndex:i] 
+                             [[socialFeedsArray objectAtIndex:i] objectForKey:@"id"]];
+        [socialFolder addObject: [[socialFeedsArray objectAtIndex:i] objectForKey:@"id"]];
+        [socialDict setObject:[socialFeedsArray objectAtIndex:i] 
                        forKey:userKey];
     }
     appDelegate.dictSocialFeeds = socialDict;
- 
-    [sortedFolders setValue:socialFolder forKey:@"Blurblogs"];    
+    [self loadAvatars];
+    
+    [sortedFolders setValue:socialFolder forKey:@""];    
        
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
 
     [self calculateFeedLocations:YES];
     [self.feedTitlesTable reloadData];
+    NSLog(@"appDelegate.dictFolders: %@", appDelegate.dictFolders);
+    NSLog(@"appDelegate.dictFoldersArray: %@", appDelegate.dictFoldersArray);
     
     NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];  
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
@@ -290,8 +295,15 @@
 
     if (currentiPhoneVersionFloat < serveriPhoneVersionFloat) {
         NSLog(@"Version: %f - %f", serveriPhoneVersionFloat, currentiPhoneVersionFloat);
-        NSString *title = [NSString stringWithFormat:@"You should download the new version of NewsBlur.\n\nNew version: v%@\nYou have: v%@", serveriPhoneVersion, currentiPhoneVersion];
-        UIAlertView *upgradeConfirm = [[UIAlertView alloc] initWithTitle:title message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Upgrade!", nil];
+        NSString *title = [NSString stringWithFormat:@
+                           "You should download the new version of NewsBlur.\n\nNew version: v%@\nYou have: v%@", 
+                           serveriPhoneVersion, 
+                           currentiPhoneVersion];
+        UIAlertView *upgradeConfirm = [[UIAlertView alloc] initWithTitle:title 
+                                                                 message:nil 
+                                                                delegate:self 
+                                                       cancelButtonTitle:@"Cancel" 
+                                                       otherButtonTitles:@"Upgrade!", nil];
         [upgradeConfirm show];
         [upgradeConfirm setTag:2];
         [upgradeConfirm release];
@@ -401,6 +413,7 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    NSLog(@"numberOfSectionsInTableView %i", [appDelegate.dictFoldersArray count]);
     return [appDelegate.dictFoldersArray count];
 }
 
@@ -424,33 +437,21 @@
         cell.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     
-    
-    // get the folder name
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-  
-    // get all the feeds
     NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
     NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-    
-    // get the location
     int location = [[activeFolderFeeds objectAtIndex:indexPath.row] intValue];
     id feedId = [feeds objectAtIndex:location];
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-//    NSLog(@"********Folder name is %@", folderName); 
-//    NSLog(@"feedIdStr name is %@", feedIdStr);
     
-    if ([folderName isEqualToString:@"Blurblogs"]) {
+    if ([folderName isEqualToString:@""]) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
-        NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
-        NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-        UIImage *favicon = [UIImage imageWithData:imageData];
-        cell.feedFavicon = favicon;
+        cell.feedFavicon = [Utilities getImage:feedIdStr];
     } else {
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
         cell.feedFavicon = [Utilities getImage:feedIdStr];
     }
-    
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
     cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];
@@ -469,7 +470,7 @@
     id feedId = [feeds objectAtIndex:location];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     
-    if ([folderName isEqualToString:@"Blurblogs"]) {
+    if ([folderName isEqualToString:@""]) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
     } else {
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
@@ -534,6 +535,10 @@
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (section == 0) {
+        headerLabel.text = @"SOCIAL";
+        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
+                                      colorWithAlphaComponent:0.8];
+    } else if (section == 1) {
         headerLabel.text = @"EVERYTHING";
         customView.backgroundColor = [UIColorFromRGB(0xE6DDD7)
                                       colorWithAlphaComponent:0.8];
@@ -746,11 +751,11 @@
     for (NSString *folderName in appDelegate.dictFoldersArray) {
         NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
         NSMutableArray *feedLocations = [NSMutableArray array];
-        for (int f=0; f < [folder count]; f++) {
+        for (int f = 0; f < [folder count]; f++) {
             id feedId = [folder objectAtIndex:f];
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
             
-            if ([folderName isEqualToString:@"Blurblogs"]){
+            if ([folderName isEqualToString:@""]){
                 feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
             } else {
                 feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
@@ -799,6 +804,40 @@
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setDelegate:self];
     [request startAsynchronous];
+}
+
+- (void)loadAvatars {
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+    dispatch_async(queue, ^{
+        for (id feed_id in appDelegate.dictSocialFeeds) {
+            NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feed_id];
+            NSString *url = [feed objectForKey:@"photo_url"];
+            NSString *firstTwoChars = [url substringToIndex:2];
+            NSString *firstChar = [url substringToIndex:1];
+            NSURL *imageURL;
+            if ([firstTwoChars isEqualToString:@"//"]) {
+                imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"http:%@",
+                                                 [feed objectForKey:@"photo_url"]]];
+            } else if ([firstChar isEqualToString:@"/"]) {
+                imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@%@", 
+                                                 NEWSBLUR_URL, 
+                                                 [feed objectForKey:@"photo_url"]]];
+            } else {
+                imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
+            }
+            NSLog(@"imageURL is %@", imageURL);
+            
+            NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+            UIImage *faviconImage = [UIImage imageWithData:imageData];
+            [Utilities saveImage:faviconImage feedId:feed_id];
+        }
+        
+        [Utilities saveimagesToDisk];
+        
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self.feedTitlesTable reloadData];
+        });
+    });
 }
 
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {

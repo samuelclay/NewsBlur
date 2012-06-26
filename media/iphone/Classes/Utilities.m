@@ -46,7 +46,7 @@ static NSMutableDictionary *imageCache;
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
     
     dispatch_async(queue, [[^{
-        for (id filename in imageCache) {
+        for (NSString *filename in [imageCache allKeys]) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
             NSString *cacheDirectory = [paths objectAtIndex:0];
             NSString *path = [cacheDirectory stringByAppendingPathComponent:filename];

@@ -53,10 +53,9 @@
     OriginalStoryViewController *originalStoryViewController;
     SplitStoryDetailViewController *splitStoryDetailViewController;
 
-    
-
     NSString * activeUsername;
     BOOL isRiverView;
+    BOOL isSocialView;
     BOOL popoverHasFeedView;
     NSDictionary * activeFeed;
     NSString * activeFolder;
@@ -82,7 +81,6 @@
     NSDictionary * dictFeeds;
     NSDictionary * dictSocialFeeds;
     NSMutableArray * dictFoldersArray;
-    NSMutableArray * socialFeedsArray;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
@@ -106,6 +104,7 @@
 
 @property (readwrite, retain) NSString * activeUsername;
 @property (nonatomic, readwrite) BOOL isRiverView;
+@property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSString * activeFolder;
@@ -130,7 +129,6 @@
 @property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, retain) NSDictionary *dictSocialFeeds;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
-@property (nonatomic, retain) NSMutableArray *socialFeedsArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 
