@@ -2322,6 +2322,11 @@ background: transparent;
 
 #story_pane .NB-feed-stories.NB-feed-view-story .NB-feed-story {
     padding: 0;
+    display: none;
+}
+
+#story_pane .NB-feed-stories.NB-feed-view-story .NB-feed-story.NB-selected {
+    display: block;
 }
 
 #story_pane .audiojs audio {

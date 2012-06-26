@@ -1,6 +1,7 @@
 NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     initialize: function() {
+        this.bind('change:selected', this.change_selected);
         this.bind('change:comments', this.populate_comments);
         this.bind('change:comment_count', this.populate_comments);
         this.populate_comments();
@@ -44,6 +45,10 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     mark_read: function(options) {
         return NEWSBLUR.assets.stories.mark_read(this, options);
+    },
+    
+    change_selected: function(model, selected, changes) {
+        model.collection.detect_selected_story(model, selected);
     }
     
 });
@@ -59,7 +64,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     active_story: null,
     
     initialize: function() {
-        this.bind('change:selected', this.detect_selected_story, this);
+        // this.bind('change:selected', this.detect_selected_story, this);
         this.bind('reset', this.clear_previous_stories_stack, this);
     },
     
@@ -245,7 +250,6 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     get_next_unread_story: function(options) {
         options = options || {};
         var visible_stories = this.visible_and_unread(options.score, true);
-        console.log(["visible and unread", visible_stories, this, options.score]);
         if (!visible_stories.length) return;
         
         if (!this.active_story) {

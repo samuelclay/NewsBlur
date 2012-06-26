@@ -252,6 +252,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             (NEWSBLUR.reader.story_view == 'feed' ||
              (NEWSBLUR.reader.story_view == 'page' &&
               NEWSBLUR.reader.flags['page_view_showing_feed_view']))) {
+            NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
             NEWSBLUR.app.story_list.scroll_to_selected_story(model, options);
         }
     },

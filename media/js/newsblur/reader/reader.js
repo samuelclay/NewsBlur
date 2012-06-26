@@ -1438,36 +1438,6 @@
         // = Story Pane - All Views =
         // ==========================
         
-        // open_story: function(story, $story_title, options) {
-        //     var self = this;
-        //     var feed_position;
-        //     var iframe_position;
-        //     options = options || {};
-        //     // NEWSBLUR.log(['open_story', this.story_view, story, options]);
-        //     
-        //     if (this.active_story != story || options.story_id) {
-        //         if (this.story_view == 'page') {
-        //             var $iframe_story = this.find_story_in_feed_iframe(story);
-        //             if (!$iframe_story || !$iframe_story.length || !this.flags['story_titles_loaded']) {
-        //                 // If the iframe has not yet loaded, we can't touch it.
-        //                 // So just assume story not found.
-        //                 this.switch_to_correct_view(false);
-        //                 feed_position = this.scroll_to_story_in_story_feed(story, $feed_story, options);
-        //                 NEWSBLUR.app.story_list.show_stories_preference_in_feed_view(true);
-        //             } else {
-        //                 iframe_position = this.scroll_to_story_in_iframe(story, $iframe_story);
-        //                 this.switch_to_correct_view(iframe_position);
-        //             }
-        //         } else if (this.story_view == 'feed') {
-        //             this.switch_to_correct_view();
-        //             feed_position = this.scroll_to_story_in_story_feed(story, $feed_story, options);
-        //             NEWSBLUR.app.story_list.show_stories_preference_in_feed_view(true);
-        //         } else if (this.story_view == 'story') {
-        //             this.open_story_in_story_view(story);
-        //         }
-        //     }
-        // },
-        
         switch_to_correct_view: function(found_story_in_page) {
             // NEWSBLUR.log(['Found story', this.story_view, found_story_in_page, this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
             if (found_story_in_page === false) {
@@ -3234,15 +3204,31 @@
                 }
             }
             
+            if ((this.story_view == 'feed' || this.flags['page_view_showing_feed_view']) && 
+                NEWSBLUR.assets.preference('feed_view_single_story')) {
+                // No need to show/hide feed view stories under single_story preference. 
+                // If the user switches to feed/page, then no animation is happening 
+                // and this will work anyway.
+                var active_story = this.active_story;
+                var $active_story = this.active_story && this.active_story.story_view.$el;
+                if ($active_story && $active_story.length || true) {
+                  $stories_show = $stories_show.not('.NB-feed-story');
+                  $stories_hide = $stories_hide.not('.NB-feed-story');
+                }
+                console.log(["single story", $stories_show.length, $stories_hide.length, this.active_story, active_story && active_story.id]);
+            }
+            
             if (!options['animate']) {
                 $stories_hide.css({'display': 'none'});
                 $stories_show.css({'display': 'block'});
                 NEWSBLUR.app.story_titles.fill_out();
             }
             
-            setTimeout(function() {
-                NEWSBLUR.app.story_list.reset_story_positions();
-            }, 500);
+            if (!NEWSBLUR.assets.preference('feed_view_single_story')) {
+                _.delay(function() {
+                    NEWSBLUR.app.story_list.reset_story_positions();
+                }, 500);
+            }
             
             if (options['animate'] && options['follow'] && 
                 ($stories_hide.length || $stories_show.length)) {
