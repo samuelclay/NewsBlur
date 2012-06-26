@@ -41,7 +41,8 @@ env.roledefs ={
     'db': ['db01.newsblur.com', 
            'db02.newsblur.com', 
            'db03.newsblur.com', 
-           'db04.newsblur.com'],
+           'db04.newsblur.com', 
+           'db05.newsblur.com'],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
              'task03.newsblur.com', 
@@ -265,13 +266,12 @@ def setup_db():
     setup_baremetal()
     setup_db_firewall()
     setup_db_motd()
-    # setup_rabbitmq()
     copy_task_settings()
     setup_memcached()
-    setup_postgres()
+    # setup_postgres()
     setup_mongo()
     setup_gunicorn(supervisor=False)
-    setup_redis()
+    # setup_redis()
     setup_db_munin()
 
 def setup_task():
@@ -531,6 +531,14 @@ def copy_certificates():
     run('mkdir -p %s/config/certificates/' % env.NEWSBLUR_PATH)
     put('config/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
     put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+
+def maintenance_on():
+    with cd(env.NEWSBLUR_PATH):
+        run('mv media/maintenance.html.unused media/maintenance.html')
+    
+def maintenance_off():
+    with cd(env.NEWSBLUR_PATH):
+        run('mv media/maintenance.html media/maintenance.html.unused')
     
 # ==============
 # = Setup - DB =
@@ -566,17 +574,17 @@ def setup_memcached():
     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 572506112
-#    sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
+    shmmax = 577060864
+    sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
-    ), '/etc/postgresql/9.0/main/postgresql.conf', use_sudo=True)
+    ), '/etc/postgresql/9.1/main/postgresql.conf', use_sudo=True)
     sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
     sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
     sudo('sysctl -p')
     
     if standby:
-        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.0/recovery.conf', use_sudo=True)
+        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.1/recovery.conf', use_sudo=True)
         
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
