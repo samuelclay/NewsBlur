@@ -230,11 +230,8 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         NEWSBLUR.log(['Prefetching Original', !this.flags['iframe_fetching_story_locations'], !this.flags['iframe_story_locations_fetched']]);
         if (!this.flags['iframe_fetching_story_locations'] 
             && !this.flags['iframe_story_locations_fetched']) {
-            // $iframe.unbind('scroll').scroll($.rescope(this.handle_scroll_feed_iframe, this));
-            // $iframe
-            //     .unbind('mousemove.reader')
-            //     .bind('mousemove.reader', $.rescope(this.handle_mousemove_iframe_view, this));
-                
+            this.setup_events();
+            
             var last_story_index = this.cache.iframe_story_positions_keys.length;
             var last_story_position = _.last(this.cache.iframe_story_positions_keys);
             var last_story = this.cache.iframe_story_positions[last_story_position];

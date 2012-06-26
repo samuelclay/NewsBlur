@@ -1044,8 +1044,9 @@
         set_correct_story_view_for_feed: function(feed_id, view) {
             var feed = this.model.get_feed(feed_id);
             var $original_tabs = $('.task_view_page, .task_view_story');
+            var $page_tab = $('.task_view_page');
             view = view || this.model.view_setting(feed_id);
-
+            
             if (feed && feed.get('disabled_page')) {
                 view = 'feed';
                 $original_tabs.addClass('NB-disabled-page')
@@ -1071,6 +1072,10 @@
                 $original_tabs.each(function() {
                     $(this).tipsy('disable');
                 });
+            }
+
+            if (feed_id == 'starred') {
+                $page_tab.addClass('NB-disabled-page').addClass('NB-disabled');
             }
           
             this.story_view = view;
@@ -1113,7 +1118,7 @@
             this.flags.river_view = true;
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
             var explicit_view_setting = this.model.view_setting(this.active_feed);
-            if (!explicit_view_setting) {
+            if (!explicit_view_setting || explicit_view_setting == 'page') {
               explicit_view_setting = 'feed';
             }
             this.set_correct_story_view_for_feed(this.active_feed, explicit_view_setting);
@@ -1283,10 +1288,12 @@
             
             if (this.story_view == 'page') {
                 _.delay(_.bind(function() {
-                    if (!options.delay || feed_id == this.next_feed) {
+                    if (!options.delay || feed.id == this.next_feed) {
                         NEWSBLUR.app.original_tab_view.load_feed_iframe();
                     }
                 }, this), options.delay || 0);
+            } else {
+                this.flags['iframe_prevented_from_loading'] = true;
             }
 
             if (!options.silent && feed.get('feed_title')) {
@@ -2024,6 +2031,7 @@
                 self.flags.scrolling_by_selecting_story_title = false;
             }, 550);
             if (view == 'page') {
+                console.log(["iframe_prevented_from_loading", this.flags['iframe_prevented_from_loading']]);
                 if (this.flags['iframe_prevented_from_loading']) {
                     NEWSBLUR.app.original_tab_view.load_feed_iframe();
                 }
