@@ -125,13 +125,13 @@ class MSocialProfile(mongo.Document):
         if not self.username:
             self.import_user_fields()
         if not self.subscription_count:
-            self.count(skip_save=True)
+            self.count_follows(skip_save=True)
         if self.bio and len(self.bio) > MSocialProfile.bio.max_length:
             self.bio = self.bio[:80]
         super(MSocialProfile, self).save(*args, **kwargs)
         if self.user_id not in self.following_user_ids:
             self.follow_user(self.user_id)
-            self.count()
+            self.count_follows()
     
     def recommended_users(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -221,7 +221,7 @@ class MSocialProfile(mongo.Document):
             profile = cls.objects.get(user_id=user_id)
         except cls.DoesNotExist:
             return {}
-        return profile.to_json(full=True)
+        return profile.to_json(include_follows=True)
         
     @classmethod
     def profiles(cls, user_ids):
@@ -259,7 +259,7 @@ class MSocialProfile(mongo.Document):
         return params
         
     def page(self):
-        params = self.to_json(full=True)
+        params = self.to_json(include_follows=True)
         params.update({
             'feed_title': self.title,
             'custom_css': self.custom_css,
@@ -272,7 +272,7 @@ class MSocialProfile(mongo.Document):
             return self.photo_url
         return settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
-    def to_json(self, compact=False, full=False, common_follows_with_user=None):
+    def to_json(self, compact=False, include_follows=False, common_follows_with_user=None):
         # domain = Site.objects.get_current().domain
         domain = Site.objects.get_current().domain.replace('www', 'dev')
         params = {
@@ -284,8 +284,7 @@ class MSocialProfile(mongo.Document):
             'feed_title': self.title,
             'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
                                     kwargs={'user_id': self.user_id, 'username': self.username_slug})),
-            'feed_link': "http://%s%s" % (domain, reverse('load-social-page', 
-                                 kwargs={'user_id': self.user_id, 'username': self.username_slug})),
+            'feed_link': "http://%s.%s/" % (self.username_slug, domain),
         }
         if not compact:
             params.update({
@@ -300,11 +299,11 @@ class MSocialProfile(mongo.Document):
                 'stories_last_month': self.stories_last_month,
                 'average_stories_per_month': self.average_stories_per_month,
             })
-        if full:
+        if include_follows:
             params.update({
                 'photo_service': self.photo_service,
-                'following_user_ids': self.following_user_ids,
-                'follower_user_ids': self.follower_user_ids,
+                'following_user_ids': self.following_user_ids_without_self,
+                'follower_user_ids': self.follower_user_ids_without_self,
             })
         if common_follows_with_user:
             with_user, _ = MSocialProfile.objects.get_or_create(user_id=common_follows_with_user)
@@ -317,16 +316,28 @@ class MSocialProfile(mongo.Document):
 
         return params
     
+    @property
+    def following_user_ids_without_self(self):
+        if self.user_id in self.following_user_ids:
+            return [u for u in self.following_user_ids if u != self.user_id]
+        return self.following_user_ids
+        
+    @property
+    def follower_user_ids_without_self(self):
+        if self.user_id in self.follower_user_ids:
+            return [u for u in self.follower_user_ids if u != self.user_id]
+        return self.follower_user_ids
+        
     def import_user_fields(self, skip_save=False):
         user = User.objects.get(pk=self.user_id)
         self.username = user.username
         self.email = user.email
 
-    def count(self, skip_save=False):
+    def count_follows(self, skip_save=False):
         self.subscription_count = UserSubscription.objects.filter(user__pk=self.user_id).count()
         self.shared_stories_count = MSharedStory.objects.filter(user_id=self.user_id).count()
-        self.following_count = len(self.following_user_ids)
-        self.follower_count = len(self.follower_user_ids)
+        self.following_count = len(self.following_user_ids_without_self)
+        self.follower_count = len(self.follower_user_ids_without_self)
         if not skip_save:
             self.save()
         
@@ -340,7 +351,7 @@ class MSocialProfile(mongo.Document):
             self.following_user_ids.append(user_id)
             if user_id in self.unfollowed_user_ids:
                 self.unfollowed_user_ids.remove(user_id)
-            self.count()
+            self.count_follows()
             self.save()
             
             if self.user_id == user_id:
@@ -349,7 +360,7 @@ class MSocialProfile(mongo.Document):
                 followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
             if self.user_id not in followee.follower_user_ids:
                 followee.follower_user_ids.append(self.user_id)
-                followee.count()
+                followee.count_follows()
                 followee.save()
         
         following_key = "F:%s:F" % (self.user_id)
@@ -382,13 +393,13 @@ class MSocialProfile(mongo.Document):
             self.following_user_ids.remove(user_id)
         if user_id not in self.unfollowed_user_ids:
             self.unfollowed_user_ids.append(user_id)
-        self.count()
+        self.count_follows()
         self.save()
         
         followee = MSocialProfile.objects.get(user_id=user_id)
         if self.user_id in followee.follower_user_ids:
             followee.follower_user_ids.remove(self.user_id)
-            followee.count()
+            followee.count_follows()
             followee.save()
         
             following_key = "F:%s:F" % (self.user_id)
@@ -407,6 +418,11 @@ class MSocialProfile(mongo.Document):
         follows_diff    = r.sdiff(their_followers, my_followers)
         follows_inter   = [int(f) for f in follows_inter]
         follows_diff    = [int(f) for f in follows_diff]
+        
+        if user_id in follows_inter:
+            follows_inter.remove(user_id)
+        if user_id in follows_diff:
+            follows_diff.remove(user_id)
         
         return follows_inter, follows_diff
         
@@ -891,7 +907,7 @@ class MSharedStory(mongo.Document):
         super(MSharedStory, self).save(*args, **kwargs)
         
         author, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
-        author.count()
+        author.count_follows()
         
         MActivity.new_shared_story(user_id=self.user_id, story_title=self.story_title, 
                                    comments=self.comments, story_feed_id=self.story_feed_id,
@@ -1198,7 +1214,7 @@ class MSocialServices(mongo.Document):
         profile.bio = profile.bio or twitter_user.description
         profile.website = profile.website or twitter_user.url
         profile.save()
-        profile.count()
+        profile.count_follows()
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('twitter')
         
@@ -1225,7 +1241,7 @@ class MSocialServices(mongo.Document):
         profile.bio = profile.bio or facebook_user.get('bio')
         profile.website = profile.website or facebook_user.get('website')
         profile.save()
-        profile.count()
+        profile.count_follows()
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('facebook')
         

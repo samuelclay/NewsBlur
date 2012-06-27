@@ -404,7 +404,8 @@ def profile(request):
     user = get_user(request.user)
     user_id = request.GET.get('user_id', user.pk)
     user_profile = MSocialProfile.objects.get(user_id=user_id)
-    user_profile = user_profile.to_json(full=True, common_follows_with_user=user.pk)
+    user_profile.count_follows()
+    user_profile = user_profile.to_json(include_follows=True, common_follows_with_user=user.pk)
     profile_ids = set(user_profile['followers_youknow'] + user_profile['followers_everybody'] + 
                       user_profile['following_youknow'] + user_profile['following_everybody'])
     profiles = MSocialProfile.profiles(profile_ids)
@@ -437,7 +438,7 @@ def load_user_profile(request):
     
     return {
         'services': social_services,
-        'user_profile': social_profile.to_json(full=True),
+        'user_profile': social_profile.to_json(include_follows=True),
     }
     
 @ajax_login_required
@@ -456,7 +457,7 @@ def save_user_profile(request):
     
     logging.user(request, "~BB~FRSaving social profile")
     
-    return dict(code=1, user_profile=profile.to_json(full=True))
+    return dict(code=1, user_profile=profile.to_json(include_follows=True))
 
 @json.json_view
 def load_user_friends(request):
@@ -470,7 +471,7 @@ def load_user_friends(request):
     return {
         'services': social_services,
         'autofollow': social_services.autofollow,
-        'user_profile': social_profile.to_json(full=True),
+        'user_profile': social_profile.to_json(include_follows=True),
         'following_profiles': following_profiles,
         'follower_profiles': follower_profiles,
         'recommended_users': recommended_users,
@@ -509,7 +510,7 @@ def follow(request):
     logging.user(request, "~BB~FRFollowing: %s" % follow_profile.username)
     
     return {
-        "user_profile": profile.to_json(full=True), 
+        "user_profile": profile.to_json(include_follows=True), 
         "follow_profile": follow_profile.to_json(common_follows_with_user=request.user.pk),
         "follow_subscription": follow_subscription,
     }
@@ -539,7 +540,7 @@ def unfollow(request):
     logging.user(request, "~BB~FRUnfollowing: %s" % unfollow_profile.username)
     
     return {
-        'user_profile': profile.to_json(full=True),
+        'user_profile': profile.to_json(include_follows=True),
         'unfollow_profile': unfollow_profile.to_json(common_follows_with_user=request.user.pk),
     }
 
