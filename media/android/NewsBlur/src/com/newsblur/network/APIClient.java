@@ -26,15 +26,15 @@ public class APIClient {
 		this.context = context;
 		// enableHttpResponseCache();
 	}
-	
-	public APIResponse get(final URL url) {
+
+	public APIResponse get(final String urlString) {
 		HttpURLConnection connection = null;
-		
 		try {
-			connection = (HttpURLConnection) url.openConnection();
-			return extractResponse(url, connection);
+			final URL urlFeeds = new URL(urlString);
+			connection = (HttpURLConnection) urlFeeds.openConnection();
+			return extractResponse(urlFeeds, connection);
 		} catch (IOException e) {
-			Log.d(TAG, "Error opening GET connection to " + url.toString(), e.getCause());
+			Log.d(TAG, "Error opening GET connection to " + urlString, e.getCause());
 			return new APIResponse();
 		} finally {
 			connection.disconnect();
@@ -47,17 +47,19 @@ public class APIClient {
 		while (scanner.hasNextLine()) {
 			builder.append(scanner.nextLine());
 		}
+		
 		final APIResponse response = new APIResponse();
 		response.responseString = builder.toString();
 		response.responseCode = connection.getResponseCode();
+		response.cookie = connection.getHeaderField("Cookie");
 		response.hasRedirected = !TextUtils.equals(url.getHost(), connection.getURL().getHost());
-		
+
 		return response;
 	}
-	
+
 	public APIResponse post(final String urlString, final ContentValues values) {
 		HttpURLConnection connection = null;
-		
+
 		List<String> parameters = new ArrayList<String>();
 		for (Entry<String, Object> entry : values.valueSet()) {
 			final StringBuilder builder = new StringBuilder();
@@ -72,7 +74,7 @@ public class APIClient {
 			parameters.add(builder.toString());
 		}
 		final String parameterString = TextUtils.join("&", parameters);
-		
+
 		try {
 			final URL url = new URL(urlString);
 			connection = (HttpURLConnection) url.openConnection();
@@ -83,7 +85,7 @@ public class APIClient {
 			final PrintWriter printWriter = new PrintWriter(connection.getOutputStream());
 			printWriter.print(parameterString);
 			printWriter.close();
-			
+
 			return extractResponse(url, connection);
 		} catch (IOException e) {
 			Log.d(TAG, "Error opening POST connection to " + urlString + ": " + e.getLocalizedMessage(), e.getCause());
@@ -94,7 +96,7 @@ public class APIClient {
 			}
 		}
 	}
-	
+
 	/*
 	 * This method enables HTTP Response cache should the device support it.
 	 * See Android Developer's Blog for more detail: http://android-developers.blogspot.ca/2011/09/androids-http-clients.html
