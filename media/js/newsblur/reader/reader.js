@@ -2401,7 +2401,7 @@
                 var starred_class = story.get('starred') ? ' NB-story-starred ' : '';
                 var starred_title = story.get('starred') ? 'Remove bookmark' : 'Save This Story';
                 var shared_class = story.get('shared') ? ' NB-story-shared ' : '';
-                var shared_title = story.get('shared') ? 'Shared' : 'Share story';
+                var shared_title = story.get('shared') ? 'Shared' : 'Post to blurblog';
                 story.story_share_menu_view = new NEWSBLUR.Views.StoryShareView({
                     model: story
                 });
@@ -3014,7 +3014,7 @@
             var $confirm = $('.NB-menu-manage-story-share-confirm');
             
             $share.removeClass('NB-menu-manage-story-share-cancel');
-            var text = 'Share story';
+            var text = 'Post to blurblog';
             if (shared) {
                 text = 'Shared';
                 $share.addClass('NB-active');
@@ -3939,7 +3939,7 @@
         follow_user_in_tryfeed: function(feed_id) {
             var self = this;
             var socialsub = this.model.get_feed(feed_id);
-            this.model.follow_user(socialsub.user_id, function(data) {
+            this.model.follow_user(socialsub.get('user_id'), function(data) {
                 NEWSBLUR.app.feed_list.make_social_feeds();
                 self.open_social_stories(feed_id);
             });
@@ -4902,6 +4902,13 @@
             $document.bind('keydown', 'n', function(e) {
                 e.preventDefault();
                 self.open_next_unread_story_across_feeds();
+            });
+            $document.bind('keydown', 'c', function(e) {
+                e.preventDefault();
+                NEWSBLUR.app.story_list.scroll_to_selected_story(self.active_story, {
+                    scroll_to_comments: true,
+                    scroll_offset: -50
+                });
             });
             $document.bind('keydown', 'm', function(e) {
                 e.preventDefault();

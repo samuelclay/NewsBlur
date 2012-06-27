@@ -933,6 +933,8 @@ class Feed(models.Model):
             text = re.sub(r'\n+', '\n\n', text)
             text = re.sub(r'\t+', '\t', text)
             story['text'] = text
+        if '<ins' in story['story_content'] or '<del' in story['story_content']:
+            story['has_modifications'] = True
         
         return story
     

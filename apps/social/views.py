@@ -243,7 +243,8 @@ def mark_story_as_shared(request):
         story_values = dict(user_id=request.user.pk, comments=comments, 
                             has_comments=bool(comments), **story_db)
         shared_story = MSharedStory.objects.create(**story_values)
-        shared_story.set_source_user_id(source_user_id)
+        if source_user_id:
+            shared_story.set_source_user_id(int(source_user_id))
         socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
         for socialsub in socialsubs:
             socialsub.needs_unread_recalc = True

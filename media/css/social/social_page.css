@@ -264,6 +264,19 @@ header {
     font-size: 7px;
 }
 
+.NB-story-header .NB-story-modifications-button {
+    width: 16px;
+    height: 16px;
+    background: transparent url('/media/embed/reader/code_icon.png') no-repeat 0 0;
+    float: left;
+    margin: 3px 12px 0px 0px;
+    opacity: .6;
+    cursor: pointer;
+}
+.NB-story-header .NB-story-modifications-button:hover {
+    opacity: 1;
+}
+
 /* =========== */
 /* = Stories = */
 /* =========== */
@@ -290,4 +303,19 @@ header {
 
 .NB-story img {
     max-width: 100%;
+}
+.NB-story ins {
+    text-decoration: none;
+    color: inherit;
+}
+.NB-story del {
+    display: none;
+}
+.NB-pref-show-changes .NB-story ins {
+    text-decoration: underline;
+    color: #27452D;
+}
+.NB-pref-show-changes .NB-story del {
+    display: block;
+    color: #661616;
 }

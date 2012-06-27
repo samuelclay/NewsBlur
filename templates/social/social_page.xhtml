@@ -86,6 +86,10 @@
                     <a href="{{ story.story_permalink }}">{{ story.story_title }}</a>
                 </div>
                 <div class="NB-story-date">
+                    {% if story.has_modifications %}
+                        <div class="NB-story-modifications-button" title="Show story changes"></div>
+                    {% endif %}
+
                     {{ story.shared_date|date:"g:i A <\s\m\a\l\l>\o\n</\s\m\a\l\l> l, F j<\s\u\p>S</\s\u\p>, Y"|safe }} 
                 </div>
             </div>

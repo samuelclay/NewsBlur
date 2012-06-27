@@ -911,6 +911,9 @@ class MSharedStory(mongo.Document):
         super(MSharedStory, self).delete(*args, **kwargs)
     
     def set_source_user_id(self, source_user_id, original_comments=None):
+        if source_user_id == self.user_id:
+            return
+            
         def find_source(source_user_id, seen_user_ids):
             parent_shared_story = MSharedStory.objects.filter(user_id=source_user_id, 
                                                               story_guid=self.story_guid, 
