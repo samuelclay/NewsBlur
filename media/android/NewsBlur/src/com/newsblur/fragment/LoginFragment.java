@@ -72,10 +72,10 @@ public class LoginFragment extends Fragment implements OnClickListener {
 				((LoginFragmentInterface) getActivity()).loginSuccessful();
 			} else {
 				viewSwitcher.showPrevious();
-				if (result.errors != null && result.errors.message.length > 0) {
+				if (result.errors != null && result.errors.message != null) {
 					Toast.makeText(getActivity(), result.errors.message[0], Toast.LENGTH_LONG).show();
 				} else {
-					Toast.makeText(getActivity(), Resources.getSystem().getString(R.string.login_message_error), Toast.LENGTH_LONG).show();
+					Toast.makeText(getActivity(), getResources().getString(R.string.login_message_error), Toast.LENGTH_LONG).show();
 				}
 				((LoginFragmentInterface) getActivity()).loginUnsuccessful();
 			}
