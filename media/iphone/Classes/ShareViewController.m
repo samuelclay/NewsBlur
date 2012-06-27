@@ -20,8 +20,6 @@
 @synthesize submitButton;
 @synthesize toolbarTitle;
 
-@synthesize siteFavicon;
-@synthesize siteInformation;
 @synthesize commentField;
 @synthesize appDelegate;
 
@@ -54,8 +52,6 @@
 - (void)viewDidUnload
 {
     [self setCommentField:nil];
-    [self setSiteInformation:nil];
-    [self setSiteFavicon:nil];
     [self setFacebookButton:nil];
     [self setTwitterButton:nil];
     [self setSubmitButton:nil];
@@ -78,8 +74,6 @@
 - (void)dealloc {
     [appDelegate release];
     [commentField release];
-    [siteInformation release];
-    [siteFavicon release];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [facebookButton release];
     [twitterButton release];
@@ -124,26 +118,8 @@
         [submitButton setTitle:@"Post"];
         [submitButton setAction:(@selector(doShareThisStory:))];
     }
-    [self.siteInformation setNumberOfLines:2];
-    
-    NSString *siteInfoString = [NSString stringWithFormat:@"%@: %@",
-                                [appDelegate.activeFeed objectForKey:@"feed_title"],
-                                [appDelegate.activeStory objectForKey:@"story_title"]];
-    
-    [self.siteInformation setText:siteInfoString];
-    
-    // vertical align label    
-    CGRect resizedLabel = [self.siteInformation textRectForBounds:self.siteInformation.bounds limitedToNumberOfLines:2];
-    CGRect newResizedLabelFrame = self.siteInformation.frame;    
-    newResizedLabelFrame.size.height = resizedLabel.size.height;
-    self.siteInformation.frame = newResizedLabelFrame;
-    
-    // adding in favicon
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-    [siteFavicon setImage:[Utilities getImage:feedIdStr]];
+
 }
-
-
 
 - (IBAction)doShareThisStory:(id)sender {    
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
@@ -227,9 +203,15 @@
     CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.view.frame;
     
     //NSLog(@"Keyboard y is %f", keyboardFrame.size.height);
-    shareViewFrame.origin.y = shareViewFrame.origin.y + keyboardFrame.size.height;
-    storyDetailViewFrame.size.height = storyDetailViewFrame.size.height + keyboardFrame.size.height;
     
+    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+        shareViewFrame.origin.y = shareViewFrame.origin.y + keyboardFrame.size.height;
+        storyDetailViewFrame.size.height = storyDetailViewFrame.size.height + keyboardFrame.size.height;
+    } else {
+        shareViewFrame.origin.y = shareViewFrame.origin.y + keyboardFrame.size.width;
+        storyDetailViewFrame.size.height = storyDetailViewFrame.size.height + keyboardFrame.size.width;
+    }
+
     [UIView animateWithDuration:duration 
                           delay:0 
                         options:UIViewAnimationOptionBeginFromCurrentState | curve 
@@ -250,9 +232,13 @@
     CGRect shareViewFrame = self.view.frame;
     CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.view.frame;
     
-    //NSLog(@"Keyboard y is %f", keyboardFrame.size.height);
-    shareViewFrame.origin.y = shareViewFrame.origin.y - keyboardFrame.size.height;
-    storyDetailViewFrame.size.height = storyDetailViewFrame.size.height - keyboardFrame.size.height;
+    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+        shareViewFrame.origin.y = shareViewFrame.origin.y - keyboardFrame.size.height;
+        storyDetailViewFrame.size.height = storyDetailViewFrame.size.height - keyboardFrame.size.height;
+    } else {
+        shareViewFrame.origin.y = shareViewFrame.origin.y - keyboardFrame.size.width;
+        storyDetailViewFrame.size.height = storyDetailViewFrame.size.height - keyboardFrame.size.width;
+    }
     
     [UIView animateWithDuration:duration 
                           delay:0 

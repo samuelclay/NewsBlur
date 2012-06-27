@@ -14,8 +14,6 @@
 
 }
 
-@property (retain, nonatomic) IBOutlet UIImageView *siteFavicon;
-@property (retain, nonatomic) IBOutlet UILabel *siteInformation;
 @property (retain, nonatomic) IBOutlet UITextView *commentField;
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (retain, nonatomic) IBOutlet UIButton *facebookButton;

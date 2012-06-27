@@ -534,8 +534,7 @@
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        splitStoryDetailViewController.navigationItem.title = [NSString stringWithFormat:@"%@", 
-                                                               [activeStory objectForKey:@"story_title"]];
+        splitStoryDetailViewController.navigationItem.title = [NSString stringWithFormat:@""];
         // With some valid UIView *view:
         NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
         for (UIView *subview in subviews) {
