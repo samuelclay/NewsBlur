@@ -49,7 +49,7 @@
 - (void)setActiveStory;
 - (IBAction)toggleFontSize:(id)sender;
 - (void)setFontStyle:(NSString *)fontStyle;
-- (void)setFontSize:(float)fontSize;
+- (void)changeFontSize:(NSString *)fontSize;
 - (NSString *)getComments;
 - (NSString *)getComment:(NSDictionary *)commentDict;
 - (NSString *)getReplies:(NSArray *)replies;

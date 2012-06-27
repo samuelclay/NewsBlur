@@ -51,13 +51,13 @@
 }
 
 - (void)viewDidLoad {
-    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Home" 
-                                                                              style:UIBarButtonItemStylePlain 
-                                                                             target:self 
-                                                                             action:@selector(showMenuButton)] 
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] 
+                                               initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                               target:self 
+                                               action:@selector(showMenuButton)] 
                                              autorelease];
      
-     [self.navigationItem.leftBarButtonItem setImage:[UIImage imageNamed:@"53-house.png"]];
+     [self.navigationItem.rightBarButtonItem setImage:[UIImage imageNamed:@"add_button.png"]];
     [appDelegate showNavigationBar:NO];
     self.viewShowingAllFeeds = NO;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
@@ -340,7 +340,7 @@
         }
         
         [popoverController setPopoverContentSize:CGSizeMake(200, 130)];
-        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem
+        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
                                   permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];  
     } else {
         [appDelegate showFeedsMenu]; 

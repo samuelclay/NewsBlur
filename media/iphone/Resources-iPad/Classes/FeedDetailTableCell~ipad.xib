@@ -49,9 +49,10 @@
 							<object class="IBUILabel" id="750430533">
 								<reference key="NSNextResponder" ref="994014136"/>
 								<int key="NSvFlags">265</int>
-								<string key="NSFrame">{{613, 40}, {128, 15}}</string>
+								<string key="NSFrame">{{620, 40}, {128, 15}}</string>
 								<reference key="NSSuperview" ref="994014136"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<object class="NSColor" key="IBUIBackgroundColor" id="932003208">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MSAxIDEAA</bytes>
@@ -90,7 +91,7 @@
 							<object class="IBUILabel" id="417683225">
 								<reference key="NSNextResponder" ref="994014136"/>
 								<int key="NSvFlags">290</int>
-								<string key="NSFrame">{{33, 5}, {708, 34}}</string>
+								<string key="NSFrame">{{33, 8}, {728, 34}}</string>
 								<reference key="NSSuperview" ref="994014136"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="194816084"/>
@@ -170,7 +171,7 @@
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 							</object>
 						</object>
-						<string key="NSFrameSize">{748, 59}</string>
+						<string key="NSFrameSize">{768, 59}</string>
 						<reference key="NSSuperview" ref="749780469"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="523799572"/>
@@ -191,7 +192,6 @@
 				<reference key="NSNextKeyView" ref="994014136"/>
 				<reference key="IBUIBackgroundColor" ref="932003208"/>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-				<int key="IBUIAccessoryType">1</int>
 				<float key="IBUIIndentationWidth">0.0</float>
 				<reference key="IBUIContentView" ref="994014136"/>
 				<string key="IBUIReuseIdentifier">FeedDetailCellIdentifier</string>
@@ -209,7 +209,7 @@
 							<object class="IBUIView" id="111782255">
 								<reference key="NSNextResponder" ref="247257992"/>
 								<int key="NSvFlags">290</int>
-								<string key="NSFrame">{{0, -1}, {768, 20}}</string>
+								<string key="NSFrame">{{0, -1}, {788, 20}}</string>
 								<reference key="NSSuperview" ref="247257992"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1001310564"/>
@@ -219,9 +219,10 @@
 							<object class="IBUILabel" id="607536273">
 								<reference key="NSNextResponder" ref="247257992"/>
 								<int key="NSvFlags">265</int>
-								<string key="NSFrame">{{607, 61}, {141, 15}}</string>
+								<string key="NSFrame">{{607, 60}, {141, 15}}</string>
 								<reference key="NSSuperview" ref="247257992"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<reference key="IBUIBackgroundColor" ref="932003208"/>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<int key="IBUIContentMode">7</int>
@@ -248,7 +249,7 @@
 							<object class="IBUILabel" id="753396836">
 								<reference key="NSNextResponder" ref="247257992"/>
 								<int key="NSvFlags">290</int>
-								<string key="NSFrame">{{34, 25}, {708, 34}}</string>
+								<string key="NSFrame">{{34, 28}, {728, 34}}</string>
 								<reference key="NSSuperview" ref="247257992"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="450494992"/>
@@ -277,7 +278,7 @@
 							<object class="IBUILabel" id="450494992">
 								<reference key="NSNextResponder" ref="247257992"/>
 								<int key="NSvFlags">268</int>
-								<string key="NSFrame">{{34, 61}, {122, 15}}</string>
+								<string key="NSFrame">{{34, 60}, {122, 15}}</string>
 								<reference key="NSSuperview" ref="247257992"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="607536273"/>
@@ -313,7 +314,7 @@
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 							</object>
 						</object>
-						<string key="NSFrameSize">{748, 79}</string>
+						<string key="NSFrameSize">{768, 79}</string>
 						<reference key="NSSuperview" ref="183700415"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="111782255"/>
@@ -332,7 +333,6 @@
 				<reference key="IBUIBackgroundColor" ref="932003208"/>
 				<int key="IBUITag">1</int>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-				<int key="IBUIAccessoryType">1</int>
 				<float key="IBUIIndentationWidth">0.0</float>
 				<reference key="IBUIContentView" ref="247257992"/>
 				<string key="IBUIReuseIdentifier">RiverFeedDetailCellIdentifier</string>

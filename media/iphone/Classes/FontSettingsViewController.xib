@@ -158,11 +158,11 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">fontSizeSgement</string>
+						<string key="label">fontSizeSegment</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="583946447"/>
 					</object>
-					<int key="connectionID">33</int>
+					<int key="connectionID">34</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -237,7 +237,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">33</int>
+			<int key="maxID">34</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -601,7 +601,7 @@
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="appDelegate">NewsBlurAppDelegate</string>
-						<string key="fontSizeSgement">UISegmentedControl</string>
+						<string key="fontSizeSegment">UISegmentedControl</string>
 						<string key="fontStyleSegment">UISegmentedControl</string>
 						<string key="largeFontSizeLabel">UILabel</string>
 						<string key="smallFontSizeLabel">UILabel</string>
@@ -611,8 +611,8 @@
 							<string key="name">appDelegate</string>
 							<string key="candidateClassName">NewsBlurAppDelegate</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="fontSizeSgement">
-							<string key="name">fontSizeSgement</string>
+						<object class="IBToOneOutletInfo" key="fontSizeSegment">
+							<string key="name">fontSizeSegment</string>
 							<string key="candidateClassName">UISegmentedControl</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="fontStyleSegment">
@@ -992,6 +992,7 @@
 						<string key="doSwitchSitesUnread">id</string>
 						<string key="sectionTapped:">UIButton</string>
 						<string key="sectionUntapped:">UIButton</string>
+						<string key="sectionUntappedOutside:">UIButton</string>
 						<string key="selectIntelligence">id</string>
 						<string key="showMenuButton">id</string>
 					</dictionary>
@@ -1006,6 +1007,10 @@
 						</object>
 						<object class="IBActionInfo" key="sectionUntapped:">
 							<string key="name">sectionUntapped:</string>
+							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBActionInfo" key="sectionUntappedOutside:">
+							<string key="name">sectionUntappedOutside:</string>
 							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBActionInfo" key="selectIntelligence">
@@ -1152,12 +1157,17 @@
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="doCancelButton:">id</string>
+						<string key="doReplyToComment:">id</string>
 						<string key="doShareThisStory:">id</string>
 						<string key="doToggleButton:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="doCancelButton:">
 							<string key="name">doCancelButton:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="doReplyToComment:">
+							<string key="name">doReplyToComment:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="doShareThisStory:">
@@ -1173,9 +1183,10 @@
 						<string key="appDelegate">NewsBlurAppDelegate</string>
 						<string key="commentField">UITextView</string>
 						<string key="facebookButton">UIButton</string>
-						<string key="fontSizeSegment">UISegmentedControl</string>
 						<string key="siteFavicon">UIImageView</string>
 						<string key="siteInformation">UILabel</string>
+						<string key="submitButton">UIBarButtonItem</string>
+						<string key="toolbarTitle">UIBarButtonItem</string>
 						<string key="twitterButton">UIButton</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -1191,10 +1202,6 @@
 							<string key="name">facebookButton</string>
 							<string key="candidateClassName">UIButton</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="fontSizeSegment">
-							<string key="name">fontSizeSegment</string>
-							<string key="candidateClassName">UISegmentedControl</string>
-						</object>
 						<object class="IBToOneOutletInfo" key="siteFavicon">
 							<string key="name">siteFavicon</string>
 							<string key="candidateClassName">UIImageView</string>
@@ -1202,6 +1209,14 @@
 						<object class="IBToOneOutletInfo" key="siteInformation">
 							<string key="name">siteInformation</string>
 							<string key="candidateClassName">UILabel</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="submitButton">
+							<string key="name">submitButton</string>
+							<string key="candidateClassName">UIBarButtonItem</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="toolbarTitle">
+							<string key="name">toolbarTitle</string>
+							<string key="candidateClassName">UIBarButtonItem</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="twitterButton">
 							<string key="name">twitterButton</string>
@@ -1238,7 +1253,6 @@
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="doNextUnreadStory">id</string>
 						<string key="doPreviousStory">id</string>
-						<string key="doShareButton:">id</string>
 						<string key="toggleFontSize:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
@@ -1248,10 +1262,6 @@
 						</object>
 						<object class="IBActionInfo" key="doPreviousStory">
 							<string key="name">doPreviousStory</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="doShareButton:">
-							<string key="name">doShareButton:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="toggleFontSize:">

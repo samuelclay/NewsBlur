@@ -14,7 +14,7 @@
 
 @synthesize appDelegate;
 @synthesize fontStyleSegment;
-@synthesize fontSizeSgement;
+@synthesize fontSizeSegment;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -33,33 +33,27 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
     if ([userPreferences stringForKey:@"fontStyle"]) {
         if ([[userPreferences stringForKey:@"fontStyle"] isEqualToString:@"NB-san-serif"]) {
-            [self setSanSerif];
+            [fontStyleSegment setSelectedSegmentIndex:0];
         } else if ([[userPreferences stringForKey:@"fontStyle"] isEqualToString:@"NB-serif"]) {    
-            [self setSerif];
+            [fontStyleSegment setSelectedSegmentIndex:1];
         }
     }
-    int userPreferenceFontSize = [userPreferences integerForKey:@"fontSize"];
-    if(userPreferenceFontSize){
-        switch (userPreferenceFontSize) {
-            case 12:
-                [fontSizeSgement setSelectedSegmentIndex:0];
-                break;
-            case 14:
-                [fontSizeSgement setSelectedSegmentIndex:1];
-                break;
-            case 16:
-                [fontSizeSgement setSelectedSegmentIndex:2];
-                break;
-            case 22:
-                [fontSizeSgement setSelectedSegmentIndex:3];
-                break;
-            case 26:
-                [fontSizeSgement setSelectedSegmentIndex:4];
-                break;
-            default:
-                break;
+
+    if([userPreferences stringForKey:@"fontSizing"]){
+        NSString *fontSize = [NSString stringWithFormat:@"%@", [userPreferences stringForKey:@"fontSizing"]];
+        if ([fontSize isEqualToString:@"NB-extra-small"]) {
+            [fontSizeSegment setSelectedSegmentIndex:0]; 
+        } else if ([fontSize isEqualToString:@"NB-small"]) {
+            [fontSizeSegment setSelectedSegmentIndex:1];
+        } else if ([fontSize isEqualToString:@"NB-medium"]) {
+            [fontSizeSegment setSelectedSegmentIndex:2];
+        } else if ([fontSize isEqualToString:@"NB-large"]) {
+            [fontSizeSegment setSelectedSegmentIndex:3];
+        } else if ([fontSize isEqualToString:@"NB-extra-large"]) {
+            [fontSizeSegment setSelectedSegmentIndex:4];
         }
     }
     // Do any additional setup after loading the view from its nib.
@@ -67,8 +61,7 @@
 
 - (void)viewDidUnload
 {
-    [self setFontStyleSegment:nil];
-    [self setFontSizeSgement:nil];
+
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -82,7 +75,7 @@
 - (void)dealloc {
     [appDelegate release];
     [fontStyleSegment release];
-    [fontSizeSgement release];
+    [fontSizeSegment release];
     [super dealloc];
 }
 
@@ -98,20 +91,20 @@
 - (IBAction)changeFontSize:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
-        [appDelegate.storyDetailViewController setFontSize:12];
-        [userPreferences setInteger:12 forKey:@"fontSize"];
+        [appDelegate.storyDetailViewController changeFontSize:@"NB-extra-small"];
+        [userPreferences setObject:@"NB-extra-small" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 1) {
-        [appDelegate.storyDetailViewController setFontSize:14];
-        [userPreferences setInteger:14 forKey:@"fontSize"];
+        [appDelegate.storyDetailViewController changeFontSize:@"NB-small"];
+        [userPreferences setObject:@"NB-small" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 2) {
-        [appDelegate.storyDetailViewController setFontSize:16];
-        [userPreferences setInteger:16 forKey:@"fontSize"];
+        [appDelegate.storyDetailViewController changeFontSize:@"NB-medium"];
+        [userPreferences setObject:@"NB-medium" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 3) {
-        [appDelegate.storyDetailViewController setFontSize:22];
-        [userPreferences setInteger:22 forKey:@"fontSize"];
+        [appDelegate.storyDetailViewController changeFontSize:@"NB-large"];
+        [userPreferences setObject:@"NB-large" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 4) {
-        [appDelegate.storyDetailViewController setFontSize:26];
-        [userPreferences setInteger:26 forKey:@"fontSize"];
+        [appDelegate.storyDetailViewController changeFontSize:@"NB-extra-large"];
+        [userPreferences setObject:@"NB-extra-large" forKey:@"fontSizing"];
     }
     [userPreferences synchronize];
 }

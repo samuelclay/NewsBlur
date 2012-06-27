@@ -97,7 +97,6 @@
         
         self.window.rootViewController = self.splitStoryController;
 
-        
     } else {
         navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
         [window addSubview:navigationController.view];
@@ -441,6 +440,7 @@
 }
 
 - (void)adjustStoryDetailWebView:(BOOL)init shouldCheckLayout:(BOOL)checkLayout {
+    return;
     UINavigationController *navController = self.navigationController;
 
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {        

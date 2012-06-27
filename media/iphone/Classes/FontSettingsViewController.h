@@ -19,7 +19,7 @@
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (retain, nonatomic) IBOutlet UISegmentedControl *fontStyleSegment;
-@property (retain, nonatomic) IBOutlet UISegmentedControl *fontSizeSgement;
+@property (retain, nonatomic) IBOutlet UISegmentedControl *fontSizeSegment;
 
 - (IBAction)changeFontStyle:(id)sender;
 - (IBAction)changeFontSize:(id)sender;

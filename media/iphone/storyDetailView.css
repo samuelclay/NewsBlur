@@ -36,9 +36,29 @@ body {
 
 /* FONT RENDERING */
 
-body {
+.NB-extra-small {
+    line-height: 1.6em;
+    font-size: 12px;
+}
+
+.NB-small {
+    line-height: 1.6em;
+    font-size: 14px;
+}
+
+.NB-medium {
     line-height: 1.6em;
     font-size: 16px;
+}
+
+.NB-large {
+    line-height: 1.6em;
+    font-size: 22px;
+}
+
+.NB-extra-large {
+    line-height: 1.6em;
+    font-size: 26px;
 }
 
 .NB-san-serif {

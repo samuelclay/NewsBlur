@@ -263,14 +263,26 @@
 - (void)showStory {
     NSString *commentsString = [self getComments];    
     NSString *headerString, *sharingHtmlString;
-    NSString *customBodyClass = @"";
+    NSString *fontStyleClass = @"";
+    NSString *fontSizeClass = @"";
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
+    
     if ([userPreferences stringForKey:@"fontStyle"]){
-        customBodyClass = [customBodyClass stringByAppendingString:[userPreferences stringForKey:@"fontStyle"]];
+        fontStyleClass = [fontStyleClass stringByAppendingString:[userPreferences stringForKey:@"fontStyle"]];
     } else {
-        customBodyClass = [customBodyClass stringByAppendingString:@"NB-san-serif"];
+        fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-san-serif"];
     }
+    
+    NSLog(@"fontClass is %@", fontStyleClass);
+    
+    if ([userPreferences stringForKey:@"fontSizing"]){
+        fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"fontSizing"]];
+    } else {
+        fontSizeClass = [fontSizeClass stringByAppendingString:@"NB-medium"];
+    }
+    
+    NSLog(@"fontSizing is %@", fontSizeClass);
     
     // set up layout values based on iPad/iPhone    
     headerString = [NSString stringWithFormat:@
@@ -321,13 +333,19 @@
                              story_tags];
     NSString *htmlString = [NSString stringWithFormat:@
                             "<html><head>%@</head>"
-                            "<body id=\"story_pane\" class=\"%@\">%@"
+                            "<body id=\"story_pane\">"
+                            "<div class=\"%@\" id=\"NB-font-size\">"
+                            "<div class=\"%@\" id=\"NB-font-style\">"
+                            "%@"
                             "<div class=\"NB-story\">%@ </div>"
                             "<div id=\"NB-comments-wrapper\">%@</div>" // comments
                             "%@" // share
+                            "</div>" // font-style
+                            "</div>" // font-size
                             "</body></html>",
-                            headerString, 
-                            customBodyClass,
+                            headerString,
+                            fontSizeClass,
+                            fontStyleClass,
                             storyHeader, 
                             [appDelegate.activeStory objectForKey:@"story_content"],
                             commentsString,
@@ -422,16 +440,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
-    if ([userPreferences integerForKey:@"fontSize"]){
-        [self setFontSize:[userPreferences integerForKey:@"fontSize"]];
+    if ([userPreferences integerForKey:@"fontSizing"]){
+        [self changeFontSize:[userPreferences stringForKey:@"fontSizing"]];
     }
 
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
-    if ([userPreferences integerForKey:@"fontSize"]){
-        [self setFontSize:[userPreferences integerForKey:@"fontSize"]];
+    if ([userPreferences integerForKey:@"fontSizing"]){
+        [self changeFontSize:[userPreferences stringForKey:@"fontSizing"]];
     }
 }
 
@@ -596,8 +614,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 }
 
-- (void)setFontSize:(float)fontSize {
-    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.fontSize= '%fpx'", 
+- (void)changeFontSize:(NSString *)fontSize {
+    NSLog(@"fontSize is %@", fontSize);
+    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-size').setAttribute('class', '%@')", 
                           fontSize];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     [jsString release];
@@ -612,7 +631,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     [userPreferences synchronize];
     
-    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementsByTagName('body')[0].style.fontFamily= '%@'", 
+    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-style').setAttribute('class', '%@')", 
                           fontStyle];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     [jsString release];
