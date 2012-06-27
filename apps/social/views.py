@@ -190,6 +190,13 @@ def load_social_page(request, user_id, username=None):
     
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
     social_profile = MSocialProfile.objects.get(user_id=social_user_id)
+    profiles = dict([(p['user_id'], p) for p in profiles])
+    
+    for s, story in enumerate(stories):
+        for u, user in enumerate(story['shared_by_friends']):
+            stories[s]['shared_by_friends'][u] = profiles[user]
+        for u, user in enumerate(story['shared_by_public']):
+            stories[s]['shared_by_public'][u] = profiles[user]
 
     params = {
         'user': user,

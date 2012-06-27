@@ -2220,10 +2220,6 @@ background: transparent;
 #story_pane .NB-story-comments-public-header-wrapper {
     cursor: default;
 }
-#story_pane .NB-story-comments-shares-teaser-wrapper {
-    border-top: 0;
-    padding-top: 0;
-}
 #story_pane .NB-story-comments-public-teaser,
 #story_pane .NB-story-comments-public-header {
     background-color: #B1B6B4;
@@ -2244,6 +2240,12 @@ background: transparent;
     color: #404040;
     text-shadow: 0 1px 0 white;
 }
+
+#story_pane .NB-story-comments-shares-teaser-wrapper {
+    border-top: 0;
+    padding-top: 0;
+}
+
 #story_pane .NB-story-comments-shares-teaser {
     background-color: whiteSmoke;
     color: #202020;
