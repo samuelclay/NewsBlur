@@ -94,6 +94,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
+    'subdomains.middleware.SubdomainURLRoutingMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -179,6 +180,15 @@ SESSION_ENGINE          = "django.contrib.sessions.backends.db"
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
+
+# ==============
+# = Subdomains =
+# ==============
+
+SUBDOMAIN_URLCONFS = {
+    None: 'urls',
+    'www': 'urls',
+}
 
 # ===========
 # = Logging =

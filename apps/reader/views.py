@@ -16,6 +16,7 @@ from django.conf import settings
 from django.core.mail import mail_admins
 from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
+from django.contrib.sites.models import Site
 from mongoengine.queryset import OperationError
 from pymongo.helpers import OperationFailure
 from operator import itemgetter
@@ -34,6 +35,7 @@ try:
 except:
     pass
 from apps.social.models import MSharedStory, MSocialProfile, MSocialSubscription, MActivity
+from apps.social.views import load_social_page
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import relative_timesince
@@ -51,6 +53,16 @@ SINGLE_DAY = 60*60*24
 @never_cache
 @render_to('reader/feeds.xhtml')
 def index(request):
+    if request.method == "GET" and request.subdomain:
+        username = request.subdomain
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return HttpResponseRedirect('http://%s%s' % (
+                Site.objects.get_current().domain,
+                reverse('index')))
+        return load_social_page(request, user_id=user.pk, username=request.subdomain)
+
     # XXX TODO: Remove me on launch.
     if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
         return {}, 'reader/social_signup.xhtml'
