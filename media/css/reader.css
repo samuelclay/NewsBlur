@@ -494,6 +494,10 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-feedlist .feed.NB-feed-inactive {
   display: none;
 }
+.NB-feedlist .feed.NB-feed-self-blurblog,
+.NB-feedlist-hide-read-feeds .NB-feedlist .feed.NB-feed-self-blurblog {
+    display: block;
+}
 
 .NB-feedlist .feed.NB-feed-unfetched {
 }

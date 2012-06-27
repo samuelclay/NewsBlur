@@ -4964,6 +4964,7 @@
             });
             $document.bind('keydown', 'u', function(e) {
                 e.preventDefault();
+                if (!self.active_story) return;
                 var story_id = self.active_story.id;
                 var story = self.model.get_story(story_id);
                 if (self.active_story && !self.active_story.get('read_status')) {
