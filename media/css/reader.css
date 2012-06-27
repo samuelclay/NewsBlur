@@ -378,11 +378,12 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-feedlists .NB-socialfeeds {
     border-bottom: 1px solid #A0A0A0;
 }
-..NB-feedlists .NB-socialfeeds .feed .feed_title {
+.NB-feedlists .NB-socialfeeds .feed .feed_title {
     text-shadow: 0 1px 0 #DAE2E8;
 }
-
-
+.NB-feedlists .NB-socialfeeds img.feed_favicon {
+    border-radius: 3px;
+}
 /* ============= */
 /* = Feed List = */
 /* ============= */
@@ -995,7 +996,9 @@ background: transparent;
     width: 16px;
     height: 16px;
 }
-
+#story_titles .NB-feedbar .feed.NB-feed-social .feed_favicon {
+    border-radius: 3px;
+}
 #story_titles .NB-feedbar .feed .feed_title {
 /*    float: left;*/
   display: block;

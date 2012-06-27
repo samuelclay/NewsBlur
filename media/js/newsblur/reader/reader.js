@@ -152,6 +152,7 @@
             this.locks.scrolling = _.delay(_.bind(function() {
                 this.flags.scrolling_by_selecting_story_title = false;
             }, this), 1000);
+            this.make_content_pane_feed_counter();
             
             this.switch_taskbar_view(view, flag);
             NEWSBLUR.app.story_titles.fill_out();
@@ -922,7 +923,6 @@
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_story', this.$s.$taskbar).removeClass('NB-disabled');
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-task-return');
-            // $('.feed_counts_floater').remove();
             clearTimeout(this.flags['next_fetch']);
             
             if (this.flags['showing_feed_in_tryfeed_view'] || this.flags['showing_social_feed_in_tryfeed_view']) {
