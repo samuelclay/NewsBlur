@@ -23,6 +23,7 @@
     NSString *_positiveCountStr;
     NSString *_neutralCountStr;
     NSString *_negativeCountStr;
+    BOOL isSocial;
 }
 
 @property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
@@ -31,6 +32,7 @@
 @property (assign, nonatomic) int positiveCount;
 @property (assign, nonatomic) int neutralCount;
 @property (assign, nonatomic) int negativeCount;
+@property (assign, nonatomic) BOOL isSocial;
 @property (nonatomic, retain) NSString *positiveCountStr;
 @property (nonatomic, retain) NSString *neutralCountStr;
 @property (nonatomic, retain) NSString *negativeCountStr;

@@ -31,6 +31,7 @@ static CGFloat *psColors = nil;
 @synthesize positiveCountStr;
 @synthesize neutralCountStr;
 @synthesize negativeCountStr;
+@synthesize isSocial;
 
 + (void) initialize{
 	if(self == [FeedTableCell class])
@@ -164,8 +165,6 @@ static CGFloat *psColors = nil;
          withFont:indicatorFont];    
 	}
     
-    
-	
     UIColor *textColor = self.selected || self.highlighted ? 
                          [UIColor whiteColor] : 
                          [UIColor blackColor];
@@ -176,13 +175,23 @@ static CGFloat *psColors = nil;
     } else {
         font = [UIFont fontWithName:@"Helvetica" size:12.6];
     }
-    [feedTitle 
-     drawInRect:CGRectMake(36.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
-     withFont:font
-     lineBreakMode:UILineBreakModeTailTruncation 
-     alignment:UITextAlignmentLeft];
-    
-    [self.feedFavicon drawInRect:CGRectMake(14.0, 11.0, 16.0, 16.0)];
+
+    if (isSocial) {
+        [self.feedFavicon drawInRect:CGRectMake(4.0, 4.0, 32.0, 32.0)];
+        [feedTitle 
+         drawInRect:CGRectMake(36 + 6.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 6, 20.0) 
+         withFont:font
+         lineBreakMode:UILineBreakModeTailTruncation 
+         alignment:UITextAlignmentLeft];
+    } else {
+        [self.feedFavicon drawInRect:CGRectMake(14.0, 11.0, 16.0, 16.0)];
+        [feedTitle 
+         drawInRect:CGRectMake(36.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
+         withFont:font
+         lineBreakMode:UILineBreakModeTailTruncation 
+         alignment:UITextAlignmentLeft];
+    }
+
     
 }
 

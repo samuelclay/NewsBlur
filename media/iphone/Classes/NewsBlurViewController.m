@@ -490,8 +490,9 @@
     id feedId = [feeds objectAtIndex:location];
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
     
-    if ([appDelegate isSocialFeed:feedIdStr]) {
+    if (isSocial) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
         cell.feedFavicon = [Utilities getImage:feedIdStr];
     } else {
@@ -502,6 +503,7 @@
     cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
     cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];
     cell.negativeCount = [[feed objectForKey:@"ng"] intValue];
+    cell.isSocial      = isSocial;
     
     return cell;
 }
