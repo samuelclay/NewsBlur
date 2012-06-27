@@ -121,6 +121,10 @@
 
 }
 
+- (void)clearComments {
+    self.commentField.text = nil;
+}
+
 - (IBAction)doShareThisStory:(id)sender {    
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
                            NEWSBLUR_URL];
@@ -172,6 +176,7 @@
 
 
 
+
 - (void)finishAddComment:(ASIHTTPRequest *)request {
     NSLog(@"%@", [request responseString]);
     NSLog(@"Successfully added.");
@@ -183,6 +188,7 @@
                              initWithDictionary:[responseString JSONValue]];
     appDelegate.activeStory = [results objectForKey:@"story"];
     [results release];
+    self.commentField.text = nil;
     [appDelegate refreshComments];
 }
 
@@ -193,6 +199,7 @@
 
 -(void)keyboardWillHide:(NSNotification*)notification
 {
+    
     NSDictionary *userInfo = notification.userInfo;
     NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];

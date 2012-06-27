@@ -22,6 +22,7 @@
 @property (retain, nonatomic) IBOutlet UIBarButtonItem *toolbarTitle;
 
 - (void)setSiteInfo:(NSString *)userId setUsername:(NSString *)username;
+- (void)clearComments;
 - (IBAction)doCancelButton:(id)sender;
 - (IBAction)doToggleButton:(id)sender;
 - (IBAction)doShareThisStory:(id)sender;

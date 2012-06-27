@@ -375,6 +375,10 @@
     [storyDetailViewController refreshComments];
 }
 
+- (void)resetShareComments {
+    [shareViewController clearComments];
+}
+
 - (BOOL)isSocialFeed:(NSString *)feedIdStr {
     if ([feedIdStr length] > 6) {
         NSString *feedIdSubStr = [feedIdStr substringToIndex:6];

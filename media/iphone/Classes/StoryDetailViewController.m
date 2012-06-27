@@ -261,6 +261,8 @@
 }
 
 - (void)showStory {
+    
+    [appDelegate resetShareComments];
     NSString *commentsString = [self getComments];    
     NSString *headerString, *sharingHtmlString;
     NSString *fontStyleClass = @"";
