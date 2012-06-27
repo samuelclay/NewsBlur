@@ -316,7 +316,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         }
 
         NEWSBLUR.reader.cache.mouse_position_y = e.pageY;
-        NEWSBLUR.reader.$s.$mouse_indicator.css('top', NEWSBLUR.reader.cache.mouse_position_y - 8);
+        NEWSBLUR.reader.$s.$mouse_indicator.css('top', NEWSBLUR.reader.cache.mouse_position_y - this.cache.story_pane_position - 8);
         
         if (this.flags['mousemove_timeout'] ||
             NEWSBLUR.reader.flags['scrolling_by_selecting_story_title']) {

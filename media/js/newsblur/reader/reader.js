@@ -438,8 +438,14 @@
             }
         },
         
-        blur_to_page: function() {
-            $(':focus').blur();
+        blur_to_page: function(options) {
+            options = options || {};
+            
+            if (options.manage_menu) {
+                $('.NB-menu-manage :focus').blur();
+            } else {
+                $(':focus').blur();
+            }
         },
         
         // ==============
@@ -2739,7 +2745,7 @@
             }
             $('.NB-task-manage').removeClass('NB-hover');
             
-            this.blur_to_page();
+            this.blur_to_page({manage_menu: true});
         },
         
         // ========================
