@@ -49,7 +49,7 @@
 - (void)openMoveView;
 - (void)changeActiveFeedDetailRow;
 - (void)changeRowStyleToRead:(UITableViewCell *)cell;
-- (void)instafetchFeed:(id)sender;
+- (void)instafetchFeed;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;

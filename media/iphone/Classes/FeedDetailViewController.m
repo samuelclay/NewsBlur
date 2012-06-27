@@ -103,21 +103,7 @@
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    //[self.storyTitlesTable deselectRowAtIndexPath:[storyTitlesTable indexPathForSelectedRow] animated:YES];
-    
-    UIBarButtonItem *refreshButton = [[UIBarButtonItem alloc] 
-                                      initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh
-                                      target:self 
-                                      action:@selector(instafetchFeed:)
-                                      ];
-    if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
-        self.navigationItem.rightBarButtonItem = refreshButton;   
-    } else {
-        //self.navigationItem.rightBarButtonItem = originalButton;   
-    }
-    [refreshButton release];
-    
+- (void)viewDidAppear:(BOOL)animated {    
 	[super viewDidAppear:animated];
 }
 
@@ -784,8 +770,10 @@
             [self confirmDeleteSite];
         } else if (buttonIndex == 1) {
             [self openMoveView];
+        } else if (buttonIndex == 2) {
+            [self instafetchFeed];
         }
-    }
+    } 
 }
 
 - (IBAction)doOpenSettingsActionSheet {
@@ -809,6 +797,10 @@
         
         NSString *moveText = @"Move to another folder";
         [options addButtonWithTitle:moveText];
+        
+        NSString *fetchText = @"Instafetch Site";
+        [options addButtonWithTitle:fetchText];
+
     }
     
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
@@ -933,7 +925,7 @@
 
 // called when the user taps refresh button
 
-- (void)instafetchFeed:(id)sender {
+- (void)instafetchFeed {
     NSLog(@"Instafetch");
     
     NSString *urlString = [NSString 

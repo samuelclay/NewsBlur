@@ -358,15 +358,16 @@
 - (void)hideShareView {    
     int newStoryHeight = storyDetailViewController.view.frame.size.height + SHARE_MODAL_HEIGHT - 44;
     
+    storyDetailViewController.view.frame = CGRectMake(0,
+                                                      0,
+                                                      storyDetailViewController.view.frame.size.width,
+                                                      newStoryHeight);
+    
     [UIView animateWithDuration:0.35 animations:^{
         shareViewController.view.frame = CGRectMake(0, 
                                                     storyDetailViewController.view.frame.size.height + SHARE_MODAL_HEIGHT + 44,
                                                     storyDetailViewController.view.frame.size.width,
-                                                    0);        
-        storyDetailViewController.view.frame = CGRectMake(0,
-                                                          0,
-                                                          storyDetailViewController.view.frame.size.width,
-                                                          newStoryHeight);
+                                                    0);
     }]; 
     
 }
