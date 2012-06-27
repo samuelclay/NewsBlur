@@ -57,6 +57,7 @@
     BOOL isRiverView;
     BOOL isSocialView;
     BOOL popoverHasFeedView;
+    BOOL inStoryDetail;
     NSDictionary * activeFeed;
     NSString * activeFolder;
     NSDictionary * activeComment;
@@ -107,6 +108,7 @@
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
+@property (nonatomic, readwrite) BOOL inStoryDetail;
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSString * activeFolder;
 @property (readwrite, retain) NSDictionary * activeComment;
@@ -145,6 +147,7 @@
 - (void)showMasterPopover;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
+- (void)showDashboard;
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView:(BOOL)init shouldCheckLayout:(BOOL)checkLayout;

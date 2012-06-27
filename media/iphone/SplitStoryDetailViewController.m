@@ -72,9 +72,9 @@
 
 #pragma mark - Split view
 
-//-(BOOL)splitViewController:(UISplitViewController *)svc shouldHideViewController:(UIViewController *)vc inOrientation:(UIInterfaceOrientation)orientation {
-//    return YES;
-//}
+-(BOOL)splitViewController:(UISplitViewController *)svc shouldHideViewController:(UIViewController *)vc inOrientation:(UIInterfaceOrientation)orientation {
+    return NO;
+}
 
 - (void)splitViewController:(UISplitViewController *)splitController 
      willHideViewController:(UIViewController *)viewController 

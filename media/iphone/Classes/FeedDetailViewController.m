@@ -64,11 +64,7 @@
     
     UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        appDelegate.splitStoryDetailViewController.navigationItem.titleView = titleLabel;
-    } else {
-        self.navigationItem.titleView = titleLabel;
-    }
+    self.navigationItem.titleView = titleLabel;
 
     // Commenting out until training is ready...
     //    UIBarButtonItem *trainBarButton = [UIBarButtonItem alloc];

@@ -95,6 +95,7 @@
 		437AA8C61592F8D2005463F5 /* bullets_yellow_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C41592F8D2005463F5 /* bullets_yellow_green.png */; };
 		437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8C8159394E2005463F5 /* ShareViewController.m */; };
 		437AA8CB159394E2005463F5 /* ShareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C9159394E2005463F5 /* ShareViewController.xib */; };
+		4389E9E9159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 4389E9E8159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png */; };
 		438F525D159B65E200211B65 /* 16-List.png in Resources */ = {isa = PBXBuildFile; fileRef = 438F525B159B65E200211B65 /* 16-List.png */; };
 		438F525E159B65E200211B65 /* 16-List@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 438F525C159B65E200211B65 /* 16-List@2x.png */; };
 		438F5262159B6F8C00211B65 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 438F5261159B6F0400211B65 /* MBProgressHUD.m */; };
@@ -319,6 +320,7 @@
 		437AA8C7159394E2005463F5 /* ShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		437AA8C8159394E2005463F5 /* ShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
 		437AA8C9159394E2005463F5 /* ShareViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ShareViewController.xib; path = Classes/ShareViewController.xib; sourceTree = "<group>"; };
+		4389E9E8159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Screen Shot 2012-06-27 at 12.14.10 PM.png"; sourceTree = "<group>"; };
 		438F525B159B65E200211B65 /* 16-List.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "16-List.png"; sourceTree = "<group>"; };
 		438F525C159B65E200211B65 /* 16-List@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "16-List@2x.png"; sourceTree = "<group>"; };
 		438F5260159B6F0400211B65 /* MBProgressHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
@@ -728,6 +730,7 @@
 		4307BE511565EDF8007A932A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4389E9E8159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png */,
 				438F525B159B65E200211B65 /* 16-List.png */,
 				438F525C159B65E200211B65 /* 16-List@2x.png */,
 				43CF31B31593BC1500296407 /* 208-facebook-green.png */,
@@ -1412,6 +1415,7 @@
 				43E8856015951F930032022E /* reader.css in Resources */,
 				438F525D159B65E200211B65 /* 16-List.png in Resources */,
 				438F525E159B65E200211B65 /* 16-List@2x.png in Resources */,
+				4389E9E9159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

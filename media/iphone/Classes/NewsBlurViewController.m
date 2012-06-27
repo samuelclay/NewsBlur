@@ -121,6 +121,8 @@
     
     [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
                                       animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+    
+    [appDelegate showDashboard];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -585,7 +587,7 @@
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (section == 0) {
-        headerLabel.text = @"SOCIAL";
+        headerLabel.text = @"BLURBLOGS";
         customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
                                       colorWithAlphaComponent:0.8];
     } else if (section == 1) {

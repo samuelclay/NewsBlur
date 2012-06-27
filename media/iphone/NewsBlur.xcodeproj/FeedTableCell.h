@@ -37,4 +37,6 @@
 @property (nonatomic, retain) NSString *neutralCountStr;
 @property (nonatomic, retain) NSString *negativeCountStr;
 
+- (UIImage*) roundCorneredImage: (UIImage*) orig radius:(CGFloat) r;
+
 @end

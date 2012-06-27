@@ -116,12 +116,12 @@
 
 - (void)setSiteInfo:(NSString *)userId setUsername:(NSString *)username {
     if (userId) {
-        [toolbarTitle setTitle:@"Reply"];
-        [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
+        [submitButton setTitle:@"Reply"];
+        [toolbarTitle setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         [submitButton setAction:(@selector(doReplyToComment:))];
     } else {
-        [toolbarTitle setTitle:@"Share"];
-        [submitButton setTitle:@"Share this story"];
+        [toolbarTitle setTitle:@"Post to Blurblog"];
+        [submitButton setTitle:@"Post"];
         [submitButton setAction:(@selector(doShareThisStory:))];
     }
     [self.siteInformation setNumberOfLines:2];

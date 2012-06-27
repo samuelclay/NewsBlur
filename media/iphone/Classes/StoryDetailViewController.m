@@ -295,7 +295,7 @@
    sharingHtmlString      = [NSString stringWithFormat:@
                             "<div class='NB-share-header'></div>"
                             "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                            "<div class='NB-share-button'><span class='NB-share-icon'></span>Share this story</div>"
+                            "<div class='NB-share-button'><span class='NB-share-icon'></span>Post to Blurblog</div>"
                             "<div class='NB-save-button'><span class='NB-save-icon'></span>Save this story</div>"
                             "</div></div>"];
     NSString *story_author      = @"";
