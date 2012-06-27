@@ -2340,11 +2340,11 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
                     ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-socialfeed-delete' }, [
+                    (feed.get('user_id') != NEWSBLUR.Globals.user_id && $.make('li', { className: 'NB-menu-separator' })),
+                    (feed.get('user_id') != NEWSBLUR.Globals.user_id && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-socialfeed-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Unfollow')
-                    ]),
+                    ])),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete-confirm NB-menu-manage-socialfeed-delete-confirm' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Really unfollow?')
