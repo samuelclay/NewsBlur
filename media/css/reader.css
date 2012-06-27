@@ -5081,6 +5081,15 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-pinboard {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
 }
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-diigo {
+    background: transparent url('/media/embed/reader/diigo.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-kippt {
+    background: transparent url('/media/embed/reader/kippt.png') no-repeat 0 0;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-evernote {
+    background: transparent url('/media/embed/reader/evernote.png') no-repeat 0 0;
+}
 .NB-menu-manage .NB-menu-manage-story-thirdparty .NB-menu-manage-thirdparty-googleplus {
     background: transparent url('/media/embed/reader/googleplus.png') no-repeat 0 0;
 }
@@ -5137,6 +5146,27 @@ form.opml_import_form input {
   opacity: .2;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-pinboard .NB-menu-manage-thirdparty-pinboard {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-diigo .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-diigo .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-diigo .NB-menu-manage-thirdparty-diigo {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-kippt .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-kippt .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-kippt .NB-menu-manage-thirdparty-kippt {
+  opacity: 1;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-evernote .NB-menu-manage-image,
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-evernote .NB-menu-manage-thirdparty-icon {
+  opacity: .2;
+}
+.NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-evernote .NB-menu-manage-thirdparty-evernote {
   opacity: 1;
 }
 .NB-menu-manage .NB-menu-manage-story-thirdparty.NB-menu-manage-highlight-googleplus .NB-menu-manage-image,
@@ -6915,6 +6945,15 @@ form.opml_import_form input {
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-pinboard] {
     background: transparent url('/media/embed/reader/pinboard.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-diigo] {
+    background: transparent url('/media/embed/reader/diigo.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-kippt] {
+    background: transparent url('/media/embed/reader/kippt.png') no-repeat 0 0;
+}
+.NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-evernote] {
+    background: transparent url('/media/embed/reader/evernote.png') no-repeat 0 0;
 }
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-googleplus] {
     background: transparent url('/media/embed/reader/googleplus.png') no-repeat 0 0;

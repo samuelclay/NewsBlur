@@ -1640,6 +1640,54 @@
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
         },
         
+        send_story_to_diigo: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'http://www.diigo.com/post?';
+            var url = [
+              url,
+              'url=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&title=',
+              encodeURIComponent(story.get('story_title')),
+              '&tags=',
+              encodeURIComponent(story.get('story_tags').join(', '))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+        
+        send_story_to_kippt: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://kippt.com/extensions/new/?';
+            var url = [
+              url,
+              'url=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&title=',
+              encodeURIComponent(story.get('story_title')),
+              '&tags=',
+              encodeURIComponent(story.get('story_tags').join(', '))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+        
+        send_story_to_evernote: function(story_id) {
+            var story = this.model.get_story(story_id);
+            var url = 'https://www.evernote.com/clip.action?';
+            var url = [
+              url,
+              'url=',
+              encodeURIComponent(story.get('story_permalink')),
+              '&title=',
+              encodeURIComponent(story.get('story_title')),
+              '&tags=',
+              encodeURIComponent(story.get('story_tags').join(', '))
+            ].join('');
+            window.open(url, '_blank');
+            NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
+        },
+        
         send_story_to_googleplus: function(story_id) {
             var story = this.model.get_story(story_id);
             var url = 'https://plusone.google.com/_/+1/confirm'; //?hl=en&url=${url}
@@ -2459,6 +2507,21 @@
                         }, this)).bind('mouseleave', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-pinboard');
                         }, this))),
+                        (NEWSBLUR.Preferences['story_share_diigo'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-diigo'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Diigo').parent().addClass('NB-menu-manage-highlight-diigo');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-diigo');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_kippt'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-kippt'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Kippt').parent().addClass('NB-menu-manage-highlight-kippt');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-kippt');
+                        }, this))),
+                        (NEWSBLUR.Preferences['story_share_evernote'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-evernote'}).bind('mouseenter', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Evernote').parent().addClass('NB-menu-manage-highlight-evernote');
+                        }, this)).bind('mouseleave', _.bind(function(e) {
+                            $(e.target).siblings('.NB-menu-manage-title').text('Email story').parent().removeClass('NB-menu-manage-highlight-evernote');
+                        }, this))),
                         (NEWSBLUR.Preferences['story_share_googleplus'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-googleplus'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Google+').parent().addClass('NB-menu-manage-highlight-googleplus');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -2494,6 +2557,12 @@
                           this.send_story_to_readability(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-pinboard')) {
                           this.send_story_to_pinboard(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-diigo')) {
+                          this.send_story_to_diigo(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-kippt')) {
+                          this.send_story_to_kippt(story.id);
+                      } else if ($target.hasClass('NB-menu-manage-thirdparty-evernote')) {
+                          this.send_story_to_evernote(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-googleplus')) {
                           this.send_story_to_googleplus(story.id);
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-instapaper')) {
