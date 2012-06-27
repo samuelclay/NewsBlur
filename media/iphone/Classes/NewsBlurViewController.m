@@ -51,6 +51,16 @@
 }
 
 - (void)viewDidLoad {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    if ([userPreferences integerForKey:@"showAllFeeds"] == 0) {
+        self.viewShowingAllFeeds = NO;
+        [self.sitesButton setImage:[UIImage imageNamed:@"16-list.png"]];
+    } else {
+        self.viewShowingAllFeeds = YES;
+        [self.sitesButton setImage:[UIImage imageNamed:@"ellipses.png"]];
+    }
+    
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] 
                                                initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                target:self 
@@ -59,7 +69,6 @@
      
      [self.navigationItem.rightBarButtonItem setImage:[UIImage imageNamed:@"add_button.png"]];
     [appDelegate showNavigationBar:NO];
-    self.viewShowingAllFeeds = NO;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
@@ -234,9 +243,9 @@
     [self loadFavicons];
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
-    if (appDelegate.feedsViewController.view.window) {
+    //if (appDelegate.feedsViewController.view.window) {
         [appDelegate setTitle:[results objectForKey:@"user"]];
-    }
+    //}
         
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -299,10 +308,18 @@
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
 
-    [self calculateFeedLocations:YES];
+    if (self.viewShowingAllFeeds) {
+        [self calculateFeedLocations:NO];
+    } else {
+        [self calculateFeedLocations:YES];
+    }
     [self.feedTitlesTable reloadData];
+
+    
     NSLog(@"appDelegate.dictFolders: %@", appDelegate.dictFolders);
     NSLog(@"appDelegate.dictFoldersArray: %@", appDelegate.dictFoldersArray);
+    
+    // test for latest version of app
     
     NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];  
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
@@ -361,15 +378,22 @@
 
 - (IBAction)doSwitchSitesUnread {
     self.viewShowingAllFeeds = !self.viewShowingAllFeeds;
-    NSDictionary *feed;
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if (self.viewShowingAllFeeds) {
-        [self.sitesButton setImage:[UIImage imageNamed:@"ellipses_half.png"]];
-//        [self.sitesButton setTitle:@"Unreads"];
-    } else {
         [self.sitesButton setImage:[UIImage imageNamed:@"ellipses.png"]];
-//        [self.sitesButton setTitle:@"All Sites"];
+        [userPreferences setInteger:1 forKey:@"showAllFeeds"];
+    } else {
+        [self.sitesButton setImage:[UIImage imageNamed:@"16-list.png"]];
+        [userPreferences setInteger:0 forKey:@"showAllFeeds"];
     }
+        
+    [userPreferences synchronize];
+    [self switchSitesUnread];
+}
+
+- (void)switchSitesUnread {
+    NSDictionary *feed;
     
     NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
     NSMutableArray *indexPaths = [NSMutableArray array];
@@ -378,7 +402,7 @@
         [self calculateFeedLocations:NO];
     }
     
-//    NSLog(@"View showing all: %d and %@", self.viewShowingAllFeeds, self.stillVisibleFeeds);
+    //    NSLog(@"View showing all: %d and %@", self.viewShowingAllFeeds, self.stillVisibleFeeds);
     
     for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
         NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
@@ -394,7 +418,7 @@
             } else {
                 feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
             }
-             
+            
             int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
             
             if (!self.viewShowingAllFeeds ||
@@ -424,7 +448,7 @@
     
     CGPoint offset = CGPointMake(0, 0);
     [self.feedTitlesTable setContentOffset:offset animated:YES];
-
+    
     // Forget still visible feeds, since they won't be populated when
     // all feeds are showing, and shouldn't be populated after this
     // hide/show runs.

@@ -57,6 +57,7 @@
 - (IBAction)doSwitchSitesUnread;
 - (void)loadFavicons;
 - (void)loadAvatars;
+- (void)switchSitesUnread;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;

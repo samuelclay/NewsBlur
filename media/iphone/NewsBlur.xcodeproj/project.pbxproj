@@ -95,6 +95,9 @@
 		437AA8C61592F8D2005463F5 /* bullets_yellow_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C41592F8D2005463F5 /* bullets_yellow_green.png */; };
 		437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8C8159394E2005463F5 /* ShareViewController.m */; };
 		437AA8CB159394E2005463F5 /* ShareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C9159394E2005463F5 /* ShareViewController.xib */; };
+		438F525D159B65E200211B65 /* 16-List.png in Resources */ = {isa = PBXBuildFile; fileRef = 438F525B159B65E200211B65 /* 16-List.png */; };
+		438F525E159B65E200211B65 /* 16-List@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 438F525C159B65E200211B65 /* 16-List@2x.png */; };
+		438F5262159B6F8C00211B65 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 438F5261159B6F0400211B65 /* MBProgressHUD.m */; };
 		439DAB201590DA350019B0EB /* FeedsMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */; };
 		439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */; };
 		439DAB281590E6720019B0EB /* 53-house.png in Resources */ = {isa = PBXBuildFile; fileRef = 439DAB261590E6720019B0EB /* 53-house.png */; };
@@ -215,7 +218,6 @@
 		FF38DB1313F2112D00251891 /* UIView+TKCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38DB1213F2112D00251891 /* UIView+TKCategory.m */; };
 		FF38DB1A13F21B2C00251891 /* ABTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FF38DB1913F21B2C00251891 /* ABTableViewCell.m */; };
 		FF4BBC1E13F7487A001EBEBD /* TransparentToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = FF4BBC1D13F7487A001EBEBD /* TransparentToolbar.m */; };
-		FF56EC7B13F755E40009D8E0 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = FF56EC7A13F755E40009D8E0 /* MBProgressHUD.m */; };
 		FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5EA47D143B691000B7563D /* AddSiteViewController.m */; };
 		FF70DD2D1457A76E0053CFB0 /* StringHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = FF70DD2C1457A76E0053CFB0 /* StringHelper.m */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; };
@@ -317,6 +319,10 @@
 		437AA8C7159394E2005463F5 /* ShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		437AA8C8159394E2005463F5 /* ShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
 		437AA8C9159394E2005463F5 /* ShareViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ShareViewController.xib; path = Classes/ShareViewController.xib; sourceTree = "<group>"; };
+		438F525B159B65E200211B65 /* 16-List.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "16-List.png"; sourceTree = "<group>"; };
+		438F525C159B65E200211B65 /* 16-List@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "16-List@2x.png"; sourceTree = "<group>"; };
+		438F5260159B6F0400211B65 /* MBProgressHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		438F5261159B6F0400211B65 /* MBProgressHUD.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		439DAB1D1590DA350019B0EB /* FeedsMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedsMenuViewController.h; sourceTree = "<group>"; };
 		439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedsMenuViewController.m; sourceTree = "<group>"; };
 		439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FeedsMenuViewController.xib; path = ../Classes/FeedsMenuViewController.xib; sourceTree = "<group>"; };
@@ -545,8 +551,6 @@
 		FF38DB1913F21B2C00251891 /* ABTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABTableViewCell.m; sourceTree = "<group>"; };
 		FF4BBC1C13F7487A001EBEBD /* TransparentToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TransparentToolbar.h; sourceTree = "<group>"; };
 		FF4BBC1D13F7487A001EBEBD /* TransparentToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TransparentToolbar.m; sourceTree = "<group>"; };
-		FF56EC7913F755E40009D8E0 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
-		FF56EC7A13F755E40009D8E0 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		FF5EA47C143B691000B7563D /* AddSiteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteViewController.h; sourceTree = "<group>"; };
 		FF5EA47D143B691000B7563D /* AddSiteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddSiteViewController.m; sourceTree = "<group>"; };
 		FF70DD2B1457A76E0053CFB0 /* StringHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringHelper.h; sourceTree = "<group>"; };
@@ -670,6 +674,8 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				438F5260159B6F0400211B65 /* MBProgressHUD.h */,
+				438F5261159B6F0400211B65 /* MBProgressHUD.m */,
 				FF38DB1813F21B2C00251891 /* ABTableViewCell.h */,
 				FF38DB1913F21B2C00251891 /* ABTableViewCell.m */,
 				4307BEFC1565EEBC007A932A /* Base64.h */,
@@ -680,8 +686,6 @@
 				FF38679D13D8914A00F8AB3A /* GTMNString+HTML.m */,
 				FFD2BB8A1401AD85004277DA /* libTestFlight.a */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
-				FF56EC7913F755E40009D8E0 /* MBProgressHUD.h */,
-				FF56EC7A13F755E40009D8E0 /* MBProgressHUD.m */,
 				32CA4F630368D1EE00C91783 /* NewsBlur_Prefix.pch */,
 				FF38679913D88EEC00F8AB3A /* NSString+HTML.h */,
 				FF38679A13D88EEC00F8AB3A /* NSString+HTML.m */,
@@ -724,6 +728,8 @@
 		4307BE511565EDF8007A932A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				438F525B159B65E200211B65 /* 16-List.png */,
+				438F525C159B65E200211B65 /* 16-List@2x.png */,
 				43CF31B31593BC1500296407 /* 208-facebook-green.png */,
 				43CF31B41593BC1500296407 /* 208-facebook.png */,
 				43CF31B11593BA4800296407 /* 32-Twitter-Green.png */,
@@ -1404,6 +1410,8 @@
 				43CF31B51593BC1500296407 /* 208-facebook-green.png in Resources */,
 				43CF31B61593BC1500296407 /* 208-facebook.png in Resources */,
 				43E8856015951F930032022E /* reader.css in Resources */,
+				438F525D159B65E200211B65 /* 16-List.png in Resources */,
+				438F525E159B65E200211B65 /* 16-List@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1414,6 +1422,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				438F5262159B6F8C00211B65 /* MBProgressHUD.m in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* NewsBlurAppDelegate.m in Sources */,
 				28D7ACF80DDB3853001CB0EB /* NewsBlurViewController.m in Sources */,
@@ -1443,7 +1452,6 @@
 				FF38DB1313F2112D00251891 /* UIView+TKCategory.m in Sources */,
 				FF38DB1A13F21B2C00251891 /* ABTableViewCell.m in Sources */,
 				FF4BBC1E13F7487A001EBEBD /* TransparentToolbar.m in Sources */,
-				FF56EC7B13F755E40009D8E0 /* MBProgressHUD.m in Sources */,
 				FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */,
 				FFD887F01445F1E800385399 /* AddSiteAutocompleteCell.m in Sources */,
 				FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */,
