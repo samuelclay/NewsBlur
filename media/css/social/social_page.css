@@ -345,11 +345,12 @@ header {
 /* ======================= */
 
 .NB-story-comments {
-   margin: -24px 200px 32px 28px;
-   padding: 1px 0 0;
-   max-width: 700px;
-   border-top: 2px solid #353535;
-   border-bottom: 1px solid #353535; 
+    margin: 0 200px 32px 28px;
+    padding: 1px 0 0;
+    max-width: 700px;
+    border-top: 2px solid #353535;
+    border-bottom: 1px solid #353535; 
+    font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 .NB-story-comment {
     border-top: 1px solid #A6A6A6;
@@ -393,6 +394,11 @@ header {
 .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
     top: 8px;
     left: 12px;
+}
+.NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
 }
 .NB-story-comment .NB-story-comment-username {
     float: left;

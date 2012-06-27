@@ -193,10 +193,16 @@ def load_social_page(request, user_id, username=None):
     profiles = dict([(p['user_id'], p) for p in profiles])
     
     for s, story in enumerate(stories):
-        for u, user in enumerate(story['shared_by_friends']):
-            stories[s]['shared_by_friends'][u] = profiles[user]
-        for u, user in enumerate(story['shared_by_public']):
-            stories[s]['shared_by_public'][u] = profiles[user]
+        for u, user_id in enumerate(story['shared_by_friends']):
+            stories[s]['shared_by_friends'][u] = profiles[user_id]
+        for u, user_id in enumerate(story['shared_by_public']):
+            stories[s]['shared_by_public'][u] = profiles[user_id]
+        for c, comment in enumerate(story['comments']):
+            stories[s]['comments'][c]['user'] = profiles[comment['user_id']]
+            if comment['source_user_id']:
+                stories[s]['comments'][c]['source_user'] = profiles[comment['source_user_id']]
+            for r, reply in enumerate(comment['replies']):
+                stories[s]['comments'][c]['replies'][r]['user'] = profiles[reply['user_id']]
 
     params = {
         'user': user,

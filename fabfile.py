@@ -42,7 +42,8 @@ env.roledefs ={
            'db02.newsblur.com', 
            'db03.newsblur.com', 
            'db04.newsblur.com', 
-           'db05.newsblur.com'],
+           'db05.newsblur.com', 
+           'db06.newsblur.com'],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
              'task03.newsblur.com', 
@@ -595,9 +596,11 @@ def setup_mongo():
     sudo('echo "deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" >> /etc/apt/sources.list')
     sudo('apt-get update')
     sudo('apt-get -y install mongodb-10gen')
+    put('config/mongodb.prod.conf', '/etc/mongodb.conf', use_sudo=True)
+    sudo('/etc/init.d/mongodb restart')
 
 def setup_redis():
-    redis_version = '2.4.13'
+    redis_version = '2.4.15'
     with cd(env.VENDOR_PATH):
         run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
