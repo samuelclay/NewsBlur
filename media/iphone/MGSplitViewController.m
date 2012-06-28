@@ -123,7 +123,7 @@
 	// Configure default behaviour.
 	_viewControllers = [[NSMutableArray alloc] initWithObjects:[NSNull null], [NSNull null], nil];
 	_splitWidth = MG_DEFAULT_SPLIT_WIDTH;
-	_showsMasterInPortrait = NO;
+	_showsMasterInPortrait = YES;
 	_showsMasterInLandscape = YES;
 	_reconfigurePopup = NO;
 	_vertical = YES;

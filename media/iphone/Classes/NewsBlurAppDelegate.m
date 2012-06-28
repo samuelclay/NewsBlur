@@ -91,7 +91,7 @@
         
         splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:splitStoryDetailViewController];
         splitStoryDetailNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        splitStoryDetailViewController.navigationItem.title = @"Dashboard";
+        splitStoryDetailViewController.navigationItem.title = DASHBOARD_TITLE;
         
         splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, splitStoryDetailNavigationController, nil];
         
@@ -116,9 +116,6 @@
     [window makeKeyAndVisible];
     [feedsViewController fetchFeedList:YES];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-        [splitStoryController toggleMasterView:nil];
-    }
     //[self showFirstTimeUser];
 	return YES;
 }
@@ -284,7 +281,7 @@
 }
 
 - (void)showDashboard {
-    splitStoryDetailViewController.navigationItem.title = @"Dashboard";
+    splitStoryDetailViewController.navigationItem.title = DASHBOARD_TITLE;
     splitStoryDetailViewController.navigationItem.rightBarButtonItems = nil;
     [self hideStoryDetailView];
 }
@@ -387,7 +384,7 @@
     if (!self.inStoryDetail) {
         return;
     }
-    
+        
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {        
         storyDetailViewController.view.frame = CGRectMake(0, 
                                                           0, 
@@ -399,6 +396,11 @@
                                                           splitStoryDetailViewController.view.frame.size.width, 
                                                           splitStoryDetailViewController.view.frame.size.height);
     }
+    
+    int contentWidth = splitStoryDetailViewController.view.frame.size.width;
+    // set the styles inside the UIWebView
+    
+    [storyDetailViewController changeWebViewWidth:contentWidth];
 }
 
 - (void)animateHidingMasterView {

@@ -44,7 +44,7 @@
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
 
 - (void)dismissFeedsMenu;
-- (IBAction)showMenuButton;
+- (IBAction)showMenuButton:(id)sender;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;

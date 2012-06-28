@@ -166,8 +166,8 @@
 
 - (NSString *)getComments {
     NSString *comments = @"";
-    NSLog(@"the comment string is %@", [appDelegate.activeStory objectForKey:@"share_count"]);
-    NSLog(@"appDelegate.activeStory is %@", appDelegate.activeStory);
+//    NSLog(@"the comment string is %@", [appDelegate.activeStory objectForKey:@"share_count"]);
+//    NSLog(@"appDelegate.activeStory is %@", appDelegate.activeStory);
     if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] && [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
         NSArray *comments_array = [appDelegate.activeStory objectForKey:@"comments"];            
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@
@@ -281,6 +281,16 @@
     }
     
     int contentWidth = self.view.frame.size.width;
+    NSString *contentWidthClass;
+    
+    if (contentWidth > 700) {
+        contentWidthClass = @"NB-ipad-wide";
+    } else if (contentWidth > 420) {
+        contentWidthClass = @"NB-ipad-narrow";
+    } else {
+        contentWidthClass = @"NB-iphone";
+    }
+    
     
     // set up layout values based on iPad/iPhone    
     headerString = [NSString stringWithFormat:@
@@ -331,21 +341,24 @@
                              story_author,
                              story_tags];
     NSString *htmlString = [NSString stringWithFormat:@
-                            "<html><head>%@</head>"
-                            "<body id=\"story_pane\">"
-                            "<div class=\"%@\" id=\"NB-font-size\">"
-                            "<div class=\"%@\" id=\"NB-font-style\">"
-                            "%@"
-                            "<div class=\"NB-story\">%@ </div>"
-                            "<div id=\"NB-comments-wrapper\">%@</div>" // comments
-                            "%@" // share
-                            "</div>" // font-style
-                            "</div>" // font-size
-                            "</body></html>",
+                            "<html>"
+                            "<head>%@</head>" // header string
+                            "<body id=\"story_pane\" class=\"%@\">"
+                            "   <div class=\"%@\" id=\"NB-font-style\">"
+                            "   %@" // storyHeader
+                            "   <div class=\"%@\" id=\"NB-font-size\">"
+                            "       <div class=\"NB-story\">%@ </div>"
+                            "   </div>" // font-size
+                            "   <div id=\"NB-comments-wrapper\">%@</div>" // comments
+                            "       %@" // share
+                            "   </div>" // font-style
+                            "</body>"
+                            "</html>",
                             headerString,
-                            fontSizeClass,
+                            contentWidthClass,
                             fontStyleClass,
                             storyHeader, 
+                            fontSizeClass,
                             [appDelegate.activeStory objectForKey:@"story_content"],
                             commentsString,
                             sharingHtmlString
@@ -600,9 +613,24 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)changeWebViewWidth:(int)width {
     
-    NSString *jsString = [[NSString alloc] initWithFormat:@"document.querySelector('meta[name=viewport]').setAttribute('content', 'width=%d;', false); ", 
+    int contentWidth = self.view.frame.size.width;
+    NSString *contentWidthClass;
+    
+    if (contentWidth > 700) {
+        contentWidthClass = @"NB-ipad-wide";
+    } else if (contentWidth > 420) {
+        contentWidthClass = @"NB-ipad-narrow";
+    } else {
+        contentWidthClass = @"NB-iphone";
+    }
+    
+    NSString *jsString = [[NSString alloc] initWithFormat:@
+                          "document.getElementsByTagName('body')[0].setAttribute('class', '%@');"
+                          "document.querySelector('meta[name=viewport]').setAttribute('content', 'width=%d;', false); ", 
+                          contentWidthClass,
                           width];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    [contentWidthClass release];
     [jsString release];
 
 }

@@ -53,13 +53,18 @@
     // Release any retained subviews of the main view.
 }
 
+#pragma mark -
+#pragma mark Rotation support
+
+
+// Ensure that the view controller supports rotation and that the split view can therefore show in both portrait and landscape.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
+    return YES;
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation 
-                                         duration:(NSTimeInterval)duration {
-    [appDelegate adjustStoryDetailWebView:NO shouldCheckLayout:YES]; 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+	[appDelegate adjustStoryDetailWebView:NO shouldCheckLayout:YES]; 
 }
 
 

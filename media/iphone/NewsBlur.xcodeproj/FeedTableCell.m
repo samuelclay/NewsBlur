@@ -187,7 +187,7 @@ static CGFloat *psColors = nil;
 
     if (isSocial) {
         self.feedFavicon = [self roundCorneredImage:self.feedFavicon radius:6];
-        [self.feedFavicon drawInRect:CGRectMake(4.0, 4.0, 32.0, 32.0)];
+        [self.feedFavicon drawInRect:CGRectMake(5.0, 3.0, 32.0, 32.0)];
         [feedTitle 
          drawInRect:CGRectMake(36 + 6.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 6, 20.0) 
          withFont:font

@@ -55,19 +55,12 @@
     
     if ([userPreferences integerForKey:@"showAllFeeds"] == 0) {
         self.viewShowingAllFeeds = NO;
-        [self.sitesButton setImage:[UIImage imageNamed:@"16-list.png"]];
+        [self.sitesButton setImage:[UIImage imageNamed:@"16-List.png"]];
     } else {
         self.viewShowingAllFeeds = YES;
         [self.sitesButton setImage:[UIImage imageNamed:@"ellipses.png"]];
     }
     
-    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] 
-                                               initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                               target:self 
-                                               action:@selector(showMenuButton)] 
-                                             autorelease];
-     
-     [self.navigationItem.rightBarButtonItem setImage:[UIImage imageNamed:@"add_button.png"]];
     [appDelegate showNavigationBar:NO];
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
@@ -318,11 +311,10 @@
     [self.feedTitlesTable reloadData];
 
     
-    NSLog(@"appDelegate.dictFolders: %@", appDelegate.dictFolders);
-    NSLog(@"appDelegate.dictFoldersArray: %@", appDelegate.dictFoldersArray);
+//    NSLog(@"appDelegate.dictFolders: %@", appDelegate.dictFolders);
+//    NSLog(@"appDelegate.dictFoldersArray: %@", appDelegate.dictFoldersArray);
     
     // test for latest version of app
-    
     NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];  
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
@@ -349,7 +341,7 @@
     [results release];
 }
 
-- (IBAction)showMenuButton {
+- (IBAction)showMenuButton:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (popoverController == nil) {
             popoverController = [[UIPopoverController alloc]
@@ -359,8 +351,7 @@
         }
         
         [popoverController setPopoverContentSize:CGSizeMake(200, 130)];
-        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];  
+        [popoverController presentPopoverFromBarButtonItem:sender                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];  
     } else {
         [appDelegate showFeedsMenu]; 
     }
@@ -386,7 +377,7 @@
         [self.sitesButton setImage:[UIImage imageNamed:@"ellipses.png"]];
         [userPreferences setInteger:1 forKey:@"showAllFeeds"];
     } else {
-        [self.sitesButton setImage:[UIImage imageNamed:@"16-list.png"]];
+        [self.sitesButton setImage:[UIImage imageNamed:@"16-List.png"]];
         [userPreferences setInteger:0 forKey:@"showAllFeeds"];
     }
         

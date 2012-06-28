@@ -14,6 +14,7 @@
 #define FEED_TITLE_GRADIENT_TAG 100003
 #define FEED_DASHBOARD_VIEW_TAG 100004
 #define SHARE_MODAL_HEIGHT 140
+#define DASHBOARD_TITLE @"NewsBlur Dashboard"
 
 @class NewsBlurViewController;
 @class FeedDetailViewController;

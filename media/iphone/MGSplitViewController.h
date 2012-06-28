@@ -14,11 +14,9 @@ typedef enum _MGSplitViewDividerStyle {
 	MGSplitViewDividerStylePaneSplitter	= 1  // Thick divider, drawn with a grey gradient and a grab-strip.
 } MGSplitViewDividerStyle;
 
-@class NewsBlurAppDelegate;
 @class MGSplitDividerView;
 @protocol MGSplitViewControllerDelegate;
 @interface MGSplitViewController : UIViewController <UIPopoverControllerDelegate> {
-    NewsBlurAppDelegate *appDelegate;
 	BOOL _showsMasterInPortrait;
 	BOOL _showsMasterInLandscape;
 	float _splitWidth;
@@ -35,7 +33,6 @@ typedef enum _MGSplitViewDividerStyle {
 	MGSplitViewDividerStyle _dividerStyle; // Meta-setting which configures several aspects of appearance and behaviour.
 }
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, assign) IBOutlet id <MGSplitViewControllerDelegate> delegate;
 @property (nonatomic, assign) BOOL showsMasterInPortrait; // applies to both portrait orientations (default NO)
 @property (nonatomic, assign) BOOL showsMasterInLandscape; // applies to both landscape orientations (default YES)
