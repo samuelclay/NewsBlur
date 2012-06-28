@@ -2449,9 +2449,9 @@ background: transparent;
   width: 92%;
   background-color: #639510;
   cursor: pointer;
-  -moz-box-shadow:2px 2px 0 #95AB76;
-  -webkit-box-shadow:2px 2px 0 #95AB76;
-  box-shadow:2px 2px 0 #95AB76;
+  -moz-box-shadow: 2px 2px 0 #95AB76;
+  -webkit-box-shadow: 2px 2px 0 #95AB76;
+  box-shadow: 2px 2px 0 #95AB76;
   text-shadow: 0 1px 0 #101010;
 }
 .NB-sideoption-share .NB-sideoption-share-save.NB-saving {
@@ -2467,6 +2467,9 @@ background: transparent;
     margin: 6px 0;
     width: 92%;
     font-weight: normal;
+    -moz-box-shadow: 1px 1px 0 #95AB76;
+    -webkit-box-shadow: 1px 1px 0 #95AB76;
+    box-shadow: 1px 1px 0 #95AB76;
 }
 .NB-sideoption-share .NB-error {
     font-size: 10px;
