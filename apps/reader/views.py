@@ -58,7 +58,7 @@ def index(request):
         username = request.subdomain
         try:
             if '.' in username:
-                username = username.lsplit('.')[0]
+                username = username.split('.')[0]
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             return HttpResponseRedirect('http://%s%s' % (

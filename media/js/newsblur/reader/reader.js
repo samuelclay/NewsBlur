@@ -1306,8 +1306,12 @@
                 var slug = _.string.words(_.string.clean(feed.get('feed_title').replace(/[^a-z0-9\. ]/ig, ''))).join('-').toLowerCase();
                 var url = "social/" + feed.get('user_id') + "/" + slug;
                 if (!_.string.include(window.location.pathname, url)) {
+                    var params = {};
+                    if (_.string.include(window.location.pathname, "social/" + feed.get('user_id'))) {
+                        params['replace'] = true;
+                    }
                     // console.log(["Navigating to social", url, window.location.pathname]);
-                    NEWSBLUR.router.navigate(url);
+                    NEWSBLUR.router.navigate(url, params);
                 }
             } else if (!feed.get('feed_title')) {
                 console.log(["No feed title on social", feed]);

@@ -1,3 +1,5 @@
+{% load utils_tags %}
+
 <!DOCTYPE html>
 <html>
 
@@ -17,7 +19,7 @@
     
     <header class="NB-header">
         <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
-            <a href="{% url index %}social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-title-logo">
+            <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-title-logo">
                 <img src="{{ MEDIA_URL }}img/logo_128.png" class="NB-hover-off" />
                 <img src="{{ MEDIA_URL }}img/logo_newsblur_512.png" class="NB-hover-on" />
             </a>
