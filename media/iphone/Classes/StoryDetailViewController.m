@@ -200,6 +200,7 @@
         }
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
     }
+    
     return comments;
 }
 
@@ -226,6 +227,7 @@
                          [user objectForKey:@"username"],
                          [commentDict objectForKey:@"comments"],
                          [self getReplies:[commentDict objectForKey:@"replies"]]];
+
     return comment;
 }
 
@@ -238,10 +240,13 @@
             NSDictionary *user = [self getUser:[[reply_dict objectForKey:@"user_id"] intValue]];
             NSString *reply = [NSString stringWithFormat:@
                                 "<div class=\"NB-story-comment-reply\">"
-                                "<img class=\"NB-user-avatar NB-story-comment-reply-photo\" src=\"%@\" />"
-                                "<div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
-                                "<div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
-                                "<div class=\"NB-story-comment-reply-content\">%@</div>"
+                                "   <img class=\"NB-user-avatar NB-story-comment-reply-photo\" src=\"%@\" />"
+                                "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
+                                "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
+                                "   <div class=\"NB-story-comment-edit-button NB-story-comment-reply-edit-button\">"
+                                "       <div class=\"NB-story-comment-edit-button-wrapper\">edit</div>"            
+                                "   </div>"
+                                "   <div class=\"NB-story-comment-reply-content\">%@</div>"
                                 "</div>",
                                [user objectForKey:@"photo_url"],
                                [user objectForKey:@"username"],  

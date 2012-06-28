@@ -1,8 +1,8 @@
-$('img').each(function() {
+$('.NB-story img').each(function() {
     setImage(this);
 });
 
-$('img').bind('load', function() {
+$('.NB-story img').bind('load', function() {
     setImage(this);
 });
 
