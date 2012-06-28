@@ -54,10 +54,10 @@ SINGLE_DAY = 60*60*24
 @never_cache
 @render_to('reader/feeds.xhtml')
 def index(request):
-    if request.method == "GET" and request.subdomain:
+    if request.method == "GET" and request.subdomain and request.subdomain != 'dev':
         username = request.subdomain
         try:
-            if '.' in username and username != 'dev':
+            if '.' in username:
                 username = username.split('.')[0]
             user = User.objects.get(username=username)
         except User.DoesNotExist:
