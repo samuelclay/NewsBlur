@@ -57,12 +57,12 @@ def index(request):
     if request.method == "GET" and request.subdomain:
         username = request.subdomain
         try:
-            if '.' in username:
+            if '.' in username and username != 'dev':
                 username = username.split('.')[0]
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             return HttpResponseRedirect('http://%s%s' % (
-                Site.objects.get_current().domain,
+                Site.objects.get_current().domain.replace('www', 'dev'),
                 reverse('index')))
         return load_social_page(request, user_id=user.pk, username=request.subdomain)
 
