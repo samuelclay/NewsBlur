@@ -529,7 +529,7 @@
     [originalStoryViewController dismissModalViewControllerAnimated:YES];
 }
 
-- (int)indexOfNextStory {
+- (int)indexOfNextUnreadStory {
     int activeLocation = [self locationOfActiveStory];
     int readStatus = -1;
     for (int i=activeLocation+1; i < [self.activeFeedStoryLocations count]; i++) {
@@ -549,6 +549,16 @@
                 return location;
             }
         }
+    }
+    return -1;
+}
+
+- (int)indexOfNextStory {
+    int activeLocation = [self locationOfActiveStory];
+    int nextStoryLocation = activeLocation + 1;
+    if (nextStoryLocation < [self.activeFeedStoryLocations count]) {
+        int location = [[self.activeFeedStoryLocations objectAtIndex:nextStoryLocation] intValue];
+        return location;
     }
     return -1;
 }

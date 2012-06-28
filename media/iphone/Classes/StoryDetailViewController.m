@@ -265,7 +265,7 @@
 
 - (void)showStory {
     int activeLocation = appDelegate.locationOfActiveStory;    
-    if (activeLocation >= ([appDelegate.activeFeedStories count] - 1)) {
+    if (activeLocation >= ([appDelegate.activeFeedStoryLocations count] - 1)) {
         self.buttonNextStory.enabled = NO;
     } else {
         self.buttonNextStory.enabled = YES;
@@ -317,7 +317,7 @@
                          "<div class='NB-share-header'></div>"
                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
                          "<div class='NB-share-button'><span class='NB-share-icon'></span>Post to Blurblog</div>"
-                         "<div class='NB-save-button'><span class='NB-save-icon'></span>Save this story</div>"
+                         //"<div class='NB-save-button'><span class='NB-save-icon'></span>Save this story</div>"
                          "</div></div>"];
     NSString *story_author = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
@@ -483,7 +483,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark Actions
 
 - (void)setNextPreviousButtons {
-    int nextIndex = [appDelegate indexOfNextStory];
+    int nextIndex = [appDelegate indexOfNextUnreadStory];
     int unreadCount = [appDelegate unreadCount];
     if (nextIndex == -1 && unreadCount > 0) {
         [buttonNext setStyle:UIBarButtonItemStyleBordered];
@@ -550,7 +550,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (IBAction)doNextUnreadStory {
-    int nextIndex = [appDelegate indexOfNextStory];
+    int nextIndex = [appDelegate indexOfNextUnreadStory];
     int unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
     
@@ -594,16 +594,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (IBAction)doNextStory {
-    int activeLocation = appDelegate.locationOfActiveStory;
-    NSLog(@"activeLocation is %i", activeLocation);
-
-    NSLog(@"[appDelegate.activeFeedStories count] is %i", [appDelegate.activeFeedStories count]);
+    int nextIndex = [appDelegate indexOfNextStory];
     
-    if (activeLocation >= ([appDelegate.activeFeedStories count] - 1)) {
+    if (nextIndex == -1) {
         return;
     }
-        
-    int nextIndex = activeLocation + 1;
+    
     [self.loadingIndicator stopAnimating];
     
     if (self.appDelegate.feedDetailViewController.pageFetching) {
@@ -618,6 +614,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self markStoryAsRead];
     [self setNextPreviousButtons];
     [appDelegate changeActiveFeedDetailRow];
+
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:.5];
     [UIView setAnimationBeginsFromCurrentState:NO];
@@ -660,7 +657,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeWebViewWidth:(int)width {
-    
     int contentWidth = self.view.frame.size.width;
     NSString *contentWidthClass;
     
@@ -680,7 +676,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     [contentWidthClass release];
     [jsString release];
-
 }
 
 - (IBAction)toggleFontSize:(id)sender {

@@ -170,6 +170,7 @@
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
 
 
+- (int)indexOfNextUnreadStory;
 - (int)indexOfNextStory;
 - (int)indexOfPreviousStory;
 - (int)indexOfActiveStory;
