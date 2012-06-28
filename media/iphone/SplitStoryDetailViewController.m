@@ -72,7 +72,7 @@
 #pragma mark Gestures
 
 - (void)onFingerSwipeLeft {
-    if (appDelegate.splitStoryController.isShowingMaster){
+    if (appDelegate.splitStoryController.isShowingMaster && appDelegate.inStoryDetail){
         [appDelegate.splitStoryController toggleMasterView:nil];
         [appDelegate adjustStoryDetailWebView:YES shouldCheckLayout:YES];
         [self configureView];  
@@ -81,7 +81,7 @@
 }
 
 - (void)onFingerSwipeRight {
-    if (!appDelegate.splitStoryController.isShowingMaster){
+    if (!appDelegate.splitStoryController.isShowingMaster && appDelegate.inStoryDetail){
         [appDelegate.splitStoryController toggleMasterView:nil];
         [appDelegate adjustStoryDetailWebView:YES shouldCheckLayout:YES];
         [self configureView]; 

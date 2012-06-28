@@ -220,8 +220,14 @@ small {
     display: block;
 }
 
+.NB-story div {
+    max-width: 100%;
+}
 .NB-story img {
     margin: 0 auto;
+    height: auto !important;
+    max-width: 100%;
+    display: none;
 }
 
 .NB-story img.NB-large-image {
@@ -235,7 +241,7 @@ small {
     border-radius: 4px;
 }
 
-.NB-story img.NB-small-image {
+.NB-story img.NB-medium-image {
     margin: 0 20px 10px 0  !important;
     padding: 5px;
     display: block !important;
@@ -245,6 +251,10 @@ small {
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
+}
+
+.NB-story img.NB-small-image {
+    display: inline-block;
 }
 
 .NB-feed-story-comments {

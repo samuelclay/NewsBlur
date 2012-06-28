@@ -30,6 +30,7 @@
 @synthesize loadingIndicator;
 @synthesize feedTitleGradient;
 @synthesize popoverController;
+@synthesize buttonNextStory;
 
 #pragma mark -
 #pragma mark View boilerplate
@@ -54,6 +55,8 @@
     [loadingIndicator release];
     [feedTitleGradient release];
     [popoverController release];
+    [buttonNextStory release];
+    [buttonNextStory release];
     [super dealloc];
 }
 
@@ -261,10 +264,18 @@
 }
 
 - (void)showStory {
+    int activeLocation = appDelegate.locationOfActiveStory;    
+    if (activeLocation >= ([appDelegate.activeFeedStories count] - 1)) {
+        self.buttonNextStory.enabled = NO;
+    } else {
+        self.buttonNextStory.enabled = YES;
+    }
     
     [appDelegate resetShareComments];
     NSString *commentsString = [self getComments];    
-    NSString *headerString, *sharingHtmlString;
+    NSString *headerString;
+    NSString *sharingHtmlString;
+    NSString *footerString;
     NSString *fontStyleClass = @"";
     NSString *fontSizeClass = @"";
     
@@ -294,20 +305,21 @@
     
     // set up layout values based on iPad/iPhone    
     headerString = [NSString stringWithFormat:@
-                             "<script src=\"zepto.js\"></script>"
-                             "<script src=\"storyDetailView.js\"></script>"
-                             "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
-                             "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
-                             "<meta name=\"viewport\" content=\"width=%i\"/>",
-                             contentWidth];
+                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
+                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
+                    "<meta name=\"viewport\" content=\"width=%i\"/>",
+                    contentWidth];
+    footerString = [NSString stringWithFormat:@
+                    "<script src=\"zepto.js\"></script>"
+                    "<script src=\"storyDetailView.js\"></script>"];
 
-   sharingHtmlString      = [NSString stringWithFormat:@
-                            "<div class='NB-share-header'></div>"
-                            "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                            "<div class='NB-share-button'><span class='NB-share-icon'></span>Post to Blurblog</div>"
-                            "<div class='NB-save-button'><span class='NB-save-icon'></span>Save this story</div>"
-                            "</div></div>"];
-    NSString *story_author      = @"";
+    sharingHtmlString = [NSString stringWithFormat:@
+                         "<div class='NB-share-header'></div>"
+                         "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
+                         "<div class='NB-share-button'><span class='NB-share-icon'></span>Post to Blurblog</div>"
+                         "<div class='NB-save-button'><span class='NB-save-icon'></span>Save this story</div>"
+                         "</div></div>"];
+    NSString *story_author = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
         NSString *author = [NSString stringWithFormat:@"%@",
                             [appDelegate.activeStory objectForKey:@"story_authors"]];
@@ -315,7 +327,7 @@
             story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",author];
         }
     }
-    NSString *story_tags      = @"";
+    NSString *story_tags = @"";
     if ([appDelegate.activeStory objectForKey:@"story_tags"]) {
         NSArray *tag_array = [appDelegate.activeStory objectForKey:@"story_tags"];
         if ([tag_array count] > 0) {
@@ -344,14 +356,15 @@
                             "<html>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@\">"
-                            "   <div class=\"%@\" id=\"NB-font-style\">"
-                            "   %@" // storyHeader
-                            "   <div class=\"%@\" id=\"NB-font-size\">"
-                            "       <div class=\"NB-story\">%@ </div>"
-                            "   </div>" // font-size
-                            "   <div id=\"NB-comments-wrapper\">%@</div>" // comments
-                            "       %@" // share
-                            "   </div>" // font-style
+                            "    <div class=\"%@\" id=\"NB-font-style\">"
+                            "    %@" // storyHeader
+                            "    <div class=\"%@\" id=\"NB-font-size\">"
+                            "        <div class=\"NB-story\">%@ </div>"
+                            "    </div>" // font-size
+                            "    <div id=\"NB-comments-wrapper\">%@</div>" // comments
+                            "        %@" // share
+                            "    </div>" // font-style
+                            "    %@"
                             "</body>"
                             "</html>",
                             headerString,
@@ -361,7 +374,8 @@
                             fontSizeClass,
                             [appDelegate.activeStory objectForKey:@"story_content"],
                             commentsString,
-                            sharingHtmlString
+                            sharingHtmlString,
+                            footerString
                             ];
 
     //NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
@@ -579,6 +593,40 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 }
 
+- (IBAction)doNextStory {
+    int activeLocation = appDelegate.locationOfActiveStory;
+    NSLog(@"activeLocation is %i", activeLocation);
+
+    NSLog(@"[appDelegate.activeFeedStories count] is %i", [appDelegate.activeFeedStories count]);
+    
+    if (activeLocation >= ([appDelegate.activeFeedStories count] - 1)) {
+        return;
+    }
+        
+    int nextIndex = activeLocation + 1;
+    [self.loadingIndicator stopAnimating];
+    
+    if (self.appDelegate.feedDetailViewController.pageFetching) {
+        return;
+    }
+    
+    [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
+                                 objectAtIndex:nextIndex]];
+    [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
+    [self setActiveStory];
+    [self showStory];
+    [self markStoryAsRead];
+    [self setNextPreviousButtons];
+    [appDelegate changeActiveFeedDetailRow];
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:.5];
+    [UIView setAnimationBeginsFromCurrentState:NO];
+    [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp 
+                           forView:self.view 
+                             cache:NO];
+    [UIView commitAnimations];
+}
+
 - (IBAction)doPreviousStory {
     [self.loadingIndicator stopAnimating];
     id previousStoryId = [appDelegate popReadStory];
@@ -683,4 +731,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate dragFeedDetailView:y];        
 }
 
+- (void)viewDidUnload {
+    [buttonNextStory release];
+    buttonNextStory = nil;
+    [self setButtonNextStory:nil];
+    [super viewDidUnload];
+}
 @end

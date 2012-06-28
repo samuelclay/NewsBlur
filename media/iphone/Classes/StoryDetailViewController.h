@@ -36,12 +36,14 @@
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic, retain) IBOutlet UIView *feedTitleGradient;
 @property (retain,nonatomic) UIPopoverController *popoverController;
+@property (retain, nonatomic) IBOutlet UIBarButtonItem *buttonNextStory;
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;
 - (void)showStory;
 - (void)showOriginalSubview:(id)sender;
 - (IBAction)doNextUnreadStory;
+- (IBAction)doNextStory;
 - (IBAction)doPreviousStory;
 - (void)changeWebViewWidth:(int)width;
 

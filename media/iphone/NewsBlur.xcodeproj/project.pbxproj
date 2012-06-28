@@ -129,6 +129,8 @@
 		43CF31B61593BC1500296407 /* 208-facebook.png in Resources */ = {isa = PBXBuildFile; fileRef = 43CF31B41593BC1500296407 /* 208-facebook.png */; };
 		43E8856015951F930032022E /* reader.css in Resources */ = {isa = PBXBuildFile; fileRef = 43E8855F15951F930032022E /* reader.css */; };
 		43F44B05159C175C00F48F8A /* 16-List@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F44B04159C175C00F48F8A /* 16-List@2x.png */; };
+		43F44B0C159CE98B00F48F8A /* 06-arrow-south.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F44B0A159CE98B00F48F8A /* 06-arrow-south.png */; };
+		43F44B0D159CE98B00F48F8A /* 06-arrow-south@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F44B0B159CE98B00F48F8A /* 06-arrow-south@2x.png */; };
 		78095E34128EF30C00230C8E /* ASIAuthenticationDialog.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E25128EF30C00230C8E /* ASIAuthenticationDialog.m */; };
 		78095E35128EF30D00230C8E /* ASIDownloadCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E28128EF30C00230C8E /* ASIDownloadCache.m */; };
 		78095E36128EF30D00230C8E /* ASIFormDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 78095E2A128EF30C00230C8E /* ASIFormDataRequest.m */; };
@@ -374,6 +376,8 @@
 		43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MoveSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/MoveSiteViewController~ipad.xib"; sourceTree = "<group>"; };
 		43E8855F15951F930032022E /* reader.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = reader.css; sourceTree = "<group>"; };
 		43F44B04159C175C00F48F8A /* 16-List@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "16-List@2x.png"; sourceTree = "<group>"; };
+		43F44B0A159CE98B00F48F8A /* 06-arrow-south.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-arrow-south.png"; sourceTree = "<group>"; };
+		43F44B0B159CE98B00F48F8A /* 06-arrow-south@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "06-arrow-south@2x.png"; sourceTree = "<group>"; };
 		78095E24128EF30C00230C8E /* ASIAuthenticationDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIAuthenticationDialog.h; sourceTree = "<group>"; };
 		78095E25128EF30C00230C8E /* ASIAuthenticationDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIAuthenticationDialog.m; sourceTree = "<group>"; };
 		78095E26128EF30C00230C8E /* ASICacheDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASICacheDelegate.h; sourceTree = "<group>"; };
@@ -740,6 +744,8 @@
 		4307BE511565EDF8007A932A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				43F44B0A159CE98B00F48F8A /* 06-arrow-south.png */,
+				43F44B0B159CE98B00F48F8A /* 06-arrow-south@2x.png */,
 				4389E9E8159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png */,
 				438F525B159B65E200211B65 /* 16-List.png */,
 				43F44B04159C175C00F48F8A /* 16-List@2x.png */,
@@ -1439,6 +1445,8 @@
 				438F525D159B65E200211B65 /* 16-List.png in Resources */,
 				4389E9E9159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png in Resources */,
 				43F44B05159C175C00F48F8A /* 16-List@2x.png in Resources */,
+				43F44B0C159CE98B00F48F8A /* 06-arrow-south.png in Resources */,
+				43F44B0D159CE98B00F48F8A /* 06-arrow-south@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
