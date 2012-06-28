@@ -1777,8 +1777,12 @@ background: transparent;
 /*    text-shadow: 0 1px 0 #E0E0E0;*/
 }
 
+#story_pane .NB-feed-stories .NB-feed-story div {
+    max-width: 100%;
+}
 #story_pane .NB-feed-stories .NB-feed-story img {
   max-width: 100%;
+  height: auto;
 }
 #story_pane .NB-feed-story {
     position: relative;

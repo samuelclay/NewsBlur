@@ -251,6 +251,10 @@ ZEBRA_ENABLE_APP = True
 import djcelery
 djcelery.setup_loader()
 CELERY_ROUTES = {
+    "work-queue": {
+        "queue": "work_queue",
+        "binding_key": "work_queue"
+    },
     "new-feeds": {
         "queue": "new_feeds",
         "binding_key": "new_feeds"
@@ -265,6 +269,11 @@ CELERY_ROUTES = {
     },
 }
 CELERY_QUEUES = {
+    "work_queue": {
+        "exchange": "work_queue",
+        "exchange_type": "direct",
+        "binding_key": "work_queue",
+    },
     "new_feeds": {
         "exchange": "new_feeds",
         "exchange_type": "direct",
@@ -281,13 +290,13 @@ CELERY_QUEUES = {
         "binding_key": "update_feeds"
     },
 }
-CELERY_DEFAULT_QUEUE = "update_feeds"
-BROKER_BACKEND       = "redis"
+CELERY_DEFAULT_QUEUE = "work_queue"
+BROKER_BACKEND = "redis"
 BROKER_URL = "redis://db01:6379/0"
-CELERY_REDIS_HOST          = "db01"
+CELERY_REDIS_HOST = "db01"
 
 CELERYD_PREFETCH_MULTIPLIER = 1
-CELERY_IMPORTS              = ("apps.rss_feeds.tasks", )
+CELERY_IMPORTS              = ("apps.rss_feeds.tasks", "apps.social.tasks", )
 CELERYD_CONCURRENCY         = 4
 CELERY_IGNORE_RESULT        = True
 CELERY_ACKS_LATE            = True # Retry if task fails

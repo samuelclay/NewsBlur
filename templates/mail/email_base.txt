@@ -4,7 +4,7 @@
 
 -----------------------------------------------------------------------------
 
-NewsBlur is your social news reader with intelligence. A new sound of an old instrument.
+NewsBlur is your social news reader. A new sound of an old instrument.
 
 Stay up to date and in touch with us, yr. developers, in a few different ways:
 
