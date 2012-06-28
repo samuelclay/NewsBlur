@@ -189,6 +189,7 @@ SUBDOMAIN_URLCONFS = {
     None: 'urls',
     'www': 'urls',
 }
+REMOVE_WWW_FROM_DOMAIN = True
 
 # ===========
 # = Logging =

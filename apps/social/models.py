@@ -133,6 +133,12 @@ class MSocialProfile(mongo.Document):
         if self.user_id not in self.following_user_ids:
             self.follow_user(self.user_id)
             self.count_follows()
+            
+    @property
+    def blurblog_url(self):
+        return "http://%s.%s" % (
+            self.username_slug,
+            Site.objects.get_current().domain.replace('www', 'dev'))
     
     def recommended_users(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1183,9 +1189,8 @@ class MSharedStory(mongo.Document):
     
     def blurblog_permalink(self):
         profile = MSocialProfile.objects.get(user_id=self.user_id)
-        return "http://%s.%s/story/%s" % (
-            profile.username_slug,
-            Site.objects.get_current().domain.replace('www', 'dev'),
+        return "%s/story/%s" % (
+            profile.blurblog_url,
             self.guid_hash[:6]
         )
         
