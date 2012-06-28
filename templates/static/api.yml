@@ -337,6 +337,10 @@
             user_id of the original sharer.
           optional: true
           example: "128"
+        - key: post_to_services
+          desc: "List of services to cross-post to. Can be 'twitter' and/or 'facebook'."
+          optional: true
+          example: "['twitter', 'facebook']"
     - url: /social/unshare_story
       method: POST
       short_desc: "Remove a shared story from user's blurblog."

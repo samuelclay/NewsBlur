@@ -2428,12 +2428,34 @@ background: transparent;
     text-shadow: 0 1px 0 #F6F6F6;
     color: #202020;
 }
-.NB-sideoption-share .NB-sideoption-share-optional {
-    text-transform: uppercase;
+.NB-sideoption-share .NB-sideoption-share-crosspost {
+    margin-right: -4px;
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-twitter,
+.NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
     float: right;
-    color: #808080;
-    font-size: 10px;
-    text-shadow: 0 1px 0 #F6F6F6;
+    width: 16px;
+    height: 16px;
+    margin: 0 0 0 6px;
+    opacity: .4;
+    cursor: pointer;
+    -webkit-filter: grayscale(100%);
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-twitter:hover,
+.NB-sideoption-share .NB-sideoption-share-crosspost-facebook:hover {
+    opacity: .7;
+    -webkit-filter: none;
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-twitter.NB-active,
+.NB-sideoption-share .NB-sideoption-share-crosspost-facebook.NB-active {
+    opacity: 1;
+    -webkit-filter: none;
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-twitter {
+    background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
+    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
 }
 .NB-sideoption-share .NB-sideoption-share-comments {
     width: 100%;

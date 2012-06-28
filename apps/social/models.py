@@ -24,6 +24,7 @@ from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
 from utils.feed_functions import relative_timesince
+from utils.story_functions import truncate_chars
 from utils import json_functions as json
 
 RECOMMENDATIONS_LIMIT = 5
@@ -271,6 +272,15 @@ class MSocialProfile(mongo.Document):
         if self.photo_url:
             return self.photo_url
         return settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
+    
+    @property
+    def email_photo_url(self):
+        if self.photo_url:
+            if self.photo_url.startswith('//'):
+                self.photo_url = 'http:' + self.photo_url
+            return self.photo_url
+        domain = Site.objects.get_current().domain
+        return 'http://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
     def to_json(self, compact=False, include_follows=False, common_follows_with_user=None):
         # domain = Site.objects.get_current().domain
@@ -375,6 +385,9 @@ class MSocialProfile(mongo.Document):
                                                                  subscription_user_id=user_id)
         socialsub.needs_unread_recalc = True
         socialsub.save()
+        
+        from apps.social.tasks import EmailNewFollower
+        EmailNewFollower.delay(follower_user_id=self.user_id, followee_user_id=user_id)
     
     def is_following_user(self, user_id):
         return user_id in self.following_user_ids
@@ -425,6 +438,43 @@ class MSocialProfile(mongo.Document):
             follows_diff.remove(user_id)
         
         return follows_inter, follows_diff
+    
+    def send_email_for_new_follower(self, follower_user_id):
+        user = User.objects.get(pk=self.user_id)
+        if not user.email or not user.profile.send_emails:
+            return
+        
+        follower_profile = MSocialProfile.objects.get(user_id=follower_user_id)
+        photo_url = follower_profile.profile_photo_url
+        if 'graph.facebook.com' in photo_url:
+            follower_profile.photo_url = photo_url + '?type=large'
+        elif 'twimg' in photo_url:
+            follower_profile.photo_url = photo_url.replace('_normal', '')
+
+        common_followers, _ = self.common_follows(follower_user_id, direction='followers')
+        common_followings, _ = self.common_follows(follower_user_id, direction='following')
+        common_followers.remove(self.user_id)
+        common_followings.remove(self.user_id)
+        common_followers = MSocialProfile.profiles(common_followers)
+        common_followings = MSocialProfile.profiles(common_followings)
+        
+        data = {
+            'user': user,
+            'follower_profile': follower_profile,
+            'common_followers': common_followers,
+            'common_followings': common_followings,
+        }
+        
+        text    = render_to_string('mail/email_new_follower.txt', data)
+        html    = render_to_string('mail/email_new_follower.xhtml', data)
+        subject = "%s is now following your Blurblog on NewsBlur!" % follower_profile.username
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user.username, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+                
+        logging.user(user, "~BB~FM~SBSending email for new follower: %s" % follower_profile.username)
         
     def save_feed_story_history_statistics(self):
         """
@@ -870,6 +920,7 @@ class MSharedStory(mongo.Document):
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField(unique_with=('user_id',))
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
+    posted_to_services       = mongo.ListField(mongo.StringField(max_length=20))
     
     meta = {
         'collection': 'shared_stories',
@@ -1129,6 +1180,40 @@ class MSharedStory(mongo.Document):
         profiles = [profile.to_json(compact=True) for profile in profiles]
         
         return stories, profiles
+    
+    def blurblog_permalink(self):
+        profile = MSocialProfile.objects.get(user_id=self.user_id)
+        return "http://%s.%s/story/%s" % (
+            profile.username_slug,
+            Site.objects.get_current().domain.replace('www', 'dev'),
+            self.guid_hash[:6]
+        )
+        
+    def generate_post_to_service_message(self):
+        message = self.comments
+        if not message or len(message) < 1:
+            message = self.story_title
+        
+        message = truncate_chars(message, 116)
+        message += " " + self.blurblog_permalink()
+        print message
+        
+        return message
+        
+    def post_to_service(self, service):
+        if service in self.posted_to_services:
+            return
+        
+        message = self.generate_post_to_service_message()
+        social_service = MSocialServices.objects.get(user_id=self.user_id)
+        if service == 'twitter':
+            posted = social_service.post_to_twitter(message)
+        elif service == 'facebook':
+            posted = social_service.post_to_facebook(message)
+        
+        if posted:
+            self.posted_to_services.append(service)
+            self.save()
         
 
 class MSocialServices(mongo.Document):
@@ -1179,6 +1264,14 @@ class MSocialServices(mongo.Document):
             }
         }
     
+    @classmethod
+    def profile(cls, user_id):
+        try:
+            profile = cls.objects.get(user_id=user_id)
+        except cls.DoesNotExist:
+            return {}
+        return profile.to_json()
+
     def twitter_api(self):
         twitter_consumer_key = settings.TWITTER_CONSUMER_KEY
         twitter_consumer_secret = settings.TWITTER_CONSUMER_SECRET
@@ -1325,7 +1418,26 @@ class MSocialServices(mongo.Document):
                                 hashlib.md5(user.email).hexdigest()
         profile.save()
         return profile
+    
+    def post_to_twitter(self, message):
+        try:
+            api = self.twitter_api()
+            api.update_status(status=message)
+        except tweepy.TweepError, e:
+            print e
+            return
 
+        return True
+            
+    def post_to_facebook(self, message):
+        try:
+            api = self.facebook_api()
+            api.put_wall_post(message=message)
+        except facebook.GraphAPIError, e:
+            print e
+            return
+
+        return True
 
 class MInteraction(mongo.Document):
     user_id      = mongo.IntField()

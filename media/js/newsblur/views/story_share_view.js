@@ -4,6 +4,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         "click .NB-feed-story-share"            : "toggle_feed_story_share_dialog",
         "click .NB-sideoption-share-save"       : "mark_story_as_shared",
         "click .NB-sideoption-share-unshare"    : "mark_story_as_unshared",
+        "click .NB-sideoption-share-crosspost-twitter"  : "toggle_twitter",
+        "click .NB-sideoption-share-crosspost-facebook" : "toggle_facebook",
         "keyup .NB-sideoption-share-comments"   : "update_share_button_label"
     },
     
@@ -13,7 +15,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     
     render: function() {
         this.$el.html(this.template({
-            story: this.model
+            story: this.model,
+            social_services: NEWSBLUR.assets.social_services
         }));
         
         return this;
@@ -23,7 +26,14 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     <div class="NB-sideoption-share-wrapper">\
         <div class="NB-sideoption-share">\
             <div class="NB-sideoption-share-wordcount"></div>\
-            <div class="NB-sideoption-share-optional">Optional</div>\
+            <div class="NB-sideoption-share-crosspost">\
+                <% if (social_services.twitter.twitter_uid) { %>\
+                    <div class="NB-sideoption-share-crosspost-twitter"></div>\
+                <% } %>\
+                <% if (social_services.facebook.facebook_uid) { %>\
+                    <div class="NB-sideoption-share-crosspost-facebook"></div>\
+                <% } %>\
+            </div>\
             <div class="NB-sideoption-share-title">Comments:</div>\
             <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
             <div class="NB-menu-manage-story-share-save NB-modal-submit-green NB-sideoption-share-save NB-modal-submit-button">Share</div>\
@@ -41,6 +51,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $comment_input = this.$('.NB-sideoption-share-comments');
         var $story_comments = this.$('.NB-feed-story-comments');
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
+        var $twitter_button = this.$('.NB-sideoption-share-crosspost-twitter');
+        var $facebook_button = this.$('.NB-sideoption-share-crosspost-facebook');
         
         if (options.close ||
             ($sideoption.hasClass('NB-active') && !options.resize_open)) {
@@ -71,8 +83,11 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             }
         } else {
             // Open/resize
+            this.$('.NB-error').remove();
             $sideoption.addClass('NB-active');
             $unshare_button.toggleClass('NB-hidden', !this.model.get("shared"));
+            $twitter_button.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_twitter'));
+            $facebook_button.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_facebook'));
             var $share_clone = $share.clone();
             var full_height = $share_clone.css({
                 'height': 'auto',
@@ -135,10 +150,14 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
         var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
         var source_user_id = feed && feed.get('user_id');
+        var post_to_services = _.compact([
+            NEWSBLUR.assets.preference('post_to_twitter') && 'twitter',
+            NEWSBLUR.assets.preference('post_to_facebook') && 'facebook'
+        ]);
         
         $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
         $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
-        NEWSBLUR.assets.mark_story_as_shared(this.model.id, this.model.get('story_feed_id'), comments, source_user_id, _.bind(this.post_share_story, this, true), _.bind(function(data) {
+        NEWSBLUR.assets.mark_story_as_shared(this.model.id, this.model.get('story_feed_id'), comments, source_user_id, post_to_services, _.bind(this.post_share_story, this, true), _.bind(function(data) {
             this.post_share_error(data, true);
         }, this));
         
@@ -242,6 +261,30 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     count_selected_words_when_sharing_story: function($feed_story) {
         var $wordcount = $('.NB-sideoption-share-wordcount', $feed_story);
         
+    },
+    
+    toggle_twitter: function() {
+        var $twitter_button = this.$('.NB-sideoption-share-crosspost-twitter');
+        
+        if (NEWSBLUR.assets.preference('post_to_twitter')) {
+            NEWSBLUR.assets.preference('post_to_twitter', false);
+        } else {
+            NEWSBLUR.assets.preference('post_to_twitter', true);
+        }
+        
+        $twitter_button.toggleClass('NB-active', NEWSBLUR.assets.preference('post_to_twitter'));
+    },
+    
+    toggle_facebook: function() {
+        var $facebook_button = this.$('.NB-sideoption-share-crosspost-facebook');
+        
+        if (NEWSBLUR.assets.preference('post_to_facebook')) {
+            NEWSBLUR.assets.preference('post_to_facebook', false);
+        } else {
+            NEWSBLUR.assets.preference('post_to_facebook', true);
+        }
+        
+        $facebook_button.toggleClass('NB-active', NEWSBLUR.assets.preference('post_to_facebook'));
     }
         
 });

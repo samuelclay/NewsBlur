@@ -19,6 +19,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.friends = {};
         this.profile = {};
         this.user_profile = new NEWSBLUR.Models.User();
+        this.social_services = {};
         this.user_profiles = new NEWSBLUR.Collections.Users();
         this.follower_profiles = new NEWSBLUR.Collections.Users();
         this.following_profiles = new NEWSBLUR.Collections.Users();
@@ -216,7 +217,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback);
     },
     
-    mark_story_as_shared: function(story_id, feed_id, comments, source_user_id, callback, error_callback) {
+    mark_story_as_shared: function(story_id, feed_id, comments, source_user_id, post_to_services,
+                                   callback, error_callback) {
         var pre_callback = _.bind(function(data) {
             if (data.user_profiles) {
                 this.add_user_profiles(data.user_profiles);
@@ -231,7 +233,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 story_id: story_id,
                 feed_id: feed_id,
                 comments: comments,
-                source_user_id: source_user_id
+                source_user_id: source_user_id,
+                post_to_services: post_to_services
             }, pre_callback, error_callback);
         } else {
             error_callback();
@@ -292,6 +295,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             self.starred_count = subscriptions.starred_count;
             self.social_feeds.reset(subscriptions.social_feeds);
             self.user_profile.set(subscriptions.social_profile);
+            self.social_services = subscriptions.social_services;
                     
             if (!_.isEqual(self.favicons, {})) {
                 self.feeds.each(function(feed) {

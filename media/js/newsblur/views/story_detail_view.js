@@ -47,7 +47,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             model: this.model, 
             el: this.el
         }).template({
-            story: this.model
+            story: this.model,
+            social_services: NEWSBLUR.assets.social_services
         });
         this.$el.html(this.template(params));
         this.toggle_classes();

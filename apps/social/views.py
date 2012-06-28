@@ -10,6 +10,7 @@ from django.conf import settings
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
 from apps.social.models import MRequestInvite, MInteraction, MActivity
+from apps.social.tasks import PostToService
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
@@ -239,6 +240,7 @@ def mark_story_as_shared(request):
     story_id = request.POST['story_id']
     comments = request.POST.get('comments', '')
     source_user_id = request.POST.get('source_user_id')
+    post_to_services = request.POST.getlist('post_to_services')
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
@@ -279,6 +281,11 @@ def mark_story_as_shared(request):
     story = stories[0]
     story['shared_comments'] = shared_story['comments'] or ""
     
+    if post_to_services:
+        for service in post_to_services:
+            if service not in shared_story.posted_to_services:
+                PostToService.delay(shared_story_id=shared_story.id, service=service)
+        
     return {'code': code, 'story': story, 'user_profiles': profiles}
 
 @ajax_login_required

@@ -34,7 +34,8 @@ try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
     pass
-from apps.social.models import MSharedStory, MSocialProfile, MSocialSubscription, MActivity
+from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
+from apps.social.models import MSocialSubscription, MActivity
 from apps.social.views import load_social_page
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
@@ -223,6 +224,7 @@ def load_feeds(request):
     }
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
+    social_services = MSocialServices.profile(user.pk)
     
     user.profile.dashboard_date = datetime.datetime.now()
     user.profile.save()
@@ -231,6 +233,7 @@ def load_feeds(request):
         'feeds': feeds.values() if version == 2 else feeds,
         'social_feeds': social_feeds,
         'social_profile': social_profile,
+        'social_services': social_services,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
     }
