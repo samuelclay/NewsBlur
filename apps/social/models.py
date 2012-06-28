@@ -285,7 +285,7 @@ class MSocialProfile(mongo.Document):
             if self.photo_url.startswith('//'):
                 self.photo_url = 'http:' + self.photo_url
             return self.photo_url
-        domain = Site.objects.get_current().domain
+        domain = Site.objects.get_current().domain.replace('www', 'dev')
         return 'http://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
     def to_json(self, compact=False, include_follows=False, common_follows_with_user=None):

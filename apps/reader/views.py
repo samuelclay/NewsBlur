@@ -59,7 +59,7 @@ def index(request):
         try:
             if '.' in username:
                 username = username.split('.')[0]
-            user = User.objects.get(username=username)
+            user = User.objects.get(username__icontains=username)
         except User.DoesNotExist:
             return HttpResponseRedirect('http://%s%s' % (
                 Site.objects.get_current().domain.replace('www', 'dev'),
