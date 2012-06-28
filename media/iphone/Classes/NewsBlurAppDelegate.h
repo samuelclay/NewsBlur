@@ -29,12 +29,13 @@
 @class MoveSiteViewController;
 @class OriginalStoryViewController;
 @class SplitStoryDetailViewController;
+@class MGSplitViewController;
 
 
 @interface NewsBlurAppDelegate : BaseViewController 
                                 <UIApplicationDelegate>  {
     UIWindow *window;
-    UISplitViewController *splitStoryController;
+    MGSplitViewController *splitStoryController;
     UINavigationController *navigationController;
     UINavigationController *splitStoryDetailNavigationController;
 
@@ -86,7 +87,7 @@
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
-@property (nonatomic, retain) IBOutlet UISplitViewController *splitStoryController;
+@property (nonatomic, retain) IBOutlet MGSplitViewController *splitStoryController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *navigationController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *splitStoryDetailNavigationController;
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
@@ -142,9 +143,10 @@
 - (void)showLogin;
 - (void)showFeedsMenu;
 - (void)hideFeedsMenu;
+- (void)animateHidingMasterView;
+- (void)animateShowingMasterView;
 
 - (void)showAdd;
-- (void)showMasterPopover;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
 - (void)showDashboard;

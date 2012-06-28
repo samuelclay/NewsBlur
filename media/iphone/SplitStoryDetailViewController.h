@@ -7,16 +7,22 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MGSplitViewController.h"
 
 @class NewsBlurAppDelegate;
 
-@interface SplitStoryDetailViewController : UIViewController <UISplitViewControllerDelegate> {
+@interface SplitStoryDetailViewController : UIViewController <MGSplitViewControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
+    
+    IBOutlet MGSplitViewController *splitController;
+
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (strong, nonatomic) UIPopoverController *masterPopoverController;
+@property (nonatomic, retain) UIPopoverController *popoverController;
 
-- (void)showPopover;
+- (void)configureView;
+- (void)onFingerSwipeLeft;
+- (void)onFingerSwipeRight;
 
 @end

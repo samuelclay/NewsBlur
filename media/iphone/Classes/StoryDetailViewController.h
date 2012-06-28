@@ -43,6 +43,7 @@
 - (void)showOriginalSubview:(id)sender;
 - (IBAction)doNextUnreadStory;
 - (IBAction)doPreviousStory;
+- (void)changeWebViewWidth:(int)width;
 
 - (void)refreshComments;
 - (void)markedAsRead;

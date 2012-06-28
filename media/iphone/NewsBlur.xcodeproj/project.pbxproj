@@ -84,6 +84,9 @@
 		435826C4158C0CFD00CC9797 /* thumbs_up.png in Resources */ = {isa = PBXBuildFile; fileRef = 435826C0158C0CFD00CC9797 /* thumbs_up.png */; };
 		435826C5158C0CFD00CC9797 /* thumbs_up@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 435826C1158C0CFD00CC9797 /* thumbs_up@2x.png */; };
 		4362C9F5158BA0A600A044B0 /* logo_512.png in Resources */ = {isa = PBXBuildFile; fileRef = 4362C9F4158BA0A600A044B0 /* logo_512.png */; };
+		43687BE4159BEDAD00B682D1 /* MGSplitCornersView.m in Sources */ = {isa = PBXBuildFile; fileRef = 43687BDF159BEDAD00B682D1 /* MGSplitCornersView.m */; };
+		43687BE5159BEDAD00B682D1 /* MGSplitDividerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 43687BE1159BEDAD00B682D1 /* MGSplitDividerView.m */; };
+		43687BE6159BEDAD00B682D1 /* MGSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43687BE3159BEDAD00B682D1 /* MGSplitViewController.m */; };
 		43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */; };
 		43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */; };
 		437AA8AD15922D13005463F5 /* FeedDashboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8AB15922D13005463F5 /* FeedDashboardViewController.m */; };
@@ -306,6 +309,12 @@
 		435826C0158C0CFD00CC9797 /* thumbs_up.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thumbs_up.png; sourceTree = "<group>"; };
 		435826C1158C0CFD00CC9797 /* thumbs_up@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "thumbs_up@2x.png"; sourceTree = "<group>"; };
 		4362C9F4158BA0A600A044B0 /* logo_512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_512.png; sourceTree = "<group>"; };
+		43687BDE159BEDAD00B682D1 /* MGSplitCornersView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSplitCornersView.h; sourceTree = "<group>"; };
+		43687BDF159BEDAD00B682D1 /* MGSplitCornersView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSplitCornersView.m; sourceTree = "<group>"; };
+		43687BE0159BEDAD00B682D1 /* MGSplitDividerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSplitDividerView.h; sourceTree = "<group>"; };
+		43687BE1159BEDAD00B682D1 /* MGSplitDividerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSplitDividerView.m; sourceTree = "<group>"; };
+		43687BE2159BEDAD00B682D1 /* MGSplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSplitViewController.h; sourceTree = "<group>"; };
+		43687BE3159BEDAD00B682D1 /* MGSplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSplitViewController.m; sourceTree = "<group>"; };
 		43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontSettingsViewController.h; sourceTree = "<group>"; };
 		43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontSettingsViewController.m; sourceTree = "<group>"; };
 		43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontSettingsViewController.xib; path = Classes/FontSettingsViewController.xib; sourceTree = "<group>"; };
@@ -676,6 +685,7 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				43687BDC159BED9800B682D1 /* MGSplitViewController */,
 				438F5260159B6F0400211B65 /* MBProgressHUD.h */,
 				438F5261159B6F0400211B65 /* MBProgressHUD.m */,
 				FF38DB1813F21B2C00251891 /* ABTableViewCell.h */,
@@ -812,6 +822,19 @@
 			);
 			name = Images;
 			path = "Resources-iPad/Images";
+			sourceTree = "<group>";
+		};
+		43687BDC159BED9800B682D1 /* MGSplitViewController */ = {
+			isa = PBXGroup;
+			children = (
+				43687BDE159BEDAD00B682D1 /* MGSplitCornersView.h */,
+				43687BDF159BEDAD00B682D1 /* MGSplitCornersView.m */,
+				43687BE0159BEDAD00B682D1 /* MGSplitDividerView.h */,
+				43687BE1159BEDAD00B682D1 /* MGSplitDividerView.m */,
+				43687BE2159BEDAD00B682D1 /* MGSplitViewController.h */,
+				43687BE3159BEDAD00B682D1 /* MGSplitViewController.m */,
+			);
+			name = MGSplitViewController;
 			sourceTree = "<group>";
 		};
 		43B8F017156603170008733D /* Resources-iPhone */ = {
@@ -1529,6 +1552,9 @@
 				439DAB201590DA350019B0EB /* FeedsMenuViewController.m in Sources */,
 				437AA8AD15922D13005463F5 /* FeedDashboardViewController.m in Sources */,
 				437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */,
+				43687BE4159BEDAD00B682D1 /* MGSplitCornersView.m in Sources */,
+				43687BE5159BEDAD00B682D1 /* MGSplitDividerView.m in Sources */,
+				43687BE6159BEDAD00B682D1 /* MGSplitViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

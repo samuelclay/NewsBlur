@@ -515,11 +515,6 @@
         [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
         [appDelegate loadStoryDetailView];
 
-        // hides the popover in iPad portrait mode
-        if(appDelegate.splitStoryDetailViewController.masterPopoverController.popoverVisible) {
-            [appDelegate.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
-        }
-
     }
 }
 

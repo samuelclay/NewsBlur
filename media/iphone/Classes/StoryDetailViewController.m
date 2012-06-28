@@ -269,22 +269,18 @@
     NSString *fontSizeClass = @"";
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
-    
     if ([userPreferences stringForKey:@"fontStyle"]){
         fontStyleClass = [fontStyleClass stringByAppendingString:[userPreferences stringForKey:@"fontStyle"]];
     } else {
         fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-san-serif"];
-    }
-    
-    NSLog(@"fontClass is %@", fontStyleClass);
-    
+    }    
     if ([userPreferences stringForKey:@"fontSizing"]){
         fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"fontSizing"]];
     } else {
         fontSizeClass = [fontSizeClass stringByAppendingString:@"NB-medium"];
     }
     
-    NSLog(@"fontSizing is %@", fontSizeClass);
+    int contentWidth = self.view.frame.size.width;
     
     // set up layout values based on iPad/iPhone    
     headerString = [NSString stringWithFormat:@
@@ -292,7 +288,8 @@
                              "<script src=\"storyDetailView.js\"></script>"
                              "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
                              "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
-                             "<meta name=\"viewport\" content=\"width=device-width\"/>"];
+                             "<meta name=\"viewport\" content=\"width=%i\"/>",
+                             contentWidth];
 
    sharingHtmlString      = [NSString stringWithFormat:@
                             "<div class='NB-share-header'></div>"
@@ -354,7 +351,7 @@
                             sharingHtmlString
                             ];
 
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    //NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -549,7 +546,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          popToViewController:[appDelegate.navigationController.viewControllers 
                               objectAtIndex:0]  
          animated:YES];
-        [appDelegate showMasterPopover];
         [appDelegate hideStoryDetailView];
     } else {
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
@@ -578,7 +574,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          popToViewController:[appDelegate.navigationController.viewControllers 
                               objectAtIndex:0]  
          animated:YES];
-        [appDelegate showMasterPopover];
         [appDelegate hideStoryDetailView];
     } else {
         int previousIndex = [appDelegate locationOfStoryId:previousStoryId];
@@ -603,6 +598,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 }
 
+- (void)changeWebViewWidth:(int)width {
+    
+    NSString *jsString = [[NSString alloc] initWithFormat:@"document.querySelector('meta[name=viewport]').setAttribute('content', 'width=%d;', false); ", 
+                          width];
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    [jsString release];
+
+}
+
 - (IBAction)toggleFontSize:(id)sender {
     if (popoverController == nil) {
         popoverController = [[UIPopoverController alloc]
@@ -617,7 +621,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)changeFontSize:(NSString *)fontSize {
-    NSLog(@"fontSize is %@", fontSize);
     NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-size').setAttribute('class', '%@')", 
                           fontSize];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];

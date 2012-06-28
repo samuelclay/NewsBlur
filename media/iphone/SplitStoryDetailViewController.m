@@ -8,15 +8,15 @@
 
 #import "SplitStoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "MGSplitViewController.h"
 
 @implementation SplitStoryDetailViewController
 
-@synthesize masterPopoverController = _masterPopoverController;
 @synthesize appDelegate;
+@synthesize popoverController;
 
 - (void)dealloc 
 {
-    [_masterPopoverController release];
     [super dealloc];
 }
 
@@ -31,21 +31,22 @@
 
 - (void)viewDidLoad
 {
-
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    // Add swipeGestures
+    UISwipeGestureRecognizer *onFingerSwipeLeft = [[[UISwipeGestureRecognizer alloc] 
+                                                     initWithTarget:self 
+                                                     action:@selector(onFingerSwipeLeft)] autorelease];
+    [onFingerSwipeLeft setDirection:UISwipeGestureRecognizerDirectionLeft];
+    [[self view] addGestureRecognizer:onFingerSwipeLeft];
+    
+    UISwipeGestureRecognizer *onFingerSwipeRight = [[[UISwipeGestureRecognizer alloc] 
+                                                     initWithTarget:self 
+                                                     action:@selector(onFingerSwipeRight)] autorelease];
+    [onFingerSwipeRight setDirection:UISwipeGestureRecognizerDirectionRight];
+    [[self view] addGestureRecognizer:onFingerSwipeRight];
 }
 
-- (void)viewDidAppear:(BOOL)animated 
-{
-    // messes up on FTUX, must put in a state test
-//    if (self.masterPopoverController) {
-//        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) 
-//                                                      inView:self.view 
-//                                    permittedArrowDirections:UIPopoverArrowDirectionAny 
-//                                                    animated:YES];
-//    }
-}
+
 
 - (void)viewDidUnload {
     [super viewDidUnload];
@@ -61,36 +62,36 @@
     [appDelegate adjustStoryDetailWebView:NO shouldCheckLayout:YES]; 
 }
 
-- (void)showPopover {
-    if (self.masterPopoverController) {
-        [self.masterPopoverController presentPopoverFromRect:CGRectMake(0, 0, 1, 1) 
-                                                      inView:self.view
-                                    permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                    animated:YES];
+
+#pragma mark -
+#pragma mark Gestures
+
+- (void)onFingerSwipeLeft {
+    if (appDelegate.splitStoryController.isShowingMaster){
+        [appDelegate.splitStoryController toggleMasterView:nil];
+        [appDelegate adjustStoryDetailWebView:YES shouldCheckLayout:YES];
+        [self configureView];  
+        [appDelegate animateHidingMasterView];
     }
 }
 
-#pragma mark - Split view
-
--(BOOL)splitViewController:(UISplitViewController *)svc shouldHideViewController:(UIViewController *)vc inOrientation:(UIInterfaceOrientation)orientation {
-    return NO;
+- (void)onFingerSwipeRight {
+    if (!appDelegate.splitStoryController.isShowingMaster){
+        [appDelegate.splitStoryController toggleMasterView:nil];
+        [appDelegate adjustStoryDetailWebView:YES shouldCheckLayout:YES];
+        [self configureView]; 
+        [appDelegate animateShowingMasterView];
+    }
 }
 
-- (void)splitViewController:(UISplitViewController *)splitController 
-     willHideViewController:(UIViewController *)viewController 
-          withBarButtonItem:(UIBarButtonItem *)barButtonItem 
-       forPopoverController:(UIPopoverController *)popoverController {
-    barButtonItem.title = NSLocalizedString(@"All Sites", @"All Sites");
-    [self.navigationItem setLeftBarButtonItem:barButtonItem animated:YES];
-    self.masterPopoverController = popoverController;   
-}
-
-- (void)splitViewController:(UISplitViewController *)splitController 
-     willShowViewController:(UIViewController *)viewController 
-  invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem {
-    // Called when the view is shown again in the split view, invalidating the button and popover controller.
-    [self.navigationItem setLeftBarButtonItem:nil animated:YES];
-    self.masterPopoverController = nil;
+- (void)configureView
+{
+//    // Update the user interface for the detail item.
+//    detailDescriptionLabel.text = [detailItem description];
+//	toggleItem.title = ([splitController isShowingMaster]) ? @"Hide Sites" : @"Show Sites"; // "I... AM... THE MASTER!" Derek Jacobi. Gave me chills.
+//	verticalItem.title = (splitController.vertical) ? @"Horizontal Split" : @"Vertical Split";
+//	dividerStyleItem.title = (splitController.dividerStyle == MGSplitViewDividerStyleThin) ? @"Enable Dragging" : @"Disable Dragging";
+//	masterBeforeDetailItem.title = (splitController.masterBeforeDetail) ? @"Detail First" : @"Master First";
 }
 
 @end

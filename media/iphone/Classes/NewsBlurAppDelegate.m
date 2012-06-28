@@ -17,6 +17,7 @@
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
 #import "MoveSiteViewController.h"
+#import "MGSplitViewController.h"
 #import "OriginalStoryViewController.h"
 #import "SplitStoryDetailViewController.h"
 #import "ShareViewController.h"
@@ -114,6 +115,10 @@
     
     [window makeKeyAndVisible];
     [feedsViewController fetchFeedList:YES];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
+        [splitStoryController toggleMasterView:nil];
+    }
     //[self showFirstTimeUser];
 	return YES;
 }
@@ -207,7 +212,6 @@
 
 - (void)showLogin {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
         [self.splitStoryController presentModalViewController:loginViewController animated:YES];
     } else {
         [feedsMenuViewController dismissModalViewControllerAnimated:NO];
@@ -219,7 +223,6 @@
 - (void)showFirstTimeUser {
     [loginViewController dismissModalViewControllerAnimated:NO];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
         [self.splitStoryController presentModalViewController:firstTimeUserViewController animated:YES];
     } else {
         [self.navigationController presentModalViewController:loginViewController animated:YES];
@@ -233,19 +236,6 @@
 
 - (void)addedGoogleReader {
     [firstTimeUserViewController selectGoogleReaderButton];
-}
-
-- (void)showMasterPopover {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [splitStoryDetailViewController showPopover];
-        NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
-        for (UIView *subview in subviews) {
-            if (subview.tag == FEED_DETAIL_VIEW_TAG) {
-                [subview removeFromSuperview];
-            }
-        }
-        [subviews release];
-    }
 }
 
 - (void)showMoveSite {
@@ -275,36 +265,19 @@
     
     self.inStoryDetail = YES;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && 
-        UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation) &&
-        self.feedDetailPortraitYCoordinate != 960) {
-
-        // remove existing feedDetailViewController
-        [self hideStoryDetailView];
-        
-        feedDetailViewController.view.tag = FEED_DETAIL_VIEW_TAG;
-        [splitStoryDetailViewController.view addSubview:feedDetailViewController.view];
-        
-        feedDashboardViewController.view.tag = FEED_DASHBOARD_VIEW_TAG;
-        [splitStoryDetailViewController.view addSubview:feedDashboardViewController.view];
-        
-        [self adjustStoryDetailWebView:YES shouldCheckLayout:YES];
-        [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
-    } else {
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
-                                                                          style: UIBarButtonItemStyleBordered 
-                                                                         target: nil 
-                                                                         action: nil];
-        [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-        [newBackButton release];
-        UINavigationController *navController = self.navigationController;        
-        [navController pushViewController:feedDetailViewController animated:YES];
-        [self showNavigationBar:YES];
-        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
-        
-        popoverHasFeedView = YES;
-    }
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
+                                                                      style: UIBarButtonItemStyleBordered 
+                                                                     target: nil 
+                                                                     action: nil];
+    [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+    [newBackButton release];
+    UINavigationController *navController = self.navigationController;        
+    [navController pushViewController:feedDetailViewController animated:YES];
+    [self showNavigationBar:YES];
+    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
+    
+    popoverHasFeedView = YES;
     
     [feedDetailViewController resetFeedDetail];
     [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
@@ -395,27 +368,16 @@
     [self setFeedUserProfiles:nil];
     self.inStoryDetail = YES;
 
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && 
-        UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation) &&
-        self.feedDetailPortraitYCoordinate != 960) {
-        // remove existing feedDetailViewController
-        [self hideStoryDetailView];
-        feedDashboardViewController.view.tag = FEED_DASHBOARD_VIEW_TAG;
-        [splitStoryDetailViewController.view addSubview:feedDashboardViewController.view];
-        [self adjustStoryDetailWebView:YES shouldCheckLayout:YES];
-        [self.splitStoryDetailViewController.masterPopoverController dismissPopoverAnimated:YES];
-    } else {
-        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
-                                                                          style: UIBarButtonItemStyleBordered 
-                                                                         target: nil 
-                                                                         action: nil];
-        [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-        [newBackButton release];
-        UINavigationController *navController = self.navigationController;
-        [navController pushViewController:feedDetailViewController animated:YES];
-        [self showNavigationBar:YES];
-        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    }
+    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
+                                                                      style: UIBarButtonItemStyleBordered 
+                                                                     target: nil 
+                                                                     action: nil];
+    [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+    [newBackButton release];
+    UINavigationController *navController = self.navigationController;
+    [navController pushViewController:feedDetailViewController animated:YES];
+    [self showNavigationBar:YES];
+    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     [feedDetailViewController resetFeedDetail];
     [feedDetailViewController fetchRiverPage:1 withCallback:nil];
@@ -426,86 +388,40 @@
         return;
     }
     
-    UINavigationController *navController = self.navigationController;
-
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {        
-        if( (960 - self.feedDetailPortraitYCoordinate) < 44 ) {
-            feedDetailViewController.view.frame = CGRectMake(0, 
-                                                             self.feedDetailPortraitYCoordinate + (44 - (960 - self.feedDetailPortraitYCoordinate)), 
-                                                             768, 
-                                                             960 - self.feedDetailPortraitYCoordinate);                    
-        } else {
-            feedDetailViewController.view.frame = CGRectMake(0, 
-                                                             self.feedDetailPortraitYCoordinate, 
-                                                             768, 
-                                                             960 - self.feedDetailPortraitYCoordinate);
-        }
-        
-        // the storyDetailView is full screen
-        if (self.feedDetailPortraitYCoordinate == 960) {
-            storyDetailViewController.view.frame = CGRectMake(0, 0, 768, 960);
-            feedDashboardViewController.view.frame = CGRectMake(0,
-                                                                0,
-                                                                storyDetailViewController.view.frame.size.width,
-                                                                960);
-            if (checkLayout) {
-                // move the feedDetialViewController to the subview
-                if (!popoverHasFeedView) {
-                    [navController pushViewController:feedDetailViewController animated:NO];
-                    popoverHasFeedView = YES;
-                }
-            }
-
-        } else {
-            if (init) {
-                feedDashboardViewController.view.frame = CGRectMake(0,
-                                                                    0,
-                                                                    768,
-                                                                    self.feedDetailPortraitYCoordinate);
-            } else {
-                storyDetailViewController.view.frame = CGRectMake(0,
-                                                                  0,
-                                                                  768,
-                                                                  self.feedDetailPortraitYCoordinate);
-                feedDashboardViewController.view.frame = CGRectMake(0,
-                                                                    0, 
-                                                                    768, 
-                                                                    self.feedDetailPortraitYCoordinate);
-            }
-            
-            if (checkLayout) {
-                //remove the feedDetailView from the popover
-                if (popoverHasFeedView) {
-                    [navController popViewControllerAnimated:NO];
-                    popoverHasFeedView = NO;
-                    
-                }
-            }
-
-
-        }
+        storyDetailViewController.view.frame = CGRectMake(0, 
+                                                          0, 
+                                                          splitStoryDetailViewController.view.frame.size.width, 
+                                                          splitStoryDetailViewController.view.frame.size.height);
     } else {
-        if (init) {
-            feedDashboardViewController.view.frame = CGRectMake(0,0,704,704);  
-        } else {
-            storyDetailViewController.view.frame = CGRectMake(0,0,704,704);
-            NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
-            for (UIView *subview in subviews) {
-                if (subview.tag == FEED_DASHBOARD_VIEW_TAG) {
-                    [subview removeFromSuperview];
-                }
-            }
-            [subviews release];
-        }
-                
-        if (checkLayout) {
-            if (!popoverHasFeedView) {
-                [navController pushViewController:feedDetailViewController animated:NO];
-                popoverHasFeedView = YES;
-            }
-        }
-
+        storyDetailViewController.view.frame = CGRectMake(0, 
+                                                          0, 
+                                                          splitStoryDetailViewController.view.frame.size.width, 
+                                                          splitStoryDetailViewController.view.frame.size.height);
     }
+}
+
+- (void)animateHidingMasterView {
+    int width = storyDetailViewController.view.frame.size.width + 291;
+    [UIView animateWithDuration:0.1 animations:^{
+        storyDetailViewController.view.frame = CGRectMake(0, 
+                                                    0, 
+                                                    width, 
+                                                    storyDetailViewController.view.frame.size.height);
+    }];
+    [storyDetailViewController changeWebViewWidth:width];
+}
+
+- (void)animateShowingMasterView {
+    int width = storyDetailViewController.view.frame.size.width - 291;
+    [UIView animateWithDuration:0.50 animations:^{
+        storyDetailViewController.view.frame = CGRectMake(0, 
+                                                          0, 
+                                                          width, 
+                                                          storyDetailViewController.view.frame.size.height);
+    }]; 
+    [storyDetailViewController changeWebViewWidth:width];
+
 }
 
 - (void)dragFeedDetailView:(float)y {
@@ -549,9 +465,10 @@
         }
         [subviews release];
         
+        [self adjustStoryDetailWebView:NO shouldCheckLayout:NO];  
         storyDetailViewController.view.tag = STORY_DETAIL_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:storyDetailViewController.view];
-        [self adjustStoryDetailWebView:NO shouldCheckLayout:NO];        
+      
     } else{
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
