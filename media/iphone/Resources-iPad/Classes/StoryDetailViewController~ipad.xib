@@ -4502,7 +4502,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<reference key="IBUIToolbar" ref="155973878"/>
 								<int key="IBUISystemItemIdentifier">5</int>
 							</object>
-							<object class="IBUIBarButtonItem" id="397639374">
+							<object class="IBUIBarButtonItem" id="260979722">
+								<bool key="IBUIEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<float key="IBUIWidth">20</float>
 								<reference key="IBUIToolbar" ref="155973878"/>
@@ -4614,7 +4615,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">activity</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="397639374"/>
+						<reference key="destination" ref="260979722"/>
 					</object>
 					<int key="connectionID">81</int>
 				</object>
@@ -4694,7 +4695,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<reference ref="812131495"/>
 							<reference ref="284060761"/>
 							<reference ref="672699755"/>
-							<reference ref="397639374"/>
+							<reference ref="260979722"/>
 						</object>
 						<reference key="parent" ref="191373211"/>
 					</object>
@@ -4744,7 +4745,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">80</int>
-						<reference key="object" ref="397639374"/>
+						<reference key="object" ref="260979722"/>
 						<reference key="parent" ref="155973878"/>
 					</object>
 				</object>

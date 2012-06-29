@@ -192,6 +192,10 @@ div {
     width: auto !important;
 }
 
+div + p {
+    margin: 20px 0px 20px 0;
+}
+
 p {
     margin: 0px 0px 20px 0;
     clear: both;
