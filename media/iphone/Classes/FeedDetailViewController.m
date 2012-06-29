@@ -84,6 +84,7 @@
         [self.storyTitlesTable beginUpdates];
         [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
         [self.storyTitlesTable endUpdates];
+        //[self.storyTitlesTable reloadData];
     }
     [appDelegate setRecentlyReadStories:[NSMutableArray array]];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_all.png"] forSegmentAtIndex:0];
@@ -103,7 +104,7 @@
     }
 }
 
-- (void)viewDidAppear:(BOOL)animated {    
+- (void)viewDidAppear:(BOOL)animated { 
 	[super viewDidAppear:animated];
 }
 
@@ -127,6 +128,9 @@
     self.pageFinished = NO;
     self.feedPage = 1;
 }
+
+#pragma mark -
+#pragma mark Regular and Social Feeds
 
 - (void)fetchNextPage:(void(^)())callback {
     [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
@@ -176,6 +180,55 @@
     }
 }
 
+#pragma mark -
+#pragma mark River of News
+
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
+    if (!self.pageFetching && !self.pageFinished) {
+        self.feedPage = page;
+        self.pageFetching = YES;
+        int storyCount = appDelegate.storyCount;
+        if (storyCount == 0) {
+            [self.storyTitlesTable reloadData];
+            [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+        }
+        int readStoriesCount = 0;
+        if (self.feedPage > 1) {
+            for (id story in appDelegate.activeFeedStories) {
+                if ([[story objectForKey:@"read_status"] intValue] == 1) {
+                    readStoriesCount += 1;
+                }
+            }
+        }
+        
+        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
+                                      NEWSBLUR_URL,
+                                      [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
+                                      self.feedPage,
+                                      readStoriesCount];
+        
+        [self cancelRequests];
+        __block ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
+        [request setDelegate:self];
+        [request setResponseEncoding:NSUTF8StringEncoding];
+        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+        [request setFailedBlock:^(void) {
+            [self informError:[request error]];
+        }];
+        [request setCompletionBlock:^(void) {
+            [self finishedLoadingFeed:request];
+            if (callback) {
+                callback();
+            }
+        }];
+        [request setTimeOutSeconds:30];
+        [request startAsynchronous];
+    }
+}
+
+#pragma mark -
+#pragma mark Processing Stories
+
 - (void)finishedLoadingFeed:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] >= 500) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.15 * NSEC_PER_SEC), 
@@ -206,7 +259,7 @@
             [appDelegate.dictActiveFeeds setObject:[newFeeds objectAtIndex:i] 
                       forKey:feedKey];
         }
-
+        [self loadFaviconsFromActiveFeed];
     }
     
     NSArray *newStories = [results objectForKey:@"stories"];
@@ -258,52 +311,6 @@
     [results release];
 }
 
-#pragma mark -
-#pragma mark River of News
-
-- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
-    if (!self.pageFetching && !self.pageFinished) {
-        self.feedPage = page;
-        self.pageFetching = YES;
-        int storyCount = appDelegate.storyCount;
-        if (storyCount == 0) {
-            [self.storyTitlesTable reloadData];
-            [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
-        }
-        int readStoriesCount = 0;
-        if (self.feedPage > 1) {
-            for (id story in appDelegate.activeFeedStories) {
-                if ([[story objectForKey:@"read_status"] intValue] == 1) {
-                    readStoriesCount += 1;
-                }
-            }
-        }
-        
-        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
-                                      NEWSBLUR_URL,
-                                      [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
-                                      self.feedPage,
-                                      readStoriesCount];
-        
-        [self cancelRequests];
-        __block ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
-        [request setDelegate:self];
-        [request setResponseEncoding:NSUTF8StringEncoding];
-        [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-        [request setFailedBlock:^(void) {
-            [self informError:[request error]];
-        }];
-        [request setCompletionBlock:^(void) {
-            [self finishedLoadingFeed:request];
-            if (callback) {
-                callback();
-            }
-        }];
-        [request setTimeOutSeconds:30];
-        [request startAsynchronous];
-    }
-}
-
 #pragma mark - 
 #pragma mark Stories
 
@@ -332,6 +339,7 @@
                                      withRowAnimation:UITableViewRowAnimationNone];
         [self.storyTitlesTable endUpdates];
         [indexPaths release];
+//        [self.storyTitlesTable reloadData];
     } else if (newVisibleStoriesCount > 0) {
         [self.storyTitlesTable reloadData];
     } else if (newStoriesCount == 0 || 
@@ -345,6 +353,7 @@
         [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths 
                                      withRowAnimation:UITableViewRowAnimationNone];
         [self.storyTitlesTable endUpdates];
+        //[self.storyTitlesTable reloadData];
     }
     
     self.pageFetching = NO;
@@ -415,6 +424,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     static NSString *cellIdentifier;
     NSDictionary *feed ;
     
@@ -957,6 +967,61 @@
     NSLog(@"Fail: %@", request);
     [self informError:[request error]];
     [self fetchFeedDetail:1 withCallback:nil];
+}
+
+#pragma mark -
+#pragma mark loadSocial Feeds
+
+- (void)loadFaviconsFromActiveFeed {
+    NSArray * keys = [appDelegate.dictActiveFeeds allKeys];
+    NSString *feedIdsQuery = [NSString stringWithFormat:@"?feed_ids=%@", 
+                               [[keys valueForKey:@"description"] componentsJoinedByString:@"&feed_ids="]];        
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/favicons%@",
+                           NEWSBLUR_URL,
+                           feedIdsQuery];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];
+
+    [request setDidFinishSelector:@selector(saveAndDrawFavicons:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {
+
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+    dispatch_async(queue, ^{
+        for (id feed_id in results) {
+            NSDictionary *feed = [appDelegate.dictActiveFeeds objectForKey:feed_id];
+            [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
+            [appDelegate.dictActiveFeeds setValue:feed forKey:feed_id];
+            
+            NSString *favicon = [feed objectForKey:@"favicon"];
+            if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
+                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+                UIImage *faviconImage = [UIImage imageWithData:imageData];
+                [Utilities saveImage:faviconImage feedId:feed_id];
+                NSLog(@"saving favicon");
+            }
+        }
+        [Utilities saveimagesToDisk];
+        
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [results release];
+            [self.storyTitlesTable reloadData];
+        });
+    });
+    
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
 }
 
 @end

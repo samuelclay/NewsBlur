@@ -391,9 +391,22 @@
                     //baseURL:[NSURL URLWithString:feed_link]];
                     baseURL:baseURL];
     
-    NSDictionary *feed = [appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", 
-                                                              [appDelegate.activeStory 
-                                                               objectForKey:@"story_feed_id"]]];
+    
+    NSDictionary *feed;
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", 
+                           [appDelegate.activeStory 
+                            objectForKey:@"story_feed_id"]];
+                           
+    if (appDelegate.isSocialView) {
+        feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
+        // this is to catch when a user is already subscribed
+        if (!feed) {
+            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+        }
+    } else {
+        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    }
+    
     self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed 
                                  withRect:CGRectMake(0, -1, 1024, 21)]; // 1024 hack for self.webView.frame.size.width
     

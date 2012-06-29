@@ -455,7 +455,7 @@
     } else {
         feedTitle = [activeFeed objectForKey:@"feed_title"];
     }
-    
+        
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         splitStoryDetailViewController.navigationItem.title = [NSString stringWithFormat:@""];
         // With some valid UIView *view:

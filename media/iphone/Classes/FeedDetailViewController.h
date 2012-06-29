@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "ASIHTTPRequest.h"
 #import "BaseViewController.h"
+#import "Utilities.h"
 
 @class NewsBlurAppDelegate;
 
@@ -50,6 +51,10 @@
 - (void)changeActiveFeedDetailRow;
 - (void)changeRowStyleToRead:(UITableViewCell *)cell;
 - (void)instafetchFeed;
+
+- (void)loadFaviconsFromActiveFeed;
+- (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
+- (void)requestFailed:(ASIHTTPRequest *)request;
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;

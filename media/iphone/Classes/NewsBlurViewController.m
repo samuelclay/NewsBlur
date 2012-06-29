@@ -528,7 +528,7 @@
     [appDelegate setActiveFolder:folderName];
     appDelegate.readStories = [NSMutableArray array];
     appDelegate.isRiverView = NO;
-    
+        
     [appDelegate loadFeedDetailView];
 }
 
@@ -867,7 +867,7 @@
     NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/favicons",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
     [request setDidFinishSelector:@selector(saveAndDrawFavicons:)];
     [request setDidFailSelector:@selector(requestFailed:)];

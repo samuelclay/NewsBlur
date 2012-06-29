@@ -55,9 +55,9 @@
 - (void)redrawUnreadCounts;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
 - (IBAction)doSwitchSitesUnread;
+- (void)switchSitesUnread;
 - (void)loadFavicons;
 - (void)loadAvatars;
-- (void)switchSitesUnread;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
