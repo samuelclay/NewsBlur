@@ -21,11 +21,13 @@ public class Login extends FragmentActivity implements LoginFragment.LoginFragme
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
-		
 		fragmentManager = getSupportFragmentManager();
+		
 		if (fragmentManager.findFragmentByTag(currentTag) == null) {
+			Log.d(TAG, "Adding current new fragment");
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
-			transaction.add(R.id.login_container, new LoginFragment(), currentTag);
+			LoginFragment login = new LoginFragment();
+			transaction.add(R.id.login_container, login, currentTag);
 			transaction.commit();
 		}
 	}

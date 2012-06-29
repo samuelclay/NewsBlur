@@ -1,6 +1,5 @@
 package com.newsblur.network;
 
-
 public class APIResponse {
 	
 	public String responseString = "";

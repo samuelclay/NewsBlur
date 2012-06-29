@@ -14,6 +14,7 @@ import java.util.Scanner;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -32,6 +33,11 @@ public class APIClient {
 		try {
 			final URL urlFeeds = new URL(urlString);
 			connection = (HttpURLConnection) urlFeeds.openConnection();
+			final SharedPreferences preferences = context.getSharedPreferences(APIConstants.PREFERENCES, 0);
+			final String cookie = preferences.getString(APIConstants.PREF_COOKIE, null);
+			if (cookie != null) {
+				connection.setRequestProperty("Cookie", cookie);
+			}
 			return extractResponse(urlFeeds, connection);
 		} catch (IOException e) {
 			Log.d(TAG, "Error opening GET connection to " + urlString, e.getCause());
@@ -51,7 +57,7 @@ public class APIClient {
 		final APIResponse response = new APIResponse();
 		response.responseString = builder.toString();
 		response.responseCode = connection.getResponseCode();
-		response.cookie = connection.getHeaderField("Cookie");
+		response.cookie = connection.getHeaderField("Set-Cookie");
 		response.hasRedirected = !TextUtils.equals(url.getHost(), connection.getURL().getHost());
 
 		return response;

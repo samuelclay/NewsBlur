@@ -33,6 +33,7 @@ public class DetachableResultReceiver extends ResultReceiver {
 	@Override
 	protected void onReceiveResult(int resultCode, Bundle resultData) {
 		if (receiver != null) {
+			Log.d(TAG, "Sending receiver result...");
 			receiver.onReceiverResult(resultCode, resultData);
 		} else {
 			Log.w(TAG, "No receiver to handle result: " + resultCode + " " + resultData.toString());

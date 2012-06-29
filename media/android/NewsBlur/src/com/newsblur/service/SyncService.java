@@ -1,6 +1,7 @@
 package com.newsblur.service;
 
 import com.newsblur.network.APIClient;
+import com.newsblur.network.APIManager;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -20,30 +21,41 @@ public class SyncService extends IntentService {
 
 	private static final String TAG = "SyncService";
 	public static final String EXTRA_STATUS_RECEIVER = "resultReceiverExtra";
-	public final int STATUS_RUNNING = 0;
-	public final int STATUS_FINISHED = 1;
-	public final int STATUS_ERROR = 2;
+	public final static int STATUS_RUNNING = 0;
+	public final static int STATUS_FINISHED = 1;
+	public final static int STATUS_ERROR = 2;
 	public APIClient apiClient;
-	
+	private APIManager apiManager;
+
 	public SyncService() {
 		super(TAG);
 	}
 
 	@Override
 	public void onCreate() {
-		apiClient = new APIClient(this);
+		super.onCreate();
+		apiManager = new APIManager(this);
 	}
-	
+
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		Log.d(TAG, "Received SyncService handleIntent call.");
 		final ResultReceiver receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
 		try {
-			// TODO: Synchronise feedshere.
+			if (receiver != null) {
+				receiver.send(STATUS_RUNNING, Bundle.EMPTY);
+			}
+			apiManager.getFeeds();
+			Thread.sleep(3000);
 		} catch (Exception e) {
 			Log.e(TAG, "Couldn't synchronise with Newsblur servers.", e.getCause());
+			if (receiver != null) {
+				final Bundle bundle = new Bundle();
+				bundle.putString(Intent.EXTRA_TEXT, e.toString());
+				receiver.send(STATUS_ERROR, bundle);
+			}
 		}
-		
+
 		if (receiver != null) {
 			receiver.send(STATUS_FINISHED, Bundle.EMPTY);
 		}

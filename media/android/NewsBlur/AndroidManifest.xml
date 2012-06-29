@@ -27,6 +27,9 @@
         <activity
             android:name=".activity.Main"
             android:label="@string/newsblur" />
+        
+        <service android:name=".service.SyncService" />
+        
     </application>
 
 </manifest>
