@@ -2,7 +2,6 @@ package com.newsblur.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -58,12 +57,19 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.CLASSIFIER_VALUE + TEXT +
 		")";
 	
+	private final String FEED_FOLDER_SQL = "CREATE TABLE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + " (" +
+		DatabaseConstants.FEED_FOLDER_FOLDER_NAME + TEXT + ", " +
+		DatabaseConstants.FEED_FOLDER_FEED_ID + INTEGER + 
+		")";
+
+	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(FEED_SQL);
 		db.execSQL(FOLDER_SQL);
 		db.execSQL(STORY_SQL);
 		db.execSQL(CLASSIFIER_SQL);
+		db.execSQL(FEED_FOLDER_SQL);
 	}
 
 	@Override

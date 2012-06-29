@@ -14,6 +14,7 @@ public class FeedProvider extends ContentProvider {
 	public static final String VERSION = "v1";
 	public static final Uri NEWSBLUR_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION);
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
+	public static final Uri FEED_FOLDER_MAP_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedfoldermap/");
 	public static final Uri FOLDERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/folders/");
 	
 	private static final String TAG = "FeedProvider";
@@ -22,6 +23,7 @@ public class FeedProvider extends ContentProvider {
 	private static final int SPECIFIC_FEED = 1;
 	private static final int ALL_FOLDERS = 2;
 	private static final int SPECIFIC_FOLDER = 3;
+	private static final int FEED_FOLDER_MAP = 4;
 	
 	private BlurDatabase databaseHelper;
 	
@@ -30,6 +32,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/", ALL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", SPECIFIC_FEED);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/", FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", SPECIFIC_FOLDER);
 	}
@@ -53,16 +56,25 @@ public class FeedProvider extends ContentProvider {
 			// Inserting a folder
 			case ALL_FOLDERS:
 				db.beginTransaction();
-				db.insert(DatabaseConstants.FOLDER_TABLE, null, values);
+				db.insertWithOnConflict(DatabaseConstants.FOLDER_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 				db.setTransactionSuccessful();
 				db.endTransaction();
 				resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FOLDER_ID)).build();
 			break;
-		
+			
+			// Inserting a feed to folder mapping
+			case FEED_FOLDER_MAP:
+				db.beginTransaction();
+				db.insertWithOnConflict(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+				db.setTransactionSuccessful();
+				db.endTransaction();
+				resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_FOLDER_FOLDER_NAME)).build();
+				break;
+				
 			// Inserting a feed
 			case ALL_FEEDS:
 				db.beginTransaction();
-				db.insert(DatabaseConstants.FEED_TABLE, null, values);
+				db.insertWithOnConflict(DatabaseConstants.FEED_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 				db.setTransactionSuccessful();
 				db.endTransaction();
 				resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_ID)).build();
@@ -71,7 +83,7 @@ public class FeedProvider extends ContentProvider {
 			// Inserting a story	
 			case SPECIFIC_FEED:
 				db.beginTransaction();
-				db.insert(DatabaseConstants.STORY_TABLE, null, values);
+				db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 				db.setTransactionSuccessful();
 				db.endTransaction();
 				break;			
@@ -85,7 +97,8 @@ public class FeedProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
-		databaseHelper = new BlurDatabase(getContext());
+		Log.d(TAG, "Creating provider and database.");
+		databaseHelper = new BlurDatabase(getContext().getApplicationContext());
 		return true;
 	}
 

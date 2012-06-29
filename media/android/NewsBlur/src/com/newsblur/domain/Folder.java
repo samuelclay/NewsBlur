@@ -1,8 +1,8 @@
 package com.newsblur.domain;
 
-import com.newsblur.database.DatabaseConstants;
-
 import android.content.ContentValues;
+
+import com.newsblur.database.DatabaseConstants;
 
 public class Folder {
 	
@@ -15,6 +15,6 @@ public class Folder {
 	public void setName(final String name) {
 		values.put(DatabaseConstants.FOLDER_NAME, name);
 	}
-
+	
 	
 }
