@@ -521,8 +521,13 @@
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:originalStoryViewController.view animated:YES];
     HUD.labelText = @"On its way...";
     self.activeOriginalStoryURL = url;
-    UINavigationController *navController = self.navigationController;
-    [navController presentModalViewController:originalStoryViewController animated:YES];
+        
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [splitStoryController presentModalViewController:originalStoryViewController animated:YES];
+    } else {
+        UINavigationController *navController = self.navigationController;
+        [navController presentModalViewController:originalStoryViewController animated:YES];
+    }
 }
 
 - (void)closeOriginalStory {
