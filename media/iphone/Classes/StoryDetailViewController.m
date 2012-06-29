@@ -535,7 +535,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)markStoryAsRead {
     if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
-        NSLog(@"appDelegate.activeStory %@", appDelegate.activeStory);
         [appDelegate markActiveStoryRead];
         
         NSString *urlString;

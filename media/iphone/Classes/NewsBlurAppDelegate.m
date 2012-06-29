@@ -698,30 +698,47 @@
     if (activeLocation == -1) {
         return;
     }
-    id feedId = [self.activeStory objectForKey:@"story_feed_id"];
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
+    
     NSDictionary *feed;
+    id feedId;;
+    NSString *feedIdStr;
+    NSMutableArray *otherFriendFeeds = [[NSMutableArray alloc] init];
     
     if (self.isSocialView) {
-       feed = [self.dictActiveFeeds objectForKey:feedIdStr];
-        if (!feed) {
-            feed = [self.dictFeeds objectForKey:feedIdStr];
-        }
+        feedId = [self.activeStory objectForKey:@"social_user_id"];
+        feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];        
+        feed = [self.dictSocialFeeds objectForKey:feedIdStr];
+        
+        otherFriendFeeds = [self.activeStory objectForKey:@"shared_by_friends"];
+        [otherFriendFeeds removeObject:feedId];
+         NSLog(@"otherFriendFeeds is %@", otherFriendFeeds);
+        
+        
     } else {
+        feedId = [self.activeStory objectForKey:@"story_feed_id"];
+        feedIdStr = [NSString stringWithFormat:@"%@",feedId];
         feed = [self.dictFeeds objectForKey:feedIdStr];
     }
-
+    
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
 //    if (self.activeFeed != feed) {
 //        self.activeFeed = feed;
 //    }
     
-    NSLog(@"feed is %@", feed);
-    NSLog(@"story is %@", story);
-    
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryRead:story feed:feed];
+    
+    // decrement all other friend feeds
+    if (self.isSocialView) {
+        for (int i = 0; i < otherFriendFeeds.count; i++) {
+            feedIdStr = [NSString stringWithFormat:@"social:%@",
+                         [otherFriendFeeds objectAtIndex:i]];   
+            feed = [self.dictSocialFeeds objectForKey:feedIdStr];
+            [self markStoryRead:story feed:feed];
+        }
+    }
 }
 
 - (NSDictionary *)markVisibleStoriesRead {
@@ -774,6 +791,7 @@
         int unreads = MAX(0, [[feed objectForKey:@"ng"] intValue] - 1);
         [feed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
     }
+
     [self.dictFeeds setValue:feed forKey:feedIdStr];
 
 }
