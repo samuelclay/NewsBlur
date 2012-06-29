@@ -75,107 +75,109 @@
                 {% endif %}
             </div>
             
-            <div class="NB-story-header">
-                {% if story.story_authors %}
-                    <div class="NB-story-author">{{ story.story_authors }}</div>
-                {% endif %}
-                {% if story.story_tags %}
-                    <div class="NB-story-tags">
-                        {% for story_tag in story.story_tags %}
-                            <div class="NB-story-tag">{{ story_tag }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                <div class="NB-story-title">
-                    <a href="{{ story.story_permalink }}">{{ story.story_title }}</a>
-                </div>
-                <div class="NB-story-date">
-                    {% if story.has_modifications %}
-                        <div class="NB-story-modifications-button" title="Show story changes"></div>
+            <div class="NB-story-header-wrapper">
+                <div class="NB-story-header">
+                    {% if story.story_authors %}
+                        <div class="NB-story-author">{{ story.story_authors }}</div>
                     {% endif %}
+                    {% if story.story_tags %}
+                        <div class="NB-story-tags">
+                            {% for story_tag in story.story_tags %}
+                                <div class="NB-story-tag">{{ story_tag }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="NB-story-title">
+                        <a href="{{ story.story_permalink }}">{{ story.story_title }}</a>
+                    </div>
+                    <div class="NB-story-date">
+                        {% if story.has_modifications %}
+                            <div class="NB-story-modifications-button" title="Show story changes"></div>
+                        {% endif %}
 
-                    {{ story.shared_date|date:"l, F j<\s\u\p>S</\s\u\p>, Y <\s\m\a\l\l>\a\t</\s\m\a\l\l> g:i A"|safe }} 
+                        {{ story.shared_date|date:"l, F j<\s\u\p>S</\s\u\p>, Y <\s\m\a\l\l>\a\t</\s\m\a\l\l> g:i A"|safe }} 
+                    </div>
                 </div>
             </div>
             
             <div class="NB-story">
                 <div class="NB-story-content">{{ story.story_content|safe }}</div>
-            </div>
             
-            {% if story.share_count %}
-            <div class="NB-story-comments">
-                <div class="NB-story-comments-shares-teaser-wrapper">
-                    <div class="NB-story-comments-shares-teaser">
-                        {% if story.share_count %}
-                            <div class="NB-right">
-                                Shared by 
-                                <b>{{ story.share_count }}</b>
-                                {{ story.share_count|pluralize:"person, people" }}
-                            </div>
-                            {% if story.share_count_public %}
-                                <div class="NB-story-share-profiles NB-story-share-profiles-public">
-                                    {% for share_user in story.shared_by_public %}
-                                        <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
-                                            <img src="{{ share_user.photo_url }}">
-                                        </a>
-                                    {% endfor %}
+                {% if story.share_count %}
+                <div class="NB-story-comments">
+                    <div class="NB-story-comments-shares-teaser-wrapper">
+                        <div class="NB-story-comments-shares-teaser">
+                            {% if story.share_count %}
+                                <div class="NB-right">
+                                    Shared by 
+                                    <b>{{ story.share_count }}</b>
+                                    {{ story.share_count|pluralize:"person, people" }}
                                 </div>
+                                {% if story.share_count_public %}
+                                    <div class="NB-story-share-profiles NB-story-share-profiles-public">
+                                        {% for share_user in story.shared_by_public %}
+                                            <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
+                                                <img src="{{ share_user.photo_url }}">
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                        {% if story.share_count %}
-                            {% if story.share_count_friends %}
-                                <div class="NB-story-share-label">Shared by: </div>
-                                <div class="NB-story-share-profiles NB-story-share-profiles-friends">
-                                    {% for share_user in story.shared_by_friends %}
-                                        <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
-                                            <img src="{{ share_user.photo_url }}">
-                                        </a>
-                                    {% endfor %}
-                                </div>
+                            {% if story.share_count %}
+                                {% if story.share_count_friends %}
+                                    <div class="NB-story-share-label">Shared by: </div>
+                                    <div class="NB-story-share-profiles NB-story-share-profiles-friends">
+                                        {% for share_user in story.shared_by_friends %}
+                                            <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
+                                                <img src="{{ share_user.photo_url }}">
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
+                        </div>
                     </div>
-                </div>
-                {% for comment in story.comments %}
-                <div class="NB-story-comment">
-                    <a href="{{ comment.user.feed_link }}" class="NB-user-avatar {% if comment.source_user_id %}NB-story-comment-reshare{% endif %}">
-                        <img src="{{ comment.user.photo_url }}">
-                    </a>
-                    <div class="NB-story-comment-author-container">
-                        {% if comment.source_user_id %}
-                            <div class="NB-story-comment-reshares">
-                                <a href="{{ comment.source_user.feed_link }}" class="NB-user-avatar" title="{{ comment.source_user.username }}">
-                                    <img src="{{ comment.source_user.photo_url }}">
+                    {% for comment in story.comments %}
+                    <div class="NB-story-comment">
+                        <a href="{{ comment.user.feed_link }}" class="NB-user-avatar {% if comment.source_user_id %}NB-story-comment-reshare{% endif %}">
+                            <img src="{{ comment.user.photo_url }}">
+                        </a>
+                        <div class="NB-story-comment-author-container">
+                            {% if comment.source_user_id %}
+                                <div class="NB-story-comment-reshares">
+                                    <a href="{{ comment.source_user.feed_link }}" class="NB-user-avatar" title="{{ comment.source_user.username }}">
+                                        <img src="{{ comment.source_user.photo_url }}">
+                                    </a>
+                                </div>
+                            {% endif %}
+                            <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
+                            <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
+                            <div class="NB-story-comment-reply-button">
+                                <div class="NB-story-comment-reply-button-wrapper">reply</div>
+                            </div>
+                        </div>
+                        <div class="NB-story-comment-content">
+                            {{ comment.comments }}
+                        </div>
+                        {% if comment.replies %}
+                        <div class="NB-story-comment-replies">
+                            {% for reply in comment.replies %}
+                            <div class="NB-story-comment-reply">
+                                <a href="{{ reply.user.feed_link }}">
+                                    <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
                                 </a>
+                                <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
+                                <div class="NB-story-comment-date NB-story-comment-reply-date">{{ reply.publish_date }} ago</div>
+                                <div class="NB-story-comment-reply-content">{{ reply.comments }}</div>
                             </div>
+                            {% endfor %}
+                        </div>
                         {% endif %}
-                        <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
-                        <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
-                        <div class="NB-story-comment-reply-button">
-                            <div class="NB-story-comment-reply-button-wrapper">reply</div>
-                        </div>
                     </div>
-                    <div class="NB-story-comment-content">
-                        {{ comment.comments }}
-                    </div>
-                    {% if comment.replies %}
-                    <div class="NB-story-comment-replies">
-                        {% for reply in comment.replies %}
-                        <div class="NB-story-comment-reply">
-                            <a href="{{ reply.user.feed_link }}">
-                                <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
-                            </a>
-                            <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
-                            <div class="NB-story-comment-date NB-story-comment-reply-date">{{ reply.publish_date }} ago</div>
-                            <div class="NB-story-comment-reply-content">{{ reply.comments }}</div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
+                    {% endfor %}
                 </div>
-                {% endfor %}
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     {% endfor %}
 
