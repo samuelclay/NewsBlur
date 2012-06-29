@@ -90,6 +90,11 @@ javascripts:
         - media/js/vendor/jquery.tinysort.js
         - media/js/vendor/jquery.simplemodal-1.3.js
         - media/js/vendor/jquery.corners.js
+    blurblog:
+        - media/js/vendor/jquery-*.js
+        - media/js/vendor/underscore-*.js
+        - media/js/vendor/underscore.string.js
+        - media/js/vendor/backbone-*.js
 
 stylesheets:
     common:
@@ -105,3 +110,5 @@ stylesheets:
     bookmarklet:
         - media/css/bookmarklet/reset.css
         - media/css/modals.css
+    blurblog:
+        - media/css/social/social_page.css

@@ -29,6 +29,11 @@ body {
 /* = Layout = */
 /* ========== */
 
+.NB-page {
+    background: #EBC55F url(/media/img/reader/background-control-light.png) repeat 0 0;
+    padding: 0 12px;
+}
+
 /* ========== */
 /* = Header = */
 /* ========== */
@@ -36,7 +41,6 @@ body {
 header {
     padding: 64px 14px;
     text-shadow: 1px 1px 0 #E0E0E0;
-    background-color: #EBC55F;
     overflow: hidden;
 }
 
@@ -148,6 +152,19 @@ header {
 .NB-title .NB-title-left {
     overflow: hidden;
 }
+
+/* ========= */
+/* = Story = */
+/* ========= */
+
+.NB-mark {
+    margin: 0 auto 36px;
+    max-width: 800px;
+    background-color: #F6F6F6;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
 /* ===================== */
 /* = Story Feed Header = */
 /* ===================== */
@@ -222,6 +239,17 @@ header {
       #F5F8FA 84%
     );
     border-bottom: 1px solid #D0D0D0;
+}
+
+@media all and (max-width: 800px) {
+    .NB-story-header {
+        padding-right: 100px;
+    }
+}
+@media all and (max-width: 600px) {
+    .NB-story-header {
+        padding-right: 12px;
+    }
 }
 
 .NB-story-title {
@@ -302,15 +330,31 @@ header {
 /* =========== */
 
 .NB-divider {
-    border-top: 1px solid #F6F6F6;
-    border-bottom: 1px solid #E8E8E8;
+/*    border-top: 1px solid #F6F6F6;*/
+/*    border-bottom: 1px solid #E8E8E8;*/
     height: 0;
 }
 
 .NB-story {
     margin: 0 28px;
-    padding: 12px 212px 24px 0;
-    max-width: 700px;
+    padding: 12px 200px 24px 0;
+    max-width: 800px;
+}
+
+@media all and (max-width: 800px) {
+    .NB-story {
+        padding-right: 100px;
+    }
+}
+@media all and (max-width: 700px) {
+    .NB-story {
+        padding-right: 50px;
+    }
+}
+@media all and (max-width: 600px) {
+    .NB-story {
+        padding-right: 0px;
+    }
 }
 
 .NB-story a {
@@ -345,9 +389,9 @@ header {
 /* ======================= */
 
 .NB-story-comments {
-    margin: 0 200px 32px 28px;
+    margin: 0 28px 32px 28px;
     padding: 1px 0 0;
-    max-width: 700px;
+    max-width: 800px;
     border-top: 2px solid #353535;
     border-bottom: 1px solid #353535; 
     font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;

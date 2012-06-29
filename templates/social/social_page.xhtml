@@ -6,8 +6,10 @@
 <head>
     <title>{{ social_profile.feed_title }}</title>
     <link rel="alternate" type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}" title="{{ social_profile.feed_title }} RSS feed">
-      <link rel="shortcut icon" HREF="{{ social_profile.photo_url }}">
-    <link rel="stylesheet" href="{{ MEDIA_URL }}css/social/social_page.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <link rel="shortcut icon" HREF="{{ social_profile.photo_url }}">
+    
+    {% include_stylesheets "blurblog" %}
+    
     {% if social_profile.custom_css %}
     <style type="text/css" media="screen">
         {{ social_profile.custom_css|safe }}
@@ -17,6 +19,7 @@
 
 <body>
     
+<div class="NB-page">
     <header class="NB-header">
         <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
             <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-title-logo">
@@ -60,8 +63,7 @@
             <div class="NB-feed NB-feed-{{ story.feed.favicon_text_color }}" style="
                 background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0.16, #{{ story.feed.favicon_color }}), color-stop(0.84, #{{ story.feed.favicon_fade }}) );
                 background-image: -moz-linear-gradient( center bottom, #{{ story.feed.favicon_color }} 16%, #{{ story.feed.favicon_fade }} 84% );
-                border-top-color: #{{ story.feed.favicon_border }};
-                border-bottom-color: #{{ story.feed.favicon_border }};
+                border: 1px solid #{{ story.feed.favicon_border }};
                 ">
                 {% if story.feed %}
                     <div class="NB-feed-favicon">
@@ -174,7 +176,11 @@
             {% endif %}
         </div>
     {% endfor %}
+
+</div>
     
+{% include_javascripts "blurblog" %}
+
 </body>
 
 </html>
