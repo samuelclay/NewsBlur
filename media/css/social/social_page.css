@@ -1,3 +1,7 @@
+/* ========== */
+/* = Global = */
+/* ========== */
+
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 13px;
@@ -5,9 +9,30 @@ body {
     margin: 0;
 }
 
+.NB-hidden {
+  display: none;
+}
+
+.NB-left {
+  float: left;
+}
+.NB-right {
+  float: right;
+}
+.NB-raquo {
+  font-size: 18px;
+  vertical-align: baseline;
+  line-height: 12px;
+}
+
 /* ========== */
 /* = Layout = */
 /* ========== */
+
+.NB-page {
+    background: #EBC55F url(/media/img/reader/background-control-light.png) repeat 0 0;
+    padding: 0 12px;
+}
 
 /* ========== */
 /* = Header = */
@@ -16,7 +41,6 @@ body {
 header {
     padding: 64px 14px;
     text-shadow: 1px 1px 0 #E0E0E0;
-    background-color: #EBC55F;
     overflow: hidden;
 }
 
@@ -128,6 +152,19 @@ header {
 .NB-title .NB-title-left {
     overflow: hidden;
 }
+
+/* ========= */
+/* = Story = */
+/* ========= */
+
+.NB-mark {
+    margin: 0 auto 36px;
+    max-width: 800px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    overflow: hidden;
+}
+
 /* ===================== */
 /* = Story Feed Header = */
 /* ===================== */
@@ -201,7 +238,24 @@ header {
       #E9EAEF 10%,
       #F5F8FA 84%
     );
+    border-top: 1px solid #C0C0C0;
+}
+
+.NB-story-header-wrapper {
     border-bottom: 1px solid #D0D0D0;
+    border-right: 1px solid #909090;
+    border-left: 1px solid #909090;
+}
+
+@media all and (max-width: 800px) {
+    .NB-story-header {
+        padding-right: 100px;
+    }
+}
+@media all and (max-width: 600px) {
+    .NB-story-header {
+        padding-right: 12px;
+    }
 }
 
 .NB-story-title {
@@ -264,30 +318,370 @@ header {
     font-size: 7px;
 }
 
+.NB-story-header .NB-story-modifications-button {
+    width: 16px;
+    height: 16px;
+    background: transparent url('/media/embed/reader/code_icon.png') no-repeat 0 0;
+    float: left;
+    margin: 3px 12px 0px 0px;
+    opacity: .6;
+    cursor: pointer;
+}
+.NB-story-header .NB-story-modifications-button:hover {
+    opacity: 1;
+}
+
 /* =========== */
 /* = Stories = */
 /* =========== */
 
 .NB-divider {
-    border-top: 1px solid #F6F6F6;
-    border-bottom: 1px solid #E8E8E8;
+/*    border-top: 1px solid #F6F6F6;*/
+/*    border-bottom: 1px solid #E8E8E8;*/
     height: 0;
 }
 
 .NB-story {
-    margin: 0 28px;
-    padding: 12px 212px 24px 0;
-    max-width: 700px;
+    background-color: #FAFAFA;
+    padding: 0 28px;
+    max-width: 800px;
+    border-right: 1px solid #909090;
+    border-bottom: 1px solid #909090;
+    border-left: 1px solid #909090;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
 }
 
-.NB-story a {
+.NB-story-content {
+    padding: 12px 200px 24px 0;
+}
+@media all and (max-width: 800px) {
+    .NB-story-content {
+        padding-right: 100px;
+    }
+}
+@media all and (max-width: 700px) {
+    .NB-story-content {
+        padding-right: 50px;
+    }
+}
+@media all and (max-width: 600px) {
+    .NB-story-content {
+        padding-right: 0px;
+    }
+}
+
+.NB-story-content a {
     color: #1F4499;
 }
 
-.NB-story a:hover {
+.NB-story-content a:hover {
     color: #99481D;
 }
 
-.NB-story img {
+.NB-story-content img {
     max-width: 100%;
+    height: auto;
+}
+.NB-story-content ins {
+    text-decoration: none;
+    color: inherit;
+}
+.NB-story-content del {
+    display: none;
+}
+.NB-pref-show-changes .NB-story-content ins {
+    text-decoration: underline;
+    color: #27452D;
+}
+.NB-pref-show-changes .NB-story-content del {
+    display: block;
+    color: #661616;
+}
+
+/* ======================= */
+/* = Shares and Comments = */
+/* ======================= */
+
+.NB-story-comments a {
+    text-decoration: none;
+}
+.NB-story-comments a:hover {
+    color: #99481D;
+}
+.NB-story-comments a img {
+    border: none;
+}
+.NB-story-comments {
+    margin: 0 0 32px 0;
+    padding: 1px 0 0;
+    max-width: 800px;
+    border-top: 2px solid #353535;
+    border-bottom: 1px solid #353535; 
+    font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+}
+.NB-story-comment {
+    border-top: 1px solid #A6A6A6;
+    background-color: #FCFCFC;
+    position: relative;
+    padding: 0 12px 2px 54px;
+    line-height: 20px;
+    overflow: hidden;
+}
+.NB-story-comment .NB-user-avatar {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    cursor: pointer;
+}
+.NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+    top: 22px;
+    left: 6px;
+    z-index: 1;
+}
+.NB-story-comment .NB-user-avatar img {
+    border-radius: 6px;
+    margin: 2px 0 0 1px;
+    width: 38px;
+    height: 38px;
+}
+.NB-story-comment .NB-user-avatar.NB-story-comment-reshare img {
+    height: 24px;
+    width: 24px;
+}
+.NB-story-comment .NB-story-comment-author-container {
+    overflow: hidden;
+    margin: 6px 0 0;
+}
+.NB-story-comment .NB-story-comment-reshares {
+    position: absolute;
+    top: 0;
+    left: 8px;
+    z-index: 0;
+}
+.NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
+    top: 8px;
+    left: 12px;
+}
+.NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+}
+.NB-story-comment .NB-story-comment-username {
+    float: left;
+    font-size: 11px;
+    color: #1D4BA6;
+    font-weight: bold;
+    margin: 0 10px 0 0;
+    text-shadow: 0 -1px 0 #F0F0F0;
+    cursor: pointer;
+}
+.NB-story-comment .NB-story-comment-date {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #9D9D9D;
+    font-weight: bold;
+    float: left;
+}
+.NB-story-comment .NB-story-comment-content {
+    float: left;
+    color: #303030;
+}
+.NB-story-comment .NB-story-comment-reply-button {
+    padding: 4px 24px 4px 12px;
+    float: left;
+    cursor: pointer;
+}
+.NB-story-comment .NB-story-comment-reply-button .NB-story-comment-reply-button-wrapper {
+    text-transform: uppercase;
+    background-color: #E9AF86;
+    color: white;
+    padding: 1px 4px;
+    line-height: 9px;
+    font-size: 9px;
+}
+.NB-story-comment .NB-story-comment-reply-button:hover .NB-story-comment-reply-button-wrapper {
+    background-color: #DE772B;
+}
+.NB-story-comment .NB-story-comment-reply-button:active .NB-story-comment-reply-button-wrapper {
+    background-color: #9F3A00;
+}
+
+.NB-story-comment-reply {
+    border-top: 1px solid #E0E0E0;
+    padding: 4px 0;
+    overflow: hidden;
+    clear: both;
+    position: relative;
+    padding: 6px 0 6px 32px;
+    line-height: 18px;
+}
+.NB-story-comment-reply .NB-story-comment-reply-photo {
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    position: absolute;
+    left: 0px;
+    top: 10px;
+    cursor: pointer;
+}
+
+.NB-story-comment-edit-button {
+    padding: 4px 24px 4px 12px;
+    float: left;
+    cursor: pointer;
+}
+.NB-story-comment-edit-button .NB-story-comment-edit-button-wrapper {
+    text-transform: uppercase;
+    background-color: #74A2E7;
+    color: white;
+    padding: 1px 4px;
+    line-height: 9px;
+    font-size: 9px;
+}
+.NB-story-comment-edit-button:hover .NB-story-comment-edit-button-wrapper {
+    background-color: #5073BC;
+}
+.NB-story-comment-edit-button:active .NB-story-comment-edit-button-wrapper {
+    background-color: #2A3B72;
+}
+.NB-story-comment-share-edit-button {
+    padding-right: 0;
+}
+.NB-story-comment-reply-content {
+    clear: both;
+    color: #303030;
+    float: left;
+}
+
+.NB-story-comment-reply-form {
+    padding-top: 11px;
+}
+.NB-story-comment-reply-form .NB-story-comment-reply-username {
+    margin: 1px 8px 6px 0;
+}
+.NB-story-comment-reply-form .NB-story-comment-reply-comments {
+    margin: 0 8px 4px 0;
+    width: 62%;
+    display: block;
+    float: left;
+    font-size: 12px;
+}
+.NB-story-comment-reply-form .NB-modal-submit-button {
+    float: left;
+    font-size: 10px;
+    padding: 2px 8px;
+    line-height: 16px;
+    margin: 0;
+}
+.NB-story-comment-reply-form .NB-error {
+    font-size: 10px;
+    color: #6A1000;
+    padding: 4px 0 0;
+    line-height: 14px;
+    font-weight: bold;
+    clear: both;
+}
+.NB-story-comments-public-teaser-wrapper,
+.NB-story-comments-public-header-wrapper {
+    border-top: 1px solid #353535;
+    padding: 1px 0;
+    cursor: pointer;
+}
+.NB-story-comments-public-header-wrapper {
+    cursor: default;
+}
+.NB-story-comments-public-teaser,
+.NB-story-comments-public-header {
+    background-color: #B1B6B4;
+    color: white;
+    text-shadow: 0 1px 0 #505050;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 2px 12px;
+    overflow: hidden;
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+}
+.NB-story-comments-public-header {
+    background-color: whiteSmoke;
+    color: #404040;
+    text-shadow: 0 1px 0 white;
+}
+.NB-story-comments-shares-teaser-wrapper {
+    border-top: 0;
+    padding-top: 0;
+}
+
+.NB-story-comments-shares-teaser {
+    background-color: whiteSmoke;
+    color: #202020;
+    cursor: default;
+    text-shadow: 0 1px 0 #FFF;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 8px 12px 0px;
+    overflow: hidden;
+    height: 27px;
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+}
+
+.NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
+    background-color: #2B478C;
+    background-image: none;
+}
+.NB-story-comments-public-teaser b {
+    padding: 0 1px;
+    font-size: 12px;
+}
+.NB-story-share-label {
+    display: inline-block;
+    margin: 0 4px 0 0;
+}
+.NB-story-share-profiles {
+    display: inline-block;
+    vertical-align: top;
+    height: 24px;
+    padding-top: 2px;
+    margin-top: -4px;
+    overflow: hidden;
+}
+.NB-story-share-profiles.NB-story-share-profiles-public {
+    float: right;
+}
+.NB-story-share-profiles.NB-story-share-profiles-public .NB-story-share-profile {
+    float: right;
+}
+
+.NB-story-share-profiles {
+    display: inline-block;
+}
+.NB-story-share-profiles .NB-user-avatar {
+    float: left;
+    font-size: 0;
+    vertical-align: middle;
+    height: 22px;
+    width: 22px;
+    margin: 0 4px 0 0;
+    cursor: pointer;
+}
+.NB-story-share-profiles .NB-user-avatar img {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+}
+.NB-story-share-profiles .NB-user-username {
+    float: left;
+}
+.NB-story-comment .NB-story-comment-content {
+    clear: both;
+    padding: 0 0 6px 0;
 }

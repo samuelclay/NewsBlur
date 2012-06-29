@@ -174,7 +174,6 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
     comparator: function(modelA, modelB) {
         var sort_order = NEWSBLUR.assets.preference('feed_order');
         
-        
         if (modelA.is_feed() != modelB.is_feed()) {
             // Feeds above folders
             return modelA.is_feed() ? -1 : 1;
@@ -186,6 +185,11 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         
         var feedA = modelA.feed;
         var feedB = modelB.feed;
+        
+        if (!feedA || !feedB) {
+            // console.log(["missing feed", feedA, feedB, modelA, modelB]);
+            return !feedA ? 1 : -1;
+        }
         
         if (sort_order == 'ALPHABETICAL' || !sort_order) {
             return feedA.get('feed_title').toLowerCase() > feedB.get('feed_title').toLowerCase() ? 1 : -1;

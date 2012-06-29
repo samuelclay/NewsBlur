@@ -28,8 +28,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:intelligence', this.render_header, this);
         
         // Binding directly instead of using event delegation. Need for speed.
-        this.$el.bind('mouseenter', this.mouseenter);
-        this.$el.bind('mouseleave', this.mouseleave);
+        // this.$el.bind('mouseenter', this.mouseenter);
+        // this.$el.bind('mouseleave', this.mouseleave);
         
         if (!this.options.feed_floater) {
             this.model.story_view = this;
@@ -47,7 +47,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             model: this.model, 
             el: this.el
         }).template({
-            story: this.model
+            story: this.model,
+            social_services: NEWSBLUR.assets.social_services
         });
         this.$el.html(this.template(params));
         this.toggle_classes();
@@ -73,8 +74,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             feed             : NEWSBLUR.reader.flags.river_view && this.feed,
             tag              : _.first(this.model.get("story_tags")),
             title            : this.make_story_title(),
-            authors_score    : this.classifiers.authors[this.model.get('story_authors')],
-            tags_score       : this.classifiers.tags,
+            authors_score    : this.classifiers && this.classifiers.authors[this.model.get('story_authors')],
+            tags_score       : this.classifiers && this.classifiers.tags,
             options          : this.options
         };
     },
@@ -98,7 +99,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <% if (story.get("story_tags", []).length) { %>\
                     <div class="NB-feed-story-tags">\
                         <% _.each(story.get("story_tags"), function(tag) { %>\
-                            <div class="NB-feed-story-tag <% if (tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
+                            <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
                                 <%= tag %>\
                             </div>\
                         <% }) %>\
@@ -119,6 +120,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                         <% } %>\
                         <%= story.get("long_parsed_date") %>\
                     </span>\
+                    <% if (story.get("starred_date")) { %>\
+                        <span class="NB-feed-story-starred-date"><%= story.get("starred_date") %></span>\
+                    <% } %>\
                 <% } %>\
             </div>\
         </div>\
@@ -141,7 +145,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             </div>\
             <div class="NB-sideoption NB-feed-story-share">\
                 <div class="NB-sideoption-icon">&nbsp;</div>\
-                <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
+                <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Post to Blurblog" %></div>\
             </div>\
             <%= story_share_view %>\
         </div>\
@@ -156,7 +160,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         $header.css('background-image', NEWSBLUR.utils.generate_gradient(this.feed, 'moz'));
         $header.css('borderTop',        NEWSBLUR.utils.generate_gradient(this.feed, 'border'));
         $header.css('borderBottom',     NEWSBLUR.utils.generate_gradient(this.feed, 'border'));
-        $header.css('textShadow',       '0 1px 0 ' + NEWSBLUR.utils.generate_gradient(this.feed, 'shadow'));
+        $header.css('textShadow',       NEWSBLUR.utils.generate_shadow(this.feed));
     },
     
     make_story_title: function() {
@@ -174,9 +178,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     render_comments: function() {
+        var $original_comments = this.$('.NB-feed-story-share-container,.NB-feed-story-comments');
         if (this.model.get("comment_count") || this.model.get("share_count")) {
             var $comments = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).render().el;
-            this.$('.NB-feed-story-share-container,.NB-feed-story-comments').replaceWith($comments);
+            $original_comments.replaceWith($comments);
+        } else if ($original_comments.length) {
+            $original_comments.replaceWith($.make('div', { className: 'NB-feed-story-share-container' }));
         }
     },
     
@@ -246,6 +253,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             (NEWSBLUR.reader.story_view == 'feed' ||
              (NEWSBLUR.reader.story_view == 'page' &&
               NEWSBLUR.reader.flags['page_view_showing_feed_view']))) {
+            NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
             NEWSBLUR.app.story_list.scroll_to_selected_story(model, options);
         }
     },
@@ -348,10 +356,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return false;
     },
     
-    mark_story_as_shared: function() {
-        NEWSBLUR.reader.mark_story_as_shared(this.model.id, {'source': 'sideoption'});
-    },
-    
     hide_story_changes: function() {
         var $button = this.$('.NB-feed-story-hide-changes');
         
@@ -364,6 +368,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
         $button.css('opacity', 1).fadeOut(400);
         $button.tipsy('hide').tipsy('disable');
+        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
     },
     
     open_feed: function() {

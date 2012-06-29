@@ -52,7 +52,7 @@ NEWSBLUR.About.prototype = {
                       ]),
                       $.make('li', [
                         'E-mail: ',
-                        $.make('a', { href: 'mailto:samuel@ofbrooklyn.com' }, 'samuel@ofbrooklyn.com')
+                        $.make('a', { href: 'mailto:samuel@newsblur.com' }, 'samuel@newsblur.com')
                       ]),
                       $.make('li', { className: 'last' }, [
                         'Made in: ',

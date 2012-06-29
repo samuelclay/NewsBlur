@@ -51,7 +51,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                         ]),
                         $.make('td', [
                             $.make('fieldset', [
-                                $.make('legend', 'People you also follow'),
+                                $.make('legend', 'People you know'),
                                 $.make('div', { className: 'NB-modal-section NB-profile-following-youknow' })
                             ]),
                             $.make('fieldset', [
@@ -71,7 +71,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
                         ]),
                         $.make('td', [
                             $.make('fieldset', [
-                                $.make('legend', 'People you follow'),
+                                $.make('legend', 'People you know'),
                                 $.make('div', { className: 'NB-modal-section NB-profile-followers-youknow' })
                             ]),
                             $.make('fieldset', [
@@ -146,9 +146,8 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             return $.make('div', { className: 'NB-profile-link', title: user.get('username') }, [
                 $.make('img', { src: user.get('photo_url') })
             ]).tipsy({
-                delayIn: 50,
                 gravity: 's',
-                fade: true,
+                delayIn: 1,
                 offset: 3
             }).data('user_id', user_id);
         }));

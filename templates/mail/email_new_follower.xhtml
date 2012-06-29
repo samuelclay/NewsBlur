@@ -1,0 +1,36 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% block body %}
+    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">
+        Say hello to your newest follower:
+    </p>
+    <div style="margin: 24px 0;font-size: 24px;text-align: center;">
+        <a href="{{ follower_profile.blurblog_url }}"><img src="{{ follower_profile.photo_url }}" style="max-width: 200px; max-height: 200px;margin: 0 auto;border-radius: 3px;border: none;"></a>
+        <div style="margin: 8px 0 0 0;font-weight: bold;"><a href="{{ follower_profile.blurblog_url }}" style="color: #404040;text-decoration: none">{{ follower_profile.username }}</a></div>
+    </div>
+    
+    {% if common_followers %}
+    <div style="clear: both; overflow: hidden">
+        <p style="margin: 12px 0 12px;line-height: 16px;clear: both;">You follow {{ common_followers|length }} {{ common_followers|pluralize:"person,people" }} who follow{{ common_followers|pluralize:"s," }} {{ follower_profile.username }}:</p>
+        {% for follower in common_followers %}
+            <div style="margin: 0 12px 12px 0; float: left;">
+                <a href="{{ follower.blurblog_url }}"><img src="{{ follower.email_photo_url }}" style="float: left; border-radius: 3px;margin-right: 6px; width: 24px; height: 24px;border: none;"></a>
+                <a href="{{ follower.blurblog_url }}" style="color: #404040;text-decoration: none">{{ follower.username }}</a>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if common_followings %}
+    <div style="clear: both; overflow: hidden">
+        <p style="display: block; margin: 12px 0 12px;line-height: 16px;clear: both;">You and {{ follower_profile.username }} both follow {{ common_followings|length }} {{ common_followings|pluralize:"person,people" }}:</p>
+        {% for following in common_followings %}
+            <div style="margin: 0 12px 12px 0; float: left;">
+                <a href="{{ following.blurblog_url }}"><img src="{{ following.email_photo_url }}" style="float: left; border-radius: 3px;margin-right: 6px; width: 24px; height: 24px;border: none;"></a>
+                <a href="{{ following.blurblog_url }}" style="color: #404040;text-decoration: none">{{ following.username }}</a>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+{% endblock %}

@@ -137,8 +137,12 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
         
         if (feed.is_social()) {
+            extra_classes += ' NB-feed-social';
             if (feed.get('subscription_user_id') && !feed.get('shared_stories_count')) {
                 extra_classes += ' NB-feed-inactive';
+            }
+            if (feed.get('subscription_user_id') == NEWSBLUR.Globals.user_id) {
+                extra_classes += ' NB-feed-self-blurblog';
             }
         }
         

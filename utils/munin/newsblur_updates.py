@@ -11,6 +11,7 @@ graph_config = {
     'celery_update_feeds.label': 'Celery - Update Feeds',
     'celery_new_feeds.label': 'Celery - New Feeds',
     'celery_push_feeds.label': 'Celery - Push Feeds',
+    'celery_work_queue.label': 'Celery - Work Queue',
 }
 
 
@@ -28,6 +29,7 @@ def calculate_metrics():
         'celery_update_feeds': r.llen("update_feeds"),
         'celery_new_feeds': r.llen("new_feeds"),
         'celery_push_feeds': r.llen("push_feeds"),
+        'celery_work_queue': r.llen("work_queue"),
     }
 
 if __name__ == '__main__':

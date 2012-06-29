@@ -16,6 +16,7 @@ from django.conf import settings
 from django.core.mail import mail_admins
 from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
+from django.contrib.sites.models import Site
 from mongoengine.queryset import OperationError
 from pymongo.helpers import OperationFailure
 from operator import itemgetter
@@ -33,7 +34,9 @@ try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
 except:
     pass
-from apps.social.models import MSharedStory, MSocialProfile, MSocialSubscription, MActivity
+from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
+from apps.social.models import MSocialSubscription, MActivity
+from apps.social.views import load_social_page
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import relative_timesince
@@ -48,9 +51,20 @@ from vendor.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
 
-@never_cache
 @render_to('reader/feeds.xhtml')
 def index(request):
+    if request.method == "GET" and request.subdomain and request.subdomain != 'dev':
+        username = request.subdomain
+        try:
+            if '.' in username:
+                username = username.split('.')[0]
+            user = User.objects.get(username__iexact=username)
+        except User.DoesNotExist:
+            return HttpResponseRedirect('http://%s%s' % (
+                Site.objects.get_current().domain.replace('www', 'dev'),
+                reverse('index')))
+        return load_social_page(request, user_id=user.pk, username=request.subdomain)
+
     # XXX TODO: Remove me on launch.
     if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
         return {}, 'reader/social_signup.xhtml'
@@ -211,6 +225,7 @@ def load_feeds(request):
     }
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
+    social_services = MSocialServices.profile(user.pk)
     
     user.profile.dashboard_date = datetime.datetime.now()
     user.profile.save()
@@ -219,6 +234,7 @@ def load_feeds(request):
         'feeds': feeds.values() if version == 2 else feeds,
         'social_feeds': social_feeds,
         'social_profile': social_profile,
+        'social_services': social_services,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
     }
@@ -228,11 +244,11 @@ def load_feeds(request):
 def load_feed_favicons(request):
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_ids')
-    user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
-    if feed_ids and len(feed_ids) > 0:
-        user_subs = user_subs.filter(feed__in=feed_ids)
+    
+    if not feed_ids:
+        user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
+        feed_ids  = [sub['feed__pk'] for sub in user_subs.values('feed__pk')]
 
-    feed_ids   = [sub['feed__pk'] for sub in user_subs.values('feed__pk')]
     feed_icons = dict([(i.feed_id, i.data) for i in MFeedIcon.objects(feed_id__in=feed_ids)])
         
     return feed_icons
@@ -240,10 +256,13 @@ def load_feed_favicons(request):
 def load_feeds_flat(request):
     user = request.user
     include_favicons = request.REQUEST.get('include_favicons', False)
+    update_counts    = request.REQUEST.get('update_counts', False)
+    
     feeds = {}
     iphone_version = "1.2"
     
     if include_favicons == 'false': include_favicons = False
+    if update_counts == 'false': update_counts = False
     
     if not user.is_authenticated():
         return HttpResponseForbidden()
@@ -285,7 +304,23 @@ def load_feeds_flat(request):
                     make_feeds_folder(folder, flat_folder_name, depth+1)
         
     make_feeds_folder(folders)
-    data = dict(flat_folders=flat_folders, feeds=feeds, user=user.username, iphone_version=iphone_version)
+    
+    social_params = {
+        'user_id': user.pk,
+        'include_favicon': include_favicons,
+        'update_counts': update_counts,
+    }
+    social_feeds = MSocialSubscription.feeds(**social_params)
+    social_profile = MSocialProfile.profile(user.pk)
+    
+    data = {
+        "flat_folders": flat_folders, 
+        "feeds": feeds,
+        "social_feeds": social_feeds,
+        "social_profile": social_profile,
+        "user": user.username,
+        "iphone_version": iphone_version,
+    }
     return data
 
 @ratelimit(minutes=1, requests=20)
@@ -643,14 +678,20 @@ def load_river_stories(request):
     #     starred_stories = {}
     
     # Intelligence classifiers for all feeds involved
-    classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
-                                               feed_id__in=found_feed_ids))
-    classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
+    if found_feed_ids:
+        classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
                                                    feed_id__in=found_feed_ids))
-    classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
+        classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
+                                                       feed_id__in=found_feed_ids))
+        classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
+                                                     feed_id__in=found_feed_ids))
+        classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
                                                  feed_id__in=found_feed_ids))
-    classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
-                                             feed_id__in=found_feed_ids))
+    else:
+        classifier_feeds = []
+        classifier_authors = []
+        classifier_titles = []
+        classifier_tags = []
     classifiers = sort_classifiers_by_feed(user=user, feed_ids=found_feed_ids,
                                            classifier_feeds=classifier_feeds,
                                            classifier_authors=classifier_authors,

@@ -4,7 +4,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     events: {
         "click .NB-feed-story-premium-only a" : function() {
-            NEWSBLUR.reader.open_feedchooser_dialog();
+            NEWSBLUR.reader.open_feedchooser_modal();
         }
     },
     
@@ -12,6 +12,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         _.bindAll(this, 'scroll');
         this.collection.bind('reset', this.render, this);
         this.collection.bind('add', this.add, this);
+        this.collection.bind('no_more_stories', this.check_premium_river, this);
         NEWSBLUR.reader.$s.$story_titles.scroll(this.scroll);
     },
     
@@ -38,6 +39,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var collection = this.collection;
         if (options.added) {
             var $stories = _.map(this.collection.models.slice(-1 * options.added), function(story) {
+                if (story.story_title_view) return;
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
                     collection: collection
@@ -62,6 +64,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         this.$('.NB-feed-story-premium-only').remove();
         this.$el.append($notice);
     },
+    
     // ===========
     // = Actions =
     // ===========
@@ -148,6 +151,11 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         }
     },
     
+    check_premium_river: function() {
+        this.show_no_more_stories();
+        this.append_river_premium_only_notification();
+    },
+    
     end_loading: function() {
         var $endbar = NEWSBLUR.reader.$s.$story_titles.find('.NB-story-titles-end-stories-line');
         $endbar.remove();
@@ -155,10 +163,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
         if (NEWSBLUR.assets.flags['no_more_stories']) {
             this.show_no_more_stories();
-        } else if (NEWSBLUR.reader.flags['non_premium_river_view'] && 
-                   this.collection.visible().length >= NEWSBLUR.reader.constants.RIVER_STORIES_FOR_STANDARD_ACCOUNT) {
-            this.show_no_more_stories();
-            this.append_river_premium_only_notification();
         }
     },
     

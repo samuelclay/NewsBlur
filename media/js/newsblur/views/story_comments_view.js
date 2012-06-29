@@ -111,7 +111,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             }, this));
             
             this.$('.NB-story-comments-public-teaser-wrapper').replaceWith($comments);
-            // this.fetch_story_locations_in_feed_view();
+            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
         }, this));
     }
     

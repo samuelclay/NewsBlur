@@ -118,7 +118,7 @@ NEWSBLUR.Faq.prototype = {
                         $.make('div', { className: 'NB-faq-question' }, 'Help! I have an issue and it\'s not mentioned here.'),
                         $.make('div', { className: 'NB-faq-answer last' }, [
                             'Please, please, please e-mail ',
-                            $.make('a', { href: 'mailto:samuel@ofbrooklyn.com' }, 'samuel@ofbrooklyn.com'),
+                            $.make('a', { href: 'mailto:samuel@newsblur.com' }, 'samuel@newsblur.com'),
                             '. If you have an issue it is entirely possible that other people do, too.'
                         ])
                       ])

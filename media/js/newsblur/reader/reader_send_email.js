@@ -7,7 +7,7 @@ NEWSBLUR.ReaderSendEmail = function(story_id, options) {
     this.model = NEWSBLUR.assets;
     this.story_id = story_id;
     this.story = this.model.get_story(story_id);
-    this.feed_id = this.story.story_feed_id;
+    this.feed_id = this.story.get('story_feed_id');
     this.feed = this.model.get_feed(this.feed_id);
 
     this.runner();

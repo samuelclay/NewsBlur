@@ -98,7 +98,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     
     follow_user: function() {
         this.$('.NB-loading').addClass('NB-active');
-        NEWSBLUR.reader.model.follow_user(this.model.get('user_id'), _.bind(function(data, follow_user) {
+        NEWSBLUR.assets.follow_user(this.model.get('user_id'), _.bind(function(data, follow_user) {
             this.$('.NB-loading').removeClass('NB-active');
             this.model.set(follow_user);
             
