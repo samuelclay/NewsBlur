@@ -701,11 +701,24 @@
     id feedId = [self.activeStory objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
-    NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
-    NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
-    if (self.activeFeed != feed) {
-        self.activeFeed = feed;
+    NSDictionary *feed;
+    
+    if (self.isSocialView) {
+       feed = [self.dictActiveFeeds objectForKey:feedIdStr];
+        if (!feed) {
+            feed = [self.dictFeeds objectForKey:feedIdStr];
+        }
+    } else {
+        feed = [self.dictFeeds objectForKey:feedIdStr];
     }
+
+    NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
+//    if (self.activeFeed != feed) {
+//        self.activeFeed = feed;
+//    }
+    
+    NSLog(@"feed is %@", feed);
+    NSLog(@"story is %@", story);
     
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryRead:story feed:feed];

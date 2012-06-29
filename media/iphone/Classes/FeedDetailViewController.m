@@ -51,6 +51,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    NSLog(@"appDelegate.activeFeed is %@", appDelegate.activeFeed);
+    
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     

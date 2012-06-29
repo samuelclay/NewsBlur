@@ -15,6 +15,7 @@
 #import "ASIFormDataRequest.h"
 #import "Base64.h"
 #import "Utilities.h"
+#import "JSON.h"
 
 @implementation StoryDetailViewController
 
@@ -534,24 +535,58 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)markStoryAsRead {
     if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
+        NSLog(@"appDelegate.activeStory %@", appDelegate.activeStory);
         [appDelegate markActiveStoryRead];
         
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_read",
-                               NEWSBLUR_URL];
+        NSString *urlString;
+        
+        if (appDelegate.isSocialView) {
+            urlString = [NSString stringWithFormat:@"http://%@/reader/mark_social_stories_as_read",
+                        NEWSBLUR_URL];
+        } else {
+            urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_read",
+                         NEWSBLUR_URL];
+        }
+
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:[appDelegate.activeStory 
-                               objectForKey:@"id"] 
-                       forKey:@"story_id"]; 
-        [request setPostValue:[appDelegate.activeStory 
-                               objectForKey:@"story_feed_id"] 
-                       forKey:@"feed_id"]; 
-        [request setDidFinishSelector:@selector(markedAsRead)];
-        [request setDidFailSelector:@selector(markedAsRead)];
+        
+        if (appDelegate.isSocialView) {
+            NSString *usersFeedStoriesStr = [NSString stringWithFormat:@"{\"%@\":{\"%@\":[\"%@\"]}}",
+                                            [appDelegate.activeStory objectForKey:@"social_user_id"],
+                                            [appDelegate.activeStory objectForKey:@"story_feed_id"],
+                                            [appDelegate.activeStory objectForKey:@"id"]];
+            
+            NSLog(@"usersFeedStoriesStr is %@", usersFeedStoriesStr);
+
+            [request setPostValue:usersFeedStoriesStr forKey:@"users_feeds_stories"]; 
+        } else {
+            [request setPostValue:[appDelegate.activeStory 
+                                   objectForKey:@"id"] 
+                           forKey:@"story_id"];
+            [request setPostValue:[appDelegate.activeStory 
+                                   objectForKey:@"story_feed_id"] 
+                           forKey:@"feed_id"]; 
+        }
+                         
+        [request setDidFinishSelector:@selector(finishMarkAsRead:)];
+        [request setDidFailSelector:@selector(finishedWithError:)];
         [request setDelegate:self];
         [request startAsynchronous];
     }
 }
+
+- (void)requestFailed:(ASIHTTPRequest *)request {    
+    NSLog(@"Error in mark as read is %@", [request error]);
+}
+
+- (void)finishMarkAsRead:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    NSLog(@"results in mark as read is %@", results);
+    [results release];
+} 
 
 - (void)refreshComments {
     NSString *commentsString = [self getComments];    
@@ -563,9 +598,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
 }
 
-- (void)markedAsRead {
-    
-}
+   
 
 - (IBAction)doNextUnreadStory {
     int nextIndex = [appDelegate indexOfNextUnreadStory];

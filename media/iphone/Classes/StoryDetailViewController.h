@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @class NewsBlurAppDelegate;
+@class ASIHTTPRequest;
 
 @interface StoryDetailViewController : UIViewController <UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
@@ -48,7 +49,8 @@
 - (void)changeWebViewWidth:(int)width;
 
 - (void)refreshComments;
-- (void)markedAsRead;
+- (void)finishMarkAsRead:(ASIHTTPRequest *)request;
+- (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)setActiveStory;
 - (IBAction)toggleFontSize:(id)sender;
 - (void)setFontStyle:(NSString *)fontStyle;
