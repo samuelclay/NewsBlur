@@ -1777,7 +1777,7 @@ background: transparent;
 /*    text-shadow: 0 1px 0 #E0E0E0;*/
 }
 
-#story_pane .NB-feed-stories .NB-feed-story div {
+#story_pane .NB-feed-stories .NB-feed-story .NB-feed-story-content div {
     max-width: 100%;
 }
 #story_pane .NB-feed-stories .NB-feed-story img {

@@ -51,7 +51,6 @@ from vendor.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
 
-@never_cache
 @render_to('reader/feeds.xhtml')
 def index(request):
     if request.method == "GET" and request.subdomain and request.subdomain != 'dev':
@@ -59,7 +58,7 @@ def index(request):
         try:
             if '.' in username:
                 username = username.split('.')[0]
-            user = User.objects.get(username__icontains=username)
+            user = User.objects.get(username__iexact=username)
         except User.DoesNotExist:
             return HttpResponseRedirect('http://%s%s' % (
                 Site.objects.get_current().domain.replace('www', 'dev'),

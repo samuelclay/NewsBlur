@@ -173,11 +173,18 @@ def load_social_page(request, user_id, username=None):
     page = request.REQUEST.get('page')
     if page: offset = limit * (int(page) - 1)
     
+    social_profile = MSocialProfile.objects.get(user_id=social_user_id)
     mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
     
     if not stories:
-        return dict(stories=[])
+        return {
+            "user": user,
+            "stories": [],
+            "feeds": {},
+            "social_user": social_user,
+            "social_profile": social_profile.page(),
+        }
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     feeds = Feed.objects.filter(pk__in=story_feed_ids)
@@ -190,7 +197,6 @@ def load_social_page(request, user_id, username=None):
         story['shared_date'] = shared_date
     
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
-    social_profile = MSocialProfile.objects.get(user_id=social_user_id)
     profiles = dict([(p['user_id'], p) for p in profiles])
     
     for s, story in enumerate(stories):

@@ -94,7 +94,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
-    'subdomains.middleware.SubdomainURLRoutingMiddleware',
+    'subdomains.middleware.SubdomainMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
