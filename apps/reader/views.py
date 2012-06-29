@@ -245,8 +245,10 @@ def load_feed_favicons(request):
     user = get_user(request)
     feed_ids = request.REQUEST.getlist('feed_ids')
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
-    if feed_ids and len(feed_ids) > 0:
-        user_subs = user_subs.filter(feed__in=feed_ids)
+    
+    # Removed these lines because they check if the user is subscribed to the feed.
+    # if feed_ids and len(feed_ids) > 0:
+    #     user_subs = user_subs.filter(feed__in=feed_ids)
 
     feed_ids   = [sub['feed__pk'] for sub in user_subs.values('feed__pk')]
     feed_icons = dict([(i.feed_id, i.data) for i in MFeedIcon.objects(feed_id__in=feed_ids)])

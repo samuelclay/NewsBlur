@@ -108,7 +108,7 @@
           To use inline data images, you can use this syntax:
           <pre><code>&lt;img src="data:image/png;base64,[IMAGE_DATA_STRING]" /&gt;</code></pre>
       params:
-        - key: feeds
+        - key: feed_ids
           desc: " Array of feed ids. Leave empty to retrieve all active (enabled) feeds."
           optional: true
           example: "[1, 2, 3]"

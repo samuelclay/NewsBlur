@@ -300,7 +300,7 @@ class MSocialProfile(mongo.Document):
             'feed_title': self.title,
             'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
                                     kwargs={'user_id': self.user_id, 'username': self.username_slug})),
-            'feed_link': "http://%s.%s/" % (self.username_slug, domain),
+            'feed_link': self.blurblog_url,
         }
         if not compact:
             params.update({

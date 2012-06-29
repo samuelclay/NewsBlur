@@ -94,7 +94,7 @@
                         <div class="NB-story-modifications-button" title="Show story changes"></div>
                     {% endif %}
 
-                    {{ story.shared_date|date:"g:i A <\s\m\a\l\l>\o\n</\s\m\a\l\l> l, F j<\s\u\p>S</\s\u\p>, Y"|safe }} 
+                    {{ story.shared_date|date:"l, F j<\s\u\p>S</\s\u\p>, Y <\s\m\a\l\l>\a\t</\s\m\a\l\l> g:i A"|safe }} 
                 </div>
             </div>
             
@@ -114,10 +114,10 @@
                             </div>
                             {% if story.share_count_public %}
                                 <div class="NB-story-share-profiles NB-story-share-profiles-public">
-                                    {% for user in story.shared_by_public %}
-                                        <div class="NB-user-avatar" title="{{ user.username }}">
-                                            <img src="{{ user.photo_url }}">
-                                        </div>
+                                    {% for share_user in story.shared_by_public %}
+                                        <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
+                                            <img src="{{ share_user.photo_url }}">
+                                        </a>
                                     {% endfor %}
                                 </div>
                             {% endif %}
@@ -126,10 +126,10 @@
                             {% if story.share_count_friends %}
                                 <div class="NB-story-share-label">Shared by: </div>
                                 <div class="NB-story-share-profiles NB-story-share-profiles-friends">
-                                    {% for user in story.shared_by_friends %}
-                                        <div class="NB-user-avatar" title="{{ user.username }}">
-                                            <img src="{{ user.photo_url }}">
-                                        </div>
+                                    {% for share_user in story.shared_by_friends %}
+                                        <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
+                                            <img src="{{ share_user.photo_url }}">
+                                        </a>
                                     {% endfor %}
                                 </div>
                             {% endif %}
@@ -138,18 +138,18 @@
                 </div>
                 {% for comment in story.comments %}
                 <div class="NB-story-comment">
-                    <div class="NB-user-avatar {% if comment.source_user_id %}NB-story-comment-reshare{% endif %}">
+                    <a href="{{ comment.user.feed_link }}" class="NB-user-avatar {% if comment.source_user_id %}NB-story-comment-reshare{% endif %}">
                         <img src="{{ comment.user.photo_url }}">
-                    </div>
+                    </a>
                     <div class="NB-story-comment-author-container">
                         {% if comment.source_user_id %}
                             <div class="NB-story-comment-reshares">
-                                <div class="NB-user-avatar" title="{{ comment.source_user.username }}">
+                                <a href="{{ comment.source_user.feed_link }}" class="NB-user-avatar" title="{{ comment.source_user.username }}">
                                     <img src="{{ comment.source_user.photo_url }}">
-                                </div>
+                                </a>
                             </div>
                         {% endif %}
-                        <div class="NB-story-comment-username">{{ comment.user.username }}</div>
+                        <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
                         <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
                         <div class="NB-story-comment-reply-button">
                             <div class="NB-story-comment-reply-button-wrapper">reply</div>
@@ -162,8 +162,10 @@
                     <div class="NB-story-comment-replies">
                         {% for reply in comment.replies %}
                         <div class="NB-story-comment-reply">
-                            <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
-                            <div class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</div>
+                            <a href="{{ reply.user.feed_link }}">
+                                <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
+                            </a>
+                            <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
                             <div class="NB-story-comment-date NB-story-comment-reply-date">{{ reply.publish_date }} ago</div>
                             <div class="NB-story-comment-reply-content">{{ reply.comments }}</div>
                         </div>
