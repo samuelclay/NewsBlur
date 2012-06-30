@@ -1,4 +1,4 @@
-{% load utils_tags %}
+{% load utils_tags social_tags %}
 
 <!DOCTYPE html>
 <html>
@@ -7,6 +7,7 @@
     <title>{{ social_profile.feed_title }}</title>
     <link rel="alternate" type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}" title="{{ social_profile.feed_title }} RSS feed">
     <link rel="shortcut icon" HREF="{{ social_profile.photo_url }}">
+    <meta name="viewport" content="width=440px">
     
     {% include_stylesheets "blurblog" %}
     
@@ -15,6 +16,27 @@
         {{ social_profile.custom_css|safe }}
     </style>
     {% endif %}
+
+    <script type="text/javascript" charset="utf-8">
+    window.NEWSBLUR = {};
+    NEWSBLUR.Globals = {
+        'is_authenticated' : {{ user.is_authenticated|yesno:"true,false" }},
+        'is_anonymous'     : {{ user.is_anonymous|yesno:"true,false" }},
+        'is_premium'       : {{ user.profile.is_premium|yesno:"true,false" }},
+        'is_admin'         : {{ user.is_staff|yesno:"true,false" }},
+        'is_staff'         : {{ user.is_staff|yesno:"true,false" }},
+        'secret_token'     : "{{ user.profile.secret_token }}",
+        'username'         : "{{ user.username|safe }}",
+        'user_id'          : "{{ user.pk|safe }}",
+        'email'            : "{{ user.email|safe }}",
+        'MEDIA_URL'        : "{{ MEDIA_URL }}",
+    };
+    NEWSBLUR.Models = {};
+    NEWSBLUR.Collections = {};
+    NEWSBLUR.Views = {};
+    NEWSBLUR.app = {};
+    </script>
+
 </head>
 
 <body>
@@ -100,82 +122,11 @@
                 </div>
             </div>
             
-            <div class="NB-story">
+            <div class="NB-story" data-feed-id="{{ story.story_feed_id }}" data-story-id="{{ story.id }}">
                 <div class="NB-story-content">{{ story.story_content|safe }}</div>
             
                 {% if story.share_count %}
-                <div class="NB-story-comments">
-                    <div class="NB-story-comments-shares-teaser-wrapper">
-                        <div class="NB-story-comments-shares-teaser">
-                            {% if story.share_count %}
-                                <div class="NB-right">
-                                    Shared by 
-                                    <b>{{ story.share_count }}</b>
-                                    {{ story.share_count|pluralize:"person, people" }}
-                                </div>
-                                {% if story.share_count_public %}
-                                    <div class="NB-story-share-profiles NB-story-share-profiles-public">
-                                        {% for share_user in story.shared_by_public %}
-                                            <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
-                                                <img src="{{ share_user.photo_url }}">
-                                            </a>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                            {% if story.share_count %}
-                                {% if story.share_count_friends %}
-                                    <div class="NB-story-share-label">Shared by: </div>
-                                    <div class="NB-story-share-profiles NB-story-share-profiles-friends">
-                                        {% for share_user in story.shared_by_friends %}
-                                            <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
-                                                <img src="{{ share_user.photo_url }}">
-                                            </a>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% for comment in story.comments %}
-                    <div class="NB-story-comment">
-                        <a href="{{ comment.user.feed_link }}" class="NB-user-avatar {% if comment.source_user_id %}NB-story-comment-reshare{% endif %}">
-                            <img src="{{ comment.user.photo_url }}">
-                        </a>
-                        <div class="NB-story-comment-author-container">
-                            {% if comment.source_user_id %}
-                                <div class="NB-story-comment-reshares">
-                                    <a href="{{ comment.source_user.feed_link }}" class="NB-user-avatar" title="{{ comment.source_user.username }}">
-                                        <img src="{{ comment.source_user.photo_url }}">
-                                    </a>
-                                </div>
-                            {% endif %}
-                            <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
-                            <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
-                            <div class="NB-story-comment-reply-button">
-                                <div class="NB-story-comment-reply-button-wrapper">reply</div>
-                            </div>
-                        </div>
-                        <div class="NB-story-comment-content">
-                            {{ comment.comments }}
-                        </div>
-                        {% if comment.replies %}
-                        <div class="NB-story-comment-replies">
-                            {% for reply in comment.replies %}
-                            <div class="NB-story-comment-reply">
-                                <a href="{{ reply.user.feed_link }}">
-                                    <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
-                                </a>
-                                <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
-                                <div class="NB-story-comment-date NB-story-comment-reply-date">{{ reply.publish_date }} ago</div>
-                                <div class="NB-story-comment-reply-content">{{ reply.comments }}</div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
+                    {% render_story_share story %}
                 {% endif %}
             </div>
         </div>

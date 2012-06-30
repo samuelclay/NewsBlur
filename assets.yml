@@ -95,6 +95,9 @@ javascripts:
         - media/js/vendor/underscore-*.js
         - media/js/vendor/underscore.string.js
         - media/js/vendor/backbone-*.js
+        - media/js/vendor/jquery.tipsy.js
+        - media/js/vendor/inflector.js
+        - media/js/newsblur/social_page/*.js
 
 stylesheets:
     common:
@@ -111,4 +114,5 @@ stylesheets:
         - media/css/bookmarklet/reset.css
         - media/css/modals.css
     blurblog:
+        - media/css/jquery.tipsy.css
         - media/css/social/social_page.css

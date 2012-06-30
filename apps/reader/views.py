@@ -417,7 +417,7 @@ def load_single_feed(request, feed_id):
         
     stories = feed.get_stories(offset, limit)
     try:
-        stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user)
+        stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
     except redis.ConnectionError:
         logging.user(request, "~BR~FK~SBRedis is unavailable for shared stories.")
 

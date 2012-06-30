@@ -19,7 +19,6 @@
       'username'                : "{{ user.username|safe }}",
       'user_id'                 : "{{ user.pk|safe }}",
       'email'                   : "{{ user.email|safe }}",
-      'google_favicon_url'      : 'http://www.google.com/s2/favicons?domain_url=',
       'MEDIA_URL'               : "{{ MEDIA_URL }}",
       'debug'                   : {{ debug|yesno:"true,false" }}
     };

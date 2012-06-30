@@ -2273,6 +2273,7 @@ background: transparent;
 #story_pane .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
     background-color: #2B478C;
     background-image: none;
+    text-shadow: 0 1px 0 #141F48;
 }
 #story_pane .NB-story-comments-public-teaser b {
     padding: 0 1px;

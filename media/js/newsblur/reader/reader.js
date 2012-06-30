@@ -1256,6 +1256,7 @@
         // ==================
         
         open_social_stories: function(feed_id, options) {
+            debugger;
             // console.log(["open_social_stories", feed_id, options]);
             options = options || {};
             if (_.isNumber(feed_id)) feed_id = "social:" + feed_id;
@@ -1264,6 +1265,15 @@
             var $story_titles = this.$s.$story_titles;
             var $social_feed = this.find_social_feed_with_feed_id(feed_id);
 
+            if (!feed && !options.try_feed) {
+                // Setup tryfeed views first, then come back here.
+                var socialsub = this.model.add_social_feed({
+                    id: feed_id,
+                    user_id: parseInt(feed_id.replace('social:', ''), 10)
+                });
+                return this.load_social_feed_in_tryfeed_view(socialsub, options);
+            }
+            
             this.reset_feed();
             this.hide_splash_page();
             
@@ -1721,6 +1731,7 @@
         make_content_pane_feed_counter: function(feed_id) {
             var $content_pane = this.$s.$content_pane;
             feed_id = feed_id || this.active_feed;
+            if (!feed_id) return;
             var feed = this.model.get_feed(feed_id);
             
             if (NEWSBLUR.app.story_unread_counter) {

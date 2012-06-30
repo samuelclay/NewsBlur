@@ -25,6 +25,13 @@ body {
   line-height: 12px;
 }
 
+.tipsy {
+    font-size: 11px;
+}
+.tipsy-inner {
+    padding: 2px 9px 2px;
+}
+
 /* ========== */
 /* = Layout = */
 /* ========== */
@@ -33,6 +40,13 @@ body {
     background: #EBC55F url(/media/img/reader/background-control-light.png) repeat 0 0;
     padding: 0 12px;
 }
+
+@media all and (max-width: 500px) {
+    .NB-page {
+        padding: 0 6px;
+    }
+}
+
 
 /* ========== */
 /* = Header = */
@@ -637,6 +651,7 @@ header {
 .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
     background-color: #2B478C;
     background-image: none;
+    text-shadow: 0 1px 0 #141F48;
 }
 .NB-story-comments-public-teaser b {
     padding: 0 1px;

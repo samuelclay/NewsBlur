@@ -1,12 +1,13 @@
 import time
 import datetime
 import zlib
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
+from django.template import RequestContext
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
 from apps.social.models import MRequestInvite, MInteraction, MActivity
@@ -52,7 +53,7 @@ def load_social_stories(request, user_id, username=None):
     if not stories:
         return dict(stories=[])
         
-    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     try:
@@ -165,9 +166,9 @@ def load_social_stories(request, user_id, username=None):
 
 @render_to('social/social_page.xhtml')
 def load_social_page(request, user_id, username=None):
-    user = get_user(request)
     social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
+    user = social_user
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 12))
     page = request.REQUEST.get('page')
@@ -196,20 +197,9 @@ def load_social_page(request, user_id, username=None):
         shared_date = localtime_for_timezone(story['shared_date'], social_user.profile.timezone)
         story['shared_date'] = shared_date
     
-    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
-    profiles = dict([(p['user_id'], p) for p in profiles])
-    
-    for s, story in enumerate(stories):
-        for u, user_id in enumerate(story['shared_by_friends']):
-            stories[s]['shared_by_friends'][u] = profiles[user_id]
-        for u, user_id in enumerate(story['shared_by_public']):
-            stories[s]['shared_by_public'][u] = profiles[user_id]
-        for c, comment in enumerate(story['comments']):
-            stories[s]['comments'][c]['user'] = profiles[comment['user_id']]
-            if comment['source_user_id']:
-                stories[s]['comments'][c]['source_user'] = profiles[comment['source_user_id']]
-            for r, reply in enumerate(comment['replies']):
-                stories[s]['comments'][c]['replies'][r]['user'] = profiles[reply['user_id']]
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, 
+                                                                        check_all=True, 
+                                                                        attach_users=True)
 
     params = {
         'user': user,
@@ -221,22 +211,31 @@ def load_social_page(request, user_id, username=None):
     
     return params
     
-@json.json_view
 def story_comments(request):
-    feed_id  = int(request.REQUEST['feed_id'])
-    story_id = request.REQUEST['story_id']
+    format           = request.REQUEST.get('format', 'json')
+    relative_user_id = request.REQUEST.get('user_id', None)
+    feed_id          = int(request.REQUEST['feed_id'])
+    story_id         = request.REQUEST['story_id']
+  
+    if not relative_user_id:
+        relative_user_id = get_user(request).pk
     
-    shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, 
-                                                 story_guid=story_id, 
-                                                 has_comments=True)
-    comments = [s.comments_with_author() for s in shared_stories]
+    stories = MStory.objects.filter(story_feed_id=feed_id, story_guid=story_id)
+    stories = Feed.format_stories(stories)
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, relative_user_id, 
+                                                                        check_all=True,
+                                                                        public=True,
+                                                                        attach_users=True)
 
-    profile_user_ids = set([c['user_id'] for c in comments])
-    profile_user_ids = profile_user_ids.union([r['user_id'] for c in comments for r in c['replies']])
-    profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
-    profiles = [profile.to_json(compact=True) for profile in profiles]
-    
-    return {'comments': comments, 'user_profiles': profiles}
+    if format == 'html':
+        return render_to_response('social/story_comments.xhtml', {
+            'story': stories[0],
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'comments': stories[0]['comments'], 
+            'user_profiles': profiles,
+        })
 
 @ajax_login_required
 @json.json_view
@@ -323,7 +322,7 @@ def mark_story_as_unshared(request):
     
     story = Feed.format_story(story)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], 
-                                                                        request.user, 
+                                                                        request.user.pk, 
                                                                         check_all=True)
     story = stories[0]
     
