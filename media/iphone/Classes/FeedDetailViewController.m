@@ -309,6 +309,7 @@
         }
         
         NSLog(@"# of user profiles added: %i", appDelegate.activeFeedUserProfiles.count);
+        NSLog(@"user profiles added: %@", appDelegate.activeFeedUserProfiles);
     }
     
     [self renderStories:confirmedNewStories];
@@ -340,12 +341,27 @@
             [indexPaths addObject:[NSIndexPath indexPathForRow:(existingStoriesCount+i) 
                                                      inSection:0]];
         }
-        [self.storyTitlesTable beginUpdates];
-        [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths 
-                                     withRowAnimation:UITableViewRowAnimationNone];
-        [self.storyTitlesTable endUpdates];
+        
+        
+        if (self.feedPage < 3 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.storyTitlesTable reloadData];
+        } else {
+            [self.storyTitlesTable beginUpdates];
+            [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths 
+                                         withRowAnimation:UITableViewRowAnimationNone];
+            [self.storyTitlesTable endUpdates]; 
+        }
+        
+        // re-highlight selected row if any
+        int rowIndex = [appDelegate locationOfActiveStory];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
+        if (indexPath) {
+            [self.storyTitlesTable selectRowAtIndexPath: indexPath 
+                                               animated: YES 
+                                         scrollPosition: UITableViewScrollPositionNone];
+        }
         [indexPaths release];
-//        [self.storyTitlesTable reloadData];
+
     } else if (newVisibleStoriesCount > 0) {
         [self.storyTitlesTable reloadData];
     } else if (newStoriesCount == 0 || 
