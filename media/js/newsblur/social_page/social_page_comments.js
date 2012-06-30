@@ -10,13 +10,12 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
     
     load_public_story_comments: function() {
         
-        $.get('/social/comments', {
+        $.get('/social/public_comments', {
             story_id: this.options.story_id,
             feed_id: this.options.feed_id,
             format: "html"
         }, _.bind(function(template) {
             var $template = $(template);
-            console.log(["data", $template.length]);
             var $header = this.make('div', { 
                 "class": 'NB-story-comments-public-header-wrapper' 
             }, this.make('div', { 

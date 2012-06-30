@@ -436,7 +436,7 @@
           desc: "ID of blurblog's user."
           required: true
           example: "42"
-    - url: /social/comments
+    - url: /social/public_comments
       method: GET
       short_desc: "Get all public comments on a shared story."
       long_desc: 

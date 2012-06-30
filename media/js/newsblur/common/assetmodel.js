@@ -1153,7 +1153,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     load_public_story_comments: function(story_id, feed_id, callback) {
-        this.make_request('/social/comments', {
+        this.make_request('/social/public_comments', {
             'story_id': story_id,
             'feed_id': feed_id
         }, _.bind(function(data) {

@@ -211,7 +211,7 @@ def load_social_page(request, user_id, username=None):
     
     return params
     
-def story_comments(request):
+def story_public_comments(request):
     format           = request.REQUEST.get('format', 'json')
     relative_user_id = request.REQUEST.get('user_id', None)
     feed_id          = int(request.REQUEST['feed_id'])
@@ -220,7 +220,7 @@ def story_comments(request):
     if not relative_user_id:
         relative_user_id = get_user(request).pk
     
-    stories = MStory.objects.filter(story_feed_id=feed_id, story_guid=story_id)
+    stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id).limit(1)
     stories = Feed.format_stories(stories)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, relative_user_id, 
                                                                         check_all=True,
