@@ -785,8 +785,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     [userPreferences synchronize];
     
-    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-style').setAttribute('class', '%@')", 
-                          fontStyle];
+    NSString *jsString;
+    
+    if ([fontStyle isEqualToString:@"Helvetica"]) {
+        jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-style').setAttribute('class', 'NB-san-serif')", 
+                              fontStyle];
+    } else {
+        jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-style').setAttribute('class', 'NB-serif')", 
+                              fontStyle];
+    }
+    
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     [jsString release];
 }
