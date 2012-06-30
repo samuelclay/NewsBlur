@@ -20,7 +20,7 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
                 "class": 'NB-story-comments-public-header-wrapper' 
             }, this.make('div', { 
                 "class": 'NB-story-comments-public-header' 
-            }, Inflector.pluralize(' public comment', $template.length, true)));
+            }, Inflector.pluralize(' public comment', $('.NB-story-comment', $template).length, true)));
 
             this.$(".NB-story-comments-public-teaser-wrapper").replaceWith($template);
             $template.before($header);

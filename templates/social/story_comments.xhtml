@@ -1,5 +1,6 @@
 {% load social_tags %}
 
+<div class="NB-comments-body">
 {% for comment in story.comments %}
     <div class="NB-story-comment">
         <a href="{{ comment.user.feed_link }}" class="NB-user-avatar {% if comment.source_user_id %}NB-story-comment-reshare{% endif %}">
@@ -38,3 +39,4 @@
         {% endif %}
     </div>
 {% endfor %}
+</div>

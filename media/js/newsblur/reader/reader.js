@@ -1256,7 +1256,6 @@
         // ==================
         
         open_social_stories: function(feed_id, options) {
-            debugger;
             // console.log(["open_social_stories", feed_id, options]);
             options = options || {};
             if (_.isNumber(feed_id)) feed_id = "social:" + feed_id;
