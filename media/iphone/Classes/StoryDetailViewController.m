@@ -296,6 +296,8 @@
 }
 
 - (void)showStory {
+    appDelegate.inStoryDetail = YES;
+    
     int activeLocation = appDelegate.locationOfActiveStory;    
     if (activeLocation >= ([appDelegate.activeFeedStoryLocations count] - 1)) {
         self.buttonNextStory.enabled = NO;

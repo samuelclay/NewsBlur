@@ -140,6 +140,11 @@
     return YES;
 }
 
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    /* When MGSplitViewController rotates, it causes a resize of our view; we need to resize our UIBarButtonControls or they will be 0-width */    
+    [self.navigationItem.titleView sizeToFit];
+}
+
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];

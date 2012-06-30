@@ -53,6 +53,7 @@
 @synthesize isSocialView;
 @synthesize popoverHasFeedView;
 @synthesize inStoryDetail;
+@synthesize inFeedDetail;
 @synthesize activeComment;
 @synthesize activeFeed;
 @synthesize activeFolder;
@@ -260,8 +261,7 @@
     [self setStories:nil];
     [self setFeedUserProfiles:nil];
     
-    self.inStoryDetail = YES;
-    
+    self.inFeedDetail = YES;
     UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
                                                                       style: UIBarButtonItemStyleBordered 
                                                                      target: nil 
@@ -281,8 +281,11 @@
 }
 
 - (void)showDashboard {
+    self.inStoryDetail = NO;
+    self.inFeedDetail = NO;
     splitStoryDetailViewController.navigationItem.title = DASHBOARD_TITLE;
     splitStoryDetailViewController.navigationItem.rightBarButtonItems = nil;
+    splitStoryDetailViewController.navigationItem.leftBarButtonItem = nil;
     [self hideStoryDetailView];
 }
 
@@ -363,7 +366,7 @@
 - (void)loadRiverFeedDetailView {
     [self setStories:nil];
     [self setFeedUserProfiles:nil];
-    self.inStoryDetail = YES;
+    self.inFeedDetail = YES;
 
     UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
                                                                       style: UIBarButtonItemStyleBordered 
@@ -381,7 +384,7 @@
 }
 
 - (void)adjustStoryDetailWebView {
-    if (!self.inStoryDetail) {
+    if (!self.inFeedDetail) {
         return;
     }
     
@@ -405,9 +408,7 @@
     
     int contentWidth = splitStoryDetailViewController.view.frame.size.width;
     // set the styles inside the UIWebView
-    
-    [storyDetailViewController changeWebViewWidth:contentWidth];
-        
+            
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {        
         storyDetailViewController.view.frame = CGRectMake(0, 
                                                           0, 
@@ -421,6 +422,9 @@
     }
     
     [slide release];
+    
+    // change UIWebView
+    [storyDetailViewController changeWebViewWidth:contentWidth];
 }
 
 - (void)animateHidingMasterView {

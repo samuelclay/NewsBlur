@@ -81,6 +81,7 @@
 
 - (void)onFingerSwipeLeft {
     if (appDelegate.inStoryDetail){ 
+        [appDelegate adjustStoryDetailWebView];
         [appDelegate animateHidingMasterView];
     }
 }

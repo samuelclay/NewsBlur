@@ -60,6 +60,7 @@
     BOOL isSocialView;
     BOOL popoverHasFeedView;
     BOOL inStoryDetail;
+    BOOL inFeedDetail;
     NSDictionary * activeFeed;
     NSString * activeFolder;
     NSDictionary * activeComment;
@@ -111,6 +112,7 @@
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
+@property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (readwrite, retain) NSDictionary * activeFeed;
 @property (readwrite, retain) NSString * activeFolder;
 @property (readwrite, retain) NSDictionary * activeComment;
