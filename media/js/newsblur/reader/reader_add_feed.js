@@ -252,9 +252,9 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
         
         if (data.code > 0) {
             NEWSBLUR.assets.load_feeds();
-            _.defer(function() {
-              NEWSBLUR.reader.open_add_feed_modal();
-            });
+            _.defer(_.bind(function() {
+                this.close();
+            }, this));
             $submit.val('Added!');
         } else {
             var $error = $('.NB-error', '.NB-fieldset.NB-add-add-folder');

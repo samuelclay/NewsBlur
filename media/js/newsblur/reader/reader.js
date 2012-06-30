@@ -941,7 +941,7 @@
             var self = this;
             var $story_titles = this.$s.$story_titles;
             var feed = this.model.get_feed(feed_id) || options.feed;
-            var temp = feed.get('temp') || !feed.get('subscribed');
+            var temp = feed && (feed.get('temp') || !feed.get('subscribed'));
             
             if (!feed || (temp && !options.try_feed)) {
                 // Setup tryfeed views first, then come back here.
@@ -3993,6 +3993,7 @@
         },
         
         show_tryfeed_add_button: function() {
+            console.log(["show_tryfeed_add_button", this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length]);
             if (this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length) return;
             
             var $add = $.make('div', { className: 'NB-modal-submit' }, [

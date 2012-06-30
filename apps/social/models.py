@@ -1155,7 +1155,6 @@ class MSharedStory(mongo.Document):
                 else:
                     friends_with_comments = r.sinter(comment_key, friend_key)
                 shared_stories = []
-                print friends_with_comments
                 if friends_with_comments:
                     params = {
                         'story_guid': story['id'],

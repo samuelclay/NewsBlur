@@ -4,14 +4,17 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "": "index",
         "add/?": "add_site",
         "try/?": "try_site",
-        "site/:site_id": "site",
         "site/:site_id/:slug": "site",
-        "social/:user_id": "social",
+        "site/:site_id/": "site",
+        "site/:site_id": "site",
         "social/:user_id/:slug": "social",
+        "social/:user_id/": "social",
+        "social/:user_id": "social",
         "user/*user": "user"
     },
     
     index: function() {
+        // console.log(["index"]);
         NEWSBLUR.reader.show_splash_page();
     },
     
@@ -32,7 +35,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
             NEWSBLUR.reader.open_feed(site_id, {force: true});
         } else {
             NEWSBLUR.reader.load_feed_in_tryfeed_view(site_id, {force: true, feed: {
-                feed_title: _.string.humanize(slug)
+                feed_title: _.string.humanize(slug || "")
             }});
         }
     },

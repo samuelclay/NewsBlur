@@ -171,8 +171,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var self = this;
         var stories = NEWSBLUR.assets.stories;
         
-        NEWSBLUR.log(['Prefetching Feed', this.flags['feed_view_positions_calculated'], this.flags.feed_view_images_loaded, (_.keys(this.flags.feed_view_images_loaded).length > 0 || this.cache.feed_view_story_positions_keys.length > 0), _.keys(this.flags.feed_view_images_loaded).length,
-                                _.values(this.flags.feed_view_images_loaded), this.is_feed_loaded_for_location_fetch()]);
+        // NEWSBLUR.log(['Prefetching Feed', this.flags['feed_view_positions_calculated'], this.flags.feed_view_images_loaded, (_.keys(this.flags.feed_view_images_loaded).length > 0 || this.cache.feed_view_story_positions_keys.length > 0), _.keys(this.flags.feed_view_images_loaded).length, _.values(this.flags.feed_view_images_loaded), this.is_feed_loaded_for_location_fetch()]);
 
         if (!NEWSBLUR.assets.stories.size()) return;
         
@@ -191,7 +190,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 }
             }, this));
             
-            setTimeout(_.bind(function() {
+            clearTimeout(this.flags['prefetch']);
+            this.flags['prefetch'] = setTimeout(_.bind(function() {
                 if (!this.flags['feed_view_positions_calculated']) {
                     this.prefetch_story_locations_in_feed_view();
                 }
