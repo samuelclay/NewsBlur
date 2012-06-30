@@ -62,6 +62,7 @@
 - (NSString *)getComment:(NSDictionary *)commentDict;
 - (NSString *)getReplies:(NSArray *)replies;
 - (NSString *)getAvatars:(BOOL)areFriends;
+- (NSString *)getImageURL:(NSString *)imageURL;
 - (NSDictionary *)getUser:(int)user_id;
 
 @end

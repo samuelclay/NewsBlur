@@ -183,7 +183,7 @@
                             "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\">"
                             "<img src=\"%@\">"
                             "</div></div>",
-                            [user objectForKey:@"photo_url"]];
+                            [self getImageURL:[user objectForKey:@"photo_url"]]];
         avatarString = [avatarString stringByAppendingString:avatar];
     }
     
@@ -192,6 +192,20 @@
         
     }
     return avatarString;
+}
+
+- (NSString *)getImageURL:(NSString *)imageURL {
+    NSString *firstTwoChars = [imageURL substringToIndex:2];
+    NSString *firstChar = [imageURL substringToIndex:1];
+    if ([firstTwoChars isEqualToString:@"//"]) {
+        imageURL = [NSString stringWithFormat:@"http:%@",
+                                         imageURL];
+    } else if ([firstChar isEqualToString:@"/"]) {
+        imageURL = [NSString stringWithFormat:@"http://%@%@", 
+                                         NEWSBLUR_URL, 
+                                         imageURL];
+    }
+    return imageURL;
 }
 
 - (NSString *)getComments {
@@ -247,7 +261,7 @@
                          "%@"
                          "</div></div>",
                          [commentDict objectForKey:@"user_id"],
-                         [user objectForKey:@"photo_url"],
+                         [self getImageURL:[user objectForKey:@"photo_url"]],
                          [user objectForKey:@"username"],
                          [commentDict objectForKey:@"shared_date"],
                          [commentDict objectForKey:@"user_id"],
@@ -275,7 +289,7 @@
                                 "   </div>"
                                 "   <div class=\"NB-story-comment-reply-content\">%@</div>"
                                 "</div>",
-                               [user objectForKey:@"photo_url"],
+                               [self getImageURL:[user objectForKey:@"photo_url"]],
                                [user objectForKey:@"username"],  
                                [reply_dict objectForKey:@"publish_date"],
                                [reply_dict objectForKey:@"comments"]];
