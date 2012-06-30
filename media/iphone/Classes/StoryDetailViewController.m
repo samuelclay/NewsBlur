@@ -551,14 +551,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         
         if (appDelegate.isSocialView) {
-            NSString *usersFeedStoriesStr = [NSString stringWithFormat:@"{\"%@\":{\"%@\":[\"%@\"]}}",
-                                            [appDelegate.activeStory objectForKey:@"social_user_id"],
-                                            [appDelegate.activeStory objectForKey:@"story_feed_id"],
-                                            [appDelegate.activeStory objectForKey:@"id"]];
+            NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
+            NSDictionary *feedStory = [NSDictionary dictionaryWithObject:storyId 
+                                                                     forKey:[NSString stringWithFormat:@"%@", 
+                                                                             [appDelegate.activeStory objectForKey:@"story_feed_id"]]];
+                                         
+            NSDictionary *usersFeedsStories = [NSDictionary dictionaryWithObject:feedStory 
+                                                                          forKey:[NSString stringWithFormat:@"%@",
+                                                                                  [appDelegate.activeStory objectForKey:@"social_user_id"]]];
             
-            NSLog(@"usersFeedStoriesStr is %@", usersFeedStoriesStr);
-
-            [request setPostValue:usersFeedStoriesStr forKey:@"users_feeds_stories"]; 
+            [request setPostValue:[usersFeedsStories JSONRepresentation] forKey:@"users_feeds_stories"]; 
         } else {
             [request setPostValue:[appDelegate.activeStory 
                                    objectForKey:@"id"] 
