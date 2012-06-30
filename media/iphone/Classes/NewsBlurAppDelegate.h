@@ -58,6 +58,7 @@
     NSString * activeUsername;
     BOOL isRiverView;
     BOOL isSocialView;
+    BOOL isShowingShare;
     BOOL popoverHasFeedView;
     BOOL inStoryDetail;
     BOOL inFeedDetail;
@@ -110,6 +111,7 @@
 @property (readwrite, retain) NSString * activeUsername;
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
+@property (nonatomic, readwrite) BOOL isShowingShare;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
 @property (nonatomic, readwrite) BOOL inFeedDetail;

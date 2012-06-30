@@ -51,6 +51,7 @@
 @synthesize activeUsername;
 @synthesize isRiverView;
 @synthesize isSocialView;
+@synthesize isShowingShare;
 @synthesize popoverHasFeedView;
 @synthesize inStoryDetail;
 @synthesize inFeedDetail;
@@ -206,6 +207,73 @@
 }
 
 #pragma mark -
+#pragma mark Share Views
+
+- (void)showShareView:(NSString *)userId 
+          setUsername:(NSString *)username {
+    
+    self.isShowingShare = YES;
+    
+    
+    [splitStoryDetailViewController.view addSubview:shareViewController.view];    
+    
+    if (userId && username) {
+        [shareViewController setSiteInfo:userId setUsername:username];  
+    }
+    
+
+
+    shareViewController.view.frame = CGRectMake(0, 
+                                                splitStoryDetailViewController.view.frame.size.height, 
+                                                splitStoryDetailViewController.view.frame.size.width, 
+                                                0);
+    
+    int newShareHeight = splitStoryDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
+    int newStoryHeight = splitStoryDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT + 44;
+    
+    shareViewController.view.hidden = NO;
+    
+    [UIView animateWithDuration:0.35 animations:^{
+        shareViewController.view.frame = CGRectMake(0, 
+                                                    newShareHeight, 
+                                                    splitStoryDetailViewController.view.frame.size.width, 
+                                                    SHARE_MODAL_HEIGHT);
+    } completion:^(BOOL finished) {
+        storyDetailViewController.view.frame = CGRectMake(0,
+                                                          0,
+                                                          splitStoryDetailViewController.view.frame.size.width,
+                                                          newStoryHeight);
+    }]; 
+}
+
+- (void)hideShareView {
+    self.isShowingShare = NO;
+    
+    storyDetailViewController.view.frame = CGRectMake(0,
+                                                      0,
+                                                      splitStoryDetailViewController.view.frame.size.width,
+                                                       splitStoryDetailViewController.view.frame.size.height);
+    
+    [UIView animateWithDuration:0.35 animations:^{
+        shareViewController.view.frame = CGRectMake(0, 
+                                                    splitStoryDetailViewController.view.frame.size.height + SHARE_MODAL_HEIGHT,
+                                                    splitStoryDetailViewController.view.frame.size.width,
+                                                    0);
+    } completion:^(BOOL finished) {
+        shareViewController.view.hidden = YES;
+    }]; 
+    
+}
+
+- (void)refreshComments {
+    [storyDetailViewController refreshComments];
+}
+
+- (void)resetShareComments {
+    [shareViewController clearComments];
+}
+
+#pragma mark -
 #pragma mark Views
 
 - (void)showLogin {
@@ -301,58 +369,6 @@
     [subviews release];
 }
 
-- (void)showShareView:(NSString *)userId 
-          setUsername:(NSString *)username {
-    
-    [splitStoryDetailViewController.view addSubview:shareViewController.view];    
-    [shareViewController setSiteInfo:userId setUsername:username];
-    
-    shareViewController.view.frame = CGRectMake(0, 
-                                                storyDetailViewController.view.frame.size.height, 
-                                                storyDetailViewController.view.frame.size.width, 
-                                                0);
-
-    int newShareHeight = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
-    int newStoryHeight = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT + 44;
-    
-    [UIView animateWithDuration:0.35 animations:^{
-        shareViewController.view.frame = CGRectMake(0, 
-                                                    newShareHeight, 
-                                                    storyDetailViewController.view.frame.size.width, 
-                                                    SHARE_MODAL_HEIGHT);
-    } completion:^(BOOL finished) {
-        storyDetailViewController.view.frame = CGRectMake(0,
-                                                          0,
-                                                          storyDetailViewController.view.frame.size.width,
-                                                          newStoryHeight);
-    }]; 
-}
-
-- (void)hideShareView {    
-    int newStoryHeight = storyDetailViewController.view.frame.size.height + SHARE_MODAL_HEIGHT - 44;
-    
-    storyDetailViewController.view.frame = CGRectMake(0,
-                                                      0,
-                                                      storyDetailViewController.view.frame.size.width,
-                                                      newStoryHeight);
-    
-    [UIView animateWithDuration:0.35 animations:^{
-        shareViewController.view.frame = CGRectMake(0, 
-                                                    storyDetailViewController.view.frame.size.height + SHARE_MODAL_HEIGHT + 44,
-                                                    storyDetailViewController.view.frame.size.width,
-                                                    0);
-    }]; 
-    
-}
-
-- (void)refreshComments {
-    [storyDetailViewController refreshComments];
-}
-
-- (void)resetShareComments {
-    [shareViewController clearComments];
-}
-
 - (BOOL)isSocialFeed:(NSString *)feedIdStr {
     if ([feedIdStr length] > 6) {
         NSString *feedIdSubStr = [feedIdStr substringToIndex:6];
@@ -386,6 +402,12 @@
 - (void)adjustStoryDetailWebView {
     if (!self.inFeedDetail) {
         return;
+    }
+        
+    if (self.isShowingShare) {
+        [self showShareView:nil setUsername:nil];
+    } else {
+        [self hideShareView];
     }
     
     UIImage *slide;

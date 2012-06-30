@@ -9,6 +9,7 @@
 #import "SplitStoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "MGSplitViewController.h"
+#import "ShareViewController.h"
 
 @implementation SplitStoryDetailViewController
 
@@ -60,6 +61,10 @@
 // Ensure that the view controller supports rotation and that the split view can therefore show in both portrait and landscape.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    appDelegate.shareViewController.view.hidden = YES;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
