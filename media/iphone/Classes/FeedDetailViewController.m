@@ -50,9 +50,7 @@
     return YES;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"appDelegate.activeFeed is %@", appDelegate.activeFeed);
-    
+- (void)viewWillAppear:(BOOL)animated {    
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
@@ -1008,7 +1006,6 @@
                 NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
                 UIImage *faviconImage = [UIImage imageWithData:imageData];
                 [Utilities saveImage:faviconImage feedId:feed_id];
-                NSLog(@"saving favicon");
             }
         }
         [Utilities saveimagesToDisk];

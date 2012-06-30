@@ -42,6 +42,7 @@
 - (void)fetchFeedList:(BOOL)showLoader;
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
+- (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;
 
 - (void)dismissFeedsMenu;
 - (IBAction)showMenuButton:(id)sender;

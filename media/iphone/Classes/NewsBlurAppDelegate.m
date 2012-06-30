@@ -704,14 +704,13 @@
     NSDictionary *feed;
     id feedId;;
     NSString *feedIdStr;
-    NSMutableArray *otherFriendFeeds = [[NSMutableArray alloc] init];
+    NSMutableArray *otherFriendFeeds = [self.activeStory objectForKey:@"shared_by_friends"];
     
     if (self.isSocialView) {
         feedId = [self.activeStory objectForKey:@"social_user_id"];
         feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];        
         feed = [self.dictSocialFeeds objectForKey:feedIdStr];
         
-        otherFriendFeeds = [self.activeStory objectForKey:@"shared_by_friends"];
         [otherFriendFeeds removeObject:feedId];
          NSLog(@"otherFriendFeeds is %@", otherFriendFeeds);
         
@@ -739,6 +738,7 @@
             [self markStoryRead:story feed:feed];
         }
     }
+
 }
 
 - (NSDictionary *)markVisibleStoriesRead {

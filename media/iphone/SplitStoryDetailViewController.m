@@ -65,6 +65,13 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
 	[appDelegate adjustStoryDetailWebView:NO shouldCheckLayout:YES]; 
+    
+    if (appDelegate.splitStoryController.isShowingMaster) {
+        self.navigationItem.titleView = nil;
+    } else {
+        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+        self.navigationItem.titleView = titleLabel;
+    }
 }
 
 
@@ -73,6 +80,10 @@
 
 - (void)onFingerSwipeLeft {
     if (appDelegate.splitStoryController.isShowingMaster && appDelegate.inStoryDetail){
+        
+        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+        self.navigationItem.titleView = titleLabel;
+        
         [appDelegate.splitStoryController toggleMasterView:nil];
         [appDelegate adjustStoryDetailWebView:YES shouldCheckLayout:YES];
         [self configureView];  
@@ -81,6 +92,9 @@
 }
 
 - (void)onFingerSwipeRight {
+    
+    self.navigationItem.titleView = nil;
+    
     if (!appDelegate.splitStoryController.isShowingMaster && appDelegate.inStoryDetail){
         [appDelegate.splitStoryController toggleMasterView:nil];
         [appDelegate adjustStoryDetailWebView:YES shouldCheckLayout:YES];

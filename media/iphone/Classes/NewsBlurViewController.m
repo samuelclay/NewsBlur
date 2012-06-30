@@ -947,6 +947,25 @@
 
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
+
+    // refresh the feed
+    NSURL *urlFeedList = [NSURL URLWithString:
+                          [NSString stringWithFormat:@"http://%@/reader/refresh_feeds",
+                           NEWSBLUR_URL]];
+    
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
+    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
+     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    [request setDelegate:self];
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setDidFinishSelector:@selector(finishRefreshingFeedList:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
+}
+
+- (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
     [self fetchFeedList:NO];
 }
 
