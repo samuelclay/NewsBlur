@@ -153,7 +153,7 @@
 - (void)showDashboard;
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
-- (void)adjustStoryDetailWebView:(BOOL)init shouldCheckLayout:(BOOL)checkLayout;
+- (void)adjustStoryDetailWebView;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)hideNavigationBar:(BOOL)animated;
 - (void)showNavigationBar:(BOOL)animated;

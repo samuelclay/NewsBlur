@@ -32,6 +32,7 @@
 @synthesize feedTitleGradient;
 @synthesize popoverController;
 @synthesize buttonNextStory;
+@synthesize toggleViewButton;
 
 #pragma mark -
 #pragma mark View boilerplate
@@ -58,6 +59,7 @@
     [popoverController release];
     [buttonNextStory release];
     [buttonNextStory release];
+    [toggleViewButton release];
     [super dealloc];
 }
 
@@ -109,17 +111,41 @@
                                        target:self 
                                        action:@selector(toggleFontSize:)
                                        ];
+    
+    UIImage *slide = [UIImage imageNamed: appDelegate.splitStoryController.isShowingMaster ? @"slide_left.png" : @"slide_right.png"];
+    
+    UIBarButtonItem *toggleButton = [[UIBarButtonItem alloc]
+                        initWithImage:slide
+                        style:UIBarButtonItemStylePlain
+                        target:self
+                        action:@selector(toggleView)];
+    
+    self.toggleViewButton = toggleButton;
+    
+
+
         
     if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
         appDelegate.splitStoryDetailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
+        appDelegate.splitStoryDetailViewController.navigationItem.leftBarButtonItem = self.toggleViewButton;
+
     } else {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
+        self.navigationItem.rightBarButtonItem = self.toggleViewButton;
     }
 
+    [toggleButton release];
     [originalButton release];
     [fontSettingsButton release];
-
 	[super viewDidAppear:animated];
+}
+
+- (void)toggleView {
+    if (appDelegate.splitStoryController.isShowingMaster){
+        [appDelegate animateHidingMasterView];
+    } else {
+        [appDelegate animateShowingMasterView];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

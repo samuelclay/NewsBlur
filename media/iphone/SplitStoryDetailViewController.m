@@ -64,8 +64,9 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-	[appDelegate adjustStoryDetailWebView:NO shouldCheckLayout:YES]; 
+	[appDelegate adjustStoryDetailWebView]; 
     
+    // copy the title from the master view to detail view
     if (appDelegate.splitStoryController.isShowingMaster) {
         self.navigationItem.titleView = nil;
     } else {
@@ -79,38 +80,15 @@
 #pragma mark Gestures
 
 - (void)onFingerSwipeLeft {
-    if (appDelegate.splitStoryController.isShowingMaster && appDelegate.inStoryDetail){
-        
-        UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-        self.navigationItem.titleView = titleLabel;
-        
-        [appDelegate.splitStoryController toggleMasterView:nil];
-        [appDelegate adjustStoryDetailWebView:YES shouldCheckLayout:YES];
-        [self configureView];  
+    if (appDelegate.inStoryDetail){ 
         [appDelegate animateHidingMasterView];
     }
 }
 
 - (void)onFingerSwipeRight {
-    
-    self.navigationItem.titleView = nil;
-    
-    if (!appDelegate.splitStoryController.isShowingMaster && appDelegate.inStoryDetail){
-        [appDelegate.splitStoryController toggleMasterView:nil];
-        [appDelegate adjustStoryDetailWebView:YES shouldCheckLayout:YES];
-        [self configureView]; 
+    if (appDelegate.inStoryDetail){  
         [appDelegate animateShowingMasterView];
     }
-}
-
-- (void)configureView
-{
-//    // Update the user interface for the detail item.
-//    detailDescriptionLabel.text = [detailItem description];
-//	toggleItem.title = ([splitController isShowingMaster]) ? @"Hide Sites" : @"Show Sites"; // "I... AM... THE MASTER!" Derek Jacobi. Gave me chills.
-//	verticalItem.title = (splitController.vertical) ? @"Horizontal Split" : @"Vertical Split";
-//	dividerStyleItem.title = (splitController.dividerStyle == MGSplitViewDividerStyleThin) ? @"Enable Dragging" : @"Disable Dragging";
-//	masterBeforeDetailItem.title = (splitController.masterBeforeDetail) ? @"Detail First" : @"Master First";
 }
 
 @end

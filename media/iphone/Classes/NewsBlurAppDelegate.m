@@ -380,10 +380,33 @@
     [feedDetailViewController fetchRiverPage:1 withCallback:nil];
 }
 
-- (void)adjustStoryDetailWebView:(BOOL)init shouldCheckLayout:(BOOL)checkLayout {
+- (void)adjustStoryDetailWebView {
     if (!self.inStoryDetail) {
         return;
     }
+    
+    UIImage *slide;
+    
+    if (self.splitStoryController.isShowingMaster) {
+        slide = [[UIImage imageNamed: @"slide_left.png"] retain];
+        
+        [self.storyDetailViewController.toggleViewButton setImage:slide];
+
+        self.splitStoryDetailViewController.navigationItem.titleView = nil;
+    } else {
+        slide = [[UIImage imageNamed: @"slide_right.png"] retain];
+        [self.storyDetailViewController.toggleViewButton setImage:slide];
+        
+        UIView *titleLabel = [self makeFeedTitle:self.activeFeed];
+        if (splitStoryDetailViewController.navigationItem){
+            splitStoryDetailViewController.navigationItem.titleView = titleLabel;
+        }
+    }
+    
+    int contentWidth = splitStoryDetailViewController.view.frame.size.width;
+    // set the styles inside the UIWebView
+    
+    [storyDetailViewController changeWebViewWidth:contentWidth];
         
     if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {        
         storyDetailViewController.view.frame = CGRectMake(0, 
@@ -397,13 +420,14 @@
                                                           splitStoryDetailViewController.view.frame.size.height);
     }
     
-    int contentWidth = splitStoryDetailViewController.view.frame.size.width;
-    // set the styles inside the UIWebView
-    
-    [storyDetailViewController changeWebViewWidth:contentWidth];
+    [slide release];
 }
 
 - (void)animateHidingMasterView {
+    if (!self.splitStoryController.isShowingMaster) {
+        return;
+    }
+    
     int width = storyDetailViewController.view.frame.size.width + 291;
     [UIView animateWithDuration:0.1 animations:^{
         storyDetailViewController.view.frame = CGRectMake(0, 
@@ -411,10 +435,16 @@
                                                     width, 
                                                     storyDetailViewController.view.frame.size.height);
     }];
-    [storyDetailViewController changeWebViewWidth:width];
+        
+    [self.splitStoryController toggleMasterView:nil];    
+    [self performSelector:@selector(adjustStoryDetailWebView) withObject:self afterDelay:0.1 ];
 }
 
 - (void)animateShowingMasterView {
+    if (self.splitStoryController.isShowingMaster) {
+        return;
+    }
+    
     int width = storyDetailViewController.view.frame.size.width - 291;
     [UIView animateWithDuration:0.50 animations:^{
         storyDetailViewController.view.frame = CGRectMake(0, 
@@ -422,8 +452,9 @@
                                                           width, 
                                                           storyDetailViewController.view.frame.size.height);
     }]; 
-    [storyDetailViewController changeWebViewWidth:width];
 
+    [self.splitStoryController toggleMasterView:nil];
+    [self performSelector:@selector(adjustStoryDetailWebView) withObject:self afterDelay:.1 ];
 }
 
 - (void)dragFeedDetailView:(float)y {
@@ -440,7 +471,7 @@
         
         [userPreferences setInteger:self.feedDetailPortraitYCoordinate forKey:@"feedDetailPortraitYCoordinate"];
         [userPreferences synchronize];
-        [self adjustStoryDetailWebView:NO shouldCheckLayout:YES];        
+        [self adjustStoryDetailWebView];        
     }
 }
 
@@ -467,7 +498,7 @@
         }
         [subviews release];
         
-        [self adjustStoryDetailWebView:NO shouldCheckLayout:NO];  
+        [self adjustStoryDetailWebView];  
         storyDetailViewController.view.tag = STORY_DETAIL_VIEW_TAG;
         [splitStoryDetailViewController.view addSubview:storyDetailViewController.view];
       

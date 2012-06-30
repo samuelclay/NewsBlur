@@ -21,7 +21,6 @@
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) UIPopoverController *popoverController;
 
-- (void)configureView;
 - (void)onFingerSwipeLeft;
 - (void)onFingerSwipeRight;
 

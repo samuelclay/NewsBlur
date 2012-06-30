@@ -59,6 +59,10 @@
 		4307BEE41565EDF8007A932A /* warning.png in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE7F1565EDF8007A932A /* warning.png */; };
 		4307BEE61565EDF8007A932A /* world.png in Resources */ = {isa = PBXBuildFile; fileRef = 4307BE801565EDF8007A932A /* world.png */; };
 		4307BEFE1565EEBC007A932A /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4307BEFD1565EEBC007A932A /* Base64.m */; };
+		4315E95C159E910500A117C0 /* slide_left.png in Resources */ = {isa = PBXBuildFile; fileRef = 4315E958159E910500A117C0 /* slide_left.png */; };
+		4315E95D159E910500A117C0 /* slide_left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4315E959159E910500A117C0 /* slide_left@2x.png */; };
+		4315E95E159E910500A117C0 /* slide_right.png in Resources */ = {isa = PBXBuildFile; fileRef = 4315E95A159E910500A117C0 /* slide_right.png */; };
+		4315E95F159E910500A117C0 /* slide_right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4315E95B159E910500A117C0 /* slide_right@2x.png */; };
 		433323B015886FA80025064D /* logo_newsblur.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323AF15886FA80025064D /* logo_newsblur.png */; };
 		433323B8158901A40025064D /* fountain_pen.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323B6158901A40025064D /* fountain_pen.png */; };
 		433323B9158901A40025064D /* fountain_pen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323B7158901A40025064D /* fountain_pen@2x.png */; };
@@ -301,6 +305,10 @@
 		4307BE801565EDF8007A932A /* world.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = world.png; sourceTree = "<group>"; };
 		4307BEFC1565EEBC007A932A /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
 		4307BEFD1565EEBC007A932A /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
+		4315E958159E910500A117C0 /* slide_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slide_left.png; sourceTree = "<group>"; };
+		4315E959159E910500A117C0 /* slide_left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slide_left@2x.png"; sourceTree = "<group>"; };
+		4315E95A159E910500A117C0 /* slide_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slide_right.png; sourceTree = "<group>"; };
+		4315E95B159E910500A117C0 /* slide_right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slide_right@2x.png"; sourceTree = "<group>"; };
 		433323AF15886FA80025064D /* logo_newsblur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_newsblur.png; sourceTree = "<group>"; };
 		433323B6158901A40025064D /* fountain_pen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fountain_pen.png; sourceTree = "<group>"; };
 		433323B7158901A40025064D /* fountain_pen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fountain_pen@2x.png"; sourceTree = "<group>"; };
@@ -760,6 +768,10 @@
 		4307BE511565EDF8007A932A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4315E958159E910500A117C0 /* slide_left.png */,
+				4315E959159E910500A117C0 /* slide_left@2x.png */,
+				4315E95A159E910500A117C0 /* slide_right.png */,
+				4315E95B159E910500A117C0 /* slide_right@2x.png */,
 				43F44B0A159CE98B00F48F8A /* 06-arrow-south.png */,
 				43F44B0B159CE98B00F48F8A /* 06-arrow-south@2x.png */,
 				4389E9E8159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png */,
@@ -1471,6 +1483,10 @@
 				43F44B15159D42F400F48F8A /* Default-Landscape~ipad.png in Resources */,
 				43F44B18159D454100F48F8A /* logo_72.png in Resources */,
 				43F44B19159D454100F48F8A /* logo_144.png in Resources */,
+				4315E95C159E910500A117C0 /* slide_left.png in Resources */,
+				4315E95D159E910500A117C0 /* slide_left@2x.png in Resources */,
+				4315E95E159E910500A117C0 /* slide_right.png in Resources */,
+				4315E95F159E910500A117C0 /* slide_right@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
