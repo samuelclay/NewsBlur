@@ -41,7 +41,49 @@
 			<object class="IBUICustomObject" id="664661524">
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 			</object>
-			<object class="IBUIViewController" id="526351421">
+			<object class="IBUIWindow" id="117978783">
+				<reference key="NSNextResponder"/>
+				<int key="NSvFlags">292</int>
+				<string key="NSFrameSize">{768, 1024}</string>
+				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
+				<object class="NSColor" key="IBUIBackgroundColor">
+					<int key="NSColorSpace">1</int>
+					<bytes key="NSRGB">MSAxIDEAA</bytes>
+				</object>
+				<bool key="IBUIOpaque">NO</bool>
+				<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics" id="750341349">
+					<int key="IBUIStatusBarStyle">2</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+				<bool key="IBUIResizesToFullScreen">YES</bool>
+			</object>
+			<object class="IBUIViewController" id="987965812">
+				<string key="IBUINibName">AddSiteViewController</string>
+				<reference key="IBUISimulatedStatusBarMetrics" ref="750341349"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
+			<object class="IBUIViewController" id="766163246">
+				<string key="IBUINibName">LoginViewController</string>
+				<object class="IBUISimulatedNavigationBarMetrics" key="IBUISimulatedTopBarMetrics">
+					<bool key="IBUIPrompted">NO</bool>
+				</object>
+				<reference key="IBUISimulatedStatusBarMetrics" ref="750341349"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
+			<object class="IBUIViewController" id="560953651">
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
 					<int key="IBUIStatusBarStyle">2</int>
 				</object>
@@ -74,21 +116,6 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
-			<object class="IBUIViewController" id="943309135">
-				<string key="IBUINibName">NewsBlurViewController</string>
-				<object class="IBUISimulatedNavigationBarMetrics" key="IBUISimulatedTopBarMetrics">
-					<bool key="IBUIPrompted">NO</bool>
-				</object>
-				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics" id="750341349">
-					<int key="IBUIStatusBarStyle">2</int>
-				</object>
-				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-					<int key="IBUIInterfaceOrientation">1</int>
-					<int key="interfaceOrientation">1</int>
-				</object>
-				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-				<bool key="IBUIHorizontal">NO</bool>
-			</object>
 			<object class="IBUIViewController" id="449948846">
 				<string key="IBUINibName">FeedDetailViewController</string>
 				<reference key="IBUISimulatedStatusBarMetrics" ref="750341349"/>
@@ -99,7 +126,18 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
-			<object class="IBUIViewController" id="560953651">
+			<object class="IBUIViewController" id="526351421">
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
+					<int key="IBUIStatusBarStyle">2</int>
+				</object>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
+			<object class="IBUIViewController" id="998054963">
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
 					<int key="IBUIStatusBarStyle">2</int>
 				</object>
@@ -121,8 +159,8 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
-			<object class="IBUIViewController" id="331182478">
-				<string key="IBUINibName">StoryDetailViewController</string>
+			<object class="IBUIViewController" id="836617734">
+				<string key="IBUINibName">MoveSiteViewController</string>
 				<reference key="IBUISimulatedStatusBarMetrics" ref="750341349"/>
 				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
 					<int key="IBUIInterfaceOrientation">1</int>
@@ -131,42 +169,11 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
-			<object class="IBUIViewController" id="490421765">
-				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
-					<int key="IBUIStatusBarStyle">2</int>
-				</object>
-				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-					<int key="IBUIInterfaceOrientation">1</int>
-					<int key="interfaceOrientation">1</int>
-				</object>
-				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-				<bool key="IBUIHorizontal">NO</bool>
-			</object>
-			<object class="IBUIViewController" id="766163246">
-				<string key="IBUINibName">LoginViewController</string>
+			<object class="IBUIViewController" id="943309135">
+				<string key="IBUINibName">NewsBlurViewController</string>
 				<object class="IBUISimulatedNavigationBarMetrics" key="IBUISimulatedTopBarMetrics">
 					<bool key="IBUIPrompted">NO</bool>
 				</object>
-				<reference key="IBUISimulatedStatusBarMetrics" ref="750341349"/>
-				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-					<int key="IBUIInterfaceOrientation">1</int>
-					<int key="interfaceOrientation">1</int>
-				</object>
-				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-				<bool key="IBUIHorizontal">NO</bool>
-			</object>
-			<object class="IBUIViewController" id="987965812">
-				<string key="IBUINibName">AddSiteViewController</string>
-				<reference key="IBUISimulatedStatusBarMetrics" ref="750341349"/>
-				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-					<int key="IBUIInterfaceOrientation">1</int>
-					<int key="interfaceOrientation">1</int>
-				</object>
-				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-				<bool key="IBUIHorizontal">NO</bool>
-			</object>
-			<object class="IBUIViewController" id="836617734">
-				<string key="IBUINibName">MoveSiteViewController</string>
 				<reference key="IBUISimulatedStatusBarMetrics" ref="750341349"/>
 				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
 					<int key="IBUIInterfaceOrientation">1</int>
@@ -185,21 +192,16 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
-			<object class="IBUIWindow" id="117978783">
-				<reference key="NSNextResponder"/>
-				<int key="NSvFlags">292</int>
-				<string key="NSFrameSize">{768, 1024}</string>
-				<reference key="NSSuperview"/>
-				<reference key="NSWindow"/>
-				<object class="NSColor" key="IBUIBackgroundColor">
-					<int key="NSColorSpace">1</int>
-					<bytes key="NSRGB">MSAxIDEAA</bytes>
+			<object class="IBUIViewController" id="490421765">
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
+					<int key="IBUIStatusBarStyle">2</int>
 				</object>
-				<bool key="IBUIOpaque">NO</bool>
-				<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
-				<reference key="IBUISimulatedStatusBarMetrics" ref="750341349"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-				<bool key="IBUIResizesToFullScreen">YES</bool>
+				<bool key="IBUIHorizontal">NO</bool>
 			</object>
 			<object class="IBUIViewController" id="1023379780">
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
@@ -223,6 +225,16 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
+			<object class="IBUIViewController" id="331182478">
+				<string key="IBUINibName">StoryDetailViewController</string>
+				<reference key="IBUISimulatedStatusBarMetrics" ref="750341349"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
 			<object class="IBUIViewController" id="862039655">
 				<object class="NSArray" key="IBUIToolbarItems" id="0">
 					<bool key="EncodedWithXMLCoder">YES</bool>
@@ -233,6 +245,28 @@
 				</object>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
+			</object>
+			<object class="IBUINavigationController" id="645533140">
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
+					<int key="IBUIStatusBarStyle">2</int>
+				</object>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<bool key="IBUIDefinesPresentationContext">YES</bool>
+				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+				<object class="IBUINavigationBar" key="IBUINavigationBar" id="94742196">
+					<nil key="NSNextResponder"/>
+					<int key="NSvFlags">256</int>
+					<string key="NSFrameSize">{0, 0}</string>
+					<string key="NSReuseIdentifierKey">_NS:15</string>
+					<bool key="IBUIClipsSubviews">YES</bool>
+					<bool key="IBUIMultipleTouchEnabled">YES</bool>
+					<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+				</object>
+				<reference key="IBUIViewControllers" ref="0"/>
 			</object>
 			<object class="IBUINavigationController" id="396985587">
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
@@ -409,14 +443,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">navigationController</string>
-						<reference key="source" ref="664661524"/>
-						<reference key="destination" ref="396985587"/>
-					</object>
-					<int key="connectionID">185</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">splitStoryDetailNavigationController</string>
 						<reference key="source" ref="664661524"/>
 						<reference key="destination" ref="862039655"/>
@@ -430,6 +456,30 @@
 						<reference key="destination" ref="1023379780"/>
 					</object>
 					<int key="connectionID">154</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">friendListViewController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="998054963"/>
+					</object>
+					<int key="connectionID">202</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">navigationController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="396985587"/>
+					</object>
+					<int key="connectionID">185</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">findFriendsNavigationController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="645533140"/>
+					</object>
+					<int key="connectionID">226</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -545,14 +595,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">masterViewController</string>
-						<reference key="source" ref="402833749"/>
-						<reference key="destination" ref="396985587"/>
-					</object>
-					<int key="connectionID">189</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="402833749"/>
 						<reference key="destination" ref="1023379780"/>
@@ -566,6 +608,22 @@
 						<reference key="destination" ref="862039655"/>
 					</object>
 					<int key="connectionID">193</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">masterViewController</string>
+						<reference key="source" ref="402833749"/>
+						<reference key="destination" ref="396985587"/>
+					</object>
+					<int key="connectionID">189</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">appDelegate</string>
+						<reference key="source" ref="998054963"/>
+						<reference key="destination" ref="664661524"/>
+					</object>
+					<int key="connectionID">203</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -681,6 +739,16 @@
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
+						<int key="objectID">177</int>
+						<reference key="object" ref="862039655"/>
+						<reference key="parent" ref="0"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">201</int>
+						<reference key="object" ref="998054963"/>
+						<reference key="parent" ref="0"/>
+					</object>
+					<object class="IBObjectRecord">
 						<int key="objectID">173</int>
 						<reference key="object" ref="396985587"/>
 						<object class="NSMutableArray" key="children">
@@ -689,11 +757,6 @@
 							<reference ref="813520712"/>
 						</object>
 						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">174</int>
-						<reference key="object" ref="370996944"/>
-						<reference key="parent" ref="396985587"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">175</int>
@@ -710,9 +773,23 @@
 						<reference key="parent" ref="813520712"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">177</int>
-						<reference key="object" ref="862039655"/>
+						<int key="objectID">174</int>
+						<reference key="object" ref="370996944"/>
+						<reference key="parent" ref="396985587"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">222</int>
+						<reference key="object" ref="645533140"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="94742196"/>
+						</object>
 						<reference key="parent" ref="0"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">223</int>
+						<reference key="object" ref="94742196"/>
+						<reference key="parent" ref="645533140"/>
 					</object>
 				</object>
 			</object>
@@ -765,6 +842,10 @@
 					<string>176.IBPluginDependency</string>
 					<string>177.CustomClassName</string>
 					<string>177.IBPluginDependency</string>
+					<string>201.CustomClassName</string>
+					<string>201.IBPluginDependency</string>
+					<string>222.IBPluginDependency</string>
+					<string>223.IBPluginDependency</string>
 					<string>3.CustomClassName</string>
 					<string>3.IBPluginDependency</string>
 					<string>51.CustomClassName</string>
@@ -842,6 +923,10 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UINavigationController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>FriendsListViewController</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>NewsBlurAppDelegate</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>FeedDetailViewController</string>
@@ -870,7 +955,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">193</int>
+			<int key="maxID">226</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1287,6 +1372,36 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">FindFriendsViewController</string>
+					<string key="superclassName">UINavigationController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">doCancel:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">doCancel:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">doCancel:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">appDelegate</string>
+						<string key="NS.object.0">NewsBlurAppDelegate</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">appDelegate</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">appDelegate</string>
+							<string key="candidateClassName">NewsBlurAppDelegate</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/FindFriendsViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">FirstTimeUserViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
@@ -1519,6 +1634,53 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/FontSettingsViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">FriendsListViewController</string>
+					<string key="superclassName">UITableViewController</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>searchBar</string>
+							<string>searchFriendsController</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NewsBlurAppDelegate</string>
+							<string>UISearchDisplayController</string>
+							<string>UISearchDisplayController</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>searchBar</string>
+							<string>searchFriendsController</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">appDelegate</string>
+								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">searchBar</string>
+								<string key="candidateClassName">UISearchDisplayController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">searchFriendsController</string>
+								<string key="candidateClassName">UISearchDisplayController</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/FriendsListViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -2024,8 +2186,11 @@
 							<string>feedDetailViewController</string>
 							<string>feedsMenuViewController</string>
 							<string>feedsViewController</string>
+							<string>findFriendsNavigationController</string>
+							<string>findFriendsViewController</string>
 							<string>firstTimeUserViewController</string>
 							<string>fontSettingsViewController</string>
+							<string>friendListViewController</string>
 							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
@@ -2045,8 +2210,11 @@
 							<string>FeedDetailViewController</string>
 							<string>FeedsMenuViewController</string>
 							<string>NewsBlurViewController</string>
+							<string>UINavigationController</string>
+							<string>FindFriendsViewController</string>
 							<string>FirstTimeUserViewController</string>
 							<string>FontSettingsViewController</string>
+							<string>FriendsListViewController</string>
 							<string>GoogleReaderViewController</string>
 							<string>LoginViewController</string>
 							<string>MoveSiteViewController</string>
@@ -2069,8 +2237,11 @@
 							<string>feedDetailViewController</string>
 							<string>feedsMenuViewController</string>
 							<string>feedsViewController</string>
+							<string>findFriendsNavigationController</string>
+							<string>findFriendsViewController</string>
 							<string>firstTimeUserViewController</string>
 							<string>fontSettingsViewController</string>
+							<string>friendListViewController</string>
 							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
@@ -2106,12 +2277,24 @@
 								<string key="candidateClassName">NewsBlurViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">findFriendsNavigationController</string>
+								<string key="candidateClassName">UINavigationController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">findFriendsViewController</string>
+								<string key="candidateClassName">FindFriendsViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">firstTimeUserViewController</string>
 								<string key="candidateClassName">FirstTimeUserViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">fontSettingsViewController</string>
 								<string key="candidateClassName">FontSettingsViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">friendListViewController</string>
+								<string key="candidateClassName">FriendsListViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">googleReaderViewController</string>
@@ -2602,12 +2785,14 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doNextStory</string>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
 							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -2617,12 +2802,17 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doNextStory</string>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
 							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">doNextStory</string>
+								<string key="candidateClassName">id</string>
+							</object>
 							<object class="IBActionInfo">
 								<string key="name">doNextUnreadStory</string>
 								<string key="candidateClassName">id</string>
@@ -2645,10 +2835,12 @@
 							<string>appDelegate</string>
 							<string>buttonAction</string>
 							<string>buttonNext</string>
+							<string>buttonNextStory</string>
 							<string>buttonPrevious</string>
 							<string>feedTitleGradient</string>
 							<string>popoverController</string>
 							<string>progressView</string>
+							<string>toggleViewButton</string>
 							<string>toolbar</string>
 							<string>webView</string>
 						</object>
@@ -2659,9 +2851,11 @@
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
+							<string>UIBarButtonItem</string>
 							<string>UIView</string>
 							<string>UIPopoverController</string>
 							<string>UIProgressView</string>
+							<string>UIBarButtonItem</string>
 							<string>UIToolbar</string>
 							<string>UIWebView</string>
 						</object>
@@ -2674,10 +2868,12 @@
 							<string>appDelegate</string>
 							<string>buttonAction</string>
 							<string>buttonNext</string>
+							<string>buttonNextStory</string>
 							<string>buttonPrevious</string>
 							<string>feedTitleGradient</string>
 							<string>popoverController</string>
 							<string>progressView</string>
+							<string>toggleViewButton</string>
 							<string>toolbar</string>
 							<string>webView</string>
 						</object>
@@ -2700,6 +2896,10 @@
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">buttonNextStory</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">buttonPrevious</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
@@ -2714,6 +2914,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">progressView</string>
 								<string key="candidateClassName">UIProgressView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">toggleViewButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">toolbar</string>

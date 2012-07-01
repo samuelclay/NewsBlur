@@ -34,19 +34,18 @@ static CGFloat *psColors = nil;
 @synthesize isSocial;
 
 + (void) initialize{
-	if(self == [FeedTableCell class])
-	{
-		textFont = [[UIFont boldSystemFontOfSize:18] retain];
-		indicatorFont = [[UIFont boldSystemFontOfSize:12] retain];
-		indicatorWhiteColor = [[UIColor whiteColor] retain];
-		indicatorBlackColor = [[UIColor blackColor] retain];
-        
+    if (self == [FeedTableCell class]) {
+        textFont = [[UIFont boldSystemFontOfSize:18] retain];
+        indicatorFont = [[UIFont boldSystemFontOfSize:12] retain];
+        indicatorWhiteColor = [[UIColor whiteColor] retain];
+        indicatorBlackColor = [[UIColor blackColor] retain];
+
         UIColor *ps = UIColorFromRGB(0x3B7613);
         UIColor *nt = UIColorFromRGB(0xF9C72A);
         UIColor *ng = UIColorFromRGB(0xCC2A2E);
-		positiveBackgroundColor = [ps retain];
-		neutralBackgroundColor = [nt retain];
-		negativeBackgroundColor = [ng retain];
+        positiveBackgroundColor = [ps retain];
+        neutralBackgroundColor = [nt retain];
+        negativeBackgroundColor = [ng retain];
 //        UIColor *psGrad = UIColorFromRGB(0x559F4D);
 //        UIColor *ntGrad = UIColorFromRGB(0xE4AB00);
 //        UIColor *ngGrad = UIColorFromRGB(0x9B181B);
@@ -57,8 +56,7 @@ static CGFloat *psColors = nil;
 //            psBot[0], psBot[1], psBot[2], psBot[3]
 //        };
 //        psColors = psGradient;
-        
-	}
+    }
 }
 
 - (void)dealloc {
@@ -67,36 +65,36 @@ static CGFloat *psColors = nil;
     [super dealloc];
 }
 
-- (void) setPositiveCount:(int)ps {    
-	if (ps == _positiveCount) return;
+- (void) setPositiveCount:(int)ps {
+    if (ps == _positiveCount) return;
     
-	_positiveCount = ps;
-	_positiveCountStr = [[NSString stringWithFormat:@"%d", ps] retain];
-	[self setNeedsDisplay];
+    _positiveCount = ps;
+    _positiveCountStr = [[NSString stringWithFormat:@"%d", ps] retain];
+    [self setNeedsDisplay];
 }
 
-- (void) setNeutralCount:(int)nt {    
-	if (nt == _neutralCount) return;
+- (void) setNeutralCount:(int)nt {
+    if (nt == _neutralCount) return;
     
-	_neutralCount = nt;
-	_neutralCountStr = [[NSString stringWithFormat:@"%d", nt] retain];
-	[self setNeedsDisplay];
+    _neutralCount = nt;
+    _neutralCountStr = [[NSString stringWithFormat:@"%d", nt] retain];
+    [self setNeedsDisplay];
 }
 
-- (void) setNegativeCount:(int)ng {    
-	if (ng == _negativeCount) return;
+- (void) setNegativeCount:(int)ng {
+    if (ng == _negativeCount) return;
     
-	_negativeCount = ng;
-	_negativeCountStr = [[NSString stringWithFormat:@"%d", ng] retain];
-	[self setNeedsDisplay];
+    _negativeCount = ng;
+    _negativeCountStr = [[NSString stringWithFormat:@"%d", ng] retain];
+    [self setNeedsDisplay];
 }
 
 
 - (void) drawContentView:(CGRect)r highlighted:(BOOL)highlighted {
     
-	CGContextRef context = UIGraphicsGetCurrentContext();
-	
-	UIColor *backgroundColor;
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    UIColor *backgroundColor;
     
     if (self.isSocial) {
         backgroundColor = self.selected || self.highlighted ? 
@@ -106,16 +104,14 @@ static CGFloat *psColors = nil;
         backgroundColor = self.selected || self.highlighted ? 
                           [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : 
                           [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
-
     }
-	
-	[backgroundColor set];
-	CGContextFillRect(context, r);
-	
-	
-	CGRect rect = CGRectInset(r, 12, 12);
-	rect.size.width -= 18; // Scrollbar padding
-	
+    
+    [backgroundColor set];
+    CGContextFillRect(context, r);
+    
+    CGRect rect = CGRectInset(r, 12, 12);
+    rect.size.width -= 18; // Scrollbar padding
+    
     int psWidth = _positiveCount == 0 ? 0 : _positiveCount < 10 ? 
                     14 : _positiveCount < 100 ? 20 : 26;
     int ntWidth = _neutralCount  == 0 ? 0 : _neutralCount < 10 ? 
@@ -130,13 +126,13 @@ static CGFloat *psColors = nil;
     int psPadding = _positiveCount == 0 ? 0 : 2;
     int ntPadding = _neutralCount  == 0 ? 0 : 2;
     
-	if(_positiveCount > 0){		
-		[positiveBackgroundColor set];
-		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 10, psWidth, 18);
+    if(_positiveCount > 0){     
+        [positiveBackgroundColor set];
+        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 10, psWidth, 18);
         [UIView drawLinearGradientInRect:rr colors:psColors];
-		[UIView drawRoundRectangleInRect:rr withRadius:5];
-		
-		[indicatorWhiteColor set];
+        [UIView drawRoundRectangleInRect:rr withRadius:5];
+        
+        [indicatorWhiteColor set];
         
         CGSize size = [_positiveCountStr sizeWithFont:indicatorFont];   
         float x_pos = (rr.size.width - size.width) / 2; 
@@ -145,34 +141,34 @@ static CGFloat *psColors = nil;
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) 
          withFont:indicatorFont];
     }
-	if(_neutralCount > 0 && appDelegate.selectedIntelligence <= 0){		
-		[neutralBackgroundColor set];
-		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 10, ntWidth, 18);
-		[UIView drawRoundRectangleInRect:rr withRadius:5];
+    if(_neutralCount > 0 && appDelegate.selectedIntelligence <= 0){     
+        [neutralBackgroundColor set];
+        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 10, ntWidth, 18);
+        [UIView drawRoundRectangleInRect:rr withRadius:5];
 //        [UIView drawLinearGradientInRect:rr colors:ntColors];
-		
-		[indicatorBlackColor set];
+        
+        [indicatorBlackColor set];
         CGSize size = [_neutralCountStr sizeWithFont:indicatorFont];   
         float x_pos = (rr.size.width - size.width) / 2; 
         float y_pos = (rr.size.height - size.height) / 2; 
         [_neutralCountStr 
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) 
          withFont:indicatorFont];     
-	}
-	if(_negativeCount > 0 && appDelegate.selectedIntelligence <= -1){		
-		[negativeBackgroundColor set];
-		CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntWidth - ntPadding - ngOffset, 10, ngWidth, 18);
-		[UIView drawRoundRectangleInRect:rr withRadius:5];
+    }
+    if(_negativeCount > 0 && appDelegate.selectedIntelligence <= -1){       
+        [negativeBackgroundColor set];
+        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntWidth - ntPadding - ngOffset, 10, ngWidth, 18);
+        [UIView drawRoundRectangleInRect:rr withRadius:5];
 //        [UIView drawLinearGradientInRect:rr colors:ngColors];
-		
-		[indicatorWhiteColor set];
+        
+        [indicatorWhiteColor set];
         CGSize size = [_negativeCountStr sizeWithFont:indicatorFont];   
         float x_pos = (rr.size.width - size.width) / 2; 
         float y_pos = (rr.size.height - size.height) / 2; 
         [_negativeCountStr 
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos) 
          withFont:indicatorFont];    
-	}
+    }
     
     UIColor *textColor = self.selected || self.highlighted ? 
                          [UIColor whiteColor] : 
@@ -189,14 +185,14 @@ static CGFloat *psColors = nil;
         self.feedFavicon = [self roundCorneredImage:self.feedFavicon radius:6];
         [self.feedFavicon drawInRect:CGRectMake(5.0, 3.0, 32.0, 32.0)];
         [feedTitle 
-         drawInRect:CGRectMake(36 + 6.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 6, 20.0) 
+         drawInRect:CGRectMake(34 + 6.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 6, 20.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentLeft];
     } else {
-        [self.feedFavicon drawInRect:CGRectMake(14.0, 11.0, 16.0, 16.0)];
+        [self.feedFavicon drawInRect:CGRectMake(11.0, 11.0, 16.0, 16.0)];
         [feedTitle 
-         drawInRect:CGRectMake(36.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
+         drawInRect:CGRectMake(34.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentLeft];

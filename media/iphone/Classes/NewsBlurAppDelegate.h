@@ -21,6 +21,7 @@
 @class FeedsMenuViewController;
 @class FeedDashboardViewController;
 @class FirstTimeUserViewController;
+@class FriendsListViewController;
 @class FontSettingsViewController;
 @class GoogleReaderViewController;
 @class StoryDetailViewController;
@@ -39,10 +40,12 @@
     MGSplitViewController *splitStoryController;
     UINavigationController *navigationController;
     UINavigationController *splitStoryDetailNavigationController;
+    UINavigationController *findFriendsNavigationController;
 
     NewsBlurViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
     FeedDashboardViewController *feedDashboardViewController;
+    FriendsListViewController *friendListViewController;
     FontSettingsViewController *fontSettingsViewController;
     FeedDetailViewController *feedDetailViewController;
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -92,11 +95,13 @@
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet MGSplitViewController *splitStoryController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *navigationController;
+@property (nonatomic, readonly, retain) IBOutlet UINavigationController *findFriendsNavigationController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *splitStoryDetailNavigationController;
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic, retain) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic, retain) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
+@property (nonatomic, retain) IBOutlet FriendsListViewController *friendListViewController;
 @property (nonatomic, retain) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic, retain) IBOutlet GoogleReaderViewController *googleReaderViewController;
 @property (nonatomic, retain) IBOutlet StoryDetailViewController *storyDetailViewController;
@@ -151,6 +156,8 @@
 - (void)animateHidingMasterView;
 - (void)animateShowingMasterView;
 
+// social
+- (void)showFindFriends;
 - (void)showAdd;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;

@@ -13,6 +13,7 @@
 #import "FeedsMenuViewController.h"
 #import "StoryDetailViewController.h"
 #import "FirstTimeUserViewController.h"
+#import "FriendsListViewController.h"
 #import "GoogleReaderViewController.h"
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
@@ -31,6 +32,7 @@
 
 @synthesize splitStoryController;
 @synthesize navigationController;
+@synthesize findFriendsNavigationController;
 @synthesize splitStoryDetailNavigationController;
 @synthesize googleReaderViewController;
 @synthesize feedsViewController;
@@ -38,6 +40,7 @@
 @synthesize feedDetailViewController;
 @synthesize feedDashboardViewController;
 @synthesize firstTimeUserViewController;
+@synthesize friendListViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
 @synthesize shareViewController;
@@ -100,19 +103,19 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
         navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
         
-        splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:splitStoryDetailViewController];
-        splitStoryDetailNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        splitStoryDetailViewController.navigationItem.title = DASHBOARD_TITLE;
+        self.splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:splitStoryDetailViewController];
+        self.splitStoryDetailNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+        self.splitStoryDetailViewController.navigationItem.title = DASHBOARD_TITLE;
         
-        splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, splitStoryDetailNavigationController, nil];
+        self.splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, splitStoryDetailNavigationController, nil];
         
-        [window addSubview:splitStoryController.view];
+        [window addSubview:self.splitStoryController.view];
         
         self.window.rootViewController = self.splitStoryController;
 
     } else {
-        navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
-        [window addSubview:navigationController.view];
+        self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
+        [window addSubview:self.navigationController.view];
     }
     
     // set default x coordinate for feedDetailY from saved preferences
@@ -125,7 +128,7 @@
     }
     
     [window makeKeyAndVisible];
-    [feedsViewController fetchFeedList:YES];
+    [self.feedsViewController fetchFeedList:YES];
     
     //[self showFirstTimeUser];
 	return YES;
@@ -141,6 +144,7 @@
     [feedsViewController release];
     [feedsMenuViewController release];
     [feedDetailViewController release];
+    [friendListViewController release];
     [storyDetailViewController release];
     [loginViewController release];
     [addSiteViewController release];
@@ -203,7 +207,7 @@
     [addSiteViewController initWithNibName:nil bundle:nil];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        addSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+        addSiteViewController.modalPresentationStyle = UIModalPresentationFormSheet;
         [navController presentModalViewController:addSiteViewController animated:YES];
         //it's important to do this after presentModalViewController
         addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); 
@@ -216,7 +220,19 @@
 }
 
 #pragma mark -
-#pragma mark Share Views
+#pragma mark Social Views
+
+- (void)showFindFriends {
+    self.findFriendsNavigationController.viewControllers = [NSArray arrayWithObject:friendListViewController];
+    self.findFriendsNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
+    self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [splitStoryController presentModalViewController:findFriendsNavigationController animated:YES];
+    } else {
+        [navigationController presentModalViewController:findFriendsNavigationController animated:YES];
+    }
+}
 
 - (void)showShareView:(NSString *)userId 
           setUsername:(NSString *)username {

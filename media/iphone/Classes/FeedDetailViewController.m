@@ -62,7 +62,7 @@
     
     if (appDelegate.isRiverView || appDelegate.isSocialView) {
         self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
-        self.storyTitlesTable.separatorColor = [UIColor clearColor];
+        //self.storyTitlesTable.separatorColor = [UIColor clearColor];
     } else {
         self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         self.storyTitlesTable.separatorColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
@@ -515,7 +515,7 @@
     
     // River view gradient
     if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
-        UIView *feedTitleBar = [self makeFeedTitleBar:feed makeRect:CGRectMake(0, 2, 12, cell.frame.size.height)];
+        UIView *feedTitleBar = [self makeFeedTitleBar:feed cell:cell makeRect:CGRectMake(0, 1, 12, cell.frame.size.height)];
         [cell.feedGradient addSubview:feedTitleBar];
     }
     
@@ -573,8 +573,10 @@
     }
 }
 
-- (UIView *)makeFeedTitleBar:(NSDictionary *)feed makeRect:(CGRect)rect {
+- (UIView *)makeFeedTitleBar:(NSDictionary *)feed cell:(UITableViewCell *)cell makeRect:(CGRect)rect {
     UIView *gradientView = [[[UIView alloc] init] autorelease];
+    gradientView.opaque = YES;
+    
     UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
     titleLabel.text = [feed objectForKey:@"feed_title"];
     titleLabel.backgroundColor = [UIColor clearColor];
@@ -584,27 +586,43 @@
     titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:11.0];
     titleLabel.shadowOffset = CGSizeMake(0, 1);
     titleLabel.textColor = UIColorFromRGB(0x606060);
-    titleLabel.frame = CGRectMake(40, 4, 300, 20);
+    titleLabel.frame = CGRectMake(40, 3, self.view.frame.size.width - 60, 20);
     titleLabel.highlightedTextColor = UIColorFromRGB(0xE0E0E0);
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
     UIImage *titleImage = [Utilities getImage:feedIdStr];
     UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
     titleImageView.alpha = 0.6;
-    titleImageView.frame = CGRectMake(18, 6, 16.0, 16.0);
+    titleImageView.frame = CGRectMake(18, 5, 16.0, 16.0);
     [titleLabel addSubview:titleImageView];
     [titleImageView release];
     
     [gradientView addSubview:titleLabel];
     [gradientView addSubview:titleImageView];
     
+    // top border
     CALayer *topBorder = [CALayer layer];
-    topBorder.frame = CGRectMake(12, 1, 320, 1);
-    topBorder.backgroundColor = UIColorFromRGB(0xE6E6E6).CGColor;
+    topBorder.frame = CGRectMake(12, 0, self.view.frame.size.width, 1);
+    topBorder.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0].CGColor;
     topBorder.opacity = 1;
-    [gradientView.layer addSublayer:topBorder]; 
-    gradientView.opaque = YES;
+    [cell.layer addSublayer:topBorder]; 
+
     
+    // top color border
+    unsigned int colorBorder = 0;
+    NSString *faviconFade = [feed valueForKey:@"favicon_fade"];
+    if ([faviconFade class] == [NSNull class]) {
+        faviconFade = @"505050";
+    }    
+    NSScanner *scannerBorder = [NSScanner scannerWithString:faviconFade];
+    [scannerBorder scanHexInt:&colorBorder];
+    CALayer *feedColorBarBorder = [CALayer layer];
+    feedColorBarBorder.frame = CGRectMake(0, 0, rect.size.width, 1);
+    feedColorBarBorder.backgroundColor = UIColorFromRGB(colorBorder).CGColor;
+    feedColorBarBorder.opacity = 1;
+    [gradientView.layer addSublayer:feedColorBarBorder]; 
+    
+    // favicon color bar
     unsigned int color = 0;
     NSString *faviconColor = [feed valueForKey:@"favicon_color"];
     if ([faviconColor class] == [NSNull class]) {
@@ -617,21 +635,7 @@
     feedColorBar.backgroundColor = UIColorFromRGB(color).CGColor;
     feedColorBar.opacity = 1;
     [gradientView.layer addSublayer:feedColorBar]; 
-    
-    unsigned int colorBorder = 0;
-    NSString *faviconFade = [feed valueForKey:@"favicon_fade"];
-    if ([faviconFade class] == [NSNull class]) {
-        faviconFade = @"505050";
-    }    
-    NSScanner *scannerBorder = [NSScanner scannerWithString:faviconFade];
-    [scannerBorder scanHexInt:&colorBorder];
-    CALayer *feedColorBarBorder = [CALayer layer];
-    feedColorBarBorder.frame = CGRectMake(0, 1, rect.size.width, 1);
-    feedColorBarBorder.backgroundColor = UIColorFromRGB(colorBorder).CGColor;
-    feedColorBarBorder.opacity = 1;
-    [gradientView.layer addSublayer:feedColorBarBorder]; 
 
-    
     return gradientView;
 }
 
@@ -886,7 +890,7 @@
         NSString *moveText = @"Move to another folder";
         [options addButtonWithTitle:moveText];
         
-        NSString *fetchText = @"Instafetch Site";
+        NSString *fetchText = @"Insta-fetch stories";
         [options addButtonWithTitle:fetchText];
 
     }

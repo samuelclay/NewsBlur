@@ -600,7 +600,7 @@
     
     UIImage *folderImage = [UIImage imageNamed:@"folder.png"];
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
-    folderImageView.frame = CGRectMake(14.0, folderImageViewY, 16.0, 16.0);
+    folderImageView.frame = CGRectMake(12.0, folderImageViewY, 16.0, 16.0);
     [customView addSubview:folderImageView];
     [folderImageView release];
 

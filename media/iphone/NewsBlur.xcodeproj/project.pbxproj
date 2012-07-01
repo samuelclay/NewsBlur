@@ -63,6 +63,8 @@
 		4315E95D159E910500A117C0 /* slide_left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4315E959159E910500A117C0 /* slide_left@2x.png */; };
 		4315E95E159E910500A117C0 /* slide_right.png in Resources */ = {isa = PBXBuildFile; fileRef = 4315E95A159E910500A117C0 /* slide_right.png */; };
 		4315E95F159E910500A117C0 /* slide_right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4315E95B159E910500A117C0 /* slide_right@2x.png */; };
+		431B856815A0C45200DCE497 /* FriendsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B856615A0C45100DCE497 /* FriendsListViewController.m */; };
+		431B856915A0C45200DCE497 /* FriendsListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 431B856715A0C45200DCE497 /* FriendsListViewController.xib */; };
 		433323B015886FA80025064D /* logo_newsblur.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323AF15886FA80025064D /* logo_newsblur.png */; };
 		433323B8158901A40025064D /* fountain_pen.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323B6158901A40025064D /* fountain_pen.png */; };
 		433323B9158901A40025064D /* fountain_pen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323B7158901A40025064D /* fountain_pen@2x.png */; };
@@ -309,6 +311,9 @@
 		4315E959159E910500A117C0 /* slide_left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slide_left@2x.png"; sourceTree = "<group>"; };
 		4315E95A159E910500A117C0 /* slide_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slide_right.png; sourceTree = "<group>"; };
 		4315E95B159E910500A117C0 /* slide_right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slide_right@2x.png"; sourceTree = "<group>"; };
+		431B856515A0C45100DCE497 /* FriendsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendsListViewController.h; sourceTree = "<group>"; };
+		431B856615A0C45100DCE497 /* FriendsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendsListViewController.m; sourceTree = "<group>"; };
+		431B856715A0C45200DCE497 /* FriendsListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FriendsListViewController.xib; sourceTree = "<group>"; };
 		433323AF15886FA80025064D /* logo_newsblur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_newsblur.png; sourceTree = "<group>"; };
 		433323B6158901A40025064D /* fountain_pen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fountain_pen.png; sourceTree = "<group>"; };
 		433323B7158901A40025064D /* fountain_pen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fountain_pen@2x.png"; sourceTree = "<group>"; };
@@ -649,6 +654,9 @@
 				437AA8AB15922D13005463F5 /* FeedDashboardViewController.m */,
 				439DAB1D1590DA350019B0EB /* FeedsMenuViewController.h */,
 				439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */,
+				431B856515A0C45100DCE497 /* FriendsListViewController.h */,
+				431B856615A0C45100DCE497 /* FriendsListViewController.m */,
+				431B856715A0C45200DCE497 /* FriendsListViewController.xib */,
 				43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */,
 				43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */,
 				28D7ACF60DDB3853001CB0EB /* NewsBlurViewController.h */,
@@ -1487,6 +1495,7 @@
 				4315E95D159E910500A117C0 /* slide_left@2x.png in Resources */,
 				4315E95E159E910500A117C0 /* slide_right.png in Resources */,
 				4315E95F159E910500A117C0 /* slide_right@2x.png in Resources */,
+				431B856915A0C45200DCE497 /* FriendsListViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1603,6 +1612,7 @@
 				43687BE4159BEDAD00B682D1 /* MGSplitCornersView.m in Sources */,
 				43687BE5159BEDAD00B682D1 /* MGSplitDividerView.m in Sources */,
 				43687BE6159BEDAD00B682D1 /* MGSplitViewController.m in Sources */,
+				431B856815A0C45200DCE497 /* FriendsListViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

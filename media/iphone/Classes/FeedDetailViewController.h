@@ -41,7 +41,7 @@
 - (IBAction)selectIntelligence;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
 - (void)checkScroll;
-- (UIView *)makeFeedTitleBar:(NSDictionary *)feed makeRect:(CGRect)rect;
+- (UIView *)makeFeedTitleBar:(NSDictionary *)feed cell:(UITableViewCell *)cell makeRect:(CGRect)rect;
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender;
 - (IBAction)doOpenSettingsActionSheet;
