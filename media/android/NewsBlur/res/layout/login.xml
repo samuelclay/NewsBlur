@@ -9,7 +9,7 @@
         android:id="@+id/login_logo"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginRight="15dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="40dp"
         android:contentDescription="@string/description_login_logo"
         android:src="@drawable/logo" />

@@ -1,15 +1,19 @@
 package com.newsblur.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -23,17 +27,18 @@ import com.newsblur.service.DetachableResultReceiver;
 import com.newsblur.service.DetachableResultReceiver.Receiver;
 import com.newsblur.service.SyncService;
 
-public class LoginFragment extends Fragment implements OnClickListener, Receiver {
+public class LoginFragment extends Fragment implements OnClickListener, Receiver, TextView.OnEditorActionListener {
 
 	private static final String TAG = "LoginFragment";
 	private String VIEWSWITCHER_CHILD = "viewSwitcherChild";
-	
+
 	public APIManager apiManager;
 	private EditText username, password;
 	private ViewSwitcher viewSwitcher;
 	private LoginTask loginTask;
 	DetachableResultReceiver receiver;
 	private TextView updateStatus;
+	private int CURRENT_STATUS = -1;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,16 +48,15 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 		loginButton.setOnClickListener(this);
 
 		viewSwitcher = (ViewSwitcher) v.findViewById(R.id.login_viewswitcher);
-		if (savedInstanceState != null) {
-			viewSwitcher.setDisplayedChild(savedInstanceState.getInt(VIEWSWITCHER_CHILD));
-			if (loginTask != null) {
-				loginTask.viewSwitcher = viewSwitcher;
-			}
+		if (loginTask != null) {
+			loginTask.viewSwitcher = viewSwitcher;
+			viewSwitcher.setDisplayedChild(1);
+			refreshUI();
 		}
-
 		updateStatus = (TextView) v.findViewById(R.id.login_status_text);
 		username = (EditText) v.findViewById(R.id.login_username);
 		password = (EditText) v.findViewById(R.id.login_password);
+		password.setOnEditorActionListener(this);
 
 		return v;
 	}
@@ -60,9 +64,10 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setRetainInstance(true);
 		apiManager = new APIManager(getActivity());
 		receiver = new DetachableResultReceiver(new Handler());
-	    receiver.setReceiver(this);
+		receiver.setReceiver(this);
 		Log.d(TAG, "Creating new fragment instance");
 	}
 
@@ -70,10 +75,14 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 	public void onClick(View viewClicked) {
 		switch (viewClicked.getId()) {
 		case R.id.login_button: 
-			loginTask = new LoginTask();
-			loginTask.viewSwitcher = viewSwitcher;
-			loginTask.execute(username.getText().toString(), password.getText().toString());
+			logIn();
 		}
+	}
+
+	private void logIn() {
+		loginTask = new LoginTask();
+		loginTask.viewSwitcher = viewSwitcher;
+		loginTask.execute(username.getText().toString(), password.getText().toString());
 	}	
 
 	@Override
@@ -106,7 +115,7 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 			final String username = params[0];
 			final String password = params[1];
 			LoginResponse response = apiManager.login(username, password);
-			
+
 			return response;
 		}
 
@@ -115,8 +124,8 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 			if (result.authenticated) {
 				Log.d(TAG, "Authenticated. Starting receiver.");
 				final Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity(), SyncService.class);
-		        intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, receiver);
-		        getActivity().startService(intent);
+				intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, receiver);
+				getActivity().startService(intent);
 			} else {
 				if (viewSwitcher != null) {
 					viewSwitcher.showPrevious();
@@ -130,16 +139,11 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 		}
 	}
 
-	// Interface for Host 
-	public interface LoginFragmentInterface {
-		public void loginSuccessful();
-		public void loginUnsuccessful();
-	}
 
-	@Override
-	public void onReceiverResult(int resultCode, Bundle resultData) {
-		Log.d(TAG, "Received result");
-		switch (resultCode) {
+	private void refreshUI() {
+		switch (CURRENT_STATUS) {
+		case SyncService.NOT_RUNNING:
+			break;
 		case SyncService.STATUS_FINISHED:
 			updateStatus.setText("Synchronisation finished.");
 			Log.d(TAG, "Synchronisation finished.");
@@ -152,6 +156,30 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 			updateStatus.setText("Error synchronising.");
 			break;
 		}
+	}
+
+
+	// Interface for Host 
+	public interface LoginFragmentInterface {
+		public void loginSuccessful();
+		public void loginUnsuccessful();
+	}
+
+	@Override
+	public void onReceiverResult(int resultCode, Bundle resultData) {
+		Log.d(TAG, "Received result");
+		CURRENT_STATUS = resultCode;
+		refreshUI();
+	}
+
+	@Override public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		if (actionId == EditorInfo.IME_ACTION_DONE) {
+			logIn();
+			InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+			return true;
+		}
+		return false;
 	}
 
 }

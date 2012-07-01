@@ -24,6 +24,7 @@ public class SyncService extends IntentService {
 	public final static int STATUS_RUNNING = 0;
 	public final static int STATUS_FINISHED = 1;
 	public final static int STATUS_ERROR = 2;
+	public static final int NOT_RUNNING = -1;
 	public APIClient apiClient;
 	private APIManager apiManager;
 
