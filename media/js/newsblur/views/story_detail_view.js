@@ -26,6 +26,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:selected', this.toggle_selected, this);
         this.model.bind('change:starred', this.toggle_starred, this);
         this.model.bind('change:intelligence', this.render_header, this);
+        this.model.bind('change:intelligence', this.toggle_score, this);
         
         // Binding directly instead of using event delegation. Need for speed.
         // this.$el.bind('mouseenter', this.mouseenter);
@@ -53,6 +54,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.$el.html(this.template(params));
         this.toggle_classes();
         this.toggle_read_status();
+        this.toggle_score();
         this.generate_gradients();
         this.render_comments();
 
@@ -199,7 +201,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     toggle_classes: function() {
         var changes = this.model.changedAttributes();
         var onlySelected = changes && _.all(_.keys(changes), function(change) {
-            return _.contains(['selected', 'read', 'intelligence'], change);
+            return _.contains(['selected', 'read', 'intelligence', 'visible'], change);
         });
         
         if (onlySelected) return;
@@ -218,8 +220,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.$el.toggleClass('NB-river-story', NEWSBLUR.reader.flags.river_view);
         this.$el.toggleClass('NB-story-starred', !!story.get('starred'));
         this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
-        this.$el.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
-                .addClass('NB-story-'+story.score_name(score));
                 
         if (unread_view > score) {
             this.$el.css('display', 'none');
@@ -238,6 +238,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     toggle_read_status: function() {
         this.$el.toggleClass('read', !!this.model.get('read_status'));
+    },
+    
+    toggle_score: function() {
+        var story = this.model;
+        
+        this.$el.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
+                .addClass('NB-story-'+story.score_name(story.score()));
     },
     
     toggle_selected: function(model, selected, options) {
@@ -392,7 +399,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         } else if (score == -1) {
             data['dislike_'+classifier_type] = value;
         }
-
+        this.model.set('visible', true, {silent: true});
         NEWSBLUR.assets.classifiers[feed_id][classifier_type+'s'][value] = score;
         NEWSBLUR.assets.recalculate_story_scores(feed_id, {story_view: this});
         NEWSBLUR.assets.save_classifier(data, function(resp) {
