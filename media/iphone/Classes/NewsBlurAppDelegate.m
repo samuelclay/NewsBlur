@@ -976,8 +976,8 @@
     if (self.isRiverView || self.isSocialView) {
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:rect
-                        startColor:[feed objectForKey:@"favicon_color"] 
-                        endColor:[feed objectForKey:@"favicon_fade"]];
+                        startColor:[feed objectForKey:@"favicon_fade"] 
+                        endColor:[feed objectForKey:@"favicon_color"]];
         
         UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
         titleLabel.text = [feed objectForKey:@"feed_title"];
@@ -990,12 +990,12 @@
         if ([[feed objectForKey:@"favicon_text_color"] class] != [NSNull class]) {
             titleLabel.textColor = [[feed objectForKey:@"favicon_text_color"] 
                                     isEqualToString:@"white"] ?
-                [UIColor whiteColor] :
-                [UIColor blackColor];            
+            [UIColor whiteColor] :
+            [UIColor blackColor];            
             titleLabel.shadowColor = [[feed objectForKey:@"favicon_text_color"] 
                                       isEqualToString:@"white"] ?
-                UIColorFromRGB(0x202020) :
-                UIColorFromRGB(0xd0d0d0);
+            UIColorFromRGB(0x202020) :
+            UIColorFromRGB(0xd0d0d0);
         } else {
             titleLabel.textColor = [UIColor whiteColor];
             titleLabel.shadowColor = [UIColor blackColor];
@@ -1015,8 +1015,8 @@
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:CGRectMake(0, -1, 1024, 10) 
                         // hard coding the 1024 as a hack for window.frame.size.width
-                        startColor:[feed objectForKey:@"favicon_color"] 
-                        endColor:[feed objectForKey:@"favicon_fade"]];
+                        startColor:[feed objectForKey:@"favicon_fade"] 
+                        endColor:[feed objectForKey:@"favicon_color"]];
     }
     
     gradientView.opaque = YES;
