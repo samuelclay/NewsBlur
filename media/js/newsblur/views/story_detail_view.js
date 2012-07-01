@@ -263,6 +263,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
             NEWSBLUR.app.story_list.scroll_to_selected_story(model, options);
         }
+        
+        if (NEWSBLUR.reader.flags['feed_view_showing_story_view']) {
+            NEWSBLUR.reader.switch_to_correct_view();
+        }
     },
     
     // ===========

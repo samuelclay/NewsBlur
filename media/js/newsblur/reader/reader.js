@@ -2024,7 +2024,7 @@
         // ===================
         
         switch_taskbar_view: function(view, skip_save_type) {
-            // NEWSBLUR.log(['switch_taskbar_view', view]);
+            // NEWSBLUR.log(['switch_taskbar_view', view, skip_save_type]);
             var self = this;
             var $story_pane = this.$s.$story_pane;
             var feed = this.model.get_feed(this.active_feed);
