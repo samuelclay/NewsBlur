@@ -192,9 +192,9 @@ NEWSBLUR.ReaderKeyboard.prototype = {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'View keyboard shortcuts'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Email story'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                    '?'
+                    'e'
                 ])
               ]),
               $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
@@ -229,6 +229,12 @@ NEWSBLUR.ReaderKeyboard.prototype = {
                     'shift',
                     $.make('span', '+'),
                     'u'
+                ])
+              ]),
+              $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'View keyboard shortcuts'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    '?'
                 ])
               ])
             ])

@@ -4913,6 +4913,10 @@
                 e.preventDefault();
                 self.open_keyboard_shortcuts_modal();
             });
+            $document.bind('keydown', '/', function(e) {
+                e.preventDefault();
+                self.open_keyboard_shortcuts_modal();
+            });
             $document.bind('keydown', 'down', function(e) {
                 e.preventDefault();
                 self.show_next_story(1);
@@ -5046,6 +5050,12 @@
                 if (!story_id) return;
                 var story = self.model.get_story(story_id);
                 story.story_view.open_story_in_new_tab();
+            });
+            $document.bind('keypress', 'e', function(e) {
+                e.preventDefault();
+                var story_id = self.active_story;
+                if (!story_id) return;
+                self.send_story_to_email(story_id);
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();

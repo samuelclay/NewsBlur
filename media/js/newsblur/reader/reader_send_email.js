@@ -18,6 +18,10 @@ NEWSBLUR.ReaderSendEmail.prototype = new NEWSBLUR.Modal;
 _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
     
     runner: function() {
+        _.bindAll(this, 'save');
+        this.options.onOpen = _.bind(function() {
+            $('input[name=to]', this.$modal).focus();
+        }, this);
         this.make_modal();
         this.open_modal();
         
@@ -26,6 +30,8 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         }
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+        $('input, textarea', this.$modal).bind('keydown', 'ctrl+return', this.save);
+        $('input, textarea', this.$modal).bind('keydown', 'meta+return', this.save);
     },
     
     make_modal: function() {
