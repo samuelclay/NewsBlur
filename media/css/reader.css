@@ -5763,6 +5763,7 @@ form.opml_import_form input {
     -moz-animation-name: -moz-slow-spin;  
     -moz-animation-iteration-count: infinite;   
     -moz-animation-timing-function: linear;  
+    -webkit-transform: translate3d(0, 0, 0);
 }
 @-webkit-keyframes -webkit-slow-spin {
     from {-webkit-transform: rotate(0deg)}
