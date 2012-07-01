@@ -1173,7 +1173,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/oauth/unfollow_twitter_account', {'username': username}, callback);
     },
     
-    recalculate_story_scores: function(feed_id) {
+    recalculate_story_scores: function(feed_id, options) {
+        options = options || {};
         this.stories.each(_.bind(function(story, i) {
             if (story.get('story_feed_id') != feed_id) return;
             var intelligence = {
@@ -1183,35 +1184,35 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 title: 0
             };
             
-            _.each(this.classifiers[feed_id].titles, _.bind(function(classifier_score, classifier_title) {
+            _.each(this.classifiers[feed_id].titles, function(classifier_score, classifier_title) {
                 if (intelligence.title <= 0 && 
                     story.get('story_title', '').indexOf(classifier_title) != -1) {
                     intelligence.title = classifier_score;
                 }
-            }, this));
+            });
             
-            _.each(this.classifiers[feed_id].authors, _.bind(function(classifier_score, classifier_author) {
+            _.each(this.classifiers[feed_id].authors, function(classifier_score, classifier_author) {
                 if (intelligence.author <= 0 &&
                     story.get('story_authors', '').indexOf(classifier_author) != -1) {
                     intelligence.author = classifier_score;
                 }
-            }, this));
+            });
             
-            _.each(this.classifiers[feed_id].tags, _.bind(function(classifier_score, classifier_tag) {
+            _.each(this.classifiers[feed_id].tags, function(classifier_score, classifier_tag) {
                 if (intelligence.tags <= 0 &&
                     story.get('story_tags') && _.contains(story.get('story_tags'), classifier_tag)) {
                     intelligence.tags = classifier_score;
                 }
-            }, this));
+            });
             
-            _.each(this.classifiers[feed_id].feeds, _.bind(function(classifier_score, classifier_feed_id) {
+            _.each(this.classifiers[feed_id].feeds, function(classifier_score, classifier_feed_id) {
                 if (intelligence.feed <= 0 &&
                     story.get('story_feed_id') == classifier_feed_id) {
                     intelligence.feed = classifier_score;
                 }
-            }, this));
+            });
             
-            story.set('intelligence', intelligence);
+            story.set('intelligence', intelligence, options);
         }, this));
     }
 

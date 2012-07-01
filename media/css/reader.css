@@ -2445,7 +2445,6 @@ background: transparent;
     opacity: .4;
     cursor: pointer;
     -webkit-filter: grayscale(100%);
-    display: none;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter:hover,
 .NB-sideoption-share .NB-sideoption-share-crosspost-facebook:hover {

@@ -59,7 +59,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         return this;
     },
     
-    render_header: function() {
+    render_header: function(model, value, options) {
         var params = this.get_render_params();
         this.$('.NB-feed-story-header').replaceWith($(this.story_header_template(params)));
         this.generate_gradients();
@@ -280,11 +280,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             .one('mouseleave', function() {
                 $tag.removeClass('NB-score-now-'+score);
             });
-            _.defer(function() {
-                $tag.one('mouseenter', function() {
-                    $tag.removeClass('NB-score-now-'+score);
-                });
+        _.delay(function() {
+            $tag.one('mouseenter', function() {
+                $tag.removeClass('NB-score-now-'+score);
             });
+        }, 100);
     },
 
     toggle_starred: function() {
@@ -394,21 +394,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
 
         NEWSBLUR.assets.classifiers[feed_id][classifier_type+'s'][value] = score;
-        NEWSBLUR.assets.recalculate_story_scores(feed_id);
+        NEWSBLUR.assets.recalculate_story_scores(feed_id, {story_view: this});
         NEWSBLUR.assets.save_classifier(data, function(resp) {
             NEWSBLUR.reader.force_feeds_refresh(null, true, feed_id);
         });
         
-        NEWSBLUR.assets.stories.each(function(story) {
-            if (classifier_type == 'tag' &&
-                _.contains(story.get('story_tags'), value)) {
-                story.trigger('change:intelligence');
-            } else if (classifier_type == 'author' &&
-                story.get('story_authors') == value) {
-                story.trigger('change:intelligence');
-            }
-        });
-
         this.preserve_classifier_color(classifier_type, value, score);
     },
     
