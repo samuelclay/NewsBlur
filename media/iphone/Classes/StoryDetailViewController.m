@@ -74,6 +74,7 @@
                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] 
                              autorelease];
     
+    self.webView.scalesPageToFit = NO;    
     [super viewDidLoad];
 }
 
@@ -459,15 +460,16 @@
             [subview removeFromSuperview];
         }
     }
+    
     for (NSObject *aSubView in [self.webView subviews]) {
         if ([aSubView isKindOfClass:[UIScrollView class]]) {
             UIScrollView * theScrollView = (UIScrollView *)aSubView;
             if (appDelegate.isRiverView || appDelegate.isSocialView) {
-                theScrollView.contentInset = UIEdgeInsetsMake(19, 0, 0, 0);
-                theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(24, 0, 5, 0);
+                theScrollView.contentInset = UIEdgeInsetsMake(19, 0, -19, 0);
+                theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(19, 0, 0, 0);
             } else {
-                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
-                theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(14, 0, 5, 0);
+                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, -9, 0);
+                theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
             }
             [self.webView insertSubview:feedTitleGradient aboveSubview:theScrollView];
             [theScrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView || appDelegate.isSocialView) ? -19 : -9) animated:NO];

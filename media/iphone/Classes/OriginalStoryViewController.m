@@ -53,7 +53,6 @@
 }
 
 - (void)viewDidLoad {
-    
     CGRect navBarFrame = self.view.bounds;
     navBarFrame.size.height = kNavBarHeight;
     UINavigationBar *navBar = [[UINavigationBar alloc] initWithFrame:navBarFrame];
