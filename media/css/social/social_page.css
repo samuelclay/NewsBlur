@@ -238,7 +238,7 @@ header {
 
 .NB-story-header {
     position: relative;
-    padding: 12px 222px 12px 28px;
+    padding: 12px 268px 12px 28px;
     text-shadow: 0 1px 0 white;
     background-image: -webkit-gradient(
       linear,
@@ -263,11 +263,12 @@ header {
 
 @media all and (max-width: 800px) {
     .NB-story-header {
-        padding-right: 100px;
+        padding-right: 268px;
     }
 }
-@media all and (max-width: 600px) {
+@media all and (max-width: 500px) {
     .NB-story-header {
+        padding-top: 36px;
         padding-right: 12px;
     }
 }
@@ -325,6 +326,22 @@ header {
     color: silver;
     text-transform: uppercase;
 }
+@media all and (max-width: 800px) {
+    .NB-story-date-break {
+        display: block;
+    }
+}
+@media all and (max-width: 500px) {
+    .NB-story-date {
+        right: none;
+        left: 32px;
+    }
+    .NB-story-date-break {
+        display: inline;
+    }
+}
+
+
 .NB-story-date small {
     font-weight: normal;
 }

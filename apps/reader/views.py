@@ -932,7 +932,7 @@ def _parse_user_info(user):
 def add_url(request):
     code = 0
     url = request.POST['url']
-    auto_active = is_true(request.POST.get('auto_active', True))
+    auto_active = is_true(request.POST.get('auto_active', 1))
     
     if not url:
         code = -1
