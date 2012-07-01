@@ -7,7 +7,6 @@ body {
     font-size: 13px;
     line-height: 18px;
     margin: 0;
-    -webkit-transform: translate3d(0, 0, 0);
 }
 
 .NB-hidden {
@@ -31,6 +30,13 @@ body {
 }
 .tipsy-inner {
     padding: 2px 9px 2px;
+}
+
+blockquote {
+    background-color: #F0F0F0;
+    border-left: 1px solid #9B9B9B;
+    padding: .5em 2em;
+    margin: 0px;
 }
 
 /* ========== */
@@ -178,6 +184,7 @@ header {
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     overflow: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
 }
 
 /* ===================== */

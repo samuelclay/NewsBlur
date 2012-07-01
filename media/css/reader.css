@@ -2579,6 +2579,8 @@ background: transparent;
     border-left: 1px solid #9B9B9B;
     padding: .5em 2em;
     margin: 0px;
+    font-size: .9em;
+    line-height: 80%;
 }
 
 .content-pane .feed_counts_floater {
@@ -5763,7 +5765,6 @@ form.opml_import_form input {
     -moz-animation-name: -moz-slow-spin;  
     -moz-animation-iteration-count: infinite;   
     -moz-animation-timing-function: linear;  
-    -webkit-transform: translate3d(0, 0, 0);
 }
 @-webkit-keyframes -webkit-slow-spin {
     from {-webkit-transform: rotate(0deg)}
