@@ -103,7 +103,7 @@
     
 	[super viewWillAppear:animated];
         
-    if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"Everything"]) {
+    if ((appDelegate.isRiverView || appDelegate.isSocialView) || [appDelegate.activeFolder isEqualToString:@"Everything"]) {
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
@@ -342,7 +342,6 @@
                                                      inSection:0]];
         }
         
-        
         if (self.feedPage < 3 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.storyTitlesTable reloadData];
         } else {
@@ -352,18 +351,11 @@
             [self.storyTitlesTable endUpdates]; 
         }
         
-        // re-highlight selected row if any
-        int rowIndex = [appDelegate locationOfActiveStory];
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
-        if (indexPath) {
-            [self.storyTitlesTable selectRowAtIndexPath: indexPath 
-                                               animated: YES 
-                                         scrollPosition: UITableViewScrollPositionNone];
-        }
         [indexPaths release];
 
     } else if (newVisibleStoriesCount > 0) {
         [self.storyTitlesTable reloadData];
+        
     } else if (newStoriesCount == 0 || 
                (self.feedPage > 15 && 
                 existingStoriesCount >= [appDelegate unreadCount])) {
@@ -377,7 +369,7 @@
         [self.storyTitlesTable endUpdates];
         //[self.storyTitlesTable reloadData];
     }
-    
+        
     self.pageFetching = NO;
     
     [self performSelector:@selector(checkScroll)
@@ -408,7 +400,7 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     if (self.pageFinished) {
-        UIView * blue = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 321, 17)];
+        UIView * blue = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1024, 17)];
         [cell.contentView addSubview:blue];
         blue.backgroundColor = [UIColor whiteColor];
         [UIView beginAnimations:nil context:NULL];
@@ -477,7 +469,7 @@
     if (indexPath.row >= [[appDelegate activeFeedStoryLocations] count]) {
         return [self makeLoadingCell];
     }
-    
+        
     NSDictionary *story = [self getStoryAtRow:indexPath.row];
     
     id feedId = [story objectForKey:@"story_feed_id"];
@@ -517,6 +509,13 @@
     if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
         UIView *feedTitleBar = [self makeFeedTitleBar:feed cell:cell makeRect:CGRectMake(0, 1, 12, cell.frame.size.height)];
         [cell.feedGradient addSubview:feedTitleBar];
+        
+        // top border
+        UIView *topBorder = [[UIView alloc] init];
+        topBorder.frame = CGRectMake(12, 0, self.view.frame.size.width, 1);
+        topBorder.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
+        [cell addSubview:topBorder]; 
+        [topBorder release];
     }
     
     if (!isStoryRead) {
@@ -530,6 +529,11 @@
         cell.storyUnreadIndicator.alpha = 1;
     } else {
         [self changeRowStyleToRead:cell];
+    }
+
+    int rowIndex = [appDelegate locationOfActiveStory];
+    if (rowIndex == indexPath.row) {
+        [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
     }
 
 	return cell;
@@ -550,7 +554,6 @@
 }
 
 - (void)changeRowStyleToRead:(FeedDetailTableCell *)cell {
-    cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
     cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
     cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:0.5];
     cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
@@ -558,18 +561,18 @@
     cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
     cell.storyUnreadIndicator.alpha = 0.15f;
     cell.feedGradient.alpha = 0.25f;
+    if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
+        cell.storyTitle.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:0.9];
+    } else {
+        cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row >= [[appDelegate activeFeedStoryLocations] count]) {
-        if (self.pageFinished) return 16;
-        else return kTableViewRowHeight;
+    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+        return kTableViewRiverRowHeight;
     } else {
-        if (appDelegate.isRiverView || appDelegate.isSocialView) {
-            return kTableViewRiverRowHeight;
-        } else {
-            return kTableViewRowHeight;
-        }
+        return kTableViewRowHeight;
     }
 }
 
@@ -600,14 +603,6 @@
     [gradientView addSubview:titleLabel];
     [gradientView addSubview:titleImageView];
     
-    // top border
-    CALayer *topBorder = [CALayer layer];
-    topBorder.frame = CGRectMake(12, 0, self.view.frame.size.width, 1);
-    topBorder.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0].CGColor;
-    topBorder.opacity = 1;
-    [cell.layer addSublayer:topBorder]; 
-
-    
     // top color border
     unsigned int colorBorder = 0;
     NSString *faviconFade = [feed valueForKey:@"favicon_fade"];
@@ -616,11 +611,11 @@
     }    
     NSScanner *scannerBorder = [NSScanner scannerWithString:faviconFade];
     [scannerBorder scanHexInt:&colorBorder];
-    CALayer *feedColorBarBorder = [CALayer layer];
-    feedColorBarBorder.frame = CGRectMake(0, 0, rect.size.width, 1);
+    CALayer  *feedColorBarBorder = [CALayer layer];
+    feedColorBarBorder.frame = CGRectMake(0, 0, 12, 1);
     feedColorBarBorder.backgroundColor = UIColorFromRGB(colorBorder).CGColor;
     feedColorBarBorder.opacity = 1;
-    [gradientView.layer addSublayer:feedColorBarBorder]; 
+    [gradientView.layer addSublayer:feedColorBarBorder];
     
     // favicon color bar
     unsigned int color = 0;
