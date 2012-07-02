@@ -32,6 +32,7 @@
 @class OriginalStoryViewController;
 @class SplitStoryDetailViewController;
 @class MGSplitViewController;
+@class UserProfileViewController;
 
 
 @interface NewsBlurAppDelegate : BaseViewController 
@@ -45,7 +46,7 @@
     NewsBlurViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
     FeedDashboardViewController *feedDashboardViewController;
-    FriendsListViewController *friendListViewController;
+    FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
     FeedDetailViewController *feedDetailViewController;
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -57,8 +58,10 @@
     MoveSiteViewController *moveSiteViewController;
     OriginalStoryViewController *originalStoryViewController;
     SplitStoryDetailViewController *splitStoryDetailViewController;
+    UserProfileViewController *userProfileViewController;
 
     NSString * activeUsername;
+    NSString * activeUserProfile;
     BOOL isRiverView;
     BOOL isSocialView;
     BOOL isShowingShare;
@@ -89,6 +92,7 @@
     NSDictionary * dictFeeds;
     NSMutableDictionary * dictActiveFeeds;
     NSDictionary * dictSocialFeeds;
+    NSDictionary * dictUserProfile;
     NSMutableArray * dictFoldersArray;
 }
 
@@ -101,7 +105,7 @@
 @property (nonatomic, retain) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic, retain) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic, retain) IBOutlet FeedDetailViewController *feedDetailViewController;
-@property (nonatomic, retain) IBOutlet FriendsListViewController *friendListViewController;
+@property (nonatomic, retain) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic, retain) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic, retain) IBOutlet GoogleReaderViewController *googleReaderViewController;
 @property (nonatomic, retain) IBOutlet StoryDetailViewController *storyDetailViewController;
@@ -112,8 +116,10 @@
 @property (nonatomic, retain) IBOutlet SplitStoryDetailViewController *splitStoryDetailViewController;
 @property (nonatomic, retain) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic, retain) IBOutlet FontSettingsViewController *fontSettingsViewController;
+@property (nonatomic, retain) IBOutlet UserProfileViewController *userProfileViewController;
 
 @property (readwrite, retain) NSString * activeUsername;
+@property (readwrite, retain) NSString * activeUserProfile;
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL isShowingShare;
@@ -143,6 +149,7 @@
 @property (nonatomic, retain) NSDictionary *dictFeeds;
 @property (nonatomic, retain) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic, retain) NSDictionary *dictSocialFeeds;
+@property (nonatomic, retain) NSDictionary *dictUserProfile;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;

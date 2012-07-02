@@ -250,7 +250,8 @@
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     
-
+    // Set up dictUserProfile
+    appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
     
     // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
@@ -265,6 +266,7 @@
         [socialDict setObject:[socialFeedsArray objectAtIndex:i] 
                        forKey:userKey];
     }
+    
     appDelegate.dictSocialFeeds = socialDict;
     [self loadAvatars];
 

@@ -15,6 +15,6 @@
 + (void)saveImage:(UIImage *)image feedId:(NSString *)filename;
 + (UIImage *)getImage:(NSString *)filename;
 + (void)saveimagesToDisk;
-
++ (NSURL *)convertToAbsoluteURL:(NSString *)url;
 
 @end

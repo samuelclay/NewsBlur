@@ -22,6 +22,8 @@
 #import "OriginalStoryViewController.h"
 #import "SplitStoryDetailViewController.h"
 #import "ShareViewController.h"
+#import "UserProfileViewController.h"
+
 #import "MBProgressHUD.h"
 #import "Utilities.h"
 #import "StringHelper.h"
@@ -40,7 +42,7 @@
 @synthesize feedDetailViewController;
 @synthesize feedDashboardViewController;
 @synthesize firstTimeUserViewController;
-@synthesize friendListViewController;
+@synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
 @synthesize shareViewController;
@@ -49,9 +51,11 @@
 @synthesize moveSiteViewController;
 @synthesize originalStoryViewController;
 @synthesize splitStoryDetailViewController;
+@synthesize userProfileViewController;
 
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize activeUsername;
+@synthesize activeUserProfile;
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isShowingShare;
@@ -80,6 +84,7 @@
 @synthesize dictFeeds;
 @synthesize dictActiveFeeds;
 @synthesize dictSocialFeeds;
+@synthesize dictUserProfile;
 @synthesize dictFoldersArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
@@ -144,7 +149,7 @@
     [feedsViewController release];
     [feedsMenuViewController release];
     [feedDetailViewController release];
-    [friendListViewController release];
+    [friendsListViewController release];
     [storyDetailViewController release];
     [loginViewController release];
     [addSiteViewController release];
@@ -152,6 +157,7 @@
     [originalStoryViewController release];
     [splitStoryDetailViewController release];
     [navigationController release];
+    [userProfileViewController release];
     [firstTimeUserViewController release];
     [window release];
     [activeUsername release];
@@ -170,6 +176,7 @@
     [dictActiveFeeds release];
     [dictFeeds release];
     [dictSocialFeeds release];
+    [dictUserProfile release];
     [dictFoldersArray release];
 
     [super dealloc];
@@ -223,7 +230,7 @@
 #pragma mark Social Views
 
 - (void)showFindFriends {
-    self.findFriendsNavigationController.viewControllers = [NSArray arrayWithObject:friendListViewController];
+    self.findFriendsNavigationController.viewControllers = [NSArray arrayWithObject:friendsListViewController];
     self.findFriendsNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;

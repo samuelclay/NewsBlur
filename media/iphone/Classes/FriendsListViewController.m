@@ -8,16 +8,23 @@
 
 #import "FriendsListViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "UserProfileViewController.h"
+#import "ASIHTTPRequest.h"
+#import "JSON.h"
 
 @implementation FriendsListViewController
 
+@synthesize friendsTable;
 @synthesize appDelegate;
+@synthesize searchBar;
+@synthesize searchDisplayController;
 @synthesize allItems;
+@synthesize allItemIds;
+@synthesize userProfiles;
 
-
-- (id)initWithStyle:(UITableViewStyle)style
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithStyle:style];
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
     }
@@ -32,15 +39,12 @@
     
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Cancel" 
                                                                      style: UIBarButtonSystemItemCancel 
-                                                                    target: nil 
+                                                                    target: self 
                                                                     action: @selector(doCancelButton)];
     [self.navigationItem setLeftBarButtonItem:cancelButton];
     [cancelButton release];
-    
-    
-    
-    // [self.tableView reloadData];
-    self.tableView.scrollEnabled = YES;
+
+    self.friendsTable.scrollEnabled = YES;
     
     NSArray *items = [[NSArray alloc] initWithObjects:
                       @"roy",
@@ -48,14 +52,25 @@
                       @"popular",
                       nil];
     
+    NSArray *item_ids = [[NSArray alloc] initWithObjects:
+                      @"27551",
+                      @"13",
+                      @"32048",
+                      nil];
+    
+    self.allItemIds = item_ids;
     self.allItems = items;
     [items release];
+    [item_ids release];
     
-    [self.tableView reloadData];
+    [self.friendsTable reloadData];
 }
 
 - (void)viewDidUnload
 {
+    [self setSearchBar:nil];
+    [self setSearchDisplayController:nil];
+    [self setFriendsTable:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -63,7 +78,11 @@
 
 - (void)dealloc {
     [appDelegate release];
-    
+    [searchBar release];
+    [searchDisplayController release];
+    [friendsTable release];
+    [userProfiles release];
+    [userProfileIds release];
     [super dealloc];
 }
 
@@ -78,6 +97,72 @@
     [appDelegate.findFriendsNavigationController dismissModalViewControllerAnimated:YES];
 }
 
+#pragma mark - UISearchDisplayController delegate methods
+
+-(BOOL)searchDisplayController:(UISearchDisplayController *)controller 
+shouldReloadTableForSearchString:(NSString *)searchString
+{
+//    [self filterContentForSearchText:searchString 
+//                               scope:[[self.searchDisplayController.searchBar scopeButtonTitles]
+//                                      objectAtIndex:[self.searchDisplayController.searchBar
+//                                                     selectedScopeButtonIndex]]];
+
+    NSLog(@"search string is: %@", searchString);
+    if (searchString.length == 0) {
+        self.userProfiles = nil; 
+    }
+    [self loadFriendsList:searchString];
+    return NO;
+}
+
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller 
+shouldReloadTableForSearchScope:(NSInteger)searchOption
+{
+//    [self filterContentForSearchText:[self.searchDisplayController.searchBar text] 
+//                               scope:[[self.searchDisplayController.searchBar scopeButtonTitles]
+//                                      objectAtIndex:searchOption]];
+    NSLog(@"shouldReloadTableForSearchScope, %@", searchOption);
+    return NO;
+}
+
+- (void)loadFriendsList:(NSString *)query {
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/find_friends?query=%@",
+                           NEWSBLUR_URL,
+                           query];
+    NSURL *url = [NSURL URLWithString:urlString];
+    
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(requestFinished:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request startAsynchronous];
+}
+
+
+- (void)requestFinished:(ASIHTTPRequest *)request {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    // int statusCode = [request responseStatusCode];
+    int code = [[results valueForKey:@"code"] intValue];
+    if (code == -1) {
+        [results release];
+        return;
+    }
+    
+    self.userProfiles = [results objectForKey:@"profiles"];
+
+    [results release];
+    
+    [self.searchDisplayController.searchResultsTableView reloadData];
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
+}
 
 #pragma mark - Table view data source
 
@@ -87,18 +172,17 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    NSInteger rows = 0;
-    
-    rows = [self.allItems count];
-
-    NSLog(@"rows is %i", rows);
-    return rows;
+{    
+    int userCount = [self.userProfiles count];
+    if (userCount) {
+        return userCount;
+    } else {
+        return [self.allItems count];
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"rowcellForRowAtIndexPaths is");
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView 
@@ -110,64 +194,33 @@
         
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
+
     
-    cell.textLabel.text =
-    [self.allItems objectAtIndex:indexPath.row];
+    int userCount = [self.userProfiles count];
     
+    if (userCount) {
+        cell.textLabel.text = [[self.userProfiles objectAtIndex:indexPath.row] objectForKey:@"username"];
+    } else {
+        cell.textLabel.text = [self.allItems objectAtIndex:indexPath.row];
+    }
+
+    [cell setNeedsLayout];
     return cell;
 }
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     [detailViewController release];
-     */
+    NSInteger currentRow = indexPath.row;
+    
+    int row = currentRow;
+    NSLog(@"the row is %i", row);
+    
+    appDelegate.activeUserProfile = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
+    
+    [appDelegate.userProfileViewController getUserProfile];
+    [appDelegate.findFriendsNavigationController pushViewController:appDelegate.userProfileViewController animated:YES];
 }
 
 @end

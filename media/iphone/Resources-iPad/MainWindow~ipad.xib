@@ -235,6 +235,17 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
+			<object class="IBUIViewController" id="556336188">
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
+					<int key="IBUIStatusBarStyle">2</int>
+				</object>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
 			<object class="IBUIViewController" id="862039655">
 				<object class="NSArray" key="IBUIToolbarItems" id="0">
 					<bool key="EncodedWithXMLCoder">YES</bool>
@@ -246,7 +257,7 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
-			<object class="IBUINavigationController" id="645533140">
+			<object class="IBUINavigationController" id="763276607">
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
 					<int key="IBUIStatusBarStyle">2</int>
 				</object>
@@ -257,7 +268,7 @@
 				<bool key="IBUIDefinesPresentationContext">YES</bool>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
-				<object class="IBUINavigationBar" key="IBUINavigationBar" id="94742196">
+				<object class="IBUINavigationBar" key="IBUINavigationBar" id="176676855">
 					<nil key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<string key="NSFrameSize">{0, 0}</string>
@@ -459,14 +470,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">friendListViewController</string>
-						<reference key="source" ref="664661524"/>
-						<reference key="destination" ref="998054963"/>
-					</object>
-					<int key="connectionID">202</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">navigationController</string>
 						<reference key="source" ref="664661524"/>
 						<reference key="destination" ref="396985587"/>
@@ -477,9 +480,25 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">findFriendsNavigationController</string>
 						<reference key="source" ref="664661524"/>
-						<reference key="destination" ref="645533140"/>
+						<reference key="destination" ref="763276607"/>
 					</object>
 					<int key="connectionID">226</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">userProfileViewController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="556336188"/>
+					</object>
+					<int key="connectionID">228</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">friendsListViewController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="998054963"/>
+					</object>
+					<int key="connectionID">230</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -624,6 +643,14 @@
 						<reference key="destination" ref="664661524"/>
 					</object>
 					<int key="connectionID">203</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">appDelegate</string>
+						<reference key="source" ref="556336188"/>
+						<reference key="destination" ref="664661524"/>
+					</object>
+					<int key="connectionID">229</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -779,17 +806,22 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">222</int>
-						<reference key="object" ref="645533140"/>
+						<reference key="object" ref="763276607"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="94742196"/>
+							<reference ref="176676855"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">223</int>
-						<reference key="object" ref="94742196"/>
-						<reference key="parent" ref="645533140"/>
+						<reference key="object" ref="176676855"/>
+						<reference key="parent" ref="763276607"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">227</int>
+						<reference key="object" ref="556336188"/>
+						<reference key="parent" ref="0"/>
 					</object>
 				</object>
 			</object>
@@ -846,6 +878,8 @@
 					<string>201.IBPluginDependency</string>
 					<string>222.IBPluginDependency</string>
 					<string>223.IBPluginDependency</string>
+					<string>227.CustomClassName</string>
+					<string>227.IBPluginDependency</string>
 					<string>3.CustomClassName</string>
 					<string>3.IBPluginDependency</string>
 					<string>51.CustomClassName</string>
@@ -927,6 +961,8 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>UserProfileViewController</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>NewsBlurAppDelegate</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>FeedDetailViewController</string>
@@ -955,7 +991,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">226</int>
+			<int key="maxID">234</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1372,36 +1408,6 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">FindFriendsViewController</string>
-					<string key="superclassName">UINavigationController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">doCancel:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">doCancel:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">doCancel:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">appDelegate</string>
-						<string key="NS.object.0">NewsBlurAppDelegate</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">appDelegate</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">appDelegate</string>
-							<string key="candidateClassName">NewsBlurAppDelegate</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/FindFriendsViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">FirstTimeUserViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
@@ -1638,19 +1644,19 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">FriendsListViewController</string>
-					<string key="superclassName">UITableViewController</string>
+					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="outlets">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
 							<string>searchBar</string>
-							<string>searchFriendsController</string>
+							<string>searchDisplayController</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NewsBlurAppDelegate</string>
-							<string>UISearchDisplayController</string>
+							<string>UISearchBar</string>
 							<string>UISearchDisplayController</string>
 						</object>
 					</object>
@@ -1660,7 +1666,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
 							<string>searchBar</string>
-							<string>searchFriendsController</string>
+							<string>searchDisplayController</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1670,10 +1676,10 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">searchBar</string>
-								<string key="candidateClassName">UISearchDisplayController</string>
+								<string key="candidateClassName">UISearchBar</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">searchFriendsController</string>
+								<string key="name">searchDisplayController</string>
 								<string key="candidateClassName">UISearchDisplayController</string>
 							</object>
 						</object>
@@ -2187,10 +2193,9 @@
 							<string>feedsMenuViewController</string>
 							<string>feedsViewController</string>
 							<string>findFriendsNavigationController</string>
-							<string>findFriendsViewController</string>
 							<string>firstTimeUserViewController</string>
 							<string>fontSettingsViewController</string>
-							<string>friendListViewController</string>
+							<string>friendsListViewController</string>
 							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
@@ -2201,6 +2206,7 @@
 							<string>splitStoryDetailNavigationController</string>
 							<string>splitStoryDetailViewController</string>
 							<string>storyDetailViewController</string>
+							<string>userProfileViewController</string>
 							<string>window</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -2211,7 +2217,6 @@
 							<string>FeedsMenuViewController</string>
 							<string>NewsBlurViewController</string>
 							<string>UINavigationController</string>
-							<string>FindFriendsViewController</string>
 							<string>FirstTimeUserViewController</string>
 							<string>FontSettingsViewController</string>
 							<string>FriendsListViewController</string>
@@ -2225,6 +2230,7 @@
 							<string>UINavigationController</string>
 							<string>SplitStoryDetailViewController</string>
 							<string>StoryDetailViewController</string>
+							<string>UserProfileViewController</string>
 							<string>UIWindow</string>
 						</object>
 					</object>
@@ -2238,10 +2244,9 @@
 							<string>feedsMenuViewController</string>
 							<string>feedsViewController</string>
 							<string>findFriendsNavigationController</string>
-							<string>findFriendsViewController</string>
 							<string>firstTimeUserViewController</string>
 							<string>fontSettingsViewController</string>
-							<string>friendListViewController</string>
+							<string>friendsListViewController</string>
 							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
@@ -2252,6 +2257,7 @@
 							<string>splitStoryDetailNavigationController</string>
 							<string>splitStoryDetailViewController</string>
 							<string>storyDetailViewController</string>
+							<string>userProfileViewController</string>
 							<string>window</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -2281,10 +2287,6 @@
 								<string key="candidateClassName">UINavigationController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">findFriendsViewController</string>
-								<string key="candidateClassName">FindFriendsViewController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">firstTimeUserViewController</string>
 								<string key="candidateClassName">FirstTimeUserViewController</string>
 							</object>
@@ -2293,7 +2295,7 @@
 								<string key="candidateClassName">FontSettingsViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">friendListViewController</string>
+								<string key="name">friendsListViewController</string>
 								<string key="candidateClassName">FriendsListViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -2335,6 +2337,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">storyDetailViewController</string>
 								<string key="candidateClassName">StoryDetailViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">userProfileViewController</string>
+								<string key="candidateClassName">UserProfileViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">window</string>
@@ -2932,6 +2938,106 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/StoryDetailViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UserProfileViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">doFollowButton:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">doFollowButton:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">doFollowButton:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>followButton</string>
+							<string>followersCount</string>
+							<string>followingCount</string>
+							<string>userAvatar</string>
+							<string>userDescription</string>
+							<string>userLocation</string>
+							<string>userStats</string>
+							<string>username</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NewsBlurAppDelegate</string>
+							<string>UIButton</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+							<string>UIImageView</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>followButton</string>
+							<string>followersCount</string>
+							<string>followingCount</string>
+							<string>userAvatar</string>
+							<string>userDescription</string>
+							<string>userLocation</string>
+							<string>userStats</string>
+							<string>username</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">appDelegate</string>
+								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">followButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">followersCount</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">followingCount</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">userAvatar</string>
+								<string key="candidateClassName">UIImageView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">userDescription</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">userLocation</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">userStats</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">username</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UserProfileViewController.h</string>
 					</object>
 				</object>
 			</object>
