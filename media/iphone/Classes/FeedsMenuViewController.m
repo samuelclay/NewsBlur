@@ -142,7 +142,7 @@
     } else if (indexPath.row == 1) {
         NSLog(@"Add Site");
         [appDelegate showAdd];
-    } else if (indexPath.row == 3) {
+    } else if (indexPath.row == 2) {
         // logout
         UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Logout", nil];
         [logoutConfirm show];

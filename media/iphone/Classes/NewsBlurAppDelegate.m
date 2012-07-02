@@ -323,6 +323,13 @@
 #pragma mark Views
 
 - (void)showLogin {
+    self.dictFeeds = nil;
+    self.dictSocialFeeds = nil;
+    self.dictFolders = nil;
+    self.dictFoldersArray = nil;
+    
+    [self.feedsViewController.feedTitlesTable reloadData];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.splitStoryController presentModalViewController:loginViewController animated:YES];
     } else {

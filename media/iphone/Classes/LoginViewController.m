@@ -290,6 +290,8 @@
 
         [self.errorLabel setHidden:NO];
     } else {
+        [self.passwordInput setText:@""];
+        [self.signUpPasswordInput setText:@""];
         [appDelegate showFirstTimeUser];
     }
     
