@@ -185,16 +185,21 @@
     NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(BACKGROUND_REFRESH_SECONDS)];
     NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
-        [self fetchFeedList:YES];
+        [self fetchFeedList:YES refreshFeeds:YES];
     }
     [decayDate release];
 }
 
-- (void)fetchFeedList:(BOOL)showLoader {
+-(void)fetchFeedList:(BOOL)showLoader refreshFeeds:(BOOL)refreshFeeds {
     if (showLoader && appDelegate.navigationController.topViewController == appDelegate.feedsViewController) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"On its way...";
+    }
+    
+    if (refreshFeeds) {
+        [self refreshFeedList];
+        return;
     }
 
     NSURL *urlFeedList = [NSURL URLWithString:
@@ -967,7 +972,11 @@
 
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
+    [self refreshFeedList];
+}
 
+
+- (void)refreshFeedList {
     // refresh the feed
     NSURL *urlFeedList = [NSURL URLWithString:
                           [NSString stringWithFormat:@"http://%@/reader/refresh_feeds",
@@ -986,7 +995,7 @@
 }
 
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
-    [self fetchFeedList:NO];
+    [self fetchFeedList:NO refreshFeeds:NO];
 }
 
 // called when the date shown needs to be updated, optional

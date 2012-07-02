@@ -39,7 +39,7 @@
 }
 
 - (void)returnToApp;
-- (void)fetchFeedList:(BOOL)showLoader;
+- (void)fetchFeedList:(BOOL)showLoader refreshFeeds:(BOOL)refreshFeeds;
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;
@@ -62,6 +62,7 @@
 - (UIImage*) roundCorneredImage: (UIImage*) orig radius:(CGFloat) r;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)refreshFeedList;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 

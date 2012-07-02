@@ -81,6 +81,7 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
 	[appDelegate adjustStoryDetailWebView]; 
+    self.scrollView.contentSize = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height);
     
     // copy the title from the master view to detail view
     if (appDelegate.splitStoryController.isShowingMaster) {
