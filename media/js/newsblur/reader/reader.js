@@ -153,6 +153,7 @@
                 this.flags.scrolling_by_selecting_story_title = false;
             }, this), 1000);
             this.make_content_pane_feed_counter();
+            this.position_mouse_indicator();
             
             this.switch_taskbar_view(view, flag);
             NEWSBLUR.app.story_titles.fill_out();
@@ -3545,7 +3546,7 @@
             $callout.corner('5px');
             
             this.$s.$mouse_indicator.hover(function() {
-                if (parseInt(self.model.preference('lock_mouse_indicator'), 10)) {
+                if (self.model.preference('lock_mouse_indicator')) {
                     $('.NB-callout-text', $callout).text('Unlock');
                 } else {
                     $('.NB-callout-text', $callout).text('Lock');
@@ -3571,7 +3572,7 @@
             var self = this;
             var $callout = $('.NB-callout-mouse-indicator');
             
-            if (parseInt(self.model.preference('lock_mouse_indicator'), 10)) {
+            if (self.model.preference('lock_mouse_indicator')) {
                 self.model.preference('lock_mouse_indicator', 0);
                 $('.NB-callout-text', $callout).text('Unlocked');
             } else {
@@ -3586,12 +3587,15 @@
         },
         
         position_mouse_indicator: function() {
-            var position = parseInt(this.model.preference('lock_mouse_indicator'), 10);
-            if (position <= 0 || position > this.$s.$content_pane.height()) {
+            var position = this.model.preference('lock_mouse_indicator');
+            var container = this.layout.contentLayout.state.container.innerHeight - 30;
+
+            if (position <= 0 || position > container) {
                 position = 50; // Start with a 50 offset
             } else {
                 position = position - 8; // Compensate for mouse indicator height.
             }
+
             this.$s.$mouse_indicator.css('top', position);
             this.cache.mouse_position_y = position;
         },
