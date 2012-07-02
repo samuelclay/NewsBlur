@@ -74,7 +74,8 @@
                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] 
                              autorelease];
     
-    self.webView.scalesPageToFit = NO;    
+    self.webView.scalesPageToFit = NO; 
+    self.webView.multipleTouchEnabled = NO;
     [super viewDidLoad];
 }
 
@@ -182,8 +183,9 @@
         NSDictionary *user = [self getUser:[[share_user_ids objectAtIndex:i] intValue]];
         NSString *avatar = [NSString stringWithFormat:@
                             "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\">"
-                            "<img src=\"%@\">"
+                            "<a href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a>"
                             "</div></div>",
+                            [user objectForKey:@"user_id"],
                             [self getImageURL:[user objectForKey:@"photo_url"]]];
         avatarString = [avatarString stringByAppendingString:avatar];
     }
@@ -250,7 +252,7 @@
     NSDictionary *user = [self getUser:[[commentDict objectForKey:@"user_id"] intValue]];
     NSString *comment = [NSString stringWithFormat:@
                          "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\"><div>"
-                         "<div class=\"NB-user-avatar\"><img src=\"%@\" /></div>"
+                         "<div class=\"NB-user-avatar\"><a href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a></div>"
                          "<div class=\"NB-story-comment-author-container\">"
                          "<div class=\"NB-story-comment-username\">%@</div>"
                          "<div class=\"NB-story-comment-date\">%@ ago</div>"
@@ -261,6 +263,7 @@
                          "<div class=\"NB-story-comment-content\">%@</div>"
                          "%@"
                          "</div></div>",
+                         [commentDict objectForKey:@"user_id"],
                          [commentDict objectForKey:@"user_id"],
                          [self getImageURL:[user objectForKey:@"photo_url"]],
                          [user objectForKey:@"username"],
@@ -356,7 +359,9 @@
     headerString = [NSString stringWithFormat:@
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
-                    "<meta name=\"viewport\" content=\"width=%i\"/>",
+                    "<meta name=\"viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
+
+
                     contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script src=\"zepto.js\"></script>"
@@ -517,6 +522,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             return NO;
         } else if ([action isEqualToString:@"share"]) {
             [appDelegate showShareView:nil setUsername:nil];
+            return NO; 
+        } else if ([action isEqualToString:@"show-profile"]) {
+            appDelegate.activeUserProfile = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
+            [appDelegate showUserProfile];
             return NO; 
         }
     }

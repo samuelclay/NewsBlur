@@ -215,7 +215,6 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
     NSInteger currentRow = indexPath.row;
     
     int row = currentRow;
-    NSLog(@"the row is %i", row);
     
     appDelegate.activeUserProfile = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
     

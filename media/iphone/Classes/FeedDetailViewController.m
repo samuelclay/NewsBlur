@@ -308,8 +308,8 @@
             [appDelegate addFeedUserProfiles:confirmedNewUserProfiles];
         }
         
-        NSLog(@"# of user profiles added: %i", appDelegate.activeFeedUserProfiles.count);
-        NSLog(@"user profiles added: %@", appDelegate.activeFeedUserProfiles);
+//        NSLog(@"# of user profiles added: %i", appDelegate.activeFeedUserProfiles.count);
+//        NSLog(@"user profiles added: %@", appDelegate.activeFeedUserProfiles);
     }
     
     [self renderStories:confirmedNewStories];

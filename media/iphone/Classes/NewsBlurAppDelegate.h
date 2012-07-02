@@ -164,7 +164,10 @@
 - (void)animateShowingMasterView;
 
 // social
+- (void)showUserProfile;
 - (void)showFindFriends;
+
+
 - (void)showAdd;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
@@ -186,7 +189,6 @@
 - (void)refreshComments;
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
-
 
 - (int)indexOfNextUnreadStory;
 - (int)indexOfNextStory;

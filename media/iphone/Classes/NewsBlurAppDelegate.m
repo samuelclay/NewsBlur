@@ -229,6 +229,20 @@
 #pragma mark -
 #pragma mark Social Views
 
+- (void)showUserProfile {
+    self.findFriendsNavigationController.viewControllers = [NSArray arrayWithObject:userProfileViewController];
+    self.findFriendsNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
+    self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [splitStoryController presentModalViewController:findFriendsNavigationController animated:NO];
+    } else {
+        [navigationController presentModalViewController:findFriendsNavigationController animated:NO];
+    }
+    [self.userProfileViewController setupModal];
+
+}
+
 - (void)showFindFriends {
     self.findFriendsNavigationController.viewControllers = [NSArray arrayWithObject:friendsListViewController];
     self.findFriendsNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];

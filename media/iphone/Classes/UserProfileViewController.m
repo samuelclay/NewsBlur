@@ -80,6 +80,22 @@
     }
 }
 
+- (void)setupModal {
+    self.navigationItem.title = nil;
+    
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done" 
+                                                                     style: UIBarButtonSystemItemCancel 
+                                                                    target: self 
+                                                                    action: @selector(doCancelButton)];
+    [self.navigationItem setRightBarButtonItem:cancelButton];
+    [cancelButton release];
+    [self getUserProfile];
+}
+
+- (void)doCancelButton {
+    [appDelegate.findFriendsNavigationController dismissModalViewControllerAnimated:NO];
+}
+
 - (void)getUserProfile {
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/settings/%@",
                            NEWSBLUR_URL,
@@ -94,6 +110,7 @@
 }
 
 
+
 - (void)requestFinished:(ASIHTTPRequest *)request {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSString *responseString = [request responseString];
@@ -106,7 +123,9 @@
         [results release];
         return;
     } 
-        
+    
+    NSLog(@"results %@", results);
+    
     self.username.text = [results objectForKey:@"username"]; 
     
     if ([results objectForKey:@"location"] != [NSNull null]) {
