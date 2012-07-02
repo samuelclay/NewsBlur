@@ -12,7 +12,9 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
     
     initialize: function(options) {
         this.story = options.story;
-        this.user = NEWSBLUR.assets.user_profiles.find(this.model.get('user_id'));
+        if (!this.options.on_social_page) {
+            this.user = NEWSBLUR.assets.user_profiles.find(this.model.get('user_id'));
+        }
     },
     
     render: function() {
@@ -102,7 +104,9 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         }, this));
         $('input', $form).focus();
         
-        NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+        if (NEWSBLUR.app.story_list) {
+            NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
+        }
     },
     
     remove_social_comment_reply_form: function() {

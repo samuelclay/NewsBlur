@@ -6,18 +6,17 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         var user_comments = this.$el.data("userComments");
         var shared = this.$el.hasClass('NB-story-shared');
         var $sideoptions = this.$('.NB-feed-story-sideoptions-container');
-        
-        this.comments_view = new NEWSBLUR.Views.SocialPageComments({
-            el: this.$('.NB-story-comments-container'),
-            story_id: story_id,
-            feed_id: feed_id
-        });
-        
         var story = new Backbone.Model({
             story_feed_id: feed_id,
             id: story_id,
             shared_comments: user_comments,
             shared: shared
+        });
+        
+        this.comments_view = new NEWSBLUR.Views.SocialPageComments({
+            el: this.$('.NB-story-comments-container'),
+            model: story,
+            story_view: this
         });
         story.social_page_comments = this.comments_view;
         story.social_page_story = this;
@@ -47,6 +46,10 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             }, this), 50);
         }
         
+        this.attach_tooltips();
+    },
+    
+    attach_tooltips: function() {
         this.$('.NB-user-avatar').tipsy({
             delayIn: 50,
             gravity: 's',

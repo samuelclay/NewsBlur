@@ -99,6 +99,7 @@ javascripts:
         - media/js/vendor/inflector.js
         - media/js/newsblur/social_page/*.js
         - media/js/newsblur/views/story_share_view.js
+        - media/js/newsblur/views/story_comment_view.js
         - media/js/vendor/jquery.easing.js
         - media/js/vendor/jquery.newsblur.js
         - media/js/vendor/jquery.scrollTo.js

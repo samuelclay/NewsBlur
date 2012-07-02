@@ -166,14 +166,17 @@ def load_social_stories(request, user_id, username=None):
 
 @render_to('social/social_page.xhtml')
 def load_social_page(request, user_id, username=None):
-    user = get_user(request)
+    user = request.user
     social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 12))
     page = request.REQUEST.get('page')
     if page: offset = limit * (int(page) - 1)
-    
+
+    user_social_profile = None
+    if user.is_authenticated():
+        user_social_profile = MSocialProfile.objects.get(user_id=user.pk)
     social_profile = MSocialProfile.objects.get(user_id=social_user_id)
     mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
@@ -200,19 +203,21 @@ def load_social_page(request, user_id, username=None):
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, social_user.pk, 
                                                                         check_all=True)
 
-    for story in stories:
-        if user.pk in story['shared_by_friends'] or user.pk in story['shared_by_public']:
-            story['shared_by_user'] = True
-            shared_story = MSharedStory.objects.get(user_id=user.pk, 
-                                                    story_feed_id=story['story_feed_id'],
-                                                    story_guid=story['id'])
-            story['user_comments'] = shared_story.comments
+    if user.is_authenticated():
+        for story in stories:
+            if user.pk in story['shared_by_friends'] or user.pk in story['shared_by_public']:
+                story['shared_by_user'] = True
+                shared_story = MSharedStory.objects.get(user_id=user.pk, 
+                                                        story_feed_id=story['story_feed_id'],
+                                                        story_guid=story['id'])
+                story['user_comments'] = shared_story.comments
 
     stories = MSharedStory.attach_users_to_stories(stories, profiles)
 
     params = {
         'social_user'   : social_user,
         'stories'       : stories,
+        'user_social_profile' : json.encode(user_social_profile and user_social_profile.page()),
         'social_profile': social_profile.page(),
         'feeds'         : feeds,
         'user_profile'  : hasattr(user, 'profile') and user.profile,
