@@ -208,7 +208,7 @@
     }
 }
 
-- (void)showAdd {
+- (void)showAddSite {
     UINavigationController *navController = self.navigationController;
     [navController dismissModalViewControllerAnimated:NO];
     [addSiteViewController initWithNibName:nil bundle:nil];
@@ -217,8 +217,12 @@
         addSiteViewController.modalPresentationStyle = UIModalPresentationFormSheet;
         [navController presentModalViewController:addSiteViewController animated:YES];
         //it's important to do this after presentModalViewController
-        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); 
-        addSiteViewController.view.superview.center = self.view.center;
+        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 460); 
+        if ([self isPortrait]) {
+            addSiteViewController.view.superview.center = self.view.center;
+        } else {
+            addSiteViewController.view.superview.center = CGPointMake(self.view.center.y, self.view.center.x);
+        }
     } else {
         [navController presentModalViewController:addSiteViewController animated:YES];
     }
@@ -429,6 +433,15 @@
         }
     }
     return NO;
+}
+
+- (BOOL)isPortrait {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
+    if (orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (void)confirmLogout {

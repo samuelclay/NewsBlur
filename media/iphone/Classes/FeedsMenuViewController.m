@@ -106,7 +106,7 @@
         [appDelegate showFindFriends];
     } else if (indexPath.row == 1) {
         NSLog(@"Add Site");
-        [appDelegate showAdd];
+        [appDelegate showAddSite];
     }
 //    } else if (indexPath.row == 2) {
 //        // logout

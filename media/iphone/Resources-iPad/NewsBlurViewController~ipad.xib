@@ -75,14 +75,13 @@
 								<string key="NSFrame">{{79, 8}, {161, 30}}</string>
 								<reference key="NSSuperview" ref="895374018"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBSegmentControlStyle">2</int>
 								<int key="IBNumberOfSegments">3</int>
 								<int key="IBSelectedSegmentIndex">0</int>
 								<object class="NSArray" key="IBSegmentTitles">
 									<bool key="EncodedWithXMLCoder">YES</bool>
-									<string>Redd</string>
+									<string>Red</string>
 									<string>Yellow</string>
 									<string>Green</string>
 								</object>
@@ -135,7 +134,7 @@
 									<string key="NSResourceName">16-List.png</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<float key="IBUIWidth">42</float>
+								<float key="IBUIWidth">38</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="895374018"/>
 							</object>
@@ -2166,17 +2165,30 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">SplitStoryDetailViewController</string>
 					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">doLogoutButton:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">doLogoutButton:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">doLogoutButton:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
-							<string>splitController</string>
+							<string>bottomToolbar</string>
+							<string>scrollView</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NewsBlurAppDelegate</string>
-							<string>MGSplitViewController</string>
+							<string>UIToolbar</string>
+							<string>UIScrollView</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -2184,7 +2196,8 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
-							<string>splitController</string>
+							<string>bottomToolbar</string>
+							<string>scrollView</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2193,8 +2206,12 @@
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">splitController</string>
-								<string key="candidateClassName">MGSplitViewController</string>
+								<string key="name">bottomToolbar</string>
+								<string key="candidateClassName">UIToolbar</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">scrollView</string>
+								<string key="candidateClassName">UIScrollView</string>
 							</object>
 						</object>
 					</object>

@@ -168,7 +168,7 @@
 - (void)showFindFriends;
 
 
-- (void)showAdd;
+- (void)showAddSite;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
 - (void)showDashboard;
@@ -189,6 +189,7 @@
 - (void)refreshComments;
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
+- (BOOL)isPortrait;
 - (void)confirmLogout;
 
 - (int)indexOfNextUnreadStory;

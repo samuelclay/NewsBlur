@@ -189,7 +189,7 @@ static CGFloat *psColors = nil;
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentLeft];
     } else {
-        [self.feedFavicon drawInRect:CGRectMake(11.0, 11.0, 16.0, 16.0)];
+        [self.feedFavicon drawInRect:CGRectMake(12.0, 11.0, 16.0, 16.0)];
         [feedTitle 
          drawInRect:CGRectMake(34.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
          withFont:font

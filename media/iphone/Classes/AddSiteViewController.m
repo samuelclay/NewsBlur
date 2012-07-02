@@ -32,6 +32,7 @@
 @synthesize addingLabel;
 @synthesize errorLabel;
 @synthesize addTypeControl;
+@synthesize hasAutomaticallyAddedSiteAddress;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -153,16 +154,22 @@
     } else if (textField == siteAddressInput) {
         if (siteAddressInput.returnKeyType == UIReturnKeySearch) {
             [self checkSiteAddress];
-        } else {
-            [self addSite];            
         }
     } else if (textField == addFolderInput) {
         [self addFolder];
     }
+
 	return YES;
 }
 
 - (IBAction)checkSiteAddress {
+
+    // do not run the checkSiteAddress if the site was added from tableview
+    if (self.hasAutomaticallyAddedSiteAddress) {
+        self.hasAutomaticallyAddedSiteAddress = NO;
+        return;
+    }
+    
     NSString *phrase = siteAddressInput.text;
     if ([phrase length] == 0) {
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
@@ -224,11 +231,15 @@
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_url",
                            NEWSBLUR_URL];
+    
+
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSString *parent_folder = [self extractParentFolder];
-    [request setPostValue:parent_folder forKey:@"folder"]; 
+    
+    [request setPostValue:parent_folder forKey:@"folder"];       
     [request setPostValue:[siteAddressInput text] forKey:@"url"]; 
+    [request setPostValue:@"true" forKey:@"auto_active"];
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -369,7 +380,7 @@
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView
 numberOfRowsInComponent:(NSInteger)component {
-    return [[appDelegate dictFoldersArray] count];
+    return [[appDelegate dictFoldersArray] count] - 1;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView
@@ -378,7 +389,7 @@ numberOfRowsInComponent:(NSInteger)component {
     if (row == 0) {
         return @"— Top Level —";
     } else {
-        return [[appDelegate dictFoldersArray] objectAtIndex:row];
+        return [[appDelegate dictFoldersArray] objectAtIndex:(row + 1)];
     }
 }
 
@@ -389,12 +400,13 @@ numberOfRowsInComponent:(NSInteger)component {
     if (row == 0) {
         folder_title = @"- Top Level -";
     } else {
-        folder_title = [[appDelegate dictFoldersArray] objectAtIndex:row];        
+        folder_title = [[appDelegate dictFoldersArray] objectAtIndex:(row + 1)];        
     }
     [inFolderInput setText:folder_title];
 }
 
 - (void)showFolderPicker {
+    siteScrollView.alpha = 0;
     [siteAddressInput resignFirstResponder];
     [addFolderInput resignFirstResponder];
     [inFolderInput setInputView:folderPicker];
@@ -452,8 +464,10 @@ numberOfRowsInComponent:(NSInteger)component {
 - (void)tableView:(UITableView *)tableView 
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *result = [autocompleteResults objectAtIndex:indexPath.row];
+    self.hasAutomaticallyAddedSiteAddress = YES;
     [self.siteAddressInput setText:[result objectForKey:@"value"]];
-    [self addSite];
+
+//    [self addSite];
     [UIView animateWithDuration:.35 animations:^{
         siteScrollView.alpha = 0;
     }];
