@@ -14,14 +14,20 @@
 @interface SplitStoryDetailViewController : UIViewController <MGSplitViewControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
-    IBOutlet MGSplitViewController *splitController;
-
+    MGSplitViewController *splitController;
+    UIToolbar *bottomToolbar;
+    UIScrollView *scrollView;
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) UIPopoverController *popoverController;
 
+@property (retain, nonatomic) IBOutlet UIScrollView *scrollView;
+@property (retain, nonatomic) IBOutlet UIToolbar *bottomToolbar;
+
+
 - (void)onFingerSwipeLeft;
 - (void)onFingerSwipeRight;
+- (IBAction)doLogoutButton:(id)sender;
 
 @end

@@ -13,11 +13,15 @@
 
 @implementation SplitStoryDetailViewController
 
+@synthesize scrollView;
 @synthesize appDelegate;
 @synthesize popoverController;
+@synthesize bottomToolbar;
 
 - (void)dealloc 
 {
+    [bottomToolbar release];
+    [scrollView release];
     [super dealloc];
 }
 
@@ -47,9 +51,16 @@
     [[self view] addGestureRecognizer:onFingerSwipeRight];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    self.bottomToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    self.scrollView.contentSize = CGSizeMake(self.view.frame.size.width, self.view.frame.size.height);
+}
+
 
 
 - (void)viewDidUnload {
+    [self setBottomToolbar:nil];
+    [self setScrollView:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
@@ -95,6 +106,10 @@
     if (appDelegate.inStoryDetail){  
         [appDelegate animateShowingMasterView];
     }
+}
+
+- (IBAction)doLogoutButton:(id)sender {
+    [appDelegate confirmLogout];
 }
 
 @end

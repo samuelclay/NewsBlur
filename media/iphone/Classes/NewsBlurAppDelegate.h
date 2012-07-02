@@ -36,7 +36,7 @@
 
 
 @interface NewsBlurAppDelegate : BaseViewController 
-                                <UIApplicationDelegate>  {
+                                <UIApplicationDelegate, UIAlertViewDelegate>  {
     UIWindow *window;
     MGSplitViewController *splitStoryController;
     UINavigationController *navigationController;
@@ -189,6 +189,7 @@
 - (void)refreshComments;
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
+- (void)confirmLogout;
 
 - (int)indexOfNextUnreadStory;
 - (int)indexOfNextStory;

@@ -33,7 +33,7 @@
     // Do any additional setup after loading the view from its nib.
     
     self.menuOptions = [[[NSArray alloc]
-                        initWithObjects:@"Find Friends", @"Add Site", @"Logout", nil] autorelease];
+                        initWithObjects:@"Find Friends", @"Add Site", nil] autorelease];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         toolbar.hidden = YES;
@@ -67,41 +67,6 @@
 
 - (IBAction)tapCancelButton:(UIBarButtonItem *)sender {
     [appDelegate hideFeedsMenu];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 1) {
-        if (buttonIndex == 0) {
-            return;
-        } else {
-            NSLog(@"Logging out...");
-            NSString *urlS = [NSString stringWithFormat:@"http://%@/reader/logout?api=1",
-                              NEWSBLUR_URL];
-            NSURL *url = [NSURL URLWithString:urlS];
-            
-            __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-            [request setDelegate:self];
-            [request setResponseEncoding:NSUTF8StringEncoding];
-            [request setDefaultResponseEncoding:NSUTF8StringEncoding];
-            [request setFailedBlock:^(void) {
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [self finishedWithError:request];
-            }];
-            [request setCompletionBlock:^(void) {
-                NSLog(@"Logout successful");
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [appDelegate showLogin];
-            }];
-            [request setTimeOutSeconds:30];
-            [request startAsynchronous];
-            
-            [ASIHTTPRequest setSessionCookies:nil];
-            
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-            HUD.labelText = @"Logging out...";
-        }
-    }
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {    
@@ -142,13 +107,14 @@
     } else if (indexPath.row == 1) {
         NSLog(@"Add Site");
         [appDelegate showAdd];
-    } else if (indexPath.row == 2) {
-        // logout
-        UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Logout", nil];
-        [logoutConfirm show];
-        [logoutConfirm setTag:1];
-        [logoutConfirm release];
     }
+//    } else if (indexPath.row == 2) {
+//        // logout
+//        UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Logout", nil];
+//        [logoutConfirm show];
+//        [logoutConfirm setTag:1];
+//        [logoutConfirm release];
+//    }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [appDelegate hideFeedsMenu];

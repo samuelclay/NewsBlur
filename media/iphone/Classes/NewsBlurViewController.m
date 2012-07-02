@@ -357,7 +357,7 @@
             popoverController.delegate = self;
         }
         
-        [popoverController setPopoverContentSize:CGSizeMake(200, 130)];
+        [popoverController setPopoverContentSize:CGSizeMake(200, 86)];
         [popoverController presentPopoverFromBarButtonItem:sender                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];  
     } else {
         [appDelegate showFeedsMenu]; 

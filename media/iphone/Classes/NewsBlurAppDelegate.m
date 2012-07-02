@@ -329,7 +329,6 @@
     self.dictFoldersArray = nil;
     
     [self.feedsViewController.feedTitlesTable reloadData];
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.splitStoryController presentModalViewController:loginViewController animated:YES];
     } else {
@@ -430,6 +429,51 @@
         }
     }
     return NO;
+}
+
+- (void)confirmLogout {
+    UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" 
+                                                            message:nil 
+                                                           delegate:self 
+                                                  cancelButtonTitle:@"Cancel" 
+                                                  otherButtonTitles:@"Logout", nil];
+    [logoutConfirm show];
+    [logoutConfirm setTag:1];
+    [logoutConfirm release];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 1) { // this is logout
+        if (buttonIndex == 0) {
+            return;
+        } else {
+            NSLog(@"Logging out...");
+            NSString *urlS = [NSString stringWithFormat:@"http://%@/reader/logout?api=1",
+                              NEWSBLUR_URL];
+            NSURL *url = [NSURL URLWithString:urlS];
+            
+            __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+            [request setDelegate:self];
+            [request setResponseEncoding:NSUTF8StringEncoding];
+            [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+            [request setFailedBlock:^(void) {
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+            }];
+            [request setCompletionBlock:^(void) {
+                NSLog(@"Logout successful");
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                [self showLogin];
+            }];
+            [request setTimeOutSeconds:30];
+            [request startAsynchronous];
+            
+            [ASIHTTPRequest setSessionCookies:nil];
+            
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            HUD.labelText = @"Logging out...";
+        }
+    }
 }
 
 - (void)loadRiverFeedDetailView {

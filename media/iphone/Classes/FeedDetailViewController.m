@@ -133,6 +133,7 @@
     self.pageFetching = NO;
     self.pageFinished = NO;
     self.feedPage = 1;
+    [self.storyTitlesTable reloadData];
 }
 
 #pragma mark -
