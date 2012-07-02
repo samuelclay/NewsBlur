@@ -10,6 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "JSON.h"
+#import "SocialBadge.h"
 #import "Utilities.h"
 
 @implementation UserProfileViewController
@@ -23,6 +24,7 @@
 @synthesize followButton;
 @synthesize followingCount;
 @synthesize followersCount;
+@synthesize socialBadge;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -37,6 +39,9 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+//    self.socialBadge.frame = CGRectMake(0, 0, 200, 200);
+//    self.socialBadge.backgroundColor = [UIColor greenColor];
+
 }
 
 - (void)viewDidUnload

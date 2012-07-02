@@ -12,6 +12,7 @@
 #import "ASIFormDataRequest.h"
 #import "JSON.h"
 #import <QuartzCore/QuartzCore.h>
+#import "NewsBlurAppDelegate.h"
 
 @implementation LoginViewController
 
@@ -292,7 +293,9 @@
     } else {
         [self.passwordInput setText:@""];
         [self.signUpPasswordInput setText:@""];
-        [appDelegate showFirstTimeUser];
+        //[appDelegate showFirstTimeUser];
+        [appDelegate.feedsViewController fetchFeedList:YES refreshFeeds:YES];
+        [self dismissModalViewControllerAnimated:NO];
     }
     
     [results release];    

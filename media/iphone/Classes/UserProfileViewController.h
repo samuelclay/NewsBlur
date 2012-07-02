@@ -10,6 +10,7 @@
 #import "ASIHTTPRequest.h"
 
 @class NewsBlurAppDelegate;
+@class SocialBadge;
 
 @interface UserProfileViewController : UIViewController <ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
@@ -23,6 +24,7 @@
     
     UILabel *followingCount;
     UILabel *followersCount;
+    SocialBadge *socialBadge;
 }
 
 @property (retain, nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -32,6 +34,7 @@
 @property (retain, nonatomic) IBOutlet UILabel *userDescription;
 @property (retain, nonatomic) IBOutlet UILabel *userStats;
 @property (retain, nonatomic) IBOutlet UIButton *followButton;
+@property (retain, nonatomic) IBOutlet SocialBadge *socialBadge;
 
 @property (retain, nonatomic) IBOutlet UILabel *followingCount;
 @property (retain, nonatomic) IBOutlet UILabel *followersCount;

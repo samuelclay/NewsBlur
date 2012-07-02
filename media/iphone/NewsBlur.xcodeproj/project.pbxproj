@@ -67,6 +67,7 @@
 		431B856915A0C45200DCE497 /* FriendsListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 431B856715A0C45200DCE497 /* FriendsListViewController.xib */; };
 		431B856E15A0D91E00DCE497 /* UserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B856C15A0D91E00DCE497 /* UserProfileViewController.m */; };
 		431B856F15A0D91E00DCE497 /* UserProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 431B856D15A0D91E00DCE497 /* UserProfileViewController.xib */; };
+		431B858115A23C6B00DCE497 /* SocialBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B858015A23C6B00DCE497 /* SocialBadge.m */; };
 		433323B015886FA80025064D /* logo_newsblur.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323AF15886FA80025064D /* logo_newsblur.png */; };
 		433323B8158901A40025064D /* fountain_pen.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323B6158901A40025064D /* fountain_pen.png */; };
 		433323B9158901A40025064D /* fountain_pen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323B7158901A40025064D /* fountain_pen@2x.png */; };
@@ -319,6 +320,8 @@
 		431B856B15A0D91E00DCE497 /* UserProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserProfileViewController.h; sourceTree = "<group>"; };
 		431B856C15A0D91E00DCE497 /* UserProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserProfileViewController.m; sourceTree = "<group>"; };
 		431B856D15A0D91E00DCE497 /* UserProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = UserProfileViewController.xib; path = Classes/UserProfileViewController.xib; sourceTree = "<group>"; };
+		431B857F15A23C6B00DCE497 /* SocialBadge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocialBadge.h; sourceTree = "<group>"; };
+		431B858015A23C6B00DCE497 /* SocialBadge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SocialBadge.m; sourceTree = "<group>"; };
 		433323AF15886FA80025064D /* logo_newsblur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_newsblur.png; sourceTree = "<group>"; };
 		433323B6158901A40025064D /* fountain_pen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fountain_pen.png; sourceTree = "<group>"; };
 		433323B7158901A40025064D /* fountain_pen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fountain_pen@2x.png"; sourceTree = "<group>"; };
@@ -756,6 +759,8 @@
 				431B856615A0C45100DCE497 /* FriendsListViewController.m */,
 				431B856B15A0D91E00DCE497 /* UserProfileViewController.h */,
 				431B856C15A0D91E00DCE497 /* UserProfileViewController.m */,
+				431B857F15A23C6B00DCE497 /* SocialBadge.h */,
+				431B858015A23C6B00DCE497 /* SocialBadge.m */,
 			);
 			name = Social;
 			sourceTree = "<group>";
@@ -1695,6 +1700,7 @@
 				43687BE6159BEDAD00B682D1 /* MGSplitViewController.m in Sources */,
 				431B856815A0C45200DCE497 /* FriendsListViewController.m in Sources */,
 				431B856E15A0D91E00DCE497 /* UserProfileViewController.m in Sources */,
+				431B858115A23C6B00DCE497 /* SocialBadge.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
