@@ -184,7 +184,12 @@ header {
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
     overflow: hidden;
-    -webkit-transform: translate3d(0, 0, 0);
+}
+
+@media all and (max-width: 500px) {
+    .NB-mark {
+        -webkit-transform: translate3d(0, 0, 0);
+    }
 }
 
 /* ===================== */
@@ -393,6 +398,7 @@ header {
 
 .NB-story-content {
     padding: 12px 200px 24px 0;
+    position: relative;
 }
 @media all and (max-width: 800px) {
     .NB-story-content {
@@ -724,4 +730,163 @@ header {
 .NB-story-comment .NB-story-comment-content {
     clear: both;
     padding: 0 0 6px 0;
+}
+
+/* ============================= */
+/* = Side Options in Feed view = */
+/* ============================= */
+
+.NB-feed-story-sideoptions-container {
+    position: absolute;
+    right: 0px;
+    bottom: 32px;
+    text-align: center;
+    width: 172px;
+}
+
+.NB-feed-story-sideoptions-container {
+    
+}
+.NB-sideoption {
+    cursor: pointer;
+    position: relative;
+    text-transform: uppercase;
+    font-size: 10px;
+    white-space: nowrap;
+    font-weight: bold;
+    text-shadow: 0 1px 0 #000;
+}
+.NB-sideoption .NB-sideoption-icon {
+    width: 24px;
+    padding: 4px;
+    height: 100%;
+    float: right;
+    background: #EBF6DA url('/media/embed/reader/star_blue.png') no-repeat 8px 4px;
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+}
+.NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
+    background-image: url('/media/embed/icons/silk/bricks.png');
+}
+.NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
+    background-image: url('/media/embed/icons/silk/rainbow.png');
+}
+
+.NB-sideoption .NB-sideoption-title {
+    padding: 4px 36px 4px 6px;
+    color: white;
+    text-shadow: none;
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+.NB-sideoption:hover {
+    cursor: pointer;
+}
+.NB-sideoption:hover .NB-sideoption-icon,
+.NB-sideoption:hover .NB-sideoption-title,
+.NB-sideoption.NB-active .NB-sideoption-icon,
+.NB-sideoption.NB-active .NB-sideoption-title,
+.NB-story-starred .NB-sideoption.NB-feed-story-save .NB-sideoption-icon,
+.NB-story-starred .NB-sideoption.NB-feed-story-save .NB-sideoption-title,
+.NB-story-shared .NB-sideoption.NB-feed-story-share .NB-sideoption-icon,
+.NB-story-shared .NB-sideoption.NB-feed-story-share .NB-sideoption-title {
+    background-color: #2B478C;
+    color: #D7DDF7;
+    opacity: 1;
+    text-shadow: 0 1px 0 #101010;
+}
+.NB-sideoption-share-wrapper {
+    background-color: #EBF6DA;
+    height: 0;
+    overflow: hidden;
+}
+.NB-sideoption-share {
+    padding: 4px 12px 6px;
+}
+.NB-sideoption-share .NB-sideoption-share-title {
+    text-transform: uppercase;
+    font-size: 10px;
+    text-align: left;
+    text-shadow: 0 1px 0 #F6F6F6;
+    color: #202020;
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost {
+    margin-right: -4px;
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-twitter,
+.NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
+    float: right;
+    width: 16px;
+    height: 16px;
+    margin: 0 0 0 6px;
+    opacity: .4;
+    cursor: pointer;
+    -webkit-filter: grayscale(100%);
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-twitter:hover,
+.NB-sideoption-share .NB-sideoption-share-crosspost-facebook:hover {
+    opacity: .7;
+    -webkit-filter: none;
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-twitter.NB-active,
+.NB-sideoption-share .NB-sideoption-share-crosspost-facebook.NB-active {
+    opacity: 1;
+    -webkit-filter: none;
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-twitter {
+    background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
+    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
+}
+.NB-sideoption-share .NB-sideoption-share-comments {
+    width: 100%;
+    height: 52px;
+}
+.NB-sideoption-share .NB-sideoption-share-save {
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  padding: 2px 6px;
+  margin: 2px 0;
+  width: 92%;
+  background-color: #639510;
+  cursor: pointer;
+  -moz-box-shadow: 2px 2px 0 #95AB76;
+  -webkit-box-shadow: 2px 2px 0 #95AB76;
+  box-shadow: 2px 2px 0 #95AB76;
+  text-shadow: 0 1px 0 #101010;
+}
+.NB-sideoption-share .NB-sideoption-share-save.NB-saving {
+    background-color: #b5b4bB;
+    text-shadow: none;
+}
+.NB-sideoption-share .NB-sideoption-share-unshare {
+    color: #404040;
+    text-shadow: 0 1px 0 #E0E0E0;
+    line-height: 1;
+    font-size: 11px;
+    padding: 2px 6px;
+    margin: 6px 0;
+    width: 92%;
+    font-weight: normal;
+    -moz-box-shadow: 1px 1px 0 #95AB76;
+    -webkit-box-shadow: 1px 1px 0 #95AB76;
+    box-shadow: 1px 1px 0 #95AB76;
+}
+.NB-sideoption-share .NB-error {
+    font-size: 10px;
+    color: #6A1000;
+    padding: 4px 0 0;
+    line-height: 14px;
+    font-weight: bold;
 }

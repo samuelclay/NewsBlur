@@ -1139,8 +1139,7 @@ class MSharedStory(mongo.Document):
         return comments
     
     @classmethod
-    def stories_with_comments_and_profiles(cls, stories, user_id, check_all=False, public=False,
-                                           attach_users=False):
+    def stories_with_comments_and_profiles(cls, stories, user_id, check_all=False, public=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         friend_key = "F:%s:F" % (user_id)
         profile_user_ids = set()
@@ -1188,23 +1187,26 @@ class MSharedStory(mongo.Document):
             
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.to_json(compact=True) for profile in profiles]
-        
-        if attach_users and story['share_count']:
-            profiles = dict([(p['user_id'], p) for p in profiles])
-            for s, story in enumerate(stories):
-                for u, user_id in enumerate(story['shared_by_friends']):
-                    stories[s]['shared_by_friends'][u] = profiles[user_id]
-                for u, user_id in enumerate(story['shared_by_public']):
-                    stories[s]['shared_by_public'][u] = profiles[user_id]
-                for c, comment in enumerate(story['comments']):
-                    stories[s]['comments'][c]['user'] = profiles[comment['user_id']]
-                    if comment['source_user_id']:
-                        stories[s]['comments'][c]['source_user'] = profiles[comment['source_user_id']]
-                    for r, reply in enumerate(comment['replies']):
-                        stories[s]['comments'][c]['replies'][r]['user'] = profiles[reply['user_id']]
 
         return stories, profiles
     
+    @staticmethod
+    def attach_users_to_stories(stories, profiles):
+        profiles = dict([(p['user_id'], p) for p in profiles])
+        for s, story in enumerate(stories):
+            for u, user_id in enumerate(story['shared_by_friends']):
+                stories[s]['shared_by_friends'][u] = profiles[user_id]
+            for u, user_id in enumerate(story['shared_by_public']):
+                stories[s]['shared_by_public'][u] = profiles[user_id]
+            for c, comment in enumerate(story['comments']):
+                stories[s]['comments'][c]['user'] = profiles[comment['user_id']]
+                if comment['source_user_id']:
+                    stories[s]['comments'][c]['source_user'] = profiles[comment['source_user_id']]
+                for r, reply in enumerate(comment['replies']):
+                    stories[s]['comments'][c]['replies'][r]['user'] = profiles[reply['user_id']]
+                        
+        return stories
+        
     def blurblog_permalink(self):
         profile = MSocialProfile.objects.get(user_id=self.user_id)
         return "%s/story/%s" % (

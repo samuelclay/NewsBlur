@@ -7,7 +7,7 @@
     <title>{{ social_profile.feed_title }}</title>
     <link rel="alternate" type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}" title="{{ social_profile.feed_title }} RSS feed">
     <link rel="shortcut icon" HREF="{{ social_profile.photo_url }}">
-    <meta name="viewport" content="width=440px">
+    <meta name="viewport" content="width=440">
     
     {% include_stylesheets "blurblog" %}
     
@@ -125,9 +125,22 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="NB-story" data-feed-id="{{ story.story_feed_id }}" data-story-id="{{ story.id }}">
-                <div class="NB-story-content">{{ story.story_content|safe }}</div>
+            <div class="NB-story {% if story.saved %}NB-story-saved{% endif %} {% if story.shared_by_user %}NB-story-shared{% endif %}" data-feed-id="{{ story.story_feed_id }}" data-story-id="{{ story.id }}">
+                <div class="NB-story-content">
+                    {{ story.story_content|safe }}
+                    {% if user.is_authenticated %}
+                        <div class="NB-feed-story-sideoptions-container">
+                            <div class="NB-sideoption NB-feed-story-save">
+                                <div class="NB-sideoption-icon">&nbsp;</div>
+                                <div class="NB-sideoption-title">{% if story.saved %}Saved{% else %}Save this story{% endif %}</div>
+                            </div>
+                            <div class="NB-sideoption NB-feed-story-share">
+                                <div class="NB-sideoption-icon">&nbsp;</div>
+                                <div class="NB-sideoption-title">{% if story.shared_by_user %}Shared{% else %}Post to Blurblog{% endif %}</div>
+                            </div>
+                        </div>
+                    {% endif %}    
+                </div>
             
                 {% if story.share_count %}
                     {% render_story_share story %}

@@ -166,9 +166,9 @@ def load_social_stories(request, user_id, username=None):
 
 @render_to('social/social_page.xhtml')
 def load_social_page(request, user_id, username=None):
+    user = get_user(request)
     social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
-    user = social_user
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 12))
     page = request.REQUEST.get('page')
@@ -197,9 +197,15 @@ def load_social_page(request, user_id, username=None):
         shared_date = localtime_for_timezone(story['shared_date'], social_user.profile.timezone)
         story['shared_date'] = shared_date
     
-    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, 
-                                                                        check_all=True, 
-                                                                        attach_users=True)
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, social_user.pk, 
+                                                                        check_all=True)
+
+    for story in stories:
+        print user.pk, story['shared_by_friends'], story['shared_by_public']
+        if user.pk in story['shared_by_friends'] or user.pk in story['shared_by_public']:
+            story['shared_by_user'] = True
+
+    stories = MSharedStory.attach_users_to_stories(stories, profiles)
 
     params = {
         'user': user,
