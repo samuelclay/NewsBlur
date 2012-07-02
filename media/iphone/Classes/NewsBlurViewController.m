@@ -904,6 +904,9 @@
             
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
             UIImage *faviconImage = [UIImage imageWithData:imageData];
+            
+            faviconImage = [self roundCorneredImage:faviconImage radius:6];
+            
             [Utilities saveImage:faviconImage feedId:feed_id];
         }
         
@@ -913,6 +916,16 @@
             [self.feedTitlesTable reloadData];
         });
     });
+}
+
+- (UIImage *)roundCorneredImage: (UIImage*) orig radius:(CGFloat) r {
+    UIGraphicsBeginImageContextWithOptions(orig.size, NO, 0);
+    [[UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, orig.size} 
+                                cornerRadius:r] addClip];
+    [orig drawInRect:(CGRect){CGPointZero, orig.size}];
+    UIImage* result = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return result;
 }
 
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {

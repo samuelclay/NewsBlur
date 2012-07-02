@@ -182,10 +182,9 @@ static CGFloat *psColors = nil;
     }
 
     if (isSocial) {
-        self.feedFavicon = [self roundCorneredImage:self.feedFavicon radius:6];
         [self.feedFavicon drawInRect:CGRectMake(5.0, 3.0, 32.0, 32.0)];
         [feedTitle 
-         drawInRect:CGRectMake(34 + 6.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 6, 20.0) 
+         drawInRect:CGRectMake(34 + 8.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 8, 20.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentLeft];
@@ -199,17 +198,6 @@ static CGFloat *psColors = nil;
     }
 }
 
-#pragma mark
-#pragma Adding rounded corners to UIImage
 
-- (UIImage *)roundCorneredImage: (UIImage*) orig radius:(CGFloat) r {
-    UIGraphicsBeginImageContextWithOptions(orig.size, NO, 0);
-    [[UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, orig.size} 
-                                cornerRadius:r] addClip];
-    [orig drawInRect:(CGRect){CGPointZero, orig.size}];
-    UIImage* result = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return result;
-}
 
 @end
