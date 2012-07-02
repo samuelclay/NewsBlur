@@ -68,7 +68,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-modal-submit-close NB-profile-save-button NB-modal-submit-button' }, 'Save my profile')
+                $.make('div', { className: 'NB-modal-submit-grey NB-profile-save-button NB-modal-submit-button' }, 'Save my profile')
             ]),
             $.make('div', { className: 'NB-tab NB-tab-blurblog' }, [
                 $.make('fieldset', [
@@ -83,7 +83,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                     $.make('legend', 'Comments'),
                     $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog'})
                 ]),
-                $.make('div', { className: 'NB-modal-submit-close NB-profile-save-button NB-modal-submit-button' }, 'Save my blurblog settings')
+                $.make('div', { className: 'NB-modal-submit-grey NB-profile-save-button NB-modal-submit-button' }, 'Save my blurblog settings')
             ]),
             $.make('div', { className: 'NB-tab NB-tab-following' }),
             $.make('div', { className: 'NB-tab NB-tab-followers' })
@@ -340,14 +340,14 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     enable_save: function() {
         console.log(["enable_save"]);
         $('.NB-profile-save-button', this.$modal)
-            .removeClass('NB-modal-submit-close')
+            .removeClass('NB-modal-submit-grey')
             .addClass('NB-modal-submit-green')
             .text('Save My Profile');
     },
     
     disable_save: function() {
         $('.NB-profile-save-button', this.$modal)
-            .addClass('NB-modal-submit-close')
+            .addClass('NB-modal-submit-grey')
             .removeClass('NB-modal-submit-green')
             .text('Change what you like above...');
     }

@@ -74,7 +74,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             ]);
         } else if (_.contains(NEWSBLUR.reader.model.user_profile.get('following_user_ids'), profile.get('user_id'))) {
             $actions = $.make('div', { 
-                className: 'NB-profile-badge-action-unfollow NB-profile-badge-action-buttons NB-modal-submit-button NB-modal-submit-close' 
+                className: 'NB-profile-badge-action-unfollow NB-profile-badge-action-buttons NB-modal-submit-button NB-modal-submit-grey' 
             }, 'Following');
         } else {
             $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [
@@ -106,7 +106,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             $button.text('Following');
             $button.removeClass('NB-modal-submit-green')
                 .removeClass('NB-modal-submit-red')
-                .addClass('NB-modal-submit-close');
+                .addClass('NB-modal-submit-grey');
             $button.removeClass('NB-profile-badge-action-follow')
                 .addClass('NB-profile-badge-action-unfollow');
                 
@@ -122,7 +122,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
             
             var $button = this.$('.NB-profile-badge-action-follow');
             $button.text('Unfollowed');
-            $button.removeClass('NB-modal-submit-close')
+            $button.removeClass('NB-modal-submit-grey')
                 .addClass('NB-modal-submit-red');
             $button.removeClass('NB-profile-badge-action-unfollow')
                 .addClass('NB-profile-badge-action-follow');

@@ -16,6 +16,20 @@
     border: 1px solid #303030;
 }
 
+/* =================== */
+/* = Common Elements = */
+/* =================== */
+
+.NB-input {
+    font-size: 14px;
+    padding: 2px;
+    margin: 2px 4px 2px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
+}
+
 /* ========== */
 /* = Modals = */
 /* ========== */
@@ -332,6 +346,53 @@
         center bottom,
         #ADACBB 16%,
         #BDBCC7 84%
+    );
+}
+
+.NB-modal-submit-close {
+    background-color: #525255;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #192716),
+        color-stop(0.84, #2E432B)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #192716 16%,
+        #2E432B 84%
+    );
+    color: white;
+}
+.NB-modal-submit-close:hover {
+    background-color: #CBCAD3;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #131D10),
+        color-stop(0.84, #192716)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #131D10 16%,
+        #192716 84%
+    );
+}
+.NB-modal-submit-close:active {
+    background-color: #BDBCC7;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #0A0D09),
+        color-stop(0.84, #131D10)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #0A0D09 16%,
+        #131D10 84%
     );
 }
 .NB-modal-submit-close,

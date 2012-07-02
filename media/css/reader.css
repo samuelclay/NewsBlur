@@ -59,16 +59,6 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     line-height: 20px;
 }
 
-.NB-input {
-    font-size: 14px;
-    padding: 2px;
-    margin: 2px 4px 2px;
-    border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 #D0D0D0;
-    -webkit-box-shadow:2px 2px 0 #D0D0D0;
-    box-shadow:2px 2px 0 #D0D0D0;
-}
-
 .chzn-drop {
     text-shadow: none;
 }
@@ -3497,7 +3487,7 @@ form.opml_import_form input {
     color: #FFF;
     background-color: #b5b4bB;
 }
-.NB-modal-trainer .NB-modal-submit .NB-modal-submit-close {
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-grey {
     float: left;
     color: #FFF;
     background-color: #b5b4bB;
@@ -4256,8 +4246,8 @@ form.opml_import_form input {
     box-shadow: 1px 1px 0 #D0D0D0;
 }
 
-.NB-module .NB-modal-submit-close {
-  color: #505050;
+.NB-module .NB-modal-submit-grey {
+    color: #505050;
 }
 .NB-module .NB-module-item .NB-module-item-title {
     margin: 0 0 4px 128px;

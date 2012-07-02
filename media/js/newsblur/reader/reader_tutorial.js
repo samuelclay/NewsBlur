@@ -341,7 +341,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                 $.make('span', { className: 'NB-tutorial-next-page-text' }, 'Next Page '),
                 $.make('span', { className: 'NB-raquo' }, '&raquo;')
               ]),
-              $.make('div', { className: 'NB-page-previous NB-modal-submit-button NB-modal-submit-close NB-modal-submit-save' }, [
+              $.make('div', { className: 'NB-page-previous NB-modal-submit-button NB-modal-submit-grey NB-modal-submit-save' }, [
                 $.make('span', { className: 'NB-raquo' }, '&laquo;'),
                 ' Previous Page'
               ])

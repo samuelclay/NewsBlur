@@ -25,6 +25,12 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
             this.$(".NB-story-comments-public-teaser-wrapper").replaceWith($template);
             $template.before($header);
         }, this));
+    },
+    
+    replace_comments: function(html) {
+        var $new_comments = $(html);
+        this.$el.replaceWith($new_comments);
+        this.setElement($new_comments);
     }
     
 });

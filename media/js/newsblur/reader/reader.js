@@ -3806,7 +3806,7 @@
         setup_ftux_signup_callout: function() {
             var self = this;
             
-            if (!self.flags['bouncing_callout']) {
+            if (!this.flags['bouncing_callout']) {
                 $('.NB-callout-ftux-signup .NB-callout-text').text('Signup');
                 $('.NB-callout-ftux-signup').corner('5px');
                 $('.NB-callout-ftux-signup').css({

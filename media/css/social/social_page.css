@@ -891,3 +891,30 @@ header {
     line-height: 14px;
     font-weight: bold;
 }
+.NB-sideoption-divider {
+    margin: 12px 0;
+    border-top: 1px solid #AFC997;
+    border-bottom: 1px solid #F6F6F6;
+    height: 0;
+}
+.NB-sideoption-login-wrapper .NB-input {
+    width: 140px;
+    margin: 0 0 8px;
+}
+.NB-sideoption-login-wrapper .NB-sideoption-login-signup {
+    margin: 12px 0 16px;
+    line-height: 14px;
+    color: white;
+    text-shadow: 0 1px 0 #303030;
+  -moz-box-shadow: 2px 2px 0 #95AB76;
+  -webkit-box-shadow: 2px 2px 0 #95AB76;
+  box-shadow: 2px 2px 0 #95AB76;
+}
+
+.NB-sideoption-login-wrapper .NB-sideoption-login-button {
+    line-height: 14px;
+    margin: 8px 0 2px;
+  -moz-box-shadow: 2px 2px 0 #95AB76;
+  -webkit-box-shadow: 2px 2px 0 #95AB76;
+  box-shadow: 2px 2px 0 #95AB76;
+}

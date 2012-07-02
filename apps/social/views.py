@@ -255,23 +255,29 @@ def mark_story_as_shared(request):
     source_user_id = request.POST.get('source_user_id')
     post_to_services = request.POST.getlist('post_to_services')
     format = request.REQUEST.get('format', 'json')
+    original_story_found = True
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
-        return {
-            'code': -1, 
-            'message': 'The original story is gone. This would be a nice bug to fix. Speak up.'
-        }
+        original_story_found = False
+        story = MSharedStory.objects.filter(story_feed_id=feed_id, 
+                                            story_guid=story_id).limit(1).first()
+        if not story:
+            return json.json_response(request, {
+                'code': -1, 
+                'message': 'Could not find the original story and no copies could be found.'
+            })
     
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 
-                                               story_guid=story_id)
+                                               story_guid=story_id).limit(1).first()
     if not shared_story:
         story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
         story_values = dict(user_id=request.user.pk, comments=comments, 
-                            has_comments=bool(comments), **story_db)
-        shared_story = MSharedStory.objects.create(**story_values)
+                            has_comments=bool(comments))
+        story_db.update(story_values)
+        shared_story = MSharedStory.objects.create(**story_db)
         if source_user_id:
             shared_story.set_source_user_id(int(source_user_id))
         socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
@@ -280,18 +286,20 @@ def mark_story_as_shared(request):
             socialsub.save()
         logging.user(request, "~FCSharing ~FM%s: ~SB~FB%s" % (story.story_title[:20], comments[:30]))
     else:
-        shared_story = shared_story[0]
         shared_story.comments = comments
         shared_story.has_comments = bool(comments)
         shared_story.save()
         logging.user(request, "~FCUpdating shared story ~FM%s: ~SB~FB%s" % (
                      story.story_title[:20], comments[:30]))
     
-    story.count_comments()
+    if original_story_found:
+        story.count_comments()
     shared_story.publish_update_to_subscribers()
     
     story = Feed.format_story(story)
-    stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user.pk)
+    check_all = not original_story_found
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user.pk,
+                                                                        check_all=check_all)
     story = stories[0]
     story['shared_comments'] = shared_story['comments'] or ""
     
@@ -320,14 +328,17 @@ def mark_story_as_unshared(request):
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
-        return {'code': -1, 'message': 'Story not found. Reload this site.'}
+        return json.json_response(request, {
+            'code': -1, 
+            'message': 'Story not found. Reload this site.'
+        })
         
     try:
         shared_story = MSharedStory.objects.get(user_id=request.user.pk, 
                                                    story_feed_id=feed_id, 
                                                    story_guid=story_id)
     except MSharedStory.DoesNotExist:
-        return {'code': -1, 'message': 'Shared story not found.'}
+        return json.json_response(request, {'code': -1, 'message': 'Shared story not found.'})
     
     socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
     for socialsub in socialsubs:

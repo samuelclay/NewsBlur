@@ -4,9 +4,10 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         var story_id = this.$el.data("storyId");
         var feed_id = this.$el.data("feedId");
         var user_comments = this.$el.data("userComments");
+        var $sideoptions = this.$('.NB-feed-story-sideoptions-container');
         
         this.comments_view = new NEWSBLUR.Views.SocialPageComments({
-            el: this.$('.NB-story-comments'),
+            el: this.$('.NB-story-comments-container'),
             story_id: story_id,
             feed_id: feed_id
         });
@@ -17,17 +18,33 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             shared_comments: user_comments,
             shared: !!user_comments
         });
-        _.delay(_.bind(function() {
-            this.share_view = new NEWSBLUR.Views.StoryShareView({
-                el: this.el,
-                model: story,
-                on_social_page: true
-            });
-            this.$('.NB-feed-story-sideoptions-container').append($(this.share_view.template({
-                story: story,
-                social_services: NEWSBLUR.assets.social_services
-            })));
-        }, this), 50);
+        story.social_page_comments = this.comments_view;
+        story.social_page_story = this;
+        
+        if (NEWSBLUR.Globals.is_authenticated) {
+            _.delay(_.bind(function() {
+                this.share_view = new NEWSBLUR.Views.StoryShareView({
+                    el: this.el,
+                    model: story,
+                    on_social_page: true
+                });
+                $sideoptions.append($(this.share_view.template({
+                    story: story,
+                    social_services: NEWSBLUR.assets.social_services
+                })));
+            }, this), 50);
+        } else {
+            _.delay(_.bind(function() {
+                this.login_view = new NEWSBLUR.Views.SocialPageLoginView({
+                    el: this.el,
+                    model: story
+                });
+                $sideoptions.append($(this.login_view.template({
+                    story: story
+                })));
+
+            }, this), 50);
+        }
         
         this.$('.NB-user-avatar').tipsy({
             delayIn: 50,
