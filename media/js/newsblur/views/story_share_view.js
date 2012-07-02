@@ -83,7 +83,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             }
         } else {
             // Open/resize
-            this.$('.NB-error').remove();
+            if (!options.resize_open) {
+                this.$('.NB-error').remove();
+            }
             $sideoption.addClass('NB-active');
             $unshare_button.toggleClass('NB-hidden', !this.model.get("shared"));
             $twitter_button.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_twitter'));
@@ -143,7 +145,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     mark_story_as_shared: function(options) {
         options = options || {};
         var $share_button = this.$('.NB-sideoption-share-save');
-        var $share_button_menu = $('.NB-menu-manage-story-share-save');
+        var $share_button_menu = $('.NB-menu-manage .NB-menu-manage-story-share-save');
         var $share_menu = $share_button_menu.closest('.NB-sideoption-share');
         var $comments_sideoptions = this.$('.NB-sideoption-share-comments');
         var $comments_menu = $('.NB-sideoption-share-comments', $share_menu);
@@ -202,7 +204,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         $share_sideoption.text(shared_text).closest('.NB-sideoption');
         
         if (this.options.on_social_page) {
-            this.$('.NB-story-comments').replaceWith(data);
+            this.$('.NB-story-comments-container').html(data);
         } else {
             this.model.story_view.$el.toggleClass('NB-story-shared', this.model.get('shared'));
             this.model.story_view.render_comments();
@@ -237,9 +239,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     post_share_error: function(data, shared) {
         var $share_button = this.$('.NB-sideoption-share-save');
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
-        var $share_button_menu = $('.NB-menu-manage-story-share-save');
+        var $share_button_menu = $('.NB-menu-manage .NB-menu-manage-story-share-save');
         var message = data && data.message || ("Sorry, this story could not be " + (shared ? "" : "un") + "shared. Probably a bug.");
-        console.log(["post_share_error", data, shared, message]);
         
         if (!NEWSBLUR.Globals.is_authenticated) {
             message = "You need to be logged in to share a story.";
@@ -257,6 +258,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $share_button_menu.after($error.clone());
         }
         this.toggle_feed_story_share_dialog({'resize_open': true});
+        console.log(["post_share_error", data, shared, message, $share_button, $unshare_button, $share_button_menu, $error]);
     },
     
     update_share_button_label: function() {
