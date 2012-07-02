@@ -209,6 +209,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         $share_sideoption.text(shared_text).closest('.NB-sideoption');
         
         if (this.options.on_social_page) {
+            this.model.social_page_story.$el.toggleClass('NB-story-shared', this.model.get('shared'));
             this.model.social_page_comments.replace_comments(data);
         } else {
             this.model.story_view.$el.toggleClass('NB-story-shared', this.model.get('shared'));

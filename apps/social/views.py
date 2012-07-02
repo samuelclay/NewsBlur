@@ -325,19 +325,16 @@ def mark_story_as_unshared(request):
     feed_id  = int(request.POST['feed_id'])
     story_id = request.POST['story_id']
     format = request.REQUEST.get('format', 'json')
+    original_story_found = True
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
-        return json.json_response(request, {
-            'code': -1, 
-            'message': 'Story not found. Reload this site.'
-        })
+        original_story_found = False
         
-    try:
-        shared_story = MSharedStory.objects.get(user_id=request.user.pk, 
-                                                   story_feed_id=feed_id, 
-                                                   story_guid=story_id)
-    except MSharedStory.DoesNotExist:
+    shared_story = MSharedStory.objects(user_id=request.user.pk, 
+                                        story_feed_id=feed_id, 
+                                        story_guid=story_id).limit(1).first()
+    if not shared_story:
         return json.json_response(request, {'code': -1, 'message': 'Shared story not found.'})
     
     socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
@@ -348,24 +345,26 @@ def mark_story_as_unshared(request):
                                                                 shared_story.comments[:30]))
     shared_story.delete()
     
-    story.count_comments()
+    if original_story_found:
+        story.count_comments()
+    else:
+        story = shared_story
     
     story = Feed.format_story(story)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], 
                                                                         request.user.pk, 
                                                                         check_all=True)
-    story = stories[0]
-    
+
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)
         return render_to_response('social/story_share.xhtml', {
-            'story': story,
+            'story': stories[0],
         }, context_instance=RequestContext(request))
     else:
         return json.json_response(request, {
             'code': 1, 
             'message': "Story unshared.", 
-            'story': story, 
+            'story': stories[0], 
             'user_profiles': profiles,
         })
     

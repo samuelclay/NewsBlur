@@ -1164,9 +1164,13 @@ class MSharedStory(mongo.Document):
                 for shared_story in shared_stories:
                     comments = shared_story.comments_with_author()
                     story['comments'].append(comments)
+                    if comments.get('source_user_id'):
+                        profile_user_ids.add(comments['source_user_id'])
                 profile_user_ids = profile_user_ids.union([reply['user_id'] 
                                                            for c in story['comments'] 
                                                            for reply in c['replies']])
+                if story.get('source_user_id'):
+                    profile_user_ids.add(story['source_user_id'])
                 story['comment_count_public'] = story['comment_count'] - len(shared_stories)
                 story['comment_count_friends'] = len(shared_stories)
                 

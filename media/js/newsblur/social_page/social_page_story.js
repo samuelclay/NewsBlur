@@ -4,6 +4,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         var story_id = this.$el.data("storyId");
         var feed_id = this.$el.data("feedId");
         var user_comments = this.$el.data("userComments");
+        var shared = this.$el.hasClass('NB-story-shared');
         var $sideoptions = this.$('.NB-feed-story-sideoptions-container');
         
         this.comments_view = new NEWSBLUR.Views.SocialPageComments({
@@ -16,7 +17,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             story_feed_id: feed_id,
             id: story_id,
             shared_comments: user_comments,
-            shared: !!user_comments
+            shared: shared
         });
         story.social_page_comments = this.comments_view;
         story.social_page_story = this;
