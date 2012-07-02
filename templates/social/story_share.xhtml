@@ -1,46 +1,51 @@
 {% load social_tags %}
 
+
 <div class="NB-story-comments">
-    <div class="NB-story-comments-shares-teaser-wrapper">
-        <div class="NB-story-comments-shares-teaser">
-            {% if story.share_count %}
-                <div class="NB-right">
-                    Shared by 
-                    <b>{{ story.share_count }}</b>
-                    {{ story.share_count|pluralize:"person, people" }}
-                </div>
-                {% if story.share_count_public %}
-                    <div class="NB-story-share-profiles NB-story-share-profiles-public">
-                        {% for share_user in story.shared_by_public %}
-                            <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
-                                <img src="{{ share_user.photo_url }}">
-                            </a>
-                        {% endfor %}
+    {% if story.share_count %}
+        <div class="NB-story-comments-shares-teaser-wrapper">
+            <div class="NB-story-comments-shares-teaser">
+                {% if story.share_count %}
+                    <div class="NB-right">
+                        Shared by 
+                        <b>{{ story.share_count }}</b>
+                        {{ story.share_count|pluralize:"person, people" }}
                     </div>
+                    {% if story.share_count_public %}
+                        <div class="NB-story-share-profiles NB-story-share-profiles-public">
+                            {% for share_user in story.shared_by_public %}
+                                <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
+                                    <img src="{{ share_user.photo_url }}">
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-            {% if story.share_count %}
-                {% if story.share_count_friends %}
-                    <div class="NB-story-share-label">Shared by: </div>
-                    <div class="NB-story-share-profiles NB-story-share-profiles-friends">
-                        {% for share_user in story.shared_by_friends %}
-                            <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
-                                <img src="{{ share_user.photo_url }}">
-                            </a>
-                        {% endfor %}
-                    </div>
+                {% if story.share_count %}
+                    {% if story.share_count_friends %}
+                        <div class="NB-story-share-label">Shared by: </div>
+                        <div class="NB-story-share-profiles NB-story-share-profiles-friends">
+                            {% for share_user in story.shared_by_friends %}
+                                <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
+                                    <img src="{{ share_user.photo_url }}">
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
+            </div>
         </div>
-    </div>
     
-    {% render_story_comments story %}
+        {% render_story_comments story %}
     
-    {% if story.comment_count_public %}
-    <div class="NB-story-comments-public-teaser-wrapper">
-        <div class="NB-story-comments-public-teaser">
-            There {{ story.comment_count_public|pluralize:"is,are" }} {{ story.comment_count_public}} public comment{{ story.comment_count_public|pluralize }}
+        {% if story.comment_count_public %}
+        <div class="NB-story-comments-public-teaser-wrapper">
+            <div class="NB-story-comments-public-teaser">
+                There {{ story.comment_count_public|pluralize:"is,are" }} {{ story.comment_count_public}} public comment{{ story.comment_count_public|pluralize }}
+            </div>
         </div>
-    </div>
+        {% endif %}
+    
     {% endif %}
 </div>
+

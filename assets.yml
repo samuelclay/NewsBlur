@@ -27,7 +27,7 @@ javascripts:
         - media/js/vendor/jquery.easing.js
         - media/js/vendor/jquery.newsblur.js
         - media/js/vendor/jquery.scrollTo.js
-        - media/js/vendor/jquery.corners.js
+        # - media/js/vendor/jquery.corners.js
         - media/js/vendor/jquery.hotkeys.js
         - media/js/vendor/jquery.ajaxupload.js
         - media/js/vendor/jquery.ajaxmanager.3.js
@@ -98,6 +98,11 @@ javascripts:
         - media/js/vendor/jquery.tipsy.js
         - media/js/vendor/inflector.js
         - media/js/newsblur/social_page/*.js
+        - media/js/newsblur/views/story_share_view.js
+        - media/js/vendor/jquery.easing.js
+        - media/js/vendor/jquery.newsblur.js
+        - media/js/vendor/jquery.scrollTo.js
+        - media/js/vendor/jquery.hotkeys.js
 
 stylesheets:
     common:
@@ -116,3 +121,4 @@ stylesheets:
     blurblog:
         - media/css/jquery.tipsy.css
         - media/css/social/social_page.css
+        - media/css/modals.css

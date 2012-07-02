@@ -3,6 +3,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     el: 'body',
     
     initialize: function() {
+        NEWSBLUR.assets = new NEWSBLUR.SocialPageAssets();
         this.initialize_stories();
     },
     

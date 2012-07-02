@@ -32,6 +32,7 @@
         'email'            : "{{ user.email|safe }}",
         'MEDIA_URL'        : "{{ MEDIA_URL }}",
     };
+    NEWSBLUR.Preferences = {};
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};
     NEWSBLUR.Views = {};
@@ -125,21 +126,27 @@
                     </div>
                 </div>
             </div>
-            <div class="NB-story {% if story.saved %}NB-story-saved{% endif %} {% if story.shared_by_user %}NB-story-shared{% endif %}" data-feed-id="{{ story.story_feed_id }}" data-story-id="{{ story.id }}">
+            <div class="NB-story {% if story.saved %}NB-story-saved{% endif %} {% if story.shared_by_user %}NB-story-shared{% endif %}" data-feed-id="{{ story.story_feed_id }}" data-story-id="{{ story.id }}" {% if story.user_comments %}data-user-comments="{{ story.user_comments }}"{% endif %}>
                 <div class="NB-story-content">
                     {{ story.story_content|safe }}
-                    {% if user.is_authenticated %}
                         <div class="NB-feed-story-sideoptions-container">
-                            <div class="NB-sideoption NB-feed-story-save">
-                                <div class="NB-sideoption-icon">&nbsp;</div>
-                                <div class="NB-sideoption-title">{% if story.saved %}Saved{% else %}Save this story{% endif %}</div>
-                            </div>
-                            <div class="NB-sideoption NB-feed-story-share">
-                                <div class="NB-sideoption-icon">&nbsp;</div>
-                                <div class="NB-sideoption-title">{% if story.shared_by_user %}Shared{% else %}Post to Blurblog{% endif %}</div>
-                            </div>
+                            {% if user.is_authenticated %}
+                                <div class="NB-sideoption NB-feed-story-save">
+                                    <div class="NB-sideoption-icon">&nbsp;</div>
+                                    <div class="NB-sideoption-title">{% if story.saved %}Saved{% else %}Save this story{% endif %}</div>
+                                </div>
+                                <div class="NB-sideoption NB-feed-story-share">
+                                    <div class="NB-sideoption-icon">&nbsp;</div>
+                                    <div class="NB-sideoption-title">{% if story.shared_by_user %}Shared{% else %}Post to Blurblog{% endif %}</div>
+                                </div>
+                                <div class="NB-feed-story-share-container"></div>
+                            {% else %}
+                                <div class="NB-sideoption NB-feed-story-login">
+                                    <div class="NB-sideoption-icon">&nbsp;</div>
+                                    <div class="NB-sideoption-title">Login to share</div>
+                                </div>
+                            {% endif %}
                         </div>
-                    {% endif %}    
                 </div>
             
                 {% if story.share_count %}
@@ -152,6 +159,10 @@
 </div>
     
 {% include_javascripts "blurblog" %}
+
+<script type="text/javascript" charset="utf-8">
+    _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
+</script>
 
 </body>
 

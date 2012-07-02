@@ -770,7 +770,8 @@ header {
 .NB-sideoption.NB-feed-story-train .NB-sideoption-icon {
     background-image: url('/media/embed/icons/silk/bricks.png');
 }
-.NB-sideoption.NB-feed-story-share .NB-sideoption-icon {
+.NB-sideoption.NB-feed-story-share .NB-sideoption-icon,
+.NB-sideoption.NB-feed-story-login .NB-sideoption-icon {
     background-image: url('/media/embed/icons/silk/rainbow.png');
 }
 

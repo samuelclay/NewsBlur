@@ -201,18 +201,21 @@ def load_social_page(request, user_id, username=None):
                                                                         check_all=True)
 
     for story in stories:
-        print user.pk, story['shared_by_friends'], story['shared_by_public']
         if user.pk in story['shared_by_friends'] or user.pk in story['shared_by_public']:
             story['shared_by_user'] = True
+            shared_story = MSharedStory.objects.get(user_id=user.pk, 
+                                                    story_feed_id=story['story_feed_id'],
+                                                    story_guid=story['id'])
+            story['user_comments'] = shared_story.comments
 
     stories = MSharedStory.attach_users_to_stories(stories, profiles)
 
     params = {
-        'user': user,
-        'social_user': social_user,
-        'stories': stories,
+        'social_user'   : social_user,
+        'stories'       : stories,
         'social_profile': social_profile.page(),
-        'feeds': feeds,
+        'feeds'         : feeds,
+        'user_profile'  : hasattr(user, 'profile') and user.profile,
     }
     
     return params
@@ -230,10 +233,10 @@ def story_public_comments(request):
     stories = Feed.format_stories(stories)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, relative_user_id, 
                                                                         check_all=True,
-                                                                        public=True,
-                                                                        attach_users=True)
+                                                                        public=True)
 
     if format == 'html':
+        stories = MSharedStory.attach_users_to_stories(stories, profiles)
         return render_to_response('social/story_comments.xhtml', {
             'story': stories[0],
         }, context_instance=RequestContext(request))
@@ -244,7 +247,6 @@ def story_public_comments(request):
         })
 
 @ajax_login_required
-@json.json_view
 def mark_story_as_shared(request):
     code     = 1
     feed_id  = int(request.POST['feed_id'])
@@ -252,6 +254,7 @@ def mark_story_as_shared(request):
     comments = request.POST.get('comments', '')
     source_user_id = request.POST.get('source_user_id')
     post_to_services = request.POST.getlist('post_to_services')
+    format = request.REQUEST.get('format', 'json')
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
@@ -296,14 +299,24 @@ def mark_story_as_shared(request):
         for service in post_to_services:
             if service not in shared_story.posted_to_services:
                 PostToService.delay(shared_story_id=shared_story.id, service=service)
-        
-    return {'code': code, 'story': story, 'user_profiles': profiles}
+    
+    if format == 'html':
+        stories = MSharedStory.attach_users_to_stories(stories, profiles)
+        return render_to_response('social/story_share.xhtml', {
+            'story': story,
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'code': code, 
+            'story': story, 
+            'user_profiles': profiles,
+        })
 
 @ajax_login_required
-@json.json_view
 def mark_story_as_unshared(request):
     feed_id  = int(request.POST['feed_id'])
     story_id = request.POST['story_id']
+    format = request.REQUEST.get('format', 'json')
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
@@ -332,7 +345,18 @@ def mark_story_as_unshared(request):
                                                                         check_all=True)
     story = stories[0]
     
-    return {'code': 1, 'message': "Story unshared.", 'story': story, 'user_profiles': profiles}
+    if format == 'html':
+        stories = MSharedStory.attach_users_to_stories(stories, profiles)
+        return render_to_response('social/story_share.xhtml', {
+            'story': story,
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'code': 1, 
+            'message': "Story unshared.", 
+            'story': story, 
+            'user_profiles': profiles,
+        })
     
 @ajax_login_required
 @json.json_view
