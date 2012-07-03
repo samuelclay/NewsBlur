@@ -15,25 +15,12 @@
 @interface UserProfileViewController : UIViewController <ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
-    UIImageView *UserAvatar;
-    UILabel *username;
-    UILabel *userLocation;
-    UILabel *userDescription;
-    UILabel *userStats;
-    UIButton *followButton;
-    
     UILabel *followingCount;
     UILabel *followersCount;
     SocialBadge *socialBadge;
 }
 
 @property (retain, nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) IBOutlet UIImageView *userAvatar;
-@property (retain, nonatomic) IBOutlet UILabel *username;
-@property (retain, nonatomic) IBOutlet UILabel *userLocation;
-@property (retain, nonatomic) IBOutlet UILabel *userDescription;
-@property (retain, nonatomic) IBOutlet UILabel *userStats;
-@property (retain, nonatomic) IBOutlet UIButton *followButton;
 @property (retain, nonatomic) IBOutlet SocialBadge *socialBadge;
 
 @property (retain, nonatomic) IBOutlet UILabel *followingCount;
