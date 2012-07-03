@@ -16,12 +16,6 @@
 @implementation UserProfileViewController
 
 @synthesize appDelegate;
-@synthesize userAvatar;
-@synthesize username;
-@synthesize userLocation;
-@synthesize userDescription;
-@synthesize userStats;
-@synthesize followButton;
 @synthesize followingCount;
 @synthesize followersCount;
 @synthesize socialBadge;
@@ -39,19 +33,12 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-//    self.socialBadge.frame = CGRectMake(0, 0, 200, 200);
-//    self.socialBadge.backgroundColor = [UIColor greenColor];
-
+    self.socialBadge.frame = CGRectMake(0, 0, 320, 160);
+    self.socialBadge.backgroundColor = [UIColor greenColor];
 }
 
 - (void)viewDidUnload
 {
-    [self setUserAvatar:nil];
-    [self setUsername:nil];
-    [self setUserLocation:nil];
-    [self setUserDescription:nil];
-    [self setUserStats:nil];
-    [self setFollowButton:nil];
     [self setFollowingCount:nil];
     [self setFollowersCount:nil];
     [super viewDidUnload];
@@ -66,24 +53,12 @@
 
 - (void)dealloc {
     [appDelegate release];
-    [userAvatar release];
-    [username release];
-    [userLocation release];
-    [userDescription release];
-    [userStats release];
-    [followButton release];
     [followingCount release];
     [followersCount release];
     [super dealloc];
 }
 
-- (IBAction)doFollowButton:(id)sender {
-    if ([self.followButton.currentTitle isEqualToString:@"Following"]) {
-        [self.followButton setTitle:@"Follow" forState:UIControlStateNormal];
-    } else {
-        [self.followButton setTitle:@"Following" forState:UIControlStateNormal];
-    }
-}
+
 
 - (void)setupModal {
     self.navigationItem.title = nil;
@@ -130,51 +105,9 @@
     } 
     
     NSLog(@"results %@", results);
+    [self.socialBadge refreshWithDict:results];
     
-    self.username.text = [results objectForKey:@"username"]; 
-    
-    if ([results objectForKey:@"location"] != [NSNull null]) {
-        self.userLocation.text = [results objectForKey:@"location"];
-    } else {
-        self.userLocation.text = @"No location given...";
-    }
-    
-    if ([results objectForKey:@"bio"] != [NSNull null]) {
-        self.userDescription.text = [results objectForKey:@"bio"];
-    } else {
-        self.userDescription.text = @"No bio given...";
-    }
-    
-    self.userStats.text = [NSString stringWithFormat:@"%i shared stories · %i followers", 
-                           [[results objectForKey:@"shared_stories_count"] intValue],
-                           [[results objectForKey:@"follower_count"] intValue]];
-    self.followingCount.text = [NSString stringWithFormat:@"%i", 
-                                [[results objectForKey:@"following_count"] intValue]];
-    self.followersCount.text = [NSString stringWithFormat:@"%i",
-                                [[results objectForKey:@"follower_count"] intValue]];
-    
-    NSURL *imageURL = [Utilities convertToAbsoluteURL:[results objectForKey:@"photo_url"]];
-    NSLog(@"imageUrl is %@", imageURL);
-    
-    NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-    UIImage *image = [UIImage imageWithData:imageData];
-    
-    self.userAvatar.image = image;
-    
-    
-    // check following to toggle follow button
-    BOOL isFollowing = NO;
-    NSArray *followingUserIds = [appDelegate.dictUserProfile objectForKey:@"following_user_ids"];
-    for (int i = 0; i < followingUserIds.count ; i++) {
-        NSString *followingUserId = [NSString stringWithFormat:@"%@", [followingUserIds objectAtIndex:i]];
-        if ([followingUserId isEqualToString:[NSString stringWithFormat:@"%@", appDelegate.activeUserProfile]]) {
-            isFollowing = YES;
-        }
-    }    
-    if (isFollowing) {
-        [self.followButton setTitle:@"Following" forState:UIControlStateNormal];
-    }
-    
+        
     [results release];
 }
 

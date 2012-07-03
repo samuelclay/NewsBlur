@@ -30,4 +30,8 @@
 @property (retain, nonatomic) UILabel *userStats;
 @property (retain, nonatomic) UIButton *followButton;
 
+- (void)refreshWithDict:(NSDictionary *)profile;
+
+- (IBAction)doFollowButton:(id)sender;
+
 @end
