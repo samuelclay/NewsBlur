@@ -13,6 +13,7 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FolderTreeAdapter;
+import com.newsblur.view.FolderTreeViewBinder;
 
 public class FolderFeedListFragment extends Fragment {
 
@@ -29,12 +30,11 @@ public class FolderFeedListFragment extends Fragment {
 
 		final String[] groupFrom = new String[] { DatabaseConstants.FOLDER_NAME };
 		final int[] groupTo = new int[] { R.id.row_foldername };
-		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE };
-		final int[] childTo = new int[] { R.id.row_feedname };
+		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON };
+		final int[] childTo = new int[] { R.id.row_feedname, R.id.row_feedfavicon };
 
 		folderAdapter = new FolderTreeAdapter(getActivity(), cursor, R.layout.row_folder_collapsed, R.layout.row_folder_expanded, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
-
-
+		folderAdapter.setViewBinder(new FolderTreeViewBinder());
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class FolderFeedListFragment extends Fragment {
 		View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
 		list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
 		list.setAdapter(folderAdapter);
-
+		
 		return v;
 	}
 

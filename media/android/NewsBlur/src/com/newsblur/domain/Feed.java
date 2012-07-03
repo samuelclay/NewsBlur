@@ -19,6 +19,9 @@ public class Feed {
 	@SerializedName("favicon_color")
 	public String faviconColour;
 	
+	@SerializedName("favicon")
+	public String favicon;
+	
 	@SerializedName("favicon_fade")
 	public String faviconFade;
 	
@@ -41,6 +44,7 @@ public class Feed {
 		values.put(DatabaseConstants.FEED_ADDRESS, address);
 		values.put(DatabaseConstants.FEED_FAVICON_COLOUR, faviconColour);
 		values.put(DatabaseConstants.FEED_FAVICON_FADE, faviconFade);
+		values.put(DatabaseConstants.FEED_FAVICON, favicon);
 		values.put(DatabaseConstants.FEED_LINK, feedLink);
 		values.put(DatabaseConstants.FEED_SUBSCRIBERS, subscribers);
 		values.put(DatabaseConstants.FEED_TITLE, title);

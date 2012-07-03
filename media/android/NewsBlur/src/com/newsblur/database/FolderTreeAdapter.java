@@ -23,5 +23,5 @@ public class FolderTreeAdapter extends SimpleCursorTreeAdapter {
 		final Uri uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
 		return resolver.query(uri, null, null, null, null);
 	}
-
+	
 }

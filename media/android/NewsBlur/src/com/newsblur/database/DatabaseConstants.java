@@ -18,6 +18,7 @@ public class DatabaseConstants {
 	public static final String FEED_FAVICON_FADE = "favicon_fade";
 	public static final String FEED_FAVICON_COLOUR = "favicon_colour";
 	public static final String FEED_ACTIVE = "active";
+	public static final String FEED_FAVICON = "favicon";
 	
 	public static final String FEED_FOLDER_MAP_TABLE = "feed_folder_map";
 	public static final String FEED_FOLDER_FEED_ID = "feed_id";
@@ -42,5 +43,6 @@ public class DatabaseConstants {
 	public static final String STORY_INTELLIGENCE_TITLE = "intelligence_title";
 	public static final String STORY_READ = "read";
 	public static final String STORY_FEED_ID = "feed_id";
+	
 
 }

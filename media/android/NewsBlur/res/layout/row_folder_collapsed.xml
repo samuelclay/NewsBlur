@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:padding="8dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
     android:background="@color/lightgray">
     
     <TextView 
@@ -13,7 +14,7 @@
         android:textSize="18dp"
         android:textAllCaps="true"
         android:textStyle="bold"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="40dp"
         android:textColor="@color/darkgray"   />
 	
 </RelativeLayout>
