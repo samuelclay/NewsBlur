@@ -8,6 +8,11 @@
     <string name="login_button_login">Log In</string>
     <string name="login_button_signup">Sign Up</string>
     <string name="login_message_error">There was problem connecting to NewsBlur. Check your internet connection.</string>
+    <string name="login_logging_in">Logging in…</string>
+    <string name="login_logged_in">Logged in!</string>
+    <string name="login_retrieving_feeds">Retrieving feeds…</string>
+    <string name="login_retrieved_feeds">Retrieved feeds!</string>
+    <string name="login_lets_go">Let\'s go!</string>
     
     <string name="hello">Hello World!</string>
     
@@ -15,6 +20,7 @@
     <string name="description_login_logo">NewsBlur Logo</string>
     <string name="description_signup_button">Press to sign up</string>
     <string name="description_favicon">The feed\'s favicon</string>
+
     
     
     

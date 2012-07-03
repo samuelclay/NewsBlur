@@ -24,7 +24,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		")";
 	
 	private final String FEED_SQL = "CREATE TABLE " + DatabaseConstants.FEED_TABLE + " (" +
-		DatabaseConstants.FEED_ID + INTEGER + ", " +
+		DatabaseConstants.FEED_ID + INTEGER + " PRIMARY KEY, " +
 		DatabaseConstants.FEED_ACTIVE + TEXT + ", " +
 		DatabaseConstants.FEED_ADDRESS + TEXT + ", " + 
 		DatabaseConstants.FEED_FAVICON_COLOUR + TEXT + ", " +
@@ -41,7 +41,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_CONTENT + TEXT + ", " +
 		DatabaseConstants.STORY_DATE + TEXT + ", " +
 		DatabaseConstants.STORY_FEED_ID + INTEGER + ", " +
-		DatabaseConstants.STORY_ID + TEXT + ", " +
+		DatabaseConstants.STORY_ID + TEXT + " PRIMARY KEY, " +
 		DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + INTEGER + ", " +
 		DatabaseConstants.STORY_INTELLIGENCE_FEED + INTEGER + ", " + 
 		DatabaseConstants.STORY_INTELLIGENCE_TAGS + INTEGER + ", " +
@@ -60,7 +60,8 @@ public class BlurDatabase extends SQLiteOpenHelper {
 	
 	private final String FEED_FOLDER_SQL = "CREATE TABLE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + " (" +
 		DatabaseConstants.FEED_FOLDER_FOLDER_NAME + TEXT + ", " +
-		DatabaseConstants.FEED_FOLDER_FEED_ID + INTEGER + 
+		DatabaseConstants.FEED_FOLDER_FEED_ID + INTEGER + ", " +
+		"PRIMARY KEY (" + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + ", " + DatabaseConstants.FEED_FOLDER_FEED_ID + ") " + 
 		")";
 
 	

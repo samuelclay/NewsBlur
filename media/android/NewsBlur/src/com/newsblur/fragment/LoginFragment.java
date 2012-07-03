@@ -12,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.newsblur.R;
+import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.service.DetachableResultReceiver;
@@ -37,7 +41,7 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 	private ViewSwitcher viewSwitcher;
 	private LoginTask loginTask;
 	DetachableResultReceiver receiver;
-	private TextView updateStatus;
+	private TextView updateStatus, retrievingFeeds, letsGo;
 	private int CURRENT_STATUS = -1;
 
 	@Override
@@ -48,15 +52,19 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 		loginButton.setOnClickListener(this);
 
 		viewSwitcher = (ViewSwitcher) v.findViewById(R.id.login_viewswitcher);
+
+		updateStatus = (TextView) v.findViewById(R.id.login_logging_in);
+		retrievingFeeds = (TextView) v.findViewById(R.id.login_retrieving_feeds);
+		letsGo = (TextView) v.findViewById(R.id.login_lets_go);
+		username = (EditText) v.findViewById(R.id.login_username);
+		password = (EditText) v.findViewById(R.id.login_password);
+		password.setOnEditorActionListener(this);
+
 		if (loginTask != null) {
 			loginTask.viewSwitcher = viewSwitcher;
 			viewSwitcher.setDisplayedChild(1);
 			refreshUI();
 		}
-		updateStatus = (TextView) v.findViewById(R.id.login_status_text);
-		username = (EditText) v.findViewById(R.id.login_username);
-		password = (EditText) v.findViewById(R.id.login_password);
-		password.setOnEditorActionListener(this);
 
 		return v;
 	}
@@ -102,27 +110,37 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 		@Override
 		protected void onPreExecute() {
 			viewSwitcher.showNext();
+			Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
+			updateStatus.startAnimation(a);
 		}
 
 		@Override
 		protected LoginResponse doInBackground(String... params) {
+			final String username = params[0];
+			final String password = params[1];
+			LoginResponse response = apiManager.login(username, password);
 			try {
 				// We include this wait simply as a small UX convenience. Otherwise the user could be met with a disconcerting flicker when attempting to log in and failing.
 				Thread.sleep(700);
 			} catch (InterruptedException e) {
 				Log.d(TAG, "Error sleeping during login.");
 			}
-			final String username = params[0];
-			final String password = params[1];
-			LoginResponse response = apiManager.login(username, password);
-
 			return response;
 		}
 
 		@Override
 		protected void onPostExecute(LoginResponse result) {
 			if (result.authenticated) {
+				final Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
+				updateStatus.setText(R.string.login_logged_in);
+				updateStatus.startAnimation(a);
+				
 				Log.d(TAG, "Authenticated. Starting receiver.");
+				final Animation b = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
+				retrievingFeeds.setText(R.string.login_retrieving_feeds);
+				retrievingFeeds.startAnimation(b);
+				
+				Log.d(TAG, "Synchronisation finished.");
 				final Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity(), SyncService.class);
 				intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, receiver);
 				getActivity().startService(intent);
@@ -145,12 +163,28 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 		case SyncService.NOT_RUNNING:
 			break;
 		case SyncService.STATUS_FINISHED:
-			updateStatus.setText("Synchronisation finished.");
-			Log.d(TAG, "Synchronisation finished.");
-			((LoginFragmentInterface) getActivity()).syncSuccessful();
+			final Animation b = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
+			retrievingFeeds.setText(R.string.login_retrieved_feeds);
+			retrievingFeeds.startAnimation(b);
+			
+			final Animation c = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
+			letsGo.setText(R.string.login_lets_go);
+			c.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					Intent startMain = new Intent(getActivity(), Main.class);
+					getActivity().startActivity(startMain);
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) { }
+
+				@Override
+				public void onAnimationStart(Animation animation) { }				
+			});
+			letsGo.startAnimation(c);
 			break;
 		case SyncService.STATUS_RUNNING:
-			updateStatus.setText("Running synchronisation...");
 			break;
 		case SyncService.STATUS_ERROR:
 			Log.d(TAG, "Error synchronising feeds.");

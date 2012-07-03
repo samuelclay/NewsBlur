@@ -22,7 +22,7 @@ public class Login extends FragmentActivity implements LoginFragment.LoginFragme
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		preferenceCheck();
+		// preferenceCheck();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
 		fragmentManager = getSupportFragmentManager();

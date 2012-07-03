@@ -3,8 +3,8 @@
     android:id="@+id/login_viewswitcher"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:inAnimation="@android:anim/slide_in_left"
-    android:outAnimation="@android:anim/slide_out_right" >
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out" >
 
     <RelativeLayout
         android:id="@+id/login_form"
@@ -54,16 +54,38 @@
             android:text="@string/login_button_login" />
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/login_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/login_status_text"
+            android:id="@+id/login_logging_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="logging in..." />
-    </RelativeLayout>
+            android:layout_weight="1"
+            android:text="@string/login_logging_in"
+            android:textColor="@color/white"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/login_retrieving_feeds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/login_retrieving_feeds"
+            android:textColor="@color/white"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/login_lets_go"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/login_lets_go"
+            android:textColor="@color/white"
+            android:textSize="16dp" />
+    </LinearLayout>
 
 </ViewSwitcher>
