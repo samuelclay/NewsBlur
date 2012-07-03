@@ -46,7 +46,7 @@ public class SyncService extends IntentService {
 			if (receiver != null) {
 				receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 			}
-			apiManager.getFeeds();
+			apiManager.getFolderFeedMapping();
 		} catch (Exception e) {
 			Log.e(TAG, "Couldn't synchronise with Newsblur servers: " + e.getMessage(), e.getCause());
 			if (receiver != null) {

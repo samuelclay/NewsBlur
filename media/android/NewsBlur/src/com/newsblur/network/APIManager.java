@@ -33,14 +33,14 @@ public class APIManager {
 	public APIManager(final Context context) {
 		this.context = context;
 		preferences = context.getSharedPreferences(APIConstants.PREFERENCES, 0);
-		GsonBuilder builder = new GsonBuilder();
+		final GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(FolderStructure.class, new FolderStructureTypeAdapter());
 		contentResolver = context.getContentResolver();
 		gson = builder.create();
 	}
 
 	public LoginResponse login(final String username, final String password) {
-		APIClient client = new APIClient(context);
+		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.USERNAME, username);
 		values.put(APIConstants.PASSWORD, password);
@@ -57,16 +57,21 @@ public class APIManager {
 		}		
 	}
 
-	public void getFeeds() {
-		APIClient client = new APIClient(context);
+	public void getFolderFeedMapping() {
+		final APIClient client = new APIClient(context);
 		final APIResponse response = client.get(APIConstants.URL_FEEDS);
-		FeedUpdate feedUpdate = gson.fromJson(response.responseString, FeedUpdate.class);
+		final FeedUpdate feedUpdate = gson.fromJson(response.responseString, FeedUpdate.class);
 		for (Entry<String, Feed> entry : feedUpdate.feeds.entrySet()) {
 			final Feed feed = entry.getValue();
 			contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
 		}
 
 		for (Entry<String, List<Long>> entry : feedUpdate.folderStructure.folders.entrySet()) {
+			
+			final ContentValues folderValues = new ContentValues();
+			folderValues.put(DatabaseConstants.FOLDER_NAME, entry.getKey());
+			contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
+			
 			for (Long feedId : entry.getValue()) {
 				ContentValues values = new ContentValues(); 
 				values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);

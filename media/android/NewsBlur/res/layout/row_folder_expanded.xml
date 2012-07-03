@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:padding="8dp"
+    android:background="@color/lightgray">
+    
+    <TextView 
+        android:id="@+id/row_foldername" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16dp"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:layout_marginLeft="30dp"
+        android:textColor="@color/darkgray" />
+	
+</RelativeLayout>

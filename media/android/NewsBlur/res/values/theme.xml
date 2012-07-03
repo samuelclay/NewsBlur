@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<style name="NewsBlurTheme" parent="@android:style/Theme" >
+	<style name="NewsBlurTheme" parent="@style/Theme.Sherlock" >
 		<item name="android:editTextStyle">@style/edittext</item>
 		<item name="android:buttonStyle">@style/button</item>
 	</style>

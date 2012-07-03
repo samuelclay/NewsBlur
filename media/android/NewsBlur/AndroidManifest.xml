@@ -18,10 +18,10 @@
         android:theme="@style/NewsBlurTheme" >
         <activity
             android:name=".activity.Login"
+            android:noHistory="true"
             android:label="@string/newsblur" >
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
-
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>

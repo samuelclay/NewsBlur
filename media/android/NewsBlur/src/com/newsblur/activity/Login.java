@@ -1,5 +1,7 @@
 package com.newsblur.activity;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -9,6 +11,7 @@ import android.view.Window;
 
 import com.newsblur.R;
 import com.newsblur.fragment.LoginFragment;
+import com.newsblur.network.APIConstants;
 
 public class Login extends FragmentActivity implements LoginFragment.LoginFragmentInterface {
 	
@@ -19,6 +22,7 @@ public class Login extends FragmentActivity implements LoginFragment.LoginFragme
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		preferenceCheck();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
 		fragmentManager = getSupportFragmentManager();
@@ -36,10 +40,25 @@ public class Login extends FragmentActivity implements LoginFragment.LoginFragme
 	public void loginSuccessful() {
 		Log.d(TAG, "Login successful");
 	}
+	
+	@Override
+	public void syncSuccessful() {
+		Log.d(TAG, "Sync successful");
+		final Intent mainIntent = new Intent(this, Main.class);
+		startActivity(mainIntent);
+	}
 
 	@Override
 	public void loginUnsuccessful() {
 		Log.d(TAG, "Login unsuccessful");
+	}
+	
+	private void preferenceCheck() {
+		final SharedPreferences preferences = getSharedPreferences(APIConstants.PREFERENCES, 0);
+		if (preferences.getString(APIConstants.PREF_COOKIE, null) != null) {
+			final Intent mainIntent = new Intent(this, Main.class);
+			startActivity(mainIntent);
+		}
 	}
 	
 

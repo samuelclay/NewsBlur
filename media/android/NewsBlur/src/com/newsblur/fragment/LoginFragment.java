@@ -147,6 +147,7 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 		case SyncService.STATUS_FINISHED:
 			updateStatus.setText("Synchronisation finished.");
 			Log.d(TAG, "Synchronisation finished.");
+			((LoginFragmentInterface) getActivity()).syncSuccessful();
 			break;
 		case SyncService.STATUS_RUNNING:
 			updateStatus.setText("Running synchronisation...");
@@ -163,6 +164,7 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 	public interface LoginFragmentInterface {
 		public void loginSuccessful();
 		public void loginUnsuccessful();
+		public void syncSuccessful();
 	}
 
 	@Override

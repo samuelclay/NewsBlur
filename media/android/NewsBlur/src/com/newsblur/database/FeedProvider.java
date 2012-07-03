@@ -24,6 +24,7 @@ public class FeedProvider extends ContentProvider {
 	private static final int ALL_FOLDERS = 2;
 	private static final int SPECIFIC_FOLDER = 3;
 	private static final int FEED_FOLDER_MAP = 4;
+	private static final int SPECIFIC_FEED_FOLDER_MAP = 5;
 	
 	private BlurDatabase databaseHelper;
 	
@@ -33,6 +34,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/", ALL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", SPECIFIC_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/", FEED_FOLDER_MAP);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/*/", SPECIFIC_FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", SPECIFIC_FOLDER);
 	}
@@ -56,10 +58,10 @@ public class FeedProvider extends ContentProvider {
 			// Inserting a folder
 			case ALL_FOLDERS:
 				db.beginTransaction();
-				db.insertWithOnConflict(DatabaseConstants.FOLDER_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+				final long folderId = db.insertWithOnConflict(DatabaseConstants.FOLDER_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
 				db.setTransactionSuccessful();
 				db.endTransaction();
-				resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FOLDER_ID)).build();
+				resultUri = uri.buildUpon().appendPath("" + folderId).build();
 			break;
 			
 			// Inserting a feed to folder mapping
@@ -116,6 +118,19 @@ public class FeedProvider extends ContentProvider {
 				selection = DatabaseConstants.FEED_ID + " = ?";
 				selectionArgs = new String[] { uri.getLastPathSegment() };
 				cursor = db.query(DatabaseConstants.FEED_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
+				break;
+			// Querying for feeds for a given folder	
+			case SPECIFIC_FEED_FOLDER_MAP:
+				selection = DatabaseConstants.FOLDER_ID + " = ?";
+				selectionArgs = new String[] { uri.getLastPathSegment() };
+				cursor = db.rawQuery("SELECT * FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+						" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
+						" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
+						" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = ? ", selectionArgs);
+				break;
+			// Querying for all folders
+			case ALL_FOLDERS:
+				cursor = db.rawQuery("SELECT * FROM " + DatabaseConstants.FOLDER_TABLE, null);
 				break;
 		}
 		return cursor;
