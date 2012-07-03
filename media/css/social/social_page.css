@@ -387,7 +387,6 @@ header {
 
 .NB-story {
     background-color: #FAFAFA;
-    padding: 0 28px;
     max-width: 800px;
     border-right: 1px solid #909090;
     border-bottom: 1px solid #909090;
@@ -397,7 +396,7 @@ header {
 }
 
 .NB-story-content {
-    padding: 12px 200px 24px 0;
+    padding: 12px 200px 24px 28px;
     position: relative;
 }
 @media all and (max-width: 800px) {
@@ -448,6 +447,9 @@ header {
 /* = Shares and Comments = */
 /* ======================= */
 
+.NB-story-comments-container {
+}
+
 .NB-story-comments a {
     text-decoration: none;
 }
@@ -458,30 +460,30 @@ header {
     border: none;
 }
 .NB-story-comments {
-    margin: 0 0 32px 0;
-    padding: 1px 0 0;
     max-width: 800px;
-    border-top: 2px solid #353535;
-    border-bottom: 1px solid #353535; 
+    border-top: 2px solid #626262;
+    border-bottom: 1px solid #C6C6C6; 
     font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
 }
 .NB-story-comment {
     border-top: 1px solid #A6A6A6;
     background-color: #FCFCFC;
     position: relative;
-    padding: 0 12px 2px 54px;
+    padding: 4px 28px 8px 80px;
     line-height: 20px;
     overflow: hidden;
 }
 .NB-story-comment .NB-user-avatar {
     position: absolute;
-    left: 6px;
-    top: 6px;
+    left: 28px;
+    top: 10px;
     cursor: pointer;
 }
 .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
-    top: 22px;
-    left: 6px;
+    top: 26px;
+    left: 28px;
     z-index: 1;
 }
 .NB-story-comment .NB-user-avatar img {
@@ -500,13 +502,13 @@ header {
 }
 .NB-story-comment .NB-story-comment-reshares {
     position: absolute;
-    top: 0;
+    top: 0px;
     left: 8px;
     z-index: 0;
 }
 .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
-    top: 8px;
-    left: 12px;
+    top: 12px;
+    left: 36px;
 }
 .NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
     width: 22px;
@@ -645,7 +647,7 @@ header {
     font-weight: bold;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 2px 12px;
+    padding: 2px 28px;
     overflow: hidden;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
@@ -656,10 +658,24 @@ header {
     background-color: whiteSmoke;
     color: #404040;
     text-shadow: 0 1px 0 white;
+    
+    background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0.10, #EBEBEC),
+      color-stop(0.84, #F5F5F5)
+    );
+    background-image: -moz-linear-gradient(
+      center bottom,
+      #EBEBEC 10%,
+      #F5F5F5 84%
+    );
+
 }
 .NB-story-comments-shares-teaser-wrapper {
     border-top: 0;
-    padding-top: 0;
+    padding: 1px 0;
 }
 
 .NB-story-comments-shares-teaser {
@@ -670,13 +686,28 @@ header {
     font-weight: bold;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 8px 12px 0px;
+/*    padding: 8px 14px 0px;*/
+    padding: 8px 28px 0px;
     overflow: hidden;
-    height: 27px;
+    height: 26px;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
+
+    background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0.10, #EBEBEC),
+      color-stop(0.84, #F5F5F5)
+    );
+    background-image: -moz-linear-gradient(
+      center bottom,
+      #EBEBEC 10%,
+      #F5F5F5 84%
+    );
+
 }
 
 .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
@@ -738,15 +769,12 @@ header {
 
 .NB-feed-story-sideoptions-container {
     position: absolute;
-    right: 0px;
+    right: 28px;
     bottom: 32px;
     text-align: center;
-    width: 172px;
+    width: 162px;
 }
 
-.NB-feed-story-sideoptions-container {
-    
-}
 .NB-sideoption {
     cursor: pointer;
     position: relative;

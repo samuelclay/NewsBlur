@@ -269,8 +269,8 @@ def setup_db():
     setup_db_motd()
     copy_task_settings()
     setup_memcached()
-    # setup_postgres()
-    setup_mongo()
+    setup_postgres(standby=False)
+    # setup_mongo()
     setup_gunicorn(supervisor=False)
     # setup_redis()
     setup_db_munin()
@@ -575,7 +575,7 @@ def setup_memcached():
     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 577060864
+    shmmax = 580126400
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),

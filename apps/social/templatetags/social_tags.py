@@ -8,8 +8,8 @@ def render_story_share(story):
         'story': story,
     }
 
-@register.inclusion_tag('social/story_comments.xhtml')
-def render_story_comments(story):
+@register.inclusion_tag('social/story_comment.xhtml')
+def render_story_comment(comment):
     return {
-        'story': story,
+        'comment': comment,
     }

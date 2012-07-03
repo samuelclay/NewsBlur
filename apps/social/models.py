@@ -459,8 +459,10 @@ class MSocialProfile(mongo.Document):
 
         common_followers, _ = self.common_follows(follower_user_id, direction='followers')
         common_followings, _ = self.common_follows(follower_user_id, direction='following')
-        common_followers.remove(self.user_id)
-        common_followings.remove(self.user_id)
+        if self.user_id in common_followers:
+            common_followers.remove(self.user_id)
+        if self.user_id in common_followings:
+            common_followings.remove(self.user_id)
         common_followers = MSocialProfile.profiles(common_followers)
         common_followings = MSocialProfile.profiles(common_followings)
         
@@ -1144,35 +1146,40 @@ class MSharedStory(mongo.Document):
         friend_key = "F:%s:F" % (user_id)
         profile_user_ids = set()
         for story in stories: 
-            story['comments'] = []
+            story['friend_comments'] = []
+            story['public_comments'] = []
             if check_all or story['comment_count']:
                 comment_key = "C:%s:%s" % (story['story_feed_id'], story['guid_hash'])
                 if check_all:
                     story['comment_count'] = r.scard(comment_key)
-                if public:
-                    friends_with_comments = r.sdiff(comment_key, friend_key)
-                else:
-                    friends_with_comments = r.sinter(comment_key, friend_key)
+                friends_with_comments = [int(f) for f in r.sinter(comment_key, friend_key)]
+                sharer_user_ids = [int(f) for f in r.smembers(comment_key)]
                 shared_stories = []
-                if friends_with_comments:
+                if sharer_user_ids:
                     params = {
                         'story_guid': story['id'],
                         'story_feed_id': story['story_feed_id'],
-                        'user_id__in': friends_with_comments,
+                        'user_id__in': sharer_user_ids,
                     }
                     shared_stories = cls.objects.filter(**params)
                 for shared_story in shared_stories:
                     comments = shared_story.comments_with_author()
-                    story['comments'].append(comments)
+                    print friends_with_comments, sharer_user_ids, shared_story.user_id
+                    if shared_story.user_id in friends_with_comments:
+                        story['friend_comments'].append(comments)
+                    else:
+                        story['public_comments'].append(comments)
                     if comments.get('source_user_id'):
                         profile_user_ids.add(comments['source_user_id'])
+                all_comments = story['friend_comments'] + story['public_comments']
+                print all_comments
                 profile_user_ids = profile_user_ids.union([reply['user_id'] 
-                                                           for c in story['comments'] 
+                                                           for c in all_comments
                                                            for reply in c['replies']])
                 if story.get('source_user_id'):
                     profile_user_ids.add(story['source_user_id'])
-                story['comment_count_public'] = story['comment_count'] - len(shared_stories)
-                story['comment_count_friends'] = len(shared_stories)
+                story['comment_count_friends'] = len(friends_with_comments)
+                story['comment_count_public'] = story['comment_count'] - len(friends_with_comments)
                 
             if check_all or story['share_count']:
                 share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
@@ -1202,12 +1209,13 @@ class MSharedStory(mongo.Document):
                 stories[s]['shared_by_friends'][u] = profiles[user_id]
             for u, user_id in enumerate(story['shared_by_public']):
                 stories[s]['shared_by_public'][u] = profiles[user_id]
-            for c, comment in enumerate(story['comments']):
-                stories[s]['comments'][c]['user'] = profiles[comment['user_id']]
-                if comment['source_user_id']:
-                    stories[s]['comments'][c]['source_user'] = profiles[comment['source_user_id']]
-                for r, reply in enumerate(comment['replies']):
-                    stories[s]['comments'][c]['replies'][r]['user'] = profiles[reply['user_id']]
+            for comment_set in ['friend_comments', 'public_comments']:
+                for c, comment in enumerate(story[comment_set]):
+                    stories[s][comment_set][c]['user'] = profiles[comment['user_id']]
+                    if comment['source_user_id']:
+                        stories[s][comment_set][c]['source_user'] = profiles[comment['source_user_id']]
+                    for r, reply in enumerate(comment['replies']):
+                        stories[s][comment_set][c]['replies'][r]['user'] = profiles[reply['user_id']]
                         
         return stories
         
