@@ -25,9 +25,14 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
+        
         <activity
             android:name=".activity.Main"
             android:label="@string/newsblur" />
+        
+        <activity
+            android:name=".activity.Profile"
+            android:label="@string/profile" />
 
         <service android:name=".service.SyncService" />
 

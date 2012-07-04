@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    
+    <item android:id="@+id/menu_refresh"
+          android:icon="@drawable/refresh"
+          android:title="@string/menu_refresh"
+          android:showAsAction="always" />
+    
+    <item android:id="@+id/menu_profile"
+          android:icon="@drawable/person"
+          android:title="@string/menu_profile"
+          android:showAsAction="ifRoom" />
+
+</menu>

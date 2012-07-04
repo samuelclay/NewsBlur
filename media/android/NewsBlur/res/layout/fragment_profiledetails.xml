@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" 
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:padding="20dp">
+        
+        <ImageView 
+            android:id="@+id/profile_picture"
+            android:layout_width="50dp"
+            android:layout_height="50dp" 
+            android:contentDescription="@string/description_profile_picture"
+            android:src="@drawable/person"
+            android:background="@color/darkgray"
+            android:padding="10dp"
+            android:scaleType="fitCenter" />
+    </LinearLayout> 
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+        
+        <TextView 
+            android:text="USER PROFILE NAME"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent" 
+            android:textSize="20dp" 
+            android:layout_weight="1" 
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp" 
+            android:textColor="@color/lightorange" 
+            android:textStyle="bold"/>
+        
+        <TextView 
+            android:text="bio"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent" 
+            android:textSize="12dp" 
+            android:layout_weight="1" 
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:textStyle="italic"
+            android:textColor="@color/lightgray" />
+        
+    </LinearLayout>
+        
+    
+    
+</LinearLayout>

@@ -22,9 +22,9 @@ public class Login extends FragmentActivity implements LoginFragment.LoginFragme
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// preferenceCheck();
+		preferenceCheck();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.login);
+		setContentView(R.layout.activity_login);
 		fragmentManager = getSupportFragmentManager();
 		
 		if (fragmentManager.findFragmentByTag(currentTag) == null) {
@@ -54,8 +54,8 @@ public class Login extends FragmentActivity implements LoginFragment.LoginFragme
 	}
 	
 	private void preferenceCheck() {
-		final SharedPreferences preferences = getSharedPreferences(APIConstants.PREFERENCES, 0);
-		if (preferences.getString(APIConstants.PREF_COOKIE, null) != null) {
+		final SharedPreferences preferences = getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		if (preferences.getString(PrefConstants.PREF_COOKIE, null) != null) {
 			final Intent mainIntent = new Intent(this, Main.class);
 			startActivity(mainIntent);
 		}

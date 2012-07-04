@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="20dp"
             android:layout_marginTop="60dp"
             android:contentDescription="@string/description_signup_button"
             android:text="@string/login_button_signup" />
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="20dp"
             android:layout_marginTop="60dp"
             android:contentDescription="@string/description_login_button"
             android:text="@string/login_button_login" />

@@ -20,10 +20,11 @@
     <string name="description_login_logo">NewsBlur Logo</string>
     <string name="description_signup_button">Press to sign up</string>
     <string name="description_favicon">The feed\'s favicon</string>
+	<string name="description_profile_picture">The user\'s profile picture</string>
 
+    <string name="menu_profile">Profile</string>
+    <string name="menu_refresh">Refresh</string>
     
+    <string name="profile">Profile</string>
     
-    
-    
-
 </resources>

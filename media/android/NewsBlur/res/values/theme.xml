@@ -3,5 +3,7 @@
 	<style name="NewsBlurTheme" parent="@style/Theme.Sherlock" >
 		<item name="android:editTextStyle">@style/edittext</item>
 		<item name="android:buttonStyle">@style/button</item>
+		<item name="actionBarStyle">@style/actionbar</item>
+    	<item name="android:actionBarStyle">@style/actionbar</item>
 	</style>
 </resources>

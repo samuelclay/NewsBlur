@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
+import com.newsblur.activity.PrefConstants;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -33,8 +35,8 @@ public class APIClient {
 		try {
 			final URL urlFeeds = new URL(urlString);
 			connection = (HttpURLConnection) urlFeeds.openConnection();
-			final SharedPreferences preferences = context.getSharedPreferences(APIConstants.PREFERENCES, 0);
-			final String cookie = preferences.getString(APIConstants.PREF_COOKIE, null);
+			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 			if (cookie != null) {
 				connection.setRequestProperty("Cookie", cookie);
 			}

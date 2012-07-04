@@ -17,22 +17,22 @@ import com.google.gson.GsonBuilder;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
-import com.newsblur.domain.FeedUpdate;
 import com.newsblur.domain.FolderStructure;
+import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.LoginResponse;
+import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.serialization.FolderStructureTypeAdapter;
+import com.newsblur.util.PrefsUtil;
 
 public class APIManager {
 
 	private static final String TAG = "APIManager";
 	private Context context;
-	private SharedPreferences preferences;
 	private Gson gson;
 	private ContentResolver contentResolver;
 
 	public APIManager(final Context context) {
 		this.context = context;
-		preferences = context.getSharedPreferences(APIConstants.PREFERENCES, 0);
 		final GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(FolderStructure.class, new FolderStructureTypeAdapter());
 		contentResolver = context.getContentResolver();
@@ -45,29 +45,38 @@ public class APIManager {
 		values.put(APIConstants.USERNAME, username);
 		values.put(APIConstants.PASSWORD, password);
 		final APIResponse response = client.post(APIConstants.URL_LOGIN, values);
-		if (response.responseCode == HttpStatus.SC_OK && response.hasRedirected == false) {
-
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			LoginResponse loginResponse = gson.fromJson(response.responseString, LoginResponse.class);
-			final Editor edit = preferences.edit();
-			edit.putString(APIConstants.PREF_COOKIE, response.cookie);
-			edit.commit();
+			PrefsUtil.saveCookie(context, response.cookie);
 			return loginResponse;
 		} else {
 			return new LoginResponse();
 		}		
 	}
+	
+	public boolean updateUserProfile() {
+		final APIClient client = new APIClient(context);
+		final APIResponse response = client.get(APIConstants.URL_USER_PROFILE);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			ProfileResponse profileResponse = gson.fromJson(response.responseString, ProfileResponse.class);
+			PrefsUtil.saveUserDetails(context, profileResponse.user);
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public void getFolderFeedMapping() {
 		final APIClient client = new APIClient(context);
 		final APIResponse response = client.get(APIConstants.URL_FEEDS);
-		final FeedUpdate feedUpdate = gson.fromJson(response.responseString, FeedUpdate.class);
+		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
+		
 		for (Entry<String, Feed> entry : feedUpdate.feeds.entrySet()) {
 			final Feed feed = entry.getValue();
 			contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
 		}
 
-		for (Entry<String, List<Long>> entry : feedUpdate.folderStructure.folders.entrySet()) {
-			
+		for (Entry<String, List<Long>> entry : feedUpdate.folderStructure.folders.entrySet()) {	
 			final ContentValues folderValues = new ContentValues();
 			folderValues.put(DatabaseConstants.FOLDER_NAME, entry.getKey());
 			contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
@@ -79,9 +88,6 @@ public class APIManager {
 				contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
 			}
 		}
-
-
-		Log.d(TAG, "Retrieved feeds");
 	}
 
 }

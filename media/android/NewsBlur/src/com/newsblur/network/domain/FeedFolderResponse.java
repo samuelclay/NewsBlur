@@ -1,10 +1,12 @@
-package com.newsblur.domain;
+package com.newsblur.network.domain;
 
 import java.util.Map;
 
 import com.google.gson.annotations.SerializedName;
+import com.newsblur.domain.Feed;
+import com.newsblur.domain.FolderStructure;
 
-public class FeedUpdate {
+public class FeedFolderResponse {
 	
 	@SerializedName("starred_count")
 	public int starredCount;

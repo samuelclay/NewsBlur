@@ -27,6 +27,7 @@ import com.newsblur.R;
 import com.newsblur.activity.Main;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.LoginResponse;
+import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.service.DetachableResultReceiver;
 import com.newsblur.service.DetachableResultReceiver.Receiver;
 import com.newsblur.service.SyncService;
@@ -119,6 +120,7 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 			final String username = params[0];
 			final String password = params[1];
 			LoginResponse response = apiManager.login(username, password);
+			apiManager.updateUserProfile();
 			try {
 				// We include this wait simply as a small UX convenience. Otherwise the user could be met with a disconcerting flicker when attempting to log in and failing.
 				Thread.sleep(700);
