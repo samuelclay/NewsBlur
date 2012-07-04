@@ -24,6 +24,8 @@ def user(u, msg):
             platform = 'iPhone'
         elif 'Blar' in user_agent:
             platform = 'Blar'
+        elif 'Android' in user_agent:
+            platform = 'Androd'
         elif 'MSIE' in user_agent:
             platform = 'IE'
         elif 'Chrome' in user_agent:

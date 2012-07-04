@@ -96,20 +96,16 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
     },
     
     save_comment_reply: function(story_id, story_feed_id, comment_user_id, reply_comments, original_message, callback, error_callback) {
-        var pre_callback = _.bind(function(data) {
-            if (data.user_profiles) {
-                this.add_user_profiles(data.user_profiles);
-            }
-            callback(data);
-        }, this);
-        
         this.make_request('/social/save_comment_reply', {
             story_id: story_id,
             story_feed_id: story_feed_id,
             comment_user_id: comment_user_id,
             reply_comments: reply_comments,
-            original_message: original_message
-        }, pre_callback, error_callback);
+            original_message: original_message,
+            format: 'html'
+        }, callback, error_callback, {
+            request_type: 'POST'
+        });
     }
     
 });

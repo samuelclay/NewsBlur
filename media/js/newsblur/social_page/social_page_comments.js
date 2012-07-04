@@ -11,10 +11,15 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         
         this.$('.NB-story-comment').each(function() {
             var $comment = $(this);
+            var comment = new Backbone.Model({
+                user_id: $comment.data('userId')
+            });
             var comment_view = new NEWSBLUR.Views.StoryComment({
                 el: $comment,
                 on_social_page: true,
-                story: self.model
+                story: self.model,
+                story_comments_view: self,
+                model: comment
             });
             self.comment_views.push(comment_view);
         });
@@ -43,6 +48,17 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         var $new_comments = $(html);
         this.$el.replaceWith($new_comments);
         this.setElement($new_comments);
+        this.story_view.attach_tooltips();
+        this.initialize();
+    },
+    
+    replace_comment: function(comment_user_id, html) {
+        var comment_view = _.detect(this.comment_views, function(view) {
+            return view.model.get('user_id') == comment_user_id;
+        });
+        var $new_comment = $(html);
+        comment_view.$el.replaceWith($new_comment);
+        comment_view.setElement($new_comment);
         this.story_view.attach_tooltips();
         this.initialize();
     }

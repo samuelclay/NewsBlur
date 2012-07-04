@@ -1216,8 +1216,20 @@ class MSharedStory(mongo.Document):
                         stories[s][comment_set][c]['source_user'] = profiles[comment['source_user_id']]
                     for r, reply in enumerate(comment['replies']):
                         stories[s][comment_set][c]['replies'][r]['user'] = profiles[reply['user_id']]
-                        
+
         return stories
+    
+    @staticmethod
+    def attach_users_to_comment(comment, profiles):
+        profiles = dict([(p['user_id'], p) for p in profiles])
+        comment['user'] = profiles[comment['user_id']]
+        if comment['source_user_id']:
+            comment['source_user'] = profiles[comment['source_user_id']]
+        for r, reply in enumerate(comment['replies']):
+            comment['replies'][r]['user'] = profiles[reply['user_id']]
+
+        return comment
+        
         
     def blurblog_permalink(self):
         profile = MSocialProfile.objects.get(user_id=self.user_id)

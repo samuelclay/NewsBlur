@@ -374,7 +374,6 @@ def mark_story_as_unshared(request):
         })
     
 @ajax_login_required
-@json.json_view
 def save_comment_reply(request):
     code     = 1
     feed_id  = int(request.POST['story_feed_id'])
@@ -382,9 +381,10 @@ def save_comment_reply(request):
     comment_user_id = request.POST['comment_user_id']
     reply_comments = request.POST.get('reply_comments')
     original_message = request.POST.get('original_message')
+    format = request.REQUEST.get('format', 'json')
     
     if not reply_comments:
-        return {'code': -1, 'message': 'Reply comments cannot be empty.'}
+        return json.json_response(request, {'code': -1, 'message': 'Reply comments cannot be empty.'})
         
     shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
                                             story_feed_id=feed_id, 
@@ -444,7 +444,17 @@ def save_comment_reply(request):
                                          social_feed_id=comment_user_id,
                                          story_id=story_id)
     
-    return {'code': code, 'comment': comment, 'user_profiles': profiles}
+    if format == 'html':
+        comment = MSharedStory.attach_users_to_comment(comment, profiles)
+        return render_to_response('social/story_comment.xhtml', {
+            'comment': comment,
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'code': code, 
+            'comment': comment, 
+            'user_profiles': profiles
+        })
     
 def shared_stories_public(request, username):
     try:
