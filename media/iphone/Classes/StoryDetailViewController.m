@@ -11,6 +11,7 @@
 #import "FeedDetailViewController.h"
 #import "FontSettingsViewController.h"
 #import "SplitStoryDetailViewController.h"
+#import "UserProfileViewController.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "Base64.h"
@@ -183,7 +184,7 @@
         NSDictionary *user = [self getUser:[[share_user_ids objectAtIndex:i] intValue]];
         NSString *avatar = [NSString stringWithFormat:@
                             "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\">"
-                            "<a href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a>"
+                            "<a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a>"
                             "</div></div>",
                             [user objectForKey:@"user_id"],
                             [self getImageURL:[user objectForKey:@"photo_url"]]];
@@ -215,8 +216,10 @@
     NSString *comments = @"";
 //    NSLog(@"the comment string is %@", [appDelegate.activeStory objectForKey:@"share_count"]);
 //    NSLog(@"appDelegate.activeStory is %@", appDelegate.activeStory);
-    if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] && [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
-        NSArray *comments_array = [appDelegate.activeStory objectForKey:@"comments"];            
+    if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] &&
+        [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
+        
+        NSArray *comments_array = [appDelegate.activeStory objectForKey:@"friend_comments"];            
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@
                                                       "<div class=\"NB-feed-story-comments\">"
                                                       "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
@@ -249,30 +252,54 @@
 }
 
 - (NSString *)getComment:(NSDictionary *)commentDict {
+    
     NSDictionary *user = [self getUser:[[commentDict objectForKey:@"user_id"] intValue]];
-    NSString *comment = [NSString stringWithFormat:@
-                         "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\"><div>"
-                         "<div class=\"NB-user-avatar\"><a href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a></div>"
-                         "<div class=\"NB-story-comment-author-container\">"
-                         "<div class=\"NB-story-comment-username\">%@</div>"
-                         "<div class=\"NB-story-comment-date\">%@ ago</div>"
-                         "<div class=\"NB-story-comment-reply-button\"><div class=\"NB-story-comment-reply-button-wrapper\">"
-                         "<a href=\"http://ios.newsblur.com/reply/%@/%@\">reply</a>"
-                         "</div></div>"
-                         "</div>"
-                         "<div class=\"NB-story-comment-content\">%@</div>"
-                         "%@"
-                         "</div></div>",
-                         [commentDict objectForKey:@"user_id"],
-                         [commentDict objectForKey:@"user_id"],
-                         [self getImageURL:[user objectForKey:@"photo_url"]],
-                         [user objectForKey:@"username"],
-                         [commentDict objectForKey:@"shared_date"],
-                         [commentDict objectForKey:@"user_id"],
-                         [user objectForKey:@"username"],
-                         [commentDict objectForKey:@"comments"],
-                         [self getReplies:[commentDict objectForKey:@"replies"]]];
+    NSString *userAvatarClass = @"NB-user-avatar";
+    NSString *userReshareString = @"";
 
+    if ([commentDict objectForKey:@"source_user_id"] != [NSNull null]) {
+        userAvatarClass = @"NB-user-avatar NB-story-comment-reshare";
+
+        NSDictionary *sourceUser = [self getUser:[[commentDict objectForKey:@"source_user_id"] intValue]];
+        userReshareString = [NSString stringWithFormat:@
+                             "<div class=\"NB-story-comment-reshares\">"
+                             "    <div class=\"NB-story-share-profile\">"
+                             "        <div class=\"NB-user-avatar\"><img src=\"%@\"></div>"
+                             "    </div>"
+                             "</div>",
+                             [self getImageURL:[sourceUser objectForKey:@"photo_url"]]];
+    } 
+    
+    NSString *comment = [NSString stringWithFormat:@
+                        "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
+                        "<div class=\"%@\"><a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a></div>"
+                        "<div class=\"NB-story-comment-author-container\">"
+                        "   %@"
+                        "    <div class=\"NB-story-comment-username\">%@</div>"
+                        "    <div class=\"NB-story-comment-date\">%@ ago</div>"
+                        "    <div class=\"NB-story-comment-reply-button\">"
+                        "        <div class=\"NB-story-comment-reply-button-wrapper\">"
+                        "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">reply</a>"
+                        "        </div>"
+                        "    </div>"
+                        "</div>"
+                        "<div class=\"NB-story-comment-content\">%@</div>"
+                        "%@"
+                        "</div>",
+                        [commentDict objectForKey:@"user_id"],
+                        userAvatarClass,
+                        [commentDict objectForKey:@"user_id"],
+                        [self getImageURL:[user objectForKey:@"photo_url"]],
+                         userReshareString,
+
+                        [user objectForKey:@"username"],
+                        [commentDict objectForKey:@"shared_date"],
+                        [commentDict objectForKey:@"user_id"],
+                        [user objectForKey:@"username"],
+                        [commentDict objectForKey:@"comments"],
+                        [self getReplies:[commentDict objectForKey:@"replies"]]]; 
+
+    [userAvatarClass release];
     return comment;
 }
 
@@ -432,7 +459,7 @@
                             footerString
                             ];
 
-    //NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -470,10 +497,10 @@
         if ([aSubView isKindOfClass:[UIScrollView class]]) {
             UIScrollView * theScrollView = (UIScrollView *)aSubView;
             if (appDelegate.isRiverView || appDelegate.isSocialView) {
-                theScrollView.contentInset = UIEdgeInsetsMake(19, 0, -19, 0);
+                theScrollView.contentInset = UIEdgeInsetsMake(19, 0, 0, 0);
                 theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(19, 0, 0, 0);
             } else {
-                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, -9, 0);
+                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
                 theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
             }
             [self.webView insertSubview:feedTitleGradient aboveSubview:theScrollView];
@@ -524,8 +551,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             [appDelegate showShareView:nil setUsername:nil];
             return NO; 
         } else if ([action isEqualToString:@"show-profile"]) {
-            appDelegate.activeUserProfile = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
-            [appDelegate showUserProfile];
+            appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
+            [self showUserProfile:[urlComponents objectAtIndex:2]
+                      xCoordinate:[[urlComponents objectAtIndex:3] intValue] 
+                      yCoordinate:[[urlComponents objectAtIndex:4] intValue] 
+                            width:[[urlComponents objectAtIndex:5] intValue] 
+                           height:[[urlComponents objectAtIndex:6] intValue]];
             return NO; 
         }
     }
@@ -534,6 +565,34 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         return NO;
     }
     return YES;
+}
+
+- (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
+    if (popoverController == nil) {
+        popoverController = [[UIPopoverController alloc]
+                             initWithContentViewController:appDelegate.userProfileViewController];
+        
+        popoverController.delegate = self;
+    }
+    
+    [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
+    
+    // only adjust for the bar if user is scrolling
+    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+        if (self.webView.scrollView.contentOffset.y == -19) {
+            y = y + 19;
+        }
+    } else {
+        if (self.webView.scrollView.contentOffset.y == -9) {
+            y = y + 9;
+        }
+    }  
+    
+    [popoverController presentPopoverFromRect:CGRectMake(x, y, width, height) 
+                                       inView:self.view 
+                     permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                     animated:YES];
+    
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {

@@ -20,6 +20,9 @@
     UILabel *userDescription;
     UILabel *userStats;
     UIButton *followButton;
+    NSDictionary *activeProfile;
+    
+    UIActivityIndicatorView *activityIndicator;
 }
 
 @property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
@@ -29,9 +32,17 @@
 @property (retain, nonatomic) UILabel *userDescription;
 @property (retain, nonatomic) UILabel *userStats;
 @property (retain, nonatomic) UIButton *followButton;
+@property (nonatomic, retain) UIActivityIndicatorView *activityIndicator;
+
+@property (retain, nonatomic) NSDictionary *activeProfile;
+
 
 - (void)refreshWithDict:(NSDictionary *)profile;
 
 - (IBAction)doFollowButton:(id)sender;
+- (void)finishFollowing:(ASIHTTPRequest *)request;
+- (void)finishUnfollowing:(ASIHTTPRequest *)request;
+- (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)initProfile;
 
 @end

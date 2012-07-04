@@ -12,6 +12,7 @@
 #import "JSON.h"
 #import "SocialBadge.h"
 #import "Utilities.h"
+#import "MBProgressHUD.h"
 
 @implementation UserProfileViewController
 
@@ -33,8 +34,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    self.socialBadge.frame = CGRectMake(0, 0, 320, 160);
-    self.socialBadge.backgroundColor = [UIColor greenColor];
+    self.socialBadge.frame = CGRectMake(0, 0, 320, 140);
 }
 
 - (void)viewDidUnload
@@ -44,6 +44,10 @@
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [self getUserProfile];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -58,28 +62,19 @@
     [super dealloc];
 }
 
-
-
-- (void)setupModal {
-    self.navigationItem.title = nil;
-    
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Done" 
-                                                                     style: UIBarButtonSystemItemCancel 
-                                                                    target: self 
-                                                                    action: @selector(doCancelButton)];
-    [self.navigationItem setRightBarButtonItem:cancelButton];
-    [cancelButton release];
-    [self getUserProfile];
-}
-
 - (void)doCancelButton {
     [appDelegate.findFriendsNavigationController dismissModalViewControllerAnimated:NO];
 }
 
 - (void)getUserProfile {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    HUD.labelText = @"Finding...";
+    
+    [self.socialBadge initProfile];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/settings/%@",
                            NEWSBLUR_URL,
-                           appDelegate.activeUserProfile];
+                           appDelegate.activeUserProfileId];
     NSURL *url = [NSURL URLWithString:urlString];
 
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
@@ -88,8 +83,6 @@
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
 }
-
-
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -105,9 +98,10 @@
     } 
     
     NSLog(@"results %@", results);
+    NSLog(@"appDelegate.activeUserProfileId %@", appDelegate.activeUserProfileId);
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self.socialBadge refreshWithDict:results];
     
-        
     [results release];
 }
 

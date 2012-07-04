@@ -44,7 +44,7 @@
 }
 
 .NB-ipad-wide .NB-feed-story-comments {
-    margin: 30px 90px !important;
+    margin: 30px 0px !important;
 }
 
 .NB-ipad-wide .NB-story {
@@ -72,7 +72,7 @@
 }
 
 .NB-ipad-narrow .NB-feed-story-comments {
-    margin: 30px 30px !important;
+    margin: 30px 0px !important;
 }
 
 .NB-ipad-narrow .NB-share-inner-wrapper {
@@ -96,7 +96,7 @@
 }
 
 .NB-iphone .NB-feed-story-comments {
-    margin: 30px 12px !important;
+    margin: 30px 0px !important;
 }
 
 .NB-iphone .NB-share-inner-wrapper {
@@ -169,7 +169,17 @@ body {
     line-height: 13px;
 }
 
-h1, h2, h3, h4, h5, h6, div, table, span, pre, code {
+.NB-story h1, 
+.NB-story h2,
+.NB-story h3,
+.NB-story h4,
+.NB-story h5,
+.NB-story h6,
+.NB-story div,
+.NB-story table,
+.NB-story span,
+.NB-story pre,
+.NB-story code {
     overflow: auto;
 }
 
@@ -177,31 +187,23 @@ a {
     text-decoration: none;
 }
 
-blockquote {
+.NB-story blockquote {
     background-color: #F0F0F0;
     border-left: 1px solid #9B9B9B;
     padding: .5em 2em;
     margin: 0 0 20px 20px;
 }
 
-h1, h2, h3, h4, h5, h6, table, span, pre, code, img {  
-    max-width: 588px;
-}
-
-div {
-    width: auto !important;
-}
-
 div + p {
     margin: 20px 0px 20px 0;
 }
 
-p {
+.NB-story p {
     margin: 0px 0px 20px 0;
     clear: both;
 }
 
-small {
+.NB-story small {
     font-size: 11px;
 }
 
@@ -299,6 +301,9 @@ del {
 
 /* Sharing */
 
+a.NB-show-profile {
+    display: inline-block;
+}
 .NB-share-wrapper { 
     -webkit-touch-callout: none; 
     -webkit-text-size-adjust: none; 

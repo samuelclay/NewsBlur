@@ -61,7 +61,7 @@
     UserProfileViewController *userProfileViewController;
 
     NSString * activeUsername;
-    NSString * activeUserProfile;
+    NSString * activeUserProfileId;
     BOOL isRiverView;
     BOOL isSocialView;
     BOOL isShowingShare;
@@ -119,7 +119,7 @@
 @property (nonatomic, retain) IBOutlet UserProfileViewController *userProfileViewController;
 
 @property (readwrite, retain) NSString * activeUsername;
-@property (readwrite, retain) NSString * activeUserProfile;
+@property (readwrite, retain) NSString * activeUserProfileId;
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL isShowingShare;

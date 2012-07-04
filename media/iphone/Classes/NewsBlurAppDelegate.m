@@ -55,7 +55,7 @@
 
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize activeUsername;
-@synthesize activeUserProfile;
+@synthesize activeUserProfileId;
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isShowingShare;
@@ -239,6 +239,7 @@
     
     self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        
         [splitStoryController presentModalViewController:findFriendsNavigationController animated:NO];
     } else {
         [navigationController presentModalViewController:findFriendsNavigationController animated:NO];

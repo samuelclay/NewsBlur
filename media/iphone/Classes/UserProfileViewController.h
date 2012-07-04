@@ -26,7 +26,6 @@
 @property (retain, nonatomic) IBOutlet UILabel *followingCount;
 @property (retain, nonatomic) IBOutlet UILabel *followersCount;
 
-- (IBAction)doFollowButton:(id)sender;
 - (void)getUserProfile;
 - (void)requestFinished:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;

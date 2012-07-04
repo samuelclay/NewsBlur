@@ -23,7 +23,7 @@
     UIBarButtonItem *activity;
     UIBarButtonItem *toggleViewButton;
     UIActivityIndicatorView *loadingIndicator;
-    IBOutlet UIPopoverController *popoverController;
+    UIPopoverController *popoverController;
 }
 
 @property (nonatomic, retain) UIActivityIndicatorView *loadingIndicator;
@@ -50,6 +50,7 @@
 - (IBAction)doNextStory;
 - (IBAction)doPreviousStory;
 - (void)changeWebViewWidth:(int)width;
+- (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 
 - (void)refreshComments;
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
