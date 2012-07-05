@@ -26,5 +26,10 @@
     <string name="menu_refresh">Refresh</string>
     
     <string name="profile">Profile</string>
+    <string name="profile_location_icon">Location icon</string>
+    <string name="profile_following">following</string>
+    <string name="profile_followers">followers</string>
+    <string name="profile_shared">shared</string>
+    <string name="profile_subscribers">subscribers</string>
     
 </resources>

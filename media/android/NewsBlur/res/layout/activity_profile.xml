@@ -4,15 +4,22 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <FrameLayout
+        android:id="@+id/profile_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <fragment 
+        android:name="com.newsblur.fragment.ProfileActivityFragment" 
+        android:layout_height="fill_parent" 
+        android:layout_width="fill_parent" 
+        android:layout_below="@id/profile_details"/>
+    
+    
     <View
         android:layout_width="fill_parent"
         android:layout_height="8dip"
         android:layout_alignParentTop="true"
         android:background="@drawable/orangeline_shadow" />
-
-    <FrameLayout
-        android:id="@+id/profile_details"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
     
 </RelativeLayout>

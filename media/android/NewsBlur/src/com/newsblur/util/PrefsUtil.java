@@ -32,12 +32,33 @@ public class PrefsUtil {
 		edit.putString(PrefConstants.USER_POPULAR_PUBLISHERS, profile.popularPublishers);
 		edit.putInt(PrefConstants.USER_SHARED_STORIES_COUNT, profile.sharedStoriesCount);
 		edit.putInt(PrefConstants.USER_STORIES_LAST_MONTH, profile.storiesLastMonth);
-		edit.putInt(PrefConstants.USER_STORIES_LAST_MONTH, profile.storiesLastMonth);
 		edit.putInt(PrefConstants.USER_SUBSCRIBER_COUNT, profile.subscriptionCount);
 		edit.putString(PrefConstants.USER_USERNAME, profile.username);
 		edit.putString(PrefConstants.USER_WEBSITE, profile.website);
 		edit.commit();
+	}
+	
+	public static UserProfile getUserDetails(final Context context) {
+		UserProfile user = new UserProfile();
 		
+		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		user.averageStoriesPerMonth = preferences.getInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, 0);
+		user.bio = preferences.getString(PrefConstants.USER_BIO, null);
+		user.feedAddress = preferences.getString(PrefConstants.USER_FEED_ADDRESS, null);
+		user.feedTitle = preferences.getString(PrefConstants.USER_FEED_TITLE, null);
+		user.followerCount = preferences.getInt(PrefConstants.USER_FOLLOWER_COUNT, 0);
+		user.followingCount = preferences.getInt(PrefConstants.USER_FOLLOWING_COUNT, 0);
+		user.id =  preferences.getString(PrefConstants.USER_ID, null);
+		user.location = preferences.getString(PrefConstants.USER_LOCATION, null);
+		user.photoService = preferences.getString(PrefConstants.USER_PHOTO_SERVICE, null);
+		user.photoUrl = preferences.getString(PrefConstants.USER_PHOTO_URL, null);
+		user.popularPublishers = preferences.getString(PrefConstants.USER_POPULAR_PUBLISHERS, null);
+		user.sharedStoriesCount = preferences.getInt(PrefConstants.USER_SHARED_STORIES_COUNT, 0);
+		user.storiesLastMonth = preferences.getInt(PrefConstants.USER_STORIES_LAST_MONTH, 0);
+		user.subscriptionCount = preferences.getInt(PrefConstants.USER_SUBSCRIBER_COUNT, 0);
+		user.username = preferences.getString(PrefConstants.USER_USERNAME, null);
+		user.website = preferences.getString(PrefConstants.USER_WEBSITE, null);
+		return user;
 	}
 
 }
