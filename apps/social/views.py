@@ -11,7 +11,7 @@ from django.template import RequestContext
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
 from apps.social.models import MRequestInvite, MInteraction, MActivity
-from apps.social.tasks import PostToService, EmailCommentReplies
+from apps.social.tasks import PostToService, EmailCommentReplies, EmailStoryReshares
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
@@ -122,8 +122,6 @@ def load_social_stories(request, user_id, username=None):
         #     story['read_status'] = 0
         else:
             story['read_status'] = 0
-
-        # print story['read_status'], story['shared_date'], date_delta
 
         if story['id'] in starred_stories:
             story['starred'] = True
@@ -313,6 +311,9 @@ def mark_story_as_shared(request):
         for service in post_to_services:
             if service not in shared_story.posted_to_services:
                 PostToService.delay(shared_story_id=shared_story.id, service=service)
+    
+    if shared_story.source_user_id and not shared_story.emailed_reshare and shared_story.comments:
+        EmailStoryReshares.delay(shared_story_id=shared_story.id)
     
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)

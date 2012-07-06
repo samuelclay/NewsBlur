@@ -1,11 +1,15 @@
 {% extends "mail/email_base.xhtml" %}
+{% load social_tags %}
 
 {% block body %}
-    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;line-height: 48px;">
-        <a href="{{ replying_user.blurblog_url }}"><img src="{{ replying_user.photo_url }}" style="width: 48px; height: 48px;margin: 0 12px 0 0;border-radius: 3px;border: none;float: left"></a> {{ replying_user.username }} re-shared your story:
-    </p>
-    <div style="margin: 24px 0;font-size: 24px;text-align: center;">
-        <div style="margin: 8px 0 0 0;font-weight: bold;"><a href="{{ follower_profile.blurblog_url }}" style="color: #404040;text-decoration: none">{{ follower_profile.username }}</a></div>
-    </div>
     
+    <p style="font-size: 24px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;line-height: 48px;">
+        <a href="{{ reshare_user_profile.blurblog_url }}"><img src="{{ reshare_user_profile.email_photo_url }}" style="width: 48px; height: 48px;margin: 0 12px 0 0;border-radius: 3px;border: none;float: left"></a> {{ reshare_user_profile.username }} re-shared "<a href="{{ shared_story.blurblog_permalink }}">{{ shared_story.story_title }}</a>" from <img src="{{ story_feed.favicon_url_fqdn }}" style="width: 16px;height: 16px;vertical-align: middle"> {{ story_feed.feed_title }}:
+    </p>
+
+    {% render_email_comment comment %}
+    
+    <p style="padding-top: 12px;">
+        Don't want any more emails? <a href="{{ mute_url }}">Mute everything from this story</a>.
+    </p>
 {% endblock %}

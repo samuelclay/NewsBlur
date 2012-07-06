@@ -3,6 +3,7 @@
 <style>
 .NB-story-comment {
     border-top: 1px solid #A6A6A6;
+    border-bottom: 1px solid #A6A6A6;
     background-color: #FCFCFC;
     position: relative;
     padding: 4px 28px 8px 80px;
@@ -132,9 +133,6 @@
             {% endif %}
             <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
             <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
-            <div class="NB-story-comment-reply-button">
-                <div class="NB-story-comment-reply-button-wrapper">reply</div>
-            </div>
         </div>
         <div class="NB-story-comment-content">
             {{ comment.comments|linebreaksbr }}

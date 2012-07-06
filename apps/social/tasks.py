@@ -23,3 +23,9 @@ class EmailCommentReplies(Task):
         shared_story = MSharedStory.objects.get(id=shared_story_id)
         shared_story.send_emails_for_new_reply(reply_user_id)
         
+class EmailStoryReshares(Task):
+    
+    def run(self, shared_story_id):
+        shared_story = MSharedStory.objects.get(id=shared_story_id)
+        shared_story.send_email_for_reshare()
+        
