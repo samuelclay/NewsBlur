@@ -414,7 +414,6 @@ def save_comment_reply(request):
         shared_story.replies.append(reply)
     shared_story.save()
     
-    
     comment = shared_story.comments_with_author()
     profile_user_ids = set([comment['user_id']])
     reply_user_ids = [reply['user_id'] for reply in comment['replies']]
@@ -445,8 +444,8 @@ def save_comment_reply(request):
                                          original_message=original_message,
                                          social_feed_id=comment_user_id,
                                          story_id=story_id)
-                                         
-    EmailCommentReplies.delay(shared_story_id=shared_story.id, reply_user_id=request.user.pk)
+    if not original_message:
+        EmailCommentReplies.delay(shared_story_id=shared_story.id, reply_user_id=request.user.pk)
     
     if format == 'html':
         comment = MSharedStory.attach_users_to_comment(comment, profiles)
@@ -662,7 +661,7 @@ def shared_stories_rss_feed(request, user_id, username):
         story_data = {
             'title': shared_story.story_title,
             'link': shared_story.story_permalink,
-            'description': zlib.decompress(shared_story.story_content_z),
+            'description': shared_story.story_content_z and zlib.decompress(shared_story.story_content_z),
             'guid': shared_story.story_guid,
             'pubDate': shared_story.story_date,
         }
