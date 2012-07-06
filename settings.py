@@ -95,6 +95,7 @@ MIDDLEWARE_CLASSES = (
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
+    'apps.profile.middleware.SimpsonsMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
