@@ -188,13 +188,15 @@ def load_social_page(request, user_id, username=None):
     checkpoint1 = time.time()
 
     if not stories:
-        return {
+        params = {
             "user": user,
             "stories": [],
             "feeds": {},
             "social_user": social_user,
             "social_profile": social_profile.page(),
         }
+        template = 'social/social_page.xhtml'
+        return render_to_response(template, params, context_instance=RequestContext(request))
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     feeds = Feed.objects.filter(pk__in=story_feed_ids)
