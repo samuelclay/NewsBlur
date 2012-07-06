@@ -950,3 +950,67 @@ header {
   -webkit-box-shadow: 2px 2px 0 #95AB76;
   box-shadow: 2px 2px 0 #95AB76;
 }
+
+/* ================= */
+/* = Page Controls = */
+/* ================= */
+
+.NB-page-controls {
+    border-top: 2px solid #8B8B8B;
+    border-bottom: 2px solid #8B8B8B;
+    padding: 1px 0;
+    cursor: pointer;
+    text-align: center;
+    margin: 0 auto 36px;
+    width: 800px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.NB-page-controls-next {
+    background-color: #506CB1;
+    color: white;
+    text-shadow: 0 1px 0 #2B478C;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 20px;
+    padding: 20px 28px 20px;
+    overflow: hidden;
+    border-radius: 8px;
+    height: 20px;
+    position: relative;
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+}
+.NB-page-controls-next.NB-loading {
+    -webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+    -ms-transition: none;    
+    cursor: wait;
+}
+.NB-page-controls-next.NB-loaded {
+    cursor: default;
+}
+.NB-page-controls:hover .NB-page-controls-next {
+    background-color: #2B478C;
+    background-image: none;
+    text-shadow: 0 1px 0 #141F48;
+}
+.NB-page-controls .NB-page-controls-next b {
+    padding: 0 1px;
+    font-size: 12px;
+}
+.NB-page-controls .NB-page-controls-next .NB-page-controls-text {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    text-align: center;
+    bottom: 20px;
+}
+.NB-page-controls .NB-page-controls-next .NB-page-controls-text-loading,
+.NB-page-controls .NB-page-controls-next .NB-page-controls-text-loaded {
+    bottom: 64px;
+}

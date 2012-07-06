@@ -92,6 +92,7 @@ javascripts:
         - media/js/vendor/jquery.corners.js
     blurblog:
         - media/js/vendor/jquery-*.js
+        - media/js/vendor/jquery.color.js
         - media/js/vendor/underscore-*.js
         - media/js/vendor/underscore.string.js
         - media/js/vendor/backbone-*.js

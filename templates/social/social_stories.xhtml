@@ -1,0 +1,18 @@
+{% load social_tags %}
+
+{% for story in stories %}
+    {% render_social_story story %}
+{% endfor %}
+
+{% if has_next_page %}
+    <div class="NB-page-controls">
+        <div class="NB-page-controls-next">
+            <div class="NB-page-controls-text NB-page-controls-text-next">
+                Next Page of Stories
+            </div>
+            <div class="NB-page-controls-text NB-page-controls-text-loading"></div>
+            <div class="NB-page-controls-text NB-page-controls-text-loaded">
+            </div>
+        </div>
+    </div>
+{% endif %}

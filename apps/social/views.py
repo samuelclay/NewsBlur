@@ -163,22 +163,26 @@ def load_social_stories(request, user_id, username=None):
         "classifiers": classifiers,
     }
 
-@render_to('social/social_page.xhtml')
 def load_social_page(request, user_id, username=None):
     user = request.user
     social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 12))
+    limit = int(request.REQUEST.get('limit', 6))
     page = request.REQUEST.get('page')
+    format = request.REQUEST.get('format', None)
+    has_next_page = False
     if page: offset = limit * (int(page) - 1)
 
     user_social_profile = None
     if user.is_authenticated():
         user_social_profile = MSocialProfile.objects.get(user_id=user.pk)
     social_profile = MSocialProfile.objects.get(user_id=social_user_id)
-    mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
+    mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit+1]
     stories = Feed.format_stories(mstories)
+    if len(stories) > limit:
+        has_next_page = True
+        stories = stories[:-1]
     
     if not stories:
         return {
@@ -220,9 +224,15 @@ def load_social_page(request, user_id, username=None):
         'social_profile': social_profile.page(),
         'feeds'         : feeds,
         'user_profile'  : hasattr(user, 'profile') and user.profile,
+        'has_next_page' : has_next_page,
     }
     
-    return params
+    if format == 'html':
+        template = 'social/social_stories.xhtml'
+    else:
+        template = 'social/social_page.xhtml'
+        
+    return render_to_response(template, params, context_instance=RequestContext(request))
     
 def story_public_comments(request):
     format           = request.REQUEST.get('format', 'json')

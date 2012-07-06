@@ -1,0 +1,77 @@
+{% load utils_tags social_tags %}
+
+<div class="NB-mark">
+    <div class="NB-divider"></div>
+    <div class="NB-feed NB-feed-{{ story.feed.favicon_text_color }}" style="
+        background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0.16, #{{ story.feed.favicon_color }}), color-stop(0.84, #{{ story.feed.favicon_fade }}) );
+        background-image: -moz-linear-gradient( center bottom, #{{ story.feed.favicon_color }} 16%, #{{ story.feed.favicon_fade }} 84% );
+        border: 1px solid #{{ story.feed.favicon_border }};
+        ">
+        {% if story.feed %}
+            <div class="NB-feed-favicon">
+                <img src="{{ story.feed.favicon_url }}" />
+            </div>
+            <div class="NB-feed-title">
+                <a href="/site/{{ story.feed.id }}/">{{ story.feed.feed_title }}</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="NB-story-header-wrapper">
+        <div class="NB-story-header">
+            {% if story.story_authors %}
+                <div class="NB-story-author">{{ story.story_authors }}</div>
+            {% endif %}
+            {% if story.story_tags %}
+                <div class="NB-story-tags">
+                    {% for story_tag in story.story_tags %}
+                        <div class="NB-story-tag">{{ story_tag }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="NB-story-title">
+                <a href="{{ story.story_permalink }}">{{ story.story_title }}</a>
+            </div>
+            <div class="NB-story-date">
+                {% if story.has_modifications %}
+                    <div class="NB-story-modifications-button" title="Show story changes"></div>
+                {% endif %}
+
+                {{ story.shared_date|date:"D F j<\s\u\p>S</\s\u\p>, Y"|safe }} 
+                <span class="NB-story-date-break"></span>
+                <small>at</small>
+                {{ story.shared_date|date:"g:i A"|safe }} 
+            </div>
+        </div>
+    </div>
+    
+    <div class="NB-story {% if story.saved %}NB-story-saved{% endif %} {% if story.shared_by_user %}NB-story-shared{% endif %}" data-feed-id="{{ story.story_feed_id }}" data-story-id="{{ story.id }}" {% if story.user_comments %}data-user-comments="{{ story.user_comments }}"{% endif %}>
+        <div class="NB-story-content">
+            {{ story.story_content|safe }}
+                <div class="NB-feed-story-sideoptions-container">
+                    {% if user.is_authenticated %}
+                        <div class="NB-sideoption NB-feed-story-save">
+                            <div class="NB-sideoption-icon">&nbsp;</div>
+                            <div class="NB-sideoption-title">{% if story.saved %}Saved{% else %}Save this story{% endif %}</div>
+                        </div>
+                        <div class="NB-sideoption NB-feed-story-share">
+                            <div class="NB-sideoption-icon">&nbsp;</div>
+                            <div class="NB-sideoption-title">{% if story.shared_by_user %}Shared{% else %}Post to Blurblog{% endif %}</div>
+                        </div>
+                        <div class="NB-feed-story-share-container"></div>
+                    {% else %}
+                        <div class="NB-sideoption NB-feed-story-login">
+                            <div class="NB-sideoption-icon">&nbsp;</div>
+                            <div class="NB-sideoption-title">Login to share</div>
+                        </div>
+                    {% endif %}
+                </div>
+        </div>
+    
+        <div class="NB-story-comments-container">
+        {% if story.share_count %}
+            {% render_story_share story %}
+        {% endif %}
+        </div>
+    </div>
+</div>
