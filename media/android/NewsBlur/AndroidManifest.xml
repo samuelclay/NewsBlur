@@ -28,7 +28,8 @@
         
         <activity
             android:name=".activity.Main"
-            android:label="@string/newsblur" />
+            android:label="@string/newsblur"
+            android:hardwareAccelerated="false" />
         
         <activity
             android:name=".activity.Profile"

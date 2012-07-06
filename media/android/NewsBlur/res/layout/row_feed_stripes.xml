@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="40dp"
     android:background="@color/white"
-    android:orientation="vertical"
-    android:paddingBottom="10dp"
-    android:paddingTop="10dp" >
+    android:orientation="vertical" >
 
     <LinearLayout
         android:id="@+id/row_feedcounters"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:gravity="right"
@@ -18,58 +16,62 @@
 
         <TextView
             android:id="@+id/row_feednegative"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/negative_count_circle"
+            android:layout_width="10dp"
+            android:layout_height="fill_parent"
+            android:background="@drawable/negative_count_stripe"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="12dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:textSize="8dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/row_feedneutral"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/neutral_count_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@drawable/neutral_count_stripe"
             android:gravity="center"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             android:textColor="@color/white"
-            android:textSize="12dp"
+            android:textSize="10dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/row_feedpositive"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/positive_count_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@drawable/positive_count_stripe"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="12dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:textSize="14dp"
             android:textStyle="bold" />
     </LinearLayout>
-
-    <com.newsblur.view.RoundedImageView
-        android:id="@+id/row_feedfavicon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
-        android:contentDescription="@string/description_favicon" />
 
     <TextView
         android:id="@+id/row_feedname"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginRight="5dp"
         android:layout_toLeftOf="@id/row_feedcounters"
-        android:layout_toRightOf="@id/row_feedfavicon"
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/black"
-        android:textSize="16dp" />
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/row_feedfavicon"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="20dp"
+        android:alpha="0.7"
+        android:contentDescription="@string/description_favicon" />
 
 </RelativeLayout>

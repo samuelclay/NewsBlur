@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
+    android:orientation="horizontal" 
     android:background="@color/lightgray">
+   
+    <ImageView 
+        android:layout_height="20dp"
+		android:layout_width="20dp" 
+		android:src="@drawable/folder" 
+		android:layout_margin="10dp" 
+		android:contentDescription="@string/description_row_folder_icon"/>
     
     <TextView 
         android:id="@+id/row_foldername" 
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18dp"
+        android:layout_height="fill_parent"
+        android:textSize="16dp"
         android:textAllCaps="true"
         android:textStyle="bold"
-        android:layout_marginLeft="40dp"
-        android:textColor="@color/darkgray"   />
+        android:gravity="center_vertical"
+        android:textColor="@color/darkgray" />
 	
-</RelativeLayout>
+</LinearLayout>

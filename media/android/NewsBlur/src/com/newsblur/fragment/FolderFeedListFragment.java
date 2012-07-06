@@ -2,8 +2,10 @@ package com.newsblur.fragment;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +18,6 @@ import com.newsblur.database.FolderTreeAdapter;
 import com.newsblur.view.FolderTreeViewBinder;
 
 public class FolderFeedListFragment extends Fragment {
-
 
 	private ExpandableListView list;
 	private ContentResolver resolver;
@@ -41,6 +42,13 @@ public class FolderFeedListFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
 		list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
+		
+		Display display = getActivity().getWindowManager().getDefaultDisplay();
+		int width = display.getWidth();
+		
+		list.setIndicatorBounds(width - 50, width - 10);
+			
+		list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
 		list.setAdapter(folderAdapter);
 		
 		return v;

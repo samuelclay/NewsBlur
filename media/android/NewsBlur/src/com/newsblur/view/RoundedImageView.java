@@ -23,7 +23,7 @@ public class RoundedImageView extends ImageView {
 
 	// TODO: Fix this to use proper anti-aliasing for the corners
 	protected void onDraw(Canvas canvas) {
-		clipPath.addRoundRect(new RectF(0, 0, getWidth(), getHeight()), getWidth() / 12, getWidth() / 12, Path.Direction.CW);
+		clipPath.addRoundRect(new RectF(0, 0, getWidth(), getHeight()), getWidth() / 10, getWidth() / 10, Path.Direction.CW);
 		canvas.clipPath(clipPath);
 		super.onDraw(canvas);
 	};

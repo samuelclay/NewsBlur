@@ -21,6 +21,7 @@
     <string name="description_signup_button">Press to sign up</string>
     <string name="description_favicon">The feed\'s favicon</string>
 	<string name="description_profile_picture">The user\'s profile picture</string>
+	<string name="description_row_folder_icon">folder icon</string>
 
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>
@@ -31,5 +32,6 @@
     <string name="profile_followers">followers</string>
     <string name="profile_shared">shared</string>
     <string name="profile_subscribers">subscribers</string>
+    
     
 </resources>
