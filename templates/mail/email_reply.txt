@@ -9,4 +9,6 @@
     {{ reply.comments }}
 {% endfor %}
 
-View this conversation: {{ shared_story.blurblog_permalink }}{% endblock %}
+View this conversation: {{ shared_story.blurblog_permalink }}
+
+Don't want any more emails from this story? Mute this conversion: {{ mute_url }}{% endblock %}

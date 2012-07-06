@@ -4691,7 +4691,18 @@ form.opml_import_form input {
     color: #123B00;
     overflow: hidden;
   }
-  
+  .NB-recommended-show-moderation-wrapper {
+      display: none;
+      float: left;
+      margin-right: 12px;
+  }
+  .NB-module-recommended .NB-module-header:hover .NB-recommended-show-moderation-wrapper {
+      display: block;
+  }
+  .NB-recommended-unmoderated {
+      display: none;
+  }
+
 /* ========= */
 /* = Menus = */
 /* ========= */
