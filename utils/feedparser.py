@@ -3739,8 +3739,8 @@ def convert_to_utf8(http_headers, data):
     known_encoding = 0
     chardet_encoding = None
     tried_encodings = []
-    if chardet:
-        chardet_encoding = unicode(chardet.detect(data)['encoding'], 'ascii', 'ignore')
+    if chardet and data:
+        chardet_encoding = unicode(chardet.detect(data)['encoding'] or "", 'ascii', 'ignore')
     # try: HTTP encoding, declared XML encoding, encoding sniffed from BOM
     for proposed_encoding in (rfc3023_encoding, xml_encoding, bom_encoding,
                               chardet_encoding, u'utf-8', u'windows-1252', u'iso-8859-2'):
