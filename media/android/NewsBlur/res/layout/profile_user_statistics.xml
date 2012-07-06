@@ -48,17 +48,6 @@
             android:textSize="20dp"
             android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:id="@+id/profile_subscribercount"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:background="@color/white"
-            android:gravity="center_horizontal"
-            android:paddingTop="5dp"
-            android:textColor="@color/darkgray"
-            android:textSize="20dp"
-            android:textStyle="bold" />
     </TableRow>
 
     <TableRow
@@ -107,18 +96,6 @@
             android:textColor="@color/darkgray"
             android:textSize="11dp" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:background="@color/white"
-            android:gravity="center_horizontal"
-            android:paddingBottom="8dp"
-            android:paddingTop="3dp"
-            android:text="@string/profile_subscribers"
-            android:textAllCaps="true"
-            android:textColor="@color/darkgray"
-            android:textSize="11dp" />
     </TableRow>
 
 </TableLayout>

@@ -23,6 +23,11 @@ public class DatabaseConstants {
 	public static final String FEED_NEUTRAL_COUNT = "nt";
 	public static final String FEED_NEGATIVE_COUNT = "ng";
 	
+	public static final String[] FEED_COLUMNS = {
+		FEED_ACTIVE, FEED_ID, FEED_TITLE, FEED_LINK, FEED_ADDRESS, FEED_SUBSCRIBERS, FEED_UPDATED_SECONDS, FEED_FAVICON_FADE, FEED_FAVICON_COLOUR, 
+		FEED_FAVICON, FEED_POSITIVE_COUNT, FEED_NEUTRAL_COUNT, FEED_NEGATIVE_COUNT
+	};
+	
 	public static final String FEED_FOLDER_MAP_TABLE = "feed_folder_map";
 	public static final String FEED_FOLDER_FEED_ID = "feed_id";
 	public static final String FEED_FOLDER_FOLDER_NAME = "folder_name";

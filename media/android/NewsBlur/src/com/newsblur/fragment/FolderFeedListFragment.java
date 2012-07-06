@@ -45,9 +45,7 @@ public class FolderFeedListFragment extends Fragment {
 		
 		Display display = getActivity().getWindowManager().getDefaultDisplay();
 		int width = display.getWidth();
-		
 		list.setIndicatorBounds(width - 50, width - 10);
-			
 		list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
 		list.setAdapter(folderAdapter);
 		

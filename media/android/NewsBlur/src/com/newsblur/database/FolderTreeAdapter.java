@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.widget.SimpleCursorTreeAdapter;
 
 public class FolderTreeAdapter extends SimpleCursorTreeAdapter {
@@ -20,7 +21,12 @@ public class FolderTreeAdapter extends SimpleCursorTreeAdapter {
 	@Override
 	protected Cursor getChildrenCursor(Cursor folderCursor) {
 		final Folder parentFolder = Folder.fromCursor(folderCursor);
-		final Uri uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
+		Uri uri = null;
+		if (TextUtils.isEmpty(parentFolder.getName())) {
+			uri = FeedProvider.FEED_FOLDER_MAP_URI;
+		} else {
+			uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
+		}
 		return resolver.query(uri, null, null, null, null);
 	}
 	

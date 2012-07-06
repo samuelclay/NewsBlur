@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class FeedProvider extends ContentProvider {
@@ -119,21 +120,28 @@ public class FeedProvider extends ContentProvider {
 				selectionArgs = new String[] { uri.getLastPathSegment() };
 				cursor = db.query(DatabaseConstants.FEED_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
 				break;
+			// Query for feeds with no folder mapping	
+			case FEED_FOLDER_MAP:
+				cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE + 
+				" LEFT JOIN " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+				" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID +
+				" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " IS NULL", selectionArgs);
+				break;
 			// Querying for feeds for a given folder	
 			case SPECIFIC_FEED_FOLDER_MAP:
 				selection = DatabaseConstants.FOLDER_ID + " = ?";
 				selectionArgs = new String[] { uri.getLastPathSegment() };
-				cursor = db.rawQuery("SELECT * FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+				cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
 						" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 						" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
 						" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = ? AND " +
 						" (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") " +
-						" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " ASC", selectionArgs);
+						" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE", selectionArgs);
 				break;
 			// Querying for all folders
 			case ALL_FOLDERS:
 				cursor = db.rawQuery("SELECT * FROM " + DatabaseConstants.FOLDER_TABLE + " " +
-						"ORDER BY " + DatabaseConstants.FOLDER_NAME + " ASC", null);
+						"ORDER BY " + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE", null);
 				break;
 		}
 		return cursor;

@@ -16,7 +16,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textSize="16dp"
-        android:textAllCaps="true"
         android:textStyle="bold"
         android:layout_marginLeft="30dp"
         android:textColor="@color/darkgray" />

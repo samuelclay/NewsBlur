@@ -44,9 +44,6 @@ public class ProfileDetailsFragment extends Fragment {
 		TextView followingCount = (TextView) v.findViewById(R.id.profile_followingcount);
 		followingCount.setText("" + user.followingCount);
 		
-		TextView subscriberCount = (TextView) v.findViewById(R.id.profile_subscribercount);
-		subscriberCount.setText("" + user.numberOfSubscribers);
-		
 		final ImageView imageView = (ImageView) v.findViewById(R.id.profile_picture);
 		imageView.setImageBitmap(PrefsUtil.getUserImage(getActivity()));
 		
