@@ -237,8 +237,8 @@ header {
 }
     
 .NB-feed a:hover {
-    color: #274C63;
-    text-shadow: 0 1px 0 #F0F0F0;
+    color: #C8DFFF;
+    text-shadow: 0 1px 0 #202020;
 }
 .NB-feed.NB-feed-black a:hover {
     color: #274C63;
@@ -396,7 +396,7 @@ header {
 }
 
 .NB-story-content {
-    padding: 12px 200px 24px 28px;
+    padding: 12px 222px 24px 28px;
     position: relative;
 }
 @media all and (max-width: 800px) {
@@ -534,6 +534,8 @@ header {
 .NB-story-comment .NB-story-comment-content {
     float: left;
     color: #303030;
+    clear: both;
+    padding: 0 0 6px 0;
 }
 .NB-story-comment .NB-story-comment-reply-button {
     padding: 4px 24px 4px 12px;
@@ -573,6 +575,11 @@ header {
     top: 10px;
     cursor: pointer;
 }
+.NB-story-comment-reply-content {
+    clear: both;
+    color: #303030;
+    float: left;
+}
 
 .NB-story-comment-edit-button {
     padding: 4px 24px 4px 12px;
@@ -595,11 +602,6 @@ header {
 }
 .NB-story-comment-share-edit-button {
     padding-right: 0;
-}
-.NB-story-comment-reply-content {
-    clear: both;
-    color: #303030;
-    float: left;
 }
 
 .NB-story-comment-reply-form {
@@ -630,6 +632,7 @@ header {
     font-weight: bold;
     clear: both;
 }
+
 .NB-story-comments-public-teaser-wrapper,
 .NB-story-comments-public-header-wrapper {
     border-top: 1px solid #353535;
@@ -677,7 +680,6 @@ header {
     border-top: 0;
     padding: 1px 0;
 }
-
 .NB-story-comments-shares-teaser {
     background-color: whiteSmoke;
     color: #202020;
@@ -709,7 +711,6 @@ header {
     );
 
 }
-
 .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
     background-color: #2B478C;
     background-image: none;
@@ -757,10 +758,6 @@ header {
 }
 .NB-story-share-profiles .NB-user-username {
     float: left;
-}
-.NB-story-comment .NB-story-comment-content {
-    clear: both;
-    padding: 0 0 6px 0;
 }
 
 /* ============================= */
@@ -818,6 +815,13 @@ header {
 }
 .NB-sideoption:hover {
     cursor: pointer;
+}
+.NB-sideoption.NB-feed-story-login .NB-sideoption-icon,
+.NB-sideoption.NB-feed-story-login .NB-sideoption-title {
+    background-color: #256AA2;
+    color: #D7DDF7;
+    opacity: 1;
+    text-shadow: 0 1px 0 #101010;
 }
 .NB-sideoption:hover .NB-sideoption-icon,
 .NB-sideoption:hover .NB-sideoption-title,

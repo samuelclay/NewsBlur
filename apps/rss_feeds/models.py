@@ -13,8 +13,8 @@ from django.db import models
 from django.db import IntegrityError
 from django.conf import settings
 from django.db.models.query import QuerySet
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.contrib.sites.models import Site
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
@@ -29,7 +29,6 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import pre_process_story
-from utils.story_functions import bunch
 from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
@@ -91,6 +90,16 @@ class Feed(models.Model):
     def title(self):
         return self.feed_title or "[Untitled]"
         
+    @property
+    def favicon_url(self):
+        return reverse('feed-favicon', kwargs={'feed_id': self.pk})
+    
+    @property
+    def favicon_url_fqdn(self):
+        return "http://%s%s" % (
+            Site.objects.get_current().domain.replace('www', 'dev'),
+            self.favicon_url
+        )
     def canonical(self, full=False, include_favicon=True):
         feed = {
             'id': self.pk,
@@ -109,7 +118,7 @@ class Feed(models.Model):
             'favicon_border': self.favicon_border(),
             'favicon_text_color': self.favicon_text_color(),
             'favicon_fetching': self.favicon_fetching,
-            'favicon_url': reverse('feed-favicon', kwargs={'feed_id': self.pk}),
+            'favicon_url': self.favicon_url,
         }
         
         if include_favicon:

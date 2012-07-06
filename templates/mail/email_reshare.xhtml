@@ -1,0 +1,11 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% block body %}
+    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;line-height: 48px;">
+        <a href="{{ replying_user.blurblog_url }}"><img src="{{ replying_user.photo_url }}" style="width: 48px; height: 48px;margin: 0 12px 0 0;border-radius: 3px;border: none;float: left"></a> {{ replying_user.username }} re-shared your story:
+    </p>
+    <div style="margin: 24px 0;font-size: 24px;text-align: center;">
+        <div style="margin: 8px 0 0 0;font-weight: bold;"><a href="{{ follower_profile.blurblog_url }}" style="color: #404040;text-decoration: none">{{ follower_profile.username }}</a></div>
+    </div>
+    
+{% endblock %}

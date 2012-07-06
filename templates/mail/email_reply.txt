@@ -1,0 +1,12 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}
+{{ reply_user_profile.username }} replied to you:
+
+{{ comment.user.username }} ({{ comment.shared_date }} ago):
+{{ comment.comments|linebreaksbr }}
+
+{% for reply in comment.replies %}
+    {{ reply.user.username }} ({{ reply.publish_date }} ago):
+    {{ reply.comments }}
+{% endfor %}{% endblock %}

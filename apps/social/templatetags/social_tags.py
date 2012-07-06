@@ -13,3 +13,9 @@ def render_story_comment(comment):
     return {
         'comment': comment,
     }
+
+@register.inclusion_tag('mail/email_story_comment.xhtml')
+def render_email_comment(comment):
+    return {
+        'comment': comment,
+    }

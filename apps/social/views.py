@@ -11,11 +11,12 @@ from django.template import RequestContext
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
 from apps.social.models import MRequestInvite, MInteraction, MActivity
-from apps.social.tasks import PostToService
+from apps.social.tasks import PostToService, EmailCommentReplies
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
 from apps.reader.models import MUserStory, UserSubscription
+from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
 from utils import PyRSS2Gen as RSS
@@ -443,6 +444,8 @@ def save_comment_reply(request):
                                          original_message=original_message,
                                          social_feed_id=comment_user_id,
                                          story_id=story_id)
+                                         
+    EmailCommentReplies.delay(shared_story_id=shared_story.id, reply_user_id=request.user.pk)
     
     if format == 'html':
         comment = MSharedStory.attach_users_to_comment(comment, profiles)
@@ -455,6 +458,14 @@ def save_comment_reply(request):
             'comment': comment, 
             'user_profiles': profiles
         })
+
+@render_to('social/mute_story.xhtml')
+def mute_story(request, secret_token, shared_story_id):
+    user_profile = Profile.objects.get(secret_token=secret_token)
+    shared_story = MSharedStory.objects.get(id=shared_story_id)
+    shared_story.mute_for_user(user_profile.user_id)
+    
+    return {}
     
 def shared_stories_public(request, username):
     try:

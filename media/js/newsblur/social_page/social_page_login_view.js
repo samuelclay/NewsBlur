@@ -114,7 +114,7 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
                 this.login();
             }, this);
             
-            $login.add($password).unbind('keydown.login')
+            $username.add($password).unbind('keydown.login')
                      .bind('keydown.login', 'ctrl+return', login)
                      .bind('keydown.login', 'meta+return', login)
                      .bind('keydown.login', 'return', login);
