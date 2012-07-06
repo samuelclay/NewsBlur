@@ -22,6 +22,15 @@ public class Feed {
 	@SerializedName("favicon")
 	public String favicon;
 	
+	@SerializedName("nt")
+	public int neutralCount;
+	
+	@SerializedName("ng")
+	public int negativeCount;
+	
+	@SerializedName("ps")
+	public int positiveCount;
+	
 	@SerializedName("favicon_fade")
 	public String faviconFade;
 	
@@ -43,6 +52,9 @@ public class Feed {
 		values.put(DatabaseConstants.FEED_ACTIVE, active);
 		values.put(DatabaseConstants.FEED_ADDRESS, address);
 		values.put(DatabaseConstants.FEED_FAVICON_COLOUR, faviconColour);
+		values.put(DatabaseConstants.FEED_POSITIVE_COUNT, positiveCount);
+		values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, neutralCount);
+		values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, negativeCount);
 		values.put(DatabaseConstants.FEED_FAVICON_FADE, faviconFade);
 		values.put(DatabaseConstants.FEED_FAVICON, favicon);
 		values.put(DatabaseConstants.FEED_LINK, feedLink);

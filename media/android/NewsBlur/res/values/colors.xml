@@ -12,4 +12,10 @@
     <color name="half_black">#7000</color>
     <color name="transparent">#0000</color>
     <color name="half_darkgray">#77434343</color>
+    
+    <color name="positive">#3B7613</color>
+    <color name="neutral">#F6C000</color>
+    <color name="negative">#DE0000</color>
+    
+    
 </resources>

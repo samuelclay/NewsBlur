@@ -32,7 +32,8 @@
         
         <activity
             android:name=".activity.Profile"
-            android:label="@string/profile" />
+            android:label="@string/profile" 
+            android:hardwareAccelerated="false" />
 
         <service android:name=".service.SyncService" />
 

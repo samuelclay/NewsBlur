@@ -1,21 +1,31 @@
 package com.newsblur.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 
 import com.newsblur.activity.PrefConstants;
 import com.newsblur.domain.UserProfile;
 
 public class PrefsUtil {
-	
+
 	public static void saveCookie(final Context context, final String cookie) {
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		final Editor edit = preferences.edit();
 		edit.putString(PrefConstants.PREF_COOKIE, cookie);
 		edit.commit();
 	}
-	
+
 	public static void saveUserDetails(final Context context, final UserProfile profile) {
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		final Editor edit = preferences.edit();
@@ -36,11 +46,12 @@ public class PrefsUtil {
 		edit.putString(PrefConstants.USER_USERNAME, profile.username);
 		edit.putString(PrefConstants.USER_WEBSITE, profile.website);
 		edit.commit();
+		saveUserImage(context, profile.photoUrl);
 	}
-	
+
 	public static UserProfile getUserDetails(final Context context) {
 		UserProfile user = new UserProfile();
-		
+
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		user.averageStoriesPerMonth = preferences.getInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, 0);
 		user.bio = preferences.getString(PrefConstants.USER_BIO, null);
@@ -58,7 +69,31 @@ public class PrefsUtil {
 		user.subscriptionCount = preferences.getInt(PrefConstants.USER_SUBSCRIBER_COUNT, 0);
 		user.username = preferences.getString(PrefConstants.USER_USERNAME, null);
 		user.website = preferences.getString(PrefConstants.USER_WEBSITE, null);
+		
 		return user;
 	}
+
+	private static void saveUserImage(final Context context, String pictureUrl) {
+		Bitmap bitmap = null;
+		try {
+			URL url = new URL(pictureUrl);
+			URLConnection connection;
+			connection = url.openConnection();
+			connection.setUseCaches(true);
+			bitmap = BitmapFactory.decodeStream( (InputStream) connection.getContent());
+			
+			File file = context.getCacheDir();
+			File imageFile = new File(file.getPath() + "/userProfilePicture");
+			bitmap.compress(CompressFormat.PNG, 100, new FileOutputStream(imageFile));
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Bitmap getUserImage(final Context context) {
+		 return BitmapFactory.decodeFile(context.getCacheDir().getPath() + "/userProfilePicture");
+	}
+
 
 }

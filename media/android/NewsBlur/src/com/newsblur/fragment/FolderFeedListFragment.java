@@ -30,8 +30,8 @@ public class FolderFeedListFragment extends Fragment {
 
 		final String[] groupFrom = new String[] { DatabaseConstants.FOLDER_NAME };
 		final int[] groupTo = new int[] { R.id.row_foldername };
-		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON };
-		final int[] childTo = new int[] { R.id.row_feedname, R.id.row_feedfavicon };
+		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON, DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.FEED_NEGATIVE_COUNT, DatabaseConstants.FEED_POSITIVE_COUNT };
+		final int[] childTo = new int[] { R.id.row_feedname, R.id.row_feedfavicon, R.id.row_feedneutral, R.id.row_feednegative, R.id.row_feedpositive };
 
 		folderAdapter = new FolderTreeAdapter(getActivity(), cursor, R.layout.row_folder_collapsed, R.layout.row_folder_expanded, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
 		folderAdapter.setViewBinder(new FolderTreeViewBinder());

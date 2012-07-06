@@ -17,14 +17,13 @@
             android:layout_height="fill_parent"
             android:gravity="center_vertical" >
 
-            <ImageView
+            <com.newsblur.view.RoundedImageView
                 android:id="@+id/profile_picture"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_margin="20dp"
-                android:background="@color/darkgray"
                 android:contentDescription="@string/description_profile_picture"
-                android:scaleType="center"
+                android:scaleType="fitCenter"
                 android:src="@drawable/person" />
         </LinearLayout>
 

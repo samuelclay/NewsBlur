@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -27,8 +28,10 @@ public class ProfileDetailsFragment extends Fragment {
 		
 		TextView username = (TextView) v.findViewById(R.id.profile_username);
 		username.setText(user.username);
+		
 		TextView bio = (TextView) v.findViewById(R.id.profile_bio);
 		bio.setText(user.bio);
+		
 		TextView location = (TextView) v.findViewById(R.id.profile_location);
 		location.setText(user.location);
 		
@@ -43,6 +46,9 @@ public class ProfileDetailsFragment extends Fragment {
 		
 		TextView subscriberCount = (TextView) v.findViewById(R.id.profile_subscribercount);
 		subscriberCount.setText("" + user.numberOfSubscribers);
+		
+		final ImageView imageView = (ImageView) v.findViewById(R.id.profile_picture);
+		imageView.setImageBitmap(PrefsUtil.getUserImage(getActivity()));
 		
 		return v;
 	}
