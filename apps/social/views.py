@@ -49,13 +49,16 @@ def load_social_stories(request, user_id, username=None):
     if page: offset = limit * (int(page) - 1)
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-
+    
+    social_profile = MSocialProfile.objects.get(user_id=social_user.pk)
     mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
     
     if not stories:
         return dict(stories=[])
-        
+    
+    checkpoint1 = time.time()
+    
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
@@ -83,6 +86,8 @@ def load_social_stories(request, user_id, username=None):
     classifier_titles  = classifier_titles + list(MClassifierTitle.objects(user_id=user.pk, feed_id__in=story_feed_ids))
     classifier_tags    = classifier_tags + list(MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids))
 
+    checkpoint2 = time.time()
+    
     story_ids = [story['id'] for story in stories]
     userstories_db = MUserStory.objects(user_id=user.pk,
                                         feed_id__in=story_feed_ids,
@@ -155,9 +160,13 @@ def load_social_stories(request, user_id, username=None):
         socialsub.feed_opens += 1
         socialsub.save()
     
-    end = time.time()
-    logging.user(request, "~FCLoading shared stories: ~SB%s stories ~SN(%.2f sec)" % (len(stories), end-start))
-    
+    diff1 = checkpoint1-start
+    diff2 = checkpoint2-start
+    timediff = time.time()-start
+    logging.user(request, "~FCLoading ~FMshared stories~FC: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s~SN)" % (
+    social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', timediff,
+    diff1, diff2))
+
     return {
         "stories": stories, 
         "user_profiles": user_profiles, 

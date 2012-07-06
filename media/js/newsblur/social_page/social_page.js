@@ -8,6 +8,12 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         "click .NB-page-controls-next:not(.NB-loaded):not(.NB-loading)" : "next_page"
     },
     
+    next_animation_options: {
+        'duration': 500,
+        'easing': 'easeInOutQuint',
+        'queue': false
+    },
+    
     initialize: function() {
         NEWSBLUR.assets = new NEWSBLUR.SocialPageAssets();
         this.initialize_stories();
@@ -21,36 +27,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         });
     },
     
-    // ===========
-    // = Actions =
-    // ===========
     
-    post_next_page: function(data) {
-        var $controls = this.$('.NB-page-controls').last();
-        var $button = $('.NB-page-controls-next', $controls);
-        var $loading = $('.NB-page-controls-text-loading', $controls);
-        var $loaded = $('.NB-page-controls-text-loaded', $controls);
-        var height = $controls.height();
-        var innerheight = $button.height();
-        
-        $button.removeClass('NB-loading').addClass('NB-loaded');
-        $button.stop(true).animate({'backgroundColor': '#86B86B'}, {'duration': 750, 'easing': 'easeOutExpo', 'queue': false});
-        
-        $loaded.text('Page ' + this.page).css('bottom', height).animate({'bottom': innerheight}, {
-            'duration': 500,
-            'easing': 'easeInOutQuint',
-            'queue': false
-        });
-        $loading.animate({'bottom': -1 * innerheight}, {
-            'duration': 500,
-            'easing': 'easeInOutQuint',
-            'queue': false
-        });
-        
-        clearInterval(this.feed_stories_loading);
-        
-        $controls.after($(data));
-    },
     
     // ==========
     // = Events =
@@ -64,16 +41,9 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         var height = this.$('.NB-page-controls').height();
         var innerheight = $button.height();
         
-        $loading.text('Loading...').css('bottom', height).animate({'bottom': innerheight}, {
-            'duration': 500,
-            'easing': 'easeInOutQuint',
-            'queue': false
-        });
-        $next.animate({'bottom': -1 * innerheight}, {
-            'duration': 500,
-            'easing': 'easeInOutQuint',
-            'queue': false
-        });
+        $loaded.animate({'bottom': height}, this.next_animation_options);
+        $loading.text('Loading...').css('bottom', height).animate({'bottom': innerheight}, this.next_animation_options);
+        $next.animate({'bottom': -1 * innerheight}, this.next_animation_options);
         $button.addClass('NB-loading');
         
         $button.animate({'backgroundColor': '#5C89C9'}, 650)
@@ -92,8 +62,52 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
                 'page': this.page,
                 'format': 'html'
             },
-            success: _.bind(this.post_next_page, this)
+            success: _.bind(this.post_next_page, this),
+            error: _.bind(this.error_next_page, this)
         });
+    },
+    
+    post_next_page: function(data) {
+        var $controls = this.$('.NB-page-controls').last();
+        var $button = $('.NB-page-controls-next', $controls);
+        var $loading = $('.NB-page-controls-text-loading', $controls);
+        var $loaded = $('.NB-page-controls-text-loaded', $controls);
+        var height = $controls.height();
+        var innerheight = $button.height();
+        
+        $button.removeClass('NB-loading').addClass('NB-loaded');
+        $button.stop(true).animate({'backgroundColor': '#86B86B'}, {'duration': 750, 'easing': 'easeOutExpo', 'queue': false});
+        
+        $loaded.text('Page ' + this.page).css('bottom', height).animate({'bottom': innerheight}, this.next_animation_options);
+        $loading.animate({'bottom': -1 * innerheight}, this.next_animation_options);
+        
+        clearInterval(this.feed_stories_loading);
+        
+        $controls.after($(data));
+    },
+    
+    error_next_page: function() {
+        var $controls = this.$('.NB-page-controls').last();
+        var $button = $('.NB-page-controls-next', $controls);
+        var $loading = $('.NB-page-controls-text-loading', $controls);
+        var $next = $('.NB-page-controls-text-next', $controls);
+        var height = $controls.height();
+        var innerheight = $button.height();
+        
+        $button.removeClass('NB-loading').removeClass('NB-loaded');
+        $button.stop(true).animate({'backgroundColor': '#B6686B'}, {
+            'duration': 750, 
+            'easing': 'easeOutExpo', 
+            'queue': false
+        });
+        
+        this.page -= 1;
+        
+        $next.text('Whoops! Something went wrong. Try again.')
+             .animate({'bottom': innerheight}, this.next_animation_options);
+        $loading.animate({'bottom': height}, this.next_animation_options);
+        
+        clearInterval(this.feed_stories_loading);
     }
     
 });

@@ -2,11 +2,13 @@ from django import template
 
 register = template.Library()
 
-@register.inclusion_tag('social/social_story.xhtml')
-def render_social_story(story, has_next_story=False):
+@register.inclusion_tag('social/social_story.xhtml', takes_context=True)
+def render_social_story(context, story, has_next_story=False):
+    user = context['user']
     return {
         'story': story,
-        'has_next_story': has_next_story
+        'has_next_story': has_next_story,
+        'user': user,
     }
 
 @register.inclusion_tag('social/story_share.xhtml')

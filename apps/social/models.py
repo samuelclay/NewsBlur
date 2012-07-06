@@ -90,7 +90,7 @@ class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField(unique=True)
     username             = mongo.StringField(max_length=30, unique=True)
     email                = mongo.StringField()
-    bio                  = mongo.StringField(max_length=80)
+    bio                  = mongo.StringField(max_length=160)
     blog_title           = mongo.StringField(max_length=256)
     custom_css           = mongo.StringField()
     photo_url            = mongo.StringField()
