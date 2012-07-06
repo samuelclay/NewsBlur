@@ -1,6 +1,7 @@
 import time
 import datetime
 import zlib
+import random
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -24,6 +25,7 @@ from utils.user_functions import get_user, ajax_login_required
 from utils.view_functions import render_to
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
+from utils import jennyholzer
 from vendor.timezones.utilities import localtime_for_timezone
 
 @json.json_view
@@ -232,6 +234,7 @@ def load_social_page(request, user_id, username=None):
         'feeds'         : feeds,
         'user_profile'  : hasattr(user, 'profile') and user.profile,
         'has_next_page' : has_next_page,
+        'holzer_truism' : random.choice(jennyholzer.TRUISMS) #if not has_next_page else None
     }
 
     diff1 = checkpoint1-start

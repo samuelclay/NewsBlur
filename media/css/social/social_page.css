@@ -959,14 +959,14 @@ header {
     border-top: 2px solid #8B8B8B;
     border-bottom: 2px solid #8B8B8B;
     padding: 1px 0;
-    cursor: pointer;
     text-align: center;
     margin: 0 auto 36px;
     width: 800px;
     border-radius: 8px;
     overflow: hidden;
 }
-.NB-page-controls-next {
+.NB-page-controls-next,
+.NB-page-controls-end {
     background-color: #506CB1;
     color: white;
     text-shadow: 0 1px 0 #2B478C;
@@ -978,10 +978,16 @@ header {
     border-radius: 8px;
     height: 20px;
     position: relative;
+    cursor: pointer;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
+}
+.NB-page-controls-end {
+    background-color: #3B3E49;
+    cursor: default;
+    height: auto;
 }
 .NB-page-controls-next.NB-loading {
     -webkit-transition: none;
@@ -993,7 +999,7 @@ header {
 .NB-page-controls-next.NB-loaded {
     cursor: default;
 }
-.NB-page-controls:hover .NB-page-controls-next {
+.NB-page-controls .NB-page-controls-next:hover {
     background-color: #2B478C;
     background-image: none;
     text-shadow: 0 1px 0 #141F48;
