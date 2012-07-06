@@ -2641,7 +2641,7 @@
             var feed_id, inverse, story_id;
             if (type == 'folder') {
                 feed_id = options.folder_title;
-                inverse = options.inverse || $('.folder_title', $item).hasClass("NB-hover-inverse");
+                inverse = options.inverse || $item.hasClass("NB-hover-inverse");
             } else if (type == 'feed') {
                 feed_id = options.feed_id;
                 inverse = options.inverse || $item.hasClass("NB-hover-inverse");

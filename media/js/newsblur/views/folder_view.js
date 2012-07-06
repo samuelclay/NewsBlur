@@ -208,7 +208,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             return;
         }
 
-        if (this.$el.offset().top > $(window).height() - 314) {
+        if (this.$el.offset().top > $(window).height() - 194) {
             this.$el.addClass('NB-hover-inverse');
         } 
     },

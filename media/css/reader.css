@@ -607,7 +607,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     background-position: 3px 5px;
 }
 .NB-feedlist .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover,
-.NB-feedlist .folder_title.NB-hover-inverse .NB-feedlist-manage-icon:hover {
+.NB-feedlist .folder.NB-hover-inverse .NB-feedlist-manage-icon:hover {
     background: transparent url('/media/embed/icons/silk/bullet_arrow_up.png') no-repeat 3px 2px;
 }
 
@@ -6538,7 +6538,7 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
 }
 
-.NB-modal-feedchooser .NB-feedlist .folder_title.NB-hover-inverse .NB-feedlist-manage-icon {
+.NB-modal-feedchooser .NB-feedlist .folder.NB-hover-inverse .NB-feedlist-manage-icon {
     background: none;
 }
 .NB-modal-feedchooser .NB-feedlist .folder_title:hover {
