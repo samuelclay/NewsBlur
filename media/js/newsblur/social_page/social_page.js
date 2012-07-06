@@ -34,6 +34,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         var innerheight = $button.height();
         
         $button.removeClass('NB-loading').addClass('NB-loaded');
+        $button.stop(true).animate({'backgroundColor': '#86B86B'}, {'duration': 750, 'easing': 'easeOutExpo', 'queue': false});
         
         $loaded.text('Page ' + this.page).css('bottom', height).animate({'bottom': innerheight}, {
             'duration': 500,
@@ -47,7 +48,6 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         });
         
         clearInterval(this.feed_stories_loading);
-        $button.stop().animate({'backgroundColor': '#86B86B'}, {'duration': 750, 'queue': false});
         
         $controls.after($(data));
     },
@@ -76,12 +76,12 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         });
         $button.addClass('NB-loading');
         
-        $button.animate({'backgroundColor': '#5C89C9'}, 900);
+        $button.animate({'backgroundColor': '#5C89C9'}, 650)
+               .animate({'backgroundColor': '#2B478C'}, 900);
         this.feed_stories_loading = setInterval(function() {
-            if (!$button.hasClass('NB-loaded')) return;
-            $button.animate({'backgroundColor': '#2B478C'}, {'duration': 650})
-                    .animate({'backgroundColor': '#5C89C9'}, 900);
-        }, 1500);
+            $button.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+                   .animate({'backgroundColor': '#2B478C'}, 900);
+        }, 1550);
         
         this.page += 1;
         

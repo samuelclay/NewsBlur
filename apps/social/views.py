@@ -164,6 +164,7 @@ def load_social_stories(request, user_id, username=None):
     }
 
 def load_social_page(request, user_id, username=None):
+    start = time.time()
     user = request.user
     social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
@@ -183,7 +184,9 @@ def load_social_page(request, user_id, username=None):
     if len(stories) > limit:
         has_next_page = True
         stories = stories[:-1]
-    
+
+    checkpoint1 = time.time()
+
     if not stories:
         return {
             "user": user,
@@ -206,6 +209,8 @@ def load_social_page(request, user_id, username=None):
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, social_user.pk, 
                                                                         check_all=True)
 
+    checkpoint2 = time.time()
+    
     if user.is_authenticated():
         for story in stories:
             if user.pk in story['shared_by_friends'] or user.pk in story['shared_by_public']:
@@ -226,7 +231,13 @@ def load_social_page(request, user_id, username=None):
         'user_profile'  : hasattr(user, 'profile') and user.profile,
         'has_next_page' : has_next_page,
     }
-    
+
+    diff1 = checkpoint1-start
+    diff2 = checkpoint2-start
+    timediff = time.time()-start
+    logging.user(request, "~FYLoading ~FMsocial page~FY: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s~SN)" % (
+        social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', timediff,
+        diff1, diff2))
     if format == 'html':
         template = 'social/social_stories.xhtml'
     else:
