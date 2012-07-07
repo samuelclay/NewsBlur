@@ -534,7 +534,7 @@ def copy_certificates():
     put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
 
 def maintenance_on():
-    put('media/maintenance.html.unsused', '%s/media/maintenance.html.unsused' % env.NEWSBLUR_PATH)
+    put('media/maintenance.html.unused', '%s/media/maintenance.html.unused' % env.NEWSBLUR_PATH)
     with cd(env.NEWSBLUR_PATH):
         run('mv media/maintenance.html.unused media/maintenance.html')
     

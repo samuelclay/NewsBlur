@@ -50,7 +50,8 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         
         var $stats = this.make_stats({
             'last_update': '',
-            'next_update': ''
+            'next_update': '',
+            'loading': true
         });
         $('.NB-modal-statistics-info', this.$modal).replaceWith($stats);
     },
@@ -100,7 +101,7 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
               $.make('div', { className: 'NB-statistics-update'}, [
                 $.make('div', { className: 'NB-statistics-label' }, 'Next Update'),
                 (data.active && $.make('div', { className: 'NB-statistics-count' }, '&nbsp;' + (data['next_update'] && ('in ' + data['next_update'])))),
-                (!data.active && $.make('div', { className: 'NB-statistics-count' }, "Not active"))
+                (!data.active && !data.loading && $.make('div', { className: 'NB-statistics-count' }, "Not active"))
               ]),
               (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-statistics-premium-stats' }, [
                   $.make('div', { className: 'NB-statistics-update'}, [
