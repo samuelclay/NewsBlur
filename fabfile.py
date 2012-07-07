@@ -272,7 +272,7 @@ def setup_db():
     setup_postgres(standby=False)
     # setup_mongo()
     setup_gunicorn(supervisor=False)
-    # setup_redis()
+    setup_redis()
     setup_db_munin()
 
 def setup_task():
@@ -534,6 +534,7 @@ def copy_certificates():
     put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
 
 def maintenance_on():
+    put('media/maintenance.html.unsused', '%s/media/maintenance.html.unsused' % env.NEWSBLUR_PATH)
     with cd(env.NEWSBLUR_PATH):
         run('mv media/maintenance.html.unused media/maintenance.html')
     

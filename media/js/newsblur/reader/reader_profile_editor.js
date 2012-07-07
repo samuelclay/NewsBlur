@@ -63,7 +63,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                             $.make('input', { id: 'NB-profile-website', name: 'website', type: 'text', className: 'NB-input', style: 'width: 440px', value: this.profile.get('website'), "data-max": 200 }),
                             $.make('span', { className: 'NB-count NB-count-website' }),
                             $.make('label', { 'for': 'NB-profile-bio' }, 'Bio'),
-                            $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 580px', value: this.profile.get('bio'), "data-max": 80 }),
+                            $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 580px', value: this.profile.get('bio'), "data-max": 160 }),
                             $.make('span', { className: 'NB-count NB-count-bio' })
                         ])
                     ])

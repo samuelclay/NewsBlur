@@ -76,6 +76,8 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         options = options || {};
         var current_user = NEWSBLUR.assets.user_profile;
         
+        if (this.$('.NB-story-comment-reply-button').hasClass())
+        
         var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
             $.make('img', { className: 'NB-story-comment-reply-photo', src: current_user.get('photo_url') }),
             $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, current_user.get('username')),

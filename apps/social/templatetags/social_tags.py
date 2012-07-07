@@ -11,15 +11,19 @@ def render_social_story(context, story, has_next_story=False):
         'user': user,
     }
 
-@register.inclusion_tag('social/story_share.xhtml')
-def render_story_share(story):
+@register.inclusion_tag('social/story_share.xhtml', takes_context=True)
+def render_story_share(context, story):
+    user = context['user']
     return {
+        'user': user,
         'story': story,
     }
 
-@register.inclusion_tag('social/story_comment.xhtml')
-def render_story_comment(comment):
+@register.inclusion_tag('social/story_comment.xhtml', takes_context=True)
+def render_story_comment(context, comment):
+    user = context['user']
     return {
+        'user': user,
         'comment': comment,
     }
 

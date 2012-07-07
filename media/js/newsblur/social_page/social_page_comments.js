@@ -1,6 +1,7 @@
 NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
     
     events: {
+        "click .NB-story-comment-reply-button": "check_reply_or_login",
         "click .NB-story-comments-public-teaser": "load_public_story_comments"
     },
     
@@ -9,6 +10,12 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         this.comment_views = [];
         this.story_view = this.options.story_view;
         
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.attach_comments();
+        }
+    },
+    
+    attach_comments: function() {
         this.$('.NB-story-comment').each(function() {
             var $comment = $(this);
             var comment = new Backbone.Model({
@@ -23,6 +30,19 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
             });
             self.comment_views.push(comment_view);
         });
+    },
+    
+    // ==========
+    // = Events =
+    // ==========
+    
+    check_reply_or_login: function(e) {
+        if (!NEWSBLUR.Globals.is_authenticated) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.story_view.login_view.toggle_login_dialog();
+            return false;
+        }
     },
     
     load_public_story_comments: function() {
