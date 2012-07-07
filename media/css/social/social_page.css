@@ -118,6 +118,14 @@ header {
 .NB-title.NB-title-no-bio .NB-title-name {
     line-height: 48px;
 }
+.NB-title .NB-title-name a {
+    text-decoration: none;
+    color: #202020;
+}
+.NB-title .NB-title-name a:hover {
+    text-decoration: none;
+    color: #182066;
+}
 .NB-title .NB-title-location {
     float: left;
     color: #F0F0F0;
@@ -205,6 +213,8 @@ header {
     position: relative;
     border-bottom: 1px solid black;
     border-top: 1px solid #707070;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
     color: white;
     font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
