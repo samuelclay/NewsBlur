@@ -3,6 +3,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     initialize: function() {
         var story_id = this.$el.data("storyId");
         var feed_id = this.$el.data("feedId");
+        var story_guid = this.$el.data("guid");
         var user_comments = this.$el.data("userComments");
         var shared = this.$el.hasClass('NB-story-shared');
         var $sideoptions = this.$('.NB-feed-story-sideoptions-container');
@@ -13,6 +14,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             shared: shared
         });
         
+        this.story_guid = story_guid;
         this.comments_view = new NEWSBLUR.Views.SocialPageComments({
             el: this.$('.NB-story-comments-container'),
             model: story,
@@ -46,6 +48,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             }, this), 50);
         }
         
+        this.$mark = this.$el.closest('.NB-mark');
         this.attach_tooltips();
     },
     

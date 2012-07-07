@@ -174,7 +174,7 @@ def load_social_stories(request, user_id, username=None):
         "classifiers": classifiers,
     }
 
-def load_social_page(request, user_id, username=None):
+def load_social_page(request, user_id, username=None, **kwargs):
     start = time.time()
     user = request.user
     social_user_id = int(user_id)
@@ -184,13 +184,17 @@ def load_social_page(request, user_id, username=None):
     page = request.REQUEST.get('page')
     format = request.REQUEST.get('format', None)
     has_next_page = False
+    feed_id = kwargs.get('feed_id') or request.REQUEST.get('feed_id')
     if page: offset = limit * (int(page) - 1)
 
     user_social_profile = None
     if user.is_authenticated():
         user_social_profile = MSocialProfile.objects.get(user_id=user.pk)
     social_profile = MSocialProfile.objects.get(user_id=social_user_id)
-    mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit+1]
+    params = dict(user_id=social_user.pk)
+    if feed_id:
+        params['story_feed_id'] = feed_id
+    mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
     stories = Feed.format_stories(mstories)
     if len(stories) > limit:
         has_next_page = True
@@ -205,6 +209,7 @@ def load_social_page(request, user_id, username=None):
             "feeds": {},
             "social_user": social_user,
             "social_profile": social_profile.page(),
+            'user_social_profile' : json.encode(user_social_profile and user_social_profile.page()),
         }
         template = 'social/social_page.xhtml'
         return render_to_response(template, params, context_instance=RequestContext(request))

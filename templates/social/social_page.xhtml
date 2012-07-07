@@ -54,15 +54,17 @@
             <div class="NB-title-background"></div>
             <div class="NB-title-left">
                 <div class="NB-title-photo">
+                    <a href="/">
                     {% if social_profile.photo_url %}
                         <img src="{{ social_profile.photo_url }}" />
                     {% else %}
                         <img src="{{ MEDIA_URL }}img/reader/default_profile_photo.png" />
                     {% endif %}
+                    </a>
                 </div>
                 <div class="NB-title-content">
                     <div class="NB-title-name">
-                        {{ social_profile.feed_title }}
+                        <a href="/">{{ social_profile.feed_title }}</a>
                     </div>
                     {% if social_profile.location %}
                         <div class="NB-title-location">

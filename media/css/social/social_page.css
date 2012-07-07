@@ -67,7 +67,7 @@ header {
 
 .NB-title-photo {
     margin: 36px 12px 0 14px;
-    z-index: 1;
+    z-index: 2;
     position: absolute;
     top: 0;
     left: 0;

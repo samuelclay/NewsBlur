@@ -52,7 +52,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 SINGLE_DAY = 60*60*24
 
 @render_to('reader/feeds.xhtml')
-def index(request):
+def index(request, **kwargs):
     if request.method == "GET" and request.subdomain and request.subdomain != 'dev':
         username = request.subdomain
         try:
@@ -63,7 +63,7 @@ def index(request):
             return HttpResponseRedirect('http://%s%s' % (
                 Site.objects.get_current().domain.replace('www', 'dev'),
                 reverse('index')))
-        return load_social_page(request, user_id=user.pk, username=request.subdomain)
+        return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
 
     # XXX TODO: Remove me on launch.
     if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
