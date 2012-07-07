@@ -307,13 +307,13 @@ header {
       #E9EAEF 10%,
       #F5F8FA 84%
     );
-    border-top: 1px solid #C0C0C0;
+    border-top: 1px solid #FFF;
 }
 
 .NB-story-header-wrapper {
     border-bottom: 1px solid #D0D0D0;
-    border-right: 1px solid #909090;
-    border-left: 1px solid #909090;
+    border-right: 1px solid #A6A6A6;
+    border-left: 1px solid #A6A6A6;
 }
 
 @media all and (max-width: 800px) {
@@ -430,9 +430,9 @@ header {
 .NB-story {
     background-color: #FAFAFA;
     max-width: 800px;
-    border-right: 1px solid #909090;
-    border-bottom: 1px solid #909090;
-    border-left: 1px solid #909090;
+    border-right: 1px solid #A6A6A6;
+    border-bottom: 1px solid #A6A6A6;
+    border-left: 1px solid #A6A6A6;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
 }
@@ -504,7 +504,7 @@ header {
 .NB-story-comments {
     max-width: 800px;
     border-top: 2px solid #626262;
-    border-bottom: 1px solid #C6C6C6; 
+    border-bottom: 1px solid #EFEFEF; 
     font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
@@ -700,21 +700,21 @@ header {
     -ms-transition: all .12s ease-out;
 }
 .NB-story-comments-public-header {
-    background-color: whiteSmoke;
-    color: #404040;
-    text-shadow: 0 1px 0 white;
+    background-color: #A0A0A0;
+    color: #FFF;
+    text-shadow: 0 1px 0 #101010;
     
     background-image: -webkit-gradient(
       linear,
       left bottom,
       left top,
-      color-stop(0.10, #EBEBEC),
-      color-stop(0.84, #F5F5F5)
+      color-stop(0.10, #878787),
+      color-stop(0.84, #A0A0A0)
     );
     background-image: -moz-linear-gradient(
       center bottom,
-      #EBEBEC 10%,
-      #F5F5F5 84%
+      #878787 10%,
+      #A0A0A0 84%
     );
 
 }
@@ -998,8 +998,8 @@ header {
 /* ================= */
 
 .NB-page-controls {
-    border-top: 2px solid #8B8B8B;
-    border-bottom: 2px solid #8B8B8B;
+    border-top: 2px solid #626262;
+    border-bottom: 2px solid #626262;
     padding: 1px 0;
     text-align: center;
     margin: 0 auto 36px;

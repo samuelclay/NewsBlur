@@ -2233,9 +2233,22 @@ background: transparent;
     -ms-transition: all .12s ease-out;
 }
 #story_pane .NB-story-comments-public-header {
-    background-color: whiteSmoke;
-    color: #404040;
-    text-shadow: 0 1px 0 white;
+    background-color: #A0A0A0;
+    color: #FFF;
+    text-shadow: 0 1px 0 #101010;
+    
+    background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0.10, #878787),
+      color-stop(0.84, #A0A0A0)
+    );
+    background-image: -moz-linear-gradient(
+      center bottom,
+      #878787 10%,
+      #A0A0A0 84%
+    );
 }
 
 #story_pane .NB-story-comments-shares-teaser-wrapper {
