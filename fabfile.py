@@ -636,8 +636,9 @@ def enable_celery_supervisor():
     put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
     
 def copy_task_settings():
-    put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
-    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+    with settings(warn_only=True):
+        put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+        run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 
 # ==============
