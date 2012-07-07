@@ -6,7 +6,6 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
     },
     
     initialize: function() {
-        var self = this;
         this.comment_views = [];
         this.story_view = this.options.story_view;
         
@@ -16,6 +15,8 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
     },
     
     attach_comments: function() {
+        var self = this;
+        
         this.$('.NB-story-comment').each(function() {
             var $comment = $(this);
             var comment = new Backbone.Model({
