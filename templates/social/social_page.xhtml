@@ -47,37 +47,52 @@
 <div class="NB-page">
     <header class="NB-header">
         <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
-            <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-title-logo">
-                <img src="{{ MEDIA_URL }}img/logo_128.png" class="NB-hover-off" />
-                <img src="{{ MEDIA_URL }}img/logo_newsblur_512.png" class="NB-hover-on" />
-            </a>
+
             <div class="NB-title-background"></div>
-            <div class="NB-title-left">
-                <div class="NB-title-photo">
-                    <a href="/">
-                    {% if social_profile.photo_url %}
-                        <img src="{{ social_profile.photo_url }}" />
-                    {% else %}
-                        <img src="{{ MEDIA_URL }}img/reader/default_profile_photo.png" />
-                    {% endif %}
-                    </a>
-                </div>
-                <div class="NB-title-content">
-                    <div class="NB-title-name">
-                        <a href="/">{{ social_profile.feed_title }}</a>
-                    </div>
-                    {% if social_profile.location %}
-                        <div class="NB-title-location">
-                            {{ social_profile.location }}
+            
+            <table class="NB-header-table">
+                <tr>
+                    <td class="NB-title-photo">
+                        <a href="/">
+                        {% if social_profile.photo_url %}
+                            <img src="{{ social_profile.large_photo_url }}" />
+                        {% else %}
+                            <img src="{{ MEDIA_URL }}img/reader/default_profile_photo.png" />
+                        {% endif %}
+                        </a>
+                    </td>
+                    <td class="NB-title">
+                        <div class="NB-title-content">
+                            <div class="NB-title-name">
+                                <a href="/">{{ social_profile.title }}</a>
+                            </div>
+                            {% if social_profile.location %}
+                                <div class="NB-title-location">
+                                    {{ social_profile.location }}
+                                </div>
+                            {% endif %}
+                            {% if social_profile.bio %}
+                                <div class="NB-title-bio">
+                                    {{ social_profile.bio }}
+                                </div>
+                            {% endif %}
+                            <div class="NB-header-stats">
+                                <div class="NB-header-stat"><b>{{ social_profile.shared_stories_count }}</b> shared {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
+                                <div class="NB-header-stat">&middot;</div>
+                                <div class="NB-header-stat"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
+                            </div>
                         </div>
-                    {% endif %}
-                    {% if social_profile.bio %}
-                        <div class="NB-title-bio">
-                            {{ social_profile.bio }}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+                    </td>
+                    <td class="NB-header-right">
+                        <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-title-logo">
+                            <img src="{{ MEDIA_URL }}img/logo_128.png" class="NB-hover-off" />
+                            <img src="{{ MEDIA_URL }}img/logo_newsblur_512.png" class="NB-hover-on" />
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            
+            
         </h1>
         <div class="NB-header-feed">
             {# <a type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}">RSS feed for this page</a> #}

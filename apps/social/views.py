@@ -244,7 +244,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'social_user'   : social_user,
         'stories'       : stories,
         'user_social_profile' : json.encode(user_social_profile and user_social_profile.page()),
-        'social_profile': social_profile.page(),
+        'social_profile': social_profile,
         'feeds'         : feeds,
         'user_profile'  : hasattr(user, 'profile') and user.profile,
         'has_next_page' : has_next_page,

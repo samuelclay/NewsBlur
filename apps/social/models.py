@@ -280,6 +280,15 @@ class MSocialProfile(mongo.Document):
         return settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
     
     @property
+    def large_photo_url(self):
+        photo_url = self.profile_photo_url
+        if 'graph.facebook.com' in photo_url:
+            return photo_url + '?type=large'
+        elif 'twimg' in photo_url:
+            return photo_url.replace('_normal', '')
+        return photo_url
+            
+    @property
     def email_photo_url(self):
         if self.photo_url:
             if self.photo_url.startswith('//'):
@@ -451,12 +460,6 @@ class MSocialProfile(mongo.Document):
             return
         
         follower_profile = MSocialProfile.objects.get(user_id=follower_user_id)
-        photo_url = follower_profile.profile_photo_url
-        if 'graph.facebook.com' in photo_url:
-            follower_profile.photo_url = photo_url + '?type=large'
-        elif 'twimg' in photo_url:
-            follower_profile.photo_url = photo_url.replace('_normal', '')
-
         common_followers, _ = self.common_follows(follower_user_id, direction='followers')
         common_followings, _ = self.common_follows(follower_user_id, direction='following')
         if self.user_id in common_followers:

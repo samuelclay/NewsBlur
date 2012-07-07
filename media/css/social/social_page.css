@@ -65,24 +65,34 @@ header {
     overflow: hidden;
 }
 
+.NB-header-table {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+.NB-header-table td {
+    text-align: left;
+}
+
 .NB-title-photo {
-    margin: 36px 12px 0 14px;
+    vertical-align: top;
+    padding: 24px 12px 24px 14px;
     z-index: 2;
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
 }
 .NB-title-photo img {
-    max-width: 48px;
-    max-height: 48px;
+    max-width: 148px;
+    max-height: 148px;
 }
 .NB-title {
+    vertical-align: middle;
+    width: 100%;
     font-weight: bold;
     overflow: hidden;
     margin: 0;
     position: relative;
 }
-.NB-title .NB-title-background {
+.NB-header .NB-title-background {
     width: 100%;
     height: 100%;
     background-image: -webkit-gradient(
@@ -105,7 +115,7 @@ header {
     z-index: 0;
 }
 .NB-title-content {
-    padding: 36px 14px 24px 74px;
+    padding: 24px 0;
     z-index: 1;
     position: relative;
 }
@@ -116,7 +126,7 @@ header {
     margin-right: 16px;
 }
 .NB-title.NB-title-no-bio .NB-title-name {
-    line-height: 48px;
+    margin-bottom: 6px;
 }
 .NB-title .NB-title-name a {
     text-decoration: none;
@@ -138,28 +148,31 @@ header {
     margin: 4px 16px 0 0;
     text-transform: uppercase;
 }
-.NB-title.NB-title-no-bio .NB-title-location {
-    margin-top: 14px;
-}
 .NB-title .NB-title-bio {
     clear: left;
     color: #909090;
     font-size: 18px;
-    line-height: 18px;
-    padding-top: 4px;
+    line-height: 22px;
+    padding-top: 6px;
 }
-.NB-title.NB-title-no-bio .NB-title-bio {
-    padding: 0;
+
+/* ================ */
+/* = Right Header = */
+/* ================ */
+
+.NB-header .NB-header-right {
+    z-index: 1;
+    vertical-align: top;
+    padding: 24px 12px;
 }
-.NB-title .NB-title-logo {
+.NB-header .NB-title-logo {
     float: right;
     z-index: 1;
     position: relative;
     width: 92px;
     height: 92px;
-    margin: 12px;
 }
-.NB-title .NB-title-logo img {
+.NB-header .NB-title-logo img {
     position: absolute;
     width: 92px;
     height: 92px;
@@ -168,18 +181,37 @@ header {
     border: none;
     opacity: .4;
 }
-.NB-title .NB-title-logo .NB-hover-on {
+.NB-header .NB-title-logo .NB-hover-on {
     opacity: 0;
     -webkit-transition: all .22s ease-out;
     -moz-transition: all .22s ease-out;
     -o-transition: all .22s ease-out;
     -ms-transition: all .22s ease-out;
 }
-.NB-title .NB-title-logo:hover .NB-hover-on {
+.NB-header .NB-title-logo:hover .NB-hover-on {
     opacity: 1;
 }
-.NB-title .NB-title-left {
+.NB-header .NB-header-stats {
+    clear: left;
     overflow: hidden;
+    font-size: 11px;
+    text-transform: uppercase;
+    z-index: 1;
+    color: #AE5D15;
+    font-weight: normal;
+    text-shadow: 0 1px 0 #F0F0F0;
+    margin-top: 6px;
+}
+.NB-header .NB-header-stat {
+    padding-right: 6px;
+    float: left;
+}
+.NB-header .NB-header-stat:last-child {
+    border-bottom: none;
+}
+.NB-header .NB-header-stat b {
+    font-size: 12px;
+    color: #C06411;
 }
 
 /* ========= */
