@@ -1,4 +1,5 @@
 import datetime
+import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
@@ -243,3 +244,26 @@ def change_password(user, old_password, new_password):
         user_db.set_password(new_password)
         user_db.save()
         return 1
+        
+    
+class MSentEmail(mongo.Document):
+    sending_user_id = mongo.IntField()
+    receiver_user_id = mongo.IntField()
+    email_type = mongo.StringField()
+    date_sent = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'sent_emails',
+        'allow_inheritance': False,
+        'indexes': [('sending_user_id', 'receiver_user_id', 'email_type')],
+    }
+    
+    def __unicode__(self):
+        return "%s sent %s email to %s" % (self.sending_user_id, self.email_type, self.receiver_user_id)
+    
+    @classmethod
+    def record(cls, email_type, receiver_user_id, sending_user_id):
+        cls.objects.create(email_type=email_type, 
+                           receiver_user_id=receiver_user_id, 
+                           sending_user_id=sending_user_id)
+    

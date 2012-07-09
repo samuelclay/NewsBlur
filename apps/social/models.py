@@ -19,7 +19,7 @@ from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.rss_feeds.models import Feed, MStory
-from apps.profile.models import Profile
+from apps.profile.models import Profile, MSentEmail
 from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
@@ -281,7 +281,7 @@ class MSocialProfile(mongo.Document):
     
     @property
     def large_photo_url(self):
-        photo_url = self.profile_photo_url
+        photo_url = self.email_photo_url
         if 'graph.facebook.com' in photo_url:
             return photo_url + '?type=large'
         elif 'twimg' in photo_url:
@@ -459,6 +459,15 @@ class MSocialProfile(mongo.Document):
         if not user.email or not user.profile.send_emails or self.user_id == follower_user_id:
             return
         
+        emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,
+                                                sending_user_id=follower_user_id,
+                                                email_type='new_follower')
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+        for email in emails_sent:
+            if email.date_sent > day_ago:
+                logging.user(user, "~BB~SK~FMNot sending new follower email, already sent before. NBD.")
+                return
+        
         follower_profile = MSocialProfile.objects.get(user_id=follower_user_id)
         common_followers, _ = self.common_follows(follower_user_id, direction='followers')
         common_followings, _ = self.common_follows(follower_user_id, direction='following')
@@ -484,6 +493,9 @@ class MSocialProfile(mongo.Document):
                                          to=['%s <%s>' % (user.username, user.email)])
         msg.attach_alternative(html, "text/html")
         msg.send()
+        
+        MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
+                          email_type='new_follower')
                 
         logging.user(user, "~BB~FM~SBSending email for new follower: %s" % follower_profile.username)
             
