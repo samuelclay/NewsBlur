@@ -971,11 +971,25 @@ header {
     border-bottom: 1px solid #F6F6F6;
     height: 0;
 }
+.NB-sideoption-login-wrapper {
+    position: relative;
+}
+.NB-sideoption-login,
+.NB-sideoption-signup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 138px;
+} 
+.NB-sideoption-signup {
+    left: 162px;
+}
 .NB-sideoption-login-wrapper .NB-input {
-    width: 140px;
+    width: 132px;
     margin: 0 0 8px;
 }
-.NB-sideoption-login-wrapper .NB-sideoption-login-signup {
+.NB-sideoption-login-wrapper .NB-sideoption-login-signup,
+.NB-sideoption-login-wrapper .NB-sideoption-signup-login {
     margin: 12px 0 16px;
     line-height: 14px;
     color: white;
@@ -985,7 +999,8 @@ header {
   box-shadow: 2px 2px 0 #95AB76;
 }
 
-.NB-sideoption-login-wrapper .NB-sideoption-login-button {
+.NB-sideoption-login-wrapper .NB-sideoption-login-button,
+.NB-sideoption-login-wrapper .NB-sideoption-signup-button {
     line-height: 14px;
     margin: 8px 0 2px;
   -moz-box-shadow: 2px 2px 0 #95AB76;

@@ -1,13 +1,13 @@
-from fabric.api import abort, cd, lcd, env, get, hide, hosts, local, prompt, parallel, serial
-from fabric.api import put, require, roles, run, runs_once, settings, show, sudo, warn
-from fabric.colors import red, green, blue, cyan, magenta, white, yellow
+from fabric.api import cd, env, local, parallel
+from fabric.api import put, run, settings, sudo
+# from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 try:
     from boto.s3.connection import S3Connection
     from boto.s3.key import Key
 except ImportError:
     print " ---> Boto not installed yet. No S3 connections available."
 from fabric.contrib import django
-import os, sys
+import os
 
 django.settings_module('settings')
 try:
@@ -116,11 +116,12 @@ def deploy_code(copy_assets=False, full=False):
             transfer_assets()
         if full:
             with settings(warn_only=True):
-                run('sudo supervisorctl restart gunicorn')            
+                run('pkill -c gunicorn')            
         else:
             run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://%s > /dev/null' % env.host)
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
+        sudo('supervisorctl restart celery')
 
 def deploy_node():
     with cd(env.NEWSBLUR_PATH):
