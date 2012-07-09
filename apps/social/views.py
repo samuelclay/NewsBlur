@@ -521,6 +521,8 @@ def shared_stories_public(request, username):
 def profile(request):
     user = get_user(request.user)
     user_id = request.GET.get('user_id', user.pk)
+    include_activities_html = request.REQUEST.get('include_activities_html', None)
+
     user_profile = MSocialProfile.objects.get(user_id=user_id)
     user_profile.count_follows()
     user_profile = user_profile.to_json(include_follows=True, common_follows_with_user=user.pk)
@@ -528,11 +530,6 @@ def profile(request):
                       user_profile['following_youknow'] + user_profile['following_everybody'])
     profiles = MSocialProfile.profiles(profile_ids)
     activities = MActivity.user(user_id, page=1, public=True)
-    activities_html = render_to_string('reader/activities_module.xhtml', {
-        'activities': activities,
-        'username': user_profile['username'],
-        'public': True,
-    })
     logging.user(request, "~BB~FRLoading social profile: %s" % user_profile['username'])
         
     payload = {
@@ -544,8 +541,15 @@ def profile(request):
         'following_everybody': user_profile['following_everybody'],
         'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
         'activities': activities,
-        'activities_html': activities_html,
     }
+    
+    if include_activities_html:
+        payload['activities_html'] = render_to_string('reader/activities_module.xhtml', {
+            'activities': activities,
+            'username': user_profile['username'],
+            'public': True,
+        })
+    
     return payload
 
 @ajax_login_required
@@ -760,13 +764,21 @@ def load_social_settings(request, social_user_id, username=None):
     
     return social_profile.to_json()
 
-@render_to('reader/interactions_module.xhtml')
 def load_interactions(request):
-    user = get_user(request)
+    user_id = request.REQUEST.get('user_id', None)
+    if not user_id:
+        user_id = get_user(request).pk
     page = max(1, int(request.REQUEST.get('page', 1)))
-    interactions = MInteraction.user(user.pk, page=page)
-
-    return {
+    interactions = MInteraction.user(user_id, page=page)
+    format = request.REQUEST.get('format', None)
+    
+    data = {
         'interactions': interactions,
         'page': page,
     }
+    
+    if format == 'html':
+        return render_to_response('reader/interactions_module.xhtml', data,
+                                  context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, data)

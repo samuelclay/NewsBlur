@@ -295,7 +295,7 @@ class GoogleReaderImporter(Importer):
                     original_feed = Feed.get_feed_from_url(story['origin']['htmlUrl'], create=False, fetch=False)
                 content = story.get('content') or story.get('summary')
                 story_db = {
-                    "user_id": self.user_id,
+                    "user_id": self.user.pk,
                     "starred_date": datetime.datetime.fromtimestamp(story['updated']),
                     "story_date": datetime.datetime.fromtimestamp(story['published']),
                     "story_title": story.get('title', story.get('origin', {}).get('title', '[Untitled]')),

@@ -405,7 +405,15 @@
       short_desc: "Interactions between a user and other users."
       long_desc: 
         - "Interactions between a user and other users."
-        - Currently only serves HTML. Email samuel@newsblur.com if you want this data in JSON.
+      params:
+        - key: user_id
+          desc: "ID of user. Defaults to current logged in user."
+          optional: true
+          example: "42"
+        - key: page
+          desc: "4 interactions per page."
+          optional: true
+          example: "2"
     - url: /social/follow
       method: POST
       short_desc: "Follow a user and subscribe to their blurblog."
