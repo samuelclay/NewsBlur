@@ -1668,7 +1668,7 @@ class MInteraction(mongo.Document):
     
         interactions = []
         for interaction_db in interactions_db:
-            interaction = interaction_db.to_mongo()
+            interaction = interaction_db.to_json()
             social_profile = social_profiles.get(interaction_db.with_user_id)
             if social_profile:
                 interaction['photo_url'] = social_profile.profile_photo_url
