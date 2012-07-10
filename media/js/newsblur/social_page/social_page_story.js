@@ -39,7 +39,8 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             _.delay(_.bind(function() {
                 this.login_view = new NEWSBLUR.Views.SocialPageLoginView({
                     el: this.el,
-                    model: story
+                    model: story,
+                    story_url: this.story_url()
                 });
                 $sideoptions.append($(this.login_view.template({
                     story: story
@@ -59,6 +60,13 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             fade: true,
             offset: 3
         });
+    },
+    
+    story_url: function() {
+        var guid = this.story_guid.substr(0, 6);
+        var url = window.location.protocol + '//' + window.location.host + '/story/' + guid;
+
+        return url;
     }
     
 });

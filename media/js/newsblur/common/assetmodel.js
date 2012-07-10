@@ -915,13 +915,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     load_interactions_page: function(page, callback, error_callback) {
         this.make_request('/social/interactions', {
-            'page': page
+            'page': page,
+            'format': 'html'
         }, callback, error_callback, {request_type: 'GET'});
     },
     
     load_activities_page: function(page, callback, error_callback) {
         this.make_request('/profile/activities', {
-            'page': page
+            'page': page,
+            'format': 'html'
         }, callback, error_callback, {request_type: 'GET'});
     },
     

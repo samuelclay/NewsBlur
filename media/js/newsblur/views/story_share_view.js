@@ -92,28 +92,32 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $unshare_button.toggleClass('NB-hidden', !this.model.get("shared"));
             $twitter_button.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_twitter'));
             $facebook_button.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_facebook'));
+            this.update_share_button_label();
+            
             var $share_clone = $share.clone();
-            var full_height = $share_clone.css({
+            var dialog_height = $share_clone.css({
                 'height': 'auto',
                 'position': 'absolute',
                 'visibility': 'hidden'
             }).appendTo($share.parent()).height();
-            // $share_clone.remove();
+            $share_clone.remove();
             $share.animate({
-                'height': full_height
+                'height': dialog_height
             }, {
                 'duration': options.immediate ? 0 : 350,
                 'easing': 'easeInOutQuint',
                 'queue': false,
                 'complete': function() {
-                    $comment_input.focus();
+                    if ($comment_input.length == 1) {
+                        $comment_input.focus();
+                    }
                 }
             });
-        
+            
             var sideoptions_height = this.$('.NB-feed-story-sideoptions-container').innerHeight() + 12;
-            var content_height = $story_content.innerHeight() + $story_comments.innerHeight();
+            var content_height = $story_content.height() + $story_comments.height();
 
-            if (sideoptions_height + full_height > content_height) {
+            if (sideoptions_height + dialog_height > content_height) {
                 // this.$s.$feed_stories.scrollTo(this.$s.$feed_stories.scrollTop() + sideoptions_height, {
                 //     'duration': 350,
                 //     'queue': false,
@@ -121,8 +125,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                 // });
                 var original_height = $story_content.height();
                 var original_outerHeight = $story_content.outerHeight(true);
+                
                 $story_content.animate({
-                    'height': original_outerHeight + ((full_height + sideoptions_height) - content_height)
+                    'height': original_height + ((dialog_height + sideoptions_height) - content_height)
                 }, {
                     'duration': 350,
                     'easing': 'easeInOutQuint',
@@ -134,7 +139,6 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
                     }
                 }).data('original_height', original_height);
             }
-            this.update_share_button_label();
             var share = _.bind(function(e) {
                 e.preventDefault();
                 this.mark_story_as_shared({'source': 'sideoption'});

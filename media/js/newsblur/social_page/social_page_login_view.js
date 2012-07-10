@@ -105,13 +105,13 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
             });
         
             var sideoptions_height = $sideoption.innerHeight() + 12;
-            var content_height = $story_content.innerHeight() + $story_comments.innerHeight();
+            var content_height = $story_content.height() + $story_comments.innerHeight();
 
             if (sideoptions_height + dialog_height > content_height) {
                 var original_height = $story_content.height();
                 var original_outerHeight = $story_content.outerHeight(true);
                 $story_content.animate({
-                    'height': original_outerHeight + ((dialog_height + sideoptions_height) - content_height)
+                    'height': original_height + ((dialog_height + sideoptions_height) - content_height)
                 }, {
                     'duration': 350,
                     'easing': 'easeInOutQuint',
@@ -154,12 +154,60 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
     // = Events =
     // ==========
     
+    clean: function() {
+        this.$('.NB-error').remove();
+        this.toggle_login_dialog({resize_open: true});
+    },
+    
     login: function() {
+        this.clean();
         
+        var username = this.$('input[name=login_username]').val();
+        var password = this.$('input[name=login_password]').val();
+        
+        NEWSBLUR.assets.login(username, password, _.bind(this.post_login, this), _.bind(this.login_error, this));
+    },
+    
+    post_login: function(data) {
+        console.log(["login data", data]);
+        this.clean();
+        
+        window.location.href = this.options.story_url;
+    },
+    
+    login_error: function(data) {
+        this.clean();
+        
+        var error = _.first(_.values(data.errors))[0];
+        this.$('.NB-sideoption-login').append($.make('div', { className: 'NB-error' }, error));
+        
+        this.toggle_login_dialog({resize_open: true});
     },
     
     signup: function() {
+        this.clean();
         
+        var username = this.$('input[name=signup_username]').val();
+        var password = this.$('input[name=signup_password]').val();
+        var email    = this.$('input[name=signup_email]').val();
+        
+        NEWSBLUR.assets.signup(username, password, email, _.bind(this.post_signup, this), _.bind(this.signup_error, this));
+    },
+    
+    post_signup: function(data) {
+        console.log(["signup data", data]);
+        this.clean();
+        
+        window.location.href = this.options.story_url;
+    },
+    
+    signup_error: function(data) {
+        this.clean();
+        
+        var error = _.first(_.values(data.errors))[0];
+        this.$('.NB-sideoption-signup').append($.make('div', { className: 'NB-error' }, error));
+        
+        this.toggle_login_dialog({resize_open: true});
     },
     
     switch_to_signup: function() {
@@ -185,7 +233,7 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
             left: !!options.signup ? 0 : width
         });
         
-        this.toggle_login_dialog({resize_open: true});
+        this.clean();
     }
         
 });
