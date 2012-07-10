@@ -7731,7 +7731,7 @@ form.opml_import_form input {
 }
 .NB-modal-profile-editor .NB-tab-profile .NB-modal-submit-button {
     float: left;
-    margin: 12px 0 0 12px;
+    margin: 12px 0 12px 12px;
     text-align: center;
 }
 .NB-modal-profile-editor .NB-modal-section.NB-friends-profile {
@@ -7851,6 +7851,64 @@ form.opml_import_form input {
     text-transform: uppercase;
 }
 
+.NB-modal-profile-editor .NB-tab-blurblog label {
+    clear: both;
+    float: left;
+    width: 200px;
+    padding: 0 8px 0 12px;
+}
+.NB-modal-profile-editor .NB-tab-blurblog input {
+    width: 300px;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-colors {
+    width: 516px;
+    float: left;
+    margin: 0 -6px 12px;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-colorline {
+    clear: both;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-color {
+    float: left;
+    width: 29px;
+    height: 33px;
+    border: 1px solid #606060;
+    margin: 5px 6px;
+    box-shadow: 1px 1px 0 #CFCFCF;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-color:hover {
+    box-shadow: none;
+    border: 4px solid #D95300;
+    margin: 2px 3px;
+    cursor: pointer;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-color.NB-active {
+    border: 4px solid #8F1F00;
+    margin: 2px 3px;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-css {
+    width: 100%;
+    font-family: Courier, monospace;
+    font-size: 13px;
+    padding: 6px;
+    height: 54px;
+}
+.NB-modal-profile-editor .NB-tab-blurblog input[type=text] {
+    margin: 0 0 12px;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-address {
+    float: left;
+    margin: 0 0 12px;
+}
+.NB-modal-profile-editor .NB-blurblog-save-button {
+    margin: 18px 12px 12px;
+    float: left;
+    clear: both;
+}
+.NB-modal-profile-editor .NB-tab.NB-tab-profile,
+.NB-modal-profile-editor .NB-tab.NB-tab-blurblog {
+    height: auto;
+}
 
 /* ================= */
 /* = Profile Badge = */

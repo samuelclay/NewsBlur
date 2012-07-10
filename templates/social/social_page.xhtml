@@ -44,7 +44,7 @@
 
 <body>
     
-<div class="NB-page">
+<div class="NB-page" style="background-color: {% if social_profile.custom_bgcolor %}{{ social_profile.custom_bgcolor }}{% else %}#EBC55F{% endif %}">
     <header class="NB-header">
         <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
 

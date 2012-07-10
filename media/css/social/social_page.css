@@ -44,7 +44,7 @@ blockquote {
 /* ========== */
 
 .NB-page {
-    background: #EBC55F url(/media/img/reader/background-control-light.png) repeat 0 0;
+    background: transparent url(/media/img/reader/background-control-light.png) repeat 0 0;
     padding: 0 12px;
     overflow: hidden;
 }

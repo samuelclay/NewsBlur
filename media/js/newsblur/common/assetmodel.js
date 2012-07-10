@@ -1124,6 +1124,13 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, this));
     },
     
+    save_blurblog_settings: function(data, callback) {
+        this.make_request('/social/save_blurblog_settings/', data, _.bind(function(response) {
+            this.user_profile.set(response.user_profile);
+            callback(response);
+        }, this));
+    },
+    
     follow_user: function(user_id, callback) {
         this.make_request('/social/follow', {'user_id': user_id}, _.bind(function(data) {
             console.log(["follow data", data]);

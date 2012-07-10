@@ -91,7 +91,8 @@ class MSocialProfile(mongo.Document):
     username             = mongo.StringField(max_length=30, unique=True)
     email                = mongo.StringField()
     bio                  = mongo.StringField(max_length=160)
-    blog_title           = mongo.StringField(max_length=256)
+    blurblog_title       = mongo.StringField(max_length=256)
+    custom_bgcolor       = mongo.StringField(max_length=50)
     custom_css           = mongo.StringField()
     photo_url            = mongo.StringField()
     photo_service        = mongo.StringField()
@@ -254,7 +255,7 @@ class MSocialProfile(mongo.Document):
     
     @property
     def title(self):
-        return self.blog_title if self.blog_title else self.username + "'s blurblog"
+        return self.blurblog_title if self.blurblog_title else self.username + "'s blurblog"
         
     def feed(self):
         params = self.to_json(compact=True)
@@ -297,7 +298,7 @@ class MSocialProfile(mongo.Document):
         domain = Site.objects.get_current().domain.replace('www', 'dev')
         return 'http://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
-    def to_json(self, compact=False, include_follows=False, common_follows_with_user=None):
+    def to_json(self, compact=False, include_follows=False, common_follows_with_user=None, include_settings=False):
         # domain = Site.objects.get_current().domain
         domain = Site.objects.get_current().domain.replace('www', 'dev')
         params = {
@@ -323,6 +324,11 @@ class MSocialProfile(mongo.Document):
                 'popular_publishers': json.decode(self.popular_publishers),
                 'stories_last_month': self.stories_last_month,
                 'average_stories_per_month': self.average_stories_per_month,
+            })
+        if include_settings:
+            params.update({
+                'custom_css': self.custom_css,
+                'custom_bgcolor': self.custom_bgcolor,
             })
         if include_follows:
             params.update({

@@ -68,26 +68,80 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-modal-submit-grey NB-profile-save-button NB-modal-submit-button' }, 'Save my profile')
+                $.make('div', { className: 'NB-modal-submit-grey NB-profile-save-button NB-modal-submit-button' }, 'Change your profile above')
             ]),
             $.make('div', { className: 'NB-tab NB-tab-blurblog' }, [
                 $.make('fieldset', [
                     $.make('legend', 'Your Blurblog'),
-                    $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-preview' })
+                    $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-preview' }, [
+                        $.make('label', { 'for': 'NB-profile-blurblog-address' }, 'Blurblog address'),
+                        $.make('a', { href: this.profile.get('feed_link'), target: '_blank', className: 'NB-profile-blurblog-address NB-splash-link' }, this.profile.get('feed_link')),
+                        $.make('label', { 'for': 'NB-profile-blurblog-title' }, 'Blurblog title'),
+                        $.make('input', { type: 'text', id: 'NB-profile-blurblog-title', name: 'blurblog_title', value: this.profile.get('feed_title'), className: 'NB-input' }),
+                        $.make('label', 'Background color'),
+                        this.make_color_palette()
+                    ])
                 ]),
                 $.make('fieldset', [
-                    $.make('legend', 'Custom CSS'),
-                    $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-custom-css'})
+                    $.make('legend', 'Custom CSS for your Blurblog'),
+                    $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-custom-css'}, [
+                        $.make('textarea', { 'className': 'NB-profile-blurblog-css', name: 'css' })
+                    ])
                 ]),
-                $.make('fieldset', [
-                    $.make('legend', 'Comments'),
-                    $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog'})
-                ]),
-                $.make('div', { className: 'NB-modal-submit-grey NB-profile-save-button NB-modal-submit-button' }, 'Save my blurblog settings')
+                $.make('div', { className: 'NB-modal-submit-grey NB-blurblog-save-button NB-modal-submit-button' }, 'Change your blurblog settings above')
             ]),
             $.make('div', { className: 'NB-tab NB-tab-following' }),
             $.make('div', { className: 'NB-tab NB-tab-followers' })
         ]);
+    },
+    
+    make_color_palette: function() {
+        var user_profile = this.user_profile;
+        var colors = [
+            // ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)", "rgb(153, 153, 153)","rgb(183, 183, 183)",
+            // "rgb(204, 204, 204)", "rgb(217, 217, 217)", "rgb(239, 239, 239)", "rgb(243, 243, 243)", "rgb(255, 255, 255)"],
+            // ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
+            // "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"], 
+            ["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)", 
+            "rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)", 
+            "rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)", 
+            "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)", 
+            "rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)", 
+            "rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)",
+            "rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(241, 194, 50)", "rgb(106, 168, 79)",
+            "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
+            "rgb(133, 32, 12)", "rgb(153, 0, 0)", "rgb(180, 95, 6)", "rgb(191, 144, 0)", "rgb(56, 118, 29)",
+            "rgb(19, 79, 92)", "rgb(17, 85, 204)", "rgb(11, 83, 148)", "rgb(53, 28, 117)", "rgb(116, 27, 71)",
+            "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)", 
+            "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
+        ];
+        
+        var $colors = $.make('div', { className: 'NB-profile-blurblog-colors' });
+        _.each(colors, function(color_line) {
+            var $color_line = $.make('div', { className: 'NB-profile-blurblog-colorline' });
+            _.each(color_line, function(color) {
+                var $color = $.make('span', { className: 'NB-profile-blurblog-color', style: 'background-color: ' + color }).data('color', color);
+                $color_line.append($color);
+            });
+            $colors.append($color_line);
+        });
+        
+        return $colors;
+    },
+    
+    choose_color: function() {
+        var user_profile = this.profile;
+        var $colors = $('.NB-profile-blurblog-color', this.$modal);
+        
+        $colors.each(function() {
+            var $color = $(this);
+            var color = $color.data('color');
+            
+            if (user_profile.get('custom_bgcolor') == color) {
+                $color.addClass('NB-active');
+                return false;
+            }
+        });
     },
     
     make_profile_section: function() {
@@ -144,6 +198,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             this.services = data.services;
             this.make_profile_section();
             this.make_profile_photo_chooser();
+            this.choose_color();
             callback && callback();
         }, this));
     },
@@ -234,10 +289,23 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         };
         this.model.save_user_profile(data, _.bind(function() {
             this.animate_profile_badge();
-            this.disable_save();
+            this.disable_save_profile();
         }, this));
-        this.disable_save();
+        this.disable_save_profile();
         $('.NB-profile-save-button', this.$modal).text('Saving...');
+    },
+    
+    save_blurblog: function() {
+        var data = {
+            'blurblog_title': $('input[name=blurblog_title]', this.$modal).val(),
+            'custom_bgcolor': $('.NB-profile-blurblog-color.NB-active', this.$modal).data('color'),
+            'custom_css': $('textarea[name=css]', this.$modal).val()
+        };
+        this.model.save_blurblog_settings(data, _.bind(function() {
+            this.disable_save_blurblog();
+        }, this));
+        this.disable_save_blurblog();
+        $('.NB-blurblog-save-button', this.$modal).text('Saving...');
     },
     
     animate_profile_badge: function($badge) {
@@ -269,6 +337,12 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         });
     },
     
+    set_active_color: function($color) {
+        $('.NB-profile-blurblog-color.NB-active', this.$modal).removeClass('NB-active');
+        $color.addClass('NB-active');
+        this.enable_save_blurblog();
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -291,6 +365,11 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             
             self.save_profile();
         });
+        $.targetIs(e, { tagSelector: '.NB-blurblog-save-button' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.save_blurblog();
+        });
         $.targetIs(e, { tagSelector: '.NB-account-link' }, function($t, $p) {
             e.preventDefault();
             
@@ -300,6 +379,10 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             e.preventDefault();
             
             self.close_and_load_friends();
+        });
+        $.targetIs(e, { tagSelector: '.NB-profile-blurblog-color' }, function($t, $p) {
+            e.preventDefault();
+            self.set_active_color($t);
         });
     },
     
@@ -333,20 +416,34 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     },
     
     delegate_change: function() {
-        $('.NB-tab-profile', this.$modal).delegate('input[type=radio],input[type=checkbox],select', 'change', _.bind(this.enable_save, this));
-        $('.NB-tab-profile', this.$modal).delegate('input[type=text]', 'keydown', _.bind(this.enable_save, this));
+        $('.NB-tab-profile', this.$modal).delegate('input[type=radio],input[type=checkbox],select', 'change', _.bind(this.enable_save_profile, this));
+        $('.NB-tab-profile', this.$modal).delegate('input[type=text]', 'keydown', _.bind(this.enable_save_profile, this));
+        $('.NB-tab-blurblog', this.$modal).delegate('input[type=text],textarea', 'keydown', _.bind(this.enable_save_blurblog, this));
     },
     
-    enable_save: function() {
-        console.log(["enable_save"]);
+    enable_save_profile: function() {
         $('.NB-profile-save-button', this.$modal)
             .removeClass('NB-modal-submit-grey')
             .addClass('NB-modal-submit-green')
             .text('Save My Profile');
     },
     
-    disable_save: function() {
+    enable_save_blurblog: function() {
+        $('.NB-blurblog-save-button', this.$modal)
+            .removeClass('NB-modal-submit-grey')
+            .addClass('NB-modal-submit-green')
+            .text('Save My Blurblog Settings');
+    },
+    
+    disable_save_profile: function() {
         $('.NB-profile-save-button', this.$modal)
+            .addClass('NB-modal-submit-grey')
+            .removeClass('NB-modal-submit-green')
+            .text('Change what you like above...');
+    },
+    
+    disable_save_blurblog: function() {
+        $('.NB-blurblog-save-button', this.$modal)
             .addClass('NB-modal-submit-grey')
             .removeClass('NB-modal-submit-green')
             .text('Change what you like above...');
