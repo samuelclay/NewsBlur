@@ -116,11 +116,14 @@
         </div>
     {% endif %}
     
-    <footer>
-        NewsBlur
-    </footer>
 </div>
     
+<footer>
+    <div class="NB-footer-logo">
+        <a href="//{% current_domain %}"><img src="{{ MEDIA_URL }}img/logo_newsblur_blur.png" />
+    </div>
+</footer>
+
 {% include_javascripts "blurblog" %}
 
 <script type="text/javascript" charset="utf-8">

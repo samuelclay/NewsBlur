@@ -46,6 +46,7 @@ blockquote {
 .NB-page {
     background: #EBC55F url(/media/img/reader/background-control-light.png) repeat 0 0;
     padding: 0 12px;
+    overflow: hidden;
 }
 
 @media all and (max-width: 500px) {
@@ -1076,4 +1077,21 @@ header {
 .NB-page-controls .NB-page-controls-next .NB-page-controls-text-loading,
 .NB-page-controls .NB-page-controls-next .NB-page-controls-text-loaded {
     bottom: 64px;
+}
+
+/* ========== */
+/* = Footer = */
+/* ========== */
+
+footer {
+    background-color: #F4F4EF;
+    text-align: center;
+    border-top: 1px solid #C0C0C0;
+}
+.NB-footer-logo {
+    border-top: 1px solid #FFF;
+}
+.NB-footer-logo img {
+    margin: 36px auto;
+    border: none;
 }
