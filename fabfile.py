@@ -1,13 +1,13 @@
-from fabric.api import abort, cd, lcd, env, get, hide, hosts, local, prompt, parallel, serial
-from fabric.api import put, require, roles, run, runs_once, settings, show, sudo, warn
-from fabric.colors import red, green, blue, cyan, magenta, white, yellow
+from fabric.api import cd, env, local, parallel
+from fabric.api import put, run, settings, sudo
+# from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 try:
     from boto.s3.connection import S3Connection
     from boto.s3.key import Key
 except ImportError:
     print " ---> Boto not installed yet. No S3 connections available."
 from fabric.contrib import django
-import os, sys
+import os
 
 django.settings_module('settings')
 try:
@@ -116,11 +116,12 @@ def deploy_code(copy_assets=False, full=False):
             transfer_assets()
         if full:
             with settings(warn_only=True):
-                run('sudo supervisorctl restart gunicorn')            
+                run('pkill -c gunicorn')            
         else:
             run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://%s > /dev/null' % env.host)
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
+        sudo('supervisorctl restart celery')
 
 def deploy_node():
     with cd(env.NEWSBLUR_PATH):
@@ -269,10 +270,10 @@ def setup_db():
     setup_db_motd()
     copy_task_settings()
     setup_memcached()
-    # setup_postgres()
-    setup_mongo()
+    setup_postgres(standby=False)
+    # setup_mongo()
     setup_gunicorn(supervisor=False)
-    # setup_redis()
+    setup_redis()
     setup_db_munin()
 
 def setup_task():
@@ -534,6 +535,7 @@ def copy_certificates():
     put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
 
 def maintenance_on():
+    put('media/maintenance.html.unused', '%s/media/maintenance.html.unused' % env.NEWSBLUR_PATH)
     with cd(env.NEWSBLUR_PATH):
         run('mv media/maintenance.html.unused media/maintenance.html')
     
@@ -575,7 +577,7 @@ def setup_memcached():
     sudo('apt-get -y install memcached')
 
 def setup_postgres(standby=False):
-    shmmax = 577060864
+    shmmax = 580126400
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
     put('config/postgresql%s.conf' % (
         ('_standby' if standby else ''),
@@ -636,8 +638,9 @@ def enable_celery_supervisor():
     put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
     
 def copy_task_settings():
-    put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
-    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+    with settings(warn_only=True):
+        put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+        run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
 
 # ==============

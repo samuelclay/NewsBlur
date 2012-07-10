@@ -178,7 +178,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
             // Feeds above folders
             return modelA.is_feed() ? -1 : 1;
         }
-        if (modelA.is_folder()) {
+        if (modelA.is_folder() && modelB.is_folder()) {
             // Folders are alphabetical
             return modelA.get('folder_title').toLowerCase() > modelB.get('folder_title').toLowerCase() ? 1 : -1;
         }
@@ -187,7 +187,6 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         var feedB = modelB.feed;
         
         if (!feedA || !feedB) {
-            // console.log(["missing feed", feedA, feedB, modelA, modelB]);
             return !feedA ? 1 : -1;
         }
         

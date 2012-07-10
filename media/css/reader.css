@@ -59,16 +59,6 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     line-height: 20px;
 }
 
-.NB-input {
-    font-size: 14px;
-    padding: 2px;
-    margin: 2px 4px 2px;
-    border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 #D0D0D0;
-    -webkit-box-shadow:2px 2px 0 #D0D0D0;
-    box-shadow:2px 2px 0 #D0D0D0;
-}
-
 .chzn-drop {
     text-shadow: none;
 }
@@ -617,7 +607,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     background-position: 3px 5px;
 }
 .NB-feedlist .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover,
-.NB-feedlist .folder_title.NB-hover-inverse .NB-feedlist-manage-icon:hover {
+.NB-feedlist .folder.NB-hover-inverse .NB-feedlist-manage-icon:hover {
     background: transparent url('/media/embed/icons/silk/bullet_arrow_up.png') no-repeat 3px 2px;
 }
 
@@ -2243,9 +2233,22 @@ background: transparent;
     -ms-transition: all .12s ease-out;
 }
 #story_pane .NB-story-comments-public-header {
-    background-color: whiteSmoke;
-    color: #404040;
-    text-shadow: 0 1px 0 white;
+    background-color: #A0A0A0;
+    color: #FFF;
+    text-shadow: 0 1px 0 #101010;
+    
+    background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0.10, #878787),
+      color-stop(0.84, #A0A0A0)
+    );
+    background-image: -moz-linear-gradient(
+      center bottom,
+      #878787 10%,
+      #A0A0A0 84%
+    );
 }
 
 #story_pane .NB-story-comments-shares-teaser-wrapper {
@@ -2273,6 +2276,7 @@ background: transparent;
 #story_pane .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
     background-color: #2B478C;
     background-image: none;
+    text-shadow: 0 1px 0 #141F48;
 }
 #story_pane .NB-story-comments-public-teaser b {
     padding: 0 1px;
@@ -2444,7 +2448,6 @@ background: transparent;
     opacity: .4;
     cursor: pointer;
     -webkit-filter: grayscale(100%);
-    display: none;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter:hover,
 .NB-sideoption-share .NB-sideoption-share-crosspost-facebook:hover {
@@ -3497,7 +3500,7 @@ form.opml_import_form input {
     color: #FFF;
     background-color: #b5b4bB;
 }
-.NB-modal-trainer .NB-modal-submit .NB-modal-submit-close {
+.NB-modal-trainer .NB-modal-submit .NB-modal-submit-grey {
     float: left;
     color: #FFF;
     background-color: #b5b4bB;
@@ -4256,8 +4259,8 @@ form.opml_import_form input {
     box-shadow: 1px 1px 0 #D0D0D0;
 }
 
-.NB-module .NB-modal-submit-close {
-  color: #505050;
+.NB-module .NB-modal-submit-grey {
+    color: #505050;
 }
 .NB-module .NB-module-item .NB-module-item-title {
     margin: 0 0 4px 128px;
@@ -4701,7 +4704,18 @@ form.opml_import_form input {
     color: #123B00;
     overflow: hidden;
   }
-  
+  .NB-recommended-show-moderation-wrapper {
+      display: none;
+      float: left;
+      margin-right: 12px;
+  }
+  .NB-module-recommended .NB-module-header:hover .NB-recommended-show-moderation-wrapper {
+      display: block;
+  }
+  .NB-recommended-unmoderated {
+      display: none;
+  }
+
 /* ========= */
 /* = Menus = */
 /* ========= */
@@ -6537,7 +6551,7 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
 }
 
-.NB-modal-feedchooser .NB-feedlist .folder_title.NB-hover-inverse .NB-feedlist-manage-icon {
+.NB-modal-feedchooser .NB-feedlist .folder.NB-hover-inverse .NB-feedlist-manage-icon {
     background: none;
 }
 .NB-modal-feedchooser .NB-feedlist .folder_title:hover {

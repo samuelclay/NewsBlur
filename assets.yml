@@ -92,9 +92,19 @@ javascripts:
         - media/js/vendor/jquery.corners.js
     blurblog:
         - media/js/vendor/jquery-*.js
+        - media/js/vendor/jquery.color.js
         - media/js/vendor/underscore-*.js
         - media/js/vendor/underscore.string.js
         - media/js/vendor/backbone-*.js
+        - media/js/vendor/jquery.tipsy.js
+        - media/js/vendor/inflector.js
+        - media/js/newsblur/social_page/*.js
+        - media/js/newsblur/views/story_share_view.js
+        - media/js/newsblur/views/story_comment_view.js
+        - media/js/vendor/jquery.easing.js
+        - media/js/vendor/jquery.newsblur.js
+        - media/js/vendor/jquery.scrollTo.js
+        - media/js/vendor/jquery.hotkeys.js
 
 stylesheets:
     common:
@@ -111,4 +121,6 @@ stylesheets:
         - media/css/bookmarklet/reset.css
         - media/css/modals.css
     blurblog:
+        - media/css/jquery.tipsy.css
         - media/css/social/social_page.css
+        - media/css/modals.css

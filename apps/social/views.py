@@ -1,20 +1,23 @@
 import time
 import datetime
 import zlib
-from django.shortcuts import get_object_or_404
+import random
+from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
+from django.template import RequestContext
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
 from apps.social.models import MRequestInvite, MInteraction, MActivity
-from apps.social.tasks import PostToService
+from apps.social.tasks import PostToService, EmailCommentReplies, EmailStoryReshares
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.analyzer.models import get_classifiers_for_user, sort_classifiers_by_feed
 from apps.reader.models import MUserStory, UserSubscription
+from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
 from utils import PyRSS2Gen as RSS
@@ -22,6 +25,7 @@ from utils.user_functions import get_user, ajax_login_required
 from utils.view_functions import render_to
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
+from utils import jennyholzer
 from vendor.timezones.utilities import localtime_for_timezone
 
 @json.json_view
@@ -45,14 +49,17 @@ def load_social_stories(request, user_id, username=None):
     if page: offset = limit * (int(page) - 1)
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-
+    
+    social_profile = MSocialProfile.objects.get(user_id=social_user.pk)
     mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
     
     if not stories:
         return dict(stories=[])
-        
-    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
+    
+    checkpoint1 = time.time()
+    
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     try:
@@ -79,6 +86,8 @@ def load_social_stories(request, user_id, username=None):
     classifier_titles  = classifier_titles + list(MClassifierTitle.objects(user_id=user.pk, feed_id__in=story_feed_ids))
     classifier_tags    = classifier_tags + list(MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids))
 
+    checkpoint2 = time.time()
+    
     story_ids = [story['id'] for story in stories]
     userstories_db = MUserStory.objects(user_id=user.pk,
                                         feed_id__in=story_feed_ids,
@@ -121,8 +130,6 @@ def load_social_stories(request, user_id, username=None):
         else:
             story['read_status'] = 0
 
-        # print story['read_status'], story['shared_date'], date_delta
-
         if story['id'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
@@ -153,9 +160,13 @@ def load_social_stories(request, user_id, username=None):
         socialsub.feed_opens += 1
         socialsub.save()
     
-    end = time.time()
-    logging.user(request, "~FCLoading shared stories: ~SB%s stories ~SN(%.2f sec)" % (len(stories), end-start))
-    
+    diff1 = checkpoint1-start
+    diff2 = checkpoint2-start
+    timediff = time.time()-start
+    logging.user(request, "~FYLoading ~FMshared stories~FY: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s~SN)" % (
+    social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', timediff,
+    diff1, diff2))
+
     return {
         "stories": stories, 
         "user_profiles": user_profiles, 
@@ -163,28 +174,45 @@ def load_social_stories(request, user_id, username=None):
         "classifiers": classifiers,
     }
 
-@render_to('social/social_page.xhtml')
-def load_social_page(request, user_id, username=None):
-    user = get_user(request)
+def load_social_page(request, user_id, username=None, **kwargs):
+    start = time.time()
+    user = request.user
     social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 12))
+    limit = int(request.REQUEST.get('limit', 6))
     page = request.REQUEST.get('page')
+    format = request.REQUEST.get('format', None)
+    has_next_page = False
+    feed_id = kwargs.get('feed_id') or request.REQUEST.get('feed_id')
     if page: offset = limit * (int(page) - 1)
-    
+
+    user_social_profile = None
+    if user.is_authenticated():
+        user_social_profile = MSocialProfile.objects.get(user_id=user.pk)
     social_profile = MSocialProfile.objects.get(user_id=social_user_id)
-    mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
+    params = dict(user_id=social_user.pk)
+    if feed_id:
+        params['story_feed_id'] = feed_id
+    mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
     stories = Feed.format_stories(mstories)
-    
+    if len(stories) > limit:
+        has_next_page = True
+        stories = stories[:-1]
+
+    checkpoint1 = time.time()
+
     if not stories:
-        return {
+        params = {
             "user": user,
             "stories": [],
             "feeds": {},
             "social_user": social_user,
             "social_profile": social_profile.page(),
+            'user_social_profile' : json.encode(user_social_profile and user_social_profile.page()),
         }
+        template = 'social/social_page.xhtml'
+        return render_to_response(template, params, context_instance=RequestContext(request))
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     feeds = Feed.objects.filter(pk__in=story_feed_ids)
@@ -196,50 +224,73 @@ def load_social_page(request, user_id, username=None):
         shared_date = localtime_for_timezone(story['shared_date'], social_user.profile.timezone)
         story['shared_date'] = shared_date
     
-    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, user, check_all=True)
-    profiles = dict([(p['user_id'], p) for p in profiles])
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, social_user.pk, 
+                                                                        check_all=True)
+
+    checkpoint2 = time.time()
     
-    for s, story in enumerate(stories):
-        for u, user_id in enumerate(story['shared_by_friends']):
-            stories[s]['shared_by_friends'][u] = profiles[user_id]
-        for u, user_id in enumerate(story['shared_by_public']):
-            stories[s]['shared_by_public'][u] = profiles[user_id]
-        for c, comment in enumerate(story['comments']):
-            stories[s]['comments'][c]['user'] = profiles[comment['user_id']]
-            if comment['source_user_id']:
-                stories[s]['comments'][c]['source_user'] = profiles[comment['source_user_id']]
-            for r, reply in enumerate(comment['replies']):
-                stories[s]['comments'][c]['replies'][r]['user'] = profiles[reply['user_id']]
+    if user.is_authenticated():
+        for story in stories:
+            if user.pk in story['shared_by_friends'] or user.pk in story['shared_by_public']:
+                story['shared_by_user'] = True
+                shared_story = MSharedStory.objects.get(user_id=user.pk, 
+                                                        story_feed_id=story['story_feed_id'],
+                                                        story_guid=story['id'])
+                story['user_comments'] = shared_story.comments
+
+    stories = MSharedStory.attach_users_to_stories(stories, profiles)
 
     params = {
-        'user': user,
-        'social_user': social_user,
-        'stories': stories,
-        'social_profile': social_profile.page(),
-        'feeds': feeds,
+        'social_user'   : social_user,
+        'stories'       : stories,
+        'user_social_profile' : json.encode(user_social_profile and user_social_profile.page()),
+        'social_profile': social_profile,
+        'feeds'         : feeds,
+        'user_profile'  : hasattr(user, 'profile') and user.profile,
+        'has_next_page' : has_next_page,
+        'holzer_truism' : random.choice(jennyholzer.TRUISMS) #if not has_next_page else None
     }
-    
-    return params
-    
-@json.json_view
-def story_comments(request):
-    feed_id  = int(request.REQUEST['feed_id'])
-    story_id = request.REQUEST['story_id']
-    
-    shared_stories = MSharedStory.objects.filter(story_feed_id=feed_id, 
-                                                 story_guid=story_id, 
-                                                 has_comments=True)
-    comments = [s.comments_with_author() for s in shared_stories]
 
-    profile_user_ids = set([c['user_id'] for c in comments])
-    profile_user_ids = profile_user_ids.union([r['user_id'] for c in comments for r in c['replies']])
-    profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
-    profiles = [profile.to_json(compact=True) for profile in profiles]
+    diff1 = checkpoint1-start
+    diff2 = checkpoint2-start
+    timediff = time.time()-start
+    logging.user(request, "~FYLoading ~FMsocial page~FY: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s~SN)" % (
+        social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', timediff,
+        diff1, diff2))
+    if format == 'html':
+        template = 'social/social_stories.xhtml'
+    else:
+        template = 'social/social_page.xhtml'
+        
+    return render_to_response(template, params, context_instance=RequestContext(request))
     
-    return {'comments': comments, 'user_profiles': profiles}
+def story_public_comments(request):
+    format           = request.REQUEST.get('format', 'json')
+    relative_user_id = request.REQUEST.get('user_id', None)
+    feed_id          = int(request.REQUEST['feed_id'])
+    story_id         = request.REQUEST['story_id']
+  
+    if not relative_user_id:
+        relative_user_id = get_user(request).pk
+    
+    stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id).limit(1)
+    stories = Feed.format_stories(stories)
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, relative_user_id, 
+                                                                        check_all=True,
+                                                                        public=True)
+
+    if format == 'html':
+        stories = MSharedStory.attach_users_to_stories(stories, profiles)
+        return render_to_response('social/story_comments.xhtml', {
+            'story': stories[0],
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'comments': stories[0]['comments'], 
+            'user_profiles': profiles,
+        })
 
 @ajax_login_required
-@json.json_view
 def mark_story_as_shared(request):
     code     = 1
     feed_id  = int(request.POST['feed_id'])
@@ -247,23 +298,30 @@ def mark_story_as_shared(request):
     comments = request.POST.get('comments', '')
     source_user_id = request.POST.get('source_user_id')
     post_to_services = request.POST.getlist('post_to_services')
+    format = request.REQUEST.get('format', 'json')
+    original_story_found = True
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
-        return {
-            'code': -1, 
-            'message': 'The original story is gone. This would be a nice bug to fix. Speak up.'
-        }
+        original_story_found = False
+        story = MSharedStory.objects.filter(story_feed_id=feed_id, 
+                                            story_guid=story_id).limit(1).first()
+        if not story:
+            return json.json_response(request, {
+                'code': -1, 
+                'message': 'Could not find the original story and no copies could be found.'
+            })
     
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 
-                                               story_guid=story_id)
+                                               story_guid=story_id).limit(1).first()
     if not shared_story:
         story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
         story_values = dict(user_id=request.user.pk, comments=comments, 
-                            has_comments=bool(comments), **story_db)
-        shared_story = MSharedStory.objects.create(**story_values)
+                            has_comments=bool(comments))
+        story_db.update(story_values)
+        shared_story = MSharedStory.objects.create(**story_db)
         if source_user_id:
             shared_story.set_source_user_id(int(source_user_id))
         socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
@@ -272,18 +330,20 @@ def mark_story_as_shared(request):
             socialsub.save()
         logging.user(request, "~FCSharing ~FM%s: ~SB~FB%s" % (story.story_title[:20], comments[:30]))
     else:
-        shared_story = shared_story[0]
         shared_story.comments = comments
         shared_story.has_comments = bool(comments)
         shared_story.save()
         logging.user(request, "~FCUpdating shared story ~FM%s: ~SB~FB%s" % (
                      story.story_title[:20], comments[:30]))
     
-    story.count_comments()
+    if original_story_found:
+        story.count_comments()
     shared_story.publish_update_to_subscribers()
     
     story = Feed.format_story(story)
-    stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user)
+    check_all = not original_story_found
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user.pk,
+                                                                        check_all=check_all)
     story = stories[0]
     story['shared_comments'] = shared_story['comments'] or ""
     
@@ -291,25 +351,38 @@ def mark_story_as_shared(request):
         for service in post_to_services:
             if service not in shared_story.posted_to_services:
                 PostToService.delay(shared_story_id=shared_story.id, service=service)
-        
-    return {'code': code, 'story': story, 'user_profiles': profiles}
+    
+    if shared_story.source_user_id and not shared_story.emailed_reshare and shared_story.comments:
+        EmailStoryReshares.delay(shared_story_id=shared_story.id)
+    
+    if format == 'html':
+        stories = MSharedStory.attach_users_to_stories(stories, profiles)
+        return render_to_response('social/story_share.xhtml', {
+            'story': story,
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'code': code, 
+            'story': story, 
+            'user_profiles': profiles,
+        })
 
 @ajax_login_required
-@json.json_view
 def mark_story_as_unshared(request):
     feed_id  = int(request.POST['feed_id'])
     story_id = request.POST['story_id']
+    format = request.REQUEST.get('format', 'json')
+    original_story_found = True
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
-        return {'code': -1, 'message': 'Story not found. Reload this site.'}
+        original_story_found = False
         
-    try:
-        shared_story = MSharedStory.objects.get(user_id=request.user.pk, 
-                                                   story_feed_id=feed_id, 
-                                                   story_guid=story_id)
-    except MSharedStory.DoesNotExist:
-        return {'code': -1, 'message': 'Shared story not found.'}
+    shared_story = MSharedStory.objects(user_id=request.user.pk, 
+                                        story_feed_id=feed_id, 
+                                        story_guid=story_id).limit(1).first()
+    if not shared_story:
+        return json.json_response(request, {'code': -1, 'message': 'Shared story not found.'})
     
     socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
     for socialsub in socialsubs:
@@ -319,18 +392,30 @@ def mark_story_as_unshared(request):
                                                                 shared_story.comments[:30]))
     shared_story.delete()
     
-    story.count_comments()
+    if original_story_found:
+        story.count_comments()
+    else:
+        story = shared_story
     
     story = Feed.format_story(story)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], 
-                                                                        request.user, 
+                                                                        request.user.pk, 
                                                                         check_all=True)
-    story = stories[0]
-    
-    return {'code': 1, 'message': "Story unshared.", 'story': story, 'user_profiles': profiles}
+
+    if format == 'html':
+        stories = MSharedStory.attach_users_to_stories(stories, profiles)
+        return render_to_response('social/story_share.xhtml', {
+            'story': stories[0],
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'code': 1, 
+            'message': "Story unshared.", 
+            'story': stories[0], 
+            'user_profiles': profiles,
+        })
     
 @ajax_login_required
-@json.json_view
 def save_comment_reply(request):
     code     = 1
     feed_id  = int(request.POST['story_feed_id'])
@@ -338,9 +423,10 @@ def save_comment_reply(request):
     comment_user_id = request.POST['comment_user_id']
     reply_comments = request.POST.get('reply_comments')
     original_message = request.POST.get('original_message')
+    format = request.REQUEST.get('format', 'json')
     
     if not reply_comments:
-        return {'code': -1, 'message': 'Reply comments cannot be empty.'}
+        return json.json_response(request, {'code': -1, 'message': 'Reply comments cannot be empty.'})
         
     shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
                                             story_feed_id=feed_id, 
@@ -367,7 +453,6 @@ def save_comment_reply(request):
                      shared_story.story_title[:20], reply_comments[:30]))
         shared_story.replies.append(reply)
     shared_story.save()
-    
     
     comment = shared_story.comments_with_author()
     profile_user_ids = set([comment['user_id']])
@@ -399,8 +484,28 @@ def save_comment_reply(request):
                                          original_message=original_message,
                                          social_feed_id=comment_user_id,
                                          story_id=story_id)
+    if not original_message:
+        EmailCommentReplies.delay(shared_story_id=shared_story.id, reply_user_id=request.user.pk)
     
-    return {'code': code, 'comment': comment, 'user_profiles': profiles}
+    if format == 'html':
+        comment = MSharedStory.attach_users_to_comment(comment, profiles)
+        return render_to_response('social/story_comment.xhtml', {
+            'comment': comment,
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'code': code, 
+            'comment': comment, 
+            'user_profiles': profiles
+        })
+
+@render_to('social/mute_story.xhtml')
+def mute_story(request, secret_token, shared_story_id):
+    user_profile = Profile.objects.get(secret_token=secret_token)
+    shared_story = MSharedStory.objects.get(id=shared_story_id)
+    shared_story.mute_for_user(user_profile.user_id)
+    
+    return {}
     
 def shared_stories_public(request, username):
     try:
@@ -416,6 +521,8 @@ def shared_stories_public(request, username):
 def profile(request):
     user = get_user(request.user)
     user_id = request.GET.get('user_id', user.pk)
+    include_activities_html = request.REQUEST.get('include_activities_html', None)
+
     user_profile = MSocialProfile.objects.get(user_id=user_id)
     user_profile.count_follows()
     user_profile = user_profile.to_json(include_follows=True, common_follows_with_user=user.pk)
@@ -423,11 +530,6 @@ def profile(request):
                       user_profile['following_youknow'] + user_profile['following_everybody'])
     profiles = MSocialProfile.profiles(profile_ids)
     activities = MActivity.user(user_id, page=1, public=True)
-    activities_html = render_to_string('reader/activities_module.xhtml', {
-        'activities': activities,
-        'username': user_profile['username'],
-        'public': True,
-    })
     logging.user(request, "~BB~FRLoading social profile: %s" % user_profile['username'])
         
     payload = {
@@ -439,8 +541,15 @@ def profile(request):
         'following_everybody': user_profile['following_everybody'],
         'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
         'activities': activities,
-        'activities_html': activities_html,
     }
+    
+    if include_activities_html:
+        payload['activities_html'] = render_to_string('reader/activities_module.xhtml', {
+            'activities': activities,
+            'username': user_profile['username'],
+            'public': True,
+        })
+    
     return payload
 
 @ajax_login_required
@@ -596,7 +705,7 @@ def shared_stories_rss_feed(request, user_id, username):
         story_data = {
             'title': shared_story.story_title,
             'link': shared_story.story_permalink,
-            'description': zlib.decompress(shared_story.story_content_z),
+            'description': shared_story.story_content_z and zlib.decompress(shared_story.story_content_z),
             'guid': shared_story.story_guid,
             'pubDate': shared_story.story_date,
         }
@@ -655,13 +764,21 @@ def load_social_settings(request, social_user_id, username=None):
     
     return social_profile.to_json()
 
-@render_to('reader/interactions_module.xhtml')
 def load_interactions(request):
-    user = get_user(request)
+    user_id = request.REQUEST.get('user_id', None)
+    if not user_id:
+        user_id = get_user(request).pk
     page = max(1, int(request.REQUEST.get('page', 1)))
-    interactions = MInteraction.user(user.pk, page=page)
-
-    return {
+    interactions = MInteraction.user(user_id, page=page)
+    format = request.REQUEST.get('format', None)
+    
+    data = {
         'interactions': interactions,
         'page': page,
     }
+    
+    if format == 'html':
+        return render_to_response('reader/interactions_module.xhtml', data,
+                                  context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, data)

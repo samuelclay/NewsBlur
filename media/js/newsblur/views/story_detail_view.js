@@ -26,6 +26,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:selected', this.toggle_selected, this);
         this.model.bind('change:starred', this.toggle_starred, this);
         this.model.bind('change:intelligence', this.render_header, this);
+        this.model.bind('change:intelligence', this.toggle_score, this);
         
         // Binding directly instead of using event delegation. Need for speed.
         // this.$el.bind('mouseenter', this.mouseenter);
@@ -53,13 +54,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.$el.html(this.template(params));
         this.toggle_classes();
         this.toggle_read_status();
+        this.toggle_score();
         this.generate_gradients();
         this.render_comments();
 
         return this;
     },
     
-    render_header: function() {
+    render_header: function(model, value, options) {
         var params = this.get_render_params();
         this.$('.NB-feed-story-header').replaceWith($(this.story_header_template(params)));
         this.generate_gradients();
@@ -199,7 +201,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     toggle_classes: function() {
         var changes = this.model.changedAttributes();
         var onlySelected = changes && _.all(_.keys(changes), function(change) {
-            return _.contains(['selected', 'read', 'intelligence'], change);
+            return _.contains(['selected', 'read', 'intelligence', 'visible'], change);
         });
         
         if (onlySelected) return;
@@ -218,8 +220,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.$el.toggleClass('NB-river-story', NEWSBLUR.reader.flags.river_view);
         this.$el.toggleClass('NB-story-starred', !!story.get('starred'));
         this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
-        this.$el.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
-                .addClass('NB-story-'+story.score_name(score));
                 
         if (unread_view > score) {
             this.$el.css('display', 'none');
@@ -240,6 +240,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.$el.toggleClass('read', !!this.model.get('read_status'));
     },
     
+    toggle_score: function() {
+        var story = this.model;
+        
+        this.$el.removeClass('NB-story-negative NB-story-neutral NB-story-postiive')
+                .addClass('NB-story-'+story.score_name(story.score()));
+    },
+    
     toggle_selected: function(model, selected, options) {
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
         
@@ -255,6 +262,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
               NEWSBLUR.reader.flags['page_view_showing_feed_view']))) {
             NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
             NEWSBLUR.app.story_list.scroll_to_selected_story(model, options);
+        }
+        
+        if (NEWSBLUR.reader.flags['feed_view_showing_story_view']) {
+            NEWSBLUR.reader.switch_to_correct_view();
         }
     },
     
@@ -280,11 +291,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             .one('mouseleave', function() {
                 $tag.removeClass('NB-score-now-'+score);
             });
-            _.defer(function() {
-                $tag.one('mouseenter', function() {
-                    $tag.removeClass('NB-score-now-'+score);
-                });
+        _.delay(function() {
+            $tag.one('mouseenter', function() {
+                $tag.removeClass('NB-score-now-'+score);
             });
+        }, 100);
     },
 
     toggle_starred: function() {
@@ -392,23 +403,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         } else if (score == -1) {
             data['dislike_'+classifier_type] = value;
         }
-
+        this.model.set('visible', true, {silent: true});
         NEWSBLUR.assets.classifiers[feed_id][classifier_type+'s'][value] = score;
-        NEWSBLUR.assets.recalculate_story_scores(feed_id);
+        NEWSBLUR.assets.recalculate_story_scores(feed_id, {story_view: this});
         NEWSBLUR.assets.save_classifier(data, function(resp) {
             NEWSBLUR.reader.force_feeds_refresh(null, true, feed_id);
         });
         
-        NEWSBLUR.assets.stories.each(function(story) {
-            if (classifier_type == 'tag' &&
-                _.contains(story.get('story_tags'), value)) {
-                story.trigger('change:intelligence');
-            } else if (classifier_type == 'author' &&
-                story.get('story_authors') == value) {
-                story.trigger('change:intelligence');
-            }
-        });
-
         this.preserve_classifier_color(classifier_type, value, score);
     },
     

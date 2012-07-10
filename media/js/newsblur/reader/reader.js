@@ -153,6 +153,7 @@
                 this.flags.scrolling_by_selecting_story_title = false;
             }, this), 1000);
             this.make_content_pane_feed_counter();
+            this.position_mouse_indicator();
             
             this.switch_taskbar_view(view, flag);
             NEWSBLUR.app.story_titles.fill_out();
@@ -941,7 +942,7 @@
             var self = this;
             var $story_titles = this.$s.$story_titles;
             var feed = this.model.get_feed(feed_id) || options.feed;
-            var temp = feed.get('temp') || !feed.get('subscribed');
+            var temp = feed && (feed.get('temp') || !feed.get('subscribed'));
             
             if (!feed || (temp && !options.try_feed)) {
                 // Setup tryfeed views first, then come back here.
@@ -1264,6 +1265,15 @@
             var $story_titles = this.$s.$story_titles;
             var $social_feed = this.find_social_feed_with_feed_id(feed_id);
 
+            if (!feed && !options.try_feed) {
+                // Setup tryfeed views first, then come back here.
+                var socialsub = this.model.add_social_feed({
+                    id: feed_id,
+                    user_id: parseInt(feed_id.replace('social:', ''), 10)
+                });
+                return this.load_social_feed_in_tryfeed_view(socialsub, options);
+            }
+            
             this.reset_feed();
             this.hide_splash_page();
             
@@ -1721,6 +1731,7 @@
         make_content_pane_feed_counter: function(feed_id) {
             var $content_pane = this.$s.$content_pane;
             feed_id = feed_id || this.active_feed;
+            if (!feed_id) return;
             var feed = this.model.get_feed(feed_id);
             
             if (NEWSBLUR.app.story_unread_counter) {
@@ -2014,7 +2025,7 @@
         // ===================
         
         switch_taskbar_view: function(view, skip_save_type) {
-            // NEWSBLUR.log(['switch_taskbar_view', view]);
+            // NEWSBLUR.log(['switch_taskbar_view', view, skip_save_type]);
             var self = this;
             var $story_pane = this.$s.$story_pane;
             var feed = this.model.get_feed(this.active_feed);
@@ -2242,11 +2253,6 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence Trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-goodies' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies'),
-                        $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Extensions and extras.')
-                    ]),
                     (show_chooser && $.make('li', { className: 'NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
@@ -2260,6 +2266,10 @@
                     $.make('li', { className: 'NB-menu-manage-tutorial' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Tips &amp; Tricks')
+                    ]),
+                    $.make('li', { className: 'NB-menu-manage-goodies' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-manage-account' }, [
@@ -2631,7 +2641,7 @@
             var feed_id, inverse, story_id;
             if (type == 'folder') {
                 feed_id = options.folder_title;
-                inverse = options.inverse || $('.folder_title', $item).hasClass("NB-hover-inverse");
+                inverse = options.inverse || $item.hasClass("NB-hover-inverse");
             } else if (type == 'feed') {
                 feed_id = options.feed_id;
                 inverse = options.inverse || $item.hasClass("NB-hover-inverse");
@@ -3535,7 +3545,7 @@
             $callout.corner('5px');
             
             this.$s.$mouse_indicator.hover(function() {
-                if (parseInt(self.model.preference('lock_mouse_indicator'), 10)) {
+                if (self.model.preference('lock_mouse_indicator')) {
                     $('.NB-callout-text', $callout).text('Unlock');
                 } else {
                     $('.NB-callout-text', $callout).text('Lock');
@@ -3561,7 +3571,7 @@
             var self = this;
             var $callout = $('.NB-callout-mouse-indicator');
             
-            if (parseInt(self.model.preference('lock_mouse_indicator'), 10)) {
+            if (self.model.preference('lock_mouse_indicator')) {
                 self.model.preference('lock_mouse_indicator', 0);
                 $('.NB-callout-text', $callout).text('Unlocked');
             } else {
@@ -3576,12 +3586,15 @@
         },
         
         position_mouse_indicator: function() {
-            var position = parseInt(this.model.preference('lock_mouse_indicator'), 10);
-            if (position <= 0 || position > this.$s.$content_pane.height()) {
+            var position = this.model.preference('lock_mouse_indicator');
+            var container = this.layout.contentLayout.state.container.innerHeight - 30;
+
+            if (position <= 0 || position > container) {
                 position = 50; // Start with a 50 offset
             } else {
                 position = position - 8; // Compensate for mouse indicator height.
             }
+
             this.$s.$mouse_indicator.css('top', position);
             this.cache.mouse_position_y = position;
         },
@@ -3796,7 +3809,7 @@
         setup_ftux_signup_callout: function() {
             var self = this;
             
-            if (!self.flags['bouncing_callout']) {
+            if (!this.flags['bouncing_callout']) {
                 $('.NB-callout-ftux-signup .NB-callout-text').text('Signup');
                 $('.NB-callout-ftux-signup').corner('5px');
                 $('.NB-callout-ftux-signup').css({
@@ -3983,6 +3996,7 @@
         },
         
         show_tryfeed_add_button: function() {
+            console.log(["show_tryfeed_add_button", this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length]);
             if (this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length) return;
             
             var $add = $.make('div', { className: 'NB-modal-submit' }, [
@@ -4902,6 +4916,10 @@
                 e.preventDefault();
                 self.open_keyboard_shortcuts_modal();
             });
+            $document.bind('keydown', '/', function(e) {
+                e.preventDefault();
+                self.open_keyboard_shortcuts_modal();
+            });
             $document.bind('keydown', 'down', function(e) {
                 e.preventDefault();
                 self.show_next_story(1);
@@ -5035,6 +5053,12 @@
                 if (!story_id) return;
                 var story = self.model.get_story(story_id);
                 story.story_view.open_story_in_new_tab();
+            });
+            $document.bind('keypress', 'e', function(e) {
+                e.preventDefault();
+                var story_id = self.active_story;
+                if (!story_id) return;
+                self.send_story_to_email(story_id);
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();

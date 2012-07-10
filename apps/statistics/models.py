@@ -172,7 +172,12 @@ class MStatistics(mongo.Document):
         )
         for key, value in values:
             cls.objects(key=key).update_one(upsert=True, set__key=key, set__value=value)
-
+    
+    @classmethod
+    def delete_old_stats(cls):
+        now = datetime.datetime.now()
+        old_age = now - datetime.timedelta(days=7)
+        FeedLoadtime.objects.filter(date_accessed__lte=old_age).delete()
 
 class MFeedback(mongo.Document):
     date    = mongo.StringField()

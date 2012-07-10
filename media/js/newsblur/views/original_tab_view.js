@@ -342,8 +342,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         this.flags['iframe_story_locations_fetched'] = false;
         
         if (NEWSBLUR.reader.flags['story_titles_loaded']) {
-            NEWSBLUR.log(['iframe loaded, titles loaded (early)']);
-            this.fetch_story_locations_in_story_frame();
+            this.fetch_story_locations_in_story_frame({reset_timer: true});
         } else {
             this.prefetch_story_locations_in_story_frame();
         }

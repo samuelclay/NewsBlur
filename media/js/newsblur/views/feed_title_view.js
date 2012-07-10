@@ -258,7 +258,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             return;
         }
 
-        if (this.$el.offset().top > $(window).height() - 314) {
+        if (this.$el.offset().top > $(window).height() - 334) {
             this.$el.addClass('NB-hover-inverse');
         } 
     },

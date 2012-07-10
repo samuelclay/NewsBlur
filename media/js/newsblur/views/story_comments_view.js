@@ -41,7 +41,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
     render_comments_friends: function() {
         if (!this.model.get('comment_count_friends') || !this.model.get('comment_count')) return;
         
-        this.model.comments.each(_.bind(function(comment) {
+        this.model.friend_comments.each(_.bind(function(comment) {
             var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
             this.$el.append($comment);
         }, this));
@@ -50,17 +50,30 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
     render_comments_public: function() {
         if (!this.model.get('comment_count_public') || !this.model.get('comment_count')) return;
 
-        var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
-            $.make('div', { className: 'NB-story-comments-public-teaser' }, [
-                'There ',
-                Inflector.pluralize('is', this.model.get('comment_count_public')),
-                ' ',
-                $.make('b', this.model.get('comment_count_public')),
-                ' public ',
-                Inflector.pluralize('comment', this.model.get('comment_count_public'))
-            ])
-        ]);
-        this.$el.append($public_teaser);
+        var $header = $.make('div', { 
+            className: 'NB-story-comments-public-header-wrapper' 
+        }, $.make('div', { 
+            className: 'NB-story-comments-public-header' 
+        }, Inflector.pluralize(' public comment', this.model.get('comment_count_public'), true)));
+        
+        this.$el.append($header);
+        
+        this.model.public_comments.each(_.bind(function(comment) {
+            var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
+            this.$el.append($comment);
+        }, this));
+        
+        // var $public_teaser = $.make('div', { className: 'NB-story-comments-public-teaser-wrapper' }, [
+        //     $.make('div', { className: 'NB-story-comments-public-teaser' }, [
+        //         'There ',
+        //         Inflector.pluralize('is', this.model.get('comment_count_public')),
+        //         ' ',
+        //         $.make('b', this.model.get('comment_count_public')),
+        //         ' public ',
+        //         Inflector.pluralize('comment', this.model.get('comment_count_public'))
+        //     ])
+        // ]);
+        // this.$el.append($public_teaser);
     },
     
     template: _.template('\

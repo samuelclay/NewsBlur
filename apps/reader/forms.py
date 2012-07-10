@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db.models import Q
 from apps.reader.models import Feature
+from apps.profile.tasks import EmailNewUser
 from utils import log as logging
 
 class LoginForm(forms.Form):
@@ -125,7 +126,9 @@ class SignupForm(forms.Form):
         new_user.save()
         new_user = authenticate(username=username,
                                 password=password)
-        new_user.profile.send_new_user_email()
+
+        if new_user.email:
+            EmailNewUser.delay(user_id=new_user.pk)
         
         return new_user
 

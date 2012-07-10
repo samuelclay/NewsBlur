@@ -18,10 +18,14 @@ def user(u, msg):
         request = u
         u = request.user
         user_agent = request.environ.get('HTTP_USER_AGENT', '')
-        if 'iPhone App' in user_agent:
+        if 'iPad App' in user_agent:
+            platform = 'iPad'
+        elif 'iPhone App' in user_agent:
             platform = 'iPhone'
         elif 'Blar' in user_agent:
             platform = 'Blar'
+        elif 'Android' in user_agent:
+            platform = 'Androd'
         elif 'MSIE' in user_agent:
             platform = 'IE'
         elif 'Chrome' in user_agent:

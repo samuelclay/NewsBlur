@@ -52,7 +52,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 SINGLE_DAY = 60*60*24
 
 @render_to('reader/feeds.xhtml')
-def index(request):
+def index(request, **kwargs):
     if request.method == "GET" and request.subdomain and request.subdomain != 'dev':
         username = request.subdomain
         try:
@@ -63,7 +63,7 @@ def index(request):
             return HttpResponseRedirect('http://%s%s' % (
                 Site.objects.get_current().domain.replace('www', 'dev'),
                 reverse('index')))
-        return load_social_page(request, user_id=user.pk, username=request.subdomain)
+        return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
 
     # XXX TODO: Remove me on launch.
     if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
@@ -417,7 +417,7 @@ def load_single_feed(request, feed_id):
         
     stories = feed.get_stories(offset, limit)
     try:
-        stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user)
+        stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
     except redis.ConnectionError:
         logging.user(request, "~BR~FK~SBRedis is unavailable for shared stories.")
 
@@ -717,10 +717,10 @@ def load_river_stories(request):
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FCLoading river stories: page %s - ~SB%s/%s "
-                               "stories ~SN(%s/%s/%s feeds) ~FB(%s seconds)" % 
-                               (page, len(stories), len(mstories), len(found_feed_ids), 
-                               len(feed_ids), len(original_feed_ids), timediff))
+    logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s seconds, %s/%s "
+                               "stories, ~SN%s/%s/%s feeds)" % 
+                               (page, timediff, len(stories), len(mstories), len(found_feed_ids), 
+                               len(feed_ids), len(original_feed_ids)))
     
     return dict(stories=stories, classifiers=classifiers, elapsed_time=timediff)
     
@@ -932,7 +932,7 @@ def _parse_user_info(user):
 def add_url(request):
     code = 0
     url = request.POST['url']
-    auto_active = is_true(request.POST.get('auto_active', True))
+    auto_active = is_true(request.POST.get('auto_active', 1))
     
     if not url:
         code = -1

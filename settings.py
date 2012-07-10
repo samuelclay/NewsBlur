@@ -95,6 +95,7 @@ MIDDLEWARE_CLASSES = (
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
+    'apps.profile.middleware.SimpsonsMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -180,6 +181,7 @@ SESSION_ENGINE          = "django.contrib.sessions.backends.db"
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
+SESSION_COOKIE_DOMAIN   = '.newsblur.com'
 
 # ==============
 # = Subdomains =

@@ -8,12 +8,19 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     populate_comments: function(story, collection, changes) {
-        var comments = this.get('comments');
+        var friend_comments = this.get('friend_comments');
+        var public_comments = this.get('public_comments');
 
         if (!this.get('comment_count')) {
-            delete this.comments;
-        } else if (comments && comments.length) {
-            this.comments = new NEWSBLUR.Collections.Comments(this.get('comments'));
+            delete this.friend_comments;
+            delete this.public_comments;
+        } else {
+            if (friend_comments && friend_comments.length) {
+                this.friend_comments = new NEWSBLUR.Collections.Comments(friend_comments);
+            }
+            if (public_comments && public_comments.length) {
+                this.public_comments = new NEWSBLUR.Collections.Comments(public_comments);
+            }
         }
     },
     
@@ -48,7 +55,9 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     change_selected: function(model, selected, changes) {
-        model.collection.detect_selected_story(model, selected);
+        if (model.collection) {
+            model.collection.detect_selected_story(model, selected);
+        }
     }
     
 });
@@ -186,7 +195,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
         
         return this.select(function(story) {
-            return story.score() >= score;
+            return story.score() >= score || story.get('visible');
         });
     },
     
@@ -195,7 +204,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
         
         return this.select(function(story) {
-            var visible = story.score() >= score;
+            var visible = story.score() >= score || story.get('visible');
             var same_story = include_active_story && story.id == active_story_id;
             var read = !!story.get('read_status');
             
@@ -207,7 +216,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         score = _.isUndefined(score) ? NEWSBLUR.reader.get_unread_view_score() : score;
 
         return this.select(function(story) {
-            return story.score() < score;
+            return story.score() < score && !story.get('visible');
         });
     },
     

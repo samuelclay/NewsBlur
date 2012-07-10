@@ -1,0 +1,14 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}On a story entitled "{{ shared_story.story_title }}" from {{ story_feed.feed_title }}, {{ reply_user_profile.username }} replied to you:
+
+{{ comment.user.username }} ({{ comment.shared_date }} ago):
+{{ comment.comments|linebreaksbr }}
+{% for reply in comment.replies %}
+    {{ reply.user.username }} ({{ reply.publish_date }} ago):
+    {{ reply.comments }}
+{% endfor %}
+
+View this conversation: {{ shared_story.blurblog_permalink }}
+
+Don't want any more emails from this story? Mute this conversion: {{ mute_url }}{% endblock %}

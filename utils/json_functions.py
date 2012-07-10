@@ -115,6 +115,10 @@ def json_view(func):
         
 def json_response(request, response=None):
     code = 200
+
+    if isinstance(response, HttpResponseForbidden):
+        return response
+
     try:
         if isinstance(response, dict):
             response = dict(response)
@@ -149,8 +153,6 @@ def json_response(request, response=None):
         else:
             print '\n'.join(traceback.format_exception(*exc_info))
 
-    if isinstance(response, HttpResponseForbidden):
-        return response
     json = json_encode(response)
     return HttpResponse(json, mimetype='application/json', status=code)
 

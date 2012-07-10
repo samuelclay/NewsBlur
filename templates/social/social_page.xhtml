@@ -1,4 +1,4 @@
-{% load utils_tags %}
+{% load utils_tags social_tags %}
 
 <!DOCTYPE html>
 <html>
@@ -7,6 +7,7 @@
     <title>{{ social_profile.feed_title }}</title>
     <link rel="alternate" type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}" title="{{ social_profile.feed_title }} RSS feed">
     <link rel="shortcut icon" HREF="{{ social_profile.photo_url }}">
+    <meta name="viewport" content="width=440">
     
     {% include_stylesheets "blurblog" %}
     
@@ -15,6 +16,30 @@
         {{ social_profile.custom_css|safe }}
     </style>
     {% endif %}
+
+    <script type="text/javascript" charset="utf-8">
+    window.NEWSBLUR = {};
+    NEWSBLUR.Globals = {
+        'is_authenticated' : {{ user.is_authenticated|yesno:"true,false" }},
+        'is_anonymous'     : {{ user.is_anonymous|yesno:"true,false" }},
+        'is_premium'       : {{ user.profile.is_premium|yesno:"true,false" }},
+        'is_admin'         : {{ user.is_staff|yesno:"true,false" }},
+        'is_staff'         : {{ user.is_staff|yesno:"true,false" }},
+        'secret_token'     : "{{ user.profile.secret_token }}",
+        'username'         : "{{ user.username|safe }}",
+        'user_id'          : "{{ user.pk|safe }}",
+        'blurblog_user_id' : "{{ social_profile.user_id|safe }}",
+        'email'            : "{{ user.email|safe }}",
+        'MEDIA_URL'        : "{{ MEDIA_URL }}",
+    };
+    NEWSBLUR.user_social_profile = {{ user_social_profile|safe }};
+    NEWSBLUR.Preferences = {};
+    NEWSBLUR.Models = {};
+    NEWSBLUR.Collections = {};
+    NEWSBLUR.Views = {};
+    NEWSBLUR.app = {};
+    </script>
+
 </head>
 
 <body>
@@ -22,35 +47,52 @@
 <div class="NB-page">
     <header class="NB-header">
         <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
-            <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-title-logo">
-                <img src="{{ MEDIA_URL }}img/logo_128.png" class="NB-hover-off" />
-                <img src="{{ MEDIA_URL }}img/logo_newsblur_512.png" class="NB-hover-on" />
-            </a>
+
             <div class="NB-title-background"></div>
-            <div class="NB-title-left">
-                <div class="NB-title-photo">
-                    {% if social_profile.photo_url %}
-                        <img src="{{ social_profile.photo_url }}" />
-                    {% else %}
-                        <img src="{{ MEDIA_URL }}img/reader/default_profile_photo.png" />
-                    {% endif %}
-                </div>
-                <div class="NB-title-content">
-                    <div class="NB-title-name">
-                        {{ social_profile.feed_title }}
-                    </div>
-                    {% if social_profile.location %}
-                        <div class="NB-title-location">
-                            {{ social_profile.location }}
+            
+            <table class="NB-header-table">
+                <tr>
+                    <td class="NB-title-photo">
+                        <a href="/">
+                        {% if social_profile.photo_url %}
+                            <img src="{{ social_profile.large_photo_url }}" />
+                        {% else %}
+                            <img src="{{ MEDIA_URL }}img/reader/default_profile_photo.png" />
+                        {% endif %}
+                        </a>
+                    </td>
+                    <td class="NB-title">
+                        <div class="NB-title-content">
+                            <div class="NB-title-name">
+                                <a href="/">{{ social_profile.title }}</a>
+                            </div>
+                            {% if social_profile.location %}
+                                <div class="NB-title-location">
+                                    {{ social_profile.location }}
+                                </div>
+                            {% endif %}
+                            {% if social_profile.bio %}
+                                <div class="NB-title-bio">
+                                    {{ social_profile.bio }}
+                                </div>
+                            {% endif %}
+                            <div class="NB-header-stats">
+                                <div class="NB-header-stat"><b>{{ social_profile.shared_stories_count }}</b> shared {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
+                                <div class="NB-header-stat">&middot;</div>
+                                <div class="NB-header-stat"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
+                            </div>
                         </div>
-                    {% endif %}
-                    {% if social_profile.bio %}
-                        <div class="NB-title-bio">
-                            {{ social_profile.bio }}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+                    </td>
+                    <td class="NB-header-right">
+                        <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-title-logo">
+                            <img src="{{ MEDIA_URL }}img/logo_128.png" class="NB-hover-off" />
+                            <img src="{{ MEDIA_URL }}img/logo_newsblur_512.png" class="NB-hover-on" />
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            
+            
         </h1>
         <div class="NB-header-feed">
             {# <a type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}">RSS feed for this page</a> #}
@@ -58,132 +100,32 @@
     </header>
 
     {% for story in stories %}
-        <div class="NB-mark">
-            <div class="NB-divider"></div>
-            <div class="NB-feed NB-feed-{{ story.feed.favicon_text_color }}" style="
-                background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0.16, #{{ story.feed.favicon_color }}), color-stop(0.84, #{{ story.feed.favicon_fade }}) );
-                background-image: -moz-linear-gradient( center bottom, #{{ story.feed.favicon_color }} 16%, #{{ story.feed.favicon_fade }} 84% );
-                border: 1px solid #{{ story.feed.favicon_border }};
-                ">
-                {% if story.feed %}
-                    <div class="NB-feed-favicon">
-                        <img src="{{ story.feed.favicon_url }}" />
-                    </div>
-                    <div class="NB-feed-title">
-                        <a href="/site/{{ story.feed.id }}/">{{ story.feed.feed_title }}</a>
-                    </div>
-                {% endif %}
-            </div>
-            
-            <div class="NB-story-header-wrapper">
-                <div class="NB-story-header">
-                    {% if story.story_authors %}
-                        <div class="NB-story-author">{{ story.story_authors }}</div>
-                    {% endif %}
-                    {% if story.story_tags %}
-                        <div class="NB-story-tags">
-                            {% for story_tag in story.story_tags %}
-                                <div class="NB-story-tag">{{ story_tag }}</div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    <div class="NB-story-title">
-                        <a href="{{ story.story_permalink }}">{{ story.story_title }}</a>
-                    </div>
-                    <div class="NB-story-date">
-                        {% if story.has_modifications %}
-                            <div class="NB-story-modifications-button" title="Show story changes"></div>
-                        {% endif %}
-
-                        {{ story.shared_date|date:"l, F j<\s\u\p>S</\s\u\p>, Y <\s\m\a\l\l>\a\t</\s\m\a\l\l> g:i A"|safe }} 
-                    </div>
-                </div>
-            </div>
-            
-            <div class="NB-story">
-                <div class="NB-story-content">{{ story.story_content|safe }}</div>
-            
-                {% if story.share_count %}
-                <div class="NB-story-comments">
-                    <div class="NB-story-comments-shares-teaser-wrapper">
-                        <div class="NB-story-comments-shares-teaser">
-                            {% if story.share_count %}
-                                <div class="NB-right">
-                                    Shared by 
-                                    <b>{{ story.share_count }}</b>
-                                    {{ story.share_count|pluralize:"person, people" }}
-                                </div>
-                                {% if story.share_count_public %}
-                                    <div class="NB-story-share-profiles NB-story-share-profiles-public">
-                                        {% for share_user in story.shared_by_public %}
-                                            <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
-                                                <img src="{{ share_user.photo_url }}">
-                                            </a>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                            {% if story.share_count %}
-                                {% if story.share_count_friends %}
-                                    <div class="NB-story-share-label">Shared by: </div>
-                                    <div class="NB-story-share-profiles NB-story-share-profiles-friends">
-                                        {% for share_user in story.shared_by_friends %}
-                                            <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
-                                                <img src="{{ share_user.photo_url }}">
-                                            </a>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% for comment in story.comments %}
-                    <div class="NB-story-comment">
-                        <a href="{{ comment.user.feed_link }}" class="NB-user-avatar {% if comment.source_user_id %}NB-story-comment-reshare{% endif %}">
-                            <img src="{{ comment.user.photo_url }}">
-                        </a>
-                        <div class="NB-story-comment-author-container">
-                            {% if comment.source_user_id %}
-                                <div class="NB-story-comment-reshares">
-                                    <a href="{{ comment.source_user.feed_link }}" class="NB-user-avatar" title="{{ comment.source_user.username }}">
-                                        <img src="{{ comment.source_user.photo_url }}">
-                                    </a>
-                                </div>
-                            {% endif %}
-                            <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
-                            <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
-                            <div class="NB-story-comment-reply-button">
-                                <div class="NB-story-comment-reply-button-wrapper">reply</div>
-                            </div>
-                        </div>
-                        <div class="NB-story-comment-content">
-                            {{ comment.comments }}
-                        </div>
-                        {% if comment.replies %}
-                        <div class="NB-story-comment-replies">
-                            {% for reply in comment.replies %}
-                            <div class="NB-story-comment-reply">
-                                <a href="{{ reply.user.feed_link }}">
-                                    <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
-                                </a>
-                                <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
-                                <div class="NB-story-comment-date NB-story-comment-reply-date">{{ reply.publish_date }} ago</div>
-                                <div class="NB-story-comment-reply-content">{{ reply.comments }}</div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-        </div>
+        {% render_social_story story %}
     {% endfor %}
 
+    {% if has_next_page %}
+        <div class="NB-page-controls">
+            <div class="NB-page-controls-next">
+                <div class="NB-page-controls-text NB-page-controls-text-next">
+                    Next Page of Stories
+                </div>
+                <div class="NB-page-controls-text NB-page-controls-text-loading"></div>
+                <div class="NB-page-controls-text NB-page-controls-text-loaded">
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <footer>
+        NewsBlur
+    </footer>
 </div>
     
 {% include_javascripts "blurblog" %}
+
+<script type="text/javascript" charset="utf-8">
+    _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
+</script>
 
 </body>
 

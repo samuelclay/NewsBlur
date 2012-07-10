@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags recommendations_tags utils_tags statistics_tags %}
+
+{% block content %}
+
+
+    <style>
+        body {
+            font-size: 16px;
+            font-weight: bold;
+            color: #A0A0A0;
+        }
+        .NB-demo {
+            position: absolute;
+            top: 200px;
+            margin: 0 auto;
+            width: 100%;
+            text-align: center;
+        }
+        .NB-thanks {
+            position: absolute;
+            top: 230px;
+            margin: 0 auto;
+            width: 100%;
+            text-align: center;
+        }
+        .NB-thanks div {
+            margin: 0 0 12px 0;
+            text-shadow: 0 1px 0 #FFF;
+        }
+    </style>
+    
+    <div style="text-align: center;position: relative;">
+
+        <div class="NB-thanks">
+            <div style="color: #175700;font-size: 24px"><b><em>Muted!</em></b></div>
+            <div>You will no longer receive email notifications for this story.</div>
+            <div><a href="{% url index %}">Continue to NewsBlur &raquo;</a></div>
+        </div>
+
+    </div>
+
+
+{% endblock %}

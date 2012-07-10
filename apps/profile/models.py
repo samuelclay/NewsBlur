@@ -1,4 +1,5 @@
 import datetime
+import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
@@ -54,7 +55,8 @@ class Profile(models.Model):
             print " ---> Profile not saved. Table isn't there yet."
     
     def activate_premium(self):
-        self.send_new_premium_email()
+        from apps.profile.tasks import EmailNewPremium
+        EmailNewPremium.delay(user_id=self.user.pk)
         
         self.is_premium = True
         self.save()
@@ -71,14 +73,6 @@ class Profile(models.Model):
         self.queue_new_feeds()
         
         logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
-        message = """Woohoo!
-        
-User: %(user)s
-Feeds: %(feeds)s
-
-Sincerely,
-NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
-        mail_admins('New premium account', message, fail_silently=True)
         
     def queue_new_feeds(self, new_feeds=None):
         if not new_feeds:
@@ -128,6 +122,16 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
     
     def send_new_premium_email(self, force=False):
+        subs = UserSubscription.objects.filter(user=self.user)
+        message = """Woohoo!
+        
+User: %(user)s
+Feeds: %(feeds)s
+
+Sincerely,
+NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
+        mail_admins('New premium account', message, fail_silently=True)
+        
         if not self.user.email or not self.send_emails:
             return
         
@@ -240,3 +244,26 @@ def change_password(user, old_password, new_password):
         user_db.set_password(new_password)
         user_db.save()
         return 1
+        
+    
+class MSentEmail(mongo.Document):
+    sending_user_id = mongo.IntField()
+    receiver_user_id = mongo.IntField()
+    email_type = mongo.StringField()
+    date_sent = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'sent_emails',
+        'allow_inheritance': False,
+        'indexes': [('sending_user_id', 'receiver_user_id', 'email_type')],
+    }
+    
+    def __unicode__(self):
+        return "%s sent %s email to %s" % (self.sending_user_id, self.email_type, self.receiver_user_id)
+    
+    @classmethod
+    def record(cls, email_type, receiver_user_id, sending_user_id):
+        cls.objects.create(email_type=email_type, 
+                           receiver_user_id=receiver_user_id, 
+                           sending_user_id=sending_user_id)
+    
