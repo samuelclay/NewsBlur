@@ -194,7 +194,7 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
         [[cell.contentView viewWithTag:123123213] removeFromSuperview];
         
         ProfileBadge *profile = [[ProfileBadge alloc] init];
-        [profile refreshWithDict:[self.userProfiles objectAtIndex:indexPath.row]];
+        [profile refreshWithProfile:[self.userProfiles objectAtIndex:indexPath.row]];
         profile.tag = 123123213;
         profile.frame = CGRectMake(0, 0, 320, 140);
         profile.activeProfile = [self.userProfiles objectAtIndex:indexPath.row];

@@ -100,7 +100,7 @@
     NSLog(@"results %@", results);
     NSLog(@"appDelegate.activeUserProfileId %@", appDelegate.activeUserProfileId);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [self.profileBadge refreshWithDict:results];
+    [self.profileBadge refreshWithProfile:results];
     
     [results release];
 }

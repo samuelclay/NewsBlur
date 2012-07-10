@@ -37,7 +37,7 @@
 @property (retain, nonatomic) NSDictionary *activeProfile;
 
 
-- (void)refreshWithDict:(NSDictionary *)profile;
+- (void)refreshWithProfile:(NSDictionary *)profile;
 
 - (IBAction)doFollowButton:(id)sender;
 - (void)finishFollowing:(ASIHTTPRequest *)request;

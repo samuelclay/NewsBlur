@@ -51,8 +51,10 @@
 }
 
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    /* When MGSplitViewController rotates, it causes a resize of our view; we need to resize our UIBarButtonControls or they will be 0-width */    
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation 
+                                         duration:(NSTimeInterval)duration {
+    /* When MGSplitViewController rotates, it causes a 
+     resize of our view; we need to resize our UIBarButtonControls or they will be 0-width */    
     [self.navigationItem.titleView sizeToFit];
 }
 
@@ -103,7 +105,8 @@
     
 	[super viewWillAppear:animated];
         
-    if ((appDelegate.isRiverView || appDelegate.isSocialView) || [appDelegate.activeFolder isEqualToString:@"Everything"]) {
+    if ((appDelegate.isRiverView || appDelegate.isSocialView) || 
+        [appDelegate.activeFolder isEqualToString:@"Everything"]) {
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
@@ -208,7 +211,8 @@
             }
         }
         
-        NSString *theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
+        NSString *theFeedDetailURL = [NSString stringWithFormat:
+                                      @"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
                                       NEWSBLUR_URL,
                                       [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
                                       self.feedPage,
@@ -905,7 +909,13 @@
 }
 
 - (void)confirmDeleteSite {
-    UIAlertView *deleteConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
+    UIAlertView *deleteConfirm = [[UIAlertView alloc] 
+                                  initWithTitle:@"Positive?" 
+                                  message:nil 
+                                  delegate:self 
+                                  cancelButtonTitle:@"Cancel" 
+                                  otherButtonTitles:@"Delete", 
+                                  nil];
     [deleteConfirm show];
     [deleteConfirm setTag:0];
     [deleteConfirm release];

@@ -59,7 +59,7 @@
     [super layoutSubviews];
 }
 
-- (void)refreshWithDict:(NSDictionary *)profile {    
+- (void)refreshWithProfile:(NSDictionary *)profile {    
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];    
     
     self.activeProfile = profile;
@@ -115,9 +115,10 @@
     
     // STATS
     UILabel *stats = [[UILabel alloc] initWithFrame:CGRectMake(120, yCoordinatePointer, 190, 20)];
-    NSString *statsStr = [NSString stringWithFormat:@"%i shared stories · %i followers", 
+    NSString *statsStr = [NSString stringWithFormat:@"%i shared stories · %i follower%@", 
                           [[profile objectForKey:@"shared_stories_count"] intValue],
-                          [[profile objectForKey:@"follower_count"] intValue]];
+                          [[profile objectForKey:@"follower_count"] intValue], 
+                          [[profile objectForKey:@"follower_count"] intValue] == 1 ? @"" : @"s"];
     stats.text = statsStr;
     stats.font = [UIFont fontWithName:@"Helvetica" size:10];
     self.userStats = stats;
