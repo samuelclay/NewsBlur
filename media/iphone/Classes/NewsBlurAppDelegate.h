@@ -17,6 +17,7 @@
 #define DASHBOARD_TITLE @"NewsBlur Dashboard"
 
 @class NewsBlurViewController;
+@class DashboardViewController;
 @class FeedDetailViewController;
 @class FeedsMenuViewController;
 @class FeedDashboardViewController;
@@ -30,7 +31,6 @@
 @class AddSiteViewController;
 @class MoveSiteViewController;
 @class OriginalStoryViewController;
-@class SplitStoryDetailViewController;
 @class MGSplitViewController;
 @class UserProfileViewController;
 
@@ -43,6 +43,7 @@
     UINavigationController *splitStoryDetailNavigationController;
     UINavigationController *findFriendsNavigationController;
 
+    DashboardViewController *dashboardViewController;
     NewsBlurViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
     FeedDashboardViewController *feedDashboardViewController;
@@ -57,7 +58,6 @@
     AddSiteViewController *addSiteViewController;
     MoveSiteViewController *moveSiteViewController;
     OriginalStoryViewController *originalStoryViewController;
-    SplitStoryDetailViewController *splitStoryDetailViewController;
     UserProfileViewController *userProfileViewController;
 
     NSString * activeUsername;
@@ -101,6 +101,7 @@
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *navigationController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *findFriendsNavigationController;
 @property (nonatomic, readonly, retain) IBOutlet UINavigationController *splitStoryDetailNavigationController;
+@property (nonatomic, retain) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic, retain) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic, retain) IBOutlet FeedsMenuViewController *feedsMenuViewController;
 @property (nonatomic, retain) IBOutlet FeedDashboardViewController *feedDashboardViewController;
@@ -113,7 +114,6 @@
 @property (nonatomic, retain) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic, retain) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic, retain) IBOutlet OriginalStoryViewController *originalStoryViewController;
-@property (nonatomic, retain) IBOutlet SplitStoryDetailViewController *splitStoryDetailViewController;
 @property (nonatomic, retain) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic, retain) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic, retain) IBOutlet UserProfileViewController *userProfileViewController;
@@ -181,9 +181,9 @@
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
 - (void)closeOriginalStory;
+- (void)hideStoryDetailView;
 - (void)changeActiveFeedDetailRow;
 - (void)dragFeedDetailView:(float)y;
-- (void)hideStoryDetailView;
 - (void)showShareView:(NSString *)userId setUsername:(NSString *)username;
 - (void)hideShareView;
 - (void)refreshComments;

@@ -8,7 +8,6 @@
 
 #import "NewsBlurViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "SplitStoryDetailViewController.h"
 #import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
 #import "ASIHTTPRequest.h"
@@ -688,12 +687,11 @@
 }
 
 - (IBAction)selectIntelligence {
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [MBProgressHUD hideHUDForView:self.feedTitlesTable animated:NO];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.feedTitlesTable animated:YES];
     
 	hud.mode = MBProgressHUDModeText;
-//	hud.margin = 10.f;
 	hud.removeFromSuperViewOnHide = YES;
-    
     
     int selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
     

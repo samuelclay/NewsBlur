@@ -20,7 +20,6 @@
 #import "MoveSiteViewController.h"
 #import "MGSplitViewController.h"
 #import "OriginalStoryViewController.h"
-#import "SplitStoryDetailViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
 
@@ -37,6 +36,7 @@
 @synthesize findFriendsNavigationController;
 @synthesize splitStoryDetailNavigationController;
 @synthesize googleReaderViewController;
+@synthesize dashboardViewController;
 @synthesize feedsViewController;
 @synthesize feedsMenuViewController;
 @synthesize feedDetailViewController;
@@ -50,7 +50,6 @@
 @synthesize addSiteViewController;
 @synthesize moveSiteViewController;
 @synthesize originalStoryViewController;
-@synthesize splitStoryDetailViewController;
 @synthesize userProfileViewController;
 
 @synthesize feedDetailPortraitYCoordinate;
@@ -106,18 +105,12 @@
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
-        navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
-        
-        self.splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:splitStoryDetailViewController];
-        self.splitStoryDetailNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        self.splitStoryDetailViewController.navigationItem.title = DASHBOARD_TITLE;
-        
+        self.navigationController.viewControllers = [NSArray arrayWithObject:feedsViewController];
+        self.splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:self.dashboardViewController];
         self.splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, splitStoryDetailNavigationController, nil];
         
         [window addSubview:self.splitStoryController.view];
-        
         self.window.rootViewController = self.splitStoryController;
-
     } else {
         self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
         [window addSubview:self.navigationController.view];
@@ -146,6 +139,7 @@
 }
 
 - (void)dealloc {
+    [dashboardViewController release];
     [feedsViewController release];
     [feedsMenuViewController release];
     [feedDetailViewController release];
@@ -155,7 +149,6 @@
     [addSiteViewController release];
     [moveSiteViewController release];
     [originalStoryViewController release];
-    [splitStoryDetailViewController release];
     [navigationController release];
     [userProfileViewController release];
     [firstTimeUserViewController release];
@@ -265,7 +258,7 @@
     self.isShowingShare = YES;
     
     
-    [splitStoryDetailViewController.view addSubview:shareViewController.view];    
+    [storyDetailViewController.view addSubview:shareViewController.view];    
     
     if (userId && username) {
         [shareViewController setSiteInfo:userId setUsername:username];  
@@ -274,24 +267,24 @@
 
 
     shareViewController.view.frame = CGRectMake(0, 
-                                                splitStoryDetailViewController.view.frame.size.height, 
-                                                splitStoryDetailViewController.view.frame.size.width, 
+                                                storyDetailViewController.view.frame.size.height, 
+                                                storyDetailViewController.view.frame.size.width, 
                                                 0);
     
-    int newShareHeight = splitStoryDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
-    int newStoryHeight = splitStoryDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT + 44;
+    int newShareHeight = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
+    int newStoryHeight = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT + 44;
     
     shareViewController.view.hidden = NO;
     
     [UIView animateWithDuration:0.35 animations:^{
         shareViewController.view.frame = CGRectMake(0, 
                                                     newShareHeight, 
-                                                    splitStoryDetailViewController.view.frame.size.width, 
+                                                    storyDetailViewController.view.frame.size.width, 
                                                     SHARE_MODAL_HEIGHT);
     } completion:^(BOOL finished) {
         storyDetailViewController.view.frame = CGRectMake(0,
                                                           0,
-                                                          splitStoryDetailViewController.view.frame.size.width,
+                                                          storyDetailViewController.view.frame.size.width,
                                                           newStoryHeight);
     }]; 
 }
@@ -301,13 +294,13 @@
     
     storyDetailViewController.view.frame = CGRectMake(0,
                                                       0,
-                                                      splitStoryDetailViewController.view.frame.size.width,
-                                                       splitStoryDetailViewController.view.frame.size.height);
+                                                      storyDetailViewController.view.frame.size.width,
+                                                       storyDetailViewController.view.frame.size.height);
     
     [UIView animateWithDuration:0.35 animations:^{
         shareViewController.view.frame = CGRectMake(0, 
-                                                    splitStoryDetailViewController.view.frame.size.height + SHARE_MODAL_HEIGHT,
-                                                    splitStoryDetailViewController.view.frame.size.width,
+                                                    storyDetailViewController.view.frame.size.height + SHARE_MODAL_HEIGHT,
+                                                    storyDetailViewController.view.frame.size.width,
                                                     0);
     } completion:^(BOOL finished) {
         shareViewController.view.hidden = YES;
@@ -402,28 +395,22 @@
     
     [feedDetailViewController resetFeedDetail];
     [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[self.splitStoryDetailNavigationController viewControllers] containsObject:self.feedDashboardViewController]) {
+            //[self.storyDetailViewController initStory];
+        } else {
+            [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:YES];
+        }
+    }  
 }
 
 - (void)showDashboard {
     self.inStoryDetail = NO;
     self.inFeedDetail = NO;
-    splitStoryDetailViewController.navigationItem.title = DASHBOARD_TITLE;
-    splitStoryDetailViewController.navigationItem.rightBarButtonItems = nil;
-    splitStoryDetailViewController.navigationItem.leftBarButtonItem = nil;
-    [self hideStoryDetailView];
+    [self.splitStoryDetailNavigationController popToRootViewControllerAnimated:YES];
 }
 
-- (void)hideStoryDetailView {
-    NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
-    for (UIView *subview in subviews) {
-        if (subview.tag == FEED_DETAIL_VIEW_TAG ||
-            subview.tag == STORY_DETAIL_VIEW_TAG || 
-            subview.tag == FEED_DASHBOARD_VIEW_TAG) {
-            [subview removeFromSuperview];
-        }
-    }
-    [subviews release];
-}
 
 - (BOOL)isSocialFeed:(NSString *)feedIdStr {
     if ([feedIdStr length] > 6) {
@@ -507,56 +494,65 @@
     
     [feedDetailViewController resetFeedDetail];
     [feedDetailViewController fetchRiverPage:1 withCallback:nil];
+    
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if ([[self.splitStoryDetailNavigationController viewControllers] containsObject:self.feedDashboardViewController]) {
+            //[self.storyDetailViewController initStory];
+        } else {
+            [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:YES];
+        }
+    }  
 }
 
 - (void)adjustStoryDetailWebView {
     if (!self.inFeedDetail) {
         return;
     }
-        
-    if (self.isShowingShare) {
-        [self showShareView:nil setUsername:nil];
-    } else {
-        [self hideShareView];
-    }
-    
+//        
+//    if (self.isShowingShare) {
+//        [self showShareView:nil setUsername:nil];
+//    } else {
+//        [self hideShareView];
+//    }
+//    
     UIImage *slide;
-    
     if (self.splitStoryController.isShowingMaster) {
         slide = [[UIImage imageNamed: @"slide_left.png"] retain];
         
         [self.storyDetailViewController.toggleViewButton setImage:slide];
 
-        self.splitStoryDetailViewController.navigationItem.titleView = nil;
+        self.storyDetailViewController.navigationItem.titleView = nil;
     } else {
         slide = [[UIImage imageNamed: @"slide_right.png"] retain];
         [self.storyDetailViewController.toggleViewButton setImage:slide];
         
         UIView *titleLabel = [self makeFeedTitle:self.activeFeed];
-        if (splitStoryDetailViewController.navigationItem){
-            splitStoryDetailViewController.navigationItem.titleView = titleLabel;
+        if (storyDetailViewController.navigationItem){
+            storyDetailViewController.navigationItem.titleView = titleLabel;
         }
     }
-    
-    int contentWidth = splitStoryDetailViewController.view.frame.size.width;
-    // set the styles inside the UIWebView
-            
-    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {        
-        storyDetailViewController.view.frame = CGRectMake(0, 
-                                                          0, 
-                                                          splitStoryDetailViewController.view.frame.size.width, 
-                                                          splitStoryDetailViewController.view.frame.size.height);
-    } else {
-        storyDetailViewController.view.frame = CGRectMake(0, 
-                                                          0, 
-                                                          splitStoryDetailViewController.view.frame.size.width, 
-                                                          splitStoryDetailViewController.view.frame.size.height);
-    }
-    
     [slide release];
-    
-    // change UIWebView
-    [storyDetailViewController changeWebViewWidth:contentWidth];
+//    
+//    int contentWidth = splitStoryDetailViewController.view.frame.size.width;
+//    // set the styles inside the UIWebView
+//            
+//    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {        
+//        storyDetailViewController.view.frame = CGRectMake(0, 
+//                                                          0, 
+//                                                          splitStoryDetailViewController.view.frame.size.width, 
+//                                                          splitStoryDetailViewController.view.frame.size.height);
+//    } else {
+//        storyDetailViewController.view.frame = CGRectMake(0, 
+//                                                          0, 
+//                                                          splitStoryDetailViewController.view.frame.size.width, 
+//                                                          splitStoryDetailViewController.view.frame.size.height);
+//    }
+//    
+
+//    
+//    // change UIWebView
+//    [storyDetailViewController changeWebViewWidth:contentWidth];
 }
 
 - (void)animateHidingMasterView {
@@ -596,7 +592,7 @@
 - (void)dragFeedDetailView:(float)y {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {
+    if (UIInterfaceOrientationIsPortrait(storyDetailViewController.interfaceOrientation)) {
         y = y + 20;
         
         if(y > 955) {
@@ -624,20 +620,11 @@
     }
         
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        splitStoryDetailViewController.navigationItem.title = [NSString stringWithFormat:@""];
-        // With some valid UIView *view:
-        NSArray *subviews = [[splitStoryDetailViewController.view subviews] copy];
-        for (UIView *subview in subviews) {
-            if (subview.tag == STORY_DETAIL_VIEW_TAG) {
-                [subview removeFromSuperview];
-            }
+        if ([[self.splitStoryDetailNavigationController viewControllers] containsObject:self.storyDetailViewController]) {
+            [self.storyDetailViewController initStory];
+        } else {
+            [self.splitStoryDetailNavigationController pushViewController:self.storyDetailViewController animated:YES];
         }
-        [subviews release];
-        
-        [self adjustStoryDetailWebView];  
-        storyDetailViewController.view.tag = STORY_DETAIL_VIEW_TAG;
-        [splitStoryDetailViewController.view addSubview:storyDetailViewController.view];
-      
     } else{
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
@@ -699,6 +686,12 @@
 
 - (void)closeOriginalStory {
     [originalStoryViewController dismissModalViewControllerAnimated:YES];
+}
+
+- (void)hideStoryDetailView {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.splitStoryDetailNavigationController popViewControllerAnimated:YES];
+    }
 }
 
 - (int)indexOfNextUnreadStory {

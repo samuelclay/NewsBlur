@@ -10,7 +10,6 @@
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
-#import "SplitStoryDetailViewController.h"
 #import "ASIFormDataRequest.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"

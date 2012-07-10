@@ -8,9 +8,9 @@
 
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "MGSplitViewController.h"
 #import "FeedDetailViewController.h"
 #import "FontSettingsViewController.h"
-#import "SplitStoryDetailViewController.h"
 #import "UserProfileViewController.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
@@ -65,15 +65,20 @@
 }
 
 - (void)viewDidLoad {
-    UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    backBtn.frame = CGRectMake(0, 0, 51, 31);
-    [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
-    [backBtn addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *back = [[[UIBarButtonItem alloc] initWithCustomView:backBtn] autorelease];
-    self.navigationItem.backBarButtonItem = back;  
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.navigationItem.hidesBackButton = YES;
+    } else {
+        UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        backBtn.frame = CGRectMake(0, 0, 51, 31);
+        [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
+        [backBtn addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
+        UIBarButtonItem *back = [[[UIBarButtonItem alloc] initWithCustomView:backBtn] autorelease];
+        self.navigationItem.backBarButtonItem = back;  
+    }
+    
     self.loadingIndicator = [[[UIActivityIndicatorView alloc] 
-                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] 
-                             autorelease];
+                         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] 
+                         autorelease];
     
     self.webView.scalesPageToFit = NO; 
     self.webView.multipleTouchEnabled = NO;
@@ -86,6 +91,11 @@
 
 
 - (void)viewWillAppear:(BOOL)animated {
+    [self initStory];
+	[super viewWillAppear:animated];
+}
+
+- (void)initStory {
     id storyId = [appDelegate.activeStory objectForKey:@"id"];
     if (self.activeStoryId != storyId) {
         [appDelegate pushReadStory:storyId];
@@ -95,9 +105,7 @@
         [self setNextPreviousButtons];
         self.webView.scalesPageToFit = YES;
     }
-    [self.loadingIndicator stopAnimating];
-    
-	[super viewWillAppear:animated];
+    [self.loadingIndicator stopAnimating];    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -129,8 +137,8 @@
 
         
     if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
-        appDelegate.splitStoryDetailViewController.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
-        appDelegate.splitStoryDetailViewController.navigationItem.leftBarButtonItem = self.toggleViewButton;
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
+        self.navigationItem.leftBarButtonItem = self.toggleViewButton;
 
     } else {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
@@ -160,6 +168,20 @@
     }
     [popoverController dismissPopoverAnimated:YES];
 }
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        // copy the title from the master view to detail view
+        if (appDelegate.splitStoryController.isShowingMaster) {
+            self.navigationItem.titleView = nil;
+        } else {
+            UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+            self.navigationItem.titleView = titleLabel;
+        }        
+    }
+}
+
 
 #pragma mark -
 #pragma mark Story layout

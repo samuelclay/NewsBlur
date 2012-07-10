@@ -107,6 +107,8 @@
 		437AA8C61592F8D2005463F5 /* bullets_yellow_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C41592F8D2005463F5 /* bullets_yellow_green.png */; };
 		437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8C8159394E2005463F5 /* ShareViewController.m */; };
 		437AA8CB159394E2005463F5 /* ShareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C9159394E2005463F5 /* ShareViewController.xib */; };
+		437F974C15ACA0ED0007136B /* DashboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F974A15ACA0ED0007136B /* DashboardViewController.m */; };
+		437F974D15ACA0ED0007136B /* DashboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437F974B15ACA0ED0007136B /* DashboardViewController.xib */; };
 		4389E9E9159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png in Resources */ = {isa = PBXBuildFile; fileRef = 4389E9E8159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png */; };
 		438F525D159B65E200211B65 /* 16-List.png in Resources */ = {isa = PBXBuildFile; fileRef = 438F525B159B65E200211B65 /* 16-List.png */; };
 		438F5262159B6F8C00211B65 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 438F5261159B6F0400211B65 /* MBProgressHUD.m */; };
@@ -124,8 +126,6 @@
 		43B8F029156603180008733D /* NewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F01F156603170008733D /* NewsBlurViewController.xib */; };
 		43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F020156603170008733D /* OriginalStoryViewController.xib */; };
 		43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B8F021156603170008733D /* StoryDetailViewController.xib */; };
-		43C1E6401583DA3F006874F1 /* SplitStoryDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C1E63E1583DA3F006874F1 /* SplitStoryDetailViewController.m */; };
-		43C1E6411583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */; };
 		43C95C3F158BCDD70086C69B /* 19-circle-check.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C3D158BCDD70086C69B /* 19-circle-check.png */; };
 		43C95C40158BCDD70086C69B /* 19-circle-check@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C3E158BCDD70086C69B /* 19-circle-check@2x.png */; };
 		43C95C42158BD13D0086C69B /* category_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C41158BD13D0086C69B /* category_selected_background.png */; };
@@ -358,6 +358,9 @@
 		437AA8C7159394E2005463F5 /* ShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		437AA8C8159394E2005463F5 /* ShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
 		437AA8C9159394E2005463F5 /* ShareViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ShareViewController.xib; path = Classes/ShareViewController.xib; sourceTree = "<group>"; };
+		437F974915ACA0ED0007136B /* DashboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DashboardViewController.h; sourceTree = "<group>"; };
+		437F974A15ACA0ED0007136B /* DashboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DashboardViewController.m; sourceTree = "<group>"; };
+		437F974B15ACA0ED0007136B /* DashboardViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DashboardViewController.xib; path = Classes/DashboardViewController.xib; sourceTree = "<group>"; };
 		4389E9E8159B931900BEA604 /* Screen Shot 2012-06-27 at 12.14.10 PM.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Screen Shot 2012-06-27 at 12.14.10 PM.png"; sourceTree = "<group>"; };
 		438F525B159B65E200211B65 /* 16-List.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "16-List.png"; sourceTree = "<group>"; };
 		438F5260159B6F0400211B65 /* MBProgressHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
@@ -377,9 +380,6 @@
 		43B8F01F156603170008733D /* NewsBlurViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsBlurViewController.xib; sourceTree = "<group>"; };
 		43B8F020156603170008733D /* OriginalStoryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OriginalStoryViewController.xib; sourceTree = "<group>"; };
 		43B8F021156603170008733D /* StoryDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoryDetailViewController.xib; sourceTree = "<group>"; };
-		43C1E63D1583DA3F006874F1 /* SplitStoryDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplitStoryDetailViewController.h; path = ../SplitStoryDetailViewController.h; sourceTree = "<group>"; };
-		43C1E63E1583DA3F006874F1 /* SplitStoryDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SplitStoryDetailViewController.m; path = ../SplitStoryDetailViewController.m; sourceTree = "<group>"; };
-		43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "SplitStoryDetailViewController~ipad.xib"; sourceTree = "<group>"; };
 		43C95C3D158BCDD70086C69B /* 19-circle-check.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "19-circle-check.png"; sourceTree = "<group>"; };
 		43C95C3E158BCDD70086C69B /* 19-circle-check@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "19-circle-check@2x.png"; sourceTree = "<group>"; };
 		43C95C41158BD13D0086C69B /* category_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = category_selected_background.png; sourceTree = "<group>"; };
@@ -648,7 +648,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				431B857515A1325900DCE497 /* iPad */,
+				437F974715ACA0C50007136B /* Dashboard */,
 				431B857415A1324200DCE497 /* Story */,
 				431B857315A131C300DCE497 /* Feeds */,
 				431B857215A131B200DCE497 /* Feed-Detail */,
@@ -825,15 +825,6 @@
 			name = Story;
 			sourceTree = "<group>";
 		};
-		431B857515A1325900DCE497 /* iPad */ = {
-			isa = PBXGroup;
-			children = (
-				43C1E63D1583DA3F006874F1 /* SplitStoryDetailViewController.h */,
-				43C1E63E1583DA3F006874F1 /* SplitStoryDetailViewController.m */,
-			);
-			name = iPad;
-			sourceTree = "<group>";
-		};
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -965,6 +956,15 @@
 			name = MGSplitViewController;
 			sourceTree = "<group>";
 		};
+		437F974715ACA0C50007136B /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				437F974915ACA0ED0007136B /* DashboardViewController.h */,
+				437F974A15ACA0ED0007136B /* DashboardViewController.m */,
+			);
+			name = Dashboard;
+			sourceTree = "<group>";
+		};
 		43B8F017156603170008733D /* Resources-iPhone */ = {
 			isa = PBXGroup;
 			children = (
@@ -990,6 +990,7 @@
 				433323AF15886FA80025064D /* logo_newsblur.png */,
 				43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */,
 				43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */,
+				437F974B15ACA0ED0007136B /* DashboardViewController.xib */,
 				43D045231565BC150085F811 /* FeedDetailTableCell~ipad.xib */,
 				43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */,
 				437AA8AC15922D13005463F5 /* FeedDashboardViewController.xib */,
@@ -1003,7 +1004,6 @@
 				43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */,
 				43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
-				43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */,
 				437AA8C9159394E2005463F5 /* ShareViewController.xib */,
 			);
 			name = "Resources-iPad";
@@ -1531,7 +1531,6 @@
 				433D24851582EEC800AE9E72 /* NewsBlurViewController~ipad.xib in Resources */,
 				433D24861582EECA00AE9E72 /* OriginalStoryViewController~ipad.xib in Resources */,
 				433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */,
-				43C1E6411583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib in Resources */,
 				433323B015886FA80025064D /* logo_newsblur.png in Resources */,
 				433323B8158901A40025064D /* fountain_pen.png in Resources */,
 				433323B9158901A40025064D /* fountain_pen@2x.png in Resources */,
@@ -1582,6 +1581,7 @@
 				4315E95F159E910500A117C0 /* slide_right@2x.png in Resources */,
 				431B856915A0C45200DCE497 /* FriendsListViewController.xib in Resources */,
 				43027E8E15ABB5A800438422 /* fleuron.png in Resources */,
+				437F974D15ACA0ED0007136B /* DashboardViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1688,7 +1688,6 @@
 				FF2D8CE114886ECF00057B80 /* OAToken.m in Sources */,
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
 				4307BEFE1565EEBC007A932A /* Base64.m in Sources */,
-				43C1E6401583DA3F006874F1 /* SplitStoryDetailViewController.m in Sources */,
 				433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */,
 				43C95C48158BEC450086C69B /* GoogleReaderViewController.m in Sources */,
 				43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */,
@@ -1701,6 +1700,7 @@
 				431B856815A0C45200DCE497 /* FriendsListViewController.m in Sources */,
 				431B856E15A0D91E00DCE497 /* UserProfileViewController.m in Sources */,
 				431B858115A23C6B00DCE497 /* ProfileBadge.m in Sources */,
+				437F974C15ACA0ED0007136B /* DashboardViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

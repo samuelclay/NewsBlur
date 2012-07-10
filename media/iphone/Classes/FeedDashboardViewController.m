@@ -28,6 +28,10 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.navigationItem.hidesBackButton = YES;
+    }        
 }
 
 - (void)viewDidUnload
