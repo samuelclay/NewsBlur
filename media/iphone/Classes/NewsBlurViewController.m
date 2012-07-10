@@ -32,7 +32,6 @@
 @synthesize activeFeedLocations;
 @synthesize visibleFeeds;
 @synthesize stillVisibleFeeds;
-@synthesize sitesButton;
 @synthesize viewShowingAllFeeds;
 @synthesize pull;
 @synthesize lastUpdate;
@@ -53,12 +52,19 @@
 - (void)viewDidLoad {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    if ([userPreferences integerForKey:@"showAllFeeds"] == 0) {
-        self.viewShowingAllFeeds = NO;
-        [self.sitesButton setImage:[UIImage imageNamed:@"16-List.png"]];
-    } else {
+    if ([userPreferences integerForKey:@"siteDisplayMode"] == 0) {
+        NSLog(@"Show ALL stories");
         self.viewShowingAllFeeds = YES;
-        [self.sitesButton setImage:[UIImage imageNamed:@"ellipses.png"]];
+        [self.intelligenceControl setSelectedSegmentIndex:0];
+    } else if ([userPreferences integerForKey:@"siteDisplayMode"] == 1) {
+        NSLog(@"Show UNREAD stories");
+        self.viewShowingAllFeeds = NO;
+        [self.intelligenceControl setSelectedSegmentIndex:1];
+    } else {
+        NSLog(@"Show FOCUS stories");
+        self.viewShowingAllFeeds = NO;
+        [self.intelligenceControl setSelectedSegmentIndex:2];
+        [appDelegate setSelectedIntelligence:1];
     }
     
     [appDelegate showNavigationBar:NO];
@@ -99,17 +105,16 @@
         }
     }
 
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_all.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"16-List.png"] 
                      forSegmentAtIndex:0];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_yellow_green.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"ellipses.png"] 
                      forSegmentAtIndex:1];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] 
                      forSegmentAtIndex:2];
     [self.intelligenceControl addTarget:self
                                  action:@selector(selectIntelligence)
                        forControlEvents:UIControlEventValueChanged];
-    [self.intelligenceControl 
-     setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
+
     [appDelegate showNavigationBar:animated];
     
     [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
@@ -169,7 +174,6 @@
     [activeFeedLocations release];
     [visibleFeeds release];
     [stillVisibleFeeds release];
-    [sitesButton release];
     [pull release];
     [lastUpdate release];
     [imageCache release];
@@ -379,22 +383,6 @@
             [[UIApplication sharedApplication] openURL:url];
         }
     }
-}
-
-- (IBAction)doSwitchSitesUnread {
-    self.viewShowingAllFeeds = !self.viewShowingAllFeeds;
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
-    if (self.viewShowingAllFeeds) {
-        [self.sitesButton setImage:[UIImage imageNamed:@"ellipses.png"]];
-        [userPreferences setInteger:1 forKey:@"showAllFeeds"];
-    } else {
-        [self.sitesButton setImage:[UIImage imageNamed:@"16-List.png"]];
-        [userPreferences setInteger:0 forKey:@"showAllFeeds"];
-    }
-        
-    [userPreferences synchronize];
-    [self switchSitesUnread];
 }
 
 - (void)switchSitesUnread {
@@ -700,16 +688,46 @@
 }
 
 - (IBAction)selectIntelligence {
-    NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
-    NSInteger previousLevel = [appDelegate selectedIntelligence];
-    [appDelegate setSelectedIntelligence:newLevel];
+    int selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
     
-    if (!self.viewShowingAllFeeds) {
-        //      NSLog(@"Select Intelligence from %d to %d.", previousLevel, newLevel);
-        [self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
+    if (selectedSegmentIndex == 0) {
+        [userPreferences setInteger:0 forKey:@"siteDisplayMode"];
+        [userPreferences synchronize];
+        
+        if (self.viewShowingAllFeeds == YES) {
+            [appDelegate setSelectedIntelligence:0];
+            [self updateFeedsWithIntelligence:1 newLevel:0];
+            [self redrawUnreadCounts]; 
+        } else {
+            self.viewShowingAllFeeds = YES;
+            [self switchSitesUnread];
+        }
+    } else if(selectedSegmentIndex == 1) { 
+        [userPreferences setInteger:1 forKey:@"siteDisplayMode"];
+        [userPreferences synchronize];
+        
+        if (self.viewShowingAllFeeds == NO) {
+            [appDelegate setSelectedIntelligence:0];
+            [self updateFeedsWithIntelligence:1 newLevel:0];
+            [self redrawUnreadCounts];
+        } else {
+            self.viewShowingAllFeeds = NO;
+            [self switchSitesUnread];
+        }
+    } else {
+        [userPreferences setInteger:2 forKey:@"siteDisplayMode"];
+        [userPreferences synchronize];
+        
+        if (self.viewShowingAllFeeds == YES) {
+            self.viewShowingAllFeeds = NO;
+            [self switchSitesUnread];
+        }
+        [appDelegate setSelectedIntelligence:1];
+        [self updateFeedsWithIntelligence:0 newLevel:1];
+        [self redrawUnreadCounts];
     }
     
-    [self redrawUnreadCounts];
 }
 
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {

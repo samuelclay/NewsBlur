@@ -34,7 +34,6 @@
     IBOutlet UISlider * feedScoreSlider;
     IBOutlet UIBarButtonItem * homeButton;
     IBOutlet UISegmentedControl * intelligenceControl;
-    IBOutlet UIBarButtonItem * sitesButton;
     IBOutlet UIPopoverController *popoverController;
 }
 
@@ -55,7 +54,6 @@
 - (IBAction)sectionUntappedOutside:(UIButton *)button;
 - (void)redrawUnreadCounts;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
-- (IBAction)doSwitchSitesUnread;
 - (void)switchSitesUnread;
 - (void)loadFavicons;
 - (void)loadAvatars;
@@ -71,7 +69,6 @@
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem * homeButton;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem * sitesButton;
 @property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
 @property (nonatomic, retain) NSMutableDictionary *visibleFeeds;
 @property (nonatomic, retain) NSMutableDictionary *stillVisibleFeeds;
