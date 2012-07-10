@@ -292,11 +292,11 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
               $.make('h4', 'Stay connected to NewsBlur on Twitter'),
               $.make('div', { className: 'NB-tutorial-twitter' }, [
                 $.make('a', { className: 'NB-splash-link', href: 'http://twitter.com/samuelclay', target: '_blank' }, [
-                  $.make('img', { src: 'http://img.tweetimag.es/i/samuelclay_n.png', style: 'border-color: #505050;' }),
+                  $.make('img', { src: 'http://avatars.io/twitter/samuelclay', style: 'border-color: #505050;' }),
                   $.make('span', '@samuelclay')
                 ]),
                 $.make('a', { className: 'NB-splash-link', href: 'http://twitter.com/newsblur', target: '_blank' }, [
-                  $.make('img', { src: 'http://img.tweetimag.es/i/newsblur_n.png' }),
+                  $.make('img', { src: 'http://avatars.io/twitter/newsblur' }),
                   $.make('span', '@newsblur')
                 ])
               ]),

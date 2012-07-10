@@ -26,16 +26,19 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     <div class="NB-sideoption-share-wrapper">\
         <div class="NB-sideoption-share">\
             <div class="NB-sideoption-share-wordcount"></div>\
-            <div class="NB-sideoption-share-crosspost">\
-                <% if (social_services.twitter.twitter_uid) { %>\
-                    <div class="NB-sideoption-share-crosspost-twitter"></div>\
-                <% } %>\
-                <% if (social_services.facebook.facebook_uid) { %>\
-                    <div class="NB-sideoption-share-crosspost-facebook"></div>\
-                <% } %>\
-            </div>\
             <div class="NB-sideoption-share-title">Comments:</div>\
             <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
+            <% if (social_services.twitter.twitter_uid || social_services.facebook.facebook_uid) { %>\
+                <div class="NB-sideoption-share-crosspost">\
+                    <% if (social_services.twitter.twitter_uid) { %>\
+                        <div class="NB-sideoption-share-crosspost-twitter"></div>\
+                    <% } %>\
+                    <% if (social_services.facebook.facebook_uid) { %>\
+                        <div class="NB-sideoption-share-crosspost-facebook"></div>\
+                    <% } %>\
+                    <div class="NB-sideoption-share-crosspost-text"></div>\
+                </div>\
+            <% } %>\
             <div class="NB-menu-manage-story-share-save NB-modal-submit-green NB-sideoption-share-save NB-modal-submit-button">Share</div>\
             <div class="NB-menu-manage-story-share-unshare NB-modal-submit-grey NB-sideoption-share-unshare NB-modal-submit-button">Delete share</div>\
         </div>\
@@ -93,6 +96,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $twitter_button.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_twitter'));
             $facebook_button.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_facebook'));
             this.update_share_button_label();
+            this.reset_posting_label();
             
             var $share_clone = $share.clone();
             var dialog_height = $share_clone.css({
@@ -300,6 +304,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         }
         
         $twitter_button.toggleClass('NB-active', NEWSBLUR.assets.preference('post_to_twitter'));
+        this.reset_posting_label();
     },
     
     toggle_facebook: function() {
@@ -312,6 +317,42 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         }
         
         $facebook_button.toggleClass('NB-active', NEWSBLUR.assets.preference('post_to_facebook'));
+        this.reset_posting_label();
+    },
+    
+    show_twitter_posting_label: function() {
+        this.show_posting_label(true, false);
+    },
+    
+    show_facebook_posting_label: function() {
+        this.show_posting_label(false, true);
+    },
+    
+    reset_posting_label: function() {
+        this.show_posting_label();
+    },
+    
+    show_posting_label: function(twitter, facebook) {
+        console.log(["show_posting_label", twitter, facebook]);
+        var $text = this.$('.NB-sideoption-share-crosspost-text');
+        twitter = twitter || NEWSBLUR.assets.preference('post_to_twitter');
+        facebook = facebook || NEWSBLUR.assets.preference('post_to_facebook');
+        
+        if (twitter || facebook) {
+            var message = "Post to ";
+            if (twitter && !facebook) {
+                message += "Twitter";
+            } else if (!twitter && facebook) {
+                message += "Facebook";
+            } else {
+                message += "Twitter & FB";
+            }
+            
+            $text.text(message);
+        } else {
+            $text.text("");
+        }
     }
+    
         
 });

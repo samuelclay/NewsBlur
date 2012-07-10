@@ -1431,6 +1431,8 @@ class MSocialServices(mongo.Document):
     facebook_picture_url  = mongo.StringField()
     facebook_refresh_date = mongo.DateTimeField()
     upload_picture_url    = mongo.StringField()
+    syncing_twitter       = mongo.BooleanField()
+    syncing_facebook      = mongo.BooleanField()
     
     meta = {
         'collection': 'social_services',

@@ -99,7 +99,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
                         $.make('label', { 'for': 'NB-intro-uptodate-follow-newsblur' }, [
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
-                            $.make('img', { src: 'http://img.tweetimag.es/i/newsblur_n.png', style: 'border-color: #505050;' }),
+                            $.make('img', { src: 'http://avatars.io/twitter/newsblur', style: 'border-color: #505050;' }),
                             $.make('span', [
                                 'Follow @newsblur on', 
                                 $.make('br'), 
@@ -112,7 +112,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
                         $.make('label', { 'for': 'NB-intro-uptodate-follow-samuelclay' }, [
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
-                            $.make('img', { src: 'http://img.tweetimag.es/i/samuelclay_n.png', style: 'border-color: #505050;' }),
+                            $.make('img', { src: 'http://avatars.io/twitter/samuelclay', style: 'border-color: #505050;' }),
                             $.make('span', [
                                 'Follow @samuelclay on', 
                                 $.make('br'), 
