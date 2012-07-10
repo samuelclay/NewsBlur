@@ -16,10 +16,11 @@
         android:icon="@drawable/logo"
         android:label="@string/newsblur"
         android:theme="@style/NewsBlurTheme" >
+        
         <activity
             android:name=".activity.Login"
             android:noHistory="true"
-            android:label="@string/newsblur" >
+            android:label="@string/newsblur">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
@@ -32,8 +33,7 @@
         
         <activity
             android:name=".activity.Profile"
-            android:label="@string/profile" 
-            android:hardwareAccelerated="false" />
+            android:label="@string/profile"/>
 
         <service android:name=".service.SyncService" />
 

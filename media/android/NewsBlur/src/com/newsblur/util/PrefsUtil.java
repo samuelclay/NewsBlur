@@ -35,7 +35,7 @@ public class PrefsUtil {
 		edit.putString(PrefConstants.USER_FEED_TITLE, profile.feedTitle);
 		edit.putInt(PrefConstants.USER_FOLLOWER_COUNT, profile.followerCount);
 		edit.putInt(PrefConstants.USER_FOLLOWING_COUNT, profile.followingCount);
-		edit.putString(PrefConstants.USER_ID, profile.id);
+		edit.putString(PrefConstants.USER_ID, profile.userId);
 		edit.putString(PrefConstants.USER_LOCATION, profile.location);
 		edit.putString(PrefConstants.USER_PHOTO_SERVICE, profile.photoService);
 		edit.putString(PrefConstants.USER_PHOTO_URL, profile.photoUrl);

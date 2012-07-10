@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/login_viewswitcher"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out" >
@@ -32,7 +32,7 @@
             android:textSize="22dp" />
 
         <Button
-            android:id="@+id/signup_button"
+            android:id="@+id/login_signup"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -58,31 +58,64 @@
         android:id="@+id/login_status"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:gravity="center_horizontal"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/login_logging_in"
-            android:layout_width="match_parent"
+        <RelativeLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/login_logging_in"
-            android:textColor="@color/white"
-            android:textSize="16dp" />
+            android:layout_weight="1" >
 
-        <TextView
-            android:id="@+id/login_retrieving_feeds"
-            android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/login_logging_in"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/login_logging_in"
+                android:textColor="@color/white"
+                android:textSize="16dp" />
+
+            <ImageView
+                android:id="@+id/login_profile_picture"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@id/login_logging_in"
+                android:src="@drawable/no_favicon" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/login_retrieving_feeds"
-            android:textColor="@color/white"
-            android:textSize="16dp" />
+            android:layout_weight="1" >
+
+            <TextView
+                android:id="@+id/login_retrieving_feeds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="20dp"
+                android:text="@string/login_retrieving_feeds"
+                android:textColor="@color/white"
+                android:textSize="16dp" />
+
+            <ProgressBar
+                android:id="@+id/login_feed_progress"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/login_retrieving_feeds"
+                android:indeterminateOnly="true"
+                android:visibility="invisible" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/login_lets_go"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="@string/login_lets_go"
             android:textColor="@color/white"
             android:textSize="16dp" />

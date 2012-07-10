@@ -110,11 +110,15 @@ public class FeedProvider extends ContentProvider {
 		final SQLiteDatabase db = databaseHelper.getReadableDatabase();
 		Cursor cursor = null;
 		switch (uriMatcher.match(uri)) {
-			// Inserting a feed
+			// Query for all feeds (by default only return those that have unread items in them)
 			case ALL_FEEDS:
-				cursor = db.rawQuery(DatabaseConstants.FEED_TABLE, null);
+				cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+						" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
+						" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
+						" WHERE (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 " +
+						" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE", selectionArgs);
 				break;
-			// Inserting a story	
+			// Querying for a specific
 			case SPECIFIC_FEED:
 				selection = DatabaseConstants.FEED_ID + " = ?";
 				selectionArgs = new String[] { uri.getLastPathSegment() };
@@ -125,7 +129,8 @@ public class FeedProvider extends ContentProvider {
 				cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE + 
 				" LEFT JOIN " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
 				" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID +
-				" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " IS NULL", selectionArgs);
+				" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " IS NULL AND " +
+				" (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ", selectionArgs);
 				break;
 			// Querying for feeds for a given folder	
 			case SPECIFIC_FEED_FOLDER_MAP:
@@ -135,10 +140,10 @@ public class FeedProvider extends ContentProvider {
 						" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 						" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
 						" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = ? AND " +
-						" (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") " +
+						" (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 " +
 						" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE", selectionArgs);
 				break;
-			// Querying for all folders
+			// Querying for all folders with unread items
 			case ALL_FOLDERS:
 				cursor = db.rawQuery("SELECT * FROM " + DatabaseConstants.FOLDER_TABLE + " " +
 						"ORDER BY " + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE", null);

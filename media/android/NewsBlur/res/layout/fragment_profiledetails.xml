@@ -17,7 +17,7 @@
             android:layout_height="fill_parent"
             android:gravity="center_vertical" >
 
-            <com.newsblur.view.RoundedImageView
+            <ImageView
                 android:id="@+id/profile_picture"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
@@ -45,9 +45,9 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/profile_username"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
                 android:layout_marginTop="5dp"
-                android:textColor="@color/lightgray"
+                android:textColor="@color/darkgray"
                 android:textSize="12dp"
                 android:textStyle="italic" />
 
@@ -56,19 +56,30 @@
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 android:layout_below="@id/profile_bio"
-                android:layout_marginRight="5dp"
+                android:layout_marginRight="2dp"
                 android:contentDescription="@string/profile_location_icon"
                 android:scaleType="fitCenter"
                 android:src="@drawable/location_icon" />
 
             <TextView
+                android:id="@+id/profile_location"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@id/profile_location_icon"
                 android:layout_below="@id/profile_bio"
+                android:layout_marginBottom="5dp"
                 android:layout_toRightOf="@id/profile_location_icon"
-                android:id="@+id/profile_location"
                 android:textColor="@color/lightgray"
+                android:textSize="12dp" />
+            
+            <TextView
+                android:id="@+id/profile_website"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/profile_location"
+                android:autoLink="web"
+                android:clickable="true"
+                android:textColor="@color/lightorange"
                 android:textSize="12dp" />
         </RelativeLayout>
     </LinearLayout>

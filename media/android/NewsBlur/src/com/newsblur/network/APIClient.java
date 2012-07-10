@@ -48,6 +48,36 @@ public class APIClient {
 			connection.disconnect();
 		}
 	}
+	
+	public APIResponse get(final String urlString, final ContentValues values) {
+		HttpURLConnection connection = null;
+		try {
+			List<String> parameters = new ArrayList<String>();
+			for (Entry<String, Object> entry : values.valueSet()) {
+				final StringBuilder builder = new StringBuilder();
+				builder.append((String) entry.getKey());
+				builder.append("=");
+				builder.append((String) entry.getValue());
+				parameters.add(builder.toString());
+			}
+			final String parameterString = TextUtils.join("&", parameters);
+
+			final URL urlFeeds = new URL(urlString + "?" + parameterString);
+			connection = (HttpURLConnection) urlFeeds.openConnection();
+			
+			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
+			if (cookie != null) {
+				connection.setRequestProperty("Cookie", cookie);
+			}
+			return extractResponse(urlFeeds, connection);
+		} catch (IOException e) {
+			Log.d(TAG, "Error opening GET connection to " + urlString, e.getCause());
+			return new APIResponse();
+		} finally {
+			connection.disconnect();
+		}
+	}
 
 	private APIResponse extractResponse(final URL url, HttpURLConnection connection) throws IOException {
 		StringBuilder builder = new StringBuilder();

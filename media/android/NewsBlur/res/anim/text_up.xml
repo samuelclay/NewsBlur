@@ -2,16 +2,9 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android" 
     android:fillAfter="true">
 
-    <scale
-        android:duration="1000"
-        android:fromXScale="1.0"
-        android:fromYScale="1.0"
-        android:toXScale="1.5"
-        android:toYScale="1.5" />
-
     <alpha
         android:duration="1000"
-        android:fromAlpha="0.1"
-        android:toAlpha="1.0" />
+        android:fromAlpha="1.0"
+        android:toAlpha="2.0" />
 
 </set>

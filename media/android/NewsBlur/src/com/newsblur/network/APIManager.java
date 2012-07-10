@@ -8,8 +8,6 @@ import org.apache.http.HttpStatus;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -21,6 +19,7 @@ import com.newsblur.domain.FolderStructure;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.ProfileResponse;
+import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.serialization.FolderStructureTypeAdapter;
 import com.newsblur.util.PrefsUtil;
 
@@ -42,8 +41,8 @@ public class APIManager {
 	public LoginResponse login(final String username, final String password) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
-		values.put(APIConstants.USERNAME, username);
-		values.put(APIConstants.PASSWORD, password);
+		values.put(APIConstants.PARAMETER_USERNAME, username);
+		values.put(APIConstants.PARAMETER_PASSWORD, password);
 		final APIResponse response = client.post(APIConstants.URL_LOGIN, values);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			LoginResponse loginResponse = gson.fromJson(response.responseString, LoginResponse.class);
@@ -54,16 +53,41 @@ public class APIManager {
 		}		
 	}
 	
-	public boolean updateUserProfile() {
+	public LoginResponse signup(final String username, final String password) {
 		final APIClient client = new APIClient(context);
-		final APIResponse response = client.get(APIConstants.URL_USER_PROFILE);
+		final ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_USERNAME, username);
+		values.put(APIConstants.PARAMETER_PASSWORD, password);
+		final APIResponse response = client.post(APIConstants.URL_SIGNUP, values);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			LoginResponse loginResponse = gson.fromJson(response.responseString, LoginResponse.class);
+			PrefsUtil.saveCookie(context, response.cookie);
+			return loginResponse;
+		} else {
+			return new LoginResponse();
+		}		
+	}
+	
+	public ProfileResponse updateUserProfile() {
+		final APIClient client = new APIClient(context);
+		final APIResponse response = client.get(APIConstants.URL_MY_PROFILE);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			ProfileResponse profileResponse = gson.fromJson(response.responseString, ProfileResponse.class);
 			PrefsUtil.saveUserDetails(context, profileResponse.user);
-			return true;
+			return profileResponse;
 		} else {
-			return false;
+			return null;
 		}
+	}
+	
+	public void getStoriesForFeed(String feedId) {
+		final APIClient client = new APIClient(context);
+		final ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_FEEDS, feedId);
+		client.get(APIConstants.URL_FEEDS_STORIES, values);
+		final APIResponse response = client.get(APIConstants.URL_FEEDS_STORIES, values);
+		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
+		Log.d(TAG, "Response: " + response.responseString);
 	}
 
 	public void getFolderFeedMapping() {
@@ -71,12 +95,12 @@ public class APIManager {
 		final APIResponse response = client.get(APIConstants.URL_FEEDS);
 		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
 		
-		for (Entry<String, Feed> entry : feedUpdate.feeds.entrySet()) {
+		for (final Entry<String, Feed> entry : feedUpdate.feeds.entrySet()) {
 			final Feed feed = entry.getValue();
 			contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
 		}
 
-		for (Entry<String, List<Long>> entry : feedUpdate.folderStructure.folders.entrySet()) {	
+		for (final Entry<String, List<Long>> entry : feedUpdate.folderStructure.folders.entrySet()) {	
 			final ContentValues folderValues = new ContentValues();
 			folderValues.put(DatabaseConstants.FOLDER_NAME, entry.getKey());
 			contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
@@ -87,6 +111,19 @@ public class APIManager {
 				values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, entry.getKey());
 				contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
 			}
+		}
+	}
+
+	public ProfileResponse getUser(String userId) {
+		final APIClient client = new APIClient(context);
+		final ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_USER_ID, userId);
+		final APIResponse response = client.get(APIConstants.URL_USER_PROFILE, values);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			ProfileResponse profileResponse = gson.fromJson(response.responseString, ProfileResponse.class);
+			return profileResponse;
+		} else {
+			return null;
 		}
 	}
 

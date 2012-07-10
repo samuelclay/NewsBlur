@@ -9,12 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <fragment 
-        android:name="com.newsblur.fragment.ProfileActivityFragment" 
-        android:layout_height="fill_parent" 
-        android:layout_width="fill_parent" 
-        android:layout_below="@id/profile_details"/>
-    
+    <FrameLayout
+        android:id="@+id/profile_activities"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/profile_details" />
     
     <View
         android:layout_width="fill_parent"

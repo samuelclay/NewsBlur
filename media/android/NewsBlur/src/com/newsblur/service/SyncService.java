@@ -1,13 +1,16 @@
 package com.newsblur.service;
 
-import com.newsblur.network.APIClient;
-import com.newsblur.network.APIManager;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
+
+import com.newsblur.network.APIClient;
+import com.newsblur.network.APIManager;
 
 /**
  * The SyncService is based on an app architecture that tries to place network calls
@@ -42,12 +45,14 @@ public class SyncService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		Log.d(TAG, "Received SyncService handleIntent call.");
 		final ResultReceiver receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
-		try {
+		try {	
 			if (receiver != null) {
 				receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 			}
 			apiManager.getFolderFeedMapping();
+			
 		} catch (Exception e) {
+			e.printStackTrace();
 			Log.e(TAG, "Couldn't synchronise with Newsblur servers: " + e.getMessage(), e.getCause());
 			if (receiver != null) {
 				final Bundle bundle = new Bundle();

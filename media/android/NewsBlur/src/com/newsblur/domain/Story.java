@@ -1,59 +1,70 @@
 package com.newsblur.domain;
 
 import android.content.ContentValues;
+import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
 
 public class Story {
-	
-	public final ContentValues values = new ContentValues();
-	
-	public void setId(final String id) {
+
+	public String id;
+	public String permalink;
+
+	@SerializedName("share_count")
+	public Integer shareCount;
+
+	@SerializedName("comment_count")
+	public Integer commentCount;
+
+	@SerializedName("read_status")
+	public Boolean read;
+
+	@SerializedName("story_tags")
+	public String[] tags;
+
+	@SerializedName("source_user_id")
+	public Integer sourceUserId;
+
+	@SerializedName("story_title")
+	public String title;
+
+	@SerializedName("short_parsed_date")
+	public String date;
+
+	@SerializedName("story_content")
+	public String content;
+
+	@SerializedName("story_authors")
+	public String authors;
+
+	@SerializedName("story_feed_id")
+	public String feedId;
+
+	@SerializedName("intelligence_feed")
+	public String intelligenceFeed;
+
+	@SerializedName("intelligence_authors")
+	public String intelligenceAuthors;
+
+	@SerializedName("intelligence_title")
+	public String intelligenceTitle;
+
+	public ContentValues getValues() {
+		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
-	}
-	
-	public void setTitle(final String title) {
 		values.put(DatabaseConstants.STORY_TITLE, title);
-	}
-	
-	public void setDate(final String date) {
 		values.put(DatabaseConstants.STORY_DATE, date);
-	}
-	
-	public void setContent(final String content) {
 		values.put(DatabaseConstants.STORY_CONTENT, content);
-	}
-	
-	public void setPermalink(final String permalink) {
 		values.put(DatabaseConstants.STORY_PERMALINK, permalink);
+		values.put(DatabaseConstants.STORY_AUTHORS, authors);
+		values.put(DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, intelligenceAuthors);
+		values.put(DatabaseConstants.STORY_INTELLIGENCE_TAGS, TextUtils.join(",", tags));
+		values.put(DatabaseConstants.STORY_INTELLIGENCE_FEED, intelligenceFeed);
+		values.put(DatabaseConstants.STORY_INTELLIGENCE_TITLE, intelligenceTitle);
+		values.put(DatabaseConstants.STORY_READ, read);
+		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
+		return values;
 	}
 
-	public void setAuthors(final String authors) {
-		values.put(DatabaseConstants.STORY_AUTHORS, authors);
-	}
-	
-	public void setIntelligenceAuthors(final String authors) {
-		values.put(DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, authors);
-	}
-	
-	public void setIntelligenceTags(final String tags) {
-		values.put(DatabaseConstants.STORY_INTELLIGENCE_TAGS, tags);
-	}
-	
-	public void setIntelligenceFeed(final String feed) {
-		values.put(DatabaseConstants.STORY_INTELLIGENCE_FEED, feed);
-	}
-	
-	public void setIntelligenceTitle(final String title) {
-		values.put(DatabaseConstants.STORY_INTELLIGENCE_TITLE, title);
-	}
-	
-	public void setRead(final String read) {
-		values.put(DatabaseConstants.STORY_READ, read);
-	}
-	
-	public void setFeedId(final String feedId) {
-		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
-	}
-	
 }

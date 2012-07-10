@@ -8,4 +8,7 @@ public class ProfileResponse {
 	@SerializedName("user_profile")
 	public UserProfile user;
 	
+	@SerializedName("activities")
+	public ActivitiesResponse[] activities;
+	
 }

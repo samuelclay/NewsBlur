@@ -17,9 +17,9 @@
             android:layout_weight="1"
             android:background="@color/white"
             android:gravity="center_horizontal"
-            android:paddingTop="5dp"
+            android:paddingTop="12dp"
             android:textColor="@color/darkgray"
-            android:textSize="20dp"
+            android:textSize="30dp"
             android:textStyle="bold" />
 
         <TextView
@@ -30,9 +30,9 @@
             android:layout_weight="1"
             android:background="@color/white"
             android:gravity="center_horizontal"
-            android:paddingTop="5dp"
+            android:paddingTop="12dp"
             android:textColor="@color/darkgray"
-            android:textSize="20dp"
+            android:textSize="30dp"
             android:textStyle="bold" />
 
         <TextView
@@ -43,9 +43,9 @@
             android:layout_weight="1"
             android:background="@color/white"
             android:gravity="center_horizontal"
-            android:paddingTop="5dp"
+            android:paddingTop="12dp"
             android:textColor="@color/darkgray"
-            android:textSize="20dp"
+            android:textSize="30dp"
             android:textStyle="bold" />
 
     </TableRow>
@@ -61,10 +61,9 @@
             android:layout_weight="1"
             android:background="@color/white"
             android:gravity="center_horizontal"
-            android:paddingBottom="8dp"
+            android:paddingBottom="15dp"
             android:paddingTop="3dp"
             android:text="@string/profile_following"
-            android:textAllCaps="true"
             android:textColor="@color/darkgray"
             android:textSize="11dp" />
 
@@ -75,10 +74,9 @@
             android:layout_weight="1"
             android:background="@color/white"
             android:gravity="center_horizontal"
-            android:paddingBottom="8dp"
+            android:paddingBottom="15dp"
             android:paddingTop="3dp"
             android:text="@string/profile_followers"
-            android:textAllCaps="true"
             android:textColor="@color/darkgray"
             android:textSize="11dp" />
 
@@ -89,10 +87,9 @@
             android:layout_weight="1"
             android:background="@color/white"
             android:gravity="center_horizontal"
-            android:paddingBottom="8dp"
+            android:paddingBottom="15dp"
             android:paddingTop="3dp"
             android:text="@string/profile_shared"
-            android:textAllCaps="true"
             android:textColor="@color/darkgray"
             android:textSize="11dp" />
 

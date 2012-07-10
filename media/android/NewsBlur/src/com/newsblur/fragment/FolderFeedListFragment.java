@@ -2,7 +2,6 @@ package com.newsblur.fragment;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.Display;

@@ -47,7 +47,7 @@ public class UserProfile {
 	public int followerCount;
 
 	@SerializedName("user_id")
-	public int userId;
+	public String userId;
 
 	@SerializedName("feed_link")
 	public String feedLink;
