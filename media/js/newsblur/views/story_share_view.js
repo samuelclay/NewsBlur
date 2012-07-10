@@ -272,7 +272,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             $share_button_menu.after($error.clone());
         }
         this.toggle_feed_story_share_dialog({'resize_open': true});
-        console.log(["post_share_error", data, shared, message, $share_button, $unshare_button, $share_button_menu, $error]);
+        NEWSBLUR.log(["post_share_error", data, shared, message, $share_button, $unshare_button, $share_button_menu, $error]);
     },
     
     update_share_button_label: function() {
@@ -333,7 +333,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     },
     
     show_posting_label: function(twitter, facebook) {
-        console.log(["show_posting_label", twitter, facebook]);
+        NEWSBLUR.log(["show_posting_label", twitter, facebook]);
         var $text = this.$('.NB-sideoption-share-crosspost-text');
         twitter = twitter || NEWSBLUR.assets.preference('post_to_twitter');
         facebook = facebook || NEWSBLUR.assets.preference('post_to_facebook');

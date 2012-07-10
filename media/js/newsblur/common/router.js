@@ -14,21 +14,21 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     index: function() {
-        // console.log(["index"]);
+        // NEWSBLUR.log(["index"]);
         NEWSBLUR.reader.show_splash_page();
     },
     
     add_site: function() {
-        console.log(["add", window.location, $.getQueryString('url')]);
+        NEWSBLUR.log(["add", window.location, $.getQueryString('url')]);
         NEWSBLUR.reader.open_add_feed_modal({url: $.getQueryString('url')});
     },
     
     try_site: function() {
-        console.log(["try", window.location]);
+        NEWSBLUR.log(["try", window.location]);
     },
     
     site: function(site_id, slug) {
-        // console.log(["site", site_id, slug]);
+        // NEWSBLUR.log(["site", site_id, slug]);
         site_id = parseInt(site_id, 10);
         var feed = NEWSBLUR.reader.model.get_feed(site_id);
         if (feed) {
@@ -41,7 +41,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     social: function(user_id, slug) {
-        // console.log(["router:social", user_id, slug]);
+        // NEWSBLUR.log(["router:social", user_id, slug]);
         var feed_id = "social:" + user_id;
         if (NEWSBLUR.reader.model.get_feed(feed_id)) {
             NEWSBLUR.reader.open_social_stories(feed_id, {force: true});
@@ -56,7 +56,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     user: function(user) {
-        console.log(["user", user]);
+        NEWSBLUR.log(["user", user]);
     }
     
 });

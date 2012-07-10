@@ -177,7 +177,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     show_manage_menu: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+        // NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
         NEWSBLUR.reader.show_manage_menu('story', this.$el, {
             story_id: this.model.id,
             feed_id: this.model.get('story_feed_id')

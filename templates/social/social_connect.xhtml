@@ -35,23 +35,23 @@
     <script type="text/javascript" charset="utf-8">
         var next = "{{ next|safe }}";
         if (next) {
-            console.log(["Forwarding to next", next]);
+            NEWSBLUR.log(["Forwarding to next", next]);
             setTimeout(function() {
                 window.location.href = next;
             }, 1000);
         } else if (window.opener && window.opener.NEWSBLUR) {
-            console.log(["Found opener", window.opener.NEWSBLUR]);
+            NEWSBLUR.log(["Found opener", window.opener.NEWSBLUR]);
             if (window.opener.NEWSBLUR.reader.flags.importing_from_google_reader) {
-                console.log(['Importing from Reader']);
+                NEWSBLUR.log(['Importing from Reader']);
                 if (window.opener.NEWSBLUR.intro) {
-                    console.log(['Using Intro dialog']);
+                    NEWSBLUR.log(['Using Intro dialog']);
                     window.opener.NEWSBLUR.intro.start_import_from_google_reader({
                         {% if error %}
                             'error': "{{ error }}",
                         {% endif %}
                     });
                 } else {
-                    console.log(['Using some other dialog']);
+                    NEWSBLUR.log(['Using some other dialog']);
                     window.opener.NEWSBLUR.reader.post_google_reader_connect({
                         {% if error %}
                             'error': "{{ error }}",
@@ -59,14 +59,14 @@
                     });
                 }
             } else if (window.opener.NEWSBLUR.intro) {
-                console.log(['Connecting through intro']);
+                NEWSBLUR.log(['Connecting through intro']);
                 window.opener.NEWSBLUR.intro.post_connect({
                     {% if error %}
                         'error': "{{ error }}",
                     {% endif %}
                 });
             } else if (window.opener.NEWSBLUR.reader_friends) {
-                console.log(["Connecting through friends dialog"]);
+                NEWSBLUR.log(["Connecting through friends dialog"]);
                 window.opener.NEWSBLUR.reader_friends.post_connect({
                     {% if error %}
                         'error': "{{ error }}",

@@ -199,7 +199,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     select_preferences: function() {
         var pref = this.model.preference;
         $('input[name=send_emails]', this.$modal).each(function() {
-            console.log(["pref", pref('send_emails'), $(this).val()]);
+            NEWSBLUR.log(["pref", pref('send_emails'), $(this).val()]);
             if ($(this).val() == ""+pref('send_emails')) {
                 $(this).attr('checked', true);
                 return false;
@@ -229,7 +229,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         $('.NB-preference-error', this.$modal).text('');
         $('input[type=submit]', this.$modal).val('Saving...').attr('disabled', true).addClass('NB-disabled');
         
-        console.log(["form['send_emails']", form['send_emails']]);
+        NEWSBLUR.log(["form['send_emails']", form['send_emails']]);
         this.model.preference('send_emails', form['send_emails']);
         this.model.save_account_settings(form, function(data) {
             if (data.code == -1) {

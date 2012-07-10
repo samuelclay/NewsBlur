@@ -186,7 +186,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             NEWSBLUR.reader.story_view == 'story' ||
             NEWSBLUR.reader.flags['page_view_showing_feed_view']) options.immediate = true;
 
-        // console.log(["Scroll in Original", story.get('story_title'), options]);
+        // NEWSBLUR.log(["Scroll in Original", story.get('story_title'), options]);
         
         if ($story && $story.length) {
             if (!options.immediate) {
@@ -415,7 +415,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         this.$el.ready(function() {
             
             if (feed_id != NEWSBLUR.reader.active_feed) {
-                console.log(["Switched feed, unloading iframe"]);
+                NEWSBLUR.log(["Switched feed, unloading iframe"]);
                 self.unload_feed_iframe();
                 return;
             }
@@ -580,7 +580,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             var story = this.cache.iframe_story_positions[positions[closest]];
             if (!story) return;
             if (story.score() < NEWSBLUR.reader.get_unread_view_score()) return;
-            // console.log(['Scroll iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
+            // NEWSBLUR.log(['Scroll iframe', from_top, closest, positions[closest], this.cache.iframe_story_positions[positions[closest]]]);
             
             if (!story.get('selected')) {
                 story.set('selected', true, {selected_in_original: true, scroll: true, immediate: true});
@@ -601,7 +601,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         }
 
         var scroll_top = this.$el.contents().scrollTop();
-        // console.log(["mousemove", e, scroll_top, e.pageY]);
+        // NEWSBLUR.log(["mousemove", e, scroll_top, e.pageY]);
         NEWSBLUR.reader.cache.mouse_position_y = e.pageY - scroll_top;
         NEWSBLUR.reader.$s.$mouse_indicator.css('top', NEWSBLUR.reader.cache.mouse_position_y - 8);
         
@@ -618,7 +618,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         var positions = this.cache.iframe_story_positions_keys;
         var closest = $.closest(from_top, positions);
         var story = this.cache.iframe_story_positions[positions[closest]];
-        // console.log(["mousemove", story, from_top, positions[closest], this.cache.iframe_story_positions]);
+        // NEWSBLUR.log(["mousemove", story, from_top, positions[closest], this.cache.iframe_story_positions]);
         // this.flags['mousemove_timeout'] = true;
         if (!story) return;
         if (story.score() < NEWSBLUR.reader.get_unread_view_score()) {

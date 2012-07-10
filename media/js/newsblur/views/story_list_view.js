@@ -274,7 +274,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         models.each(_.bind(function(story) {
             var image_count = story.story_view.$('.NB-feed-story-content img').length;
             if (!image_count) {
-                // console.log(["No images", story.get('story_title')]);
+                // NEWSBLUR.log(["No images", story.get('story_title')]);
                 this.flags.feed_view_images_loaded[story.id] = true;
             } else if (!this.flags.feed_view_images_loaded[story.id]) {
                 // Progressively load the images in each story, so that when one story
@@ -353,7 +353,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             var story = this.cache.feed_view_story_positions[positions[closest]];
 
             if (!story) return;
-            // console.log(["Scroll Feed", from_top, offset, position, closest, story.get('story_title')]);
+            // NEWSBLUR.log(["Scroll Feed", from_top, offset, position, closest, story.get('story_title')]);
             if (!story.get('selected')) {
                 story.set('selected', true, {selected_by_scrolling: true, mouse: true, immediate: true});
             }

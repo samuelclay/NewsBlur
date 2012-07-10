@@ -102,7 +102,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
               $last.position().top + $last.height() - 13 < container_height))) {
             if (NEWSBLUR.reader.counts['page_fill_outs'] < NEWSBLUR.reader.constants.FILL_OUT_PAGES && 
                 !NEWSBLUR.assets.flags['no_more_stories']) {
-                // console.log(["fill out", $last.length && $last.position().top, container_height, $last.length, NEWSBLUR.reader.$s.$story_titles.scrollTop()]);
+                // NEWSBLUR.log(["fill out", $last.length && $last.position().top, container_height, $last.length, NEWSBLUR.reader.$s.$story_titles.scrollTop()]);
                 NEWSBLUR.reader.counts['page_fill_outs'] += 1;
                 _.delay(function() {
                     NEWSBLUR.reader.load_page_of_feed_stories({show_loading: false});

@@ -207,7 +207,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (onlySelected) return;
         
         // if (this.model.changedAttributes()) {
-        //     console.log(["Story changed", this.model.changedAttributes(), this.model.previousAttributes()]);
+        //     NEWSBLUR.log(["Story changed", this.model.changedAttributes(), this.model.previousAttributes()]);
         // }
         
         var story = this.model;

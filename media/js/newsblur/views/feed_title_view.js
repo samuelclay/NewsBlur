@@ -236,7 +236,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         if (this.options.feed_chooser) return;
         e.preventDefault();
         e.stopPropagation();
-        // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+        // NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
         NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', this.$el, {
             feed_id: this.model.id,
             toplevel: this.options.depth == 0
