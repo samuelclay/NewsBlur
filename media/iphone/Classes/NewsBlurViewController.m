@@ -695,26 +695,24 @@
         [userPreferences setInteger:0 forKey:@"siteDisplayMode"];
         [userPreferences synchronize];
         
-        if (self.viewShowingAllFeeds == YES) {
+        if (appDelegate.selectedIntelligence == 1) {
             [appDelegate setSelectedIntelligence:0];
             [self updateFeedsWithIntelligence:1 newLevel:0];
             [self redrawUnreadCounts]; 
-        } else {
-            self.viewShowingAllFeeds = YES;
-            [self switchSitesUnread];
         }
+        self.viewShowingAllFeeds = YES;
+        [self switchSitesUnread];
     } else if(selectedSegmentIndex == 1) { 
         [userPreferences setInteger:1 forKey:@"siteDisplayMode"];
         [userPreferences synchronize];
         
-        if (self.viewShowingAllFeeds == NO) {
+        if (appDelegate.selectedIntelligence == 1) {
             [appDelegate setSelectedIntelligence:0];
             [self updateFeedsWithIntelligence:1 newLevel:0];
             [self redrawUnreadCounts];
-        } else {
-            self.viewShowingAllFeeds = NO;
-            [self switchSitesUnread];
         }
+        self.viewShowingAllFeeds = NO;
+        [self switchSitesUnread];
     } else {
         [userPreferences setInteger:2 forKey:@"siteDisplayMode"];
         [userPreferences synchronize];
