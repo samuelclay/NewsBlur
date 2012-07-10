@@ -244,7 +244,6 @@
     } else {
         [navigationController presentModalViewController:findFriendsNavigationController animated:NO];
     }
-    [self.userProfileViewController setupModal];
 
 }
 

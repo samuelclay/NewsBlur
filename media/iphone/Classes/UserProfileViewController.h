@@ -29,7 +29,6 @@
 - (void)getUserProfile;
 - (void)requestFinished:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-- (void)setupModal;
 - (void)doCancelButton;
     
 @end

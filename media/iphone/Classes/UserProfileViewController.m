@@ -30,17 +30,25 @@
     return self;
 }
 
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    self.profileBadge.frame = CGRectMake(0, 0, 320, 140);
+    ProfileBadge *badge = [[ProfileBadge alloc] init];
+    badge.frame = CGRectMake(0, 0, 320, 140);
+    self.profileBadge = badge;
+
+    self.view.frame = CGRectMake(0, 0, 320, 500);
+    [self.view addSubview:self.profileBadge];
+    [badge release];
 }
 
 - (void)viewDidUnload
 {
     [self setFollowingCount:nil];
     [self setFollowersCount:nil];
+    [self setProfileBadge:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -59,6 +67,7 @@
     [appDelegate release];
     [followingCount release];
     [followersCount release];
+    [profileBadge release];
     [super dealloc];
 }
 
@@ -96,9 +105,7 @@
         [results release];
         return;
     } 
-    
-    NSLog(@"results %@", results);
-    NSLog(@"appDelegate.activeUserProfileId %@", appDelegate.activeUserProfileId);
+
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     [self.profileBadge refreshWithProfile:results];
     

@@ -67,7 +67,6 @@
 		431B856815A0C45200DCE497 /* FriendsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B856615A0C45100DCE497 /* FriendsListViewController.m */; };
 		431B856915A0C45200DCE497 /* FriendsListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 431B856715A0C45200DCE497 /* FriendsListViewController.xib */; };
 		431B856E15A0D91E00DCE497 /* UserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B856C15A0D91E00DCE497 /* UserProfileViewController.m */; };
-		431B856F15A0D91E00DCE497 /* UserProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 431B856D15A0D91E00DCE497 /* UserProfileViewController.xib */; };
 		431B858115A23C6B00DCE497 /* ProfileBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B858015A23C6B00DCE497 /* ProfileBadge.m */; };
 		433323B015886FA80025064D /* logo_newsblur.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323AF15886FA80025064D /* logo_newsblur.png */; };
 		433323B8158901A40025064D /* fountain_pen.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323B6158901A40025064D /* fountain_pen.png */; };
@@ -321,8 +320,7 @@
 		431B856715A0C45200DCE497 /* FriendsListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FriendsListViewController.xib; path = Classes/FriendsListViewController.xib; sourceTree = "<group>"; };
 		431B856B15A0D91E00DCE497 /* UserProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = UserProfileViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		431B856C15A0D91E00DCE497 /* UserProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = UserProfileViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		431B856D15A0D91E00DCE497 /* UserProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = UserProfileViewController.xib; path = Classes/UserProfileViewController.xib; sourceTree = "<group>"; };
-		431B857F15A23C6B00DCE497 /* ProfileBadge.h */ = {isa = PBXFileReference; fileEncoding = 4; lineEnding = 0; path = ProfileBadge.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		431B857F15A23C6B00DCE497 /* ProfileBadge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ProfileBadge.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		431B858015A23C6B00DCE497 /* ProfileBadge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ProfileBadge.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		433323AF15886FA80025064D /* logo_newsblur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo_newsblur.png; sourceTree = "<group>"; };
 		433323B6158901A40025064D /* fountain_pen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fountain_pen.png; sourceTree = "<group>"; };
@@ -1007,7 +1005,6 @@
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
 				43C1E63F1583DA3F006874F1 /* SplitStoryDetailViewController~ipad.xib */,
 				437AA8C9159394E2005463F5 /* ShareViewController.xib */,
-				431B856D15A0D91E00DCE497 /* UserProfileViewController.xib */,
 			);
 			name = "Resources-iPad";
 			sourceTree = "<group>";
@@ -1584,7 +1581,6 @@
 				4315E95E159E910500A117C0 /* slide_right.png in Resources */,
 				4315E95F159E910500A117C0 /* slide_right@2x.png in Resources */,
 				431B856915A0C45200DCE497 /* FriendsListViewController.xib in Resources */,
-				431B856F15A0D91E00DCE497 /* UserProfileViewController.xib in Resources */,
 				43027E8E15ABB5A800438422 /* fleuron.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
