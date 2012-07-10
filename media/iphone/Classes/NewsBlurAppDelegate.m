@@ -84,6 +84,7 @@
 @synthesize dictActiveFeeds;
 @synthesize dictSocialFeeds;
 @synthesize dictUserProfile;
+@synthesize dictUserInteractions;
 @synthesize dictFoldersArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
@@ -170,6 +171,7 @@
     [dictFeeds release];
     [dictSocialFeeds release];
     [dictUserProfile release];
+    [dictUserInteractions release];
     [dictFoldersArray release];
 
     [super dealloc];

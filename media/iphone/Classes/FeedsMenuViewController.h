@@ -26,7 +26,6 @@
 @property (retain, nonatomic) IBOutlet UITableView *menuTableView;
 
 - (IBAction)tapCancelButton:(UIBarButtonItem *)sender;
-
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 
 @end

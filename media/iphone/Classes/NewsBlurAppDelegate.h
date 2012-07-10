@@ -93,6 +93,7 @@
     NSMutableDictionary * dictActiveFeeds;
     NSDictionary * dictSocialFeeds;
     NSDictionary * dictUserProfile;
+    NSMutableArray * dictUserInteractions;
     NSMutableArray * dictFoldersArray;
 }
 
@@ -150,6 +151,7 @@
 @property (nonatomic, retain) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic, retain) NSDictionary *dictSocialFeeds;
 @property (nonatomic, retain) NSDictionary *dictUserProfile;
+@property (nonatomic, retain) NSMutableArray *dictUserInteractions;
 @property (nonatomic, retain) NSMutableArray *dictFoldersArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;

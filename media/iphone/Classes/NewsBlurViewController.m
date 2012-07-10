@@ -8,6 +8,7 @@
 
 #import "NewsBlurViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "DashboardViewController.h"
 #import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
 #import "ASIHTTPRequest.h"
@@ -16,6 +17,7 @@
 #import "Base64.h"
 #import "JSON.h"
 #import "Utilities.h"
+
 
 #define kTableViewRowHeight 40;
 
@@ -104,11 +106,11 @@
         }
     }
 
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"16-List.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"read.png"] 
                      forSegmentAtIndex:0];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"ellipses.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"unread.png"] 
                      forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"focused.png"] 
                      forSegmentAtIndex:2];
     [self.intelligenceControl addTarget:self
                                  action:@selector(selectIntelligence)
@@ -260,6 +262,8 @@
     
     // Set up dictUserProfile
     appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
+    [appDelegate.dashboardViewController refreshInteractions];
+    
     
     // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
@@ -277,7 +281,7 @@
     
     appDelegate.dictSocialFeeds = socialDict;
     [self loadAvatars];
-
+    
     // set up dictFolders
     NSMutableDictionary * allFolders = [results objectForKey:@"flat_folders"];
     [allFolders setValue:socialFolder forKey:@""]; 

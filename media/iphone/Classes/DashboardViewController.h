@@ -9,14 +9,22 @@
 #import <UIKit/UIKit.h>
 
 @class NewsBlurAppDelegate;
+@class ASIHTTPRequest;
 
-@interface DashboardViewController : UIViewController {
+@interface DashboardViewController : UIViewController 
+    <UITableViewDelegate, 
+    UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
     UIToolbar *bottomToolbar;
+    UITableView *interactionsTable;    
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (retain, nonatomic) IBOutlet UIToolbar *bottomToolbar;
+@property (retain, nonatomic) IBOutlet UITableView *interactionsTable;
 
 - (IBAction)doLogout:(id)sender;
+- (void)refreshInteractions;
+- (void)finishLoadInteractions:(ASIHTTPRequest *)request;
+- (void)requestFailed:(ASIHTTPRequest *)request;
 @end
