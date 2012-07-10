@@ -89,7 +89,6 @@
     return YES;
 }
 
-
 - (void)viewWillAppear:(BOOL)animated {
     [self initStory];
 	[super viewWillAppear:animated];

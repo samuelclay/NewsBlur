@@ -11,6 +11,7 @@
 #import "NSString+HTML.h"
 #import "TransparentToolbar.h"
 #import "SHK.h"
+#import "MBProgressHUD.h"
 
 @implementation OriginalStoryViewController
 
@@ -40,6 +41,10 @@
     [self updateAddress:request];
     [self.pageTitle setText:[[appDelegate activeStory] objectForKey:@"story_title"]];
     [request release];
+    
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
+    HUD.labelText = @"On its way...";
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -131,6 +136,8 @@
 
 }
 
+
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [self loadAddress:nil];
     return YES;
@@ -184,7 +191,7 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)aWebView
 {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [MBProgressHUD hideHUDForView:self.webView animated:YES];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     [self updateButtons];
     [self updateTitle:aWebView];

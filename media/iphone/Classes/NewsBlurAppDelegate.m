@@ -671,17 +671,14 @@
 }
 
 - (void)showOriginalStory:(NSURL *)url {
-    [MBProgressHUD hideHUDForView:originalStoryViewController.view animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:originalStoryViewController.view animated:YES];
-    HUD.labelText = @"On its way...";
     self.activeOriginalStoryURL = url;
-        
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [splitStoryController presentModalViewController:originalStoryViewController animated:YES];
     } else {
         UINavigationController *navController = self.navigationController;
         [navController presentModalViewController:originalStoryViewController animated:YES];
     }
+
 }
 
 - (void)closeOriginalStory {
