@@ -333,8 +333,8 @@ class MSocialProfile(mongo.Document):
         if include_follows:
             params.update({
                 'photo_service': self.photo_service,
-                'following_user_ids': self.following_user_ids_without_self,
-                'follower_user_ids': self.follower_user_ids_without_self,
+                'following_user_ids': self.following_user_ids_without_self[:50],
+                'follower_user_ids': self.follower_user_ids_without_self[:50],
             })
         if common_follows_with_user:
             with_user, _ = MSocialProfile.objects.get_or_create(user_id=common_follows_with_user)
@@ -472,7 +472,7 @@ class MSocialProfile(mongo.Document):
         for email in emails_sent:
             if email.date_sent > day_ago:
                 logging.user(user, "~BB~SK~FMNot sending new follower email, already sent before. NBD.")
-                return
+                # return
         
         follower_profile = MSocialProfile.objects.get(user_id=follower_user_id)
         common_followers, _ = self.common_follows(follower_user_id, direction='followers')
@@ -1431,8 +1431,8 @@ class MSocialServices(mongo.Document):
     facebook_picture_url  = mongo.StringField()
     facebook_refresh_date = mongo.DateTimeField()
     upload_picture_url    = mongo.StringField()
-    syncing_twitter       = mongo.BooleanField()
-    syncing_facebook      = mongo.BooleanField()
+    syncing_twitter       = mongo.BooleanField(default=False)
+    syncing_facebook      = mongo.BooleanField(default=False)
     
     meta = {
         'collection': 'social_services',
@@ -1451,10 +1451,12 @@ class MSocialServices(mongo.Document):
                 'twitter_username': self.twitter_username,
                 'twitter_picture_url': self.twitter_picture_url,
                 'twitter_uid': self.twitter_uid,
+                'syncing': self.syncing_twitter,
             },
             'facebook': {
                 'facebook_uid': self.facebook_uid,
                 'facebook_picture_url': self.facebook_picture_url,
+                'syncing': self.syncing_facebook,
             },
             'gravatar': {
                 'gravatar_picture_url': "http://www.gravatar.com/avatar/" + \
@@ -1513,6 +1515,9 @@ class MSocialServices(mongo.Document):
             self.set_photo('twitter')
         
     def sync_facebook_friends(self):
+        self.syncing_facebook = False
+        self.save()
+        
         graph = self.facebook_api()
         if not graph:
             return
@@ -1540,6 +1545,9 @@ class MSocialServices(mongo.Document):
             self.set_photo('facebook')
         
     def follow_twitter_friends(self):
+        self.syncing_twitter = False
+        self.save()
+        
         social_profile, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
         following = []
         followers = 0

@@ -92,9 +92,9 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         _.each(['twitter', 'facebook'], _.bind(function(service) {
             var $service;
             if (this.services && this.services[service][service+'_uid']) {
-                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service }, [
+                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service + (this.services[service].syncing && ' NB-friends-service-syncing') }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
-                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, 'Disconnect')
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, this.services[service].syncing ? 'Fetching...' : 'Disconnect')
                 ]);
             } else {
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [

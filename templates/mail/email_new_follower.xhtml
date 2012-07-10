@@ -7,6 +7,7 @@
     <div style="margin: 24px 0;font-size: 24px;text-align: center;">
         <a href="{{ follower_profile.blurblog_url }}"><img src="{{ follower_profile.large_photo_url }}" style="max-width: 200px; max-height: 200px;margin: 0 auto;border-radius: 3px;border: none;"></a>
         <div style="margin: 8px 0 0 0;font-weight: bold;"><a href="{{ follower_profile.blurblog_url }}" style="color: #404040;text-decoration: none">{{ follower_profile.username }}</a></div>
+        <div style="color: #AE5D15;font-size: 11px;text-transform: uppercase;margin: 4px 0;"><b>{{ follower_profile.shared_stories_count }}</b> shared {{ follower_profile.shared_stories_count|pluralize:"story,stories" }} &middot; <b>{{ follower_profile.follower_count }}</b> follower{{ follower_profile.follower_count|pluralize }}</div>
     </div>
     
     {% if common_followers %}

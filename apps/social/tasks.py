@@ -1,5 +1,5 @@
 from celery.task import Task
-from apps.social.models import MSharedStory, MSocialProfile
+from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
 
 
 class PostToService(Task):
@@ -28,4 +28,16 @@ class EmailStoryReshares(Task):
     def run(self, shared_story_id):
         shared_story = MSharedStory.objects.get(id=shared_story_id)
         shared_story.send_email_for_reshare()
+        
+class SyncTwitterFriends(Task):
+    
+    def run(self, user_id):
+        social_services = MSocialServices.objects.get(user_id=user_id)
+        social_services.sync_twitter_friends()
+
+class SyncFacebookFriends(Task):
+    
+    def run(self, user_id):
+        social_services = MSocialServices.objects.get(user_id=user_id)
+        social_services.sync_facebook_friends()
         
