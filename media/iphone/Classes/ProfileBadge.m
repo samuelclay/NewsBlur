@@ -1,18 +1,18 @@
 //
-//  SocialBadge.m
+//  ProfileBadge.m
 //  NewsBlur
 //
 //  Created by Roy Yang on 7/2/12.
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
-#import "SocialBadge.h"
+#import "ProfileBadge.h"
 #import "NewsBlurAppDelegate.h"
 #import "Utilities.h"
 #import "ASIHTTPRequest.h"
 #import "JSON.h"
 
-@implementation SocialBadge
+@implementation ProfileBadge
 
 @synthesize appDelegate;
 @synthesize userAvatar;
@@ -148,17 +148,26 @@
     UIButton *follow = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     follow.frame = CGRectMake(120, 80, 100, 30);
 
+    // check if self
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictUserProfile objectForKey:@"user_id"]];    
     // check following to toggle follow button
     BOOL isFollowing = NO;
+    BOOL isSelf = NO;
     NSArray *followingUserIds = [self.appDelegate.dictUserProfile objectForKey:@"following_user_ids"];
     for (int i = 0; i < followingUserIds.count ; i++) {
         NSString *followingUserId = [NSString stringWithFormat:@"%@", [followingUserIds objectAtIndex:i]];
+        if ([currentUserId isEqualToString:[NSString stringWithFormat:@"%@", [profile objectForKey:@"user_id"]]]) {
+            isSelf = YES;
+        }
         if ([followingUserId isEqualToString:[NSString stringWithFormat:@"%@", [profile objectForKey:@"user_id"]]]) {
             isFollowing = YES;
         }
     }
 
-    if (isFollowing) {
+    if (isSelf) {
+        [follow setTitle:@"You" forState:UIControlStateNormal];
+        follow.enabled = NO;
+    } else if (isFollowing) {
         [follow setTitle:@"Following" forState:UIControlStateNormal];
     } else {
         [follow setTitle:@"Follow" forState:UIControlStateNormal];
@@ -173,11 +182,10 @@
 
     // ACTIVITY INDICATOR
     UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    activityView.frame = CGRectMake(50, 85, 20, 20.0);
+    activityView.frame = CGRectMake(160, 85, 20, 20.0);
     self.activityIndicator = activityView;
     [self addSubview:self.activityIndicator];
     [activityView release];
-    
 }
 
 - (void)initProfile {
@@ -192,8 +200,7 @@
     
     [self.activityIndicator startAnimating];
     
-    if ([self.followButton.currentTitle isEqualToString:@"Following"]) {
-        
+    if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
         urlString = [NSString stringWithFormat:@"http://%@/social/follow",
                                NEWSBLUR_URL,
                                [self.activeProfile objectForKey:@"user_id"]];
@@ -208,20 +215,26 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setDelegate:self];
     [request setPostValue:[self.activeProfile objectForKey:@"user_id"] forKey:@"user_id"];
-    if ([self.followButton.currentTitle isEqualToString:@"Following"]) {
-        [request setDidFinishSelector:@selector(finishUnfollowing:)];        
+    if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
+        [request setDidFinishSelector:@selector(finishFollowing:)];        
     } else {
         [request setDidFinishSelector:@selector(finishUnfollowing:)];
     }
     [request setDidFailSelector:@selector(requestFailed:)];
+    
+    NSLog(@"url is %@", url);
     [request startAsynchronous];
 }
 
 - (void)finishFollowing:(ASIHTTPRequest *)request {
+
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
+    NSLog(@"responseString is %@", responseString);
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
+    
+
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
@@ -238,6 +251,7 @@
 - (void)finishUnfollowing:(ASIHTTPRequest *)request {
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
+    NSLog(@"responseString is %@", responseString);
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     // int statusCode = [request responseStatusCode];

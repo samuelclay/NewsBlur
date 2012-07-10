@@ -10,7 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "JSON.h"
-#import "SocialBadge.h"
+#import "ProfileBadge.h"
 #import "Utilities.h"
 #import "MBProgressHUD.h"
 
@@ -19,7 +19,7 @@
 @synthesize appDelegate;
 @synthesize followingCount;
 @synthesize followersCount;
-@synthesize socialBadge;
+@synthesize profileBadge;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -34,7 +34,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    self.socialBadge.frame = CGRectMake(0, 0, 320, 140);
+    self.profileBadge.frame = CGRectMake(0, 0, 320, 140);
 }
 
 - (void)viewDidUnload
@@ -71,7 +71,7 @@
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Finding...";
     
-    [self.socialBadge initProfile];
+    [self.profileBadge initProfile];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/settings/%@",
                            NEWSBLUR_URL,
                            appDelegate.activeUserProfileId];
@@ -100,7 +100,7 @@
     NSLog(@"results %@", results);
     NSLog(@"appDelegate.activeUserProfileId %@", appDelegate.activeUserProfileId);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [self.socialBadge refreshWithDict:results];
+    [self.profileBadge refreshWithDict:results];
     
     [results release];
 }

@@ -10,6 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "UserProfileViewController.h"
 #import "ASIHTTPRequest.h"
+#import "ProfileBadge.h"
 #import "JSON.h"
 
 @implementation FriendsListViewController
@@ -36,6 +37,7 @@
     [super viewDidLoad];
     
     self.navigationItem.title = @"Find Friends";
+    self.friendsTable.rowHeight = 140;
     
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Cancel" 
                                                                      style: UIBarButtonSystemItemCancel 
@@ -102,11 +104,6 @@
 -(BOOL)searchDisplayController:(UISearchDisplayController *)controller 
 shouldReloadTableForSearchString:(NSString *)searchString
 {
-//    [self filterContentForSearchText:searchString 
-//                               scope:[[self.searchDisplayController.searchBar scopeButtonTitles]
-//                                      objectAtIndex:[self.searchDisplayController.searchBar
-//                                                     selectedScopeButtonIndex]]];
-
     NSLog(@"search string is: %@", searchString);
     if (searchString.length == 0) {
         self.userProfiles = nil; 
@@ -118,10 +115,6 @@ shouldReloadTableForSearchString:(NSString *)searchString
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller 
 shouldReloadTableForSearchScope:(NSInteger)searchOption
 {
-//    [self filterContentForSearchText:[self.searchDisplayController.searchBar text] 
-//                               scope:[[self.searchDisplayController.searchBar scopeButtonTitles]
-//                                      objectAtIndex:searchOption]];
-    NSLog(@"shouldReloadTableForSearchScope, %@", searchOption);
     return NO;
 }
 
@@ -177,12 +170,11 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
     if (userCount) {
         return userCount;
     } else {
-        return [self.allItems count];
+        return 0;
     }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView 
@@ -199,18 +191,32 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
     int userCount = [self.userProfiles count];
     
     if (userCount) {
-        cell.textLabel.text = [[self.userProfiles objectAtIndex:indexPath.row] objectForKey:@"username"];
-    } else {
-        cell.textLabel.text = [self.allItems objectAtIndex:indexPath.row];
-    }
+        [[cell.contentView viewWithTag:123123213] removeFromSuperview];
+        
+        ProfileBadge *profile = [[ProfileBadge alloc] init];
+        [profile refreshWithDict:[self.userProfiles objectAtIndex:indexPath.row]];
+        profile.tag = 123123213;
+        profile.frame = CGRectMake(0, 0, 320, 140);
+        profile.activeProfile = [self.userProfiles objectAtIndex:indexPath.row];
+        [cell.contentView addSubview:profile];
+        
+        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        
+        [profile release];        
+    } 
 
     [cell setNeedsLayout];
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 140;
+}
+
 #pragma mark - Table view delegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
     NSInteger currentRow = indexPath.row;
     

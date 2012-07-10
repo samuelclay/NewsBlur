@@ -1,5 +1,5 @@
 //
-//  SocialBadge.h
+//  ProfileBadge.h
 //  NewsBlur
 //
 //  Created by Roy Yang on 7/2/12.
@@ -11,7 +11,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface SocialBadge : UIView {
+@interface ProfileBadge : UIView {
     NewsBlurAppDelegate *appDelegate;
     
     UIImageView *UserAvatar;

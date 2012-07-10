@@ -10,18 +10,18 @@
 #import "ASIHTTPRequest.h"
 
 @class NewsBlurAppDelegate;
-@class SocialBadge;
+@class ProfileBadge;
 
 @interface UserProfileViewController : UIViewController <ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     UILabel *followingCount;
     UILabel *followersCount;
-    SocialBadge *socialBadge;
+    ProfileBadge *profileBadge;
 }
 
 @property (retain, nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) IBOutlet SocialBadge *socialBadge;
+@property (retain, nonatomic) IBOutlet ProfileBadge *profileBadge;
 
 @property (retain, nonatomic) IBOutlet UILabel *followingCount;
 @property (retain, nonatomic) IBOutlet UILabel *followersCount;
