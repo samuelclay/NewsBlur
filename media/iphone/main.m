@@ -13,6 +13,8 @@ int main(int argc, char *argv[]) {
     
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
     int retVal = UIApplicationMain(argc, argv, nil, nil);
+//    for iOS6
+//    int retVal = UIApplicationMain(argc, argv, nil, NSStringFromClass([NewsBlurAppDelegate class]));
     [pool release];
     return retVal;
 }
