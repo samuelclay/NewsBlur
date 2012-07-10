@@ -340,10 +340,10 @@ class MSocialProfile(mongo.Document):
             with_user, _ = MSocialProfile.objects.get_or_create(user_id=common_follows_with_user)
             followers_youknow, followers_everybody = with_user.common_follows(self.user_id, direction='followers')
             following_youknow, following_everybody = with_user.common_follows(self.user_id, direction='following')
-            params['followers_youknow'] = followers_youknow
-            params['followers_everybody'] = followers_everybody
-            params['following_youknow'] = following_youknow
-            params['following_everybody'] = following_everybody
+            params['followers_youknow'] = followers_youknow[:50]
+            params['followers_everybody'] = followers_everybody[:50]
+            params['following_youknow'] = following_youknow[:50]
+            params['following_everybody'] = following_everybody[:50]
 
         return params
     
@@ -472,7 +472,7 @@ class MSocialProfile(mongo.Document):
         for email in emails_sent:
             if email.date_sent > day_ago:
                 logging.user(user, "~BB~SK~FMNot sending new follower email, already sent before. NBD.")
-                # return
+                return
         
         follower_profile = MSocialProfile.objects.get(user_id=follower_user_id)
         common_followers, _ = self.common_follows(follower_user_id, direction='followers')
