@@ -401,14 +401,21 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     if (self.pageFinished) {
-        UIView * blue = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1024, 17)];
-        [cell.contentView addSubview:blue];
-        blue.backgroundColor = [UIColor whiteColor];
-        [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationDuration:0.5f];
-        blue.backgroundColor = [UIColor colorWithRed:.7f green:0.7f blue:0.7f alpha:1.0f];
-        [UIView commitAnimations];
-        [blue release];
+        UIImage *img = [UIImage imageNamed:@"fleuron.png"];
+        UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
+        int height = 0;
+        
+        if (appDelegate.isRiverView || appDelegate.isSocialView) {
+            height = kTableViewRiverRowHeight;
+        } else {
+            height = kTableViewRowHeight;
+        }
+        
+        fleuron.frame = CGRectMake(0, 0, self.view.frame.size.width, height);
+        fleuron.contentMode = UIViewContentModeCenter;
+        [cell.contentView addSubview:fleuron];
+        fleuron.backgroundColor = [UIColor whiteColor];
+        [fleuron release];
     } else {
         cell.textLabel.text = @"Loading...";
         

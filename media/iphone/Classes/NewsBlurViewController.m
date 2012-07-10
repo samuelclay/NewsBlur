@@ -688,10 +688,18 @@
 }
 
 - (IBAction)selectIntelligence {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+	hud.mode = MBProgressHUDModeText;
+//	hud.margin = 10.f;
+	hud.removeFromSuperViewOnHide = YES;
+    
+    
     int selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
     if (selectedSegmentIndex == 0) {
+        hud.labelText = @"All stories";
         [userPreferences setInteger:0 forKey:@"siteDisplayMode"];
         [userPreferences synchronize];
         
@@ -702,7 +710,8 @@
         }
         self.viewShowingAllFeeds = YES;
         [self switchSitesUnread];
-    } else if(selectedSegmentIndex == 1) { 
+    } else if(selectedSegmentIndex == 1) {
+        hud.labelText = @"Unread stories";
         [userPreferences setInteger:1 forKey:@"siteDisplayMode"];
         [userPreferences synchronize];
         
@@ -714,6 +723,7 @@
         self.viewShowingAllFeeds = NO;
         [self switchSitesUnread];
     } else {
+        hud.labelText = @"Focus stories";
         [userPreferences setInteger:2 forKey:@"siteDisplayMode"];
         [userPreferences synchronize];
         
@@ -725,6 +735,10 @@
         [self updateFeedsWithIntelligence:0 newLevel:1];
         [self redrawUnreadCounts];
     }
+    
+
+    
+	[hud hide:YES afterDelay:0.75];
     
 }
 
