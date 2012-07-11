@@ -85,17 +85,30 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         }, this));
     },
     
+    check_services_sync_status: function() {
+        this.model.fetch_friends(_.bind(function(data) {
+            this.profile = this.model.user_profile;
+            this.services = data.services;
+            this.make_find_friends_and_services();
+        }, this));
+    },
+    
     make_find_friends_and_services: function() {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         var $services = $('.NB-friends-services', this.$modal).empty();
         
         _.each(['twitter', 'facebook'], _.bind(function(service) {
             var $service;
+            
             if (this.services && this.services[service][service+'_uid']) {
-                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service + (this.services[service].syncing && ' NB-friends-service-syncing') }, [
+                var syncing = this.services[service].syncing;
+                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service + (this.services[service].syncing ? ' NB-friends-service-syncing' : '') }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
-                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, this.services[service].syncing ? 'Fetching...' : 'Disconnect')
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, syncing ? 'Fetching...' : 'Disconnect')
                 ]);
+                if (syncing) {
+                    _.delay(_.bind(this.check_services_sync_status, this), 3000);
+                }
             } else {
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),

@@ -333,17 +333,17 @@ class MSocialProfile(mongo.Document):
         if include_follows:
             params.update({
                 'photo_service': self.photo_service,
-                'following_user_ids': self.following_user_ids_without_self[:50],
-                'follower_user_ids': self.follower_user_ids_without_self[:50],
+                'following_user_ids': self.following_user_ids_without_self[:48],
+                'follower_user_ids': self.follower_user_ids_without_self[:48],
             })
         if common_follows_with_user:
             with_user, _ = MSocialProfile.objects.get_or_create(user_id=common_follows_with_user)
             followers_youknow, followers_everybody = with_user.common_follows(self.user_id, direction='followers')
             following_youknow, following_everybody = with_user.common_follows(self.user_id, direction='following')
-            params['followers_youknow'] = followers_youknow[:50]
-            params['followers_everybody'] = followers_everybody[:50]
-            params['following_youknow'] = following_youknow[:50]
-            params['following_everybody'] = following_everybody[:50]
+            params['followers_youknow'] = followers_youknow[:48]
+            params['followers_everybody'] = followers_everybody[:48]
+            params['following_youknow'] = following_youknow[:48]
+            params['following_everybody'] = following_everybody[:48]
 
         return params
     
@@ -377,22 +377,24 @@ class MSocialProfile(mongo.Document):
         
         if check_unfollowed and user_id in self.unfollowed_user_ids:
             return
+        
+        if user_id in self.following_user_ids:
+            return
             
-        if user_id not in self.following_user_ids:
-            self.following_user_ids.append(user_id)
-            if user_id in self.unfollowed_user_ids:
-                self.unfollowed_user_ids.remove(user_id)
-            self.count_follows()
-            self.save()
-            
-            if self.user_id == user_id:
-                followee = self
-            else:
-                followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
-            if self.user_id not in followee.follower_user_ids:
-                followee.follower_user_ids.append(self.user_id)
-                followee.count_follows()
-                followee.save()
+        self.following_user_ids.append(user_id)
+        if user_id in self.unfollowed_user_ids:
+            self.unfollowed_user_ids.remove(user_id)
+        self.count_follows()
+        self.save()
+        
+        if self.user_id == user_id:
+            followee = self
+        else:
+            followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
+        if self.user_id not in followee.follower_user_ids:
+            followee.follower_user_ids.append(self.user_id)
+            followee.count_follows()
+            followee.save()
         
         following_key = "F:%s:F" % (self.user_id)
         r.sadd(following_key, user_id)
@@ -409,6 +411,8 @@ class MSocialProfile(mongo.Document):
         
         from apps.social.tasks import EmailNewFollower
         EmailNewFollower.delay(follower_user_id=self.user_id, followee_user_id=user_id)
+        
+        return socialsub
     
     def is_following_user(self, user_id):
         return user_id in self.following_user_ids
@@ -1552,21 +1556,24 @@ class MSocialServices(mongo.Document):
         following = []
         followers = 0
         
-        if self.autofollow:
-            # Follow any friends already on NewsBlur
-            user_social_services = MSocialServices.objects.filter(twitter_uid__in=self.twitter_friend_ids)
-            for user_social_service in user_social_services:
-                followee_user_id = user_social_service.user_id
-                social_profile.follow_user(followee_user_id)
+        if not self.autofollow:
+            return following
+
+        # Follow any friends already on NewsBlur
+        user_social_services = MSocialServices.objects.filter(twitter_uid__in=self.twitter_friend_ids)
+        for user_social_service in user_social_services:
+            followee_user_id = user_social_service.user_id
+            socialsub = social_profile.follow_user(followee_user_id)
+            if socialsub:
                 following.append(followee_user_id)
-        
-            # Follow any friends already on NewsBlur
-            following_users = MSocialServices.objects.filter(twitter_friend_ids__contains=self.twitter_uid)
-            for following_user in following_users:
-                if following_user.autofollow:
-                    following_user_profile = MSocialProfile.objects.get(user_id=following_user.user_id)
-                    following_user_profile.follow_user(self.user_id, check_unfollowed=True)
-                    followers += 1
+    
+        # Follow any friends already on NewsBlur
+        following_users = MSocialServices.objects.filter(twitter_friend_ids__contains=self.twitter_uid)
+        for following_user in following_users:
+            if following_user.autofollow:
+                following_user_profile = MSocialProfile.objects.get(user_id=following_user.user_id)
+                following_user_profile.follow_user(self.user_id, check_unfollowed=True)
+                followers += 1
         
         user = User.objects.get(pk=self.user_id)
         logging.user(user, "~BB~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
@@ -1578,21 +1585,24 @@ class MSocialServices(mongo.Document):
         following = []
         followers = 0
         
-        if self.autofollow:
-            # Follow any friends already on NewsBlur
-            user_social_services = MSocialServices.objects.filter(facebook_uid__in=self.facebook_friend_ids)
-            for user_social_service in user_social_services:
-                followee_user_id = user_social_service.user_id
-                social_profile.follow_user(followee_user_id)
+        if not self.autofollow:
+            return following
+
+        # Follow any friends already on NewsBlur
+        user_social_services = MSocialServices.objects.filter(facebook_uid__in=self.facebook_friend_ids)
+        for user_social_service in user_social_services:
+            followee_user_id = user_social_service.user_id
+            socialsub = social_profile.follow_user(followee_user_id)
+            if socialsub:
                 following.append(followee_user_id)
-        
-            # Friends already on NewsBlur should follow back
-            following_users = MSocialServices.objects.filter(facebook_friend_ids__contains=self.facebook_uid)
-            for following_user in following_users:
-                if following_user.autofollow:
-                    following_user_profile = MSocialProfile.objects.get(user_id=following_user.user_id)
-                    following_user_profile.follow_user(self.user_id, check_unfollowed=True)
-                    followers += 1
+    
+        # Friends already on NewsBlur should follow back
+        following_users = MSocialServices.objects.filter(facebook_friend_ids__contains=self.facebook_uid)
+        for following_user in following_users:
+            if following_user.autofollow:
+                following_user_profile = MSocialProfile.objects.get(user_id=following_user.user_id)
+                following_user_profile.follow_user(self.user_id, check_unfollowed=True)
+                followers += 1
         
         user = User.objects.get(pk=self.user_id)
         logging.user(user, "~BB~FRFacebook import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.facebook_friend_ids), len(following), followers))

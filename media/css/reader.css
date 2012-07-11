@@ -7656,7 +7656,11 @@ form.opml_import_form input {
     float: left;
     clear: both;
 }
-
+.NB-friends-service.NB-friends-service-syncing .NB-friends-service-title {
+    padding-right: 18px;
+    background: transparent url('/media/embed/reader/recycle_spinner.gif') no-repeat right 3px;
+    margin-right: 8px;
+}
 
 .NB-modal-friends .NB-friends-findfriends-profile {
     text-align: left;

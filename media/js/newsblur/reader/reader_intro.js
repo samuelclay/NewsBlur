@@ -182,7 +182,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         
         _.each(['twitter', 'facebook'], _.bind(function(service) {
             var $service;
-            if (this.services && this.services[service][service+'_uid']) {
+            if (this.services && this.services[service][service+'_uid'] && !this.services[service].syncing) {
                 $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
                     $.make('div', { className: 'NB-friends-service-connected' }, [
@@ -190,14 +190,19 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         'Connected'
                     ])
                 ]);
+                
             } else {
+                var syncing = this.services && this.services[service] && this.services[service].syncing;
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, [
                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
-                        'Find ' + _.string.capitalize(service) + ' Friends'
+                        (syncing ? 'Fetching...' : 'Find ' + _.string.capitalize(service) + ' Friends')
                     ])
                 ]);
+                if (syncing) {
+                    _.delay(_.bind(this.fetch_friends, this), 3000);
+                }
             }
             $services.append($service);
         }, this));

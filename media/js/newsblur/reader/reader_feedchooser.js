@@ -70,11 +70,11 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
                 $.make('li', { className: 'NB-1' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Unlimited number of sites'
+                  'Enable every site by going premium'
                 ]),
                 $.make('li', { className: 'NB-2' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'Some sites are updated up to 10x more often'
+                  'Sites updated up to 10x more often'
                 ]),
                 $.make('li', { className: 'NB-3' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
