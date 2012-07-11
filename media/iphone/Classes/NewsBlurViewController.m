@@ -106,7 +106,7 @@
         }
     }
 
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"read.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"16-List.png"] 
                      forSegmentAtIndex:0];
     [self.intelligenceControl setImage:[UIImage imageNamed:@"unread.png"] 
                      forSegmentAtIndex:1];
@@ -256,6 +256,24 @@
     //if (appDelegate.feedsViewController.view.window) {
         [appDelegate setTitle:[results objectForKey:@"user"]];
     //}
+    
+
+    NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
+    NSURL * imageURL = [NSURL URLWithString:url];
+    NSData * imageData = [NSData dataWithContentsOfURL:imageURL];
+    UIImage * userAvatarImage = [UIImage imageWithData:imageData];
+    userAvatarImage = [self roundCorneredImage:userAvatarImage radius:6];
+    
+    UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
+    [userAvatarButton setImage:userAvatarImage forState:UIControlStateNormal];
+
+    UIBarButtonItem *userAvatar = [[UIBarButtonItem alloc] 
+                                   initWithCustomView:userAvatarButton];
+    
+    self.navigationItem.leftBarButtonItem = userAvatar;
+    
+    [userAvatar release];
         
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
@@ -924,21 +942,7 @@
     dispatch_async(queue, ^{
         for (id feed_id in appDelegate.dictSocialFeeds) {
             NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feed_id];
-            NSString *url = [feed objectForKey:@"photo_url"];
-            NSString *firstTwoChars = [url substringToIndex:2];
-            NSString *firstChar = [url substringToIndex:1];
-            NSURL *imageURL;
-            if ([firstTwoChars isEqualToString:@"//"]) {
-                imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"http:%@",
-                                                 [feed objectForKey:@"photo_url"]]];
-            } else if ([firstChar isEqualToString:@"/"]) {
-                imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@%@", 
-                                                 NEWSBLUR_URL, 
-                                                 [feed objectForKey:@"photo_url"]]];
-            } else {
-                imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
-            }
-            
+            NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
             UIImage *faviconImage = [UIImage imageWithData:imageData];
             

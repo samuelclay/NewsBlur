@@ -58,22 +58,4 @@ static NSMutableDictionary *imageCache;
     } copy] autorelease]);
 }
 
-+ (NSURL *)convertToAbsoluteURL:(NSString *)url {
-    NSString *firstTwoChars = [url substringToIndex:2];
-    NSString *firstChar = [url substringToIndex:1];
-    NSURL *imageURL;
-    if ([firstTwoChars isEqualToString:@"//"]) {
-        imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"http:%@",
-                                         url]];
-    } else if ([firstChar isEqualToString:@"/"]) {
-        imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@%@", 
-                                         NEWSBLUR_URL, 
-                                         url]];
-    } else {
-        imageURL = [NSURL URLWithString:url];
-    }
-    
-    return imageURL;
-}
-
 @end

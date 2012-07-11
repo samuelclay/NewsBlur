@@ -208,7 +208,7 @@
                             "<a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a>"
                             "</div></div>",
                             [user objectForKey:@"user_id"],
-                            [self getImageURL:[user objectForKey:@"photo_url"]]];
+                            [user objectForKey:@"photo_url"]];
         avatarString = [avatarString stringByAppendingString:avatar];
     }
     
@@ -217,20 +217,6 @@
         
     }
     return avatarString;
-}
-
-- (NSString *)getImageURL:(NSString *)imageURL {
-    NSString *firstTwoChars = [imageURL substringToIndex:2];
-    NSString *firstChar = [imageURL substringToIndex:1];
-    if ([firstTwoChars isEqualToString:@"//"]) {
-        imageURL = [NSString stringWithFormat:@"http:%@",
-                                         imageURL];
-    } else if ([firstChar isEqualToString:@"/"]) {
-        imageURL = [NSString stringWithFormat:@"http://%@%@", 
-                                         NEWSBLUR_URL, 
-                                         imageURL];
-    }
-    return imageURL;
 }
 
 - (NSString *)getComments {
@@ -288,7 +274,7 @@
                              "        <div class=\"NB-user-avatar\"><img src=\"%@\"></div>"
                              "    </div>"
                              "</div>",
-                             [self getImageURL:[sourceUser objectForKey:@"photo_url"]]];
+                             [sourceUser objectForKey:@"photo_url"]];
     } 
     
     NSString *comment = [NSString stringWithFormat:@
@@ -310,7 +296,7 @@
                         [commentDict objectForKey:@"user_id"],
                         userAvatarClass,
                         [commentDict objectForKey:@"user_id"],
-                        [self getImageURL:[user objectForKey:@"photo_url"]],
+                        [user objectForKey:@"photo_url"],
                          userReshareString,
 
                         [user objectForKey:@"username"],
@@ -341,7 +327,7 @@
                                 "   </div>"
                                 "   <div class=\"NB-story-comment-reply-content\">%@</div>"
                                 "</div>",
-                               [self getImageURL:[user objectForKey:@"photo_url"]],
+                               [user objectForKey:@"photo_url"],
                                [user objectForKey:@"username"],  
                                [reply_dict objectForKey:@"publish_date"],
                                [reply_dict objectForKey:@"comments"]];

@@ -136,7 +136,7 @@
         photo_url = [photo_url stringByReplacingOccurrencesOfString:@"_normal" withString:@""];        
     }
     
-    NSURL *imageURL = [Utilities convertToAbsoluteURL:photo_url];    
+    NSURL *imageURL = [NSURL URLWithString:photo_url];
     NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
     UIImage *image = [UIImage imageWithData:imageData];
     UIImageView *avatar = [[UIImageView alloc] initWithImage:image];    
