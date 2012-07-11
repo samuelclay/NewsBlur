@@ -182,9 +182,9 @@ static CGFloat *psColors = nil;
     }
 
     if (isSocial) {
-        [self.feedFavicon drawInRect:CGRectMake(5.0, 3.0, 32.0, 32.0)];
+        [self.feedFavicon drawInRect:CGRectMake(7.0, 7.0, 32.0, 32.0)];
         [feedTitle 
-         drawInRect:CGRectMake(34 + 8.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 8, 20.0) 
+         drawInRect:CGRectMake(46, 14.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 8, 20.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentLeft];

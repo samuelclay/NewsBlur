@@ -20,6 +20,7 @@
 
 
 #define kTableViewRowHeight 40;
+#define kBlurblogTableViewRowHeight 45;
 
 @implementation NewsBlurViewController
 
@@ -555,7 +556,14 @@
 
 - (CGFloat)tableView:(UITableView *)tableView 
            heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return kTableViewRowHeight;
+    
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    
+    if ([folderName isEqualToString:@""]) { // blurblogs
+        return kBlurblogTableViewRowHeight;
+    } else {
+        return kTableViewRowHeight;
+    }
 }
 
 - (UIView *)tableView:(UITableView *)tableView 
