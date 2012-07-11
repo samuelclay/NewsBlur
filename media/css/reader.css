@@ -2588,6 +2588,11 @@ background: transparent;
     clear: both;
 }
 
+#store_pane img {
+    display: block;
+    margin: 1em 0;
+}
+
 #story_pane blockquote {
     background-color: #F0F0F0;
     border-left: 1px solid #9B9B9B;
