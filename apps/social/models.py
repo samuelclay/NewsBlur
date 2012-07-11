@@ -1182,8 +1182,7 @@ class MSharedStory(mongo.Document):
             story['public_comments'] = []
             if check_all or story['comment_count']:
                 comment_key = "C:%s:%s" % (story['story_feed_id'], story['guid_hash'])
-                if check_all:
-                    story['comment_count'] = r.scard(comment_key)
+                story['comment_count'] = r.scard(comment_key)
                 friends_with_comments = [int(f) for f in r.sinter(comment_key, friend_key)]
                 sharer_user_ids = [int(f) for f in r.smembers(comment_key)]
                 shared_stories = []
@@ -1213,8 +1212,7 @@ class MSharedStory(mongo.Document):
                 
             if check_all or story['share_count']:
                 share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
-                if check_all:
-                    story['share_count'] = r.scard(share_key)
+                story['share_count'] = r.scard(share_key)
                 friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
                 nonfriend_user_ids = [int(f) for f in r.sdiff(share_key, friend_key)]
                 profile_user_ids.update(nonfriend_user_ids)
