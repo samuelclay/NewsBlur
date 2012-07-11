@@ -12,6 +12,7 @@ import android.widget.SimpleCursorTreeAdapter;
 public class FolderTreeAdapter extends SimpleCursorTreeAdapter {
 
 	ContentResolver resolver; 
+	public String currentState = FeedProvider.INTELLIGENCE_ALL;
 	
 	public FolderTreeAdapter(Context context, Cursor cursor, int collapsedGroupLayout, int expandedGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo) {
 		super(context, cursor, collapsedGroupLayout, expandedGroupLayout, groupFrom, groupTo, childLayout, childFrom, childTo);
@@ -27,7 +28,7 @@ public class FolderTreeAdapter extends SimpleCursorTreeAdapter {
 		} else {
 			uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
 		}
-		return resolver.query(uri, null, null, null, null);
+		return resolver.query(uri, null, null, new String[] { currentState }, null);
 	}
 	
 }

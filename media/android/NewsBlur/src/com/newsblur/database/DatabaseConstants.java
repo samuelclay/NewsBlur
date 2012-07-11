@@ -29,8 +29,8 @@ public class DatabaseConstants {
 	};
 	
 	public static final String FEED_FOLDER_MAP_TABLE = "feed_folder_map";
-	public static final String FEED_FOLDER_FEED_ID = "feed_id";
-	public static final String FEED_FOLDER_FOLDER_NAME = "folder_name";
+	public static final String FEED_FOLDER_FEED_ID = "feed_feed_id";
+	public static final String FEED_FOLDER_FOLDER_NAME = "feed_folder_name";
 	
 	public static final String CLASSIFIER_TABLE = "classifiers";
 	public static final String CLASSIFIER_ID = BaseColumns._ID;
@@ -52,6 +52,8 @@ public class DatabaseConstants {
 	public static final String STORY_READ = "read";
 	public static final String STORY_FEED_ID = "feed_id";
 	
-	
+	public static final String[] FOLDER_COLUMNS = {
+		FOLDER_TABLE + "." + FOLDER_ID, FOLDER_TABLE + "." + FOLDER_NAME
+	};
 
 }

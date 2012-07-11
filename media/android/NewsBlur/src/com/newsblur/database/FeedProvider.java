@@ -17,18 +17,22 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
 	public static final Uri FEED_FOLDER_MAP_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedfoldermap/");
 	public static final Uri FOLDERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/folders/");
-	
+
+	public static final String INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
+	public static final String INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
+	public static final String INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
+
 	private static final String TAG = "FeedProvider";
-	
+
 	private static final int ALL_FEEDS = 0;
 	private static final int SPECIFIC_FEED = 1;
 	private static final int ALL_FOLDERS = 2;
 	private static final int SPECIFIC_FOLDER = 3;
 	private static final int FEED_FOLDER_MAP = 4;
 	private static final int SPECIFIC_FEED_FOLDER_MAP = 5;
-	
+
 	private BlurDatabase databaseHelper;
-	
+
 	private static UriMatcher uriMatcher;
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -39,7 +43,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", SPECIFIC_FOLDER);
 	}
-	
+
 	@Override
 	public int delete(Uri arg0, String arg1, String[] arg2) {
 		return 0;
@@ -55,44 +59,44 @@ public class FeedProvider extends ContentProvider {
 		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
 		Uri resultUri = null;
 		switch (uriMatcher.match(uri)) {
-		
-			// Inserting a folder
-			case ALL_FOLDERS:
-				db.beginTransaction();
-				final long folderId = db.insertWithOnConflict(DatabaseConstants.FOLDER_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-				db.setTransactionSuccessful();
-				db.endTransaction();
-				resultUri = uri.buildUpon().appendPath("" + folderId).build();
+
+		// Inserting a folder
+		case ALL_FOLDERS:
+			db.beginTransaction();
+			final long folderId = db.insertWithOnConflict(DatabaseConstants.FOLDER_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			resultUri = uri.buildUpon().appendPath("" + folderId).build();
 			break;
-			
+
 			// Inserting a feed to folder mapping
-			case FEED_FOLDER_MAP:
-				db.beginTransaction();
-				db.insertWithOnConflict(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-				db.setTransactionSuccessful();
-				db.endTransaction();
-				resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_FOLDER_FOLDER_NAME)).build();
-				break;
-				
+		case FEED_FOLDER_MAP:
+			db.beginTransaction();
+			db.insertWithOnConflict(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_FOLDER_FOLDER_NAME)).build();
+			break;
+
 			// Inserting a feed
-			case ALL_FEEDS:
-				db.beginTransaction();
-				db.insertWithOnConflict(DatabaseConstants.FEED_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-				db.setTransactionSuccessful();
-				db.endTransaction();
-				resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_ID)).build();
-				break;
-	
+		case ALL_FEEDS:
+			db.beginTransaction();
+			db.insertWithOnConflict(DatabaseConstants.FEED_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_ID)).build();
+			break;
+
 			// Inserting a story	
-			case SPECIFIC_FEED:
-				db.beginTransaction();
-				db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-				db.setTransactionSuccessful();
-				db.endTransaction();
-				break;			
-			case UriMatcher.NO_MATCH:
-				Log.d(TAG, "No match found for URI: " + uri.toString());
-				break;
+		case SPECIFIC_FEED:
+			db.beginTransaction();
+			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			break;			
+		case UriMatcher.NO_MATCH:
+			Log.d(TAG, "No match found for URI: " + uri.toString());
+			break;
 		}
 		db.close();
 		return resultUri;
@@ -110,44 +114,69 @@ public class FeedProvider extends ContentProvider {
 		final SQLiteDatabase db = databaseHelper.getReadableDatabase();
 		Cursor cursor = null;
 		switch (uriMatcher.match(uri)) {
-			// Query for all feeds (by default only return those that have unread items in them)
-			case ALL_FEEDS:
-				cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
-						" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
-						" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
-						" WHERE (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 " +
-						" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE", selectionArgs);
-				break;
+		// Query for all feeds (by default only return those that have unread items in them)
+		case ALL_FEEDS:
+			cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+					" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
+					" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
+					" WHERE (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 " +
+					" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE", selectionArgs);
+			break;
+			
 			// Querying for a specific
-			case SPECIFIC_FEED:
-				selection = DatabaseConstants.FEED_ID + " = ?";
-				selectionArgs = new String[] { uri.getLastPathSegment() };
-				cursor = db.query(DatabaseConstants.FEED_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
-				break;
+		case SPECIFIC_FEED:
+			selection = DatabaseConstants.FEED_ID + " = ?";
+			selectionArgs = new String[] { uri.getLastPathSegment() };
+			cursor = db.query(DatabaseConstants.FEED_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
+			break;
+			
 			// Query for feeds with no folder mapping	
-			case FEED_FOLDER_MAP:
-				cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE + 
-				" LEFT JOIN " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
-				" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID +
-				" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " IS NULL AND " +
-				" (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ", selectionArgs);
-				break;
+		case FEED_FOLDER_MAP:
+			cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE + 
+					" LEFT JOIN " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+					" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID +
+					" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " IS NULL AND " +
+					" (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ", null);
+			break;
+			
 			// Querying for feeds for a given folder	
-			case SPECIFIC_FEED_FOLDER_MAP:
-				selection = DatabaseConstants.FOLDER_ID + " = ?";
-				selectionArgs = new String[] { uri.getLastPathSegment() };
-				cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
-						" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
-						" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
-						" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = ? AND " +
-						" (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 " +
-						" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE", selectionArgs);
-				break;
+		case SPECIFIC_FEED_FOLDER_MAP:
+			selection = DatabaseConstants.FOLDER_ID + " = ?";
+			String[] folderArguments = new String[] { uri.getLastPathSegment() };
+
+			String query = "SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
+			" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
+			" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = ? " +
+			" GROUP BY " + DatabaseConstants.FEED_TABLE+ "." + DatabaseConstants.FOLDER_ID;
+
+			StringBuilder builder = new StringBuilder();
+			builder.append(query);
+			if (selectionArgs != null && selectionArgs.length > 0) {
+				builder.append(selectionArgs[0]);
+			}
+			builder.append(" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE");
+			cursor = db.rawQuery(builder.toString(), folderArguments);
+			break;
+			
 			// Querying for all folders with unread items
-			case ALL_FOLDERS:
-				cursor = db.rawQuery("SELECT * FROM " + DatabaseConstants.FOLDER_TABLE + " " +
-						"ORDER BY " + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE", null);
-				break;
+		case ALL_FOLDERS:
+			String folderQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
+			" LEFT JOIN " + DatabaseConstants.FOLDER_TABLE + 
+			" ON " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME +
+			" LEFT JOIN " + DatabaseConstants.FEED_TABLE + 
+			" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID + 
+			" GROUP BY " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME;
+
+			StringBuilder folderBuilder = new StringBuilder();
+			folderBuilder.append(folderQuery);
+			if (selectionArgs != null && selectionArgs.length > 0) {
+				folderBuilder.append(selectionArgs[0]);
+			}
+			folderBuilder.append(" ORDER BY ");
+			folderBuilder.append(DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE");
+			cursor = db.rawQuery(folderBuilder.toString(), null);
+			break;
 		}
 		return cursor;
 	}
@@ -157,6 +186,6 @@ public class FeedProvider extends ContentProvider {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
+
 
 }

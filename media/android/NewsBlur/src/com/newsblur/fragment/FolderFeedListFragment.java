@@ -15,6 +15,7 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FolderTreeAdapter;
 import com.newsblur.view.FolderTreeViewBinder;
+import com.newsblur.view.StateToggleButton;
 
 public class FolderFeedListFragment extends Fragment {
 
@@ -49,6 +50,28 @@ public class FolderFeedListFragment extends Fragment {
 		list.setAdapter(folderAdapter);
 		
 		return v;
+	}
+
+	public void changeState(int state) {
+		
+		String selection = null;
+		
+		switch (state) {
+		case (StateToggleButton.STATE_ONE):
+			selection = FeedProvider.INTELLIGENCE_ALL;
+			break;
+		case (StateToggleButton.STATE_TWO):
+			selection = FeedProvider.INTELLIGENCE_SOME;
+			break;
+		case (StateToggleButton.STATE_THREE):
+			selection = FeedProvider.INTELLIGENCE_BEST;
+			break;
+		}
+		
+		folderAdapter.currentState = selection;
+		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { selection }, null);
+		folderAdapter.setGroupCursor(cursor);
+		folderAdapter.notifyDataSetChanged();	
 	}
 
 }

@@ -5,7 +5,8 @@
     <color name="black">#000</color>
     <color name="darkgray">#434343</color>
     <color name="hintgray">#66bbbbbb</color>
-    <color name="lightgray">#bbbbbb</color>
+    <color name="midgray">#bbbbbb</color>
+    <color name="lightgray">#dddddd</color>
     <color name="lightorange">#d98800</color>
     <color name="darkorange">#b44a00</color>
 

@@ -2,6 +2,8 @@ package com.newsblur.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -9,16 +11,25 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.newsblur.R;
+import com.newsblur.fragment.FolderFeedListFragment;
+import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class Main extends SherlockFragmentActivity {
+public class Main extends SherlockFragmentActivity implements StateChangedListener {
     
 	private ActionBar actionBar;
+	private FolderFeedListFragment folderFeedList;
+	private FragmentManager fragmentManager;
+	private static final String TAG = "MainActivity";
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         setContentView(R.layout.activity_main);
         setupActionBar();
+        
+        fragmentManager = getSupportFragmentManager();
+        folderFeedList = (FolderFeedListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
     }
 	
 	private void setupActionBar() {
@@ -43,6 +54,13 @@ public class Main extends SherlockFragmentActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void changedState(int state) {
+		Log.d(TAG, "State changed");
+		
+		folderFeedList.changeState(state);
 	}
 	
 }

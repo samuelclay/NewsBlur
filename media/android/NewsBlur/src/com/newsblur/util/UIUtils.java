@@ -1,9 +1,9 @@
 package com.newsblur.util;
 
-import static android.graphics.Color.WHITE;
 import static android.graphics.Bitmap.Config.ARGB_8888;
+import static android.graphics.Color.WHITE;
 import static android.graphics.PorterDuff.Mode.DST_IN;
-
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -13,7 +13,8 @@ import android.graphics.RectF;
 public class UIUtils {
 	
 	/*
-	 * Based on the RoundedCorners code from Square / Eric Burke and the GitHub Android code
+	 * Based on the RoundedCorners code from Square / Eric Burke's "Android UI" talk 
+	 * and the GitHub Android code.
 	 * https://github.com/github/android
 	 */
 	
@@ -40,4 +41,15 @@ public class UIUtils {
 
         return rounded;
     }
+	
+	/*
+	 * Convert from device-independent-pixels to pixels for use in custom view drawing, as
+	 * used throughout Android. 
+	 * See: http://bit.ly/MfsAUZ (Romain Guy's comment)  
+	 */
+	
+	public static int convertDPsToPixels(Context context, final int dps) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (dps * scale + 0.5f);
+	}
 }

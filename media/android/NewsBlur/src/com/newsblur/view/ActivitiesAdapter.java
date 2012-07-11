@@ -22,7 +22,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
 	private final String startedFollowing, ago, repliedTo, sharedStory, withComment;
-	private ForegroundColorSpan lightgray, highlight, darkgray;
+	private ForegroundColorSpan midgray, highlight, darkgray;
 	
 	public ActivitiesAdapter(Context context, final ActivitiesResponse[] activities) {
 		super(context, R.id.row_activity_text);
@@ -41,7 +41,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		ago = resources.getString(R.string.profile_ago);
 		
 		highlight = new ForegroundColorSpan(resources.getColor(R.color.lightorange));
-		lightgray = new ForegroundColorSpan(resources.getColor(R.color.lightgray));
+		midgray = new ForegroundColorSpan(resources.getColor(R.color.midgray));
 		darkgray = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
 	}
 	
@@ -64,12 +64,12 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 			activityUpdate = new SpannableString(repliedTo + " " + activity.user.username + ": \"" + activity.content + "\"");
 			activityUpdate.setSpan(darkgray, 0, repliedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			activityUpdate.setSpan(highlight, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			activityUpdate.setSpan(lightgray, activityUpdate.length() - activity.content.length() - 2, activityUpdate.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			activityUpdate.setSpan(midgray, activityUpdate.length() - activity.content.length() - 2, activityUpdate.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		} else if (TextUtils.equals(activity.category, "sharedstory")) {
 			activityUpdate = new SpannableString(sharedStory + " \"" + activity.title + "\" " + withComment + ": \"" + activity.content + "\"");
 			activityUpdate.setSpan(darkgray, 0, sharedStory.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			activityUpdate.setSpan(highlight, sharedStory.length() + 1, sharedStory.length() + 2 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			activityUpdate.setSpan(lightgray, sharedStory.length() + 4 + activity.title.length() + withComment.length(), activityUpdate.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			activityUpdate.setSpan(midgray, sharedStory.length() + 4 + activity.title.length() + withComment.length(), activityUpdate.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		}
 		
 		TextView activityText = (TextView) view.findViewById(R.id.row_activity_text);
