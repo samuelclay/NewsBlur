@@ -82,17 +82,26 @@
     
     int userInteractions = [appDelegate.dictUserInteractions count];
     if (userInteractions) {
-        
+        cell.textLabel.font = [UIFont systemFontOfSize:13];        
         NSDictionary *interaction = [appDelegate.dictUserInteractions objectAtIndex:indexPath.row];
         NSString *category = [interaction objectForKey:@"category"];
         NSString *content = [interaction objectForKey:@"content"];
+        NSString *title = [interaction objectForKey:@"title"];
         NSString *username = [[interaction objectForKey:@"with_user"] objectForKey:@"username"];
+        
         if ([category isEqualToString:@"follow"]) {
             cell.textLabel.text = [NSString stringWithFormat:@"%@ is now following you", username];
+            
         } else if ([category isEqualToString:@"comment_reply"]) {
             cell.textLabel.text = [NSString stringWithFormat:@"%@ replied to your comment: %@", username, content];
+        
+        } else if ([category isEqualToString:@"reply_reply"]) {
+            cell.textLabel.text = [NSString stringWithFormat:@"%@ replied to your reply: %@", username, content];
+            
+        } else if ([category isEqualToString:@"story_reshare"]) {
+            cell.textLabel.text = [NSString stringWithFormat:@"%@ re-shared: %@ | %@", username, title, content];
         }
-        cell.textLabel.font = [UIFont systemFontOfSize:13];
+
     }
     
     return cell;
