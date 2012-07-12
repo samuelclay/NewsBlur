@@ -8,17 +8,14 @@
 
 #import "ActivityModule.h"
 #import "NewsBlurAppDelegate.h"
-#import "Utilities.h"
-#import "ASIHTTPRequest.h"
-#import "JSON.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation ActivityModule
 
 @synthesize appDelegate;
 @synthesize activitiesTable;
 @synthesize activitiesArray;
-@synthesize isSelf;
-
+@synthesize activitiesUsername;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -32,6 +29,7 @@
     [appDelegate release];
     [activitiesTable release];
     [activitiesArray release];
+    [activitiesUsername release];
     [super dealloc];
 }
 
@@ -40,18 +38,20 @@
 }
 
 
-- (void)refreshWithActivities:(NSArray *)activities asSelf:(BOOL)asSelf {
-    self.isSelf = asSelf;
+- (void)refreshWithActivities:(NSDictionary *)activitiesDict {
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];   
-    self.activitiesArray = activities;
+    self.activitiesArray = [activitiesDict objectForKey:@"activities"];
+    self.activitiesUsername = [activitiesDict objectForKey:@"username"];
     
     self.activitiesTable = [[[UITableView alloc] init] autorelease];
     self.activitiesTable.dataSource = self;
     self.activitiesTable.delegate = self;
     self.activitiesTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+    self.activitiesTable.layer.cornerRadius = 10;
     
     [self addSubview:self.activitiesTable];    
     [self.activitiesTable reloadData];
+    
 }
 
 #pragma mark -
@@ -90,18 +90,18 @@
         NSString *category = [activity objectForKey:@"category"];
         NSString *content = [activity objectForKey:@"content"];
         NSString *title = [activity objectForKey:@"title"];
-        NSString *username = self.isSelf ? @"You" : @"Stub for username";
-        NSString *withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-
         
         if ([category isEqualToString:@"follow"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ followed %@", username, withUserUsername];
+            
+            NSString *withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
+            cell.textLabel.text = [NSString stringWithFormat:@"%@ followed %@", self.activitiesUsername, withUserUsername];
             
         } else if ([category isEqualToString:@"comment_reply"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ replied to %@", username, withUserUsername];
+            NSString *withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
+            cell.textLabel.text = [NSString stringWithFormat:@"%@ replied to %@", self.activitiesUsername, withUserUsername];
             
         } else if ([category isEqualToString:@"sharedstory"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ shared %@ : %@", username, title, content];
+            cell.textLabel.text = [NSString stringWithFormat:@"%@ shared %@ : %@", self.activitiesUsername, title, content];
         
         // star and feedsub are always private.
         } else if ([category isEqualToString:@"star"]) {

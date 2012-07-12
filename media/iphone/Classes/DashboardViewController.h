@@ -11,17 +11,13 @@
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
-@interface DashboardViewController : UIViewController 
-    <UITableViewDelegate, 
-    UITableViewDataSource> {
+@interface DashboardViewController : UIViewController {
     NewsBlurAppDelegate *appDelegate;
     UIToolbar *bottomToolbar;
-    UITableView *interactionsTable;    
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (retain, nonatomic) IBOutlet UIToolbar *bottomToolbar;
-@property (retain, nonatomic) IBOutlet UITableView *interactionsTable;
 
 - (IBAction)doLogout:(id)sender;
 - (void)refreshInteractions;

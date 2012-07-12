@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @class NewsBlurAppDelegate;
-@class ASIHTTPRequest;
 
 @interface ActivityModule : UIView
     <UITableViewDelegate, 
@@ -17,15 +16,14 @@
     NewsBlurAppDelegate *appDelegate;
     UITableView *activitiesTable;
     NSArray *activitiesArray;
-    
-    BOOL isSelf;
+    NSString *activitiesUsername;
 }
 
 @property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) UITableView *activitiesTable;
 @property (nonatomic, retain) NSArray *activitiesArray;
-@property (nonatomic, readwrite) BOOL isSelf;
+@property (nonatomic, retain) NSString *activitiesUsername;
 
-- (void)refreshWithActivities:(NSArray *)activities asSelf:(BOOL)asSelf;
+- (void)refreshWithActivities:(NSDictionary *)activitiesDict;
 
 @end

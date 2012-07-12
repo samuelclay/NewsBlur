@@ -9,12 +9,12 @@
 #import "DashboardViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "ActivityModule.h"
+#import "InteractionsModule.h"
 #import "JSON.h"
 
 @implementation DashboardViewController
 
 @synthesize bottomToolbar;
-@synthesize interactionsTable;
 @synthesize appDelegate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -33,7 +33,6 @@
 - (void)viewDidUnload {
     [self setAppDelegate:nil];
     [self setBottomToolbar:nil];
-    [self setInteractionsTable:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -48,7 +47,6 @@
 - (void)dealloc {
     [appDelegate release];
     [bottomToolbar release];
-    [interactionsTable release];
     [super dealloc];
 }
 
@@ -78,8 +76,30 @@
     [request startAsynchronous];
 }
 
+- (void)finishLoadInteractions:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    
+    appDelegate.dictUserInteractions = [results objectForKey:@"interactions"];
+    [results release];
+
+    InteractionsModule *interactions = [[InteractionsModule alloc] init];
+    interactions.frame = CGRectMake(20, 100, 438, 300);
+    [interactions refreshWithInteractions:appDelegate.dictUserInteractions];
+    [self.view addSubview:interactions];
+    [interactions release];
+} 
+
+- (void)requestFailed:(ASIHTTPRequest *)request {    
+    NSLog(@"Error in finishLoadInteractions is %@", [request error]);
+}
+
+# pragma mark
+# pragma Activities
+
 - (void)refreshActivity {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/profile?user_id=%@",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/activities?user_id=%@",
                            NEWSBLUR_URL,
                            [appDelegate.dictUserProfile objectForKey:@"user_id"]];
     
@@ -96,79 +116,14 @@
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     
-    appDelegate.dictUserActivity = [results objectForKey:@"activities"];
+    appDelegate.dictUserActivities = results;
     [results release];
     
     ActivityModule *activity = [[ActivityModule alloc] init];
     activity.frame = CGRectMake(20, 510, 438, 300);
-    activity.backgroundColor = [UIColor redColor];
-    [activity refreshWithActivities:appDelegate.dictUserActivity asSelf:YES];
+    [activity refreshWithActivities:appDelegate.dictUserActivities];
     [self.view addSubview:activity];
     [activity release];
-}
-
-
-- (void)finishLoadInteractions:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
-    
-    appDelegate.dictUserInteractions = [results objectForKey:@"interactions"];
-    [results release];
-    [self.interactionsTable reloadData];
-} 
-
-- (void)requestFailed:(ASIHTTPRequest *)request {    
-    NSLog(@"Error in finishLoadInteractions is %@", [request error]);
-}
-
-
-
-#pragma mark -
-#pragma mark Table View - Interactions List
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{    
-    int userInteractions = [appDelegate.dictUserInteractions count];
-    if (userInteractions) {
-        return userInteractions;
-    } else {
-        return 0;
-    }
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView 
-                             dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] 
-                 initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:CellIdentifier] autorelease];
-    }
-    
-    int userInteractions = [appDelegate.dictUserInteractions count];
-    if (userInteractions) {
-        
-        NSDictionary *interaction = [appDelegate.dictUserInteractions objectAtIndex:indexPath.row];
-        NSString *category = [interaction objectForKey:@"category"];
-        NSString *content = [interaction objectForKey:@"content"];
-        NSString *username = [[interaction objectForKey:@"with_user"] objectForKey:@"username"];
-        if ([category isEqualToString:@"follow"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ is now following you", username];
-        } else if ([category isEqualToString:@"comment_reply"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ replied to your comment: %@", username, content];
-        }
-        cell.textLabel.font = [UIFont systemFontOfSize:13];
-    }
-    
-    return cell;
 }
 
 @end

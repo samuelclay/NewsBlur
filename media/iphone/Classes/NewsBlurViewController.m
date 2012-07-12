@@ -194,6 +194,7 @@
         [self fetchFeedList:YES refreshFeeds:YES];
     }
     [decayDate release];
+    
 }
 
 -(void)fetchFeedList:(BOOL)showLoader refreshFeeds:(BOOL)refreshFeeds {
@@ -291,9 +292,9 @@
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     
-    // Set up dictUserProfile and dictUserActivity
+    // Set up dictUserProfile and dictUserActivities
     appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
-    appDelegate.dictUserActivity = [results objectForKey:@"activities"];
+    appDelegate.dictUserActivities = [results objectForKey:@"activities"];
     [appDelegate.dashboardViewController refreshInteractions];
     [appDelegate.dashboardViewController refreshActivity];
 

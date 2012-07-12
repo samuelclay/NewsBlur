@@ -57,7 +57,6 @@
 - (void)switchSitesUnread;
 - (void)loadFavicons;
 - (void)loadAvatars;
-- (UIImage*) roundCorneredImage: (UIImage*) orig radius:(CGFloat) r;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)refreshFeedList;
