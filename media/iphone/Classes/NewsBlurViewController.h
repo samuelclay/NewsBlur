@@ -77,6 +77,7 @@
 - (void)refreshFeedList;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
 - (void)showUserProfilePopover:(id)sender;
+- (void)showSettingsPopover:(id)sender;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 
 @end

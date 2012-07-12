@@ -139,7 +139,7 @@
 
 - (void)dismissFeedsMenu {
     if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:NO];
+        [popoverController dismissPopoverAnimated:YES];
     }
 }
 
@@ -284,17 +284,20 @@
     [userAvatar release];
     
     // adding settings button to right
+
+    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
+    UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
+    settings.bounds = CGRectMake(0, 0, 32, 32);
+    [settings setTitle:@"Logout" forState:UIControlStateNormal];
+    [settings addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
+    [settings setImage:settingsImage forState:UIControlStateNormal];
     
-//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] init];
-//
-//    settingsButton.title = @"\u2699"; 
-//    UIFont *f1 = [UIFont fontWithName:@"Helvetica" size:24.0]; 
-//    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:f1, UITextAttributeFont, nil]; 
-//    [settingsButton setTitleTextAttributes:dict forState:UIControlStateNormal]; 
-//    
-//    self.navigationItem.rightBarButtonItem = settingsButton;
-//    [settingsButton release];
-        
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+                                   initWithCustomView:settings];
+    
+    self.navigationItem.rightBarButtonItem = settingsButton;
+    
+    
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     
@@ -424,7 +427,7 @@
 
 }
 
-- (IBAction)showMenuButton:(id)sender {
+- (void)showSettingsPopover:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (popoverController == nil) {
             popoverController = [[UIPopoverController alloc]
@@ -435,13 +438,17 @@
             [popoverController setContentViewController:appDelegate.feedsMenuViewController];
         }
         
-        [popoverController setPopoverContentSize:CGSizeMake(200, 86)];
-        [popoverController presentPopoverFromBarButtonItem:sender
+        [popoverController setPopoverContentSize:CGSizeMake(200, 132)];
+        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
                                   permittedArrowDirections:UIPopoverArrowDirectionAny 
                                                   animated:YES];  
     } else {
         [appDelegate showFeedsMenu]; 
     }
+}
+
+- (IBAction)showMenuButton:(id)sender {
+    [appDelegate showAddSite];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

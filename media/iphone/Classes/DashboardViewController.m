@@ -78,7 +78,8 @@
 }
 
 - (void)repositionDashboard {
-	if (UIInterfaceOrientationIsPortrait([[UIDevice currentDevice] orientation])) {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
+	if (UIInterfaceOrientationIsPortrait(orientation)) {
         self.interactionsLabel.frame = CGRectMake(151,
                                                   42,
                                                   self.interactionsLabel.frame.size.width,

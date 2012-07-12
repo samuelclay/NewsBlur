@@ -33,7 +33,7 @@
     // Do any additional setup after loading the view from its nib.
     
     self.menuOptions = [[[NSArray alloc]
-                        initWithObjects:@"Find Friends", @"Add Site", nil] autorelease];
+                        initWithObjects:@"Account", @"Preferences", @"Logout", nil] autorelease];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         toolbar.hidden = YES;
@@ -101,21 +101,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    if (indexPath.row == 0) {
-        NSLog(@"Find Friends");
-        [appDelegate showFindFriends];
-    } else if (indexPath.row == 1) {
-        NSLog(@"Add Site");
-        [appDelegate showAddSite];
+    if (indexPath.row == 2) {
+        [appDelegate confirmLogout];
     }
-//    } else if (indexPath.row == 2) {
-//        // logout
-//        UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Logout", nil];
-//        [logoutConfirm show];
-//        [logoutConfirm setTag:1];
-//        [logoutConfirm release];
-//    }
-
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [appDelegate hideFeedsMenu];
 }
