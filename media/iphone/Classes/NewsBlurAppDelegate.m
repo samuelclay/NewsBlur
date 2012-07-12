@@ -85,6 +85,7 @@
 @synthesize dictSocialFeeds;
 @synthesize dictUserProfile;
 @synthesize dictUserInteractions;
+@synthesize dictUserActivity;
 @synthesize dictFoldersArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
@@ -172,6 +173,7 @@
     [dictSocialFeeds release];
     [dictUserProfile release];
     [dictUserInteractions release];
+    [dictUserActivity release];
     [dictFoldersArray release];
 
     [super dealloc];
@@ -689,7 +691,10 @@
 
 - (void)hideStoryDetailView {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.splitStoryDetailNavigationController popViewControllerAnimated:YES];
+        [self.splitStoryDetailNavigationController popToRootViewControllerAnimated:YES];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    } else {
+        [self.navigationController popViewControllerAnimated:YES];
     }
 }
 

@@ -317,16 +317,21 @@
         for (int i = 0; i < replies.count; i++) {
             NSDictionary *reply_dict = [replies objectAtIndex:i];
             NSDictionary *user = [self getUser:[[reply_dict objectForKey:@"user_id"] intValue]];
+            NSString *editStr = [NSString stringWithFormat:@
+                                 "   <div class=\"NB-story-comment-edit-button NB-story-comment-reply-edit-button\">"
+                                 "       <div class=\"NB-story-comment-edit-button-wrapper\">edit</div>"            
+                                 "   </div>"];
+            
             NSString *reply = [NSString stringWithFormat:@
                                 "<div class=\"NB-story-comment-reply\">"
-                                "   <img class=\"NB-user-avatar NB-story-comment-reply-photo\" src=\"%@\" />"
+                                "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
+                                "       <img class=\"NB-user-avatar NB-story-comment-reply-photo\" src=\"%@\" />"
+                                "   </a>"
                                 "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
                                 "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
-                                "   <div class=\"NB-story-comment-edit-button NB-story-comment-reply-edit-button\">"
-                                "       <div class=\"NB-story-comment-edit-button-wrapper\">edit</div>"            
-                                "   </div>"
                                 "   <div class=\"NB-story-comment-reply-content\">%@</div>"
                                 "</div>",
+                               [user objectForKey:@"user_id"],  
                                [user objectForKey:@"photo_url"],
                                [user objectForKey:@"username"],  
                                [reply_dict objectForKey:@"publish_date"],

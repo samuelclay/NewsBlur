@@ -267,6 +267,10 @@ div + p {
     clear: both;
 }
 
+#story_pane .nb-feed-story-comments {
+    max-width: none;
+}
+
 .NB-story-title {
     clear: left;
     margin: 8px 0 4px;

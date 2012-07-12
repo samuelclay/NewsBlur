@@ -7,7 +7,7 @@ $('.NB-story img').bind('load', function() {
 });
 
 $('a.NB-show-profile').click(function(){
-  var offset = $(this).offset();
+  var offset = $('img', this).offset();
   console.log(offset);
   var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
   window.location = url;

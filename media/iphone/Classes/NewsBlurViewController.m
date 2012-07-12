@@ -20,7 +20,7 @@
 
 
 #define kTableViewRowHeight 40;
-#define kBlurblogTableViewRowHeight 45;
+#define kBlurblogTableViewRowHeight 46;
 
 @implementation NewsBlurViewController
 
@@ -109,9 +109,9 @@
 
     [self.intelligenceControl setImage:[UIImage imageNamed:@"16-List.png"] 
                      forSegmentAtIndex:0];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"unread.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_color.png"] 
                      forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"focused.png"] 
+    [self.intelligenceControl setImage:[UIImage imageNamed:@"focused_color.png"] 
                      forSegmentAtIndex:2];
     [self.intelligenceControl addTarget:self
                                  action:@selector(selectIntelligence)
@@ -259,11 +259,12 @@
     //}
     
 
+    // adding user avatar to left
     NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
     NSURL * imageURL = [NSURL URLWithString:url];
     NSData * imageData = [NSData dataWithContentsOfURL:imageURL];
     UIImage * userAvatarImage = [UIImage imageWithData:imageData];
-    userAvatarImage = [self roundCorneredImage:userAvatarImage radius:6];
+    userAvatarImage = [Utilities roundCorneredImage:userAvatarImage radius:6];
     
     UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
@@ -273,17 +274,29 @@
                                    initWithCustomView:userAvatarButton];
     
     self.navigationItem.leftBarButtonItem = userAvatar;
-    
     [userAvatar release];
+    
+    // adding settings button to right
+    
+//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] init];
+//
+//    settingsButton.title = @"\u2699"; 
+//    UIFont *f1 = [UIFont fontWithName:@"Helvetica" size:24.0]; 
+//    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:f1, UITextAttributeFont, nil]; 
+//    [settingsButton setTitleTextAttributes:dict forState:UIControlStateNormal]; 
+//    
+//    self.navigationItem.rightBarButtonItem = settingsButton;
+//    [settingsButton release];
         
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     
-    // Set up dictUserProfile
+    // Set up dictUserProfile and dictUserActivity
     appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
+    appDelegate.dictUserActivity = [results objectForKey:@"activities"];
     [appDelegate.dashboardViewController refreshInteractions];
-    
-    
+    [appDelegate.dashboardViewController refreshActivity];
+
     // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
@@ -572,9 +585,9 @@
     int headerLabelHeight, folderImageViewY, disclosureImageViewY;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        headerLabelHeight = 30;
-        folderImageViewY = 7;
-        disclosureImageViewY = 8;
+        headerLabelHeight = 24;
+        folderImageViewY = 4;
+        disclosureImageViewY = 5;
     } else {
         headerLabelHeight = 20;
         folderImageViewY = 2;
@@ -675,7 +688,7 @@
 //        return 0;
 //    }
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
-        return 31;
+        return 25;
     }else{
         return 21;
     }
@@ -954,7 +967,7 @@
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
             UIImage *faviconImage = [UIImage imageWithData:imageData];
             
-            faviconImage = [self roundCorneredImage:faviconImage radius:6];
+            faviconImage = [Utilities roundCorneredImage:faviconImage radius:6];
             
             [Utilities saveImage:faviconImage feedId:feed_id];
         }
@@ -967,15 +980,7 @@
     });
 }
 
-- (UIImage *)roundCorneredImage: (UIImage*) orig radius:(CGFloat) r {
-    UIGraphicsBeginImageContextWithOptions(orig.size, NO, 0);
-    [[UIBezierPath bezierPathWithRoundedRect:(CGRect){CGPointZero, orig.size} 
-                                cornerRadius:r] addClip];
-    [orig drawInRect:(CGRect){CGPointZero, orig.size}];
-    UIImage* result = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return result;
-}
+
 
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];

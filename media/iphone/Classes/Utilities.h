@@ -15,5 +15,6 @@
 + (void)saveImage:(UIImage *)image feedId:(NSString *)filename;
 + (UIImage *)getImage:(NSString *)filename;
 + (void)saveimagesToDisk;
++ (UIImage *)roundCorneredImage:(UIImage *)orig radius:(CGFloat)r;
 
 @end

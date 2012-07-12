@@ -11,15 +11,15 @@
 #import "ASIHTTPRequest.h"
 #import "JSON.h"
 #import "ProfileBadge.h"
+#import "ActivityModule.h"
 #import "Utilities.h"
 #import "MBProgressHUD.h"
 
 @implementation UserProfileViewController
 
 @synthesize appDelegate;
-@synthesize followingCount;
-@synthesize followersCount;
 @synthesize profileBadge;
+@synthesize activityModule;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -38,16 +38,22 @@
     ProfileBadge *badge = [[ProfileBadge alloc] init];
     badge.frame = CGRectMake(0, 0, 320, 140);
     self.profileBadge = badge;
+    
+    ActivityModule *activity = [[ActivityModule alloc] init];
+    activity.frame = CGRectMake(0, badge.frame.size.height, 320, 300);
+    self.activityModule = activity;
 
     self.view.frame = CGRectMake(0, 0, 320, 500);
+    self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.profileBadge];
+    
     [badge release];
+    [activity release];
 }
 
 - (void)viewDidUnload
 {
-    [self setFollowingCount:nil];
-    [self setFollowersCount:nil];
+    [self setActivityModule:nil];
     [self setProfileBadge:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
@@ -65,9 +71,8 @@
 
 - (void)dealloc {
     [appDelegate release];
-    [followingCount release];
-    [followersCount release];
     [profileBadge release];
+    [activityModule release];
     [super dealloc];
 }
 
@@ -78,10 +83,10 @@
 - (void)getUserProfile {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Finding...";
+    HUD.labelText = @"Profiling...";
     
     [self.profileBadge initProfile];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/settings/%@",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/profile?user_id=%@",
                            NEWSBLUR_URL,
                            appDelegate.activeUserProfileId];
     NSURL *url = [NSURL URLWithString:urlString];
@@ -107,8 +112,9 @@
     } 
 
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    [self.profileBadge refreshWithProfile:results];
-    
+    [self.profileBadge refreshWithProfile:[results objectForKey:@"user_profile"]];
+    [self.activityModule refreshWithActivities:[results objectForKey:@"activities"]];
+
     [results release];
 }
 

@@ -8,6 +8,7 @@
 
 #import "DashboardViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "ActivityModule.h"
 #import "JSON.h"
 
 @implementation DashboardViewController
@@ -77,14 +78,42 @@
     [request startAsynchronous];
 }
 
+- (void)refreshActivity {
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/profile?user_id=%@",
+                           NEWSBLUR_URL,
+                           [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [request setDidFinishSelector:@selector(finishLoadActivities:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)finishLoadActivities:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    
+    appDelegate.dictUserActivity = [results objectForKey:@"activities"];
+    [results release];
+    
+    ActivityModule *activity = [[ActivityModule alloc] init];
+    activity.frame = CGRectMake(20, 510, 438, 300);
+    activity.backgroundColor = [UIColor redColor];
+    [activity refreshWithActivities:appDelegate.dictUserActivity asSelf:YES];
+    [self.view addSubview:activity];
+    [activity release];
+}
+
+
 - (void)finishLoadInteractions:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     
     appDelegate.dictUserInteractions = [results objectForKey:@"interactions"];
-    
-    NSLog(@"appDelegate.dictUserInteractions finishLoadInteractions is %i", [appDelegate.dictUserInteractions count]);
     [results release];
     [self.interactionsTable reloadData];
 } 

@@ -72,7 +72,7 @@
     int yCoordinatePointer = 0;
     
     // USERNAME
-    UILabel *user = [[UILabel alloc] initWithFrame:CGRectMake(120,10,230,20)];
+    UILabel *user = [[UILabel alloc] initWithFrame:CGRectMake(120, 10, 190, 20)];
     user.text = [profile objectForKey:@"username"]; 
     user.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
     user.font = [UIFont fontWithName:@"Helvetica-Bold" size:20];
@@ -107,6 +107,20 @@
         bio.text = [profile objectForKey:@"bio"];
         bio.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
         bio.font = [UIFont fontWithName:@"Helvetica" size:12];
+        bio.lineBreakMode = UILineBreakModeTailTruncation;
+        bio.numberOfLines = 2;
+        
+        
+        // Calculate the expected size based on the font and linebreak mode of your label
+        CGSize maximumLabelSize = CGSizeMake(190, 40);
+        CGSize expectedLabelSize = [[profile objectForKey:@"bio"] 
+                                    sizeWithFont:bio.font 
+                                    constrainedToSize:maximumLabelSize 
+                                    lineBreakMode:bio.lineBreakMode];
+        CGRect newFrame = bio.frame;
+        newFrame.size.height = expectedLabelSize.height;
+        bio.frame = newFrame;
+        
         self.userDescription = bio;
         [self addSubview:self.userDescription];
         [bio release];
@@ -121,6 +135,8 @@
                           [[profile objectForKey:@"follower_count"] intValue] == 1 ? @"" : @"s"];
     stats.text = statsStr;
     stats.font = [UIFont fontWithName:@"Helvetica" size:10];
+    stats.textColor = UIColorFromRGB(0xAE5D15);
+    
     self.userStats = stats;
     [self addSubview:self.userStats];
     [stats release];
@@ -133,13 +149,14 @@
     }
                      
     if ([photo_url rangeOfString:@"twimg"].location != NSNotFound) {
-        photo_url = [photo_url stringByReplacingOccurrencesOfString:@"_normal" withString:@""];        
+        photo_url = [photo_url stringByReplacingOccurrencesOfString:@"_normal" withString:@"_bigger"];        
     }
     
     NSURL *imageURL = [NSURL URLWithString:photo_url];
     NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
     UIImage *image = [UIImage imageWithData:imageData];
-    UIImageView *avatar = [[UIImageView alloc] initWithImage:image];    
+    image = [Utilities roundCorneredImage:image radius:6];
+    UIImageView *avatar = [[UIImageView alloc] initWithImage:image];
     avatar.frame = CGRectMake(10, 10, 100, 100);
     self.userAvatar = avatar;
     [self addSubview:self.userAvatar];
@@ -147,7 +164,7 @@
     
     // FOLLOW BUTTON
     UIButton *follow = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    follow.frame = CGRectMake(120, 80, 100, 30);
+    follow.frame = CGRectMake(120, 83, 100, 30);
 
     // check if self
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictUserProfile objectForKey:@"user_id"]];    
