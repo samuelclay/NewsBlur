@@ -15,11 +15,11 @@
 #import "ASIHTTPRequest.h"
 
 @implementation ShareViewController
+
 @synthesize facebookButton;
 @synthesize twitterButton;
 @synthesize submitButton;
 @synthesize toolbarTitle;
-
 @synthesize commentField;
 @synthesize appDelegate;
 
@@ -61,8 +61,7 @@
     // e.g. self.myOutlet = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
 
@@ -84,7 +83,7 @@
 
 - (IBAction)doCancelButton:(id)sender {
     [commentField resignFirstResponder];
-    [appDelegate hideShareView];
+    [appDelegate hideShareView:NO];
 }
 
 - (IBAction)doToggleButton:(id)sender {
@@ -181,7 +180,7 @@
     NSLog(@"%@", [request responseString]);
     NSLog(@"Successfully added.");
     [commentField resignFirstResponder];
-    [appDelegate hideShareView];
+    [appDelegate hideShareView:YES];
     
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
@@ -207,11 +206,11 @@
     CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
     CGRect shareViewFrame = self.view.frame;
-    CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.view.frame;
+    CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.webView.frame;
     
     //NSLog(@"Keyboard y is %f", keyboardFrame.size.height);
-    
-    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
+	if (UIInterfaceOrientationIsPortrait(orientation)) {
         shareViewFrame.origin.y = shareViewFrame.origin.y + keyboardFrame.size.height;
         storyDetailViewFrame.size.height = storyDetailViewFrame.size.height + keyboardFrame.size.height;
     } else {
@@ -224,7 +223,7 @@
                         options:UIViewAnimationOptionBeginFromCurrentState | curve 
                      animations:^{
         self.view.frame = shareViewFrame;
-        appDelegate.storyDetailViewController.view.frame = storyDetailViewFrame;
+        appDelegate.storyDetailViewController.webView.frame = storyDetailViewFrame;
     } completion:nil];
 }
 
@@ -237,9 +236,10 @@
     CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
     CGRect shareViewFrame = self.view.frame;
-    CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.view.frame;
+    CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.webView.frame;
     
-    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
+	if (UIInterfaceOrientationIsPortrait(orientation)) {
         shareViewFrame.origin.y = shareViewFrame.origin.y - keyboardFrame.size.height;
         storyDetailViewFrame.size.height = storyDetailViewFrame.size.height - keyboardFrame.size.height;
     } else {
@@ -252,7 +252,7 @@
                         options:UIViewAnimationOptionBeginFromCurrentState | curve 
                      animations:^{
                          self.view.frame = shareViewFrame;
-                         appDelegate.storyDetailViewController.view.frame = storyDetailViewFrame;
+                         appDelegate.storyDetailViewController.webView.frame = storyDetailViewFrame;
                      } completion:nil];
 }
 

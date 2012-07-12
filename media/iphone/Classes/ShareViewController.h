@@ -11,7 +11,6 @@
 
 @interface ShareViewController : UIViewController <ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
-
 }
 
 @property (retain, nonatomic) IBOutlet UITextView *commentField;

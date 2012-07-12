@@ -260,49 +260,69 @@
     
     self.isShowingShare = YES;
     
-    
+    // add shareViewController to storyDetail
     [storyDetailViewController.view addSubview:shareViewController.view];    
     
     if (userId && username) {
         [shareViewController setSiteInfo:userId setUsername:username];  
     }
     
-
-
     shareViewController.view.frame = CGRectMake(0, 
                                                 storyDetailViewController.view.frame.size.height, 
                                                 storyDetailViewController.view.frame.size.width, 
                                                 0);
     
-    int newShareHeight = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
-    int newStoryHeight = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT + 44;
+    int newShareYCoordinate = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
+    int newStoryHeight = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
     
     shareViewController.view.hidden = NO;
     
     [UIView animateWithDuration:0.35 animations:^{
         shareViewController.view.frame = CGRectMake(0, 
-                                                    newShareHeight, 
+                                                    newShareYCoordinate, 
                                                     storyDetailViewController.view.frame.size.width, 
                                                     SHARE_MODAL_HEIGHT);
     } completion:^(BOOL finished) {
-        storyDetailViewController.view.frame = CGRectMake(0,
+        storyDetailViewController.webView.frame = CGRectMake(0,
                                                           0,
                                                           storyDetailViewController.view.frame.size.width,
                                                           newStoryHeight);
-    }]; 
+        
+        [self.storyDetailViewController scrolltoBottom];
+    }];
 }
 
-- (void)hideShareView {
+- (void)adjustShareModal {    
+    if (self.isShowingShare) {
+        int newShareYCoordinate = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
+        int newStoryHeight = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
+        shareViewController.view.frame = CGRectMake(0, 
+                                                    newShareYCoordinate, 
+                                                    storyDetailViewController.view.frame.size.width, 
+                                                    SHARE_MODAL_HEIGHT);
+        storyDetailViewController.webView.frame = CGRectMake(0,
+                                                             0,
+                                                             storyDetailViewController.view.frame.size.width,
+                                                             newStoryHeight);
+    }
+}
+
+
+- (void)hideShareView:(BOOL)resetComment {
+    if (resetComment) {
+        self.shareViewController.commentField.text = @"";
+    }
+    
     self.isShowingShare = NO;
     
-    storyDetailViewController.view.frame = CGRectMake(0,
+    storyDetailViewController.webView.frame = CGRectMake(0,
                                                       0,
                                                       storyDetailViewController.view.frame.size.width,
-                                                       storyDetailViewController.view.frame.size.height);
+                                                       storyDetailViewController.view.frame.size.height - 44);
     
     [UIView animateWithDuration:0.35 animations:^{
         shareViewController.view.frame = CGRectMake(0, 
-                                                    storyDetailViewController.view.frame.size.height + SHARE_MODAL_HEIGHT,
+                                                    storyDetailViewController.view.frame.size.height,
                                                     storyDetailViewController.view.frame.size.width,
                                                     0);
     } completion:^(BOOL finished) {
@@ -509,16 +529,8 @@
 }
 
 - (void)adjustStoryDetailWebView {
-    if (!self.inFeedDetail) {
-        return;
-    }
-//        
-//    if (self.isShowingShare) {
-//        [self showShareView:nil setUsername:nil];
-//    } else {
-//        [self hideShareView];
-//    }
-//    
+    [self adjustShareModal];
+    
     UIImage *slide;
     if (self.splitStoryController.isShowingMaster) {
         slide = [[UIImage imageNamed: @"slide_left.png"] retain];
@@ -536,27 +548,12 @@
         }
     }
     [slide release];
-//    
-//    int contentWidth = splitStoryDetailViewController.view.frame.size.width;
-//    // set the styles inside the UIWebView
-//            
-//    if (UIInterfaceOrientationIsPortrait(splitStoryDetailViewController.interfaceOrientation)) {        
-//        storyDetailViewController.view.frame = CGRectMake(0, 
-//                                                          0, 
-//                                                          splitStoryDetailViewController.view.frame.size.width, 
-//                                                          splitStoryDetailViewController.view.frame.size.height);
-//    } else {
-//        storyDetailViewController.view.frame = CGRectMake(0, 
-//                                                          0, 
-//                                                          splitStoryDetailViewController.view.frame.size.width, 
-//                                                          splitStoryDetailViewController.view.frame.size.height);
-//    }
-//    
 
-//    
-//    // change UIWebView
-//    [storyDetailViewController changeWebViewWidth:contentWidth];
+    // change UIWebView
+    int contentWidth = storyDetailViewController.view.frame.size.width;
+    [storyDetailViewController changeWebViewWidth:contentWidth];
 }
+
 
 - (void)animateHidingMasterView {
     if (!self.splitStoryController.isShowingMaster) {

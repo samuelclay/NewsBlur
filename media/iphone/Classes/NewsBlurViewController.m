@@ -209,10 +209,10 @@
         HUD.labelText = @"On its way...";
     }
     
-    if (refreshFeeds) {
-        [self refreshFeedList];
-        return;
-    }
+//    if (refreshFeeds) {
+//        [self refreshFeedList];
+//        return;
+//    }
 
     NSURL *urlFeedList = [NSURL URLWithString:
                           [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true",

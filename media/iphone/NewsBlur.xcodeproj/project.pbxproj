@@ -429,7 +429,7 @@
 		43D045241565BC150085F811 /* LoginViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "LoginViewController~ipad.xib"; path = "Resources-iPad/Classes/LoginViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "OriginalStoryViewController~ipad.xib"; path = "Resources-iPad/Classes/OriginalStoryViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "AddSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/AddSiteViewController~ipad.xib"; sourceTree = "<group>"; };
-		43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "AddSiteAutocompleteCell~ipad.xib"; path = "Resources-iPad/Classes/AddSiteAutocompleteCell~ipad.xib"; sourceTree = "<group>"; };
+		43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "AddSiteAutocompleteCell~ipad.xib"; path = "Resources-iPad/Classes/AddSiteAutocompleteCell~ipad.xib"; sourceTree = SOURCE_ROOT; };
 		43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MoveSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/MoveSiteViewController~ipad.xib"; sourceTree = "<group>"; };
 		43E8855F15951F930032022E /* reader.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = reader.css; path = ../reader.css; sourceTree = "<group>"; };
 		43F44B04159C175C00F48F8A /* 16-List@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "16-List@2x.png"; sourceTree = "<group>"; };
@@ -1034,7 +1034,6 @@
 			children = (
 				433323B5158901A40025064D /* Images */,
 				433323AF15886FA80025064D /* logo_newsblur.png */,
-				43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */,
 				43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */,
 				437F974B15ACA0ED0007136B /* DashboardViewController.xib */,
 				43D045231565BC150085F811 /* FeedDetailTableCell~ipad.xib */,
@@ -1049,6 +1048,7 @@
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
 				43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */,
 				43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */,
+				43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
 				437AA8C9159394E2005463F5 /* ShareViewController.xib */,
 			);

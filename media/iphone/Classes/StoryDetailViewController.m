@@ -12,6 +12,7 @@
 #import "FeedDetailViewController.h"
 #import "FontSettingsViewController.h"
 #import "UserProfileViewController.h"
+#import "ShareViewController.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "Base64.h"
@@ -23,6 +24,7 @@
 @synthesize appDelegate;
 @synthesize activeStoryId;
 @synthesize progressView;
+@synthesize innerView;
 @synthesize webView;
 @synthesize toolbar;
 @synthesize buttonPrevious;
@@ -50,6 +52,7 @@
     [appDelegate release];
     [progressView release];
     [webView release];
+    [innerView release];
     [toolbar release];
     [buttonNext release];
     [buttonPrevious release];
@@ -61,6 +64,7 @@
     [buttonNextStory release];
     [buttonNextStory release];
     [toggleViewButton release];
+    [innerView release];
     [super dealloc];
 }
 
@@ -166,10 +170,13 @@
         [webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@""]];
     }
     [popoverController dismissPopoverAnimated:YES];
+    
+    // remove the comment
+    
+    [appDelegate hideShareView:YES];
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // copy the title from the master view to detail view
         if (appDelegate.splitStoryController.isShowingMaster) {
@@ -177,8 +184,14 @@
         } else {
             UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
             self.navigationItem.titleView = titleLabel;
-        }        
+        }
+        
+        [appDelegate adjustStoryDetailWebView];
     }
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [appDelegate.shareViewController.commentField resignFirstResponder];
 }
 
 
@@ -354,6 +367,7 @@
 
 - (void)showStory {
     appDelegate.inStoryDetail = YES;
+    [appDelegate hideShareView:YES];
     
     int activeLocation = appDelegate.locationOfActiveStory;    
     if (activeLocation >= ([appDelegate.activeFeedStoryLocations count] - 1)) {
@@ -727,7 +741,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           commentsString];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     [jsString release];
-    
+
+}
+
+- (void)scrolltoBottom {
+    NSString *jsString = [[NSString alloc] initWithFormat:@
+                          "window.scrollTo(0, document.body.scrollHeight);"];
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    [jsString release];
 }
 
    
@@ -851,11 +872,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         contentWidthClass = @"NB-iphone";
     }
     
-    NSString *jsString = [[NSString alloc] initWithFormat:@
-                          "document.getElementsByTagName('body')[0].setAttribute('class', '%@');"
-                          "document.querySelector('meta[name=viewport]').setAttribute('content', 'width=%d;', false); ", 
-                          contentWidthClass,
-                          width];
+    NSString *jsString = [[NSString alloc] initWithFormat:
+                          @"document.getElementsByTagName('body')[0].setAttribute('class', '%@');",
+                          contentWidthClass];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     [contentWidthClass release];
     [jsString release];
@@ -927,6 +946,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [buttonNextStory release];
     buttonNextStory = nil;
     [self setButtonNextStory:nil];
+    [self setInnerView:nil];
     [super viewDidUnload];
 }
 @end

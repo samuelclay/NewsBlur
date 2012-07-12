@@ -16,6 +16,7 @@
     
     NSString *activeStoryId;
     UIProgressView *progressView;
+    UIView *innerView;
     UIWebView *webView;
     UIToolbar *toolbar;
     UIBarButtonItem *buttonPrevious;
@@ -30,6 +31,7 @@
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, retain) NSString *activeStoryId;
 @property (nonatomic, retain) IBOutlet UIProgressView *progressView;
+@property (retain, nonatomic) IBOutlet UIView *innerView;
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
 @property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonPrevious;
@@ -45,6 +47,7 @@
 - (void)markStoryAsRead;
 - (void)toggleView;
 - (void)showStory;
+- (void)scrolltoBottom;
 - (void)showOriginalSubview:(id)sender;
 - (IBAction)doNextUnreadStory;
 - (IBAction)doNextStory;

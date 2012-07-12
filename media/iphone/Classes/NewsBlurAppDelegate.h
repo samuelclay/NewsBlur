@@ -179,6 +179,7 @@
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;
+- (void)adjustShareModal;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)hideNavigationBar:(BOOL)animated;
 - (void)showNavigationBar:(BOOL)animated;
@@ -189,7 +190,7 @@
 - (void)changeActiveFeedDetailRow;
 - (void)dragFeedDetailView:(float)y;
 - (void)showShareView:(NSString *)userId setUsername:(NSString *)username;
-- (void)hideShareView;
+- (void)hideShareView:(BOOL)resetComment;
 - (void)refreshComments;
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
