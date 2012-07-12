@@ -337,6 +337,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
             models = NEWSBLUR.assets.stories;
         }
         if (!models.length) return;
+        if (NEWSBLUR.reader.story_view != 'page') return;
         
         this.flags['iframe_fetching_story_locations'] = false;
         this.flags['iframe_story_locations_fetched'] = false;

@@ -643,6 +643,9 @@
                     left:'+=0'
                 }, 230, {queue: false});
             }
+            
+            this.show_mouse_indicator();
+            // _.delay(_.bind(this.hide_mouse_indicator, this), 350);
         },
         
         find_story_with_action_preference_on_open_feed: function() {
@@ -2110,6 +2113,7 @@
                 }
             }
             
+            this.setup_mousemove_on_views();
         },
         
         switch_taskbar_view_direction: function(direction) {
@@ -3497,12 +3501,13 @@
 
         setup_mousemove_on_views: function() {
             this.hide_mouse_indicator();
-            this.$s.$content_pane
-                .unbind('mouseleave.reader')
-                .bind('mouseleave.reader', $.rescope(this.hide_mouse_indicator, this));
-            this.$s.$content_pane
-                .unbind('mouseenter.reader')
-                .bind('mouseenter.reader', $.rescope(this.show_mouse_indicator, this));
+            
+            if (this.story_view == 'story' ||
+                this.flags['feed_view_showing_story_view']) {
+                // this.hide_mouse_indicator();
+            } else {
+                _.delay(_.bind(this.show_mouse_indicator, this), 350);
+            }
         },
         
         hide_mouse_indicator: function() {
@@ -3522,6 +3527,7 @@
         
         show_mouse_indicator: function() {
             var self = this;
+            
             if (this.flags['mouse_indicator_hidden']) {
                 this.flags['mouse_indicator_hidden'] = false;
                 this.$s.$mouse_indicator.animate({'opacity': 1, 'left': 0}, {
