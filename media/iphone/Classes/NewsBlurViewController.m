@@ -403,6 +403,7 @@
 }
 
 - (void)showUserProfilePopover:(id)sender {
+    
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -412,6 +413,10 @@
             
             popoverController.delegate = self;
         } else {
+            if (popoverController.isPopoverVisible) {
+                [popoverController dismissPopoverAnimated:YES];
+                return;
+            }
             [popoverController setContentViewController:appDelegate.userProfileViewController];
         }
         
@@ -435,6 +440,10 @@
             
             popoverController.delegate = self;
         } else {
+            if (popoverController.isPopoverVisible) {
+                [popoverController dismissPopoverAnimated:YES];
+                return;
+            }
             [popoverController setContentViewController:appDelegate.feedsMenuViewController];
         }
         

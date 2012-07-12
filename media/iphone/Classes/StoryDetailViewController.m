@@ -586,6 +586,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         
         popoverController.delegate = self;
     } else {
+        if (popoverController.isPopoverVisible) {
+            [popoverController dismissPopoverAnimated:YES];
+            return;
+        }
+        
         [popoverController setContentViewController:appDelegate.userProfileViewController];
     }
     
@@ -863,14 +868,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         
         popoverController.delegate = self;
     } else {
+        if (popoverController.isPopoverVisible) {
+            [popoverController dismissPopoverAnimated:YES];
+            return;
+        }
+        
         [popoverController setContentViewController:appDelegate.fontSettingsViewController];
     }
         
     [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
-    
+
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-
 }
 
 - (void)changeFontSize:(NSString *)fontSize {
