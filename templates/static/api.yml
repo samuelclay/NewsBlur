@@ -341,6 +341,11 @@
           desc: "List of services to cross-post to. Can be 'twitter' and/or 'facebook'."
           optional: true
           example: "['twitter', 'facebook']"
+        - key: format
+          desc: "Return a JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
     - url: /social/unshare_story
       method: POST
       short_desc: "Remove a shared story from user's blurblog."
@@ -357,6 +362,11 @@
           desc: "Story id to remove the existing share."
           required: true
           example: "http://blog.newsblur.com/post/1"
+        - key: format
+          desc: "Return a JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
     - url: /social/load_user_friends
       method: GET
       short_desc: "Lists of user profiles: followers, followings, etc."
@@ -414,6 +424,33 @@
           desc: "4 interactions per page."
           optional: true
           example: "2"
+        - key: format
+          desc: "JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/activities
+      method: GET
+      short_desc: "A user's activities."
+      long_desc: 
+        - "A user's activities: follows, shared stories, and replies to comments."
+        - > 
+          Also includes starred stories and new site subscriptions if fetching the
+          currently logged in user's activities.
+      params:
+        - key: user_id
+          desc: "ID of user. Defaults to current logged in user."
+          optional: true
+          example: "42"
+        - key: page
+          desc: "4 activities per page."
+          optional: true
+          example: "2"
+        - key: format
+          desc: "JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
     - url: /social/follow
       method: POST
       short_desc: "Follow a user and subscribe to their blurblog."
@@ -462,6 +499,11 @@
           desc: "ID of feed for the shared story."
           required: true
           example: "42"
+        - key: format
+          desc: "JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
     - url: /social/save_comment_reply
       method: POST
       short_desc: "Saves a reply to a comment."
@@ -494,6 +536,11 @@
             reply can be overwritten.
           optional: true
           example: "Brilliant analysis, bro."
+        - key: format
+          desc: "Return a JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
     - url: /social/find_friends
       method: GET
       short_desc: "Search for a user by username, email, or blurblog title."

@@ -800,3 +800,29 @@ def load_interactions(request):
                                   context_instance=RequestContext(request))
     else:
         return json.json_response(request, data)
+        
+def load_activities(request):
+    user_id = request.REQUEST.get('user_id', None)
+    if user_id:
+        user_id = int(user_id)
+        user = User.objects.get(pk=user_id)
+    else:
+        user = get_user(request)
+        user_id = user.pk
+        
+    public = user_id != request.user.pk
+    page = max(1, int(request.REQUEST.get('page', 1)))
+    activities = MActivity.user(user_id, page=page, public=public)
+    format = request.REQUEST.get('format', None)
+    
+    data = {
+        'activities': activities,
+        'page': page,
+        'username': (user.username if public else 'You'),
+    }
+    
+    if format == 'html':
+        return render_to_response('reader/activities_module.xhtml', data,
+                                  context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, data)
