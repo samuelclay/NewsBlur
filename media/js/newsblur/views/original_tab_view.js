@@ -326,7 +326,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         
         NEWSBLUR.log(['Original view entirely loaded', _.keys(self.cache.iframe_stories).length + " stories", this.counts['positions_timer']/1000 + " sec delay"]);
         
-        this.counts['positions_timer'] = Math.max(this.counts['positions_timer']*2, 1000);
+        this.counts['positions_timer'] = Math.min(60*1000, Math.max(this.counts['positions_timer']*2, 1*1000));
         clearTimeout(this.flags['next_fetch']);
         this.flags['next_fetch'] = _.delay(_.bind(this.fetch_story_locations_in_story_frame, this),
                                            this.counts['positions_timer']);

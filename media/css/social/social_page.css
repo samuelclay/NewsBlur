@@ -1044,7 +1044,7 @@ header {
     padding: 1px 0;
     text-align: center;
     margin: 0 auto 36px;
-    width: 800px;
+    max-width: 800px;
     border-radius: 8px;
     overflow: hidden;
 }

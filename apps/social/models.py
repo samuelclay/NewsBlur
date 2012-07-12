@@ -317,7 +317,6 @@ class MSocialProfile(mongo.Document):
                 'bio': self.bio,
                 'location': self.location,
                 'website': self.website,
-                'subscription_count': self.subscription_count,
                 'shared_stories_count': self.shared_stories_count,
                 'following_count': self.following_count,
                 'follower_count': self.follower_count,
@@ -344,6 +343,7 @@ class MSocialProfile(mongo.Document):
             params['followers_everybody'] = followers_everybody[:48]
             params['following_youknow'] = following_youknow[:48]
             params['following_everybody'] = following_everybody[:48]
+            params['following'] = self.is_followed_by_user(common_follows_with_user)
 
         return params
     
@@ -416,6 +416,9 @@ class MSocialProfile(mongo.Document):
     
     def is_following_user(self, user_id):
         return user_id in self.following_user_ids
+    
+    def is_followed_by_user(self, user_id):
+        return user_id in self.follower_user_ids
         
     def unfollow_user(self, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
