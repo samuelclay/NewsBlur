@@ -66,8 +66,8 @@ def index(request, **kwargs):
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
 
     # XXX TODO: Remove me on launch.
-    if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
-        return {}, 'reader/social_signup.xhtml'
+    # if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
+    #     return {}, 'reader/social_signup.xhtml'
         
     if request.method == "POST":
         if request.POST.get('submit') == 'login':
@@ -905,7 +905,7 @@ def mark_feed_as_read(request):
                 sub = UserSubscription.objects.get(feed=feed, user=request.user)
                 if not multiple:
                     logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
-            except Feed.DoesNotExist:
+            except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
                 continue
     
         try:

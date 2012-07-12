@@ -106,7 +106,10 @@ class IconImporter(object):
 
         if PngImagePlugin._accept(prefix):
             # Windows Vista icon with PNG inside
-            image = PngImagePlugin.PngImageFile(image_file)
+            try:
+                image = PngImagePlugin.PngImageFile(image_file)
+            except IOError:
+                return
         else:
             # Load XOR bitmap
             image = BmpImagePlugin.DibImageFile(image_file)

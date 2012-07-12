@@ -57,10 +57,13 @@ class PageImporter(object):
                     time.sleep(0.01) # Grrr, GIL.
                     data = response.read()
                 else:
-                    response = requests.get(feed_link, headers=self.headers)
+                    try:
+                        response = requests.get(feed_link, headers=self.headers)
+                    except requests.exceptions.TooManyRedirects:
+                        response = requests.get(feed_link)
                     try:
                         data = response.text
-                    except LookupError:
+                    except (LookupError, TypeError):
                         data = response.content
             elif any(feed_link.startswith(s) for s in BROKEN_PAGES):
                 self.save_no_page()

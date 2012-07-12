@@ -99,7 +99,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
                         $.make('label', { 'for': 'NB-intro-uptodate-follow-newsblur' }, [
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
-                            $.make('img', { src: 'http://avatars.io/twitter/newsblur', style: 'border-color: #505050;' }),
+                            $.make('img', { src: 'http://a0.twimg.com/profile_images/1268996309/logo_128_normal.png', style: 'border-color: #505050;' }),
                             $.make('span', [
                                 'Follow @newsblur on', 
                                 $.make('br'), 
@@ -112,7 +112,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
                         $.make('label', { 'for': 'NB-intro-uptodate-follow-samuelclay' }, [
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
-                            $.make('img', { src: 'http://avatars.io/twitter/samuelclay', style: 'border-color: #505050;' }),
+                            $.make('img', { src: 'http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_normal.jpg', style: 'border-color: #505050;' }),
                             $.make('span', [
                                 'Follow @samuelclay on', 
                                 $.make('br'), 
@@ -239,11 +239,13 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var options = "location=0,status=0,width=800,height=500";
         var url = "/oauth/" + service + "_connect";
         this.connect_window = window.open(url, '_blank', options);
+        _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + this.service.name + ' attempt']);
     },
     
     disconnect: function(service) {
         var $service = $('.NB-friends-service-'+service, this.$modal);
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
+        _gaq.push(['_trackEvent', 'reader_intro', 'Disconnect from ' + this.service.name]);
         NEWSBLUR.assets.disconnect_social_service(service, _.bind(function(data) {
             this.services = data.services;
             this.make_find_friends_and_services();
@@ -262,8 +264,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $('.NB-intro-services', this.$modal).append($error);
             $error.animate({'opacity': 1}, {'duration': 1000});
             this.resize();
+            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + this.service.name + ' error']);
         } else {
             this.fetch_friends();
+            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + this.service.name + ' success']);
         }
         NEWSBLUR.assets.preference('has_found_friends', true);
         NEWSBLUR.reader.check_hide_getting_started();
@@ -274,11 +278,11 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     // ==========
     
     next_page: function() {
-      return this.page(this.page_number+1, this.page_number);
+        return this.page(this.page_number+1, this.page_number);
     },
     
     previous_page: function() {
-      return this.page(this.page_number-1, this.page_number);
+        return this.page(this.page_number-1, this.page_number);
     },
     
     page: function(page_number, from_page) {
@@ -325,6 +329,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       if (page_number == 4) {
           this.show_twitter_follow_buttons();
       }
+      
+      _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
     },
     
     advance_import_carousel: function(page) {

@@ -563,7 +563,7 @@ class MSocialProfile(mongo.Document):
                         month_count += 1
 
         self.story_count_history = months
-        self.average_stories_per_month = total / month_count
+        self.average_stories_per_month = total / max(1, month_count)
         self.save()
     
     def save_classifier_counts(self):
