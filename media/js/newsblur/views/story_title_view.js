@@ -107,13 +107,15 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     toggle_starred: function() {
+        var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
         var $star = this.$('.NB-storytitles-star');
         NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);
+        
         
         if (this.model.get('starred')) {
             $star.attr({'title': 'Saved!'});
             $star.tipsy({
-                gravity: 'sw',
+                gravity: pane_alignment == 'north' ? 'nw' : 'sw',
                 fade: true,
                 trigger: 'manual',
                 offsetOpposite: -1
@@ -143,7 +145,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             $star.attr({'title': 'Removed'});
         
             $star.tipsy({
-                gravity: 'sw',
+                gravity: pane_alignment == 'north' ? 'nw' : 'sw',
                 fade: true,
                 trigger: 'manual',
                 offsetOpposite: -1
