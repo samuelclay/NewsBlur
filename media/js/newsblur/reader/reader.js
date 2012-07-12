@@ -3423,14 +3423,14 @@
                 refresh_interval *= 2;
             }
             if (feed_count > 250) {
-                refresh_interval *= 4;
+                refresh_interval *= 2;
             }
             if (feed_count > 500) {
                 refresh_interval *= 1.5;
             }
             if (this.flags['feed_refreshing_in_realtime'] && !this.flags['has_unfetched_feeds'] &&
                 this.socket && this.socket.socket.connected) {
-                refresh_interval *= 20;
+                refresh_interval *= 10;
             }
 
             if (new_feeds && feed_count < 250) {
@@ -3446,14 +3446,10 @@
             
             this.flags.feed_refresh = setInterval(function() {
                 if (!self.flags['pause_feed_refreshing']) {
-                  self.model.refresh_feeds(_.bind(function(updated_feeds) {
-                      self.post_feed_refresh(updated_feeds);
-                  }, self), self.flags['has_unfetched_feeds'], null, function(e) {
-                      NEWSBLUR.log(["Feed refresh error", e]);
-                  });
+                    self.force_feeds_refresh();
                 }
             }, refresh_interval);
-            // NEWSBLUR.log(["Setting refresh interval to every " + refresh_interval/1000 + " seconds."]);
+            NEWSBLUR.log(["Setting refresh interval to every " + refresh_interval/1000 + " seconds."]);
         },
         
         force_feed_refresh: function(feed_id, new_feed_id) {
