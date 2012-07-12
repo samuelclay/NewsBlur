@@ -15,8 +15,11 @@
 
 @implementation DashboardViewController
 
-@synthesize bottomToolbar;
 @synthesize appDelegate;
+@synthesize interactionsLabel;
+@synthesize interactionsModule;
+@synthesize activitesLabel;
+@synthesize activitiesModule;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -33,7 +36,10 @@
 
 - (void)viewDidUnload {
     [self setAppDelegate:nil];
-    [self setBottomToolbar:nil];
+    [self setInteractionsLabel:nil];
+    [self setInteractionsModule:nil];
+    [self setActivitesLabel:nil];
+    [self setActivitiesModule:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -50,18 +56,65 @@
     label.textColor = [UIColor whiteColor];
     label.text = DASHBOARD_TITLE;
     self.navigationItem.titleView = label;
-
-    self.bottomToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
+    [self repositionDashboard];
 }
 
 - (void)dealloc {
     [appDelegate release];
-    [bottomToolbar release];
+    [interactionsLabel release];
+    [interactionsModule release];
+    [activitesLabel release];
+    [activitiesModule release];
     [super dealloc];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
+}
+
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [self repositionDashboard];
+}
+
+- (void)repositionDashboard {
+	if (UIInterfaceOrientationIsPortrait([[UIDevice currentDevice] orientation])) {
+        self.interactionsLabel.frame = CGRectMake(151,
+                                                  42,
+                                                  self.interactionsLabel.frame.size.width,
+                                                  self.interactionsLabel.frame.size.height);
+        self.interactionsModule.frame = CGRectMake(self.interactionsModule.frame.origin.x,
+                                                   self.interactionsModule.frame.origin.y,
+                                                   440,
+                                                   self.interactionsModule.frame.size.height);
+        self.activitesLabel.frame = CGRectMake(151,
+                                               444,
+                                               self.activitesLabel.frame.size.width,
+                                               self.activitesLabel.frame.size.height);
+        self.activitiesModule.frame = CGRectMake(20, 
+                                                 555, 
+                                                 440, 
+                                                 self.interactionsModule.frame.size.height);
+    } else {
+        self.interactionsLabel.frame = CGRectMake(80,
+                                                  self.interactionsLabel.frame.origin.y,
+                                                  self.interactionsLabel.frame.size.width,
+                                                  self.interactionsLabel.frame.size.height);
+        self.interactionsModule.frame = CGRectMake(self.interactionsModule.frame.origin.x,
+                                                   self.interactionsModule.frame.origin.y,
+                                                   300,
+                                                   self.interactionsModule.frame.size.height);
+        
+        self.activitesLabel.frame = CGRectMake(460,
+                                                  self.interactionsLabel.frame.origin.y,
+                                                  self.activitesLabel.frame.size.width,
+                                                  self.activitesLabel.frame.size.height);
+        self.activitiesModule.frame = CGRectMake(400, 
+                                                 100, 
+                                                 300, 
+                                                 self.interactionsModule.frame.size.height);        
+    }
+    
 }
 
 - (IBAction)doLogout:(id)sender {
@@ -96,7 +149,9 @@
     InteractionsModule *interactions = [[InteractionsModule alloc] init];
     interactions.frame = CGRectMake(20, 100, 438, 300);
     [interactions refreshWithInteractions:appDelegate.dictUserInteractions];
-    [self.view addSubview:interactions];
+    self.interactionsModule = interactions;
+    [self.view addSubview:self.interactionsModule];
+    [self repositionDashboard];
     [interactions release];
 } 
 
@@ -131,7 +186,9 @@
     ActivityModule *activity = [[ActivityModule alloc] init];
     activity.frame = CGRectMake(20, 510, 438, 300);
     [activity refreshWithActivities:appDelegate.dictUserActivities];
-    [self.view addSubview:activity];
+    self.activitiesModule = activity;
+    [self.view addSubview:self.activitiesModule];
+    [self repositionDashboard];
     [activity release];
 }
 

@@ -10,14 +10,23 @@
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
+@class InteractionsModule;
+@class ActivityModule;
 
 @interface DashboardViewController : UIViewController <UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
-    UIToolbar *bottomToolbar;
+    
+    UILabel *interactionsLabel;
+    UILabel *activitesLabel;
+    InteractionsModule *interactionsModule;
+    ActivityModule *activitiesModule;
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) IBOutlet UIToolbar *bottomToolbar;
+@property (retain, nonatomic) IBOutlet UILabel *interactionsLabel;
+@property (retain, nonatomic) IBOutlet UILabel *activitesLabel;
+@property (retain, nonatomic) IBOutlet InteractionsModule *interactionsModule;
+@property (retain, nonatomic) IBOutlet ActivityModule *activitiesModule;
 
 - (IBAction)doLogout:(id)sender;
 - (void)refreshInteractions;
@@ -25,4 +34,5 @@
 - (void)finishLoadInteractions:(ASIHTTPRequest *)request;
 - (void)finishLoadActivities:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)repositionDashboard;
 @end

@@ -47,6 +47,7 @@
     self.interactionsTable.delegate = self;
     self.interactionsTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
     self.interactionsTable.layer.cornerRadius = 10;
+    self.interactionsTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
     [self addSubview:self.interactionsTable];    
     [self.interactionsTable reloadData];
