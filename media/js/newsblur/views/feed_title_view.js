@@ -6,11 +6,12 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     events: {
-        "contextmenu"                           : "show_manage_menu",
-        "click .NB-feedlist-manage-icon"        : "show_manage_menu",
-        "click"                                 : "open",
-        "mouseenter .NB-feedlist-manage-icon"   : "add_hover_inverse",
-        "mouseleave .NB-feedlist-manage-icon"   : "remove_hover_inverse"
+        "contextmenu"                       : "show_manage_menu",
+        "click .NB-feedlist-manage-icon"    : "show_manage_menu",
+        "dblclick"                          : "open_feed_link",
+        "click"                             : "open",
+        "mouseenter"                        : "add_hover_inverse",
+        "mouseleave"                        : "remove_hover_inverse"
     },
     
     initialize: function() {
@@ -230,6 +231,12 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         } else {
             NEWSBLUR.reader.open_feed(this.model.id, {$feed: this.$el});
         }
+    },
+    
+    open_feed_link: function() {
+        NEWSBLUR.reader.mark_feed_as_read(this.model.id);
+        window.open(this.model.get('feed_link'), '_blank');
+        window.focus();
     },
     
     show_manage_menu: function(e) {

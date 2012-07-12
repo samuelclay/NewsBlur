@@ -3,11 +3,12 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     className: 'story NB-story-title',
     
     events: {
-        "click"                             : "select_story",
-        "contextmenu"                       : "show_manage_menu",
-        "click .NB-story-manage-icon"       : "show_manage_menu",
-        "mouseenter .NB-story-manage-icon"  : "mouseenter_manage_icon",
-        "mouseleave .NB-story-manage-icon"  : "mouseleave_manage_icon"
+        "dblclick"                      : "open_story_in_story_view",
+        "click"                         : "select_story",
+        "contextmenu"                   : "show_manage_menu",
+        "click .NB-story-manage-icon"   : "show_manage_menu",
+        "mouseenter"                    : "mouseenter_manage_icon",
+        "mouseleave"                    : "mouseleave_manage_icon"
     },
     
     initialize: function() {
@@ -194,6 +195,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     
     mouseleave_manage_icon: function() {
         this.$el.removeClass('NB-hover-inverse');
+    },
+    
+    open_story_in_story_view: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        NEWSBLUR.app.story_tab_view.open_story(this.model, true);
+        return false;
     }
         
 });
