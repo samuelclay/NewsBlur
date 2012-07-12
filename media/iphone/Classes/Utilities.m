@@ -19,7 +19,12 @@ static NSMutableDictionary *imageCache;
     
     // Save image to memory-based cache, for performance when reading.
 //    NSLog(@"Saving %@", [imageCache allKeys]);
-    [imageCache setObject:image forKey:filename];
+    if (image) {
+        [imageCache setObject:image forKey:filename];
+    } else {
+        NSLog(@"%@ has no image!!!", filename);
+    }
+    
 }
 
 + (UIImage *)getImage:(NSString *)filename {

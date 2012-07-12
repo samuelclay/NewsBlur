@@ -241,7 +241,6 @@
     } else {
         [navigationController presentModalViewController:findFriendsNavigationController animated:NO];
     }
-
 }
 
 - (void)showFindFriends {

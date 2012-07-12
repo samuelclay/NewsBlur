@@ -10,6 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "ActivityModule.h"
 #import "InteractionsModule.h"
+#import "UserProfileViewController.h"
 #import "JSON.h"
 
 @implementation DashboardViewController
@@ -58,7 +59,6 @@
     [bottomToolbar release];
     [super dealloc];
 }
-
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;

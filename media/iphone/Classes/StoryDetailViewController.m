@@ -317,10 +317,10 @@
         for (int i = 0; i < replies.count; i++) {
             NSDictionary *reply_dict = [replies objectAtIndex:i];
             NSDictionary *user = [self getUser:[[reply_dict objectForKey:@"user_id"] intValue]];
-            NSString *editStr = [NSString stringWithFormat:@
-                                 "   <div class=\"NB-story-comment-edit-button NB-story-comment-reply-edit-button\">"
-                                 "       <div class=\"NB-story-comment-edit-button-wrapper\">edit</div>"            
-                                 "   </div>"];
+//            NSString *editStr = [NSString stringWithFormat:@
+//                                 "   <div class=\"NB-story-comment-edit-button NB-story-comment-reply-edit-button\">"
+//                                 "       <div class=\"NB-story-comment-edit-button-wrapper\">edit</div>"            
+//                                 "   </div>"];
             
             NSString *reply = [NSString stringWithFormat:@
                                 "<div class=\"NB-story-comment-reply\">"
@@ -585,6 +585,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                              initWithContentViewController:appDelegate.userProfileViewController];
         
         popoverController.delegate = self;
+    } else {
+        [popoverController setContentViewController:appDelegate.userProfileViewController];
     }
     
     [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
@@ -859,8 +861,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         popoverController = [[UIPopoverController alloc]
                            initWithContentViewController:appDelegate.fontSettingsViewController];
         
-        popoverController.delegate=self;
+        popoverController.delegate = self;
+    } else {
+        [popoverController setContentViewController:appDelegate.fontSettingsViewController];
     }
+        
+    [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
     
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];

@@ -11,6 +11,7 @@
 #import "DashboardViewController.h"
 #import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
+#import "UserProfileViewController.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
@@ -273,6 +274,7 @@
     
     UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
+    [userAvatarButton addTarget:self action:@selector(showUserProfilePopover:) forControlEvents:UIControlEventTouchUpInside];
     [userAvatarButton setImage:userAvatarImage forState:UIControlStateNormal];
 
     UIBarButtonItem *userAvatar = [[UIBarButtonItem alloc] 
@@ -397,6 +399,31 @@
     [results release];
 }
 
+- (void)showUserProfilePopover:(id)sender {
+    appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (popoverController == nil) {
+            popoverController = [[UIPopoverController alloc]
+                                 initWithContentViewController:appDelegate.userProfileViewController];
+            
+            popoverController.delegate = self;
+        } else {
+            [popoverController setContentViewController:appDelegate.userProfileViewController];
+        }
+        
+
+        
+        [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
+        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem 
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                                  animated:YES];  
+    } else {
+        NSLog(@"Implement for iPhone!");
+    }
+
+}
+
 - (IBAction)showMenuButton:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (popoverController == nil) {
@@ -404,10 +431,14 @@
                                  initWithContentViewController:appDelegate.feedsMenuViewController];
             
             popoverController.delegate = self;
+        } else {
+            [popoverController setContentViewController:appDelegate.feedsMenuViewController];
         }
         
         [popoverController setPopoverContentSize:CGSizeMake(200, 86)];
-        [popoverController presentPopoverFromBarButtonItem:sender                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];  
+        [popoverController presentPopoverFromBarButtonItem:sender
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                                  animated:YES];  
     } else {
         [appDelegate showFeedsMenu]; 
     }

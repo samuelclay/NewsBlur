@@ -35,20 +35,6 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    ProfileBadge *badge = [[ProfileBadge alloc] init];
-    badge.frame = CGRectMake(0, 0, 320, 140);
-    self.profileBadge = badge;
-    
-    ActivityModule *activity = [[ActivityModule alloc] init];
-    activity.frame = CGRectMake(0, badge.frame.size.height, 320, 300);
-    self.activityModule = activity;
-
-    self.view.frame = CGRectMake(0, 0, 320, 500);
-    self.view.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:self.profileBadge];
-    
-    [badge release];
-    [activity release];
 }
 
 - (void)viewDidUnload
@@ -61,7 +47,27 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    ProfileBadge *badge = [[ProfileBadge alloc] init];
+    badge.frame = CGRectMake(0, 0, 320, 140);
+    self.profileBadge = badge;
+    
+    ActivityModule *activity = [[ActivityModule alloc] init];
+    activity.frame = CGRectMake(0, badge.frame.size.height, 320, 300);
+    self.activityModule = activity;
+    
+    self.view.frame = CGRectMake(0, 0, 320, 500);
+    self.view.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.profileBadge];
+    [self.view addSubview:self.activityModule];
+    
+    [badge release];
+    [activity release];
     [self getUserProfile];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [self.profileBadge removeFromSuperview];
+    [self.activityModule removeFromSuperview];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -112,8 +118,9 @@
     } 
 
     [MBProgressHUD hideHUDForView:self.view animated:YES];
+    
     [self.profileBadge refreshWithProfile:[results objectForKey:@"user_profile"]];
-    [self.activityModule refreshWithActivities:[results objectForKey:@"activities"]];
+    [self.activityModule refreshWithActivities:results];
 
     [results release];
 }

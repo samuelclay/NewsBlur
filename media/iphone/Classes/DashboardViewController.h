@@ -11,7 +11,7 @@
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
-@interface DashboardViewController : UIViewController {
+@interface DashboardViewController : UIViewController <UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     UIToolbar *bottomToolbar;
 }

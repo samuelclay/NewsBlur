@@ -43,6 +43,10 @@
     self.activitiesArray = [activitiesDict objectForKey:@"activities"];
     self.activitiesUsername = [activitiesDict objectForKey:@"username"];
     
+    if (!self.activitiesUsername) {
+        self.activitiesUsername = [[activitiesDict objectForKey:@"user_profile"] objectForKey:@"username"];
+    }
+    
     self.activitiesTable = [[[UITableView alloc] init] autorelease];
     self.activitiesTable.dataSource = self;
     self.activitiesTable.delegate = self;
@@ -51,8 +55,8 @@
     
     [self addSubview:self.activitiesTable];    
     [self.activitiesTable reloadData];
-    
 }
+
 
 #pragma mark -
 #pragma mark Table View - Interactions List

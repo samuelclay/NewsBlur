@@ -175,6 +175,7 @@
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
         [request setFailedBlock:^(void) {
+            NSLog(@"in failed block %@", request);
             [self informError:[request error]];
         }];
         [request setCompletionBlock:^(void) {
@@ -183,7 +184,7 @@
                 callback();
             }
         }];
-        [request setTimeOutSeconds:30];
+        [request setTimeOutSeconds:10];
         [request setTag:[[[appDelegate activeFeed] objectForKey:@"id"] intValue]];
         [request startAsynchronous];
     }

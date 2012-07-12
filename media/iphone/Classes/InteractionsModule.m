@@ -9,6 +9,8 @@
 #import "InteractionsModule.h"
 #import "NewsBlurAppDelegate.h"
 #import <QuartzCore/QuartzCore.h>
+#import "DashboardViewController.h"
+#import "UserProfileViewController.h"
 
 @implementation InteractionsModule
 
@@ -61,9 +63,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {    
-    int userInteractions = [appDelegate.dictUserInteractions count];
-    if (userInteractions) {
-        return userInteractions;
+    int userInteractionsCount = [appDelegate.dictUserInteractions count];
+    if (userInteractionsCount) {
+        return userInteractionsCount;
     } else {
         return 0;
     }
@@ -105,6 +107,28 @@
     }
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    int userInteractions = [appDelegate.dictUserInteractions count];
+    if (indexPath.row < userInteractions) {
+        NSDictionary *interaction = [appDelegate.dictUserInteractions objectAtIndex:indexPath.row];
+        NSString *category = [interaction objectForKey:@"category"];
+        if ([category isEqualToString:@"follow"]) {
+            NSString *userId = [[interaction objectForKey:@"with_user"] objectForKey:@"user_id"];
+            appDelegate.activeUserProfileId = userId;
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            
+            UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+
+            UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:appDelegate.userProfileViewController];
+            [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
+            [popoverController presentPopoverFromRect:cell.bounds 
+                                     inView:cell 
+                   permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                   animated:YES];
+        }
+    }
 }
 
 @end
