@@ -150,6 +150,10 @@
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     /* When MGSplitViewController rotates, it causes a resize of our view; we need to resize our UIBarButtonControls or they will be 0-width */    
     [self.navigationItem.titleView sizeToFit];
+    UIButton *avatar = (UIButton *)self.navigationItem.leftBarButtonItem.customView; 
+    CGRect buttonFrame = avatar.frame;
+    buttonFrame.size = CGSizeMake(32, 32);
+    avatar.frame = buttonFrame;
 }
 
 - (void)didReceiveMemoryWarning {
