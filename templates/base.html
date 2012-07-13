@@ -75,19 +75,19 @@
   
   {% include_stylesheets "common" %}
     
-  {% if not debug %}
   <script type="text/javascript">
-
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-8371683-2']);
     _gaq.push(['_trackPageview']);
-
+  </script>
+  
+  {% if not debug %}
+  <script type="text/javascript">
     (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
-
   </script>
   {% endif %}
 </head>
@@ -130,6 +130,7 @@
     _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
     _.extend(NEWSBLUR.Preferences['view_settings'], {% if user_profile.view_settings %}{{ user_profile.view_settings|safe }}{% else %}{}{% endif %});
     _.extend(NEWSBLUR.Preferences['collapsed_folders'], {% if user_profile.collapsed_folders %}{{ user_profile.collapsed_folders|safe }}{% else %}[]{% endif %});
+    
   </script>
 
   {% block extra_head_js %}
