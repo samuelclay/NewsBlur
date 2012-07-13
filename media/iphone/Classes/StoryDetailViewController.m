@@ -594,37 +594,41 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
-    if (popoverController == nil) {
-        popoverController = [[UIPopoverController alloc]
-                             initWithContentViewController:appDelegate.userProfileViewController];
-        
-        popoverController.delegate = self;
-    } else {
-        if (popoverController.isPopoverVisible) {
-            [popoverController dismissPopoverAnimated:YES];
-            return;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (popoverController == nil) {
+            popoverController = [[UIPopoverController alloc]
+                                 initWithContentViewController:appDelegate.userProfileViewController];
+            
+            popoverController.delegate = self;
+        } else {
+            if (popoverController.isPopoverVisible) {
+                [popoverController dismissPopoverAnimated:YES];
+                return;
+            }
+            
+            [popoverController setContentViewController:appDelegate.userProfileViewController];
         }
         
-        [popoverController setContentViewController:appDelegate.userProfileViewController];
+        [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
+        
+        // only adjust for the bar if user is scrolling
+        if (appDelegate.isRiverView || appDelegate.isSocialView) {
+            if (self.webView.scrollView.contentOffset.y == -19) {
+                y = y + 19;
+            }
+        } else {
+            if (self.webView.scrollView.contentOffset.y == -9) {
+                y = y + 9;
+            }
+        }  
+        
+        [popoverController presentPopoverFromRect:CGRectMake(x, y, width, height) 
+                                           inView:self.view 
+                         permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                         animated:YES];
+    } else {
+        [appDelegate showUserProfileModal];
     }
-    
-    [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
-    
-    // only adjust for the bar if user is scrolling
-    if (appDelegate.isRiverView || appDelegate.isSocialView) {
-        if (self.webView.scrollView.contentOffset.y == -19) {
-            y = y + 19;
-        }
-    } else {
-        if (self.webView.scrollView.contentOffset.y == -9) {
-            y = y + 9;
-        }
-    }  
-    
-    [popoverController presentPopoverFromRect:CGRectMake(x, y, width, height) 
-                                       inView:self.view 
-                     permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                     animated:YES];
     
 }
 

@@ -110,11 +110,15 @@
 - (void)setSiteInfo:(NSString *)userId setUsername:(NSString *)username {
     if (userId) {
         [submitButton setTitle:@"Reply"];
+        facebookButton.hidden = YES;
+        twitterButton.hidden = YES;
         [toolbarTitle setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         [submitButton setAction:(@selector(doReplyToComment:))];
     } else {
+        facebookButton.hidden = NO;
+        twitterButton.hidden = NO;
         [toolbarTitle setTitle:@"Post to Blurblog"];
-        [submitButton setTitle:@"Post"];
+        [submitButton setTitle:@"Share this Story"];
         [submitButton setAction:(@selector(doShareThisStory:))];
     }
 

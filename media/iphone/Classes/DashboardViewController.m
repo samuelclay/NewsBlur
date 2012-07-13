@@ -89,7 +89,7 @@
                                                    440,
                                                    self.interactionsModule.frame.size.height);
         self.activitesLabel.frame = CGRectMake(151,
-                                               444,
+                                               494,
                                                self.activitesLabel.frame.size.width,
                                                self.activitesLabel.frame.size.height);
         self.activitiesModule.frame = CGRectMake(20, 
@@ -103,16 +103,16 @@
                                                   self.interactionsLabel.frame.size.height);
         self.interactionsModule.frame = CGRectMake(self.interactionsModule.frame.origin.x,
                                                    self.interactionsModule.frame.origin.y,
-                                                   300,
+                                                   320,
                                                    self.interactionsModule.frame.size.height);
         
-        self.activitesLabel.frame = CGRectMake(460,
+        self.activitesLabel.frame = CGRectMake(450,
                                                   self.interactionsLabel.frame.origin.y,
                                                   self.activitesLabel.frame.size.width,
                                                   self.activitesLabel.frame.size.height);
-        self.activitiesModule.frame = CGRectMake(400, 
+        self.activitiesModule.frame = CGRectMake(380, 
                                                  100, 
-                                                 300, 
+                                                 320, 
                                                  self.interactionsModule.frame.size.height);        
     }
     

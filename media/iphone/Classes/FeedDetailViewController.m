@@ -11,6 +11,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "FeedDetailTableCell.h"
 #import "ASIFormDataRequest.h"
+#import "UserProfileViewController.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
@@ -25,6 +26,7 @@
 
 @implementation FeedDetailViewController
 
+@synthesize popoverController;
 @synthesize storyTitlesTable, feedViewToolbar, feedScoreSlider, feedMarkReadButton;
 @synthesize settingsButton;
 @synthesize stories;
@@ -69,10 +71,23 @@
         self.storyTitlesTable.separatorColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
     }
     
-    UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
     
+    // set center title
+    UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
     self.navigationItem.titleView = titleLabel;
+    
+    // set right avatar title image
+    if (appDelegate.isSocialView) {
+        UIButton *titleImageButton = [appDelegate makeRightFeedTitle:appDelegate.activeFeed];
+        [titleImageButton addTarget:self action:@selector(showUserProfilePopover) forControlEvents:UIControlEventTouchUpInside];
+        UIBarButtonItem *titleImageBarButton = [[[UIBarButtonItem alloc] 
+                                                 initWithCustomView:titleImageButton] autorelease];
+        self.navigationItem.rightBarButtonItem = titleImageBarButton;
+    } else {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
 
+    
     // Commenting out until training is ready...
     //    UIBarButtonItem *trainBarButton = [UIBarButtonItem alloc];
     //    [trainBarButton setImage:[UIImage imageNamed:@"train.png"]];
@@ -112,11 +127,17 @@
     }
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.popoverController dismissPopoverAnimated:YES];
+}
+
 - (void)viewDidAppear:(BOOL)animated { 
 	[super viewDidAppear:animated];
 }
 
 - (void)dealloc {
+    [popoverController release];
     [storyTitlesTable release];
     [feedViewToolbar release];
     [feedScoreSlider release];
@@ -996,6 +1017,32 @@
 
 - (void)openMoveView {
     [appDelegate showMoveSite];
+}
+
+- (void)showUserProfilePopover {
+    appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"user_id"]];
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (popoverController == nil) {
+            popoverController = [[UIPopoverController alloc]
+                                 initWithContentViewController:appDelegate.userProfileViewController];
+            
+            popoverController.delegate = self;
+        } else {
+            if (popoverController.isPopoverVisible) {
+                [popoverController dismissPopoverAnimated:YES];
+                return;
+            }
+            [popoverController setContentViewController:appDelegate.userProfileViewController];
+        }
+        
+        [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
+        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                                  animated:YES];  
+    } else {
+        [appDelegate showUserProfileModal];
+    }
 }
 
 - (void)changeActiveFeedDetailRow {

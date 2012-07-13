@@ -59,7 +59,6 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.profileBadge];
     [self.view addSubview:self.activityModule];
-    
     [badge release];
     [activity release];
     [self getUserProfile];
@@ -87,10 +86,10 @@
 }
 
 - (void)getUserProfile {
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Profiling...";
-    
     [self.profileBadge initProfile];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/profile?user_id=%@",
                            NEWSBLUR_URL,
@@ -109,6 +108,7 @@
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
+
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {

@@ -240,7 +240,6 @@
     }
     [request setDidFailSelector:@selector(requestFailed:)];
     
-    NSLog(@"url is %@", url);
     [request startAsynchronous];
 }
 

@@ -243,6 +243,31 @@
     }
 }
 
+- (void)showUserProfileModal {
+    UserProfileViewController *userProfileView = [[UserProfileViewController alloc] init];
+    self.userProfileViewController = userProfileView;
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
+    
+    // adding Done button
+    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                     initWithTitle:@"Done" 
+                                   style:UIBarButtonItemStyleDone 
+                                   target:self 
+                                   action:@selector(hideUserProfileModal)];
+    
+    self.userProfileViewController.navigationItem.rightBarButtonItem = donebutton;
+    self.userProfileViewController.navigationItem.title = @"Profile";
+    [self.navigationController presentModalViewController:navController animated:YES];
+    
+    [userProfileView release];
+    [donebutton release];
+    [navController release];
+}
+
+- (void)hideUserProfileModal {
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
 - (void)showFindFriends {
     self.findFriendsNavigationController.viewControllers = [NSArray arrayWithObject:friendsListViewController];
     self.findFriendsNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
@@ -263,9 +288,7 @@
     // add shareViewController to storyDetail
     [storyDetailViewController.view addSubview:shareViewController.view];    
     
-    if (userId && username) {
-        [shareViewController setSiteInfo:userId setUsername:username];  
-    }
+    [shareViewController setSiteInfo:userId setUsername:username];  
     
     shareViewController.view.frame = CGRectMake(0, 
                                                 storyDetailViewController.view.frame.size.height, 
@@ -1150,10 +1173,11 @@
 }
 
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
-    
     UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
     if (self.isRiverView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder];        
+    } else if (self.isSocialView) {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
     } else {
         titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
     }
@@ -1165,22 +1189,46 @@
     titleLabel.numberOfLines = 1;
     titleLabel.shadowColor = [UIColor blackColor];
     titleLabel.shadowOffset = CGSizeMake(0, -1);
-    titleLabel.center = CGPointMake(28, -2);
+    titleLabel.center = CGPointMake(0, -2);
     [titleLabel sizeToFit];
+    
+    if (!self.isSocialView) {
+        titleLabel.center = CGPointMake(28, -2);
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+        UIImage *titleImage;
+        if (self.isRiverView) {
+            titleImage = [UIImage imageNamed:@"folder.png"];
+        } else {
+            titleImage = [Utilities getImage:feedIdStr];
+        }
+        UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+        titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+        [titleLabel addSubview:titleImageView];
+        [titleImageView release];
+    }
+    return titleLabel;
+}
+
+- (UIButton *)makeRightFeedTitle:(NSDictionary *)feed {
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
     UIImage *titleImage;
     if (self.isRiverView) {
         titleImage = [UIImage imageNamed:@"folder.png"];
+    } else if (self.isRiverView) {
+        titleImage = [Utilities getImage:feedIdStr];
     } else {
         titleImage = [Utilities getImage:feedIdStr];
     }
-	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
-    [titleLabel addSubview:titleImageView];
-    [titleImageView release];
+    
 
-    return titleLabel;
+    titleImage = [Utilities roundCorneredImage:titleImage radius:6];
+    
+    UIButton *titleImageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    titleImageButton.bounds = CGRectMake(0, 0, 32, 32);
+
+    [titleImageButton setImage:titleImage forState:UIControlStateNormal];
+    return titleImageButton;
 }
 
 @end

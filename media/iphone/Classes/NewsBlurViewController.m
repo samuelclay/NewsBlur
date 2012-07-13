@@ -108,12 +108,12 @@
         }
     }
 
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"16-List.png"] 
-                     forSegmentAtIndex:0];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_color.png"] 
-                     forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"focused_color.png"] 
-                     forSegmentAtIndex:2];
+//    [self.intelligenceControl setImage:[UIImage imageNamed:@"16-List.png"] 
+//                     forSegmentAtIndex:0];
+//    [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_color.png"] 
+//                     forSegmentAtIndex:1];
+//    [self.intelligenceControl setImage:[UIImage imageNamed:@"focused_color.png"] 
+//                     forSegmentAtIndex:2];
     [self.intelligenceControl addTarget:self
                                  action:@selector(selectIntelligence)
                        forControlEvents:UIControlEventValueChanged];
@@ -127,8 +127,12 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-//    appDelegate.activeFeed = nil; 
     [super viewDidAppear:animated];
+    
+    // reset all feed detail specific data
+    appDelegate.activeFeed = nil; 
+    appDelegate.isSocialView = NO;
+    appDelegate.isRiverView = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -403,9 +407,8 @@
 }
 
 - (void)showUserProfilePopover:(id)sender {
-    
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (popoverController == nil) {
             popoverController = [[UIPopoverController alloc]
@@ -420,16 +423,13 @@
             [popoverController setContentViewController:appDelegate.userProfileViewController];
         }
         
-
-        
         [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
         [popoverController presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem 
                                   permittedArrowDirections:UIPopoverArrowDirectionAny 
                                                   animated:YES];  
     } else {
-        NSLog(@"Implement for iPhone!");
+        [appDelegate showUserProfileModal];
     }
-
 }
 
 - (void)showSettingsPopover:(id)sender {
@@ -747,6 +747,7 @@
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {
+    NSLog(@"button tag is %i", button.tag);
     // current position of social header
     if (button.tag == 0) { 
         return;
@@ -756,7 +757,7 @@
     appDelegate.isRiverView = YES;
     NSMutableArray *feeds = [NSMutableArray array];
 
-    if (button.tag == 0) {
+    if (button.tag == 1) {
         [appDelegate setActiveFolder:@"Everything"];
         for (NSString *folderName in self.activeFeedLocations) {
             NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
@@ -792,7 +793,7 @@
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
     if (selectedSegmentIndex == 0) {
-        hud.labelText = @"All stories";
+        hud.labelText = @"All Stories";
         [userPreferences setInteger:0 forKey:@"siteDisplayMode"];
         [userPreferences synchronize];
         
@@ -804,7 +805,7 @@
         self.viewShowingAllFeeds = YES;
         [self switchSitesUnread];
     } else if(selectedSegmentIndex == 1) {
-        hud.labelText = @"Unread stories";
+        hud.labelText = @"Unread Stories";
         [userPreferences setInteger:1 forKey:@"siteDisplayMode"];
         [userPreferences synchronize];
         
@@ -816,7 +817,7 @@
         self.viewShowingAllFeeds = NO;
         [self switchSitesUnread];
     } else {
-        hud.labelText = @"Focus stories";
+        hud.labelText = @"Focus Stories";
         [userPreferences setInteger:2 forKey:@"siteDisplayMode"];
         [userPreferences synchronize];
         
@@ -829,10 +830,7 @@
         [self redrawUnreadCounts];
     }
     
-
-    
 	[hud hide:YES afterDelay:0.75];
-    
 }
 
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {

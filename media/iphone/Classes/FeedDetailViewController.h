@@ -15,7 +15,8 @@
 
 @interface FeedDetailViewController : BaseViewController 
 <UITableViewDelegate, UITableViewDataSource, 
- UIActionSheetDelegate, UIAlertViewDelegate> {
+ UIActionSheetDelegate, UIAlertViewDelegate,
+ UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSArray * stories;
@@ -28,7 +29,23 @@
     UISlider * feedScoreSlider;
     UIBarButtonItem * feedMarkReadButton;
     UISegmentedControl * intelligenceControl;
+    UIPopoverController *popoverController;
 }
+
+@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic, retain) UIPopoverController *popoverController;
+@property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;
+@property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
+@property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem * feedMarkReadButton;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem * settingsButton;
+@property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
+
+@property (nonatomic, retain) NSArray * stories;
+@property (nonatomic, readwrite) int feedPage;
+@property (nonatomic, readwrite) BOOL pageFetching;
+@property (nonatomic, readwrite) BOOL pageFinished;
+
 
 - (void)resetFeedDetail;
 - (void)fetchNextPage:(void(^)())callback;
@@ -49,6 +66,7 @@
 - (void)deleteSite;
 - (void)deleteFolder;
 - (void)openMoveView;
+- (void)showUserProfilePopover;
 - (void)changeActiveFeedDetailRow;
 - (void)changeRowStyleToRead:(UITableViewCell *)cell;
 - (void)instafetchFeed;
@@ -56,18 +74,5 @@
 - (void)loadFaviconsFromActiveFeed;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;
-@property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
-@property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem * feedMarkReadButton;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem * settingsButton;
-@property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
-
-@property (nonatomic, retain) NSArray * stories;
-@property (nonatomic, readwrite) int feedPage;
-@property (nonatomic, readwrite) BOOL pageFetching;
-@property (nonatomic, readwrite) BOOL pageFinished;
 
 @end

@@ -169,6 +169,8 @@
 
 // social
 - (void)showUserProfile;
+- (void)showUserProfileModal;
+- (void)hideUserProfileModal;
 - (void)showFindFriends;
 
 
@@ -227,6 +229,6 @@
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
-
+- (UIButton *)makeRightFeedTitle:(NSDictionary *)feed;
 @end
 
