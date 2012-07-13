@@ -38,7 +38,6 @@ public class PrefsUtil {
 		edit.putString(PrefConstants.USER_LOCATION, profile.location);
 		edit.putString(PrefConstants.USER_PHOTO_SERVICE, profile.photoService);
 		edit.putString(PrefConstants.USER_PHOTO_URL, profile.photoUrl);
-		edit.putString(PrefConstants.USER_POPULAR_PUBLISHERS, profile.popularPublishers);
 		edit.putInt(PrefConstants.USER_SHARED_STORIES_COUNT, profile.sharedStoriesCount);
 		edit.putInt(PrefConstants.USER_STORIES_LAST_MONTH, profile.storiesLastMonth);
 		edit.putInt(PrefConstants.USER_SUBSCRIBER_COUNT, profile.subscriptionCount);
@@ -62,7 +61,6 @@ public class PrefsUtil {
 		user.location = preferences.getString(PrefConstants.USER_LOCATION, null);
 		user.photoService = preferences.getString(PrefConstants.USER_PHOTO_SERVICE, null);
 		user.photoUrl = preferences.getString(PrefConstants.USER_PHOTO_URL, null);
-		user.popularPublishers = preferences.getString(PrefConstants.USER_POPULAR_PUBLISHERS, null);
 		user.sharedStoriesCount = preferences.getInt(PrefConstants.USER_SHARED_STORIES_COUNT, 0);
 		user.storiesLastMonth = preferences.getInt(PrefConstants.USER_STORIES_LAST_MONTH, 0);
 		user.subscriptionCount = preferences.getInt(PrefConstants.USER_SUBSCRIBER_COUNT, 0);

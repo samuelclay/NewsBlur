@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.domain.UserProfile;
+import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtil;
 import com.newsblur.util.UIUtils;
 
@@ -21,16 +22,20 @@ public class ProfileDetailsFragment extends Fragment {
 	private TextView username, bio, location, sharedCount, followerCount, followingCount, website;
 	private ImageView imageView;
 	private String noBio, noLocation;  
+	private boolean viewingSelf = false;
+	private ImageLoader imageLoader;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		noBio = getString(R.string.profile_no_bio);
 		noLocation = getActivity().getResources().getString(R.string.profile_no_location);
+		imageLoader = new ImageLoader(getActivity());
 	}
 	
-	public void setUser(final UserProfile user) {
+	public void setUser(final UserProfile user, final boolean viewingSelf) {
 		this.user = user;
+		this.viewingSelf = viewingSelf;
 		if (username != null) {
 			setUserFields();
 		}
@@ -82,9 +87,13 @@ public class ProfileDetailsFragment extends Fragment {
 		
 		followingCount.setText("" + user.followingCount);
 		
-		Bitmap userPicture = PrefsUtil.getUserImage(getActivity());
-		userPicture = UIUtils.roundCorners(userPicture, 10f);
-		imageView.setImageBitmap(userPicture);
+		if (!viewingSelf) {
+			imageLoader.DisplayImage(user.photoUrl, imageView);
+		} else {
+			Bitmap userPicture = PrefsUtil.getUserImage(getActivity());
+			userPicture = UIUtils.roundCorners(userPicture, 10f);
+			imageView.setImageBitmap(userPicture);
+		}
 	}
 	
 }

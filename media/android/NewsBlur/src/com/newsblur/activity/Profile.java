@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
+import android.text.TextUtils;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -28,18 +28,19 @@ public class Profile extends SherlockFragmentActivity {
 	private ProfileDetailsFragment detailsFragment;
 	private ProfileResponse profileResponse;
 	private ProfileActivityFragment activitiesFragment;
-
+	private String userId = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		apiManager = new APIManager(this);
-
+		userId = getIntent().getStringExtra(USER_ID);
+		
 		fragmentManager = getSupportFragmentManager();
 
 		if (fragmentManager.findFragmentByTag(detailsTag) == null) {
-			Log.d(TAG , "Adding current new fragment");
 			FragmentTransaction detailsTransaction = fragmentManager.beginTransaction();
 			detailsFragment = new ProfileDetailsFragment();
 			detailsFragment.setRetainInstance(true);
@@ -70,26 +71,24 @@ public class Profile extends SherlockFragmentActivity {
 		}
 	}
 
-	private class LoadUserTask extends AsyncTask<Void, Void, ProfileResponse> {
+	private class LoadUserTask extends AsyncTask<Void, Void, Void> {
 		private UserProfile user;
 		private ActivitiesResponse[] activities;
 
 		@Override
 		protected void onPreExecute() {
-			if (getIntent().getStringExtra(USER_ID) == null) {
-				detailsFragment.setUser(PrefsUtil.getUserDetails(Profile.this));
+			if (TextUtils.isEmpty(userId)) {
+				detailsFragment.setUser(PrefsUtil.getUserDetails(Profile.this), true);
 			}
 		}
 
 		@Override
-		protected ProfileResponse doInBackground(Void... params) {
-			if (getIntent().getStringExtra(USER_ID) != null) {
-				Log.d(TAG, "Viewing a user.");
+		protected Void doInBackground(Void... params) {
+			if (!TextUtils.isEmpty(userId)) {
 				profileResponse = apiManager.getUser(getIntent().getStringExtra(USER_ID));
 				user = profileResponse.user;
 				activities = profileResponse.activities;
 			} else {
-				Log.d(TAG, "Viewing our own profile");
 				apiManager.updateUserProfile();
 				user = PrefsUtil.getUserDetails(Profile.this);
 				profileResponse = apiManager.getUser(user.id);
@@ -101,15 +100,11 @@ public class Profile extends SherlockFragmentActivity {
 		}
 
 		@Override
-		protected void onPostExecute(ProfileResponse result) {
+		protected void onPostExecute(Void result) {
 			if (user != null) {
-				detailsFragment.setUser(user);
+				detailsFragment.setUser(user, TextUtils.isEmpty(userId));
 				activitiesFragment.setActivities(activities);
 			}
 		}
-
 	}
-
-
-
 }

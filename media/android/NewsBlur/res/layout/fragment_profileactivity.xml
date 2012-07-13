@@ -18,7 +18,7 @@
         android:id="@+id/profile_details_activitylist"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@color/lightgray"
+        android:background="@drawable/list_background"
         android:divider="@drawable/divider_dark"
         android:dividerHeight="1px" />
 

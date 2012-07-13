@@ -14,8 +14,8 @@ public class ActivitiesResponse {
 	@SerializedName("with_user")
 	public WithUser user;
 	
-	@SerializedName("with_userid")
-	public String withUserId;
+	@SerializedName("with_user_id")
+	public String id;
 	
 	
 	public class WithUser {
