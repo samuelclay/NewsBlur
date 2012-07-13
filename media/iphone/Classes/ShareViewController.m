@@ -47,6 +47,8 @@
     if ([userPreferences integerForKey:@"shareToTwitter"]){
         twitterButton.selected = YES;
     }
+    
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
 }
 
 - (void)viewDidUnload
@@ -65,9 +67,13 @@
 	return YES;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+- (void)viewDidAppear:(BOOL)animated {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    } else {
+        [self.commentField becomeFirstResponder];
+    }
 }
 
 - (void)dealloc {
@@ -82,6 +88,7 @@
 }
 
 - (IBAction)doCancelButton:(id)sender {
+    NSLog(@"do cancel buttom?");
     [commentField resignFirstResponder];
     [appDelegate hideShareView:NO];
 }
@@ -117,11 +124,16 @@
     } else {
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
-        [toolbarTitle setTitle:@"Post to Blurblog"];
-        [submitButton setTitle:@"Share this Story"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [toolbarTitle setTitle:@"Post to Blurblog"];
+            [submitButton setTitle:@"Share this Story"];
+        } else {
+            [toolbarTitle setTitle:@"Post"];
+            [submitButton setTitle:@"Share"];
+            NSLog(@"set title");
+        }
         [submitButton setAction:(@selector(doShareThisStory:))];
     }
-
 }
 
 - (void)clearComments {
@@ -176,9 +188,6 @@
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
 }
-
-
-
 
 - (void)finishAddComment:(ASIHTTPRequest *)request {
     NSLog(@"%@", [request responseString]);

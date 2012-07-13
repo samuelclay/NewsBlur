@@ -62,6 +62,7 @@
 		4307BEFE1565EEBC007A932A /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4307BEFD1565EEBC007A932A /* Base64.m */; };
 		43081E1E15AF4DF700B24D7A /* settings.png in Resources */ = {isa = PBXBuildFile; fileRef = 43081E1C15AF4DF700B24D7A /* settings.png */; };
 		43081E1F15AF4DF700B24D7A /* settings@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43081E1D15AF4DF700B24D7A /* settings@2x.png */; };
+		43081E2215AFE84200B24D7A /* ShareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43081E2115AFE84200B24D7A /* ShareViewController.xib */; };
 		4315E95C159E910500A117C0 /* slide_left.png in Resources */ = {isa = PBXBuildFile; fileRef = 4315E958159E910500A117C0 /* slide_left.png */; };
 		4315E95D159E910500A117C0 /* slide_left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4315E959159E910500A117C0 /* slide_left@2x.png */; };
 		4315E95E159E910500A117C0 /* slide_right.png in Resources */ = {isa = PBXBuildFile; fileRef = 4315E95A159E910500A117C0 /* slide_right.png */; };
@@ -108,7 +109,7 @@
 		437AA8C51592F8D2005463F5 /* bullets_all.png in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C31592F8D2005463F5 /* bullets_all.png */; };
 		437AA8C61592F8D2005463F5 /* bullets_yellow_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C41592F8D2005463F5 /* bullets_yellow_green.png */; };
 		437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8C8159394E2005463F5 /* ShareViewController.m */; };
-		437AA8CB159394E2005463F5 /* ShareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C9159394E2005463F5 /* ShareViewController.xib */; };
+		437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */; };
 		437F974C15ACA0ED0007136B /* DashboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F974A15ACA0ED0007136B /* DashboardViewController.m */; };
 		437F974D15ACA0ED0007136B /* DashboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437F974B15ACA0ED0007136B /* DashboardViewController.xib */; };
 		437F975B15ACF5D20007136B /* focused.png in Resources */ = {isa = PBXBuildFile; fileRef = 437F975515ACF5D20007136B /* focused.png */; };
@@ -327,6 +328,7 @@
 		4307BEFD1565EEBC007A932A /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
 		43081E1C15AF4DF700B24D7A /* settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settings.png; sourceTree = "<group>"; };
 		43081E1D15AF4DF700B24D7A /* settings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settings@2x.png"; sourceTree = "<group>"; };
+		43081E2115AFE84200B24D7A /* ShareViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ShareViewController.xib; sourceTree = "<group>"; };
 		4315E958159E910500A117C0 /* slide_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slide_left.png; sourceTree = "<group>"; };
 		4315E959159E910500A117C0 /* slide_left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "slide_left@2x.png"; sourceTree = "<group>"; };
 		4315E95A159E910500A117C0 /* slide_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = slide_right.png; sourceTree = "<group>"; };
@@ -373,7 +375,7 @@
 		437AA8C41592F8D2005463F5 /* bullets_yellow_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bullets_yellow_green.png; sourceTree = "<group>"; };
 		437AA8C7159394E2005463F5 /* ShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		437AA8C8159394E2005463F5 /* ShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
-		437AA8C9159394E2005463F5 /* ShareViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ShareViewController.xib; path = Classes/ShareViewController.xib; sourceTree = "<group>"; };
+		437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "ShareViewController~ipad.xib"; path = "Classes/ShareViewController~ipad.xib"; sourceTree = "<group>"; };
 		437F974915ACA0ED0007136B /* DashboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DashboardViewController.h; sourceTree = "<group>"; };
 		437F974A15ACA0ED0007136B /* DashboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DashboardViewController.m; sourceTree = "<group>"; };
 		437F974B15ACA0ED0007136B /* DashboardViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DashboardViewController.xib; path = Classes/DashboardViewController.xib; sourceTree = "<group>"; };
@@ -785,6 +787,8 @@
 		431B857015A1315F00DCE497 /* Social */ = {
 			isa = PBXGroup;
 			children = (
+				437AA8C7159394E2005463F5 /* ShareViewController.h */,
+				437AA8C8159394E2005463F5 /* ShareViewController.m */,
 				431B856515A0C45100DCE497 /* FriendsListViewController.h */,
 				431B856615A0C45100DCE497 /* FriendsListViewController.m */,
 				431B856B15A0D91E00DCE497 /* UserProfileViewController.h */,
@@ -851,8 +855,6 @@
 				43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */,
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
-				437AA8C7159394E2005463F5 /* ShareViewController.h */,
-				437AA8C8159394E2005463F5 /* ShareViewController.m */,
 				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
 				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 			);
@@ -1024,6 +1026,7 @@
 				43B8F01E156603170008733D /* MoveSiteViewController.xib */,
 				43B8F01F156603170008733D /* NewsBlurViewController.xib */,
 				43B8F020156603170008733D /* OriginalStoryViewController.xib */,
+				43081E2115AFE84200B24D7A /* ShareViewController.xib */,
 				43B8F021156603170008733D /* StoryDetailViewController.xib */,
 			);
 			path = "Resources-iPhone";
@@ -1050,7 +1053,7 @@
 				43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */,
 				43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
-				437AA8C9159394E2005463F5 /* ShareViewController.xib */,
+				437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */,
 			);
 			name = "Resources-iPad";
 			sourceTree = "<group>";
@@ -1604,7 +1607,7 @@
 				437AA8C015929DFA005463F5 /* storyDetailView.css in Resources */,
 				437AA8C51592F8D2005463F5 /* bullets_all.png in Resources */,
 				437AA8C61592F8D2005463F5 /* bullets_yellow_green.png in Resources */,
-				437AA8CB159394E2005463F5 /* ShareViewController.xib in Resources */,
+				437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */,
 				43CF31AF1593B84000296407 /* 32-Twitter.png in Resources */,
 				43CF31B21593BA4800296407 /* 32-Twitter-Green.png in Resources */,
 				43CF31B51593BC1500296407 /* 208-facebook-green.png in Resources */,
@@ -1640,6 +1643,7 @@
 				437F976C15ADFD980007136B /* unread_color@2x.png in Resources */,
 				43081E1E15AF4DF700B24D7A /* settings.png in Resources */,
 				43081E1F15AF4DF700B24D7A /* settings@2x.png in Resources */,
+				43081E2215AFE84200B24D7A /* ShareViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

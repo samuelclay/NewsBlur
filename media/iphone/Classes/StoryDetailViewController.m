@@ -169,11 +169,10 @@
         self.activeStoryId = nil;
         [webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@""]];
     }
-    [popoverController dismissPopoverAnimated:YES];
-    
-    // remove the comment
-    
-    [appDelegate hideShareView:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [popoverController dismissPopoverAnimated:YES];
+        [appDelegate hideShareView:YES];
+    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {

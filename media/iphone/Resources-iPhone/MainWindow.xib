@@ -126,6 +126,15 @@
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
+			<object class="IBUIViewController" id="604853392">
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
 			<object class="IBUIWindow" id="117978783">
 				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
@@ -271,6 +280,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">shareViewController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="604853392"/>
+					</object>
+					<int key="connectionID">132</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">appDelegate</string>
 						<reference key="source" ref="943309135"/>
 						<reference key="destination" ref="664661524"/>
@@ -332,6 +349,14 @@
 						<reference key="destination" ref="664661524"/>
 					</object>
 					<int key="connectionID">130</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">appDelegate</string>
+						<reference key="source" ref="604853392"/>
+						<reference key="destination" ref="664661524"/>
+					</object>
+					<int key="connectionID">133</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -442,6 +467,11 @@
 						<reference key="object" ref="704072722"/>
 						<reference key="parent" ref="0"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">131</int>
+						<reference key="object" ref="604853392"/>
+						<reference key="parent" ref="0"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -465,6 +495,8 @@
 					<string>124.IBPluginDependency</string>
 					<string>128.CustomClassName</string>
 					<string>128.IBPluginDependency</string>
+					<string>131.CustomClassName</string>
+					<string>131.IBPluginDependency</string>
 					<string>3.CustomClassName</string>
 					<string>3.IBPluginDependency</string>
 					<string>39.IBPluginDependency</string>
@@ -496,6 +528,8 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>FeedsMenuViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>ShareViewController</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>NewsBlurAppDelegate</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -521,11 +555,19 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">130</int>
+			<int key="maxID">133</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<bool key="EncodedWithXMLCoder">YES</bool>
+				<object class="IBPartialClassDescription">
+					<string key="className">ActivityModule</string>
+					<string key="superclassName">UIView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/ActivityModule.h</string>
+					</object>
+				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">AddSiteViewController</string>
 					<string key="superclassName">UIViewController</string>
@@ -726,6 +768,118 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">DashboardViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">doLogout:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">doLogout:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">doLogout:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>activitesLabel</string>
+							<string>activitiesModule</string>
+							<string>appDelegate</string>
+							<string>interactionsLabel</string>
+							<string>interactionsModule</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UILabel</string>
+							<string>ActivityModule</string>
+							<string>NewsBlurAppDelegate</string>
+							<string>UILabel</string>
+							<string>InteractionsModule</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>activitesLabel</string>
+							<string>activitiesModule</string>
+							<string>appDelegate</string>
+							<string>interactionsLabel</string>
+							<string>interactionsModule</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">activitesLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">activitiesModule</string>
+								<string key="candidateClassName">ActivityModule</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">appDelegate</string>
+								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">interactionsLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">interactionsModule</string>
+								<string key="candidateClassName">InteractionsModule</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/DashboardViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">FeedDashboardViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>toolbar</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NewsBlurAppDelegate</string>
+							<string>UIToolbar</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>toolbar</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">appDelegate</string>
+								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">toolbar</string>
+								<string key="candidateClassName">UIToolbar</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/FeedDashboardViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">FeedDetailViewController</string>
 					<string key="superclassName">BaseViewController</string>
 					<object class="NSMutableDictionary" key="actions">
@@ -842,162 +996,59 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">FeedsMenuViewController</string>
 					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">appDelegate</string>
-						<string key="NS.object.0">NewsBlurAppDelegate</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">appDelegate</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">appDelegate</string>
-							<string key="candidateClassName">NewsBlurAppDelegate</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/FeedsMenuViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">FeedsViewController</string>
-					<string key="superclassName">BaseViewController</string>
 					<object class="NSMutableDictionary" key="actions">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>doAddButton</string>
-							<string>doSwitchSitesUnread</string>
-							<string>sectionTapped:</string>
-							<string>sectionUntapped:</string>
-							<string>selectIntelligence</string>
-							<string>showMenuButton</string>
-						</object>
-						<object class="NSArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>id</string>
-							<string>UIButton</string>
-							<string>UIButton</string>
-							<string>id</string>
-							<string>id</string>
-						</object>
+						<string key="NS.key.0">tapCancelButton:</string>
+						<string key="NS.object.0">UIBarButtonItem</string>
 					</object>
 					<object class="NSMutableDictionary" key="actionInfosByName">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>doAddButton</string>
-							<string>doSwitchSitesUnread</string>
-							<string>sectionTapped:</string>
-							<string>sectionUntapped:</string>
-							<string>selectIntelligence</string>
-							<string>showMenuButton</string>
-						</object>
-						<object class="NSArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBActionInfo">
-								<string key="name">doAddButton</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">doSwitchSitesUnread</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">sectionTapped:</string>
-								<string key="candidateClassName">UIButton</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">sectionUntapped:</string>
-								<string key="candidateClassName">UIButton</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">selectIntelligence</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">showMenuButton</string>
-								<string key="candidateClassName">id</string>
-							</object>
+						<string key="NS.key.0">tapCancelButton:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">tapCancelButton:</string>
+							<string key="candidateClassName">UIBarButtonItem</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>addButton</string>
 							<string>appDelegate</string>
-							<string>feedScoreSlider</string>
-							<string>feedTitlesTable</string>
-							<string>feedViewToolbar</string>
-							<string>homeButton</string>
-							<string>intelligenceControl</string>
-							<string>sitesButton</string>
+							<string>menuTableView</string>
+							<string>toolbar</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>UIBarButtonItem</string>
 							<string>NewsBlurAppDelegate</string>
-							<string>UISlider</string>
 							<string>UITableView</string>
 							<string>UIToolbar</string>
-							<string>UIBarButtonItem</string>
-							<string>UISegmentedControl</string>
-							<string>UIBarButtonItem</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>addButton</string>
 							<string>appDelegate</string>
-							<string>feedScoreSlider</string>
-							<string>feedTitlesTable</string>
-							<string>feedViewToolbar</string>
-							<string>homeButton</string>
-							<string>intelligenceControl</string>
-							<string>sitesButton</string>
+							<string>menuTableView</string>
+							<string>toolbar</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBToOneOutletInfo">
-								<string key="name">addButton</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">feedScoreSlider</string>
-								<string key="candidateClassName">UISlider</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">feedTitlesTable</string>
+								<string key="name">menuTableView</string>
 								<string key="candidateClassName">UITableView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">feedViewToolbar</string>
+								<string key="name">toolbar</string>
 								<string key="candidateClassName">UIToolbar</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">homeButton</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">intelligenceControl</string>
-								<string key="candidateClassName">UISegmentedControl</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">sitesButton</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 						</object>
 					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/FeedsViewController.h</string>
+						<string key="minorKey">./Classes/FeedsMenuViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1058,6 +1109,7 @@
 							<string>addSitesView</string>
 							<string>appDelegate</string>
 							<string>googleReaderButton</string>
+							<string>logo</string>
 							<string>nextButton</string>
 							<string>toolbar</string>
 							<string>toolbarTitle</string>
@@ -1070,6 +1122,7 @@
 							<string>UIView</string>
 							<string>NewsBlurAppDelegate</string>
 							<string>UIButton</string>
+							<string>UIImageView</string>
 							<string>UIBarButtonItem</string>
 							<string>UIToolbar</string>
 							<string>UIButton</string>
@@ -1085,6 +1138,7 @@
 							<string>addSitesView</string>
 							<string>appDelegate</string>
 							<string>googleReaderButton</string>
+							<string>logo</string>
 							<string>nextButton</string>
 							<string>toolbar</string>
 							<string>toolbarTitle</string>
@@ -1111,6 +1165,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">googleReaderButton</string>
 								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">logo</string>
+								<string key="candidateClassName">UIImageView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">nextButton</string>
@@ -1175,12 +1233,16 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
+							<string>fontSizeSegment</string>
+							<string>fontStyleSegment</string>
 							<string>largeFontSizeLabel</string>
 							<string>smallFontSizeLabel</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NewsBlurAppDelegate</string>
+							<string>UISegmentedControl</string>
+							<string>UISegmentedControl</string>
 							<string>UILabel</string>
 							<string>UILabel</string>
 						</object>
@@ -1190,6 +1252,8 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
+							<string>fontSizeSegment</string>
+							<string>fontStyleSegment</string>
 							<string>largeFontSizeLabel</string>
 							<string>smallFontSizeLabel</string>
 						</object>
@@ -1198,6 +1262,14 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">fontSizeSegment</string>
+								<string key="candidateClassName">UISegmentedControl</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">fontStyleSegment</string>
+								<string key="candidateClassName">UISegmentedControl</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">largeFontSizeLabel</string>
@@ -1212,6 +1284,60 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/FontSettingsViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">FriendsListViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>friendsTable</string>
+							<string>searchBar</string>
+							<string>searchDisplayController</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NewsBlurAppDelegate</string>
+							<string>UITableView</string>
+							<string>UISearchBar</string>
+							<string>UISearchDisplayController</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>friendsTable</string>
+							<string>searchBar</string>
+							<string>searchDisplayController</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">appDelegate</string>
+								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">friendsTable</string>
+								<string key="candidateClassName">UITableView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">searchBar</string>
+								<string key="candidateClassName">UISearchBar</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">searchDisplayController</string>
+								<string key="candidateClassName">UISearchDisplayController</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/FriendsListViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1263,6 +1389,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/GoogleReaderViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">InteractionsModule</string>
+					<string key="superclassName">UIView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/InteractionsModule.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1464,6 +1598,99 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">MGSplitViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>showMasterPopover:</string>
+							<string>toggleMasterBeforeDetail:</string>
+							<string>toggleMasterView:</string>
+							<string>toggleSplitOrientation:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>showMasterPopover:</string>
+							<string>toggleMasterBeforeDetail:</string>
+							<string>toggleMasterView:</string>
+							<string>toggleSplitOrientation:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">showMasterPopover:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">toggleMasterBeforeDetail:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">toggleMasterView:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">toggleSplitOrientation:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>delegate</string>
+							<string>detailViewController</string>
+							<string>masterViewController</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>UIViewController</string>
+							<string>UIViewController</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>delegate</string>
+							<string>detailViewController</string>
+							<string>masterViewController</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">delegate</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">detailViewController</string>
+								<string key="candidateClassName">UIViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">masterViewController</string>
+								<string key="candidateClassName">UIViewController</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/MGSplitViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">MoveSiteViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
@@ -1620,39 +1847,49 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addSiteViewController</string>
+							<string>dashboardViewController</string>
+							<string>feedDashboardViewController</string>
 							<string>feedDetailViewController</string>
 							<string>feedsMenuViewController</string>
 							<string>feedsViewController</string>
+							<string>findFriendsNavigationController</string>
 							<string>firstTimeUserViewController</string>
 							<string>fontSettingsViewController</string>
+							<string>friendsListViewController</string>
 							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
+							<string>shareViewController</string>
 							<string>splitStoryController</string>
 							<string>splitStoryDetailNavigationController</string>
-							<string>splitStoryDetailViewController</string>
 							<string>storyDetailViewController</string>
+							<string>userProfileViewController</string>
 							<string>window</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>AddSiteViewController</string>
+							<string>DashboardViewController</string>
+							<string>FeedDashboardViewController</string>
 							<string>FeedDetailViewController</string>
 							<string>FeedsMenuViewController</string>
-							<string>FeedsViewController</string>
+							<string>NewsBlurViewController</string>
+							<string>UINavigationController</string>
 							<string>FirstTimeUserViewController</string>
 							<string>FontSettingsViewController</string>
+							<string>FriendsListViewController</string>
 							<string>GoogleReaderViewController</string>
 							<string>LoginViewController</string>
 							<string>MoveSiteViewController</string>
 							<string>UINavigationController</string>
 							<string>OriginalStoryViewController</string>
-							<string>UISplitViewController</string>
+							<string>ShareViewController</string>
+							<string>MGSplitViewController</string>
 							<string>UINavigationController</string>
-							<string>SplitStoryDetailViewController</string>
 							<string>StoryDetailViewController</string>
+							<string>UserProfileViewController</string>
 							<string>UIWindow</string>
 						</object>
 					</object>
@@ -1661,20 +1898,25 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>addSiteViewController</string>
+							<string>dashboardViewController</string>
+							<string>feedDashboardViewController</string>
 							<string>feedDetailViewController</string>
 							<string>feedsMenuViewController</string>
 							<string>feedsViewController</string>
+							<string>findFriendsNavigationController</string>
 							<string>firstTimeUserViewController</string>
 							<string>fontSettingsViewController</string>
+							<string>friendsListViewController</string>
 							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
+							<string>shareViewController</string>
 							<string>splitStoryController</string>
 							<string>splitStoryDetailNavigationController</string>
-							<string>splitStoryDetailViewController</string>
 							<string>storyDetailViewController</string>
+							<string>userProfileViewController</string>
 							<string>window</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -1682,6 +1924,14 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">addSiteViewController</string>
 								<string key="candidateClassName">AddSiteViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">dashboardViewController</string>
+								<string key="candidateClassName">DashboardViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">feedDashboardViewController</string>
+								<string key="candidateClassName">FeedDashboardViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">feedDetailViewController</string>
@@ -1693,7 +1943,11 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">feedsViewController</string>
-								<string key="candidateClassName">FeedsViewController</string>
+								<string key="candidateClassName">NewsBlurViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">findFriendsNavigationController</string>
+								<string key="candidateClassName">UINavigationController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">firstTimeUserViewController</string>
@@ -1702,6 +1956,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">fontSettingsViewController</string>
 								<string key="candidateClassName">FontSettingsViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">friendsListViewController</string>
+								<string key="candidateClassName">FriendsListViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">googleReaderViewController</string>
@@ -1724,20 +1982,24 @@
 								<string key="candidateClassName">OriginalStoryViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">shareViewController</string>
+								<string key="candidateClassName">ShareViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">splitStoryController</string>
-								<string key="candidateClassName">UISplitViewController</string>
+								<string key="candidateClassName">MGSplitViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">splitStoryDetailNavigationController</string>
 								<string key="candidateClassName">UINavigationController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">splitStoryDetailViewController</string>
-								<string key="candidateClassName">SplitStoryDetailViewController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">storyDetailViewController</string>
 								<string key="candidateClassName">StoryDetailViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">userProfileViewController</string>
+								<string key="candidateClassName">UserProfileViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">window</string>
@@ -1748,6 +2010,134 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/NewsBlurAppDelegate.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NewsBlurViewController</string>
+					<string key="superclassName">BaseViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>sectionTapped:</string>
+							<string>sectionUntapped:</string>
+							<string>sectionUntappedOutside:</string>
+							<string>selectIntelligence</string>
+							<string>showMenuButton:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIButton</string>
+							<string>UIButton</string>
+							<string>UIButton</string>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>sectionTapped:</string>
+							<string>sectionUntapped:</string>
+							<string>sectionUntappedOutside:</string>
+							<string>selectIntelligence</string>
+							<string>showMenuButton:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">sectionTapped:</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">sectionUntapped:</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">sectionUntappedOutside:</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">selectIntelligence</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">showMenuButton:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>feedScoreSlider</string>
+							<string>feedTitlesTable</string>
+							<string>feedViewToolbar</string>
+							<string>homeButton</string>
+							<string>intelligenceControl</string>
+							<string>popoverController</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NewsBlurAppDelegate</string>
+							<string>UISlider</string>
+							<string>UITableView</string>
+							<string>UIToolbar</string>
+							<string>UIBarButtonItem</string>
+							<string>UISegmentedControl</string>
+							<string>UIPopoverController</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>feedScoreSlider</string>
+							<string>feedTitlesTable</string>
+							<string>feedViewToolbar</string>
+							<string>homeButton</string>
+							<string>intelligenceControl</string>
+							<string>popoverController</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">appDelegate</string>
+								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">feedScoreSlider</string>
+								<string key="candidateClassName">UISlider</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">feedTitlesTable</string>
+								<string key="candidateClassName">UITableView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">feedViewToolbar</string>
+								<string key="candidateClassName">UIToolbar</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">homeButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">intelligenceControl</string>
+								<string key="candidateClassName">UISegmentedControl</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">popoverController</string>
+								<string key="candidateClassName">UIPopoverController</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/NewsBlurViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1886,37 +2276,20 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">SplitStoryDetailViewController</string>
-					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">appDelegate</string>
-						<string key="NS.object.0">NewsBlurAppDelegate</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">appDelegate</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">appDelegate</string>
-							<string key="candidateClassName">NewsBlurAppDelegate</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/SplitStoryDetailViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">StoryDetailViewController</string>
+					<string key="className">ShareViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>doNextUnreadStory</string>
-							<string>doPreviousStory</string>
-							<string>toggleFontSize:</string>
+							<string>doCancelButton:</string>
+							<string>doReplyToComment:</string>
+							<string>doShareThisStory:</string>
+							<string>doToggleButton:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -1926,12 +2299,131 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doCancelButton:</string>
+							<string>doReplyToComment:</string>
+							<string>doShareThisStory:</string>
+							<string>doToggleButton:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">doCancelButton:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">doReplyToComment:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">doShareThisStory:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">doToggleButton:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>commentField</string>
+							<string>facebookButton</string>
+							<string>submitButton</string>
+							<string>toolbarTitle</string>
+							<string>twitterButton</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>NewsBlurAppDelegate</string>
+							<string>UITextView</string>
+							<string>UIButton</string>
+							<string>UIBarButtonItem</string>
+							<string>UIBarButtonItem</string>
+							<string>UIButton</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>appDelegate</string>
+							<string>commentField</string>
+							<string>facebookButton</string>
+							<string>submitButton</string>
+							<string>toolbarTitle</string>
+							<string>twitterButton</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">appDelegate</string>
+								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">commentField</string>
+								<string key="candidateClassName">UITextView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">facebookButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">submitButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">toolbarTitle</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">twitterButton</string>
+								<string key="candidateClassName">UIButton</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/ShareViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">StoryDetailViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doNextStory</string>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
 							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doNextStory</string>
+							<string>doNextUnreadStory</string>
+							<string>doPreviousStory</string>
+							<string>toggleFontSize:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">doNextStory</string>
+								<string key="candidateClassName">id</string>
+							</object>
 							<object class="IBActionInfo">
 								<string key="name">doNextUnreadStory</string>
 								<string key="candidateClassName">id</string>
@@ -1954,10 +2446,12 @@
 							<string>appDelegate</string>
 							<string>buttonAction</string>
 							<string>buttonNext</string>
+							<string>buttonNextStory</string>
 							<string>buttonPrevious</string>
 							<string>feedTitleGradient</string>
-							<string>popoverController</string>
+							<string>innerView</string>
 							<string>progressView</string>
+							<string>toggleViewButton</string>
 							<string>toolbar</string>
 							<string>webView</string>
 						</object>
@@ -1968,9 +2462,11 @@
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
+							<string>UIBarButtonItem</string>
 							<string>UIView</string>
-							<string>UIPopoverController</string>
+							<string>UIView</string>
 							<string>UIProgressView</string>
+							<string>UIBarButtonItem</string>
 							<string>UIToolbar</string>
 							<string>UIWebView</string>
 						</object>
@@ -1983,10 +2479,12 @@
 							<string>appDelegate</string>
 							<string>buttonAction</string>
 							<string>buttonNext</string>
+							<string>buttonNextStory</string>
 							<string>buttonPrevious</string>
 							<string>feedTitleGradient</string>
-							<string>popoverController</string>
+							<string>innerView</string>
 							<string>progressView</string>
+							<string>toggleViewButton</string>
 							<string>toolbar</string>
 							<string>webView</string>
 						</object>
@@ -2009,6 +2507,10 @@
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">buttonNextStory</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">buttonPrevious</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
@@ -2017,12 +2519,16 @@
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">popoverController</string>
-								<string key="candidateClassName">UIPopoverController</string>
+								<string key="name">innerView</string>
+								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">progressView</string>
 								<string key="candidateClassName">UIProgressView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">toggleViewButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">toolbar</string>
@@ -2037,6 +2543,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/StoryDetailViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">UserProfileViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/UserProfileViewController.h</string>
 					</object>
 				</object>
 			</object>
