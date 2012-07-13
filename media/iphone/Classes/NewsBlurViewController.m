@@ -237,15 +237,20 @@
         [appDelegate.dictFoldersArray addObject:f];
         NSArray *folder = [appDelegate.dictFolders objectForKey:f];
         sortedArray = [folder sortedArrayUsingComparator:^NSComparisonResult(id id1, id id2) {
-            return [[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", id1]] objectForKey:@"feed_title"] 
-                    caseInsensitiveCompare:[[appDelegate.dictFeeds objectForKey:[NSString stringWithFormat:@"%@", id2]] objectForKey:@"feed_title"]];
+            NSString *feedTitleA = [[appDelegate.dictFeeds 
+                                     objectForKey:[NSString stringWithFormat:@"%@", id1]] 
+                                    objectForKey:@"feed_title"];
+            NSString *feedTitleB = [[appDelegate.dictFeeds 
+                                     objectForKey:[NSString stringWithFormat:@"%@", id2]] 
+                                    objectForKey:@"feed_title"];
+            return [feedTitleA caseInsensitiveCompare:feedTitleB];
         }];
         [sortedFolders setValue:sortedArray forKey:f];
     }
     
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
-    
+    NSLog(@"Folders: %@, Array: %@", appDelegate.dictFolders, appDelegate.dictFoldersArray);
     [self calculateFeedLocations:YES];
     [self.feedTitlesTable reloadData];
     
@@ -323,6 +328,13 @@
 //        [self.sitesButton setTitle:@"All Sites"];
     }
     
+    NSIndexPath *topIndexPath = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
+    NSString *topFolderName = [appDelegate.dictFoldersArray objectAtIndex:topIndexPath.section];
+    NSArray *feeds = [appDelegate.dictFolders objectForKey:topFolderName];
+    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:topFolderName];
+    int location = [[activeFolderFeeds objectAtIndex:topIndexPath.row] intValue];
+    id topFeedId = [feeds objectAtIndex:location];
+    
     NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
     NSMutableArray *indexPaths = [NSMutableArray array];
     
@@ -369,8 +381,20 @@
     }
     [self.feedTitlesTable endUpdates];
     
-    CGPoint offset = CGPointMake(0, 0);
-    [self.feedTitlesTable setContentOffset:offset animated:YES];
+    // Find the top feed and scroll to it
+    NSArray *topActiveFolderFeeds = [self.activeFeedLocations objectForKey:topFolderName];
+    for (int i=0; i < [topActiveFolderFeeds count]; i++) {
+        int location = [[topActiveFolderFeeds objectAtIndex:i] intValue];
+        id feedId = [feeds objectAtIndex:location];
+        if (feedId == topFeedId) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i 
+                                                        inSection:topIndexPath.section];
+            CGRect rowFrame = [self.feedTitlesTable rectForRowAtIndexPath:indexPath];
+            CGPoint origin = rowFrame.origin;
+            [self.feedTitlesTable setContentOffset:origin animated:YES];
+            break;
+        }
+    }
 
     // Forget still visible feeds, since they won't be populated when
     // all feeds are showing, and shouldn't be populated after this

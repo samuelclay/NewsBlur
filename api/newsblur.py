@@ -1,11 +1,12 @@
 # Original API work by Dananjaya Ramanayake <dananjaya86@gmail.com>
 # Retooled by Samuel Clay, August 2011
+# Modified by Luke Hagan, 2011-11-05
 
 import urllib, urllib2
 import cookielib
 import json
 
-__author__ = "Dananjaya Ramanayake <dananjaya86@gmail.com>, Samuel Clay <samuel@ofbrooklyn.com>"
+__author__ = "Dananjaya Ramanayake <dananjaya86@gmail.com>, Samuel Clay <samuel@newsblur.com>"
 __version__ = "1.0"
 
 API_URL = "http://www.newsblur.com/"
@@ -95,9 +96,10 @@ class API:
         Used when combined with /reader/feeds and include_favicons=false, so the feeds request contains far less data. 
         Useful for mobile devices, but requires a second request. 
         '''
-        return {
-            'feeds': feeds
-        }
+        data = []
+        for feed in feeds:
+            data.append( ("feeds", feed) )
+        return data
 
     @request()
     def page(self, feed_id):
@@ -166,32 +168,34 @@ class API:
             'page': page,
         }
 
-    @request('rewader/river_stories')
+    @request('reader/river_stories')
     def river_stories(self, feeds, page=1, read_stories_count=0):
         '''
         Retrieve stories from a collection of feeds. This is known as the River of News.
         Stories are ordered in reverse chronological order.
         `read_stories_count` is the number of stories that have been read in this
         continuation, so NewsBlur can efficiently skip those stories when retrieving
-        new stories.
+        new stories. Takes an array of feed ids.
         '''
-        return {
-            'feeds': feeds,
-            'page': page,
-            'read_stories_count': read_stories_count,
-        }
+        
+        data = [ ('page', page), ('read_stories_count', read_stories_count) ]
+        for feed in feeds:
+            data.append( ("feeds", feed) )
+        return data
     
     @request('reader/mark_story_as_read')
-    def mark_story_as_read(self, feed_id, story_id):
+    def mark_story_as_read(self, feed_id, story_ids):
         '''
          Mark stories as read.
             Multiple story ids can be sent at once.
             Each story must be from the same feed.
+            Takes an array of story ids.
         '''
-        return {
-            'feed_id': feed_id,
-            'story_id': story_id,
-        }
+        
+        data = [ ('feed_id', feed_id) ]
+        for story_id in story_ids:
+            data.append( ("story_id", story_id) )
+        return data
 
     @request('reader/mark_story_as_starred')
     def mark_story_as_starred(self, feed_id, story_id):
@@ -277,13 +281,15 @@ class API:
         }
     
     @request('reader/mark_feed_as_read')
-    def mark_feed_as_read(self, feed_id):
+    def mark_feed_as_read(self, feed_ids):
         '''
         Mark a list of feeds as read.
+        Takes an array of feeds.
         '''
-        return {
-            'feed_id': feed_id,
-        }
+        data = []
+        for feed in feed_ids:
+            data.append( ("feed_id", feed) )
+        return data
 
     @request('reader/save_feed_order')
     def save_feed_order(self, folders):

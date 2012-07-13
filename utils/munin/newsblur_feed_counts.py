@@ -11,9 +11,12 @@ graph_config = {
     'duplicate_feeds.label': 'duplicate_feeds',
     'active_feeds.label': 'active_feeds',
     'known_good_feeds.label': 'known_good',
+    'push_feeds.label': 'push_feeds',
+    'push_feeds_failed.label': 'push_feeds_failed',
 }
 def calculate_metrics():
     from apps.rss_feeds.models import Feed, DuplicateFeed
+    from apps.push.models import PushSubscription
     
     return {
         'exception_feeds': Feed.objects.filter(has_feed_exception=True).count(),
@@ -22,6 +25,8 @@ def calculate_metrics():
         'duplicate_feeds': DuplicateFeed.objects.count(),
         'active_feeds': Feed.objects.filter(active_subscribers__gt=0).count(),
         'known_good_feeds': Feed.objects.filter(known_good=True).count(),
+        'push_feeds': PushSubscription.objects.filter(verified=True).count(),
+        'push_feeds_failed': PushSubscription.objects.filter(verified=False).count(),
     }
 
 if __name__ == '__main__':

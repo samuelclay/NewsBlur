@@ -57,8 +57,14 @@ class PageImporter(object):
                     time.sleep(0.01) # Grrr, GIL.
                     data = response.read()
                 else:
-                    response = requests.get(feed_link, headers=self.headers)
-                    data = response.content
+                    try:
+                        response = requests.get(feed_link, headers=self.headers)
+                    except requests.exceptions.TooManyRedirects:
+                        response = requests.get(feed_link)
+                    try:
+                        data = response.text
+                    except (LookupError, TypeError):
+                        data = response.content
             elif any(feed_link.startswith(s) for s in BROKEN_PAGES):
                 self.save_no_page()
                 return
@@ -86,10 +92,9 @@ class PageImporter(object):
         except (httplib.IncompleteRead), e:
             self.feed.save_page_history(500, "IncompleteRead", e)
         except (requests.exceptions.RequestException, 
-                LookupError, 
                 requests.packages.urllib3.exceptions.HTTPError), e:
             logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
-            mail_feed_error_to_admin(self.feed, e, locals())
+            mail_feed_error_to_admin(self.feed, e, local_vars=locals())
             return self.fetch_page(urllib_fallback=True, requests_exception=e)
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
@@ -97,7 +102,7 @@ class PageImporter(object):
             logging.debug(tb)
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
             self.feed.save_page_history(500, "Error", tb)
-            mail_feed_error_to_admin(self.feed, e, locals())
+            mail_feed_error_to_admin(self.feed, e, local_vars=locals())
             if not urllib_fallback:
                 self.fetch_page(urllib_fallback=True)
         else:
@@ -148,6 +153,10 @@ class PageImporter(object):
         
     def save_page(self, html):
         if html and len(html) > 100:
-            feed_page, _ = MFeedPage.objects.get_or_create(feed_id=self.feed.pk)
+            feed_page, created = MFeedPage.objects.get_or_create(feed_id=self.feed.pk, auto_save=True)
             feed_page.page_data = html
-            feed_page.save()
+            if not created:
+                feed_page.save()
+            else:
+                feed_page.save(force_insert=True)
+            return feed_page

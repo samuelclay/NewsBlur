@@ -11,7 +11,7 @@ from utils import jammit
 # ===================
 
 ADMINS       = (
-    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
+    ('Samuel Clay', 'samuel@newsblur.com'),
 )
 
 SERVER_EMAIL = 'server@newsblur.com'
@@ -80,8 +80,6 @@ DEVELOPMENT = NEWSBLUR_DIR.find('/Users/') == 0
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    'django.template.loaders.eggs.load_template_source',
-
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
@@ -97,6 +95,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
+    'subdomains.middleware.SubdomainMiddleware',
+    'apps.profile.middleware.SimpsonsMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -182,6 +182,17 @@ SESSION_ENGINE          = "django.contrib.sessions.backends.db"
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
+SESSION_COOKIE_DOMAIN   = '.newsblur.com'
+
+# ==============
+# = Subdomains =
+# ==============
+
+SUBDOMAIN_URLCONFS = {
+    None: 'urls',
+    'www': 'urls',
+}
+REMOVE_WWW_FROM_DOMAIN = True
 
 # ===========
 # = Logging =
@@ -212,6 +223,9 @@ INSTALLED_APPS = (
     'apps.statistics',
     'apps.static',
     'apps.mobile',
+    'apps.push',
+    'apps.social',
+    'apps.oauth',
     'south',
     'utils',
     'vendor',
@@ -240,9 +254,17 @@ ZEBRA_ENABLE_APP = True
 import djcelery
 djcelery.setup_loader()
 CELERY_ROUTES = {
+    "work-queue": {
+        "queue": "work_queue",
+        "binding_key": "work_queue"
+    },
     "new-feeds": {
         "queue": "new_feeds",
         "binding_key": "new_feeds"
+    },
+    "push-feeds": {
+        "queue": "push_feeds",
+        "binding_key": "push_feeds"
     },
     "update-feeds": {
         "queue": "update_feeds",
@@ -250,10 +272,20 @@ CELERY_ROUTES = {
     },
 }
 CELERY_QUEUES = {
+    "work_queue": {
+        "exchange": "work_queue",
+        "exchange_type": "direct",
+        "binding_key": "work_queue",
+    },
     "new_feeds": {
         "exchange": "new_feeds",
         "exchange_type": "direct",
         "binding_key": "new_feeds"
+    },
+    "push_feeds": {
+        "exchange": "push_feeds",
+        "exchange_type": "direct",
+        "binding_key": "push_feeds"
     },
     "update_feeds": {
         "exchange": "update_feeds",
@@ -261,13 +293,13 @@ CELERY_QUEUES = {
         "binding_key": "update_feeds"
     },
 }
-CELERY_DEFAULT_QUEUE = "update_feeds"
-BROKER_BACKEND       = "redis"
+CELERY_DEFAULT_QUEUE = "work_queue"
+BROKER_BACKEND = "redis"
 BROKER_URL = "redis://db01:6379/0"
-CELERY_REDIS_HOST          = "db01"
+CELERY_REDIS_HOST = "db01"
 
 CELERYD_PREFETCH_MULTIPLIER = 1
-CELERY_IMPORTS              = ("apps.rss_feeds.tasks", )
+CELERY_IMPORTS              = ("apps.rss_feeds.tasks", "apps.social.tasks", )
 CELERYD_CONCURRENCY         = 4
 CELERY_IGNORE_RESULT        = True
 CELERY_ACKS_LATE            = True # Retry if task fails
@@ -315,6 +347,15 @@ REDIS = {
 
 ELASTICSEARCH_HOSTS = ['db01:9200']
 
+# ===============
+# = Social APIs =
+# ===============
+
+FACEBOOK_APP_ID = '111111111111111'
+FACEBOOK_SECRET = '99999999999999999999999999999999'
+TWITTER_CONSUMER_KEY = 'ooooooooooooooooooooo'
+TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+
 # ==================
 # = Configurations =
 # ==================
@@ -345,7 +386,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
-    'host': 'db02',
+    'host': 'db02:27017',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
@@ -355,6 +396,7 @@ MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 # =========
 
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
+REDIS_ANALYTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=1)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
@@ -363,3 +405,6 @@ JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 # =================
 
 ELASTICSEARCH = pyes.ES(ELASTICSEARCH_HOSTS)
+
+if DEBUG:
+    MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.SqldumpMiddleware',)

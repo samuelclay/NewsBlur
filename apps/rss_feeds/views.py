@@ -1,13 +1,16 @@
 import datetime
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render_to_response
-from django.http import HttpResponseForbidden
+from django.views.decorators.http import condition
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
 from django.db.models import Q
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 # from django.db import IntegrityError
 from apps.rss_feeds.models import Feed, merge_feeds
-from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory
+from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, MFeedPushHistory
+from apps.rss_feeds.models import MFeedIcon
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
 from utils.user_functions import ajax_login_required
@@ -35,13 +38,35 @@ def search_feed(request):
 def load_single_feed(request, feed_id):
     user = get_user(request)
     feed = get_object_or_404(Feed, pk=feed_id)
-    classifiers = get_classifiers_for_user(user, feed.pk)
+    classifiers = get_classifiers_for_user(user, feed_id=feed.pk)
 
     payload = feed.canonical(full=True)
     payload['classifiers'] = classifiers
 
     return payload
+
+def feed_favicon_etag(request, feed_id):
+    try:
+        feed_icon = MFeedIcon.objects.get(feed_id=feed_id)
+    except MFeedIcon.DoesNotExist:
+        return
     
+    return feed_icon.color
+    
+@condition(etag_func=feed_favicon_etag)
+def load_feed_favicon(request, feed_id):
+    not_found = False
+    try:
+        feed_icon = MFeedIcon.objects.get(feed_id=feed_id)
+    except MFeedIcon.DoesNotExist:
+        not_found = True
+        
+    if not_found or not feed_icon.data:
+        return HttpResponseRedirect(settings.MEDIA_URL + 'img/icons/silk/world.png')
+        
+    icon_data = feed_icon.data.decode('base64')
+    return HttpResponse(icon_data, mimetype='image/png')
+
 @json.json_view
 def feed_autocomplete(request):
     query = request.GET.get('term')
@@ -82,12 +107,19 @@ def load_feed_statistics(request, feed_id):
     feed.save_classifier_counts()
     
     # Dates of last and next update
+    stats['active'] = feed.active
     stats['last_update'] = relative_timesince(feed.last_update)
-    stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
+    if feed.is_push:
+        stats['next_update'] = "real-time..."
+    else:
+        stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
 
     # Minutes between updates
     update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
-    stats['update_interval_minutes'] = update_interval_minutes
+    if feed.is_push:
+        stats['update_interval_minutes'] = 0
+    else:
+        stats['update_interval_minutes'] = update_interval_minutes
     original_active_premium_subscribers = feed.active_premium_subscribers
     original_premium_subscribers = feed.premium_subscribers
     feed.active_premium_subscribers = max(feed.active_premium_subscribers+1, 1)
@@ -95,7 +127,10 @@ def load_feed_statistics(request, feed_id):
     premium_update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
     feed.active_premium_subscribers = original_active_premium_subscribers
     feed.premium_subscribers = original_premium_subscribers
-    stats['premium_update_interval_minutes'] = premium_update_interval_minutes
+    if feed.is_push:
+        stats['premium_update_interval_minutes'] = 0
+    else:
+        stats['premium_update_interval_minutes'] = premium_update_interval_minutes
     
     # Stories per month - average and month-by-month breakout
     average_stories_per_month, story_count_history = feed.average_stories_per_month, feed.data.story_count_history
@@ -116,6 +151,7 @@ def load_feed_statistics(request, feed_id):
     # Fetch histories
     stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id)
     stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id)
+    stats['feed_push_history'] = MFeedPushHistory.feed_history(feed_id)
     
     logging.user(request, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
 
@@ -155,7 +191,7 @@ def exception_retry(request):
     usersub = UserSubscription.objects.get(user=user, feed=feed)
     usersub.calculate_feed_scores(silent=False)
     
-    feeds = {feed.pk: usersub.canonical(full=True)}
+    feeds = {feed.pk: usersub.canonical(full=True), feed_id: usersub.canonical(full=True)}
     return {'code': 1, 'feeds': feeds}
     
     
@@ -167,7 +203,7 @@ def exception_change_feed_address(request):
     original_feed = feed
     feed_address = request.POST['feed_address']
     code = -1
-    
+
     if feed.has_page_exception or feed.has_feed_exception:
         # Fix broken feed
         logging.user(request, "~FRFixing feed exception by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
@@ -201,7 +237,6 @@ def exception_change_feed_address(request):
 
     feed = feed.update()
     feed = Feed.objects.get(pk=feed.pk)
-
     usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
     if usersub:
         usersub.switch_feed(feed, original_feed)
@@ -210,15 +245,19 @@ def exception_change_feed_address(request):
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
-    classifiers = get_classifiers_for_user(usersub.user, usersub.feed.pk)
+    classifiers = get_classifiers_for_user(usersub.user, feed_id=usersub.feed_id)
     
     feeds = {
         original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
     }
+    
+    if feed and feed.has_feed_exception:
+        code = -1
+    
     return {
         'code': code, 
         'feeds': feeds, 
-        'new_feed_id': usersub.feed.pk,
+        'new_feed_id': usersub.feed_id,
     }
     
 @ajax_login_required
@@ -274,7 +313,10 @@ def exception_change_feed_link(request):
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
-    classifiers = get_classifiers_for_user(usersub.user, usersub.feed.pk)
+    classifiers = get_classifiers_for_user(usersub.user, feed_id=usersub.feed_id)
+    
+    if feed and feed.has_feed_exception:
+        code = -1
     
     feeds = {
         original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
@@ -282,7 +324,7 @@ def exception_change_feed_link(request):
     return {
         'code': code, 
         'feeds': feeds, 
-        'new_feed_id': usersub.feed.pk,
+        'new_feed_id': usersub.feed_id,
     }
 
 @login_required

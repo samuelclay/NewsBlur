@@ -1,8 +1,8 @@
-from django.utils.dateformat import DateFormat
 import datetime
-from django.utils.http import urlquote
-from django.conf import settings
+from HTMLParser import HTMLParser
 from itertools import chain
+from django.utils.dateformat import DateFormat
+from django.conf import settings
 
 def story_score(story, bottom_delta=None):
     # A) Date - Assumes story is unread and within unread range
@@ -59,24 +59,24 @@ def pre_process_story(entry):
     publish_date = entry.get('published_parsed', entry.get('updated_parsed'))
     entry['published'] = datetime.datetime(*publish_date[:6]) if publish_date else datetime.datetime.utcnow()
     
-    entry_link = entry.get('link') or ''
-    protocol_index = entry_link.find("://")
-    if protocol_index != -1:
-        entry['link'] = (entry_link[:protocol_index+3]
-                        + urlquote(entry_link[protocol_index+3:]))
-    else:
-        entry['link'] = urlquote(entry_link)
+    # entry_link = entry.get('link') or ''
+    # protocol_index = entry_link.find("://")
+    # if protocol_index != -1:
+    #     entry['link'] = (entry_link[:protocol_index+3]
+    #                     + urlquote(entry_link[protocol_index+3:]))
+    # else:
+    #     entry['link'] = urlquote(entry_link)
     if isinstance(entry.get('guid'), dict):
         entry['guid'] = unicode(entry['guid'])
 
     # Normalize story content/summary
     if entry.get('content'):
-        entry['story_content'] = entry['content'][0].get('value', '')
+        entry['story_content'] = entry['content'][0].get('value', '').strip()
     else:
-        entry['story_content'] = entry.get('summary', '')
+        entry['story_content'] = entry.get('summary', '').strip()
     
     # Add each media enclosure as a Download link
-    for media_content in chain(entry.get('media_content', []), entry.get('links', [])):
+    for media_content in chain(entry.get('media_content', [])[:5], entry.get('links', [])[:5]):
         media_url = media_content.get('url', '')
         media_type = media_content.get('type', '')
         if media_url and media_type and entry['story_content'] and media_url not in entry['story_content']:
@@ -103,6 +103,12 @@ def pre_process_story(entry):
             }
     
     entry['guid'] = entry.get('guid') or entry.get('id') or entry.get('link') or str(entry.get('published'))
+
+    if not entry.get('title') and entry.get('story_content'):
+        story_title = strip_tags(entry['story_content'])
+        if len(story_title) > 80:
+            story_title = story_title[:80] + '...'
+        entry['title'] = story_title
     
     return entry
     
@@ -139,3 +145,29 @@ class bunch(dict):
             dict.__setattr__(self, item, value)
         else:
             self.__setitem__(item, value)
+            
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ' '.join(self.fed)
+
+def strip_tags(html):
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()
+    
+def truncate_chars(value, max_length):
+    if len(value) <= max_length:
+        return value
+ 
+    truncd_val = value[:max_length]
+    if value[max_length] != " ":
+        rightmost_space = truncd_val.rfind(" ")
+        if rightmost_space != -1:
+            truncd_val = truncd_val[:rightmost_space]
+ 
+    return truncd_val + "..."

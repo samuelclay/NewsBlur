@@ -6,18 +6,19 @@ import pymongo
 # ===================
 
 ADMINS                = (
-    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
+    ('Samuel Clay', 'samuel@newsblur.com'),
 )
 
 SERVER_EMAIL          = 'server@newsblur.com'
 HELLO_EMAIL           = 'hello@newsblur.com'
 NEWSBLUR_URL          = 'http://www.newsblur.com'
 
-# ==================
-# = Global Settngs =
-# ==================
+# ===================
+# = Global Settings =
+# ===================
 
 DEBUG = True
+DEBUG_ASSETS = DEBUG
 MEDIA_URL = '/media/'
 SECRET_KEY = 'YOUR SECRET KEY'
 
@@ -28,7 +29,7 @@ CACHE_BACKEND = 'dummy:///'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Set this to the username that is shown on the homepage to unauthenticated users.
-HOMEPAGE_USERNAME = 'conesus'
+HOMEPAGE_USERNAME = 'popular'
 
 # Google Reader OAuth API Keys
 OAUTH_KEY = 'www.example.com'
@@ -40,6 +41,15 @@ S3_BACKUP_BUCKET = 'newsblur_backups'
 
 STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
+
+# ===============
+# = Social APIs =
+# ===============
+
+FACEBOOK_APP_ID = '111111111111111'
+FACEBOOK_SECRET = '99999999999999999999999999999999'
+TWITTER_CONSUMER_KEY = 'ooooooooooooooooooooo'
+TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 
 # =============
 # = Databases =
@@ -81,7 +91,6 @@ BROKER_USER     = "newsblur"
 BROKER_PASSWORD = "newsblur"
 BROKER_VHOST    = "newsblurvhost"
 
-
 # ===========
 # = Logging =
 # ===========
@@ -95,3 +104,4 @@ if len(logging._handlerList) < 1:
                             format='%(asctime)-12s: %(message)s',
                             datefmt='%b %d %H:%M:%S',
                             handler=logging.StreamHandler)
+

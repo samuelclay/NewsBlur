@@ -1,4 +1,3 @@
-from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.db import models
 from django.utils.functional import Promise
 from django.utils.encoding import force_unicode
@@ -10,6 +9,7 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
+from mongoengine.queryset import QuerySet as MongoQuerySet
 import sys
 import datetime
 
@@ -45,6 +45,8 @@ def json_encode(data, *args, **kwargs):
         # the type "list". Oh man, that was a dumb mistake!
         if hasattr(data, 'to_json'):
             ret = data.to_json()
+        elif hasattr(data, 'canonical'):
+            ret = data.canonical()
         elif isinstance(data, list):
             ret = _list(data)
         # Same as for lists above.
@@ -54,6 +56,9 @@ def json_encode(data, *args, **kwargs):
             # json.dumps() cant handle Decimal
             ret = str(data)
         elif isinstance(data, models.query.QuerySet):
+            # Actually its the same as a list ...
+            ret = _list(data)
+        elif isinstance(data, MongoQuerySet):
             # Actually its the same as a list ...
             ret = _list(data)
         elif isinstance(data, models.Model):
@@ -100,52 +105,56 @@ def json_encode(data, *args, **kwargs):
 
 def json_view(func):
     def wrap(request, *a, **kw):
-        response = None
-        code = 200
-        try:
-            response = func(request, *a, **kw)
-            if isinstance(response, dict):
-                response = dict(response)
-                if 'result' not in response:
-                    response['result'] = 'ok'
-                authenticated = request.user.is_authenticated()
-                response['authenticated'] = authenticated
-        except KeyboardInterrupt:
-            # Allow keyboard interrupts through for debugging.
-            raise
-        except Http404:
-            raise Http404
-        except Exception, e:
-            # Mail the admins with the error
-            exc_info = sys.exc_info()
-            subject = 'JSON view error: %s' % request.path
-            try:
-                request_repr = repr(request)
-            except:
-                request_repr = 'Request repr() unavailable'
-            import traceback
-            message = 'Traceback:\n%s\n\nRequest:\n%s' % (
-                '\n'.join(traceback.format_exception(*exc_info)),
-                request_repr,
-                )
-            # print message
-            if not settings.DEBUG:
-                mail_admins(subject, message, fail_silently=True)
+        response = func(request, *a, **kw)
+        return json_response(request, response)
 
-                response = {'result': 'error',
-                            'text': unicode(e)}
-                code = 500
-            else:
-                print '\n'.join(traceback.format_exception(*exc_info))
-
-        if isinstance(response, HttpResponseForbidden):
-            return response
-        json = json_encode(response)
-        return HttpResponse(json, mimetype='application/json', status=code)
     if isinstance(func, HttpResponse):
         return func
     else:
         return wrap
+        
+def json_response(request, response=None):
+    code = 200
+
+    if isinstance(response, HttpResponseForbidden):
+        return response
+
+    try:
+        if isinstance(response, dict):
+            response = dict(response)
+            if 'result' not in response:
+                response['result'] = 'ok'
+            authenticated = request.user.is_authenticated()
+            response['authenticated'] = authenticated
+    except KeyboardInterrupt:
+        # Allow keyboard interrupts through for debugging.
+        raise
+    except Http404:
+        raise Http404
+    except Exception, e:
+        # Mail the admins with the error
+        exc_info = sys.exc_info()
+        subject = 'JSON view error: %s' % request.path
+        try:
+            request_repr = repr(request)
+        except:
+            request_repr = 'Request repr() unavailable'
+        import traceback
+        message = 'Traceback:\n%s\n\nRequest:\n%s' % (
+            '\n'.join(traceback.format_exception(*exc_info)),
+            request_repr,
+            )
+        
+        response = {'result': 'error',
+                    'text': unicode(e)}
+        code = 500
+        if not settings.DEBUG:
+            mail_admins(subject, message, fail_silently=True)
+        else:
+            print '\n'.join(traceback.format_exception(*exc_info))
+
+    json = json_encode(response)
+    return HttpResponse(json, mimetype='application/json', status=code)
 
 def main():
     test = {1: True, 2: u"string", 3: 30}

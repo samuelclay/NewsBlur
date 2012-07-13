@@ -1,5 +1,5 @@
 (function() {
-  var client, fs, io, redis;
+  var REDIS_SERVER, client, fs, io, redis;
 
   fs = require('fs');
 
@@ -7,22 +7,40 @@
 
   redis = require('redis');
 
-  client = redis.createClient(6379, 'db01');
+  REDIS_SERVER = process.env.NODE_ENV === 'development' ? 'localhost' : 'db01';
+
+  client = redis.createClient(6379, REDIS_SERVER);
+
+  io.configure('production', function() {
+    io.set('log level', 1);
+    io.enable('browser client minification');
+    io.enable('browser client etag');
+    return io.enable('browser client gzip');
+  });
+
+  io.configure('development', function() {
+    return io.set('log level', 2);
+  });
 
   io.sockets.on('connection', function(socket) {
-    socket.on('subscribe:feeds', function(feeds) {
-      socket.subscribe = redis.createClient(6379, 'db01');
-      console.log("Subscribing to " + feeds.length + " feeds");
-      socket.subscribe.subscribe(feeds);
+    socket.on('subscribe:feeds', function(feeds, username) {
+      var _ref,
+        _this = this;
+      this.feeds = feeds;
+      this.username = username;
+      console.log(("   ---> [" + this.username + "] Subscribing to " + feeds.length + " feeds ") + (" (" + (io.sockets.clients().length) + " users on)"));
+      if ((_ref = socket.subscribe) != null) _ref.end();
+      socket.subscribe = redis.createClient(6379, REDIS_SERVER);
+      socket.subscribe.subscribe(this.feeds);
       return socket.subscribe.on('message', function(channel, message) {
-        console.log("Update on " + channel + ": " + message);
+        console.log("   ---> [" + _this.username + "] Update on " + channel + ": " + message);
         return socket.emit('feed:update', channel);
       });
     });
     return socket.on('disconnect', function() {
       var _ref;
       if ((_ref = socket.subscribe) != null) _ref.end();
-      return console.log('Disconnect');
+      return console.log(("   ---> [" + this.username + "] Disconnect, there are now") + (" " + (io.sockets.clients().length - 1) + " users."));
     });
   });
 

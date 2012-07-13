@@ -81,7 +81,7 @@ class OPMLExporter:
         
     def fetch_feeds(self):
         subs = UserSubscription.objects.filter(user=self.user)
-        self.feeds = dict((sub.feed.pk, sub.canonical()) for sub in subs)
+        self.feeds = dict((sub.feed_id, sub.canonical()) for sub in subs)
         
 
 class Importer:
@@ -107,17 +107,26 @@ class OPMLImporter(Importer):
     def process_outline(self, outline):
         folders = []
         for item in outline:
-            if not hasattr(item, 'xmlUrl') and hasattr(item, 'text'):
+            if (not hasattr(item, 'xmlUrl') and 
+                (hasattr(item, 'text') or hasattr(item, 'title'))):
                 folder = item
+                title = getattr(item, 'text', None) or getattr(item, 'title', None)
                 # if hasattr(folder, 'text'):
                 #     logging.info(' ---> [%s] ~FRNew Folder: %s' % (self.user, folder.text))
-                folders.append({folder.text: self.process_outline(folder)})
+                folders.append({title: self.process_outline(folder)})
             elif hasattr(item, 'xmlUrl'):
                 feed = item
                 if not hasattr(feed, 'htmlUrl'):
                     setattr(feed, 'htmlUrl', None)
-                if not hasattr(feed, 'title') or not feed.title:
+                # If feed title matches what's in the DB, don't override it on subscription.
+                feed_title = getattr(feed, 'title', None) or getattr(feed, 'text', None)
+                if not feed_title:
                     setattr(feed, 'title', feed.htmlUrl or feed.xmlUrl)
+                    user_feed_title = None
+                else:
+                    setattr(feed, 'title', feed_title)
+                    user_feed_title = feed.title
+
                 feed_address = urlnorm.normalize(feed.xmlUrl)
                 feed_link = urlnorm.normalize(feed.htmlUrl)
                 if len(feed_address) > Feed._meta.get_field('feed_address').max_length:
@@ -135,10 +144,13 @@ class OPMLImporter(Importer):
                 else:
                     feed_data['active_subscribers'] = 1
                     feed_data['num_subscribers'] = 1
-                    feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address,
-                                                            feed_link=feed_link,
-                                                            defaults=dict(**feed_data))
-                    
+                    feed_db, _ = Feed.find_or_create(feed_address=feed_address, 
+                                                     feed_link=feed_link,
+                                                     defaults=dict(**feed_data))
+
+                if user_feed_title == feed_db.feed_title:
+                    user_feed_title = None
+                
                 us, _ = UserSubscription.objects.get_or_create(
                     feed=feed_db, 
                     user=self.user,
@@ -146,10 +158,14 @@ class OPMLImporter(Importer):
                         'needs_unread_recalc': True,
                         'mark_read_date': datetime.datetime.utcnow() - datetime.timedelta(days=1),
                         'active': self.user.profile.is_premium,
+                        'user_title': user_feed_title
                     }
                 )
                 if self.user.profile.is_premium and not us.active:
                     us.active = True
+                    us.save()
+                if not us.needs_unread_recalc:
+                    us.needs_unread_recalc = True
                     us.save()
                 folders.append(feed_db.pk)
         return folders
@@ -226,15 +242,11 @@ class GoogleReaderImporter(Importer):
             if duplicate_feed:
                 feed_db = duplicate_feed[0].feed
             else:
-                feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed_title)
+                feed_data = dict(feed_title=feed_title)
                 feed_data['active_subscribers'] = 1
                 feed_data['num_subscribers'] = 1
-                feeds = Feed.objects.filter(feed_address=feed_address,
-                                            branch_from_feed__isnull=True).order_by('-num_subscribers')
-                if feeds:
-                    feed_db = feeds[0]
-                else:
-                    feed_db = Feed.objects.create(**feed_data)
+                feed_db, _ = Feed.find_or_create(feed_address=feed_address, feed_link=feed_link,
+                                                 defaults=dict(**feed_data))
 
             us, _ = UserSubscription.objects.get_or_create(
                 feed=feed_db, 
@@ -245,10 +257,13 @@ class GoogleReaderImporter(Importer):
                     'active': self.user.profile.is_premium,
                 }
             )
+            if not us.needs_unread_recalc:
+                us.needs_unread_recalc = True
+                us.save()
             if not category: category = "Root"
             folders[category].append(feed_db.pk)
         except Exception, e:
-            logging.info(' *** -> Exception: %s' % e)
+            logging.info(' *** -> Exception: %s: %s' % (e, item))
             
         return folders
         
@@ -283,7 +298,7 @@ class GoogleReaderImporter(Importer):
                     "user_id": self.user.pk,
                     "starred_date": datetime.datetime.fromtimestamp(story['updated']),
                     "story_date": datetime.datetime.fromtimestamp(story['published']),
-                    "story_title": story.get('title'),
+                    "story_title": story.get('title', story.get('origin', {}).get('title', '[Untitled]')),
                     "story_permalink": story['alternate'][0]['href'],
                     "story_guid": story['id'],
                     "story_content": content.get('content'),
@@ -295,6 +310,6 @@ class GoogleReaderImporter(Importer):
                 MStarredStory.objects.create(**story_db)
             except OperationError:
                 logging.user(self.user, "~FCAlready starred: ~SB%s" % (story_db['story_title'][:50]))
-            except:
-                logging.user(self.user, "~FC~BRFailed to star: ~SB%s" % (story))
+            except Exception, e:
+                logging.user(self.user, "~FC~BRFailed to star: ~SB%s / %s" % (story, e))
                 

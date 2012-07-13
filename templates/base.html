@@ -5,9 +5,10 @@
   <title>{% block title %}NewsBlur{% endblock %}</title>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
   <link rel="shortcut icon" HREF="/media/img/favicon.png">
+  <link rel="apple-touch-icon" href="/media/img/mobile/apple-touch-icon-precomposed.png" />
 
   <script type="text/javascript" charset="utf-8">
-    var NEWSBLUR = {};
+    window.NEWSBLUR = {};
     NEWSBLUR.Globals = {
       'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
       'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
@@ -16,9 +17,10 @@
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
       'secret_token'            : "{{ user.profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
+      'user_id'                 : "{{ user.pk|safe }}",
       'email'                   : "{{ user.email|safe }}",
-      'google_favicon_url'      : 'http://www.google.com/s2/favicons?domain_url=',
-      'MEDIA_URL'               : "{{ MEDIA_URL }}"
+      'MEDIA_URL'               : "{{ MEDIA_URL }}",
+      'debug'                   : {{ debug|yesno:"true,false" }}
     };
     NEWSBLUR.Flags = {
       'start_import_from_google_reader': {{ start_import_from_google_reader|yesno:"true,false" }}
@@ -27,7 +29,10 @@
       'unread_view'             : 0,
       'lock_mouse_indicator'    : 0,
       'feed_pane_size'          : {% firstof user_profile.feed_pane_size 240 %},
-      'tutorial_finished'       : {{ user_profile.tutorial_finished|yesno:"true,false" }},
+      'hide_getting_started'    : {{ user_profile.hide_getting_started|yesno:"true,false" }},
+      'has_setup_feeds'         : {{ user_profile.has_setup_feeds|yesno:"true,false" }},
+      'has_found_friends'       : {{ user_profile.has_found_friends|yesno:"true,false" }},
+      'has_trained_intelligence': {{ user_profile.has_trained_intelligence|yesno:"true,false" }},
       'hide_mobile'             : {{ user_profile.hide_mobile|yesno:"true,false" }},
       'story_titles_pane_size'  : 168,
       'story_pane_anchor'       : 'south',
@@ -38,6 +43,7 @@
       'feed_order'              : 'ALPHABETICAL',
       'ssl'                     : 0,
       'open_feed_action'        : 0,
+      'read_story_delay'        : 0,
       'hide_story_changes'      : 1,
       'feed_view_single_story'  : 0,
       'animations'              : true,
@@ -58,25 +64,30 @@
       'google-reader-authorize' : "{% url google-reader-authorize %}",
       'opml-upload'             : "{% url opml-upload %}",
       'opml-export'             : "{% url opml-export %}",
-      'domain'                  : "{% current_domain %}"
+      'domain'                  : "{% current_domain %}",
+      'favicon'                 : "/rss_feeds/icon/{id}"
     };
+    NEWSBLUR.Models = {};
+    NEWSBLUR.Collections = {};
+    NEWSBLUR.Views = {};
+    NEWSBLUR.app = {};
   </script>
   
   {% include_stylesheets "common" %}
     
-  {% if not debug %}
   <script type="text/javascript">
-
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-8371683-2']);
     _gaq.push(['_trackPageview']);
-
+  </script>
+  
+  {% if not debug %}
+  <script type="text/javascript">
     (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
-
   </script>
   {% endif %}
 </head>
@@ -114,13 +125,16 @@
   {% block head_js %}
     {% include_javascripts "common" %}
   {% endblock head_js %}
+
+  <script type="text/javascript" charset="utf-8">
+    _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
+    _.extend(NEWSBLUR.Preferences['view_settings'], {% if user_profile.view_settings %}{{ user_profile.view_settings|safe }}{% else %}{}{% endif %});
+    _.extend(NEWSBLUR.Preferences['collapsed_folders'], {% if user_profile.collapsed_folders %}{{ user_profile.collapsed_folders|safe }}{% else %}[]{% endif %});
+    
+  </script>
+
   {% block extra_head_js %}
   {% endblock extra_head_js %}
   
-  <script type="text/javascript" charset="utf-8">
-    $.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
-    $.extend(NEWSBLUR.Preferences['view_settings'], {% if user_profile.view_settings %}{{ user_profile.view_settings|safe }}{% else %}{}{% endif %});
-    $.extend(NEWSBLUR.Preferences['collapsed_folders'], {% if user_profile.collapsed_folders %}{{ user_profile.collapsed_folders|safe }}{% else %}[]{% endif %});
-  </script>
 </body>
 </html>

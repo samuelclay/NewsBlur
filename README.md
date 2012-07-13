@@ -87,6 +87,7 @@ Not the easiest to get installed. If you are running Mac OS X, you have a few op
  * Use the [Superpack by Chris Fonnesbeck](http://fonnesbeck.github.com/ScipySuperpack/)
  * Use MacPorts: `sudo port install py26-numpy py26-scipy`
  * Install from source (grueling): [http://www.scipy.org/Download](http://www.scipy.org/Download)
+ * Use a combination of pip, easy_install, and [homebrew](http://mxcl.github.com/homebrew/): `pip install numpy && brew install gfortran && easy_install scipy`
  
 ### Configure paths
 
@@ -109,6 +110,7 @@ these after the installation below.
         fab -R local setup_mongoengine
         fab -R local setup_forked_mongoengine
         fab -R local setup_repo_local_settings
+        fab -R local compress_assets
     
     If any of the packages fail to install (`lxml`, for instance), look through `fabfile.py` 
     and check if there is a function that can be used to circumvent broken easy_install 
@@ -117,7 +119,16 @@ these after the installation below.
 
         fab -R local setup_libxml_code
         
- 2. Configure MySQL/PostgreSQL by adding in a `newsblur` user and a `newsblur` database.
+ 2. Configure MySQL/PostgreSQL by adding in a `newsblur` user and a `newsblur` database. Here's an example for MySQL:
+ 	
+        mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/path/to/var/mysql --tmpdir=/tmp
+        mysql.server start
+        mysql -u root
+        > CREATE USER 'newsblur'@'localhost' IDENTIFIED BY '';
+        > GRANT ALL PRIVILEGES ON *.* TO 'newsblur'@'localhost' WITH GRANT OPTION;
+        > CREATE DATABASE newsblur;
+        > exit
+ 
     Then load up the database with empty NewsBlur tables and bootstrap the database:
     
         ./manage.py syncdb --all
@@ -127,10 +138,14 @@ these after the installation below.
     If you don't create a user during `syncdb`, the `bootstrap.json` file will create a 
     newsblur user with no password.
 
- 3. Run the development server. At this point, all dependencies should be installed and no
+ 3. Start mongodb (if not already running):
+ 
+        mongod run
+ 
+ 4. Run the development server. At this point, all dependencies should be installed and no
     additional configuration is needed. If you find that something is not working at this
     point, please email the resulting output to Samuel Clay at 
-    [samuel@ofbrooklyn.com](samuel@ofbrooklyn.com).
+    [samuel@newsblur.com](samuel@newsblur.com).
  
         ./manage.py runserver
  
@@ -215,7 +230,7 @@ reader, and feed importer. To run the test suite:
 ## Author
 
  * Created by [Samuel Clay](http://www.samuelclay.com).
- * Email address: <samuel@ofbrooklyn.com>
+ * Email address: <samuel@newsblur.com>
  * [@samuelclay](http://twitter.com/samuelclay) on Twitter.
  
 

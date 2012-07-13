@@ -1,0 +1,49 @@
+# Screens/Features:
+
+- Login/Signup
+- Import from Google Reader
+- Add sites
+    - Autocomplete
+    - Folder choice
+    - Add folders
+- Feed list
+    - Sites to display:
+        - Single site
+        - Folders (river of news)
+        - Saved stories
+        - Shared stories (blurblog)
+    - Each site has three unread counts
+    - Change intelligence level (red, yellow, green)
+    - Toggle display of sites with no unreads above intelligence level
+    - Quick search by site title
+    - Refresh unread counts (pull to refresh on iOS)
+    - Mark all sites as read going back N days
+- Story titles view
+    - Story title, author, tags, dates, and [potentially] content excerpt
+    - Change intelligence level
+    - Mark site/folder/blurblog as read
+    - Here or in the feed list:
+        - Delete site
+        - Move site to folder
+        - Rename site
+- Story detail
+    - Story header (title, author, tags, date, feed gradient bar + favicon)
+    - Story content
+    - Next/Previous links/preview
+    - Unread progress (how many unread stories left)
+    - Social:
+        - Share count: friends + other
+        - Share comments and replies by friends
+        - Public comments (fetch with another api call)
+        - Each user links to profile dialog
+- Profiles
+    - Badge:
+        - Username, bio, location, website, share counts, follow counts
+        - Follow status (follow/unfollow/preview blurblog)
+    - Followers/Following, separated by friends (intersection of their follows
+      and your follows) and public
+    - Recent activities
+- Training
+    - By site or story
+    - Titles, authors, tags, and publisher
+    - Thumbs up/down

@@ -13,7 +13,7 @@ from utils.user_functions import get_user, ajax_login_required, admin_only
 
 def load_recommended_feed(request):
     user        = get_user(request)
-    page        = int(request.REQUEST.get('page', 0))
+    page        = max(int(request.REQUEST.get('page', 0)), 0)
     usersub     = None
     refresh     = request.REQUEST.get('refresh')
     now         = datetime.datetime.now
@@ -29,7 +29,10 @@ def load_recommended_feed(request):
         logging.user(request, "~FBBrowse recommended feed: ~SBPage #%s" % (page+1))
     
     recommended_feed = recommended_feeds and recommended_feeds[0]
-    feed_icon = MFeedIcon.objects(feed_id=recommended_feed.feed.pk)
+    if not recommended_feeds:
+        return HttpResponse("")
+        
+    feed_icon = MFeedIcon.objects(feed_id=recommended_feed.feed_id)
     
     if recommended_feed:
         return render_to_response('recommendations/render_recommended_feed.xhtml', {

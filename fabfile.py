@@ -1,13 +1,13 @@
-from fabric.api import abort, cd, env, get, hide, hosts, local, prompt, parallel, serial
-from fabric.api import put, require, roles, run, runs_once, settings, show, sudo, warn
-from fabric.colors import red, green, blue, cyan, magenta, white, yellow
+from fabric.api import cd, env, local, parallel
+from fabric.api import put, run, settings, sudo
+# from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 try:
     from boto.s3.connection import S3Connection
     from boto.s3.key import Key
 except ImportError:
     print " ---> Boto not installed yet. No S3 connections available."
 from fabric.contrib import django
-import os, sys
+import os
 
 django.settings_module('settings')
 try:
@@ -31,10 +31,26 @@ env.VENDOR_PATH   = "~/projects/code"
 env.user = 'sclay'
 env.roledefs ={
     'local': ['localhost'],
-    'app': ['app01.newsblur.com', 'app02.newsblur.com'],
-    'web': ['www.newsblur.com', 'app02.newsblur.com'],
-    'db': ['db01.newsblur.com', 'db02.newsblur.com', 'db03.newsblur.com'],
-    'task': ['task01.newsblur.com', 'task02.newsblur.com', 'task03.newsblur.com'],
+    'app': ['app01.newsblur.com', 
+            'app02.newsblur.com', 
+            'app03.newsblur.com', 
+            'app04.newsblur.com'],
+    'dev': ['dev.newsblur.com'],
+    'web': ['app02.newsblur.com', 
+            'app04.newsblur.com'],
+    'db': ['db01.newsblur.com', 
+           'db02.newsblur.com', 
+           'db03.newsblur.com', 
+           'db04.newsblur.com', 
+           'db05.newsblur.com', 
+           'db06.newsblur.com'],
+    'task': ['task01.newsblur.com', 
+             'task02.newsblur.com', 
+             'task03.newsblur.com', 
+             'task04.newsblur.com', 
+             'task05.newsblur.com', 
+             'task06.newsblur.com', 
+             'task07.newsblur.com'],
 }
 
 # ================
@@ -42,12 +58,16 @@ env.roledefs ={
 # ================
 
 def server():
-    env.NEWSBLUR_PATH = "~/newsblur"
-    env.VENDOR_PATH   = "~/code"
+    env.NEWSBLUR_PATH = "/home/sclay/newsblur"
+    env.VENDOR_PATH   = "/home/sclay/code"
 
 def app():
     server()
     env.roles = ['app']
+    
+def dev():
+    server()
+    env.roles = ['dev']
 
 def web():
     server()
@@ -96,12 +116,21 @@ def deploy_code(copy_assets=False, full=False):
             transfer_assets()
         if full:
             with settings(warn_only=True):
-                run('sudo supervisorctl restart gunicorn')            
+                run('pkill -c gunicorn')            
         else:
             run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://%s > /dev/null' % env.host)
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
-        
+        sudo('supervisorctl restart celery')
+
+def deploy_node():
+    with cd(env.NEWSBLUR_PATH):
+        run('sudo supervisorctl restart node_unread')
+        run('sudo supervisorctl restart node_favicons')
+
+def gunicorn_restart():
+    restart_gunicorn()
+    
 def restart_gunicorn():
     with cd(env.NEWSBLUR_PATH):
         with settings(warn_only=True):
@@ -182,9 +211,18 @@ def backup_postgresql():
 # ===============
 
 def sync_time():
-    sudo("/etc/init.d/ntp stop")
-    sudo("ntpdate pool.ntp.org")
-    sudo("/etc/init.d/ntp start")
+    with settings(warn_only=True):
+        sudo("/etc/init.d/ntp stop")
+        sudo("ntpdate pool.ntp.org")
+        sudo("/etc/init.d/ntp start")
+    
+def setup_time_calibration():
+    sudo('apt-get -y install ntp')
+    put('config/ntpdate.cron', '%s/' % env.NEWSBLUR_PATH)
+    sudo('chmod 755 %s/ntpdate.cron' % env.NEWSBLUR_PATH)
+    sudo('mv %s/ntpdate.cron /etc/cron.hourly/ntpdate' % env.NEWSBLUR_PATH)
+    with settings(warn_only=True):
+        sudo('/etc/cron.hourly/ntpdate')
     
 # =============
 # = Bootstrap =
@@ -199,12 +237,12 @@ def setup_common():
     setup_local_files()
     setup_libxml()
     setup_python()
-    setup_psycopg()
+    # setup_psycopg()
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
-    setup_mongoengine()
-    setup_forked_mongoengine()
+    # setup_mongoengine()
+    # setup_forked_mongoengine()
     setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
@@ -212,26 +250,38 @@ def setup_common():
 
 def setup_app():
     setup_common()
+    setup_vps()
     setup_app_firewall()
     setup_app_motd()
+    copy_app_settings()
+    copy_certificates()
+    configure_nginx()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
+    setup_node()
+    configure_node()
+    pre_deploy()
+    deploy()
 
 def setup_db():
     setup_common()
+    setup_baremetal()
     setup_db_firewall()
     setup_db_motd()
-    # setup_rabbitmq()
+    copy_task_settings()
     setup_memcached()
-    setup_postgres()
-    setup_mongo()
+    setup_postgres(standby=False)
+    # setup_mongo()
     setup_gunicorn(supervisor=False)
     setup_redis()
+    setup_db_munin()
 
 def setup_task():
     setup_common()
+    setup_vps()
     setup_task_firewall()
     setup_task_motd()
+    copy_task_settings()
     enable_celery_supervisor()
     setup_gunicorn(supervisor=False)
     update_gunicorn()
@@ -244,7 +294,7 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl ntp monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl monit')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -311,8 +361,8 @@ def setup_psycopg():
     sudo('easy_install -U psycopg2')
     
 def setup_python():
-    sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo stripe BeautifulSoup pyyaml nltk==0.9.9 lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
+    # sudo('easy_install -U pip')
+    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
     
     put('config/pystartup.py', '.pystartup')
     with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -333,15 +383,15 @@ def setup_hosts():
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
-    # put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
-    # sudo('echo "START=1" > /etc/default/pgbouncer')
+    put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('/etc/init.d/pgbouncer stop')
     with settings(warn_only=True):
         sudo('pkill pgbouncer')
+        run('sleep 2')
     sudo('/etc/init.d/pgbouncer start')
     
 def config_monit():
-    # sudo('apt-get install -y monit')
     put('config/monit.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
     sudo('echo "startup=1" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
@@ -350,7 +400,7 @@ def setup_mongoengine():
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             run('rm -fr mongoengine')
-            run('git clone https://github.com/hmarr/mongoengine.git')
+            run('git clone https://github.com/mongoengine/mongoengine.git')
             sudo('rm -f /usr/local/lib/python2.7/dist-packages/mongoengine')
             sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
                  os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
@@ -390,14 +440,15 @@ def setup_sudoers():
     sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % env.user)
 
 def setup_nginx():
+    NGINX_VERSION = '1.2.0'
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             sudo("groupadd nginx")
             sudo("useradd -g nginx -d /var/www/htdocs -s /bin/false nginx")
-            run('wget http://nginx.org/download/nginx-1.1.12.tar.gz')
-            run('tar -xzf nginx-1.1.12.tar.gz')
-            run('rm nginx-1.1.12.tar.gz')
-            with cd('nginx-1.1.12'):
+            run('wget http://nginx.org/download/nginx-%s.tar.gz' % NGINX_VERSION)
+            run('tar -xzf nginx-%s.tar.gz' % NGINX_VERSION)
+            run('rm nginx-%s.tar.gz' % NGINX_VERSION)
+            with cd('nginx-%s' % NGINX_VERSION):
                 run('./configure --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module')
                 run('make')
                 sudo('make install')
@@ -411,6 +462,14 @@ def configure_nginx():
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
     sudo("/etc/init.d/nginx restart")
+
+def setup_vps():
+    # VPS suffer from severe time drift. Force blunt hourly time recalibration.
+    setup_time_calibration()
+
+def setup_baremetal():
+    # Bare metal doesn't suffer from severe time drift. Use standard ntp slow-drift-calibration.
+    sudo('apt-get -y install ntp')
     
 # ===============
 # = Setup - App =
@@ -451,14 +510,38 @@ def setup_staging():
         run('touch logs/newsblur.log')
 
 def setup_node():
-    sudo('add-apt-repository ppa:chris-lea/node.js')
+    sudo('add-apt-repository -y ppa:chris-lea/node.js')
     sudo('apt-get update')
-    sudo('apt-get install nodejs')
+    sudo('apt-get install -y nodejs')
     run('curl http://npmjs.org/install.sh | sudo sh')
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
-    put('config/supervisor_node.conf', '/etc/supervisor/conf.d/node.conf', use_sudo=True)
 
+def configure_node():
+    sudo('rm -fr /etc/supervisor/conf.d/node.conf')
+    put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
+    put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
+    sudo('supervisorctl reload')
+    sudo('supervisorctl start node_unread')
+    sudo('supervisorctl start node_favicons')
+
+def copy_app_settings():
+    put('config/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+    run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+
+def copy_certificates():
+    run('mkdir -p %s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('config/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+
+def maintenance_on():
+    put('media/maintenance.html.unused', '%s/media/maintenance.html.unused' % env.NEWSBLUR_PATH)
+    with cd(env.NEWSBLUR_PATH):
+        run('mv media/maintenance.html.unused media/maintenance.html')
+    
+def maintenance_off():
+    with cd(env.NEWSBLUR_PATH):
+        run('mv media/maintenance.html media/maintenance.html.unused')
     
 # ==============
 # = Setup - DB =
@@ -468,11 +551,12 @@ def setup_db_firewall():
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
-    sudo('ufw allow from 199.15.250.0/22 to any port 5432 ') # PostgreSQL
-    sudo('ufw allow from 199.15.250.0/22 to any port 27017') # MongoDB
-    # sudo('ufw allow from 199.15.250.0/22 to any port 5672 ') # RabbitMQ
-    sudo('ufw allow from 199.15.250.0/22 to any port 6379 ') # Redis
-    sudo('ufw allow from 199.15.250.0/22 to any port 11211 ') # Memcached
+    sudo('ufw allow from 199.15.248.0/21 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 199.15.248.0/21 to any port 27017') # MongoDB
+    sudo('ufw allow from 199.15.248.0/21 to any port 28017') # MongoDB web
+    # sudo('ufw allow from 199.15.248.0/21 to any port 5672 ') # RabbitMQ
+    sudo('ufw allow from 199.15.248.0/21 to any port 6379 ') # Redis
+    sudo('ufw allow from 199.15.248.0/21 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -492,8 +576,21 @@ def setup_rabbitmq():
 def setup_memcached():
     sudo('apt-get -y install memcached')
 
-def setup_postgres():
+def setup_postgres(standby=False):
+    shmmax = 580126400
     sudo('apt-get -y install postgresql postgresql-client postgresql-contrib libpq-dev')
+    put('config/postgresql%s.conf' % (
+        ('_standby' if standby else ''),
+    ), '/etc/postgresql/9.1/main/postgresql.conf', use_sudo=True)
+    sudo('echo "%s" > /proc/sys/kernel/shmmax' % shmmax)
+    sudo('echo "\nkernel.shmmax = %s" > /etc/sysctl.conf' % shmmax)
+    sudo('sysctl -p')
+    
+    if standby:
+        put('config/postgresql_recovery.conf', '/var/lib/postgresql/9.1/recovery.conf', use_sudo=True)
+        
+    sudo('/etc/init.d/postgresql stop')
+    sudo('/etc/init.d/postgresql start')
 
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
@@ -501,19 +598,23 @@ def setup_mongo():
     sudo('echo "deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" >> /etc/apt/sources.list')
     sudo('apt-get update')
     sudo('apt-get -y install mongodb-10gen')
+    put('config/mongodb.prod.conf', '/etc/mongodb.conf', use_sudo=True)
+    sudo('/etc/init.d/mongodb restart')
 
 def setup_redis():
+    redis_version = '2.4.15'
     with cd(env.VENDOR_PATH):
-        run('wget http://redis.googlecode.com/files/redis-2.4.2.tar.gz')
-        run('tar -xzf redis-2.4.2.tar.gz')
-        run('rm redis-2.4.2.tar.gz')
-    with cd(os.path.join(env.VENDOR_PATH, 'redis-2.4.2')):
+        run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
+        run('tar -xzf redis-%s.tar.gz' % redis_version)
+        run('rm redis-%s.tar.gz' % redis_version)
+    with cd(os.path.join(env.VENDOR_PATH, 'redis-%s' % redis_version)):
         sudo('make install')
     put('config/redis-init', '/etc/init.d/redis', use_sudo=True)
     sudo('chmod u+x /etc/init.d/redis')
     put('config/redis.conf', '/etc/redis.conf', use_sudo=True)
     sudo('mkdir -p /var/lib/redis')
     sudo('update-rc.d redis defaults')
+    sudo('/etc/init.d/redis stop')
     sudo('/etc/init.d/redis start')
 
 def setup_db_munin():
@@ -535,6 +636,24 @@ def setup_task_motd():
     
 def enable_celery_supervisor():
     put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+    
+def copy_task_settings():
+    with settings(warn_only=True):
+        put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
+        run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
+
+
+# ==============
+# = Tasks - DB =
+# ==============
+
+def restore_postgres():
+    backup_date = '2012-05-03-08-00'
+    run('PYTHONPATH=/home/sclay/newsblur python s3.py get backup_postgresql_%s.sql.gz' % backup_date)
+    sudo('su postgres -c "createuser -U newsblur"')
+    sudo('su postgres -c "createdb newsblur -O newsblur"')
+    sudo('su postgres -c "pg_restore --role=newsblur --dbname=newsblur backup_postgresql_%s.sql.gz"' % backup_date)
+    
     
 # ======
 # = S3 =

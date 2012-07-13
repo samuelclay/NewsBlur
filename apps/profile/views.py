@@ -1,4 +1,5 @@
 import stripe
+import datetime
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseRedirect
@@ -12,12 +13,17 @@ from django.conf import settings
 from apps.profile.models import Profile, change_password
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS
+from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
+from utils.view_functions import render_to
+from utils.user_functions import get_user
 from vendor.paypal.standard.forms import PayPalPaymentsForm
 
-SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','tutorial_finished','hide_mobile','send_emails',)
-SPECIAL_PREFERENCES = ('old_password', 'new_password',)
+SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
+                      'hide_getting_started', 'has_setup_feeds', 'has_found_friends',
+                      'has_trained_intelligence',)
+SPECIAL_PREFERENCES = ('old_password', 'new_password', 'autofollow_friends', 'dashboard_date',)
 
 @ajax_login_required
 @require_POST
@@ -32,6 +38,13 @@ def set_preference(request):
         if preference_value in ['true','false']: preference_value = True if preference_value == 'true' else False
         if preference_name in SINGLE_FIELD_PREFS:
             setattr(request.user.profile, preference_name, preference_value)
+        elif preference_name in SPECIAL_PREFERENCES:
+            if preference_name == 'autofollow_friends':
+                social_services = MSocialServices.objects.get(user_id=request.user.pk)
+                social_services.autofollow = preference_value
+                social_services.save()
+            elif preference_name == 'dashboard_date':
+                request.user.profile.dashboard_date = datetime.datetime.utcnow()
         else:
             if preference_value in ["true", "false"]:
                 preference_value = True if preference_value == "true" else False
@@ -71,6 +84,9 @@ def set_account_settings(request):
         except User.DoesNotExist:
             request.user.username = post_settings['username']
             request.user.save()
+            social_profile = MSocialProfile.objects.get(user_id=request.user.pk)
+            social_profile.username = post_settings['username']
+            social_profile.save()
         else:
             code = -1
             message = "This username is already taken. Try something different."
@@ -91,6 +107,7 @@ def set_account_settings(request):
     payload = {
         "username": request.user.username,
         "email": request.user.email,
+        "social_profile": MSocialProfile.profile(request.user.pk)
     }
     return dict(code=code, message=message, payload=payload)
     
@@ -238,3 +255,15 @@ def stripe_form(request):
         },
         context_instance=RequestContext(request)
     )
+
+@render_to('reader/activities_module.xhtml')
+def load_activities(request):
+    user = get_user(request)
+    page = max(1, int(request.REQUEST.get('page', 1)))
+    activities = MActivity.user(user.pk, page=page)
+
+    return {
+        'activities': activities,
+        'page': page,
+        'username': 'You',
+    }

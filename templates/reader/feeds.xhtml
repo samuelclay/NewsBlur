@@ -7,6 +7,7 @@
         $(document).ready(function() {
 
             NEWSBLUR.reader = new NEWSBLUR.Reader();
+            NEWSBLUR.reader.init();
 
         });
     </script>
@@ -33,48 +34,14 @@
 
   <div class="NB-modules-center">
     
-    <div class="NB-module NB-module-features">
-      
-      <h5 class="NB-module-header">
-        What's New
-        <div class="NB-module-header-right">
-          {% if user.is_staff %}
-            <div class="NB-features-add">
-              <a href="#" id="add-feature-button" class="NB-splash-link">Add</a>
-            </div>
-          {% endif %}
-          <div class="NB-spinner NB-left"></div>
-        <a href="#" class="NB-module-direction NB-module-next-page NB-javascript"></a>
-        <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
-        </div>
-      </h5>
-      
-      <h3 class="NB-module-content-header">
-        New Features
-      </h3>
-          
-      <table class="NB-features" cellpadding="0" cellspacing="0">
-        {% for feature in features %}
-          <tr class="NB-module-feature {% if forloop.last %}last{% endif %} {% if feature.date > user.profile.last_seen_on %}NB-module-feature-new{% endif %}">
-            <td class="NB-module-feature-date">{% localdatetime feature.date "%b %d, %Y" %}</td>
-            <td class="NB-module-feature-description">{{ feature.description|typogrify }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-      {% if user.is_staff %}
-        <form action="{% url add-feature %}" id="add-feature-form" method="post">
-          {{ feature_form.description }}
-          <input type="submit" value="Add feature" />
-        </form>
-      {% endif %}
+    {% if user.is_authenticated %}
+        {% render_interactions_module %}
+        {% render_activities_module %}
+    {% endif %}
     
-      <h3 class="NB-module-content-header">
-        Community Feedback
-      </h3>
-
-      {% render_feedback_table feedbacks %}
-
-    </div>
+    {% if not user.is_authenticated %}
+        {% render_features_module %}
+    {% endif %}
     
     {% if recommended_feeds %}
       {% render_recommended_feed recommended_feeds %}
@@ -113,7 +80,7 @@
               <div class="NB-signup-optional">
                 {% if login_form.errors %}
                   {% for field, error in login_form.errors.items %}
-                    <a href="mailto:samuel@ofbrooklyn.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot password?</a>
+                    <a href="mailto:password@newsblur.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot password?</a>
                   {% endfor %}
                 {% else %}
                   Optional
@@ -162,12 +129,12 @@
 
       <div class="NB-module NB-module-howitworks">
         <h5 class="NB-module-header">
-          <div class="NB-module-header-left">
-            How It Works
-          </div>
           <div class="NB-module-header-right">
             <a href="#" class="NB-module-direction NB-module-next-page"></a>
             <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
+          </div>
+          <div class="NB-module-header-left">
+            How It Works
           </div>
         </h5>
         
@@ -262,12 +229,12 @@
       
     {% else %}
       
-      <div class="NB-module">
+      <div class="NB-module NB-module-account">
         <h5 class="NB-module-header">
-          Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
           <div class="NB-module-header-right">
             <a href="{% url logout %}?next=/" class="NB-splash-link">Logout</a>
           </div>
+          Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
         </h5>
         <div class="NB-module-item {% if train_count == active_count %}NB-last{% endif %}">
           <div class="NB-module-item-image">
@@ -278,86 +245,111 @@
             {% endif %}
           </div>
           <h3 class="NB-module-content-header">
+            <div class="NB-module-content-subtitle NB-module-content-account-realtime-subtitle"></div>
+            <div class="NB-module-content-account-realtime" title=""></div>
             {% if user.profile.is_premium %}
-              <span class="NB-module-content-subtitle">
-                {{ active_count }} site{{ active_count|pluralize }}
-              </span>
               Premium Account
             {% else %}
-              <span class="NB-module-content-subtitle">
-                <span class="NB-module-account-feedcount">{{ active_count }}</span> of 64 sites
-              </span>
-              Standard Account
+              Free Standard Account
             {% endif %}
           </h3>
           <div class="NB-module-item-title">
-            {% if user.profile.is_premium %}
-              
-            {% else %}
-              
-              <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-upgrade NB-module-account-premium NB-javascript">Go Premium!</div>
-                {% if feed_count == 0 %}
-                    <div class="NB-modal-submit-green NB-modal-submit-button NB-task-add NB-javascript">Add Sites</div>
-                {% else %}
-                    <div class="{% if active_count == 0 %}NB-modal-submit-green{% else %}NB-modal-submit-close{% endif %} NB-modal-submit-button NB-module-account-upgrade NB-javascript">Choose Your 64</div>
-                {% endif %}
-              </div>
-            {% endif %}
-          </div>
-        </div>
-        <div class="NB-module-item NB-module-account-trainer NB-last {% if train_count == active_count %}NB-hidden{% endif %}">
-          <div class="NB-module-item-image">
-              <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
-          </div>
-          <h3 class="NB-module-content-header">
-              <span class="NB-module-content-subtitle">
-                <span class="NB-module-account-trainer-count">{{ train_count }}</span> of {{ active_count }} site{{ active_count|pluralize }}
-              </span>
-              Intelligence Trainer
-          </h3>
-          <div class="NB-module-item-title">
-              <div class="NB-modal-submit">
-                <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">Launch Intelligence Trainer</div>
-              </div>
-          </div>
-        </div>
-      </div>
-      
-      {% if not user_profile.tutorial_finished %}
-        <div class="NB-module NB-module-tutorial">
-          <h5 class="NB-module-header">
-            Tutorial
-            <div class="NB-module-header-right">
-              <a href="#" class="NB-splash-link NB-module-tutorial-hide">Hide</a>
-            </div>
-          </h5>
-          <div class="NB-module-item NB-last {% if user_profile.hide_tutorial %}NB-hidden{% endif %}">
-            <div class="NB-module-item-image">
-                <img src="{{ MEDIA_URL }}/img/reader/module_tutorial.jpg" />
-            </div>
-            <h3 class="NB-module-content-header">
-                <span class="NB-module-content-subtitle">
-                  Takes <span class="NB-module-account-trainer-count">2-3</span> minutes
-                </span>
-                Learn to use NewsBlur
-            </h3>
-            <div class="NB-module-item-title">
-                <div class="NB-modal-submit">
-                  <div class="NB-modal-submit-green NB-modal-submit-button NB-module-launch-tutorial NB-javascript">Launch the 5 step tutorial</div>
+            <div class="NB-module-item NB-module-stats NB-module-account-stats {% if not user_statistics.shared_stories %}NB-hidden{% endif %}">
+                <div class="NB-module-stats-count NB-module-stats-count-shared-stories">
+                    <div class="NB-module-stats-count-number">{{ user_statistics.shared_stories|commify }}</div>
+                    <div class="NB-module-stats-count-description">Shared stor{{ user_statistics.shared_stories|pluralize:"y,ies" }}</div>
+                </div>
+                <div class="NB-module-stats-count NB-module-stats-count-following">
+                    <div class="NB-module-stats-count-number">{{ user_statistics.following|commify }}</div>
+                    <div class="NB-module-stats-count-description">Following</div>
+                </div>
+                <div class="NB-module-stats-count NB-module-stats-count-followers">
+                    <div class="NB-module-stats-count-number">{{ user_statistics.followers|commify }}</div>
+                    <div class="NB-module-stats-count-description">Follower{{ user_statistics.followers|pluralize }}</div>
                 </div>
             </div>
           </div>
+          
         </div>
+
+      </div>
+
+      {% if not user_profile.hide_getting_started %}
+        <div class="NB-module NB-module-gettingstarted">
+          <h5 class="NB-module-header">
+            <div class="NB-module-header-right">
+              <a href="#" class="NB-splash-link NB-module-gettingstarted-hide">Hide</a>
+            </div>
+            Getting Started
+          </h5>
+
+          <div class="NB-module-item NB-module-item-intro {% if user_profile.has_setup_feeds %}NB-done{% endif %}">
+              <div class="NB-module-item-image">
+                  <img src="{{ MEDIA_URL }}/img/reader/module_tutorial.jpg" />
+              </div>
+              <h3 class="NB-module-content-header">
+                  <span class="NB-module-content-subtitle">
+                      It's quick!
+                  </span>
+                  Start by setting up NewsBlur
+              </h3>
+              <div class="NB-module-item-title">
+                  <div class="NB-modal-submit">
+                      <div class="NB-modal-submit-green NB-modal-submit-button NB-module-launch-intro NB-javascript">Setup NewsBlur</div>
+                  </div>
+                  <div class="NB-done-label">Done</div>
+              </div>
+          </div>
+
+          <div class="NB-module-item NB-module-find-friends 
+                      {% if not user_profile.has_setup_feeds %}NB-hidden{% endif %}
+                      {% if user_profile.has_found_friends %}NB-done{% endif %}">
+              <div class="NB-module-item-image">
+                  <img src="{{ MEDIA_URL }}/img/reader/account_friends.jpg" />
+              </div>
+              <h3 class="NB-module-content-header">
+                  <span class="NB-module-content-subtitle">
+                      Share stories
+                  </span>
+                  Get Social
+              </h3>
+              <div class="NB-module-item-title">
+                  <div class="NB-modal-submit">
+                      <div class="NB-modal-submit-green NB-modal-submit-button NB-module-friends-button NB-javascript">Find and Follow Friends</div>
+                  </div>
+                  <div class="NB-done-label">Done</div>
+              </div>
+          </div>
+
+          <div class="NB-module-item NB-module-account-trainer NB-last 
+                      {% if not user_profile.has_setup_feeds %}NB-hidden{% endif %}
+                      {% if user_profile.has_trained_intelligence %}NB-done{% endif %}">
+              <div class="NB-module-item-image">
+                  <img src="{{ MEDIA_URL }}/img/reader/account_trainer.jpg" />
+              </div>
+              <h3 class="NB-module-content-header">
+                  <span class="NB-module-content-subtitle">
+                      <span class="NB-module-account-trainer-count">{{ train_count }}</span> of <span class="NB-module-account-trainer-site-count">{{ active_count }} site{{ active_count|pluralize }}</span>
+                  </span>
+                  Intelligence Trainer
+              </h3>
+              <div class="NB-module-item-title">
+                  <div class="NB-modal-submit">
+                      <div class="NB-modal-submit-green NB-modal-submit-button NB-module-account-train NB-javascript">Launch Intelligence Trainer</div>
+                  </div>
+                  <div class="NB-done-label">Done</div>
+              </div>
+          </div>
+      </div>
       {% endif %}
       
       {% if not user_profile.hide_mobile %}
         <div class="NB-module NB-module-mobile">
           <h5 class="NB-module-header">
-            Mobile Apps
             <div class="NB-module-header-right">
               <a href="#" class="NB-splash-link NB-module-mobile-hide">Hide</a>
             </div>
+            Mobile Apps
           </h5>
           <div class="NB-module-item {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
             <div class="NB-module-mobile-image">
@@ -375,7 +367,7 @@
                 <a href="/iphone/" class="NB-splash-link">See the free NewsBlur iPhone App</a>
             </div>
           </div>
-          <div class="NB-module-item NB-last {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
+          <div class="NB-module-item {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
             <div class="NB-module-mobile-image">
                 <img src="{{ MEDIA_URL }}/img/mobile/android-icon-blar.png" />
             </div>
@@ -391,12 +383,34 @@
                 <a href="https://market.android.com/details?id=bitwrit.Blar" class="NB-splash-link">Download Blar on the Android Market</a>
             </div>
           </div>
+          <div class="NB-module-item NB-last {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
+            <div class="NB-module-mobile-image">
+                <img src="{{ MEDIA_URL }}/img/mobile/meego-icon-webfeeds.png" />
+            </div>
+            <h3 class="NB-module-content-header">
+                <span class="NB-module-content-subtitle">
+                  User-Built Client
+                </span>
+                <div class="NB-module-mobile-title">Web Feeds</div>
+                <div class="NB-module-mobile-device">Nokia MeeGo</div>
+            </h3>
+            <div class="NB-module-item-title">
+                <span class="NB-raquo">&raquo;</span>
+                <a href="http://projects.developer.nokia.com/feed_reader" class="NB-splash-link">Download Web Feeds on the Nokia Store</a>
+            </div>
+          </div>
         </div>
       {% endif %}
       
     {% endif %}
     
-    {% render_statistics_graphs statistics %}
+    {% if user.is_authenticated and user_profile.hide_getting_started %}
+        {% render_features_module %}
+    {% endif %}
+    
+    {% if not user.is_authenticated or user_profile.hide_getting_started %}
+        {% render_statistics_graphs statistics %}
+    {% endif %}
 
   </div>
   
@@ -407,22 +421,12 @@
 <div class="left-pane">
 
     <div class="left-north">
-      <div class="NB-feeds-header-dashboard">
-        <div class="NB-feeds-header-right">
-          <div class="NB-feeds-header-sites">&nbsp;</div>
-        </div>
-        <div class="NB-feeds-header-left">
-          <span class="NB-feeds-header-count NB-feeds-header-negative NB-empty">0</span>
-          <span class="NB-feeds-header-count NB-feeds-header-neutral NB-empty">0</span>
-          <span class="NB-feeds-header-count NB-feeds-header-positive NB-empty">0</span>
-        </div>
-        <div class="NB-feeds-header-home">Dashboard</div>
-      </div>
+      <div class="NB-feeds-header-dashboard"></div>
     </div>
     
     <div class="left-center">
 
-      <div class="left-center-content NB-feedlist">
+      <div class="left-center-content NB-feedlists">
         <div id="NB-feeds-list-loader">Everything is on its way...</div>
         <div class="NB-feeds-header-wrapper">
           
@@ -454,6 +458,7 @@
           </div>
           
         </div>
+        <ul class="NB-socialfeeds NB-feedlist"></ul>
         <ul class="folder NB-feedlist" id="feed_list"></ul>
       </div>
     
@@ -486,12 +491,16 @@
         </div>
         <ul class="taskbar_nav taskbar_nav_feeds">
           <li class="task_button task_button_menu NB-task-add">
-              <div class="task_button_background"></div>
-              <div class="NB-task-image"></div>
+              <div class="NB-task-button-wrapper">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
+              </div>
           </li>
           <li class="task_button task_button_menu NB-task-manage NB-disabled">
-              <div class="task_button_background"></div>
-              <div class="NB-task-image"></div>
+              <div class="NB-task-button-wrapper">
+                  <div class="task_button_background"></div>
+                  <div class="NB-task-image"></div>
+              </div>
           </li>
         </ul>
         <div class="NB-taskbar-intelligence">
@@ -524,51 +533,68 @@
     
 <div class="right-pane">
   
-    <div id="story_titles" class="right-north"></div>
+    <div id="story_titles" class="right-north">
+        <div class="NB-feedbar"></div>
+        <div class="NB-story-titles"></div>
+    </div>
     <div class="content-pane">
         <div id="story_taskbar" class="NB-taskbar-container content-north">
           <div class="NB-taskbar">
             <ul class="taskbar_nav taskbar_nav_view">
               <li class="task_button task_button_view task_view_page NB-active">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
-                <span class="NB-task-title">Original</span>
-                <span class="NB-task-original-return NB-task-title">
-                  <div>Return to</div>
-                  <div>Original</div>
-                </span>
-                <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                      <span class="NB-task-title">Original</span>
+                      <span class="NB-task-original-return NB-task-title">
+                          <div>Return to</div>
+                          <div>Original</div>
+                      </span>
+                      <div class="NB-task-view-switch-arrow NB-task-view-page-to-feed-arrow"></div>
+                  </div>
               </li>
               <li class="task_button task_button_view task_view_feed">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
-                <span class="NB-task-title">Feed</span>
-                <div class="NB-task-view-switch-arrow NB-task-view-feed-to-story-arrow"></div>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                      <span class="NB-task-title">Feed</span>
+                      <div class="NB-task-view-switch-arrow NB-task-view-feed-to-story-arrow"></div>
+                  </div>
               </li>
               <li class="task_button task_button_view task_view_story">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
-                <span class="NB-task-title">Story</span>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                      <span class="NB-task-title">Story</span>
+                  </div>
               </li>
             </ul>
             <ul class="taskbar_nav taskbar_nav_story first">
               <li class="task_button task_button_story task_story_previous">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                  </div>
               </li>
               <li class="task_button task_button_story task_story_next_unread task_story_next_positive">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
-                <span class="NB-task-title">Next Unread</span>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                      <span class="NB-task-title">Next Unread</span>
+                  </div>
               </li>
               <li class="task_button task_button_story task_story_next">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
+                  <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                  </div>
               </li>
               {% if not user.is_authenticated %}
                 <li class="task_button task_button_signup">
-                  <div class="task_button_background"></div>
-                  <div class="NB-task-image"></div>
+                    <div class="NB-task-button-wrapper">
+                      <div class="task_button_background"></div>
+                      <div class="NB-task-image"></div>
+                    </div>
                 </li>
               {% endif %}
             </ul>

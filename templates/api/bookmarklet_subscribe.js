@@ -18,6 +18,10 @@
         
         this.options  = $.extend({}, defaults, options);
         this.runner();
+
+        {% if code < 0 %}
+        this.show_error();
+        {% endif %}
     };
 
     NEWSBLUR.BookmarkletModal.prototype = {
@@ -45,6 +49,15 @@
             this.open_modal();
         
             this.$modal.bind('click', $.rescope(this.handle_clicks, this));
+        },
+        
+        show_error: function() {
+            $('.NB-bookmarklet-folder-container', this.$modal).hide();
+            $('.NB-modal-submit', this.$modal).html($.make('div', { className: 'NB-error-invalid' }, [
+                'This bookmarklet no longer matches an account. Re-create it in ',
+                $.make('a', { href: 'http://www.newsblur.com/?next=goodies' }, 'Goodies on NewsBlur'),
+                '.'
+            ]));
         },
         
         attach_css: function() {
@@ -110,10 +123,16 @@
         },
 
         make_folder_options: function($options, items, depth) {
+            if (depth && depth.length > 5) {
+                return $options;
+            }
+            
             for (var i in items) {
+                if (!items.hasOwnProperty(i)) continue;
                 var item = items[i];
                 if (typeof item == "object") {
                     for (var o in item) {
+                        if (!item.hasOwnProperty(o)) continue;
                         var folder = item[o];
                         var $option = $.make('option', { value: o }, depth + ' ' + o);
                         $options.append($option);

@@ -10,12 +10,13 @@ graph_config = {
     'feeds_fetched.label': 'Fetched feeds last hour',
     'celery_update_feeds.label': 'Celery - Update Feeds',
     'celery_new_feeds.label': 'Celery - New Feeds',
+    'celery_push_feeds.label': 'Celery - Push Feeds',
+    'celery_work_queue.label': 'Celery - Work Queue',
 }
 
 
 def calculate_metrics():
     import datetime
-    import commands
     from apps.rss_feeds.models import Feed
     from django.conf import settings
     
@@ -27,6 +28,8 @@ def calculate_metrics():
         'feeds_fetched': Feed.objects.filter(last_update__gte=hour_ago).count(),
         'celery_update_feeds': r.llen("update_feeds"),
         'celery_new_feeds': r.llen("new_feeds"),
+        'celery_push_feeds': r.llen("push_feeds"),
+        'celery_work_queue': r.llen("work_queue"),
     }
 
 if __name__ == '__main__':

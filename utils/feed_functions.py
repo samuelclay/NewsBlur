@@ -104,11 +104,14 @@ def _do_timesince(d, chunks, now=None):
     # ignore microsecond part of 'd' since we removed it from 'now'
     delta = now - (d - datetime.timedelta(0, 0, d.microsecond))
     since = delta.days * 24 * 60 * 60 + delta.seconds
-    for i, (seconds, name) in enumerate(chunks):
-        count = since // seconds
-        if count != 0:
-            break
-    s = '%(number)d %(type)s' % {'number': count, 'type': name(count)}
+    if since > 10:
+        for i, (seconds, name) in enumerate(chunks):
+            count = since // seconds
+            if count != 0:
+                break
+        s = '%(number)d %(type)s' % {'number': count, 'type': name(count)}
+    else:
+        s = 'just a second'
     return s
 
 def relative_timesince(value):
@@ -116,8 +119,11 @@ def relative_timesince(value):
         return u''
 
     chunks = (
+      (60 * 60 * 24, lambda n: ungettext('day', 'days', n)),
       (60 * 60, lambda n: ungettext('hour', 'hours', n)),
-      (60, lambda n: ungettext('minute', 'minutes', n))
+      (60, lambda n: ungettext('minute', 'minutes', n)),
+      (1, lambda n: ungettext('second', 'seconds', n)),
+      (0, lambda n: 'just now'),
     )
     return _do_timesince(value, chunks)
     
@@ -153,7 +159,7 @@ def format_relative_date(date, future=False):
                                    '' if future else 'ago')
     elif datetime.timedelta(minutes=60) <= diff < datetime.timedelta(minutes=90):
         return "1 hour %s" % ('' if future else 'ago')
-    elif diff >= datetime.timedelta(minutes=90):
+    elif diff < datetime.timedelta(hours=24):
         dec = (diff.seconds / 60 + 15) % 60
         if dec >= 30:
             return "%s.5 hours %s" % ((((diff.seconds / 60) + 15) / 60),
@@ -161,7 +167,10 @@ def format_relative_date(date, future=False):
         else:
             return "%s hours %s" % ((((diff.seconds / 60) + 15) / 60), 
                                     '' if future else 'ago')
-
+    else:
+        days = ((diff.seconds / 60) / 60 / 24)
+        return "%s day%s %s" % (days, '' if days == 1 else 's', '' if future else 'ago')
+    
 def add_object_to_folder(obj, folder, folders, parent='', added=False):
     if not folder and not parent and obj not in folders:
         folders.append(obj)
