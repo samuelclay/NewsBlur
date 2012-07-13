@@ -20,7 +20,6 @@ from utils.user_functions import ajax_login_required, get_user
 
 
 @ajax_login_required
-@json.json_view
 def opml_upload(request):
     xml_opml = None
     message = "OK"
@@ -43,7 +42,8 @@ def opml_upload(request):
             message = "Attach an .opml file."
             code = -1
             
-    return dict(message=message, code=code, payload=payload)
+    return HttpResponse(json.encode(dict(message=message, code=code, payload=payload)),
+                        mimetype='text/html')
 
 def opml_export(request):
     user     = get_user(request)

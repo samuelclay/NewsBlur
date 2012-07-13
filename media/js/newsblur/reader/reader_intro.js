@@ -45,7 +45,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $.make('div', { className: 'NB-page NB-page-1' }, [
                 $.make('h4', { className: 'NB-page-1-started' }, "So much time and so little to do. Strike that! Reverse it.")
             ]),
-            $.make('div', { className: 'NB-page NB-page-2 carousel' }, [
+            $.make('div', { className: 'NB-page NB-page-2 carousel slide' }, [
                 $.make('div', { className: 'carousel-inner NB-intro-imports' }, [
                     $.make('div', { className: 'item NB-intro-imports-start' }, [
                         $.make('h4', { className: 'NB-page-2-started' }, "Let's get some sites to read."),
@@ -457,8 +457,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         this.advance_import_carousel(1);
         
         // NEWSBLUR.log(['Uploading']);
-        var formData = new FormData($file.closest('form')[0]);
-        $.ajax({
+        var params = {
             url: NEWSBLUR.URLs['opml-upload'],
             type: 'POST',
             success: function (data, status) {
@@ -475,11 +474,23 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 $error.text("There was a problem uploading your OPML file. Try e-mailing it to samuel@newsblur.com.");
                 $error.slideDown(300);
             },
-            data: formData,
             cache: false,
             contentType: false,
             processData: false
-        });
+        };
+        if (window.FormData) {
+            var formData = new FormData($file.closest('form')[0]);
+            params['data'] = formData;
+            
+            $.ajax(params);
+        } else {
+            // IE9 has no FormData
+            params['secureuri'] = false;
+            params['fileElementId'] = 'NB-intro-upload-opml-button';
+            params['dataType'] = 'json';
+            
+            $.ajaxFileUpload(params);
+        }
         
         $file.replaceWith($file.clone());
         
