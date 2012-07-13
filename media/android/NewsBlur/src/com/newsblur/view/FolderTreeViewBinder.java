@@ -12,9 +12,14 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.util.AppConstants;
 
 public class FolderTreeViewBinder implements ViewBinder {
 
+	private int currentState = AppConstants.STATE_ALL;
+	
+	
+	// TODO: Make this more efficient
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON)) {
@@ -28,7 +33,7 @@ public class FolderTreeViewBinder implements ViewBinder {
 			}
 			((ImageView) view).setImageBitmap(bitmap);
 			return true;
-		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_POSITIVE_COUNT)) {
+		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_POSITIVE_COUNT) || TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SUM_POS)) {
 			int feedPositive = cursor.getInt(columnIndex);
 			if (feedPositive > 0) {
 				view.setVisibility(View.VISIBLE);
@@ -37,18 +42,18 @@ public class FolderTreeViewBinder implements ViewBinder {
 				view.setVisibility(View.GONE);
 			}
 			return true;
-		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_NEUTRAL_COUNT)) {
+		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_NEUTRAL_COUNT) || TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SUM_NEUT)) {
 			int feedNeutral = cursor.getInt(columnIndex);
-			if (feedNeutral > 0) {
+			if (feedNeutral > 0 && currentState != AppConstants.STATE_BEST) {
 				view.setVisibility(View.VISIBLE);
 				((TextView) view).setText("" + feedNeutral);
 			} else {
 				view.setVisibility(View.GONE);
 			}
 			return true;
-		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_NEGATIVE_COUNT)) {
+		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_NEGATIVE_COUNT) || TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SUM_NEG)) {
 			int feedNegative = cursor.getInt(columnIndex);
-			if (feedNegative > 0) {
+			if (feedNegative > 0 && currentState == AppConstants.STATE_ALL) {
 				view.setVisibility(View.VISIBLE);
 				((TextView) view).setText("" + feedNegative);
 			} else {
@@ -65,7 +70,12 @@ public class FolderTreeViewBinder implements ViewBinder {
 			((TextView) view).setText("" + folderName);
 			return true;
 		}
+
 		return false;
+	}
+
+	public void setState(int selection) {
+		currentState = selection;
 	}
 
 }

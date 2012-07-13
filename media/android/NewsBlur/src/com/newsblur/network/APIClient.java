@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
-import com.newsblur.activity.PrefConstants;
+import com.newsblur.util.PrefConstants;
 
 import android.content.ContentValues;
 import android.content.Context;

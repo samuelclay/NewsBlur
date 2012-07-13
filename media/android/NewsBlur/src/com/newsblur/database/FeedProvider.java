@@ -114,6 +114,7 @@ public class FeedProvider extends ContentProvider {
 		final SQLiteDatabase db = databaseHelper.getReadableDatabase();
 		Cursor cursor = null;
 		switch (uriMatcher.match(uri)) {
+
 		// Query for all feeds (by default only return those that have unread items in them)
 		case ALL_FEEDS:
 			cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
@@ -122,23 +123,31 @@ public class FeedProvider extends ContentProvider {
 					" WHERE (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 " +
 					" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE", selectionArgs);
 			break;
-			
+
 			// Querying for a specific
 		case SPECIFIC_FEED:
 			selection = DatabaseConstants.FEED_ID + " = ?";
 			selectionArgs = new String[] { uri.getLastPathSegment() };
 			cursor = db.query(DatabaseConstants.FEED_TABLE, projection, selection, selectionArgs, null, null, sortOrder);
 			break;
-			
+
 			// Query for feeds with no folder mapping	
 		case FEED_FOLDER_MAP:
-			cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE + 
-					" LEFT JOIN " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
-					" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID +
-					" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " IS NULL AND " +
-					" (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ", null);
+			String nullFolderQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE + 
+			" LEFT JOIN " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+			" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID +
+			" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " IS NULL " +
+			" GROUP BY " + DatabaseConstants.FEED_TABLE+ "." + DatabaseConstants.FEED_ID;
+
+			StringBuilder nullFolderBuilder = new StringBuilder();
+			nullFolderBuilder.append(nullFolderQuery);
+			if (selectionArgs != null && selectionArgs.length > 0) {
+				nullFolderBuilder.append(selectionArgs[0]);
+			}
+			nullFolderBuilder.append(" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE");
+			cursor = db.rawQuery(nullFolderBuilder.toString(), null);
 			break;
-			
+
 			// Querying for feeds for a given folder	
 		case SPECIFIC_FEED_FOLDER_MAP:
 			selection = DatabaseConstants.FOLDER_ID + " = ?";
@@ -148,7 +157,7 @@ public class FeedProvider extends ContentProvider {
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
 			" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = ? " +
-			" GROUP BY " + DatabaseConstants.FEED_TABLE+ "." + DatabaseConstants.FOLDER_ID;
+			" GROUP BY " + DatabaseConstants.FEED_TABLE+ "." + DatabaseConstants.FEED_ID;
 
 			StringBuilder builder = new StringBuilder();
 			builder.append(query);
@@ -158,7 +167,7 @@ public class FeedProvider extends ContentProvider {
 			builder.append(" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE");
 			cursor = db.rawQuery(builder.toString(), folderArguments);
 			break;
-			
+
 			// Querying for all folders with unread items
 		case ALL_FOLDERS:
 			String folderQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +

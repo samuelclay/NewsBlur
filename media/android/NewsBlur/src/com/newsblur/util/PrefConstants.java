@@ -1,4 +1,4 @@
-package com.newsblur.activity;
+package com.newsblur.util;
 
 public class PrefConstants {
 

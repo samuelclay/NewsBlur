@@ -3,14 +3,14 @@
 
     <item>
         <bitmap
-            android:src="@drawable/repeating_pattern"
+            android:src="@drawable/second_repeating_pattern"
         	android:tileMode="repeat" 
             />        
     </item>
     
     <item>
         <shape>
-        	<solid android:color="@color/half_darkgray" />
+        	<solid android:color="@color/half_lightgray" />
         </shape>
     </item>
     

@@ -8,14 +8,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.newsblur.R;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.UIUtils;
 
 public class StateToggleButton extends LinearLayout implements OnClickListener {
 
-	public static final int STATE_ONE = 0;
-	public static final int STATE_TWO = 1;
-	public static final int STATE_THREE = 2;
-	private int CURRENT_STATE = STATE_ONE;
+	private int CURRENT_STATE = AppConstants.STATE_ALL;
 
 	private Context context;
 	private StateChangedListener stateChangedListener;
@@ -39,19 +37,19 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 		final int marginTop = UIUtils.convertDPsToPixels(context, 5);
 
 		imageStateOne = new ImageView(context);
-		imageStateOne.setId(STATE_ONE);
+		imageStateOne.setId(AppConstants.STATE_ALL);
 		imageStateOne.setImageResource(R.drawable.negative_count_circle);
 		imageStateOne.setLayoutParams(new LayoutParams(length, length));
 
 		LayoutParams centerParams = new LayoutParams(length, length);
 		centerParams.setMargins(marginSide, marginTop, marginSide, marginTop);
 		imageStateTwo = new ImageView(context);
-		imageStateTwo.setId(STATE_TWO);
+		imageStateTwo.setId(AppConstants.STATE_SOME);
 		imageStateTwo.setImageResource(R.drawable.neutral_count_circle);
 		imageStateTwo.setLayoutParams(centerParams);
 
 		imageStateThree = new ImageView(context);
-		imageStateThree.setId(STATE_THREE);
+		imageStateThree.setId(AppConstants.STATE_BEST);
 		imageStateThree.setImageResource(R.drawable.positive_count_circle);
 		imageStateThree.setLayoutParams(new LayoutParams(length, length));
 
@@ -73,17 +71,17 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 
 	public void changeState(final int state) {
 		switch (state) {
-			case STATE_ONE:
+			case AppConstants.STATE_ALL:
 				imageStateOne.setAlpha(255);
 				imageStateTwo.setAlpha(125);
 				imageStateThree.setAlpha(125);
 				break;
-			case STATE_TWO:
+			case AppConstants.STATE_SOME:
 				imageStateOne.setAlpha(125);
 				imageStateTwo.setAlpha(255);
 				imageStateThree.setAlpha(125);
 				break;
-			case STATE_THREE:
+			case AppConstants.STATE_BEST:
 				imageStateOne.setAlpha(125);
 				imageStateTwo.setAlpha(125);
 				imageStateThree.setAlpha(255);

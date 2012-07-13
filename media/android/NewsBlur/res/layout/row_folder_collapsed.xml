@@ -1,24 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal" 
-    android:background="@color/lightgray">
-   
-    <ImageView 
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/lightgray"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp" >
+
+    <ImageView
+        android:id="@+id/row_folder_icon"
+        android:layout_width="20dp"
         android:layout_height="20dp"
-		android:layout_width="20dp" 
-		android:src="@drawable/folder" 
-		android:layout_margin="10dp" 
-		android:contentDescription="@string/description_row_folder_icon"/>
-    
-    <TextView 
-        android:id="@+id/row_foldername" 
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="10dp"
+        android:contentDescription="@string/description_row_folder_icon"
+        android:src="@drawable/folder" />
+
+    <TextView
+        android:id="@+id/row_foldername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/row_folder_icon"
+        android:textColor="@color/darkgray"
         android:textSize="16dp"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:textColor="@color/darkgray" />
-	
-</LinearLayout>
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/row_foldersums"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="25dp" >
+
+        <TextView
+            android:id="@+id/row_foldersumneg"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/negative_count_circle"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/row_foldersumneu"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/neutral_count_circle"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/row_foldersumpos"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/positive_count_circle"
+            android:gravity="center"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/white"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</RelativeLayout>

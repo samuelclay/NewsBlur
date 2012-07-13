@@ -12,6 +12,7 @@ import android.view.Window;
 import com.newsblur.R;
 import com.newsblur.fragment.LoginFragment;
 import com.newsblur.network.APIConstants;
+import com.newsblur.util.PrefConstants;
 
 public class Login extends FragmentActivity implements LoginFragment.LoginFragmentInterface {
 	

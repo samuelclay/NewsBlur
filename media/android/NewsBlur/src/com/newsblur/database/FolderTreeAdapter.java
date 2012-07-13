@@ -1,7 +1,5 @@
 package com.newsblur.database;
 
-import com.newsblur.domain.Folder;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,13 +7,16 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.widget.SimpleCursorTreeAdapter;
 
+import com.newsblur.domain.Folder;
+
 public class FolderTreeAdapter extends SimpleCursorTreeAdapter {
 
 	ContentResolver resolver; 
 	public String currentState = FeedProvider.INTELLIGENCE_ALL;
+	private String TAG = "FolderTreeAdapter";
 	
-	public FolderTreeAdapter(Context context, Cursor cursor, int collapsedGroupLayout, int expandedGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo) {
-		super(context, cursor, collapsedGroupLayout, expandedGroupLayout, groupFrom, groupTo, childLayout, childFrom, childTo);
+	public FolderTreeAdapter(Context context, Cursor cursor, int collapsedGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo) {
+		super(context, cursor, collapsedGroupLayout, groupFrom, groupTo, childLayout, childFrom, childTo);
 		resolver = context.getContentResolver();
 	}
 

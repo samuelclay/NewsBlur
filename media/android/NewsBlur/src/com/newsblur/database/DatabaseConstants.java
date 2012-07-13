@@ -52,8 +52,13 @@ public class DatabaseConstants {
 	public static final String STORY_READ = "read";
 	public static final String STORY_FEED_ID = "feed_id";
 	
+	// Aggregated columns
+	public static final String SUM_POS = "sum_postive";
+	public static final String SUM_NEUT = "sum_neutral";
+	public static final String SUM_NEG = "sum_negative";
+	
 	public static final String[] FOLDER_COLUMNS = {
-		FOLDER_TABLE + "." + FOLDER_ID, FOLDER_TABLE + "." + FOLDER_NAME
+		FOLDER_TABLE + "." + FOLDER_ID, FOLDER_TABLE + "." + FOLDER_NAME, " SUM(" + FEED_POSITIVE_COUNT + ") AS " + SUM_POS, " SUM(" + FEED_NEUTRAL_COUNT + ") AS " + SUM_NEUT, " SUM(" + FEED_NEGATIVE_COUNT + ") AS " + SUM_NEG
 	};
 
 }
