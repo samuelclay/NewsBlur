@@ -14,6 +14,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #define kTopBadgeHeight 125
+#define kTopBadgeTextXCoordinate 110
 
 @implementation ProfileBadge
 
@@ -64,13 +65,85 @@
 
 - (void)refreshWithProfile:(NSDictionary *)profile {    
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];    
-    
     self.activeProfile = profile;
-     
     int yCoordinatePointer = 0;
     
+    // AVATAR
+    NSString *photo_url = [profile objectForKey:@"photo_url"];
+    
+    if ([photo_url rangeOfString:@"graph.facebook.com"].location != NSNotFound) {
+        photo_url = [photo_url stringByAppendingFormat:@"?type=large"];
+    }
+    
+    if ([photo_url rangeOfString:@"twimg"].location != NSNotFound) {
+        photo_url = [photo_url stringByReplacingOccurrencesOfString:@"_normal" withString:@""];        
+    }
+    
+    NSURL *imageURL = [NSURL URLWithString:photo_url];
+    NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+    UIImage *image = [UIImage imageWithData:imageData];
+    
+    image = [Utilities roundCorneredImage:image radius:6];
+    UIImageView *avatar = [[UIImageView alloc] initWithImage:image];
+    avatar.frame = CGRectMake(20, 10, 80, 80);
+    
+    CALayer * l = [avatar layer];
+    [l setMasksToBounds:YES];
+    [l setCornerRadius:6.0];
+    
+    // scale and crop image
+    [avatar setContentMode:UIViewContentModeScaleAspectFill];
+    [avatar setClipsToBounds:YES];
+    
+    self.userAvatar = avatar;
+    [self addSubview:self.userAvatar];
+    [avatar release];
+    
+    // FOLLOW BUTTON
+    UIButton *follow = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    follow.frame = CGRectMake(20, 96, 80, 24);
+    
+    // check follow button status
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictUserProfile objectForKey:@"user_id"]];    
+    BOOL isFollowing = NO;
+    BOOL isSelf = NO;
+    NSArray *followingUserIds = [self.appDelegate.dictUserProfile objectForKey:@"following_user_ids"];
+    for (int i = 0; i < followingUserIds.count ; i++) {
+        NSString *followingUserId = [NSString stringWithFormat:@"%@", [followingUserIds objectAtIndex:i]];
+        if ([currentUserId isEqualToString:[NSString stringWithFormat:@"%@", [profile objectForKey:@"user_id"]]]) {
+            isSelf = YES;
+        }
+        if ([followingUserId isEqualToString:[NSString stringWithFormat:@"%@", [profile objectForKey:@"user_id"]]]) {
+            isFollowing = YES;
+        }
+    }
+    
+    if (isSelf) {
+        [follow setTitle:@"You" forState:UIControlStateNormal];
+        follow.enabled = NO;
+    } else if (isFollowing) {
+        [follow setTitle:@"Following" forState:UIControlStateNormal];
+    } else {
+        [follow setTitle:@"Follow" forState:UIControlStateNormal];
+    }
+    
+    follow.titleLabel.font = [UIFont systemFontOfSize:12];
+    [follow addTarget:self 
+               action:@selector(doFollowButton:) 
+     forControlEvents:UIControlEventTouchUpInside];
+    
+    self.followButton = follow;
+    [self addSubview:self.followButton];
+    
+    // ACTIVITY INDICATOR
+    UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    activityView.frame = CGRectMake(50, 98, 20, 20.0);
+    self.activityIndicator = activityView;
+    [self addSubview:self.activityIndicator];
+    [activityView release];
+    
     // USERNAME
-    UILabel *user = [[UILabel alloc] initWithFrame:CGRectMake(110, 10, 190, 22)];
+    UILabel *user = [[UILabel alloc] initWithFrame:CGRectMake(kTopBadgeTextXCoordinate, 10, 190, 22)];
     user.text = [profile objectForKey:@"username"]; 
     user.textColor = UIColorFromRGB(0xAE5D15);
     user.font = [UIFont fontWithName:@"Helvetica-Bold" size:18];
@@ -83,12 +156,11 @@
     // BIO
     if ([profile objectForKey:@"bio"] != [NSNull null]) {
         UILabel *bio = [[UILabel alloc] 
-                             initWithFrame:CGRectMake(110, 
+                             initWithFrame:CGRectMake(kTopBadgeTextXCoordinate, 
                                                       yCoordinatePointer, 
                                                       190, 
                                                       60)];
         bio.text = [profile objectForKey:@"bio"];
-//        bio.text = @"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
         bio.textColor = UIColorFromRGB(0x333333);
         bio.font = [UIFont fontWithName:@"Helvetica" size:12];
         bio.lineBreakMode = UILineBreakModeTailTruncation;
@@ -114,7 +186,7 @@
     // LOCATION
     if ([profile objectForKey:@"location"] != [NSNull null]) {
         UILabel *location = [[UILabel alloc] 
-                             initWithFrame:CGRectMake(130, 
+                             initWithFrame:CGRectMake(kTopBadgeTextXCoordinate + 20, 
                                                       yCoordinatePointer, 
                                                       190, 
                                                       20)];
@@ -128,7 +200,7 @@
         
         UIImage *locationIcon = [UIImage imageNamed:@"flag_orange.png"];
         UIImageView *locationIconView = [[UIImageView alloc] initWithImage:locationIcon];
-        locationIconView.Frame = CGRectMake(110,
+        locationIconView.Frame = CGRectMake(kTopBadgeTextXCoordinate,
                                             yCoordinatePointer + 2, 
                                             16, 
                                             16);
@@ -211,82 +283,6 @@
     followersLabel.backgroundColor = [UIColor clearColor];
     [self addSubview:followersLabel];
     [followersLabel release];
-    
-    
-    // AVATAR
-    NSString *photo_url = [profile objectForKey:@"photo_url"];
-
-    if ([photo_url rangeOfString:@"graph.facebook.com"].location != NSNotFound) {
-        photo_url = [photo_url stringByAppendingFormat:@"?type=large"];
-    }
-                     
-    if ([photo_url rangeOfString:@"twimg"].location != NSNotFound) {
-        photo_url = [photo_url stringByReplacingOccurrencesOfString:@"_normal" withString:@""];        
-    }
-    
-    NSURL *imageURL = [NSURL URLWithString:photo_url];
-    NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-    UIImage *image = [UIImage imageWithData:imageData];
-
-    image = [Utilities roundCorneredImage:image radius:6];
-    UIImageView *avatar = [[UIImageView alloc] initWithImage:image];
-    avatar.frame = CGRectMake(20, 10, 80, 80);
-
-    CALayer * l = [avatar layer];
-    [l setMasksToBounds:YES];
-    [l setCornerRadius:6.0];
-    
-    // scale and crop image
-    [avatar setContentMode:UIViewContentModeScaleAspectFill];
-    [avatar setClipsToBounds:YES];
-    
-    self.userAvatar = avatar;
-    [self addSubview:self.userAvatar];
-    [avatar release];
-    
-    // FOLLOW BUTTON
-    UIButton *follow = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    follow.frame = CGRectMake(20, 96, 80, 24);
-
-    // check if self
-    NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictUserProfile objectForKey:@"user_id"]];    
-    // check following to toggle follow button
-    BOOL isFollowing = NO;
-    BOOL isSelf = NO;
-    NSArray *followingUserIds = [self.appDelegate.dictUserProfile objectForKey:@"following_user_ids"];
-    for (int i = 0; i < followingUserIds.count ; i++) {
-        NSString *followingUserId = [NSString stringWithFormat:@"%@", [followingUserIds objectAtIndex:i]];
-        if ([currentUserId isEqualToString:[NSString stringWithFormat:@"%@", [profile objectForKey:@"user_id"]]]) {
-            isSelf = YES;
-        }
-        if ([followingUserId isEqualToString:[NSString stringWithFormat:@"%@", [profile objectForKey:@"user_id"]]]) {
-            isFollowing = YES;
-        }
-    }
-
-    if (isSelf) {
-        [follow setTitle:@"You" forState:UIControlStateNormal];
-        follow.enabled = NO;
-    } else if (isFollowing) {
-        [follow setTitle:@"Following" forState:UIControlStateNormal];
-    } else {
-        [follow setTitle:@"Follow" forState:UIControlStateNormal];
-    }
-    
-    follow.titleLabel.font = [UIFont systemFontOfSize:12];
-    [follow addTarget:self 
-               action:@selector(doFollowButton:) 
-       forControlEvents:UIControlEventTouchUpInside];
-    
-    self.followButton = follow;
-    [self addSubview:self.followButton];
-
-    // ACTIVITY INDICATOR
-    UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    activityView.frame = CGRectMake(150, 85, 20, 20.0);
-    self.activityIndicator = activityView;
-    [self addSubview:self.activityIndicator];
-    [activityView release];
 }
 
 - (void)initProfile {
@@ -333,9 +329,7 @@
     NSLog(@"responseString is %@", responseString);
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
-    
 
-    // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         NSLog(@"ERROR");
@@ -351,10 +345,8 @@
 - (void)finishUnfollowing:(ASIHTTPRequest *)request {
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
-    NSLog(@"responseString is %@", responseString);
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
-    // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         NSLog(@"ERROR");

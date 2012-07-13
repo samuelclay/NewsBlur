@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NewsBlurAppDelegate.h"
 
 @class NewsBlurAppDelegate;
+@class ASIHTTPRequest;
 
 @interface ProfileBadge : UIView {
     NewsBlurAppDelegate *appDelegate;
