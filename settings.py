@@ -92,6 +92,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.profile.middleware.TimingMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'subdomains.middleware.SubdomainMiddleware',

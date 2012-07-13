@@ -519,6 +519,7 @@ def shared_stories_public(request, username):
     
 @json.json_view
 def profile(request):
+    time.sleep(1)
     user = get_user(request.user)
     user_id = request.GET.get('user_id', user.pk)
     include_activities_html = request.REQUEST.get('include_activities_html', None)
