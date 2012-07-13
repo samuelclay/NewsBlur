@@ -155,9 +155,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     generate_gradients: function() {
         var $header = this.$('.NB-feed-story-header-feed');
-        
+
         if (!this.feed) return;
         
+        var favicon_color = this.feed.get('favicon_color');
+        if (favicon_color) {
+            $header.css('backgroundColor',  '#' + favicon_color);
+            $header.css('background-image', 'none');
+        }
         $header.css('background-image', NEWSBLUR.utils.generate_gradient(this.feed, 'webkit'));
         $header.css('background-image', NEWSBLUR.utils.generate_gradient(this.feed, 'moz'));
         $header.css('borderTop',        NEWSBLUR.utils.generate_gradient(this.feed, 'border'));

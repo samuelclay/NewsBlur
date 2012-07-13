@@ -28,6 +28,12 @@ def user(u, msg):
             platform = 'Androd'
         elif 'MSIE' in user_agent:
             platform = 'IE'
+            if 'MSIE 9' in user_agent:
+                platform += '9'
+            elif 'MSIE 10' in user_agent:
+                platform += '10'
+            elif 'MSIE 8' in user_agent:
+                platform += '8'
         elif 'Chrome' in user_agent:
             platform = 'Chrome'
         elif 'Safari' in user_agent:

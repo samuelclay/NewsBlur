@@ -193,9 +193,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 
             } else {
                 var syncing = this.services && this.services[service] && this.services[service].syncing;
-                $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
+                $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service + (syncing ? ' NB-friends-service-syncing' : '') }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
-                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, [
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button ' + (syncing ? 'NB-modal-submit-grey' : 'NB-modal-submit-green') }, [
                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
                         (syncing ? 'Fetching...' : 'Find ' + _.string.capitalize(service) + ' Friends')
                     ])
@@ -239,13 +239,13 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var options = "location=0,status=0,width=800,height=500";
         var url = "/oauth/" + service + "_connect";
         this.connect_window = window.open(url, '_blank', options);
-        _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + this.service.name + ' attempt']);
+        _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + service.name + ' attempt']);
     },
     
     disconnect: function(service) {
         var $service = $('.NB-friends-service-'+service, this.$modal);
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
-        _gaq.push(['_trackEvent', 'reader_intro', 'Disconnect from ' + this.service.name]);
+        _gaq.push(['_trackEvent', 'reader_intro', 'Disconnect from ' + service.name]);
         NEWSBLUR.assets.disconnect_social_service(service, _.bind(function(data) {
             this.services = data.services;
             this.make_find_friends_and_services();
@@ -255,6 +255,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     },
     
     post_connect: function(data) {
+        console.log(["Intro post_connect", data]);
         $('.NB-error', this.$modal).remove();
         if (data.error) {
             var $error = $.make('div', { className: 'NB-error' }, [
@@ -264,10 +265,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $('.NB-intro-services', this.$modal).append($error);
             $error.animate({'opacity': 1}, {'duration': 1000});
             this.resize();
-            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + this.service.name + ' error']);
+            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service error']);
         } else {
             this.fetch_friends();
-            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + this.service.name + ' success']);
+            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service success']);
         }
         NEWSBLUR.assets.preference('has_found_friends', true);
         NEWSBLUR.reader.check_hide_getting_started();
@@ -365,7 +366,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         ].join(""));
 
         if (feed_count) {
-            NEWSBLUR.assets.preference('has_setup_feeds', true);
             NEWSBLUR.reader.check_hide_getting_started();
         }
     },

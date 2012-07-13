@@ -51,6 +51,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
 
+@never_cache
 @render_to('reader/feeds.xhtml')
 def index(request, **kwargs):
     if request.method == "GET" and request.subdomain and request.subdomain != 'dev':
@@ -178,6 +179,7 @@ def autologin(request, username, secret):
     return HttpResponseRedirect(reverse('index') + next)
     
 @ratelimit(minutes=1, requests=12)
+@never_cache
 @json.json_view
 def load_feeds(request):
     user             = get_user(request)
@@ -324,6 +326,7 @@ def load_feeds_flat(request):
     return data
 
 @ratelimit(minutes=1, requests=20)
+@never_cache
 @json.json_view
 def refresh_feeds(request):
     user = get_user(request)
@@ -390,6 +393,7 @@ def refresh_feed(request, feed_id):
     return load_single_feed(request, feed_id)
     
 @json.json_view
+@never_cache
 def load_single_feed(request, feed_id):
     start        = time.time()
     user         = get_user(request)
