@@ -11,6 +11,7 @@
 #import "Utilities.h"
 #import "ASIHTTPRequest.h"
 #import "JSON.h"
+#import <QuartzCore/QuartzCore.h>
 
 #define kTopBadgeHeight 125
 
@@ -133,7 +134,6 @@
                                             16);
         [self addSubview:locationIconView];
         [locationIconView release];
-//        yCoordinatePointer = yCoordinatePointer + self.userLocation.frame.size.height;
     } 
     
     UIView *horizontalBar = [[[UIView alloc] initWithFrame:CGRectMake(10, kTopBadgeHeight, self.frame.size.width - 20, 1)] autorelease];
@@ -221,15 +221,25 @@
     }
                      
     if ([photo_url rangeOfString:@"twimg"].location != NSNotFound) {
-        photo_url = [photo_url stringByReplacingOccurrencesOfString:@"_normal" withString:@"_bigger"];        
+        photo_url = [photo_url stringByReplacingOccurrencesOfString:@"_normal" withString:@""];        
     }
     
     NSURL *imageURL = [NSURL URLWithString:photo_url];
     NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
     UIImage *image = [UIImage imageWithData:imageData];
+
     image = [Utilities roundCorneredImage:image radius:6];
     UIImageView *avatar = [[UIImageView alloc] initWithImage:image];
     avatar.frame = CGRectMake(20, 10, 80, 80);
+
+    CALayer * l = [avatar layer];
+    [l setMasksToBounds:YES];
+    [l setCornerRadius:6.0];
+    
+    // scale and crop image
+    [avatar setContentMode:UIViewContentModeScaleAspectFill];
+    [avatar setClipsToBounds:YES];
+    
     self.userAvatar = avatar;
     [self addSubview:self.userAvatar];
     [avatar release];
