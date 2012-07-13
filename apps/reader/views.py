@@ -392,8 +392,8 @@ def refresh_feed(request, feed_id):
 
     return load_single_feed(request, feed_id)
     
-@json.json_view
 @never_cache
+@json.json_view
 def load_single_feed(request, feed_id):
     start        = time.time()
     user         = get_user(request)

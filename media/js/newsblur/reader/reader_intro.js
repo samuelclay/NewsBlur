@@ -62,7 +62,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         ]),
                         $.make('div', { className: 'NB-intro-import NB-intro-import-opml' }, [
                             $.make('h3', ['Upload an', $.make('br'), 'OPML file']),
-                            $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
+                            $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
                                 $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
                                     'Upload OPML File',
                                     $.make('input', { type: 'file', name: 'file', id: 'NB-intro-upload-opml-button', className: 'NB-intro-upload-opml-button' })
