@@ -12,6 +12,8 @@
 #import "ASIHTTPRequest.h"
 #import "JSON.h"
 
+#define kTopBadgeHeight 125
+
 @implementation ProfileBadge
 
 @synthesize appDelegate;
@@ -63,57 +65,38 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];    
     
     self.activeProfile = profile;
-    
-//    self.followingCount.text = [NSString stringWithFormat:@"%i", 
-//                                [[results objectForKey:@"following_count"] intValue]];
-//    self.followersCount.text = [NSString stringWithFormat:@"%i",
-//                                [[results objectForKey:@"follower_count"] intValue]];
- 
+     
     int yCoordinatePointer = 0;
     
     // USERNAME
-    UILabel *user = [[UILabel alloc] initWithFrame:CGRectMake(120, 10, 190, 20)];
+    UILabel *user = [[UILabel alloc] initWithFrame:CGRectMake(110, 10, 190, 22)];
     user.text = [profile objectForKey:@"username"]; 
-    user.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
-    user.font = [UIFont fontWithName:@"Helvetica-Bold" size:20];
+    user.textColor = UIColorFromRGB(0xAE5D15);
+    user.font = [UIFont fontWithName:@"Helvetica-Bold" size:18];
+    user.backgroundColor = [UIColor clearColor];
     self.username = user;
     [self addSubview:self.username];
     yCoordinatePointer = self.username.frame.origin.y + self.username.frame.size.height;
     [user release];
-    
-    // LOCATION
-//    if ([profile objectForKey:@"location"] != [NSNull null]) {
-//        UILabel *location = [[UILabel alloc] 
-//                             initWithFrame:CGRectMake(120, 
-//                                                      yCoordinatePointer, 
-//                                                      190, 
-//                                                      20)];
-//        location.text = [profile objectForKey:@"location"];
-//        location.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
-//        location.font = [UIFont fontWithName:@"Helvetica" size:12];
-//        self.userLocation = location;
-//        [self addSubview:self.userLocation];
-//        [location release];
-//        yCoordinatePointer = yCoordinatePointer + self.userLocation.frame.size.height;
-//    } 
-    
+        
     // BIO
     if ([profile objectForKey:@"bio"] != [NSNull null]) {
         UILabel *bio = [[UILabel alloc] 
-                             initWithFrame:CGRectMake(120, 
+                             initWithFrame:CGRectMake(110, 
                                                       yCoordinatePointer, 
                                                       190, 
-                                                      20)];
+                                                      60)];
         bio.text = [profile objectForKey:@"bio"];
-        bio.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
+//        bio.text = @"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
+        bio.textColor = UIColorFromRGB(0x333333);
         bio.font = [UIFont fontWithName:@"Helvetica" size:12];
         bio.lineBreakMode = UILineBreakModeTailTruncation;
-        bio.numberOfLines = 2;
-        
+        bio.numberOfLines = 5;
+        bio.backgroundColor = [UIColor clearColor];
         
         // Calculate the expected size based on the font and linebreak mode of your label
-        CGSize maximumLabelSize = CGSizeMake(190, 40);
-        CGSize expectedLabelSize = [[profile objectForKey:@"bio"] 
+        CGSize maximumLabelSize = CGSizeMake(190, 60);
+        CGSize expectedLabelSize = [bio.text
                                     sizeWithFont:bio.font 
                                     constrainedToSize:maximumLabelSize 
                                     lineBreakMode:bio.lineBreakMode];
@@ -124,22 +107,111 @@
         self.userDescription = bio;
         [self addSubview:self.userDescription];
         [bio release];
-        yCoordinatePointer = yCoordinatePointer + self.userDescription.frame.size.height;
+        yCoordinatePointer = yCoordinatePointer + self.userDescription.frame.size.height + 6;
     } 
     
-    // STATS
-    UILabel *stats = [[UILabel alloc] initWithFrame:CGRectMake(120, yCoordinatePointer, 190, 20)];
-    NSString *statsStr = [NSString stringWithFormat:@"%i shared stories · %i follower%@", 
-                          [[profile objectForKey:@"shared_stories_count"] intValue],
-                          [[profile objectForKey:@"follower_count"] intValue], 
-                          [[profile objectForKey:@"follower_count"] intValue] == 1 ? @"" : @"s"];
-    stats.text = statsStr;
-    stats.font = [UIFont fontWithName:@"Helvetica" size:10];
-    stats.textColor = UIColorFromRGB(0xAE5D15);
+    // LOCATION
+    if ([profile objectForKey:@"location"] != [NSNull null]) {
+        UILabel *location = [[UILabel alloc] 
+                             initWithFrame:CGRectMake(130, 
+                                                      yCoordinatePointer, 
+                                                      190, 
+                                                      20)];
+        location.text = [profile objectForKey:@"location"];
+        location.textColor = UIColorFromRGB(0x666666);
+        location.backgroundColor = [UIColor clearColor];
+        location.font = [UIFont fontWithName:@"Helvetica" size:12];
+        self.userLocation = location;
+        [self addSubview:self.userLocation];
+        [location release];
+        
+        UIImage *locationIcon = [UIImage imageNamed:@"flag_orange.png"];
+        UIImageView *locationIconView = [[UIImageView alloc] initWithImage:locationIcon];
+        locationIconView.Frame = CGRectMake(110,
+                                            yCoordinatePointer + 2, 
+                                            16, 
+                                            16);
+        [self addSubview:locationIconView];
+        [locationIconView release];
+//        yCoordinatePointer = yCoordinatePointer + self.userLocation.frame.size.height;
+    } 
     
-    self.userStats = stats;
-    [self addSubview:self.userStats];
-    [stats release];
+    UIView *horizontalBar = [[[UIView alloc] initWithFrame:CGRectMake(10, kTopBadgeHeight, self.frame.size.width - 20, 1)] autorelease];
+    horizontalBar.backgroundColor = [UIColor lightGrayColor];
+    horizontalBar.autoresizingMask = 0x3f;
+    [self addSubview:horizontalBar];
+    
+    UIView *leftVerticalBar = [[[UIView alloc] initWithFrame:CGRectMake(((self.frame.size.width - 20)/3) + 10, kTopBadgeHeight, 1, 55)] autorelease];
+    leftVerticalBar.backgroundColor = [UIColor lightGrayColor];
+    [self addSubview:leftVerticalBar];
+    
+    UIView *rightVerticalBar = [[[UIView alloc] initWithFrame:CGRectMake(((self.frame.size.width - 20)/3)*2 + 10, kTopBadgeHeight, 1, 55)] autorelease];
+    rightVerticalBar.backgroundColor = [UIColor lightGrayColor];
+    [self addSubview:rightVerticalBar];
+    
+    // Shared
+    UILabel *shared = [[UILabel alloc] initWithFrame:CGRectMake(20, kTopBadgeHeight + 10, 80, 20)];
+    NSString *sharedStr = [NSString stringWithFormat:@"%i",
+                              [[profile objectForKey:@"shared_stories_count"] intValue]];
+    shared.text = sharedStr;
+    shared.textAlignment = UITextAlignmentCenter;
+    shared.font = [UIFont boldSystemFontOfSize:20];
+    shared.backgroundColor = [UIColor clearColor];
+    [self addSubview:shared];
+    [shared release];
+    
+    UILabel *sharedLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, kTopBadgeHeight + 30, 80, 20)];
+    NSString *sharedLabelStr = [NSString stringWithFormat:@"Shared Stories"];
+    sharedLabel.text = sharedLabelStr;
+    sharedLabel.textAlignment = UITextAlignmentCenter;
+    sharedLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
+    sharedLabel.backgroundColor = [UIColor clearColor];
+    [self addSubview:sharedLabel];
+    [sharedLabel release];
+    
+    
+    // Following
+    UILabel *following = [[UILabel alloc] initWithFrame:CGRectMake(120, kTopBadgeHeight + 10, 80, 20)];
+    NSString *followingStr = [NSString stringWithFormat:@"%i",
+                          [[profile objectForKey:@"following_count"] intValue]];
+    following.text = followingStr;
+    following.textAlignment = UITextAlignmentCenter;
+    following.font = [UIFont boldSystemFontOfSize:20];
+    following.backgroundColor = [UIColor clearColor];
+    [self addSubview:following];
+    [following release];
+    
+    UILabel *followingLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, kTopBadgeHeight + 30, 80, 20)];
+    NSString *followingLabelStr = [NSString stringWithFormat:@"Following"];
+    followingLabel.text = followingLabelStr;
+    followingLabel.textAlignment = UITextAlignmentCenter;
+    followingLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
+    followingLabel.backgroundColor = [UIColor clearColor];
+    [self addSubview:followingLabel];
+    [followingLabel release];
+    
+    
+    // Followers
+    UILabel *followers = [[UILabel alloc] initWithFrame:CGRectMake(220, kTopBadgeHeight + 10, 80, 20)];
+    NSString *followersStr = [NSString stringWithFormat:@"%i", 
+                              [[profile objectForKey:@"follower_count"] intValue]];
+    followers.text = followersStr;
+    followers.textAlignment = UITextAlignmentCenter;
+    followers.font = [UIFont boldSystemFontOfSize:20];
+    followers.backgroundColor = [UIColor clearColor];
+    [self addSubview:followers];
+    [followers release];
+    
+    UILabel *followersLabel = [[UILabel alloc] initWithFrame:CGRectMake(220, kTopBadgeHeight + 30, 80, 20)];
+    NSString *followersLabelStr = [NSString stringWithFormat:@"Follower%@", 
+                              [[profile objectForKey:@"follower_count"] intValue] == 1 ? @"" : @"s"];
+    followersLabel.text = followersLabelStr;
+    followersLabel.textAlignment = UITextAlignmentCenter;
+    followersLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
+    followersLabel.backgroundColor = [UIColor clearColor];
+    [self addSubview:followersLabel];
+    [followersLabel release];
+    
     
     // AVATAR
     NSString *photo_url = [profile objectForKey:@"photo_url"];
@@ -157,14 +229,14 @@
     UIImage *image = [UIImage imageWithData:imageData];
     image = [Utilities roundCorneredImage:image radius:6];
     UIImageView *avatar = [[UIImageView alloc] initWithImage:image];
-    avatar.frame = CGRectMake(10, 10, 100, 100);
+    avatar.frame = CGRectMake(20, 10, 80, 80);
     self.userAvatar = avatar;
     [self addSubview:self.userAvatar];
     [avatar release];
     
     // FOLLOW BUTTON
     UIButton *follow = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    follow.frame = CGRectMake(120, 83, 100, 30);
+    follow.frame = CGRectMake(20, 96, 80, 24);
 
     // check if self
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictUserProfile objectForKey:@"user_id"]];    
@@ -191,6 +263,7 @@
         [follow setTitle:@"Follow" forState:UIControlStateNormal];
     }
     
+    follow.titleLabel.font = [UIFont systemFontOfSize:12];
     [follow addTarget:self 
                action:@selector(doFollowButton:) 
        forControlEvents:UIControlEventTouchUpInside];
@@ -200,7 +273,7 @@
 
     // ACTIVITY INDICATOR
     UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    activityView.frame = CGRectMake(160, 85, 20, 20.0);
+    activityView.frame = CGRectMake(150, 85, 20, 20.0);
     self.activityIndicator = activityView;
     [self addSubview:self.activityIndicator];
     [activityView release];

@@ -14,12 +14,14 @@
 #import "ActivityModule.h"
 #import "Utilities.h"
 #import "MBProgressHUD.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation UserProfileViewController
 
 @synthesize appDelegate;
 @synthesize profileBadge;
 @synthesize activityModule;
+@synthesize profileTable;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -41,12 +43,19 @@
 {
     [self setActivityModule:nil];
     [self setProfileBadge:nil];
+    [self setProfileTable:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    
+    self.profileTable = [[[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 460) style:UITableViewStyleGrouped] autorelease];
+    self.profileTable.dataSource = self;
+    self.profileTable.delegate = self;
+    self.profileTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
     ProfileBadge *badge = [[ProfileBadge alloc] init];
     badge.frame = CGRectMake(0, 0, 320, 140);
     self.profileBadge = badge;
@@ -57,8 +66,10 @@
     
     self.view.frame = CGRectMake(0, 0, 320, 500);
     self.view.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:self.profileBadge];
-    [self.view addSubview:self.activityModule];
+//    [self.view addSubview:self.profileBadge];
+//    [self.view addSubview:self.activityModule];
+    [self.view addSubview:self.profileTable];
+    
     [badge release];
     [activity release];
     [self getUserProfile];
@@ -78,6 +89,7 @@
     [appDelegate release];
     [profileBadge release];
     [activityModule release];
+    [profileBadge release];
     [super dealloc];
 }
 
@@ -121,7 +133,7 @@
     
     [self.profileBadge refreshWithProfile:[results objectForKey:@"user_profile"]];
     [self.activityModule refreshWithActivities:results];
-
+    [self.profileTable reloadData];
     [results release];
 }
 
@@ -130,5 +142,96 @@
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
 }
+
+#pragma mark -
+#pragma mark Table View - Profile Modules List
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 2;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if (section == 1) {
+        return @"Latest Activity";
+    } else {
+        return nil;
+    }
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {    
+    if (section == 0) {
+        return 1;
+    } else {
+        return 5;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
+        return 180;
+    } else {
+        return 44;
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *CellIdentifier;
+        
+    if (indexPath.section == 0) {
+        CellIdentifier = @"ProfileBadgeCellIdentifier";
+    } else {
+        CellIdentifier = @"ActivityCellIdentifier";
+    }
+    
+    UITableViewCell *cell = [tableView 
+                             dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        cell = [[[UITableViewCell alloc] 
+                 initWithStyle:UITableViewCellStyleDefault 
+                 reuseIdentifier:CellIdentifier] autorelease];
+    }
+    
+    NSLog(@"indexPath.section is %i", indexPath.section);
+    if (indexPath.section == 0) {
+        [cell addSubview:self.profileBadge];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    } else {
+        cell.textLabel.text = @"test";
+    }
+//    int activitesCount = [self.activitiesArray count];
+//    if (activitesCount) {
+//        
+//        NSDictionary *activity = [self.activitiesArray objectAtIndex:indexPath.row];
+//        NSString *category = [activity objectForKey:@"category"];
+//        NSString *content = [activity objectForKey:@"content"];
+//        NSString *title = [activity objectForKey:@"title"];
+//        
+//        if ([category isEqualToString:@"follow"]) {
+//            
+//            NSString *withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
+//            cell.textLabel.text = [NSString stringWithFormat:@"%@ followed %@", self.activitiesUsername, withUserUsername];
+//            
+//        } else if ([category isEqualToString:@"comment_reply"]) {
+//            NSString *withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
+//            cell.textLabel.text = [NSString stringWithFormat:@"%@ replied to %@", self.activitiesUsername, withUserUsername];
+//            
+//        } else if ([category isEqualToString:@"sharedstory"]) {
+//            cell.textLabel.text = [NSString stringWithFormat:@"%@ shared %@ : %@", self.activitiesUsername, title, content];
+//            
+//            // star and feedsub are always private.
+//        } else if ([category isEqualToString:@"star"]) {
+//            cell.textLabel.text = [NSString stringWithFormat:@"You saved %@", content];
+//            
+//        } else if ([category isEqualToString:@"feedsub"]) {
+//            
+//            cell.textLabel.text = [NSString stringWithFormat:@"You subscribed to %@", content];
+//        }
+//        
+//        cell.textLabel.font = [UIFont systemFontOfSize:13];
+//    }
+    
+    return cell;
+}
+
 
 @end
