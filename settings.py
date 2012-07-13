@@ -3,7 +3,6 @@ import logging
 import os
 from mongoengine import connect
 import redis
-import pyes
 from utils import jammit
 
 # ===================
@@ -226,6 +225,7 @@ INSTALLED_APPS = (
     'apps.push',
     'apps.social',
     'apps.oauth',
+    'apps.search',
     'south',
     'utils',
     'vendor',
@@ -399,12 +399,6 @@ REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
 REDIS_ANALYTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=1)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
-
-# =================
-# = Elasticsearch =
-# =================
-
-ELASTICSEARCH = pyes.ES(ELASTICSEARCH_HOSTS)
 
 if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.SqldumpMiddleware',)
