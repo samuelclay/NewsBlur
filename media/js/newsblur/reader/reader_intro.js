@@ -179,6 +179,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     make_find_friends_and_services: function() {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         var $services = $('.NB-intro-services', this.$modal).empty();
+        var service_syncing = false;
         
         _.each(['twitter', 'facebook'], _.bind(function(service) {
             var $service;
@@ -193,6 +194,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 
             } else {
                 var syncing = this.services && this.services[service] && this.services[service].syncing;
+                if (syncing) service_syncing = true;
+                
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service + (syncing ? ' NB-friends-service-syncing' : '') }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button ' + (syncing ? 'NB-modal-submit-grey' : 'NB-modal-submit-green') }, [
@@ -200,9 +203,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         (syncing ? 'Fetching...' : 'Find ' + _.string.capitalize(service) + ' Friends')
                     ])
                 ]);
-                if (syncing) {
-                    _.delay(_.bind(this.fetch_friends, this), 3000);
-                }
             }
             $services.append($service);
         }, this));
@@ -232,6 +232,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             }, this));
             $services.append($stats);
             $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
+        }
+
+        if (service_syncing) {
+            _.delay(_.bind(this.fetch_friends, this), 3000);
         }
     },
     

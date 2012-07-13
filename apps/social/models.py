@@ -298,7 +298,8 @@ class MSocialProfile(mongo.Document):
         domain = Site.objects.get_current().domain.replace('www', 'dev')
         return 'http://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
-    def to_json(self, compact=False, include_follows=False, common_follows_with_user=None, include_settings=False):
+    def to_json(self, compact=False, include_follows=False, common_follows_with_user=None,
+                include_settings=False, include_following_user=None):
         # domain = Site.objects.get_current().domain
         domain = Site.objects.get_current().domain.replace('www', 'dev')
         params = {
@@ -343,7 +344,11 @@ class MSocialProfile(mongo.Document):
             params['followers_everybody'] = followers_everybody[:48]
             params['following_youknow'] = following_youknow[:48]
             params['following_everybody'] = following_everybody[:48]
-            params['following'] = self.is_followed_by_user(common_follows_with_user)
+        if include_following_user or common_follows_with_user:
+            if not include_following_user:
+                include_following_user = common_follows_with_user
+            params['followed_by_you'] = self.is_followed_by_user(include_following_user)
+            params['following_you'] = self.is_following_user(include_following_user)
 
         return params
     

@@ -96,19 +96,18 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     make_find_friends_and_services: function() {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         var $services = $('.NB-friends-services', this.$modal).empty();
+        var service_syncing = false;
         
         _.each(['twitter', 'facebook'], _.bind(function(service) {
             var $service;
             
             if (this.services && this.services[service][service+'_uid']) {
                 var syncing = this.services[service].syncing;
+                if (syncing) service_syncing = true;
                 $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service + (this.services[service].syncing ? ' NB-friends-service-syncing' : '') }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, syncing ? 'Fetching...' : 'Disconnect')
                 ]);
-                if (syncing) {
-                    _.delay(_.bind(this.check_services_sync_status, this), 3000);
-                }
             } else {
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
@@ -150,6 +149,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         } else {
             var $ghost = $.make('div', { className: 'NB-ghost' }, 'Nobody left to recommend. Good job!');
             $findlist.append($ghost);
+        }
+        
+        if (service_syncing) {
+            _.delay(_.bind(this.check_services_sync_status, this), 3000);
         }
     },
     

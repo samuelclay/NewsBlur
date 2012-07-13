@@ -54,7 +54,7 @@ def user(u, msg):
             time_elapsed = "[%.4ss] " % (now - request.start_time)
     premium = '*' if u.is_authenticated() and u.profile.is_premium else ''
     username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else u
-    info(' ---> [~FB~SN%-6s~SB] [%s%s] %s%s' % (platform, time_elapsed, username, premium, msg))
+    info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
 
 def cipher(msg):
     shift = len(msg)

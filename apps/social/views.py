@@ -519,7 +519,6 @@ def shared_stories_public(request, username):
     
 @json.json_view
 def profile(request):
-    time.sleep(1)
     user = get_user(request.user)
     user_id = request.GET.get('user_id', user.pk)
     include_activities_html = request.REQUEST.get('include_activities_html', None)
@@ -603,11 +602,19 @@ def save_blurblog_settings(request):
 @json.json_view
 def load_user_friends(request):
     user = get_user(request.user)
-    social_profile, _ = MSocialProfile.objects.get_or_create(user_id=user.pk)
+    social_profile, _  = MSocialProfile.objects.get_or_create(user_id=user.pk)
     social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
     following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
-    follower_profiles = MSocialProfile.profiles(social_profile.follower_user_ids)
-    recommended_users = social_profile.recommended_users()
+    follower_profiles  = MSocialProfile.profiles(social_profile.follower_user_ids)
+    recommended_users  = social_profile.recommended_users()
+    
+    following_profiles = [p.to_json(include_following_user=user.pk) for p in following_profiles]
+    follower_profiles  = [p.to_json(include_following_user=user.pk) for p in follower_profiles]
+    
+    logging.user(request, "~BB~FRLoading Friends (%s following, %s followers)" % (
+        social_profile.following_count,
+        social_profile.follower_count,
+    ))
 
     return {
         'services': social_services,
