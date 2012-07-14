@@ -50,8 +50,11 @@ def user(u, msg):
             platform = 'WP7'
 
         if hasattr(request, 'start_time'):
-            now = time.time()
-            time_elapsed = "[%.4ss] " % (now - request.start_time)
+            seconds = time.time() - request.start_time
+            time_elapsed = "[%s%.4ss] " % (
+                '~FB' if seconds < .5 else '~FR',
+                seconds,
+            )
     premium = '*' if u.is_authenticated() and u.profile.is_premium else ''
     username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else u
     info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
