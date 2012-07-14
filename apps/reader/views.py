@@ -321,6 +321,7 @@ def load_feeds_flat(request):
         "social_feeds": social_feeds,
         "social_profile": social_profile,
         "user": user.username,
+        "user_profile": user.profile,
         "iphone_version": iphone_version,
     }
     return data
