@@ -162,10 +162,8 @@ def load_social_stories(request, user_id, username=None):
     
     diff1 = checkpoint1-start
     diff2 = checkpoint2-start
-    timediff = time.time()-start
-    logging.user(request, "~FYLoading ~FMshared stories~FY: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s~SN)" % (
-    social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', timediff,
-    diff1, diff2))
+    logging.user(request, "~FYLoading ~FMshared stories~FY: ~SB%s%s ~SN(~SB%.4ss/%.4ss~SN)" % (
+    social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', diff1, diff2))
 
     return {
         "stories": stories, 
