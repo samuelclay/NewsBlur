@@ -36,9 +36,11 @@
                         initWithObjects:@"Account", @"Preferences", @"Logout", nil] autorelease];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        toolbar.hidden = YES;
-        menuTableView.frame = CGRectMake(0, 0, menuTableView.frame.size.width, menuTableView.frame.size.height + 44);
+        self.toolbar.hidden = YES;
+        self.menuTableView.frame = CGRectMake(0, 0, menuTableView.frame.size.width, menuTableView.frame.size.height + 44);
     }
+    
+    self.toolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 - (void)viewDidUnload

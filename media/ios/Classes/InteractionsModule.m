@@ -123,7 +123,7 @@
             UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
 
             UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:appDelegate.userProfileViewController];
-            [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
+            [popoverController setPopoverContentSize:CGSizeMake(320, 416)];
             [popoverController presentPopoverFromRect:cell.bounds 
                                      inView:cell 
                    permittedArrowDirections:UIPopoverArrowDirectionAny 

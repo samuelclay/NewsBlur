@@ -608,7 +608,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             [popoverController setContentViewController:appDelegate.userProfileViewController];
         }
         
-        [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
+        [popoverController setPopoverContentSize:CGSizeMake(320, 416)];
         
         // only adjust for the bar if user is scrolling
         if (appDelegate.isRiverView || appDelegate.isSocialView) {
@@ -884,24 +884,49 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (IBAction)toggleFontSize:(id)sender {
-    if (popoverController == nil) {
-        popoverController = [[UIPopoverController alloc]
-                           initWithContentViewController:appDelegate.fontSettingsViewController];
-        
-        popoverController.delegate = self;
-    } else {
-        if (popoverController.isPopoverVisible) {
-            [popoverController dismissPopoverAnimated:YES];
-            return;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (popoverController == nil) {
+            popoverController = [[UIPopoverController alloc]
+                                 initWithContentViewController:appDelegate.fontSettingsViewController];
+            
+            popoverController.delegate = self;
+        } else {
+            if (popoverController.isPopoverVisible) {
+                [popoverController dismissPopoverAnimated:YES];
+                return;
+            }
+            
+            [popoverController setContentViewController:appDelegate.fontSettingsViewController];
         }
         
-        [popoverController setContentViewController:appDelegate.fontSettingsViewController];
-    }
+        [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
         
-    [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
+        [popoverController presentPopoverFromBarButtonItem:sender
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    } else {
+        FontSettingsViewController *fontSettings = [[FontSettingsViewController alloc] init];
+        appDelegate.fontSettingsViewController = fontSettings;
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:appDelegate.fontSettingsViewController];
+        
+        // adding Done button
+        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                       initWithTitle:@"Done" 
+                                       style:UIBarButtonItemStyleDone 
+                                       target:self 
+                                       action:@selector(hideToggleFontSize)];
+        
+        appDelegate.fontSettingsViewController.navigationItem.rightBarButtonItem = donebutton;
+        appDelegate.fontSettingsViewController.navigationItem.title = @"Style";
+        [self presentModalViewController:navController animated:YES];
+        
+        [fontSettings release];
+        [donebutton release];
+        [navController release];
+    }
+}
 
-    [popoverController presentPopoverFromBarButtonItem:sender
-                              permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+- (void)hideToggleFontSize {
+    [self dismissModalViewControllerAnimated:YES];
 }
 
 - (void)changeFontSize:(NSString *)fontSize {

@@ -55,19 +55,21 @@
 - (void)viewDidLoad {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    if ([userPreferences integerForKey:@"siteDisplayMode"] == 0) {
-        NSLog(@"Show ALL stories");
-        self.viewShowingAllFeeds = YES;
-        [self.intelligenceControl setSelectedSegmentIndex:0];
-    } else if ([userPreferences integerForKey:@"siteDisplayMode"] == 1) {
-        NSLog(@"Show UNREAD stories");
-        self.viewShowingAllFeeds = NO;
-        [self.intelligenceControl setSelectedSegmentIndex:1];
-    } else {
+    if ([userPreferences integerForKey:@"selectedIntelligence"] == 2) {
         NSLog(@"Show FOCUS stories");
         self.viewShowingAllFeeds = NO;
         [self.intelligenceControl setSelectedSegmentIndex:2];
         [appDelegate setSelectedIntelligence:1];
+    } else if ([userPreferences integerForKey:@"selectedIntelligence"] == 1) {
+        NSLog(@"Show UNREAD stories");
+        self.viewShowingAllFeeds = NO;
+        [self.intelligenceControl setSelectedSegmentIndex:1];
+        [appDelegate setSelectedIntelligence:0];
+    } else {
+        NSLog(@"Show ALL stories");
+        self.viewShowingAllFeeds = YES;
+        [self.intelligenceControl setSelectedSegmentIndex:0];
+        [appDelegate setSelectedIntelligence:0];
     }
     
     [appDelegate showNavigationBar:NO];
@@ -423,7 +425,7 @@
             [popoverController setContentViewController:appDelegate.userProfileViewController];
         }
         
-        [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
+        [popoverController setPopoverContentSize:CGSizeMake(320, 416)];
         [popoverController presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem 
                                   permittedArrowDirections:UIPopoverArrowDirectionAny 
                                                   animated:YES];  
@@ -794,7 +796,7 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
     if (selectedSegmentIndex == 0) {
         hud.labelText = @"All Stories";
-        [userPreferences setInteger:0 forKey:@"siteDisplayMode"];
+        [userPreferences setInteger:0 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
         if (appDelegate.selectedIntelligence == 1) {
@@ -806,7 +808,7 @@
         [self switchSitesUnread];
     } else if(selectedSegmentIndex == 1) {
         hud.labelText = @"Unread Stories";
-        [userPreferences setInteger:1 forKey:@"siteDisplayMode"];
+        [userPreferences setInteger:1 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
         if (appDelegate.selectedIntelligence == 1) {
@@ -818,7 +820,7 @@
         [self switchSitesUnread];
     } else {
         hud.labelText = @"Focus Stories";
-        [userPreferences setInteger:2 forKey:@"siteDisplayMode"];
+        [userPreferences setInteger:2 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
         if (self.viewShowingAllFeeds == YES) {

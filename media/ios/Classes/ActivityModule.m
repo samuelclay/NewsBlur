@@ -7,6 +7,7 @@
 //
 
 #import "ActivityModule.h"
+#import "ActivityCell.h"
 #import "NewsBlurAppDelegate.h"
 #import <QuartzCore/QuartzCore.h>
 
@@ -77,6 +78,12 @@
     }
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    ActivityCell *activityCell = [[[ActivityCell alloc] init] autorelease];
+    int height = [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername] + 20;
+    return height;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
     
@@ -86,40 +93,17 @@
         cell = [[[UITableViewCell alloc] 
                  initWithStyle:UITableViewCellStyleDefault 
                  reuseIdentifier:CellIdentifier] autorelease];
+    } else {
+        [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
     }
     
     int activitesCount = [self.activitiesArray count];
-    if (activitesCount) {
-
-        NSDictionary *activity = [self.activitiesArray objectAtIndex:indexPath.row];
-        NSString *category = [activity objectForKey:@"category"];
-        NSString *content = [activity objectForKey:@"content"];
-        NSString *title = [activity objectForKey:@"title"];
-        
-        if ([category isEqualToString:@"follow"]) {
-            
-            NSString *withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ followed %@", self.activitiesUsername, withUserUsername];
-            
-        } else if ([category isEqualToString:@"comment_reply"]) {
-            NSString *withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ replied to %@", self.activitiesUsername, withUserUsername];
-            
-        } else if ([category isEqualToString:@"sharedstory"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ shared %@ : %@", self.activitiesUsername, title, content];
-        
-        // star and feedsub are always private.
-        } else if ([category isEqualToString:@"star"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"You saved %@", content];
-            
-        } else if ([category isEqualToString:@"feedsub"]) {
-            
-            cell.textLabel.text = [NSString stringWithFormat:@"You subscribed to %@", content];
-        }
-        
-        cell.textLabel.font = [UIFont systemFontOfSize:13];
-    }
-    
+    if (activitesCount >= (indexPath.row + 1)) {
+        ActivityCell *activityCell = [[ActivityCell alloc] init];
+        [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername];
+        [cell.contentView addSubview:activityCell];
+        [activityCell release];
+    }    
     return cell;
 }
 

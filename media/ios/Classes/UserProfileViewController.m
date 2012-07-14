@@ -54,8 +54,9 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    self.view.frame = CGRectMake(0, 0, 320, 400);
+    self.view.frame = CGRectMake(0, 0, 320, 416);
     self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     self.profileTable = [[[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped] autorelease];
     self.profileTable.dataSource = self;
@@ -167,7 +168,7 @@
     if (section == 0) {
         return 1;
     } else {
-        return [self.activitiesArray count] * 50;
+        return [self.activitiesArray count];
     }
 }
 
@@ -176,7 +177,7 @@
         return 180;
     } else {
         ActivityCell *activityCell = [[[ActivityCell alloc] init] autorelease];
-        int height = [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row % 5)] withUsername:self.activitiesUsername] + 20;
+        int height = [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername] + 20;
         return height;
     }
 }
@@ -207,10 +208,10 @@
     // User Activities
     } else {
         int activitesCount = [self.activitiesArray count];
-        if (activitesCount * 50 >= (indexPath.row + 1)) {
+        if (activitesCount >= (indexPath.row + 1)) {
             ActivityCell *activityCell = [[ActivityCell alloc] init];
             activityCell.tag = 1;
-            [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row % 5)] withUsername:self.activitiesUsername];
+            [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername];
             [cell.contentView addSubview:activityCell];
             [activityCell release];
         }

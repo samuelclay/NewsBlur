@@ -233,7 +233,8 @@
     [shared release];
     
     UILabel *sharedLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, kTopBadgeHeight + 30, 80, 20)];
-    NSString *sharedLabelStr = [NSString stringWithFormat:@"Shared Stories"];
+    NSString *sharedLabelStr = [NSString stringWithFormat:@"Shared Stor%@",
+                                [[profile objectForKey:@"shared_stories_count"] intValue] == 1 ? @"y" : @"ies"];
     sharedLabel.text = sharedLabelStr;
     sharedLabel.textAlignment = UITextAlignmentCenter;
     sharedLabel.font = [UIFont fontWithName:@"Helvetica" size:12];

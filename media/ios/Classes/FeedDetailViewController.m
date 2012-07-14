@@ -115,7 +115,7 @@
     [self.intelligenceControl addTarget:self
                          action:@selector(selectIntelligence)
                forControlEvents:UIControlEventValueChanged];
-    [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence]+1];
+    [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence] + 1];
     
 	[super viewWillAppear:animated];
         
@@ -1034,7 +1034,7 @@
             [popoverController setContentViewController:appDelegate.userProfileViewController];
         }
         
-        [popoverController setPopoverContentSize:CGSizeMake(320, 400)];
+        [popoverController setPopoverContentSize:CGSizeMake(320, 416)];
         [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
                                   permittedArrowDirections:UIPopoverArrowDirectionAny 
                                                   animated:YES];  

@@ -61,6 +61,7 @@
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)setActiveStory;
 - (IBAction)toggleFontSize:(id)sender;
+- (void)hideToggleFontSize;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
 - (NSString *)getComments;
