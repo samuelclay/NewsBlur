@@ -7,13 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "OHAttributedLabel.h"
 
 @interface ActivityCell : UIView {
-    UILabel *activityLabel;
+    OHAttributedLabel *activityLabel;
 }
 
-@property (retain, nonatomic) UILabel *activityLabel;
+@property (retain, nonatomic) OHAttributedLabel *activityLabel;
 
-- (void)refreshActivity:(NSDictionary *)activity withUsername:(NSString *)username;
+- (int)refreshActivity:(NSDictionary *)activity withUsername:(NSString *)username;
 
 @end

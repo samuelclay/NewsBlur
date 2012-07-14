@@ -18,4 +18,6 @@
 //    #define NEWSBLUR_URL [NSString stringWithFormat:@"nb.local.host:8000"]
     #define NEWSBLUR_URL [NSString stringWithFormat:@"dev.newsblur.com"]
 
+    #define NEWSBLUR_ORANGE 0xAE5D15
+
 #endif

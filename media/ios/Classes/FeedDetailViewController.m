@@ -359,8 +359,6 @@
     
     NSInteger newVisibleStoriesCount = [[appDelegate activeFeedStoryLocations] count] - existingStoriesCount;
     
-//    NSLog(@"Paging: %d/%d", existingStoriesCount, [appDelegate unreadCount]);
-    
     if (existingStoriesCount > 0 && newVisibleStoriesCount > 0) {
         NSMutableArray *indexPaths = [[NSMutableArray alloc] init];
         for (int i=0; i < newVisibleStoriesCount; i++) {

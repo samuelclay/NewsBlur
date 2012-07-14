@@ -135,7 +135,6 @@
 }
 
 - (void)viewDidLoad {
-    self.selectedIntelligence = 1;
     self.visibleUnreadCount = 0;
     [self setRecentlyReadStories:[NSMutableArray array]];
 }
