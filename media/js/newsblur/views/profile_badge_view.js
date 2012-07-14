@@ -72,7 +72,7 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                                (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
                 }, 'Edit Profile'))
             ]);
-        } else if (_.contains(NEWSBLUR.reader.model.user_profile.get('following_user_ids'), profile.get('user_id'))) {
+        } else if (profile.get('followed_by_you')) {
             $actions = $.make('div', { 
                 className: 'NB-profile-badge-action-unfollow NB-profile-badge-action-buttons NB-modal-submit-button NB-modal-submit-grey' 
             }, 'Following');

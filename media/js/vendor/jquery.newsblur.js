@@ -7,7 +7,8 @@ if (typeof NEWSBLUR.Globals == 'undefined') NEWSBLUR.Globals = {};
 var URL_REGEX = /((https?\:\/\/)|(www\.))(\S+)(\w{2,4})(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi;
 
 if (!window.console || !window.console.log) {
-    console.log = function() {};
+    window.console = {};
+    window.console.log = function() {};
 }
 
 NEWSBLUR.log = function(msg) {

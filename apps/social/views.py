@@ -558,9 +558,11 @@ def load_user_profile(request):
     social_profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
     social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
     
+    logging.user(request, "~BB~FRLoading social profile and blurblog settings")
+    
     return {
         'services': social_services,
-        'user_profile': social_profile.to_json(include_follows=True),
+        'user_profile': social_profile.to_json(include_follows=True, include_settings=True),
     }
     
 @ajax_login_required
@@ -581,14 +583,38 @@ def save_user_profile(request):
     
     return dict(code=1, user_profile=profile.to_json(include_follows=True))
 
+    
+@ajax_login_required
+@json.json_view
+def save_blurblog_settings(request):
+    data = request.POST
+
+    profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
+    profile.custom_css = data.get('custom_css', None)
+    profile.custom_bgcolor = data.get('custom_bgcolor', None)
+    profile.blurblog_title = data.get('blurblog_title', None)
+    profile.save()
+
+    logging.user(request, "~BB~FRSaving blurblog settings")
+    
+    return dict(code=1, user_profile=profile.to_json(include_follows=True, include_settings=True))
+
 @json.json_view
 def load_user_friends(request):
     user = get_user(request.user)
-    social_profile, _ = MSocialProfile.objects.get_or_create(user_id=user.pk)
+    social_profile, _  = MSocialProfile.objects.get_or_create(user_id=user.pk)
     social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
     following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
-    follower_profiles = MSocialProfile.profiles(social_profile.follower_user_ids)
-    recommended_users = social_profile.recommended_users()
+    follower_profiles  = MSocialProfile.profiles(social_profile.follower_user_ids)
+    recommended_users  = social_profile.recommended_users()
+    
+    following_profiles = [p.to_json(include_following_user=user.pk) for p in following_profiles]
+    follower_profiles  = [p.to_json(include_following_user=user.pk) for p in follower_profiles]
+    
+    logging.user(request, "~BB~FRLoading Friends (%s following, %s followers)" % (
+        social_profile.following_count,
+        social_profile.follower_count,
+    ))
 
     return {
         'services': social_services,
@@ -779,6 +805,32 @@ def load_interactions(request):
     
     if format == 'html':
         return render_to_response('reader/interactions_module.xhtml', data,
+                                  context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, data)
+        
+def load_activities(request):
+    user_id = request.REQUEST.get('user_id', None)
+    if user_id:
+        user_id = int(user_id)
+        user = User.objects.get(pk=user_id)
+    else:
+        user = get_user(request)
+        user_id = user.pk
+        
+    public = user_id != request.user.pk
+    page = max(1, int(request.REQUEST.get('page', 1)))
+    activities = MActivity.user(user_id, page=page, public=public)
+    format = request.REQUEST.get('format', None)
+    
+    data = {
+        'activities': activities,
+        'page': page,
+        'username': (user.username if public else 'You'),
+    }
+    
+    if format == 'html':
+        return render_to_response('reader/activities_module.xhtml', data,
                                   context_instance=RequestContext(request))
     else:
         return json.json_response(request, data)

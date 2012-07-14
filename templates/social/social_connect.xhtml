@@ -33,6 +33,10 @@
         } 
     </style>
     <script type="text/javascript" charset="utf-8">
+        if (!window.console) {
+            window.console = {};
+            window.console.log = function() {};
+        }
         var next = "{{ next|safe }}";
         if (next) {
             console.log(["Forwarding to next", next]);
@@ -75,6 +79,7 @@
             }
             window.close();
         } else {
+            console.log(["No opener, directing to /", window.opener]);
             window.location.href = "/";
         }
     </script>

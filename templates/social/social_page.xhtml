@@ -7,7 +7,7 @@
     <title>{{ social_profile.feed_title }}</title>
     <link rel="alternate" type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}" title="{{ social_profile.feed_title }} RSS feed">
     <link rel="shortcut icon" HREF="{{ social_profile.photo_url }}">
-    <meta name="viewport" content="width=440">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1.5">
     
     {% include_stylesheets "blurblog" %}
     
@@ -39,12 +39,28 @@
     NEWSBLUR.Views = {};
     NEWSBLUR.app = {};
     </script>
+    
+  {% if not debug %}
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-8371683-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+  {% endif %}
 
 </head>
 
 <body>
     
-<div class="NB-page">
+<div class="NB-page" style="background-color: {% if social_profile.custom_bgcolor %}{{ social_profile.custom_bgcolor }}{% else %}#EBC55F{% endif %}">
     <header class="NB-header">
         <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
 
@@ -116,15 +132,24 @@
         </div>
     {% endif %}
     
-    <footer>
-        NewsBlur
-    </footer>
 </div>
     
+<footer>
+    <div class="NB-footer-logo">
+        <a href="//{% current_domain %}"><img src="{{ MEDIA_URL }}img/logo_newsblur_blur.png" />
+    </div>
+</footer>
+
 {% include_javascripts "blurblog" %}
 
 <script type="text/javascript" charset="utf-8">
     _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
+</script>
+
+<script>
+if ($(window).width() < 600) { 
+    $('meta[name=viewport]').attr('content','initial-scale=0.9, maximum-scale=1.5'); 
+}
 </script>
 
 </body>

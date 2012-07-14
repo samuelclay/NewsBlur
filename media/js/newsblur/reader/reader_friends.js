@@ -85,16 +85,28 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         }, this));
     },
     
+    check_services_sync_status: function() {
+        this.model.fetch_friends(_.bind(function(data) {
+            this.profile = this.model.user_profile;
+            this.services = data.services;
+            this.make_find_friends_and_services();
+        }, this));
+    },
+    
     make_find_friends_and_services: function() {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         var $services = $('.NB-friends-services', this.$modal).empty();
+        var service_syncing = false;
         
         _.each(['twitter', 'facebook'], _.bind(function(service) {
             var $service;
+            
             if (this.services && this.services[service][service+'_uid']) {
-                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service }, [
+                var syncing = this.services[service].syncing;
+                if (syncing) service_syncing = true;
+                $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service + (this.services[service].syncing ? ' NB-friends-service-syncing' : '') }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
-                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, 'Disconnect')
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, syncing ? 'Fetching...' : 'Disconnect')
                 ]);
             } else {
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
@@ -138,6 +150,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var $ghost = $.make('div', { className: 'NB-ghost' }, 'Nobody left to recommend. Good job!');
             $findlist.append($ghost);
         }
+        
+        if (service_syncing) {
+            _.delay(_.bind(this.check_services_sync_status, this), 3000);
+        }
     },
     
     make_profile_section: function() {
@@ -145,21 +161,21 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         var $profile_badge;
         var profile = this.profile;
         
-        if (!profile.get('location') && !profile.get('bio') && !profile.get('website')) {
-            $profile_badge = $.make('a', { 
-                className: 'NB-friends-profile-link NB-modal-submit-button NB-modal-submit-green', 
-                href: '#'
-            }, [
-                'Fill out your profile ',
-                $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/eye.png', style: 'padding-left: 10px' }),
-                $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/eye.png' })
-            ]);
-        } else {
+        // if (!profile.get('location') && !profile.get('bio') && !profile.get('website')) {
+        //     $profile_badge = $.make('a', { 
+        //         className: 'NB-friends-profile-link NB-modal-submit-button NB-modal-submit-green', 
+        //         href: '#'
+        //     }, [
+        //         'Fill out your profile ',
+        //         $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/eye.png', style: 'padding-left: 10px' }),
+        //         $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL']+'img/icons/silk/eye.png' })
+        //     ]);
+        // } else {
             $profile_badge = new NEWSBLUR.Views.SocialProfileBadge({
                 model: profile,
                 show_edit_button: true
             });
-        }
+        // }
         
         $badge.append($profile_badge);
     },

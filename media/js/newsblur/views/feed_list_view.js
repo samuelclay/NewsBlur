@@ -194,7 +194,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     scroll_to_show_selected_feed: function(feed_view) {
         var $feed_lists = this.$s.$feed_lists;
         var is_feed_visible = $feed_lists.isScrollVisible(feed_view.$el);
-        // console.log(["scroll_to_show_selected_feed", feed_view, feed_view.$el, is_feed_visible]);
+        // NEWSBLUR.log(["scroll_to_show_selected_feed", feed_view, feed_view.$el, is_feed_visible]);
 
         if (!is_feed_visible) {
             var scroll = feed_view.$el.position().top;

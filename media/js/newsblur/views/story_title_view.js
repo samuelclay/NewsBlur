@@ -3,11 +3,12 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     className: 'story NB-story-title',
     
     events: {
-        "click"                             : "select_story",
-        "contextmenu"                       : "show_manage_menu",
-        "click .NB-story-manage-icon"       : "show_manage_menu",
-        "mouseenter .NB-story-manage-icon"  : "mouseenter_manage_icon",
-        "mouseleave .NB-story-manage-icon"  : "mouseleave_manage_icon"
+        "dblclick"                      : "open_story_in_story_view",
+        "click"                         : "select_story",
+        "contextmenu"                   : "show_manage_menu",
+        "click .NB-story-manage-icon"   : "show_manage_menu",
+        "mouseenter"                    : "mouseenter_manage_icon",
+        "mouseleave"                    : "mouseleave_manage_icon"
     },
     
     initialize: function() {
@@ -106,13 +107,15 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     },
     
     toggle_starred: function() {
+        var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
         var $star = this.$('.NB-storytitles-star');
         NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);
+        
         
         if (this.model.get('starred')) {
             $star.attr({'title': 'Saved!'});
             $star.tipsy({
-                gravity: 'sw',
+                gravity: pane_alignment == 'north' ? 'nw' : 'sw',
                 fade: true,
                 trigger: 'manual',
                 offsetOpposite: -1
@@ -142,7 +145,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             $star.attr({'title': 'Removed'});
         
             $star.tipsy({
-                gravity: 'sw',
+                gravity: pane_alignment == 'north' ? 'nw' : 'sw',
                 fade: true,
                 trigger: 'manual',
                 offsetOpposite: -1
@@ -177,7 +180,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     show_manage_menu: function(e) {
         e.preventDefault();
         e.stopPropagation();
-        // console.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+        // NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
         NEWSBLUR.reader.show_manage_menu('story', this.$el, {
             story_id: this.model.id,
             feed_id: this.model.get('story_feed_id')
@@ -194,6 +197,13 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     
     mouseleave_manage_icon: function() {
         this.$el.removeClass('NB-hover-inverse');
+    },
+    
+    open_story_in_story_view: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        NEWSBLUR.app.story_tab_view.open_story(this.model, true);
+        return false;
     }
         
 });

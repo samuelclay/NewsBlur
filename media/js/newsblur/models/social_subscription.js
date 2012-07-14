@@ -16,7 +16,7 @@ NEWSBLUR.Models.SocialSubscription = Backbone.Model.extend({
     },
     
     on_remove: function() {
-        console.log(["Remove Feed", this, this.views]);
+        NEWSBLUR.log(["Remove Feed", this, this.views]);
         _.each(this.views, function(view) { view.remove(); });
     },
 

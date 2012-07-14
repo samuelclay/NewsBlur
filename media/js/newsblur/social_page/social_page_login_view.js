@@ -169,7 +169,7 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
     },
     
     post_login: function(data) {
-        console.log(["login data", data]);
+        NEWSBLUR.log(["login data", data]);
         this.clean();
         
         window.location.href = this.options.story_url;
@@ -195,7 +195,7 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
     },
     
     post_signup: function(data) {
-        console.log(["signup data", data]);
+        NEWSBLUR.log(["signup data", data]);
         this.clean();
         
         window.location.href = this.options.story_url;

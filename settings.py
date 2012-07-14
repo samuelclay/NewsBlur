@@ -92,6 +92,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.profile.middleware.TimingMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
     'subdomains.middleware.SubdomainMiddleware',
@@ -389,6 +390,7 @@ MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
 # =========
 
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
+REDIS_ANALYTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=1)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 

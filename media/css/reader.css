@@ -2437,33 +2437,45 @@ background: transparent;
     color: #202020;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost {
-    margin-right: -4px;
+    margin: 8px 0;
+    overflow: hidden;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter,
 .NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
-    float: right;
+    float: left;
     width: 16px;
     height: 16px;
-    margin: 0 0 0 6px;
+    margin: 0 6px 0 0;
     opacity: .4;
     cursor: pointer;
     -webkit-filter: grayscale(100%);
+    filter: gray;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter:hover,
 .NB-sideoption-share .NB-sideoption-share-crosspost-facebook:hover {
     opacity: .7;
     -webkit-filter: none;
+    filter: none;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter.NB-active,
 .NB-sideoption-share .NB-sideoption-share-crosspost-facebook.NB-active {
     opacity: 1;
     -webkit-filter: none;
+    filter: none;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-twitter {
     background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
 }
 .NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
     background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
+}
+.NB-sideoption-share .NB-sideoption-share-crosspost-text {
+    font-size: 9px;
+    text-transform: uppercase;
+    text-align: left;
+    color: #7483A2;
+    text-shadow: 0 1px 0 #FBFBFB;
+    line-height: 16px;
 }
 .NB-sideoption-share .NB-sideoption-share-comments {
     width: 100%;
@@ -7644,7 +7656,11 @@ form.opml_import_form input {
     float: left;
     clear: both;
 }
-
+.NB-friends-service.NB-friends-service-syncing .NB-friends-service-title {
+    padding-right: 18px;
+    background: transparent url('/media/embed/reader/recycle_spinner.gif') no-repeat right 3px;
+    margin-right: 8px;
+}
 
 .NB-modal-friends .NB-friends-findfriends-profile {
     text-align: left;
@@ -7731,7 +7747,7 @@ form.opml_import_form input {
 }
 .NB-modal-profile-editor .NB-tab-profile .NB-modal-submit-button {
     float: left;
-    margin: 12px 0 0 12px;
+    margin: 12px 0 12px 12px;
     text-align: center;
 }
 .NB-modal-profile-editor .NB-modal-section.NB-friends-profile {
@@ -7851,6 +7867,64 @@ form.opml_import_form input {
     text-transform: uppercase;
 }
 
+.NB-modal-profile-editor .NB-tab-blurblog label {
+    clear: both;
+    float: left;
+    width: 200px;
+    padding: 0 8px 0 12px;
+}
+.NB-modal-profile-editor .NB-tab-blurblog input {
+    width: 300px;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-colors {
+    width: 516px;
+    float: left;
+    margin: 0 -6px 12px;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-colorline {
+    clear: both;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-color {
+    float: left;
+    width: 29px;
+    height: 33px;
+    border: 1px solid #606060;
+    margin: 5px 6px;
+    box-shadow: 1px 1px 0 #CFCFCF;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-color:hover {
+    box-shadow: none;
+    border: 4px solid #D95300;
+    margin: 2px 3px;
+    cursor: pointer;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-color.NB-active {
+    border: 4px solid #8F1F00;
+    margin: 2px 3px;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-css {
+    width: 100%;
+    font-family: Courier, monospace;
+    font-size: 13px;
+    padding: 6px;
+    height: 54px;
+}
+.NB-modal-profile-editor .NB-tab-blurblog input[type=text] {
+    margin: 0 0 12px;
+}
+.NB-modal-profile-editor .NB-profile-blurblog-address {
+    float: left;
+    margin: 0 0 12px;
+}
+.NB-modal-profile-editor .NB-blurblog-save-button {
+    margin: 18px 12px 12px;
+    float: left;
+    clear: both;
+}
+.NB-modal-profile-editor .NB-tab.NB-tab-profile,
+.NB-modal-profile-editor .NB-tab.NB-tab-blurblog {
+    height: 500px;
+}
 
 /* ================= */
 /* = Profile Badge = */

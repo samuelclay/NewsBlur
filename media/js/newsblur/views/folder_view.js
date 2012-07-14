@@ -241,7 +241,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             ($children.length && 
              $children.eq(0).is(':visible') && 
              !this.collection.collapsed)) {
-            console.log(["hiding folder", $children, this.collection, this.options.folder_title]);
+            NEWSBLUR.log(["hiding folder", $children, this.collection, this.options.folder_title]);
             NEWSBLUR.assets.collapsed_folders(this.options.folder_title, true);
             this.collection.collapsed = true;
             this.$el.addClass('NB-folder-collapsed');
@@ -260,7 +260,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         // Showing / Expanding
         else if ($children.length && 
                    (this.collection.collapsed || !$children.eq(0).is(':visible'))) {
-            console.log(["showing folder", this.collection, this.options.folder_title]);
+            NEWSBLUR.log(["showing folder", this.collection, this.options.folder_title]);
             NEWSBLUR.assets.collapsed_folders(this.options.folder_title, false);
             this.collection.collapsed = false;
             this.$el.removeClass('NB-folder-collapsed');

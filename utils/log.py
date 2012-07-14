@@ -1,6 +1,7 @@
 import logging
 import re
 import string
+import time
 from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
 
@@ -14,6 +15,7 @@ def getlogger():
 
 def user(u, msg):
     platform = '------'
+    time_elapsed = ""
     if isinstance(u, WSGIRequest):
         request = u
         u = request.user
@@ -28,6 +30,12 @@ def user(u, msg):
             platform = 'Androd'
         elif 'MSIE' in user_agent:
             platform = 'IE'
+            if 'MSIE 9' in user_agent:
+                platform += '9'
+            elif 'MSIE 10' in user_agent:
+                platform += '10'
+            elif 'MSIE 8' in user_agent:
+                platform += '8'
         elif 'Chrome' in user_agent:
             platform = 'Chrome'
         elif 'Safari' in user_agent:
@@ -40,9 +48,13 @@ def user(u, msg):
             platform = 'Opera'
         elif 'WP7' in user_agent:
             platform = 'WP7'
+
+        if hasattr(request, 'start_time'):
+            now = time.time()
+            time_elapsed = "[%.4ss] " % (now - request.start_time)
     premium = '*' if u.is_authenticated() and u.profile.is_premium else ''
     username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else u
-    info(' ---> [~FB~SN%-6s~SB] [%s%s] %s' % (platform, username, premium, msg))
+    info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
 
 def cipher(msg):
     shift = len(msg)

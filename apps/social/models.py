@@ -91,7 +91,8 @@ class MSocialProfile(mongo.Document):
     username             = mongo.StringField(max_length=30, unique=True)
     email                = mongo.StringField()
     bio                  = mongo.StringField(max_length=160)
-    blog_title           = mongo.StringField(max_length=256)
+    blurblog_title       = mongo.StringField(max_length=256)
+    custom_bgcolor       = mongo.StringField(max_length=50)
     custom_css           = mongo.StringField()
     photo_url            = mongo.StringField()
     photo_service        = mongo.StringField()
@@ -254,7 +255,7 @@ class MSocialProfile(mongo.Document):
     
     @property
     def title(self):
-        return self.blog_title if self.blog_title else self.username + "'s blurblog"
+        return self.blurblog_title if self.blurblog_title else self.username + "'s blurblog"
         
     def feed(self):
         params = self.to_json(compact=True)
@@ -297,7 +298,8 @@ class MSocialProfile(mongo.Document):
         domain = Site.objects.get_current().domain.replace('www', 'dev')
         return 'http://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
-    def to_json(self, compact=False, include_follows=False, common_follows_with_user=None):
+    def to_json(self, compact=False, include_follows=False, common_follows_with_user=None,
+                include_settings=False, include_following_user=None):
         # domain = Site.objects.get_current().domain
         domain = Site.objects.get_current().domain.replace('www', 'dev')
         params = {
@@ -316,7 +318,6 @@ class MSocialProfile(mongo.Document):
                 'bio': self.bio,
                 'location': self.location,
                 'website': self.website,
-                'subscription_count': self.subscription_count,
                 'shared_stories_count': self.shared_stories_count,
                 'following_count': self.following_count,
                 'follower_count': self.follower_count,
@@ -324,20 +325,30 @@ class MSocialProfile(mongo.Document):
                 'stories_last_month': self.stories_last_month,
                 'average_stories_per_month': self.average_stories_per_month,
             })
+        if include_settings:
+            params.update({
+                'custom_css': self.custom_css,
+                'custom_bgcolor': self.custom_bgcolor,
+            })
         if include_follows:
             params.update({
                 'photo_service': self.photo_service,
-                'following_user_ids': self.following_user_ids_without_self,
-                'follower_user_ids': self.follower_user_ids_without_self,
+                'following_user_ids': self.following_user_ids_without_self[:48],
+                'follower_user_ids': self.follower_user_ids_without_self[:48],
             })
         if common_follows_with_user:
             with_user, _ = MSocialProfile.objects.get_or_create(user_id=common_follows_with_user)
             followers_youknow, followers_everybody = with_user.common_follows(self.user_id, direction='followers')
             following_youknow, following_everybody = with_user.common_follows(self.user_id, direction='following')
-            params['followers_youknow'] = followers_youknow
-            params['followers_everybody'] = followers_everybody
-            params['following_youknow'] = following_youknow
-            params['following_everybody'] = following_everybody
+            params['followers_youknow'] = followers_youknow[:48]
+            params['followers_everybody'] = followers_everybody[:48]
+            params['following_youknow'] = following_youknow[:48]
+            params['following_everybody'] = following_everybody[:48]
+        if include_following_user or common_follows_with_user:
+            if not include_following_user:
+                include_following_user = common_follows_with_user
+            params['followed_by_you'] = self.is_followed_by_user(include_following_user)
+            params['following_you'] = self.is_following_user(include_following_user)
 
         return params
     
@@ -371,22 +382,24 @@ class MSocialProfile(mongo.Document):
         
         if check_unfollowed and user_id in self.unfollowed_user_ids:
             return
+        
+        if user_id in self.following_user_ids:
+            return
             
-        if user_id not in self.following_user_ids:
-            self.following_user_ids.append(user_id)
-            if user_id in self.unfollowed_user_ids:
-                self.unfollowed_user_ids.remove(user_id)
-            self.count_follows()
-            self.save()
-            
-            if self.user_id == user_id:
-                followee = self
-            else:
-                followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
-            if self.user_id not in followee.follower_user_ids:
-                followee.follower_user_ids.append(self.user_id)
-                followee.count_follows()
-                followee.save()
+        self.following_user_ids.append(user_id)
+        if user_id in self.unfollowed_user_ids:
+            self.unfollowed_user_ids.remove(user_id)
+        self.count_follows()
+        self.save()
+        
+        if self.user_id == user_id:
+            followee = self
+        else:
+            followee, _ = MSocialProfile.objects.get_or_create(user_id=user_id)
+        if self.user_id not in followee.follower_user_ids:
+            followee.follower_user_ids.append(self.user_id)
+            followee.count_follows()
+            followee.save()
         
         following_key = "F:%s:F" % (self.user_id)
         r.sadd(following_key, user_id)
@@ -403,9 +416,14 @@ class MSocialProfile(mongo.Document):
         
         from apps.social.tasks import EmailNewFollower
         EmailNewFollower.delay(follower_user_id=self.user_id, followee_user_id=user_id)
+        
+        return socialsub
     
     def is_following_user(self, user_id):
         return user_id in self.following_user_ids
+    
+    def is_followed_by_user(self, user_id):
+        return user_id in self.follower_user_ids
         
     def unfollow_user(self, user_id):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -550,7 +568,7 @@ class MSocialProfile(mongo.Document):
                         month_count += 1
 
         self.story_count_history = months
-        self.average_stories_per_month = total / month_count
+        self.average_stories_per_month = total / max(1, month_count)
         self.save()
     
     def save_classifier_counts(self):
@@ -1172,8 +1190,7 @@ class MSharedStory(mongo.Document):
             story['public_comments'] = []
             if check_all or story['comment_count']:
                 comment_key = "C:%s:%s" % (story['story_feed_id'], story['guid_hash'])
-                if check_all:
-                    story['comment_count'] = r.scard(comment_key)
+                story['comment_count'] = r.scard(comment_key)
                 friends_with_comments = [int(f) for f in r.sinter(comment_key, friend_key)]
                 sharer_user_ids = [int(f) for f in r.smembers(comment_key)]
                 shared_stories = []
@@ -1203,8 +1220,7 @@ class MSharedStory(mongo.Document):
                 
             if check_all or story['share_count']:
                 share_key = "S:%s:%s" % (story['story_feed_id'], story['guid_hash'])
-                if check_all:
-                    story['share_count'] = r.scard(share_key)
+                story['share_count'] = r.scard(share_key)
                 friends_with_shares = [int(f) for f in r.sinter(share_key, friend_key)]
                 nonfriend_user_ids = [int(f) for f in r.sdiff(share_key, friend_key)]
                 profile_user_ids.update(nonfriend_user_ids)
@@ -1425,6 +1441,8 @@ class MSocialServices(mongo.Document):
     facebook_picture_url  = mongo.StringField()
     facebook_refresh_date = mongo.DateTimeField()
     upload_picture_url    = mongo.StringField()
+    syncing_twitter       = mongo.BooleanField(default=False)
+    syncing_facebook      = mongo.BooleanField(default=False)
     
     meta = {
         'collection': 'social_services',
@@ -1443,10 +1461,12 @@ class MSocialServices(mongo.Document):
                 'twitter_username': self.twitter_username,
                 'twitter_picture_url': self.twitter_picture_url,
                 'twitter_uid': self.twitter_uid,
+                'syncing': self.syncing_twitter,
             },
             'facebook': {
                 'facebook_uid': self.facebook_uid,
                 'facebook_picture_url': self.facebook_picture_url,
+                'syncing': self.syncing_facebook,
             },
             'gravatar': {
                 'gravatar_picture_url': "http://www.gravatar.com/avatar/" + \
@@ -1505,6 +1525,9 @@ class MSocialServices(mongo.Document):
             self.set_photo('twitter')
         
     def sync_facebook_friends(self):
+        self.syncing_facebook = False
+        self.save()
+        
         graph = self.facebook_api()
         if not graph:
             return
@@ -1532,25 +1555,31 @@ class MSocialServices(mongo.Document):
             self.set_photo('facebook')
         
     def follow_twitter_friends(self):
+        self.syncing_twitter = False
+        self.save()
+        
         social_profile, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
         following = []
         followers = 0
         
-        if self.autofollow:
-            # Follow any friends already on NewsBlur
-            user_social_services = MSocialServices.objects.filter(twitter_uid__in=self.twitter_friend_ids)
-            for user_social_service in user_social_services:
-                followee_user_id = user_social_service.user_id
-                social_profile.follow_user(followee_user_id)
+        if not self.autofollow:
+            return following
+
+        # Follow any friends already on NewsBlur
+        user_social_services = MSocialServices.objects.filter(twitter_uid__in=self.twitter_friend_ids)
+        for user_social_service in user_social_services:
+            followee_user_id = user_social_service.user_id
+            socialsub = social_profile.follow_user(followee_user_id)
+            if socialsub:
                 following.append(followee_user_id)
-        
-            # Follow any friends already on NewsBlur
-            following_users = MSocialServices.objects.filter(twitter_friend_ids__contains=self.twitter_uid)
-            for following_user in following_users:
-                if following_user.autofollow:
-                    following_user_profile = MSocialProfile.objects.get(user_id=following_user.user_id)
-                    following_user_profile.follow_user(self.user_id, check_unfollowed=True)
-                    followers += 1
+    
+        # Follow any friends already on NewsBlur
+        following_users = MSocialServices.objects.filter(twitter_friend_ids__contains=self.twitter_uid)
+        for following_user in following_users:
+            if following_user.autofollow:
+                following_user_profile = MSocialProfile.objects.get(user_id=following_user.user_id)
+                following_user_profile.follow_user(self.user_id, check_unfollowed=True)
+                followers += 1
         
         user = User.objects.get(pk=self.user_id)
         logging.user(user, "~BB~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
@@ -1562,21 +1591,24 @@ class MSocialServices(mongo.Document):
         following = []
         followers = 0
         
-        if self.autofollow:
-            # Follow any friends already on NewsBlur
-            user_social_services = MSocialServices.objects.filter(facebook_uid__in=self.facebook_friend_ids)
-            for user_social_service in user_social_services:
-                followee_user_id = user_social_service.user_id
-                social_profile.follow_user(followee_user_id)
+        if not self.autofollow:
+            return following
+
+        # Follow any friends already on NewsBlur
+        user_social_services = MSocialServices.objects.filter(facebook_uid__in=self.facebook_friend_ids)
+        for user_social_service in user_social_services:
+            followee_user_id = user_social_service.user_id
+            socialsub = social_profile.follow_user(followee_user_id)
+            if socialsub:
                 following.append(followee_user_id)
-        
-            # Friends already on NewsBlur should follow back
-            following_users = MSocialServices.objects.filter(facebook_friend_ids__contains=self.facebook_uid)
-            for following_user in following_users:
-                if following_user.autofollow:
-                    following_user_profile = MSocialProfile.objects.get(user_id=following_user.user_id)
-                    following_user_profile.follow_user(self.user_id, check_unfollowed=True)
-                    followers += 1
+    
+        # Friends already on NewsBlur should follow back
+        following_users = MSocialServices.objects.filter(facebook_friend_ids__contains=self.facebook_uid)
+        for following_user in following_users:
+            if following_user.autofollow:
+                following_user_profile = MSocialProfile.objects.get(user_id=following_user.user_id)
+                following_user_profile.follow_user(self.user_id, check_unfollowed=True)
+                followers += 1
         
         user = User.objects.get(pk=self.user_id)
         logging.user(user, "~BB~FRFacebook import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.facebook_friend_ids), len(following), followers))

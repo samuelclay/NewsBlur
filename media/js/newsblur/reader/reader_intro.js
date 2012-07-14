@@ -45,7 +45,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $.make('div', { className: 'NB-page NB-page-1' }, [
                 $.make('h4', { className: 'NB-page-1-started' }, "So much time and so little to do. Strike that! Reverse it.")
             ]),
-            $.make('div', { className: 'NB-page NB-page-2 carousel' }, [
+            $.make('div', { className: 'NB-page NB-page-2 carousel slide' }, [
                 $.make('div', { className: 'carousel-inner NB-intro-imports' }, [
                     $.make('div', { className: 'item NB-intro-imports-start' }, [
                         $.make('h4', { className: 'NB-page-2-started' }, "Let's get some sites to read."),
@@ -62,7 +62,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         ]),
                         $.make('div', { className: 'NB-intro-import NB-intro-import-opml' }, [
                             $.make('h3', ['Upload an', $.make('br'), 'OPML file']),
-                            $.make('form', { method: 'post', enctype: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
+                            $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
                                 $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
                                     'Upload OPML File',
                                     $.make('input', { type: 'file', name: 'file', id: 'NB-intro-upload-opml-button', className: 'NB-intro-upload-opml-button' })
@@ -99,7 +99,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-newsblur' }),
                         $.make('label', { 'for': 'NB-intro-uptodate-follow-newsblur' }, [
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
-                            $.make('img', { src: 'http://img.tweetimag.es/i/newsblur_n.png', style: 'border-color: #505050;' }),
+                            $.make('img', { src: 'http://a0.twimg.com/profile_images/1268996309/logo_128_normal.png', style: 'border-color: #505050;' }),
                             $.make('span', [
                                 'Follow @newsblur on', 
                                 $.make('br'), 
@@ -112,7 +112,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $.make('input', { type: 'checkbox', id: 'NB-intro-uptodate-follow-samuelclay' }),
                         $.make('label', { 'for': 'NB-intro-uptodate-follow-samuelclay' }, [
                             $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/new-window-icon.png', className: 'NB-intro-uptodate-newwindow' }),
-                            $.make('img', { src: 'http://img.tweetimag.es/i/samuelclay_n.png', style: 'border-color: #505050;' }),
+                            $.make('img', { src: 'http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_normal.jpg', style: 'border-color: #505050;' }),
                             $.make('span', [
                                 'Follow @samuelclay on', 
                                 $.make('br'), 
@@ -179,10 +179,11 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     make_find_friends_and_services: function() {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         var $services = $('.NB-intro-services', this.$modal).empty();
+        var service_syncing = false;
         
         _.each(['twitter', 'facebook'], _.bind(function(service) {
             var $service;
-            if (this.services && this.services[service][service+'_uid']) {
+            if (this.services && this.services[service][service+'_uid'] && !this.services[service].syncing) {
                 $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
                     $.make('div', { className: 'NB-friends-service-connected' }, [
@@ -190,12 +191,16 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         'Connected'
                     ])
                 ]);
+                
             } else {
-                $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
+                var syncing = this.services && this.services[service] && this.services[service].syncing;
+                if (syncing) service_syncing = true;
+                
+                $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service + (syncing ? ' NB-friends-service-syncing' : '') }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
-                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-green' }, [
+                    $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button ' + (syncing ? 'NB-modal-submit-grey' : 'NB-modal-submit-green') }, [
                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/' + service + '_icon.png' }),
-                        'Find ' + _.string.capitalize(service) + ' Friends'
+                        (syncing ? 'Fetching...' : 'Find ' + _.string.capitalize(service) + ' Friends')
                     ])
                 ]);
             }
@@ -228,17 +233,23 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $services.append($stats);
             $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
         }
+
+        if (service_syncing) {
+            _.delay(_.bind(this.fetch_friends, this), 3000);
+        }
     },
     
     connect: function(service) {
         var options = "location=0,status=0,width=800,height=500";
         var url = "/oauth/" + service + "_connect";
         this.connect_window = window.open(url, '_blank', options);
+        _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + service.name + ' attempt']);
     },
     
     disconnect: function(service) {
         var $service = $('.NB-friends-service-'+service, this.$modal);
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
+        _gaq.push(['_trackEvent', 'reader_intro', 'Disconnect from ' + service.name]);
         NEWSBLUR.assets.disconnect_social_service(service, _.bind(function(data) {
             this.services = data.services;
             this.make_find_friends_and_services();
@@ -248,6 +259,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     },
     
     post_connect: function(data) {
+        console.log(["Intro post_connect", data]);
         $('.NB-error', this.$modal).remove();
         if (data.error) {
             var $error = $.make('div', { className: 'NB-error' }, [
@@ -257,8 +269,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $('.NB-intro-services', this.$modal).append($error);
             $error.animate({'opacity': 1}, {'duration': 1000});
             this.resize();
+            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service error']);
         } else {
             this.fetch_friends();
+            _gaq.push(['_trackEvent', 'reader_intro', 'Connect to service success']);
         }
         NEWSBLUR.assets.preference('has_found_friends', true);
         NEWSBLUR.reader.check_hide_getting_started();
@@ -269,11 +283,11 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     // ==========
     
     next_page: function() {
-      return this.page(this.page_number+1, this.page_number);
+        return this.page(this.page_number+1, this.page_number);
     },
     
     previous_page: function() {
-      return this.page(this.page_number-1, this.page_number);
+        return this.page(this.page_number-1, this.page_number);
     },
     
     page: function(page_number, from_page) {
@@ -320,6 +334,8 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       if (page_number == 4) {
           this.show_twitter_follow_buttons();
       }
+      
+      _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
     },
     
     advance_import_carousel: function(page) {
@@ -354,7 +370,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         ].join(""));
 
         if (feed_count) {
-            NEWSBLUR.assets.preference('has_setup_feeds', true);
             NEWSBLUR.reader.check_hide_getting_started();
         }
     },
@@ -446,8 +461,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         this.advance_import_carousel(1);
         
         // NEWSBLUR.log(['Uploading']);
-        var formData = new FormData($file.closest('form')[0]);
-        $.ajax({
+        var params = {
             url: NEWSBLUR.URLs['opml-upload'],
             type: 'POST',
             success: function (data, status) {
@@ -464,11 +478,23 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                 $error.text("There was a problem uploading your OPML file. Try e-mailing it to samuel@newsblur.com.");
                 $error.slideDown(300);
             },
-            data: formData,
             cache: false,
             contentType: false,
             processData: false
-        });
+        };
+        if (window.FormData) {
+            var formData = new FormData($file.closest('form')[0]);
+            params['data'] = formData;
+            
+            $.ajax(params);
+        } else {
+            // IE9 has no FormData
+            params['secureuri'] = false;
+            params['fileElementId'] = 'NB-intro-upload-opml-button';
+            params['dataType'] = 'json';
+            
+            $.ajaxFileUpload(params);
+        }
         
         $file.replaceWith($file.clone());
         

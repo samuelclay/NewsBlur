@@ -459,7 +459,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             if (NEWSBLUR.reader.flags['non_premium_river_view']) {
                 var visible_stories = self.stories.visible().length;
                 var max_stories = NEWSBLUR.reader.constants.RIVER_STORIES_FOR_STANDARD_ACCOUNT;
-                console.log(["checking no more stories", visible_stories, max_stories]);
+                NEWSBLUR.log(["checking no more stories", visible_stories, max_stories]);
                 if (visible_stories >= max_stories) {
                     self.flags['no_more_stories'] = true;
                     self.stories.trigger('no_more_stories');
@@ -1124,9 +1124,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, this));
     },
     
+    save_blurblog_settings: function(data, callback) {
+        this.make_request('/social/save_blurblog_settings/', data, _.bind(function(response) {
+            this.user_profile.set(response.user_profile);
+            callback(response);
+        }, this));
+    },
+    
     follow_user: function(user_id, callback) {
         this.make_request('/social/follow', {'user_id': user_id}, _.bind(function(data) {
-            console.log(["follow data", data]);
+            NEWSBLUR.log(["follow data", data]);
             this.user_profile.set(data.user_profile);
             var following_profile = this.following_profiles.detect(function(profile) {
                 return profile.get('user_id') == data.follow_profile.user_id;

@@ -11,7 +11,6 @@ from django.core.mail import mail_admins
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
-from celery.task import Task
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
 from apps.rss_feeds.tasks import NewFeeds
@@ -82,10 +81,8 @@ class Profile(models.Model):
             new_feeds = list(set([f['feed_id'] for f in new_feeds]))
         logging.user(self.user, "~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (len(new_feeds), new_feeds))
         size = 4
-        publisher = Task.get_publisher(exchange="new_feeds")
         for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
-            NewFeeds.apply_async(args=(t,), queue="new_feeds", publisher=publisher)
-        publisher.connection.close()   
+            NewFeeds.apply_async(args=(t,), queue="new_feeds")
 
     def refresh_stale_feeds(self, exclude_new=False):
         stale_cutoff = datetime.datetime.now() - datetime.timedelta(days=7)

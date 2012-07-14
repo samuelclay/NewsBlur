@@ -20,11 +20,10 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
     },
     
     render: function() {
-        if (!this.options.skip_count) {
-            this.count();
-        }
+        this.count();
+
         var hide_read_feeds = NEWSBLUR.assets.preference('hide_read_feeds');
-        // console.log(["render feed list header", this.collection.length, this.feeds_count, hide_read_feeds]);
+        // NEWSBLUR.log(["render feed list header", this.collection.length, this.feeds_count, hide_read_feeds]);
         var $header = _.template('\
             <div class="NB-feeds-header-dashboard">\
                 <div class="NB-feeds-header-right">\
@@ -60,9 +59,7 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
     
     count: function() {
         this.unread_counts = this.count_unreads_across_all_sites();
-        if (!this.options.skip_sites) {
-            this.feeds_count = this.count_feeds();
-        }
+        this.feeds_count = this.count_feeds();
           
         if (NEWSBLUR.assets.preference('show_unread_counts_in_title')) {
             var title = '(';
@@ -87,7 +84,7 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
     
     count_unreads_across_all_sites: function() {
         return this.collection.reduce(function(m, v) {
-            if (v.get('active')) {
+            if (v.get('active') && v.views && v.views.length) {
                 m['positive'] += v.get('ps');
                 m['neutral'] += v.get('nt');
                 m['negative'] += v.get('ng');

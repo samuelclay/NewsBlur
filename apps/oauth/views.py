@@ -7,6 +7,7 @@ from django.contrib.sites.models import Site
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.conf import settings
 from apps.social.models import MSocialServices
+from apps.social.tasks import SyncTwitterFriends, SyncFacebookFriends
 from utils import log as logging
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
@@ -50,8 +51,11 @@ def twitter_connect(request):
         social_services.twitter_uid = unicode(twitter_user.id)
         social_services.twitter_access_key = access_token.key
         social_services.twitter_access_secret = access_token.secret
+        social_services.syncing_twitter = True
         social_services.save()
-        social_services.sync_twitter_friends()
+
+        SyncTwitterFriends.delay(user_id=request.user.pk)
+        
         logging.user(request, "~BB~FRFinishing Twitter connect")
         return {}
     else:
@@ -108,8 +112,11 @@ def facebook_connect(request):
         social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
         social_services.facebook_uid = uid
         social_services.facebook_access_token = access_token
+        social_services.syncing_facebook = True
         social_services.save()
-        social_services.sync_facebook_friends()
+        
+        SyncFacebookFriends.delay(user_id=request.user.pk)
+        
         logging.user(request, "~BB~FRFinishing Facebook connect")
         return {}
     elif request.REQUEST.get('error'):

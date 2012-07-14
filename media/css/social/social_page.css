@@ -44,8 +44,9 @@ blockquote {
 /* ========== */
 
 .NB-page {
-    background: #EBC55F url(/media/img/reader/background-control-light.png) repeat 0 0;
+    background: transparent url(/media/img/reader/background-control-light.png) repeat 0 0;
     padding: 0 12px;
+    overflow: hidden;
 }
 
 @media all and (max-width: 500px) {
@@ -63,6 +64,11 @@ header {
     padding: 64px 14px;
     text-shadow: 1px 1px 0 #E0E0E0;
     overflow: hidden;
+}
+@media all and (max-width: 500px) {
+    header {
+        padding: 24px 0;
+    }
 }
 
 .NB-header-table {
@@ -83,6 +89,16 @@ header {
 .NB-title-photo img {
     max-width: 148px;
     max-height: 148px;
+    border-radius: 4px;
+}
+@media all and (max-width: 500px) {
+    .NB-title-photo img {
+        max-width: 72px;
+        max-height: 72px;
+    }
+    .NB-header-right {
+        display: none;
+    }
 }
 .NB-title {
     vertical-align: middle;
@@ -162,7 +178,7 @@ header {
 
 .NB-header .NB-header-right {
     z-index: 1;
-    vertical-align: top;
+    vertical-align: middle;
     padding: 24px 12px;
 }
 .NB-header .NB-title-logo {
@@ -251,6 +267,12 @@ header {
     font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 
+@media all and (max-width: 500px) {
+    .NB-feed {
+        padding-right: 12px;
+    }
+}
+
 .NB-feed-title {
     padding: 2px 0;
 }
@@ -310,22 +332,16 @@ header {
     border-top: 1px solid #FFF;
 }
 
+@media all and (max-width: 500px) {
+    .NB-story-header {
+        padding: 6px 12px 12px 12px;
+    }
+}
+
 .NB-story-header-wrapper {
     border-bottom: 1px solid #D0D0D0;
     border-right: 1px solid #A6A6A6;
     border-left: 1px solid #A6A6A6;
-}
-
-@media all and (max-width: 800px) {
-    .NB-story-header {
-        padding-right: 268px;
-    }
-}
-@media all and (max-width: 500px) {
-    .NB-story-header {
-        padding-top: 36px;
-        padding-right: 12px;
-    }
 }
 
 .NB-story-title {
@@ -382,14 +398,18 @@ header {
     text-transform: uppercase;
 }
 @media all and (max-width: 800px) {
+    .NB-story-date {
+        top: 6px;
+    }
     .NB-story-date-break {
         display: block;
     }
 }
 @media all and (max-width: 500px) {
     .NB-story-date {
-        right: none;
-        left: 32px;
+        position: static;
+        margin: 0 0 6px 0;
+        font-size: 13px;
     }
     .NB-story-date-break {
         display: inline;
@@ -441,7 +461,7 @@ header {
     padding: 12px 222px 24px 28px;
     position: relative;
 }
-@media all and (max-width: 800px) {
+/*@media all and (max-width: 800px) {
     .NB-story-content {
         padding-right: 100px;
     }
@@ -451,9 +471,10 @@ header {
         padding-right: 50px;
     }
 }
-@media all and (max-width: 600px) {
+*/
+@media all and (max-width: 500px) {
     .NB-story-content {
-        padding-right: 0px;
+        padding: 12px 12px 12px;
     }
 }
 
@@ -490,6 +511,7 @@ header {
 /* ======================= */
 
 .NB-story-comments-container {
+    clear: both;
 }
 
 .NB-story-comments a {
@@ -502,7 +524,6 @@ header {
     border: none;
 }
 .NB-story-comments {
-    max-width: 800px;
     border-top: 2px solid #626262;
     border-bottom: 1px solid #EFEFEF; 
     font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
@@ -813,6 +834,11 @@ header {
     text-align: center;
     width: 162px;
 }
+@media all and (max-width: 500px) {
+    .NB-feed-story-sideoptions-container {
+        display: none;
+    }
+}
 
 .NB-sideoption {
     cursor: pointer;
@@ -1018,7 +1044,7 @@ header {
     padding: 1px 0;
     text-align: center;
     margin: 0 auto 36px;
-    width: 800px;
+    max-width: 800px;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -1076,4 +1102,21 @@ header {
 .NB-page-controls .NB-page-controls-next .NB-page-controls-text-loading,
 .NB-page-controls .NB-page-controls-next .NB-page-controls-text-loaded {
     bottom: 64px;
+}
+
+/* ========== */
+/* = Footer = */
+/* ========== */
+
+footer {
+    background-color: #F4F4EF;
+    text-align: center;
+    border-top: 1px solid #C0C0C0;
+}
+.NB-footer-logo {
+    border-top: 1px solid #FFF;
+}
+.NB-footer-logo img {
+    margin: 36px auto;
+    border: none;
 }

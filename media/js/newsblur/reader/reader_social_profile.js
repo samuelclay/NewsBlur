@@ -7,7 +7,7 @@ NEWSBLUR.ReaderSocialProfile = function(user_id, options) {
     this.model   = NEWSBLUR.assets;
     this.profiles = new NEWSBLUR.Collections.Users();
     user_id = parseInt(_.string.ltrim(user_id, 'social:'), 10);
-    console.log(["user_id", user_id]);
+    NEWSBLUR.log(["user_id", user_id]);
     this.runner(user_id);
 };
 
@@ -102,7 +102,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
     },
     
     populate_friends: function(data) {
-        console.log(["populate_friends", data, this.profile.get('followers_youknow')]);
+        NEWSBLUR.log(["populate_friends", data, this.profile.get('followers_youknow')]);
         _.each(['following_youknow', 'following_everybody', 'followers_youknow', 'followers_everybody'], _.bind(function(f) {
             var user_ids = this.profile.get(f);
             var $f = $('.NB-profile-'+f.replace('_', '-'), this.$modal);

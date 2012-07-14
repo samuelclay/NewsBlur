@@ -51,6 +51,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 
 SINGLE_DAY = 60*60*24
 
+@never_cache
 @render_to('reader/feeds.xhtml')
 def index(request, **kwargs):
     if request.method == "GET" and request.subdomain and request.subdomain != 'dev':
@@ -66,8 +67,8 @@ def index(request, **kwargs):
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
 
     # XXX TODO: Remove me on launch.
-    if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
-        return {}, 'reader/social_signup.xhtml'
+    # if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
+    #     return {}, 'reader/social_signup.xhtml'
         
     if request.method == "POST":
         if request.POST.get('submit') == 'login':
@@ -178,6 +179,7 @@ def autologin(request, username, secret):
     return HttpResponseRedirect(reverse('index') + next)
     
 @ratelimit(minutes=1, requests=12)
+@never_cache
 @json.json_view
 def load_feeds(request):
     user             = get_user(request)
@@ -324,6 +326,7 @@ def load_feeds_flat(request):
     return data
 
 @ratelimit(minutes=1, requests=20)
+@never_cache
 @json.json_view
 def refresh_feeds(request):
     user = get_user(request)
@@ -389,6 +392,7 @@ def refresh_feed(request, feed_id):
 
     return load_single_feed(request, feed_id)
     
+@never_cache
 @json.json_view
 def load_single_feed(request, feed_id):
     start        = time.time()
@@ -905,7 +909,7 @@ def mark_feed_as_read(request):
                 sub = UserSubscription.objects.get(feed=feed, user=request.user)
                 if not multiple:
                     logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
-            except Feed.DoesNotExist:
+            except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
                 continue
     
         try:
