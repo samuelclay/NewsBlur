@@ -872,7 +872,7 @@
     self.feedPage = 1;
     self.pageFetching = YES;
     self.pageRefreshing = YES;
-    [self.storyTitlesTable reloadData];
+//    [self.storyTitlesTable reloadData];
     [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
 }
 
@@ -883,7 +883,7 @@
     [pull finishedLoading];
     self.pageRefreshing = NO;
     [self renderStories:[results objectForKey:@"stories"]];
-    
+    [self.storyTitlesTable reloadData];
     [results release];
 }
 
