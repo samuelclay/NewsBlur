@@ -26,7 +26,7 @@
 @implementation NewsBlurViewController
 
 @synthesize appDelegate;
-
+@synthesize innerView;
 @synthesize feedTitlesTable;
 @synthesize feedViewToolbar;
 @synthesize feedScoreSlider;
@@ -171,6 +171,7 @@
 }
 
 - (void)viewDidUnload {
+    [self setInnerView:nil];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
@@ -178,7 +179,7 @@
 
 - (void)dealloc {   
     [appDelegate release];
-    
+    [innerView release];
     [feedTitlesTable release];
     [feedViewToolbar release];
     [feedScoreSlider release];
@@ -191,7 +192,6 @@
     [lastUpdate release];
     [imageCache release];
     [popoverController release];
-    
     [super dealloc];
 }
 
@@ -786,8 +786,7 @@
 
 - (IBAction)selectIntelligence {
     [MBProgressHUD hideHUDForView:self.feedTitlesTable animated:NO];
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.feedTitlesTable animated:YES];
-    
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.innerView animated:YES];
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     
@@ -832,7 +831,7 @@
         [self redrawUnreadCounts];
     }
     
-	[hud hide:YES afterDelay:0.75];
+	[hud hide:YES afterDelay:0.4];
 }
 
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {

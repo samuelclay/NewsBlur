@@ -31,6 +31,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
+    
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if ([userPreferences stringForKey:@"fontStyle"]) {
@@ -88,6 +90,8 @@
 }
 
 - (IBAction)changeFontSize:(id)sender {
+    
+    NSLog(@"Calling changeFontSize");
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
         [appDelegate.storyDetailViewController changeFontSize:@"NB-extra-small"];

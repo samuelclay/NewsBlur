@@ -145,7 +145,6 @@
 
     } else {
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
-        self.navigationItem.rightBarButtonItem = self.toggleViewButton;
     }
 
     [toggleButton release];
@@ -484,7 +483,7 @@
                             footerString
                             ];
 
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -733,7 +732,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
-    NSLog(@"results in mark as read is %@", results);
+//    NSLog(@"results in mark as read is %@", results);
     [results release];
 } 
 
@@ -917,6 +916,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         
         appDelegate.fontSettingsViewController.navigationItem.rightBarButtonItem = donebutton;
         appDelegate.fontSettingsViewController.navigationItem.title = @"Style";
+        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
         [self presentModalViewController:navController animated:YES];
         
         [fontSettings release];
@@ -932,10 +932,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)changeFontSize:(NSString *)fontSize {
     NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-size').setAttribute('class', '%@')", 
                           fontSize];
+    
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     [jsString release];
 }
-
+ 
 - (void)setFontStyle:(NSString *)fontStyle {
     NSString *jsString;
     NSString *fontStyleStr;

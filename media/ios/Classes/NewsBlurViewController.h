@@ -29,15 +29,17 @@
     NSDate *lastUpdate;
     NSCache *imageCache;
     
-	IBOutlet UITableView * feedTitlesTable;
-	IBOutlet UIToolbar * feedViewToolbar;
-    IBOutlet UISlider * feedScoreSlider;
-    IBOutlet UIBarButtonItem * homeButton;
-    IBOutlet UISegmentedControl * intelligenceControl;
-    IBOutlet UIPopoverController *popoverController;
+    UIView *innerView;
+	UITableView * feedTitlesTable;
+	UIToolbar * feedViewToolbar;
+    UISlider * feedScoreSlider;
+    UIBarButtonItem * homeButton;
+    UISegmentedControl * intelligenceControl;
+    UIPopoverController *popoverController;
 }
 
 @property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (retain, nonatomic) IBOutlet UIView *innerView;
 @property (nonatomic, retain) IBOutlet UITableView *feedTitlesTable;
 @property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
