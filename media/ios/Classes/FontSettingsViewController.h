@@ -17,9 +17,9 @@
     IBOutlet UILabel *largeFontSizeLabel;
 }
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) IBOutlet UISegmentedControl *fontStyleSegment;
-@property (retain, nonatomic) IBOutlet UISegmentedControl *fontSizeSegment;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property ( nonatomic) IBOutlet UISegmentedControl *fontStyleSegment;
+@property ( nonatomic) IBOutlet UISegmentedControl *fontSizeSegment;
 
 - (IBAction)changeFontStyle:(id)sender;
 - (IBAction)changeFontSize:(id)sender;

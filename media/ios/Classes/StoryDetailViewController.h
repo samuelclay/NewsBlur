@@ -27,21 +27,21 @@
     UIPopoverController *popoverController;
 }
 
-@property (nonatomic, retain) UIActivityIndicatorView *loadingIndicator;
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) NSString *activeStoryId;
-@property (nonatomic, retain) IBOutlet UIProgressView *progressView;
-@property (retain, nonatomic) IBOutlet UIView *innerView;
-@property (nonatomic, retain) IBOutlet UIWebView *webView;
-@property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonPrevious;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonNext;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *activity;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *toggleViewButton;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *buttonAction;
-@property (nonatomic, retain) IBOutlet UIView *feedTitleGradient;
-@property (retain,nonatomic) UIPopoverController *popoverController;
-@property (retain, nonatomic) IBOutlet UIBarButtonItem *buttonNextStory;
+@property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) NSString *activeStoryId;
+@property (nonatomic) IBOutlet UIProgressView *progressView;
+@property (nonatomic) IBOutlet UIView *innerView;
+@property (nonatomic) IBOutlet UIWebView *webView;
+@property (nonatomic) IBOutlet UIToolbar *toolbar;
+@property (nonatomic) IBOutlet UIBarButtonItem *buttonPrevious;
+@property (nonatomic) IBOutlet UIBarButtonItem *buttonNext;
+@property (nonatomic) IBOutlet UIBarButtonItem *activity;
+@property (nonatomic) IBOutlet UIBarButtonItem *toggleViewButton;
+@property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
+@property (nonatomic) IBOutlet UIView *feedTitleGradient;
+@property (nonatomic) UIPopoverController *popoverController;
+@property (nonatomic) IBOutlet UIBarButtonItem *buttonNextStory;
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;

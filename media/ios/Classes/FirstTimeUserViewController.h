@@ -18,17 +18,17 @@
     int importedGoogle;
 }
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) NSMutableArray *categories;
-@property (retain, nonatomic) IBOutlet UIButton *googleReaderButton;
-@property (retain, nonatomic) IBOutlet UIView *welcomeView;
-@property (retain, nonatomic) IBOutlet UIView *addSitesView;
-@property (retain, nonatomic) IBOutlet UIView *addFriendsView;
-@property (retain, nonatomic) IBOutlet UIView *addNewsBlurView;
-@property (retain, nonatomic) IBOutlet UIToolbar *toolbar;
-@property (retain, nonatomic) IBOutlet UIButton *toolbarTitle;
-@property (retain, nonatomic) IBOutlet UIBarButtonItem *nextButton;
-@property (retain, nonatomic) IBOutlet UIImageView *logo;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) NSMutableArray *categories;
+@property ( nonatomic) IBOutlet UIButton *googleReaderButton;
+@property ( nonatomic) IBOutlet UIView *welcomeView;
+@property ( nonatomic) IBOutlet UIView *addSitesView;
+@property ( nonatomic) IBOutlet UIView *addFriendsView;
+@property ( nonatomic) IBOutlet UIView *addNewsBlurView;
+@property ( nonatomic) IBOutlet UIToolbar *toolbar;
+@property ( nonatomic) IBOutlet UIButton *toolbarTitle;
+@property ( nonatomic) IBOutlet UIBarButtonItem *nextButton;
+@property ( nonatomic) IBOutlet UIImageView *logo;
 
 - (IBAction)tapNextButton;
 - (IBAction)tapGoogleReaderButton;

@@ -16,9 +16,9 @@
     NSMutableArray *interactionsArray;
 }
 
-@property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) UITableView *interactionsTable;
-@property (nonatomic, retain) NSArray *interactionsArray;
+@property (nonatomic) NewsBlurAppDelegate *appDelegate;
+@property (nonatomic, strong) UITableView *interactionsTable;
+@property (nonatomic) NSArray *interactionsArray;
 
 - (void)refreshWithInteractions:(NSMutableArray *)interactions;
 

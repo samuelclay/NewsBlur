@@ -36,16 +36,16 @@ static const CGFloat kButtonWidth   = 48.0f;
     UIToolbar *toolbar;
 }
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *closeButton;
-@property (nonatomic, retain) IBOutlet UIWebView *webView;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem* back;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem* forward;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem* refresh;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem* pageAction;
-@property (nonatomic, retain) IBOutlet UILabel *pageTitle;
-@property (nonatomic, retain) IBOutlet UITextField *pageUrl;
-@property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) IBOutlet UIBarButtonItem *closeButton;
+@property (nonatomic) IBOutlet UIWebView *webView;
+@property (nonatomic) IBOutlet UIBarButtonItem* back;
+@property (nonatomic) IBOutlet UIBarButtonItem* forward;
+@property (nonatomic) IBOutlet UIBarButtonItem* refresh;
+@property (nonatomic) IBOutlet UIBarButtonItem* pageAction;
+@property (nonatomic) IBOutlet UILabel *pageTitle;
+@property (nonatomic) IBOutlet UITextField *pageUrl;
+@property (nonatomic) IBOutlet UIToolbar *toolbar;
 
 - (IBAction) doCloseOriginalStoryViewController;
 - (IBAction) doOpenActionSheet;

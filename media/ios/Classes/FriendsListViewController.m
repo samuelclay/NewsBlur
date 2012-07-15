@@ -44,7 +44,6 @@
                                                                     target: self 
                                                                     action: @selector(doCancelButton)];
     [self.navigationItem setLeftBarButtonItem:cancelButton];
-    [cancelButton release];
 
     self.friendsTable.scrollEnabled = YES;
     
@@ -62,8 +61,6 @@
     
     self.allItemIds = item_ids;
     self.allItems = items;
-    [items release];
-    [item_ids release];
     
     [self.friendsTable reloadData];
 }
@@ -78,15 +75,6 @@
     // e.g. self.myOutlet = nil;
 }
 
-- (void)dealloc {
-    [appDelegate release];
-    [searchBar release];
-    [searchDisplayController release];
-    [friendsTable release];
-    [userProfiles release];
-    [userProfileIds release];
-    [super dealloc];
-}
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -140,13 +128,11 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
-        [results release];
         return;
     }
     
     self.userProfiles = [results objectForKey:@"profiles"];
 
-    [results release];
     
     [self.searchDisplayController.searchResultsTableView reloadData];
 }
@@ -180,9 +166,9 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
     UITableViewCell *cell = [tableView 
                              dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] 
+        cell = [[UITableViewCell alloc] 
                  initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:CellIdentifier] autorelease];
+                 reuseIdentifier:CellIdentifier];
         
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
@@ -203,7 +189,6 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
         cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        [profile release];        
     } 
 
     [cell setNeedsLayout];

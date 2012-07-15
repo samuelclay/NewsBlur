@@ -32,14 +32,6 @@
 }
 
 
-- (void)dealloc {
-    [storyTitle release];
-    [storyAuthor release];
-    [storyDate release];
-    [storyUnreadIndicator release];
-    [feedGradient release];
-    [super dealloc];
-}
 
 
 @end

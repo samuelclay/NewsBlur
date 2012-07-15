@@ -24,10 +24,10 @@
 
 }
 
-@property (retain, nonatomic) IBOutlet UITableView *friendsTable;
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) IBOutlet UISearchBar *searchBar;
-@property (retain, nonatomic) IBOutlet UISearchDisplayController *searchDisplayController;
+@property ( nonatomic) IBOutlet UITableView *friendsTable;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property ( nonatomic) IBOutlet UISearchBar *searchBar;
+@property ( nonatomic) IBOutlet UISearchDisplayController *searchDisplayController;
 
 @property (nonatomic, copy) NSArray *userProfiles;
 @property (nonatomic, copy) NSArray *allItems;

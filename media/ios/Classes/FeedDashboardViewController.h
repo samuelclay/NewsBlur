@@ -14,8 +14,8 @@
     NewsBlurAppDelegate *appDelegate;
 }
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 
-@property (retain, nonatomic) IBOutlet UIToolbar *toolbar;
+@property (nonatomic) IBOutlet UIToolbar *toolbar;
 
 @end

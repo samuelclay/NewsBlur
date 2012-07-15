@@ -9,6 +9,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
 #import "FeedDetailViewController.h"
+#import "DashboardViewController.h"
 #import "FeedDashboardViewController.h"
 #import "FeedsMenuViewController.h"
 #import "StoryDetailViewController.h"
@@ -139,44 +140,6 @@
     [self setRecentlyReadStories:[NSMutableArray array]];
 }
 
-- (void)dealloc {
-    [dashboardViewController release];
-    [feedsViewController release];
-    [feedsMenuViewController release];
-    [feedDetailViewController release];
-    [friendsListViewController release];
-    [storyDetailViewController release];
-    [loginViewController release];
-    [addSiteViewController release];
-    [moveSiteViewController release];
-    [originalStoryViewController release];
-    [navigationController release];
-    [userProfileViewController release];
-    [firstTimeUserViewController release];
-    [window release];
-    [activeUsername release];
-    [activeFeed release];
-    [activeFolder release];
-    [activeFeedStories release];
-    [activeFeedStoryLocations release];
-    [activeFeedStoryLocationIds release];
-    [activeStory release];
-    [activeOriginalStoryURL release];
-    [recentlyReadStories release];
-    [recentlyReadFeeds release];
-    [readStories release];
-    
-    [dictFolders release];
-    [dictActiveFeeds release];
-    [dictFeeds release];
-    [dictSocialFeeds release];
-    [dictUserProfile release];
-    [dictUserInteractions release];
-    [dictUserActivities release];
-    [dictFoldersArray release];
-
-    [super dealloc];
-}
 
 - (void)hideNavigationBar:(BOOL)animated {
     [[self navigationController] setNavigationBarHidden:YES animated:animated];
@@ -207,7 +170,6 @@
 - (void)showAddSite {
     UINavigationController *navController = self.navigationController;
     [navController dismissModalViewControllerAnimated:NO];
-    [addSiteViewController initWithNibName:nil bundle:nil];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         addSiteViewController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -235,7 +197,6 @@
     
     self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        
         [splitStoryController presentModalViewController:findFriendsNavigationController animated:NO];
     } else {
         [navigationController presentModalViewController:findFriendsNavigationController animated:NO];
@@ -258,9 +219,6 @@
     self.userProfileViewController.navigationItem.title = @"Profile";
     [self.navigationController presentModalViewController:navController animated:YES];
     
-    [userProfileView release];
-    [donebutton release];
-    [navController release];
 }
 
 - (void)hideUserProfileModal {
@@ -314,7 +272,6 @@
         self.shareViewController = shareView;
         [self.shareViewController setSiteInfo:userId setUsername:username]; 
         [self.navigationController presentModalViewController:self.shareViewController animated:YES];
-        [shareView release];
     }
 }
 
@@ -407,7 +364,6 @@
 
 - (void)showMoveSite {
     UINavigationController *navController = self.navigationController;
-    [moveSiteViewController initWithNibName:nil bundle:nil];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         moveSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
@@ -436,7 +392,6 @@
                                                                      target: nil 
                                                                      action: nil];
     [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-    [newBackButton release];
     UINavigationController *navController = self.navigationController;        
     [navController pushViewController:feedDetailViewController animated:YES];
     [self showNavigationBar:YES];
@@ -491,7 +446,6 @@
                                                   otherButtonTitles:@"Logout", nil];
     [logoutConfirm show];
     [logoutConfirm setTag:1];
-    [logoutConfirm release];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -538,7 +492,6 @@
                                                                      target: nil 
                                                                      action: nil];
     [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-    [newBackButton release];
     UINavigationController *navController = self.navigationController;
     [navController pushViewController:feedDetailViewController animated:YES];
     [self showNavigationBar:YES];
@@ -562,13 +515,13 @@
     
     UIImage *slide;
     if (self.splitStoryController.isShowingMaster) {
-        slide = [[UIImage imageNamed: @"slide_left.png"] retain];
+        slide = [UIImage imageNamed: @"slide_left.png"];
         
         [self.storyDetailViewController.toggleViewButton setImage:slide];
 
         self.storyDetailViewController.navigationItem.titleView = nil;
     } else {
-        slide = [[UIImage imageNamed: @"slide_right.png"] retain];
+        slide = [UIImage imageNamed: @"slide_right.png"];
         [self.storyDetailViewController.toggleViewButton setImage:slide];
         
         UIView *titleLabel = [self makeFeedTitle:self.activeFeed];
@@ -576,7 +529,6 @@
             storyDetailViewController.navigationItem.titleView = titleLabel;
         }
     }
-    [slide release];
 
     // change UIWebView
     int contentWidth = storyDetailViewController.view.frame.size.width;
@@ -657,10 +609,9 @@
     } else{
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
-        [newBackButton release];
         UINavigationController *navController = self.navigationController;   
         [navController pushViewController:storyDetailViewController animated:YES];
-        [navController.navigationItem setLeftBarButtonItem:[[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil] autorelease]];
+        [navController.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil]];
         navController.navigationItem.hidesBackButton = YES;
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
@@ -670,21 +621,18 @@
       willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
     if (viewController == feedDetailViewController) {
         UIView *backButtonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,70,35)];
-        UIButton *myBackButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
+        UIButton *myBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [myBackButton setFrame:CGRectMake(0,0,70,35)];
         [myBackButton setImage:[UIImage imageNamed:@"toolbar_back_button.png"] forState:UIControlStateNormal];
         [myBackButton setEnabled:YES];
         [myBackButton addTarget:viewController.navigationController action:@selector(popViewControllerAnimated:) forControlEvents:UIControlEventTouchUpInside];
         [backButtonView addSubview:myBackButton];
-        [myBackButton release];
         UIBarButtonItem* backButton = [[UIBarButtonItem alloc] initWithCustomView:backButtonView];
         viewController.navigationItem.leftBarButtonItem = backButton;
         navController.navigationItem.leftBarButtonItem = backButton;
         viewController.navigationItem.hidesBackButton = YES;
         navController.navigationItem.hidesBackButton = YES;
         
-        [backButtonView release];
-        [backButton release];
     }
 }
 
@@ -696,7 +644,6 @@
     [label setText:title];
     [label sizeToFit];
     [navigationController.navigationBar.topItem setTitleView:label];
-    [label release];
 }
 
 - (void)showOriginalStory:(NSURL *)url {
@@ -1084,7 +1031,7 @@
 #pragma mark Feed Templates
 
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end {
-    UIView *gradientView = [[[UIView alloc] initWithFrame:rect] autorelease];
+    UIView *gradientView = [[UIView alloc] initWithFrame:rect];
     
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = CGRectMake(0, 1, rect.size.width, rect.size.height-1);
@@ -1133,7 +1080,7 @@
                         startColor:[feed objectForKey:@"favicon_fade"] 
                         endColor:[feed objectForKey:@"favicon_color"]];
         
-        UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
+        UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.text = [feed objectForKey:@"feed_title"];
         titleLabel.backgroundColor = [UIColor clearColor];
         titleLabel.textAlignment = UITextAlignmentLeft;
@@ -1161,7 +1108,6 @@
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(8, 3, 16.0, 16.0);
         [titleLabel addSubview:titleImageView];
-        [titleImageView release];
         
         [gradientView addSubview:titleLabel];
         [gradientView addSubview:titleImageView];
@@ -1179,7 +1125,7 @@
 }
 
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
-    UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
+    UILabel *titleLabel = [[UILabel alloc] init];
     if (self.isRiverView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder];        
     } else if (self.isSocialView) {
@@ -1210,7 +1156,6 @@
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
         [titleLabel addSubview:titleImageView];
-        [titleImageView release];
     }
     return titleLabel;
 }

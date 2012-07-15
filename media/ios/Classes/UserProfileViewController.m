@@ -58,7 +58,8 @@
     self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
-    self.profileTable = [[[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped] autorelease];
+    UITableView *profiles = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped];
+    self.profileTable = profiles;
     self.profileTable.dataSource = self;
     self.profileTable.delegate = self;
     self.profileTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -67,7 +68,6 @@
     badge.frame = CGRectMake(0, 0, self.view.frame.size.width, 140);
     self.profileBadge = badge;
     
-    [badge release];
     [self getUserProfile];
 }
 
@@ -78,15 +78,6 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	return YES;
-}
-
-- (void)dealloc {
-    [appDelegate release];
-    [profileBadge release];
-    [activitiesArray release];
-    [activitiesUsername release];
-    [profileBadge release];
-    [super dealloc];
 }
 
 - (void)doCancelButton {
@@ -122,7 +113,6 @@
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         NSLog(@"ERROR");
-        [results release];
         return;
     } 
 
@@ -139,7 +129,6 @@
     
     [self.profileTable reloadData];
     [self.view addSubview:self.profileTable];
-    [results release];
 }
 
 
@@ -176,7 +165,7 @@
     if (indexPath.section == 0) {
         return 180;
     } else {
-        ActivityCell *activityCell = [[[ActivityCell alloc] init] autorelease];
+        ActivityCell *activityCell = [[ActivityCell alloc] init];
         int height = [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername] + 20;
         return height;
     }
@@ -194,9 +183,9 @@
     UITableViewCell *cell = [tableView 
                              dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] 
+        cell = [[UITableViewCell alloc] 
                  initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:CellIdentifier] autorelease];
+                 reuseIdentifier:CellIdentifier];
     } else {
         [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
     }
@@ -213,7 +202,6 @@
             activityCell.tag = 1;
             [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername];
             [cell.contentView addSubview:activityCell];
-            [activityCell release];
         }
     }
 

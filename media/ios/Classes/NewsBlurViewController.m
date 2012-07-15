@@ -177,23 +177,6 @@
 }
 
 
-- (void)dealloc {   
-    [appDelegate release];
-    [innerView release];
-    [feedTitlesTable release];
-    [feedViewToolbar release];
-    [feedScoreSlider release];
-    [homeButton release];
-    [intelligenceControl release];
-    [activeFeedLocations release];
-    [visibleFeeds release];
-    [stillVisibleFeeds release];
-    [pull release];
-    [lastUpdate release];
-    [imageCache release];
-    [popoverController release];
-    [super dealloc];
-}
 
 #pragma mark -
 #pragma mark Initialization
@@ -204,7 +187,6 @@
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
         [self fetchFeedList:YES refreshFeeds:YES];
     }
-    [decayDate release];
     
 }
 
@@ -287,7 +269,6 @@
                                    initWithCustomView:userAvatarButton];
     
     self.navigationItem.leftBarButtonItem = userAvatar;
-    [userAvatar release];
     
     // adding settings button to right
 
@@ -317,7 +298,8 @@
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];
     NSMutableDictionary *socialDict = [[NSMutableDictionary alloc] init];
-    appDelegate.dictActiveFeeds = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *tempActiveFeeds = [[NSMutableDictionary alloc] init];
+    appDelegate.dictActiveFeeds = tempActiveFeeds;
     
     for (int i = 0; i < socialFeedsArray.count; i++) {
         NSString *userKey = [NSString stringWithFormat:@"%@", 
@@ -401,11 +383,8 @@
                                                        otherButtonTitles:@"Upgrade!", nil];
         [upgradeConfirm show];
         [upgradeConfirm setTag:2];
-        [upgradeConfirm release];
     }
     
-    [sortedFolders release];
-    [results release];
 }
 
 - (void)showUserProfilePopover:(id)sender {
@@ -561,7 +540,7 @@
     
     FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];    
     if (cell == nil) {
-        cell = [[[FeedTableCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:@"FeedCellIdentifier"] autorelease];
+        cell = [[FeedTableCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:@"FeedCellIdentifier"];
         cell.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     
@@ -649,16 +628,14 @@
     }
         
     // create the parent view that will hold header Label
-    UIControl* customView = [[[UIControl alloc] 
+    UIControl* customView = [[UIControl alloc] 
                               initWithFrame:CGRectMake(0.0, 0.0, 
-                                                       tableView.bounds.size.width, headerLabelHeight + 1)] 
-                             autorelease];
+                                                       tableView.bounds.size.width, headerLabelHeight + 1)];
     
     
-    UIView *borderBottom = [[[UIView alloc] 
+    UIView *borderBottom = [[UIView alloc] 
                              initWithFrame:CGRectMake(0.0, headerLabelHeight, 
-                                                      tableView.bounds.size.width, 1.0)]
-                            autorelease];
+                                                      tableView.bounds.size.width, 1.0)];
     borderBottom.backgroundColor = [UIColorFromRGB(0xB7BDC6) colorWithAlphaComponent:0.5];
     borderBottom.opaque = NO;
     [customView addSubview:borderBottom];
@@ -687,20 +664,17 @@
                                       colorWithAlphaComponent:0.8];
     }
     [customView addSubview:headerLabel];
-    [headerLabel release];
     
     UIImage *folderImage = [UIImage imageNamed:@"folder.png"];
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
     folderImageView.frame = CGRectMake(12.0, folderImageViewY, 16.0, 16.0);
     [customView addSubview:folderImageView];
-    [folderImageView release];
 
     if (section != 0) {    
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         UIImageView *disclosureImageView = [[UIImageView alloc] initWithImage:disclosureImage];
         disclosureImageView.frame = CGRectMake(customView.frame.size.width - 20, disclosureImageViewY, 9.0, 14.0);
         [customView addSubview:disclosureImageView];
-        [disclosureImageView release];
     }
 
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -945,7 +919,7 @@
 }
 
 - (void)calculateFeedLocations:(BOOL)markVisible {
-    NSDictionary *feed = [[NSDictionary alloc] init]; 
+    NSDictionary *feed; 
     self.activeFeedLocations = [NSMutableDictionary dictionary];
     if (markVisible) {
         self.visibleFeeds = [NSMutableDictionary dictionary];
@@ -1055,7 +1029,6 @@
         [Utilities saveimagesToDisk];
 
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [results release];
             [self.feedTitlesTable reloadData];
         });
     });

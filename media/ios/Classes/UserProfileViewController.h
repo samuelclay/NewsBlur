@@ -24,11 +24,11 @@
     NSString *activitiesUsername;
 }
 
-@property (retain, nonatomic) NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) ProfileBadge *profileBadge;
-@property (retain, nonatomic) UITableView *profileTable;
-@property (retain, nonatomic) NSArray *activitiesArray;
-@property (retain, nonatomic) NSString *activitiesUsername;
+@property (nonatomic) NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) ProfileBadge *profileBadge;
+@property (nonatomic) UITableView *profileTable;
+@property (nonatomic) NSArray *activitiesArray;
+@property (nonatomic) NSString *activitiesUsername;
 
 - (void)getUserProfile;
 - (void)requestFinished:(ASIHTTPRequest *)request;

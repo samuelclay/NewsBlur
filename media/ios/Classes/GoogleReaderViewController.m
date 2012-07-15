@@ -49,10 +49,6 @@
 	return YES;
 }
 
-- (void)dealloc {
-    [webView release];
-    [super dealloc];
-}
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     NSString *URLString = [[request URL] absoluteString];

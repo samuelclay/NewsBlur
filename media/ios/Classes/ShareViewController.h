@@ -13,12 +13,12 @@
     NewsBlurAppDelegate *appDelegate;
 }
 
-@property (retain, nonatomic) IBOutlet UITextView *commentField;
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) IBOutlet UIButton *facebookButton;
-@property (retain, nonatomic) IBOutlet UIButton *twitterButton;
-@property (retain, nonatomic) IBOutlet UIBarButtonItem *submitButton;
-@property (retain, nonatomic) IBOutlet UIBarButtonItem *toolbarTitle;
+@property ( nonatomic) IBOutlet UITextView *commentField;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property ( nonatomic) IBOutlet UIButton *facebookButton;
+@property ( nonatomic) IBOutlet UIButton *twitterButton;
+@property ( nonatomic) IBOutlet UIBarButtonItem *submitButton;
+@property ( nonatomic) IBOutlet UIBarButtonItem *toolbarTitle;
 
 - (void)setSiteInfo:(NSString *)userId setUsername:(NSString *)username;
 - (void)clearComments;

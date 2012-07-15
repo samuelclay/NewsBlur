@@ -9,6 +9,7 @@
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "MGSplitViewController.h"
+#import "NewsBlurViewController.h"
 #import "FeedDetailViewController.h"
 #import "FontSettingsViewController.h"
 #import "UserProfileViewController.h"
@@ -47,26 +48,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [activeStoryId release];
-    [appDelegate release];
-    [progressView release];
-    [webView release];
-    [innerView release];
-    [toolbar release];
-    [buttonNext release];
-    [buttonPrevious release];
-    [buttonAction release];
-    [activity release];
-    [loadingIndicator release];
-    [feedTitleGradient release];
-    [popoverController release];
-    [buttonNextStory release];
-    [buttonNextStory release];
-    [toggleViewButton release];
-    [innerView release];
-    [super dealloc];
-}
 
 - (void)viewDidLoad {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -76,13 +57,12 @@
         backBtn.frame = CGRectMake(0, 0, 51, 31);
         [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
         [backBtn addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
-        UIBarButtonItem *back = [[[UIBarButtonItem alloc] initWithCustomView:backBtn] autorelease];
+        UIBarButtonItem *back = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
         self.navigationItem.backBarButtonItem = back;  
     }
     
-    self.loadingIndicator = [[[UIActivityIndicatorView alloc] 
-                         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] 
-                         autorelease];
+    self.loadingIndicator = [[UIActivityIndicatorView alloc] 
+                         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     
     self.webView.scalesPageToFit = NO; 
     self.webView.multipleTouchEnabled = NO;
@@ -147,9 +127,6 @@
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
     }
 
-    [toggleButton release];
-    [originalButton release];
-    [fontSettingsButton release];
 	[super viewDidAppear:animated];
 }
 
@@ -317,7 +294,6 @@
                         [commentDict objectForKey:@"comments"],
                         [self getReplies:[commentDict objectForKey:@"replies"]]]; 
 
-    [userAvatarClass release];
     return comment;
 }
 
@@ -545,7 +521,6 @@
 	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
 	titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
     self.navigationItem.titleView = titleImageView;
-    [titleImageView release];
 }
 
 - (BOOL)webView:(UIWebView *)webView 
@@ -729,11 +704,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+//    NSString *responseString = [request responseString];
+//    NSDictionary *results = [[NSDictionary alloc] 
+//                             initWithDictionary:[responseString JSONValue]];
 //    NSLog(@"results in mark as read is %@", results);
-    [results release];
 } 
 
 - (void)refreshComments {
@@ -742,7 +716,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
                           commentsString];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-    [jsString release];
 
 }
 
@@ -750,7 +723,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *jsString = [[NSString alloc] initWithFormat:@
                           "window.scrollTo(0, document.body.scrollHeight);"];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-    [jsString release];
 }
 
    
@@ -878,8 +850,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           @"document.getElementsByTagName('body')[0].setAttribute('class', '%@');",
                           contentWidthClass];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-    [contentWidthClass release];
-    [jsString release];
 }
 
 - (IBAction)toggleFontSize:(id)sender {
@@ -919,9 +889,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
         [self presentModalViewController:navController animated:YES];
         
-        [fontSettings release];
-        [donebutton release];
-        [navController release];
     }
 }
 
@@ -934,7 +901,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           fontSize];
     
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-    [jsString release];
 }
  
 - (void)setFontStyle:(NSString *)fontStyle {
@@ -972,8 +938,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)viewDidUnload {
-    [buttonNextStory release];
-    buttonNextStory = nil;
     [self setButtonNextStory:nil];
     [self setInnerView:nil];
     [super viewDidUnload];

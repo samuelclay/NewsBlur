@@ -26,12 +26,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [appDelegate release];
-    [interactionsTable release];
-    [interactionsArray release];
-    [super dealloc];
-}
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -42,7 +36,7 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];   
     self.interactionsArray = interactions;
     
-    self.interactionsTable = [[[UITableView alloc] init] autorelease];
+    self.interactionsTable = [[UITableView alloc] init];
     self.interactionsTable.dataSource = self;
     self.interactionsTable.delegate = self;
     self.interactionsTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
@@ -78,9 +72,9 @@
     UITableViewCell *cell = [tableView 
                              dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] 
+        cell = [[UITableViewCell alloc] 
                  initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:CellIdentifier] autorelease];
+                 reuseIdentifier:CellIdentifier];
     }
     
     int userInteractions = [appDelegate.dictUserInteractions count];

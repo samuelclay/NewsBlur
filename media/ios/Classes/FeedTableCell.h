@@ -26,15 +26,15 @@
     BOOL isSocial;
 }
 
-@property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) NSString *feedTitle;
-@property (nonatomic, retain) UIImage *feedFavicon;
+@property (nonatomic) NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) NSString *feedTitle;
+@property (nonatomic) UIImage *feedFavicon;
 @property (assign, nonatomic) int positiveCount;
 @property (assign, nonatomic) int neutralCount;
 @property (assign, nonatomic) int negativeCount;
 @property (assign, nonatomic) BOOL isSocial;
-@property (nonatomic, retain) NSString *positiveCountStr;
-@property (nonatomic, retain) NSString *neutralCountStr;
-@property (nonatomic, retain) NSString *negativeCountStr;
+@property (nonatomic) NSString *positiveCountStr;
+@property (nonatomic) NSString *neutralCountStr;
+@property (nonatomic) NSString *negativeCountStr;
 
 @end

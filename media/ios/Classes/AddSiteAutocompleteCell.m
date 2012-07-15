@@ -29,12 +29,6 @@
 }
 
 
-- (void)dealloc {
-    [feedTitle release];
-    [feedUrl release];
-    [feedSubs release];
-    [super dealloc];
-}
 
 
 @end

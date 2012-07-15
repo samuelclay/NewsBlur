@@ -35,17 +35,17 @@ static CGFloat *psColors = nil;
 
 + (void) initialize{
     if (self == [FeedTableCell class]) {
-        textFont = [[UIFont boldSystemFontOfSize:18] retain];
-        indicatorFont = [[UIFont boldSystemFontOfSize:12] retain];
-        indicatorWhiteColor = [[UIColor whiteColor] retain];
-        indicatorBlackColor = [[UIColor blackColor] retain];
+        textFont = [UIFont boldSystemFontOfSize:18];
+        indicatorFont = [UIFont boldSystemFontOfSize:12];
+        indicatorWhiteColor = [UIColor whiteColor];
+        indicatorBlackColor = [UIColor blackColor];
 
         UIColor *ps = UIColorFromRGB(0x3B7613);
         UIColor *nt = UIColorFromRGB(0xF9C72A);
         UIColor *ng = UIColorFromRGB(0xCC2A2E);
-        positiveBackgroundColor = [ps retain];
-        neutralBackgroundColor = [nt retain];
-        negativeBackgroundColor = [ng retain];
+        positiveBackgroundColor = ps;
+        neutralBackgroundColor = nt;
+        negativeBackgroundColor = ng;
 //        UIColor *psGrad = UIColorFromRGB(0x559F4D);
 //        UIColor *ntGrad = UIColorFromRGB(0xE4AB00);
 //        UIColor *ngGrad = UIColorFromRGB(0x9B181B);
@@ -59,17 +59,12 @@ static CGFloat *psColors = nil;
     }
 }
 
-- (void)dealloc {
-    [feedTitle release];
-    [feedFavicon release];
-    [super dealloc];
-}
 
 - (void) setPositiveCount:(int)ps {
     if (ps == _positiveCount) return;
     
     _positiveCount = ps;
-    _positiveCountStr = [[NSString stringWithFormat:@"%d", ps] retain];
+    _positiveCountStr = [NSString stringWithFormat:@"%d", ps];
     [self setNeedsDisplay];
 }
 
@@ -77,7 +72,7 @@ static CGFloat *psColors = nil;
     if (nt == _neutralCount) return;
     
     _neutralCount = nt;
-    _neutralCountStr = [[NSString stringWithFormat:@"%d", nt] retain];
+    _neutralCountStr = [NSString stringWithFormat:@"%d", nt];
     [self setNeedsDisplay];
 }
 
@@ -85,7 +80,7 @@ static CGFloat *psColors = nil;
     if (ng == _negativeCount) return;
     
     _negativeCount = ng;
-    _negativeCountStr = [[NSString stringWithFormat:@"%d", ng] retain];
+    _negativeCountStr = [NSString stringWithFormat:@"%d", ng];
     [self setNeedsDisplay];
 }
 

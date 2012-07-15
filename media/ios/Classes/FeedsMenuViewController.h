@@ -20,10 +20,10 @@
     NewsBlurAppDelegate *appDelegate;
 }
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) NSArray *menuOptions;
-@property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
-@property (retain, nonatomic) IBOutlet UITableView *menuTableView;
+@property (nonatomic) IBOutlet UIToolbar *toolbar;
+@property ( nonatomic) IBOutlet UITableView *menuTableView;
 
 - (IBAction)tapCancelButton:(UIBarButtonItem *)sender;
 - (void)finishedWithError:(ASIHTTPRequest *)request;

@@ -80,8 +80,8 @@
     if (appDelegate.isSocialView) {
         UIButton *titleImageButton = [appDelegate makeRightFeedTitle:appDelegate.activeFeed];
         [titleImageButton addTarget:self action:@selector(showUserProfilePopover) forControlEvents:UIControlEventTouchUpInside];
-        UIBarButtonItem *titleImageBarButton = [[[UIBarButtonItem alloc] 
-                                                 initWithCustomView:titleImageButton] autorelease];
+        UIBarButtonItem *titleImageBarButton = [[UIBarButtonItem alloc] 
+                                                 initWithCustomView:titleImageButton];
         self.navigationItem.rightBarButtonItem = titleImageBarButton;
     } else {
         self.navigationItem.rightBarButtonItem = nil;
@@ -136,18 +136,6 @@
 	[super viewDidAppear:animated];
 }
 
-- (void)dealloc {
-    [popoverController release];
-    [storyTitlesTable release];
-    [feedViewToolbar release];
-    [feedScoreSlider release];
-    [feedMarkReadButton release];
-    [settingsButton release];
-    [stories release];
-    [appDelegate release];
-    [intelligenceControl release];
-    [super dealloc];
-}
 
 #pragma mark -
 #pragma mark Initialization
@@ -191,7 +179,7 @@
         }
         
         [self cancelRequests];
-        __block ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
+        __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -240,7 +228,7 @@
                                       readStoriesCount];
         
         [self cancelRequests];
-        __block ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
+        __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -280,7 +268,6 @@
                              initWithDictionary:[responseString JSONValue]];
     
     if (!(appDelegate.isRiverView || appDelegate.isSocialView) && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
-        [results release];
         return;
     }
     
@@ -307,7 +294,7 @@
             }
         }
     } else {
-        confirmedNewStories = [[newStories copy] autorelease];
+        confirmedNewStories = [newStories copy];
     }
     
     // Adding new user profiles to appDelegate.activeFeedUserProfiles
@@ -325,7 +312,7 @@
                 }
             }
         } else {
-            confirmedNewUserProfiles = [[newUserProfiles copy] autorelease];
+            confirmedNewUserProfiles = [newUserProfiles copy];
         }
         
         if (self.feedPage == 1) {
@@ -339,9 +326,6 @@
     }
     
     [self renderStories:confirmedNewStories];
-    
-    
-    [results release];
 }
 
 #pragma mark - 
@@ -374,8 +358,6 @@
                                          withRowAnimation:UITableViewRowAnimationNone];
             [self.storyTitlesTable endUpdates]; 
         }
-        
-        [indexPaths release];
 
     } else if (newVisibleStoriesCount > 0) {
         [self.storyTitlesTable reloadData];
@@ -402,7 +384,6 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-    [connection release];
     
     // inform the user
     NSLog(@"Connection failed! Error - %@",
@@ -417,9 +398,9 @@
 }
 
 - (UITableViewCell *)makeLoadingCell {
-    UITableViewCell *cell = [[[UITableViewCell alloc] 
+    UITableViewCell *cell = [[UITableViewCell alloc] 
                               initWithStyle:UITableViewCellStyleSubtitle 
-                              reuseIdentifier:@"NoReuse"] autorelease];
+                              reuseIdentifier:@"NoReuse"];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
@@ -438,12 +419,11 @@
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
         fleuron.backgroundColor = [UIColor whiteColor];
-        [fleuron release];
     } else {
         cell.textLabel.text = @"Loading...";
         
-        UIActivityIndicatorView *spinner = [[[UIActivityIndicatorView alloc] 
-                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray] autorelease];
+        UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] 
+                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         UIImage *spacer = [UIImage imageNamed:@"spacer"];
         UIGraphicsBeginImageContext(spinner.frame.size);        
         [spacer drawInRect:CGRectMake(0,0,spinner.frame.size.width,spinner.frame.size.height)];
@@ -546,7 +526,6 @@
         topBorder.frame = CGRectMake(12, 0, self.view.frame.size.width, 1);
         topBorder.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
         [cell addSubview:topBorder]; 
-        [topBorder release];
     }
     
     if (!isStoryRead) {
@@ -585,15 +564,15 @@
 }
 
 - (void)changeRowStyleToRead:(FeedDetailTableCell *)cell {
-    cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
-    cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:0.5];
+    cell.storyAuthor.textColor = UIColorFromRGB(0x979797);
     cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
     cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
     cell.storyUnreadIndicator.alpha = 0.15f;
     cell.feedGradient.alpha = 0.25f;
+    cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
     if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
-        cell.storyTitle.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:0.9];
+        cell.storyTitle.textColor = UIColorFromRGB(0x979797);
     } else {
         cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
     }
@@ -608,12 +587,12 @@
 }
 
 - (UIView *)makeFeedTitleBar:(NSDictionary *)feed cell:(UITableViewCell *)cell makeRect:(CGRect)rect {
-    UIView *gradientView = [[[UIView alloc] init] autorelease];
+    UIView *gradientView = [[UIView alloc] init];
     gradientView.opaque = YES;
     
-    UILabel *titleLabel = [[[UILabel alloc] init] autorelease];
+    UILabel *titleLabel = [[UILabel alloc] init];
     titleLabel.text = [feed objectForKey:@"feed_title"];
-    titleLabel.backgroundColor = [UIColor clearColor];
+    titleLabel.backgroundColor = [UIColor whiteColor];
     titleLabel.textAlignment = UITextAlignmentLeft;
     titleLabel.lineBreakMode = UILineBreakModeTailTruncation;
     titleLabel.numberOfLines = 1;
@@ -629,7 +608,6 @@
     titleImageView.alpha = 0.6;
     titleImageView.frame = CGRectMake(18, 5, 16.0, 16.0);
     [titleLabel addSubview:titleImageView];
-    [titleImageView release];
     
     [gradientView addSubview:titleLabel];
     [gradientView addSubview:titleImageView];
@@ -854,7 +832,6 @@
     
     options.tag = kMarkReadActionSheet;
     [options showInView:self.view];
-    [options release];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -924,7 +901,6 @@
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
     options.tag = kSettingsActionSheet;
     [options showInView:self.view];
-    [options release];
 }
 
 - (void)confirmDeleteSite {
@@ -937,7 +913,6 @@
                                   nil];
     [deleteConfirm show];
     [deleteConfirm setTag:0];
-    [deleteConfirm release];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -963,7 +938,7 @@
                                   NEWSBLUR_URL];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    __weak ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
     [request setDelegate:self];
     [request addPostValue:[[appDelegate activeFeed] objectForKey:@"id"] forKey:@"feed_id"];
     [request addPostValue:[appDelegate extractFolderName:appDelegate.activeFolder] forKey:@"in_folder"];
@@ -992,7 +967,7 @@
                                   NEWSBLUR_URL];
     NSURL *urlFeedDetail = [NSURL URLWithString:theFeedDetailURL];
     
-    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
+    __weak ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:urlFeedDetail];
     [request setDelegate:self];
     [request addPostValue:[appDelegate extractFolderName:appDelegate.activeFolder] 
                    forKey:@"folder_to_delete"];
@@ -1105,7 +1080,6 @@
                              initWithDictionary:[responseString JSONValue]];
 
     [self renderStories:[results objectForKey:@"stories"]];    
-    [results release];
 }
 
 - (void)failRefreshingFeed:(ASIHTTPRequest *)request {
@@ -1156,7 +1130,6 @@
         [Utilities saveimagesToDisk];
         
         dispatch_sync(dispatch_get_main_queue(), ^{
-            [results release];
             [self.storyTitlesTable reloadData];
         });
     });

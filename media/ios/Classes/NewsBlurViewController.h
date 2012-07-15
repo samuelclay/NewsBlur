@@ -38,21 +38,21 @@
     UIPopoverController *popoverController;
 }
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) IBOutlet UIView *innerView;
-@property (nonatomic, retain) IBOutlet UITableView *feedTitlesTable;
-@property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
-@property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem * homeButton;
-@property (nonatomic, retain) NSMutableDictionary *activeFeedLocations;
-@property (nonatomic, retain) NSMutableDictionary *visibleFeeds;
-@property (nonatomic, retain) NSMutableDictionary *stillVisibleFeeds;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) IBOutlet UIView *innerView;
+@property (nonatomic) IBOutlet UITableView *feedTitlesTable;
+@property (nonatomic) IBOutlet UIToolbar *feedViewToolbar;
+@property (nonatomic) IBOutlet UISlider * feedScoreSlider;
+@property (nonatomic) IBOutlet UIBarButtonItem * homeButton;
+@property (nonatomic) NSMutableDictionary *activeFeedLocations;
+@property (nonatomic) NSMutableDictionary *visibleFeeds;
+@property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
-@property (nonatomic, retain) PullToRefreshView *pull;
-@property (nonatomic, retain) NSDate *lastUpdate;
-@property (nonatomic, retain) NSCache *imageCache;
-@property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
-@property (nonatomic, retain) UIPopoverController *popoverController;
+@property (nonatomic) PullToRefreshView *pull;
+@property (nonatomic) NSDate *lastUpdate;
+@property (nonatomic) NSCache *imageCache;
+@property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
+@property (nonatomic) UIPopoverController *popoverController;
 
 - (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader refreshFeeds:(BOOL)refreshFeeds;

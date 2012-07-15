@@ -39,7 +39,6 @@
 	for (ASIHTTPRequest* r in toremove) {
 		[requests removeObject:r];
 	}
-	[toremove release];
 }
 
 - (void) cancelRequests {
@@ -68,8 +67,8 @@
     
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    [HUD setCustomView:[[[UIImageView alloc] 
-                         initWithImage:[UIImage imageNamed:@"warning.gif"]] autorelease]];
+    [HUD setCustomView:[[UIImageView alloc] 
+                         initWithImage:[UIImage imageNamed:@"warning.gif"]]];
     [HUD setMode:MBProgressHUDModeCustomView];
     HUD.labelText = errorMessage;
     [HUD hide:YES afterDelay:1];
@@ -99,9 +98,7 @@
 
 - (void)dealloc {
 	[self cancelRequests];
-	[requests release];
 	
-    [super dealloc];
 }
 
 

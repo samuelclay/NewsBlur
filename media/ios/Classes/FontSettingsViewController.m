@@ -73,14 +73,6 @@
 	return YES;
 }
 
-- (void)dealloc {
-    [appDelegate release];
-    [fontStyleSegment release];
-    [fontSizeSegment release];
-    [super dealloc];
-}
-
-
 - (IBAction)changeFontStyle:(id)sender {
     if ([sender selectedSegmentIndex] == 0) {
         [self setSanSerif];

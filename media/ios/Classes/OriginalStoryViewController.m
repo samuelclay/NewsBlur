@@ -40,7 +40,6 @@
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:appDelegate.activeOriginalStoryURL] ;
     [self updateAddress:request];
     [self.pageTitle setText:[[appDelegate activeStory] objectForKey:@"story_title"]];
-    [request release];
     
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
@@ -77,7 +76,6 @@
     label.text = [[appDelegate activeStory] objectForKey:@"story_title"];
     [navBar addSubview:label];
     self.pageTitle = label;
-    [label release];
     
     
     UIBarButtonItem *close = [[UIBarButtonItem alloc] 
@@ -95,8 +93,6 @@
     [tools setItems:[NSArray arrayWithObject:close] animated:NO];
     [tools setTintColor:UIColorFromRGB(0x183353)];
     [navBar addSubview:tools];
-    [close release];
-    [tools release];
 
     
     CGRect addressFrame = CGRectMake(closeButtonFrame.origin.x + 
@@ -131,8 +127,6 @@
         
     navBar.tintColor = UIColorFromRGB(0x183353);
     
-    [navBar release];
-    [address release];
 
 }
 
@@ -234,19 +228,6 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
-- (void)dealloc {
-    [appDelegate release];
-    [closeButton release];
-    [webView release];
-    [back release];
-    [forward release];
-    [refresh release];
-    [pageAction release];
-    [pageTitle release];
-    [pageUrl release];
-    [toolbar release];
-    [super dealloc];
-}
 
 - (IBAction)doCloseOriginalStoryViewController {
 //    NSLog(@"Close Original Story: %@", appDelegate);

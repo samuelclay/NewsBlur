@@ -26,13 +26,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [appDelegate release];
-    [activitiesTable release];
-    [activitiesArray release];
-    [activitiesUsername release];
-    [super dealloc];
-}
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -48,7 +41,7 @@
         self.activitiesUsername = [[activitiesDict objectForKey:@"user_profile"] objectForKey:@"username"];
     }
     
-    self.activitiesTable = [[[UITableView alloc] init] autorelease];
+    self.activitiesTable = [[UITableView alloc] init];
     self.activitiesTable.dataSource = self;
     self.activitiesTable.delegate = self;
     self.activitiesTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
@@ -79,7 +72,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    ActivityCell *activityCell = [[[ActivityCell alloc] init] autorelease];
+    ActivityCell *activityCell = [[ActivityCell alloc] init];
     int height = [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername] + 20;
     return height;
 }
@@ -90,9 +83,9 @@
     UITableViewCell *cell = [tableView 
                              dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc] 
+        cell = [[UITableViewCell alloc] 
                  initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:CellIdentifier] autorelease];
+                 reuseIdentifier:CellIdentifier];
     } else {
         [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
     }
@@ -102,7 +95,6 @@
         ActivityCell *activityCell = [[ActivityCell alloc] init];
         [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername];
         [cell.contentView addSubview:activityCell];
-        [activityCell release];
     }    
     return cell;
 }

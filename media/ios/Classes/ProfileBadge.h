@@ -25,16 +25,16 @@
     UIActivityIndicatorView *activityIndicator;
 }
 
-@property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) UIImageView *userAvatar;
-@property (retain, nonatomic) UILabel *username;
-@property (retain, nonatomic) UILabel *userLocation;
-@property (retain, nonatomic) UILabel *userDescription;
-@property (retain, nonatomic) UILabel *userStats;
-@property (retain, nonatomic) UIButton *followButton;
-@property (nonatomic, retain) UIActivityIndicatorView *activityIndicator;
+@property (nonatomic) NewsBlurAppDelegate *appDelegate;
+@property ( nonatomic) UIImageView *userAvatar;
+@property ( nonatomic) UILabel *username;
+@property ( nonatomic) UILabel *userLocation;
+@property ( nonatomic) UILabel *userDescription;
+@property ( nonatomic) UILabel *userStats;
+@property ( nonatomic) UIButton *followButton;
+@property (nonatomic) UIActivityIndicatorView *activityIndicator;
 
-@property (retain, nonatomic) NSDictionary *activeProfile;
+@property ( nonatomic) NSDictionary *activeProfile;
 
 
 - (void)refreshWithProfile:(NSDictionary *)profile;

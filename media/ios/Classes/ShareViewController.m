@@ -77,14 +77,7 @@
 }
 
 - (void)dealloc {
-    [appDelegate release];
-    [commentField release];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [facebookButton release];
-    [twitterButton release];
-    [submitButton release];
-    [toolbarTitle release];
-    [super dealloc];
 }
 
 - (IBAction)doCancelButton:(id)sender {
@@ -199,7 +192,6 @@
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     appDelegate.activeStory = [results objectForKey:@"story"];
-    [results release];
     self.commentField.text = nil;
     [appDelegate refreshComments];
 }

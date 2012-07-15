@@ -45,15 +45,12 @@
     UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
     [inFolderInput setLeftView:folderImage];
     [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
-    [folderImage release];
     UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
     [addFolderInput setLeftView:folderImage2];
     [addFolderInput setLeftViewMode:UITextFieldViewModeAlways];
-    [folderImage2 release];
     UIImageView *urlImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"world.png"]];
     [siteAddressInput setLeftView:urlImage];
     [siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
-    [urlImage release];
     
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
@@ -93,21 +90,6 @@
 	// Release any cached data, images, etc that aren't in use.
 }
 
-- (void)dealloc {
-    [appDelegate release];
-    [inFolderInput release];
-    [addFolderInput release];
-    [siteAddressInput release];
-    [addButton release];
-    [cancelButton release];
-    [folderPicker release];
-    [siteTable release];
-    [siteScrollView release];
-    [jsonString release];
-    [autocompleteResults release];
-    [navBar release];
-    [super dealloc];
-}
 
 - (IBAction)doCancelButton {
     [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
@@ -263,7 +245,6 @@
         [appDelegate reloadFeedsView:YES];
     }
     
-    [results release];
 }
 
 - (NSString *)extractParentFolder {
@@ -315,7 +296,6 @@
         [appDelegate reloadFeedsView:YES];
     }
     
-    [results release];    
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
@@ -450,7 +430,7 @@ numberOfRowsInComponent:(NSInteger)component {
     
     NSDictionary *result = [autocompleteResults objectAtIndex:indexPath.row];
     int subs = [[result objectForKey:@"num_subscribers"] intValue];
-    NSNumberFormatter *numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
+    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setPositiveFormat:@"#,###"];
 	NSNumber *theScore = [NSNumber numberWithInt:subs];
     cell.feedTitle.text = [result objectForKey:@"label"];

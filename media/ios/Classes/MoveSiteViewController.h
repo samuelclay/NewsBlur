@@ -24,20 +24,20 @@
 - (IBAction)doMoveButton;
 - (NSArray *)pickerFolders;
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) IBOutlet UITextField *fromFolderInput;
-@property (nonatomic, retain) IBOutlet UITextField *toFolderInput;
-@property (nonatomic, retain) IBOutlet UILabel *titleLabel;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) IBOutlet UITextField *fromFolderInput;
+@property (nonatomic) IBOutlet UITextField *toFolderInput;
+@property (nonatomic) IBOutlet UILabel *titleLabel;
 
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *moveButton;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *cancelButton;
-@property (nonatomic, retain) IBOutlet UIPickerView *folderPicker;
+@property (nonatomic) IBOutlet UIBarButtonItem *moveButton;
+@property (nonatomic) IBOutlet UIBarButtonItem *cancelButton;
+@property (nonatomic) IBOutlet UIPickerView *folderPicker;
 
-@property (nonatomic, retain) IBOutlet UINavigationBar *navBar;
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView *activityIndicator;
-@property (nonatomic, retain) IBOutlet UILabel *movingLabel;
-@property (nonatomic, retain) IBOutlet UILabel *errorLabel;
+@property (nonatomic) IBOutlet UINavigationBar *navBar;
+@property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property (nonatomic) IBOutlet UILabel *movingLabel;
+@property (nonatomic) IBOutlet UILabel *errorLabel;
 
-@property (nonatomic, retain) NSMutableArray *folders;
+@property (nonatomic) NSMutableArray *folders;
 
 @end

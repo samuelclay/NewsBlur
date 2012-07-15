@@ -15,8 +15,8 @@
     NewsBlurAppDelegate *appDelegate;
 }
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) IBOutlet UIWebView *webView;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) IBOutlet UIWebView *webView;
 
 - (IBAction)tapCancelButton:(id)sender;
 @end

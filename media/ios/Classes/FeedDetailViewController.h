@@ -32,16 +32,16 @@
     UIPopoverController *popoverController;
 }
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) UIPopoverController *popoverController;
-@property (nonatomic, retain) IBOutlet UITableView *storyTitlesTable;
-@property (nonatomic, retain) IBOutlet UIToolbar *feedViewToolbar;
-@property (nonatomic, retain) IBOutlet UISlider * feedScoreSlider;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem * feedMarkReadButton;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem * settingsButton;
-@property (nonatomic, retain) IBOutlet UISegmentedControl * intelligenceControl;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) UIPopoverController *popoverController;
+@property (nonatomic, strong) IBOutlet UITableView *storyTitlesTable;
+@property (nonatomic) IBOutlet UIToolbar *feedViewToolbar;
+@property (nonatomic) IBOutlet UISlider * feedScoreSlider;
+@property (nonatomic) IBOutlet UIBarButtonItem * feedMarkReadButton;
+@property (nonatomic) IBOutlet UIBarButtonItem * settingsButton;
+@property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
 
-@property (nonatomic, retain) NSArray * stories;
+@property (nonatomic) NSArray * stories;
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;

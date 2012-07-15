@@ -14,7 +14,7 @@ static NSMutableDictionary *imageCache;
 
 + (void)saveImage:(UIImage *)image feedId:(NSString *)filename {
     if (!imageCache) {
-        imageCache = [[NSMutableDictionary dictionary] retain];
+        imageCache = [NSMutableDictionary dictionary];
     }
     
     // Save image to memory-based cache, for performance when reading.
@@ -50,7 +50,7 @@ static NSMutableDictionary *imageCache;
 + (void)saveimagesToDisk {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT,0);
     
-    dispatch_async(queue, [[^{
+    dispatch_async(queue, [^{
         for (NSString *filename in [imageCache allKeys]) {
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
             NSString *cacheDirectory = [paths objectAtIndex:0];
@@ -60,7 +60,7 @@ static NSMutableDictionary *imageCache;
             UIImage *image = [imageCache objectForKey:filename];
             [UIImageJPEGRepresentation(image, 1.0) writeToFile:path atomically:YES];
         }
-    } copy] autorelease]);
+    } copy]);
 }
 
 + (UIImage *)roundCorneredImage: (UIImage*) orig radius:(CGFloat) r {

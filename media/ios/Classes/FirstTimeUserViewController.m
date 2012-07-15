@@ -73,19 +73,6 @@
 	return YES;
 }
 
-- (void)dealloc {
-    [categories release];
-    [googleReaderButton release];
-    [welcomeView release];
-    [addSitesView release];
-    [addFriendsView release];
-    [addNewsBlurView release];
-    [toolbar release];
-    [toolbarTitle release];
-    [nextButton release];
-    [logo release];
-    [super dealloc];
-}
 
 - (IBAction)tapNextButton {
     currentStep++;

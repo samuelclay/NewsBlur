@@ -37,19 +37,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [appDelegate release];
-    [userAvatar release];
-    [username release];
-    [userLocation release];
-    [userDescription release];
-    [userStats release];
-    [followButton release];
-    [super dealloc];
-}
-
-
-
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
@@ -97,7 +84,6 @@
     
     self.userAvatar = avatar;
     [self addSubview:self.userAvatar];
-    [avatar release];
     
     // FOLLOW BUTTON
     UIButton *follow = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -140,7 +126,6 @@
     activityView.frame = CGRectMake(50, 98, 20, 20.0);
     self.activityIndicator = activityView;
     [self addSubview:self.activityIndicator];
-    [activityView release];
     
     // USERNAME
     UILabel *user = [[UILabel alloc] initWithFrame:CGRectMake(kTopBadgeTextXCoordinate, 10, 190, 22)];
@@ -151,7 +136,6 @@
     self.username = user;
     [self addSubview:self.username];
     yCoordinatePointer = self.username.frame.origin.y + self.username.frame.size.height;
-    [user release];
         
     // BIO
     if ([profile objectForKey:@"bio"] != [NSNull null]) {
@@ -179,7 +163,6 @@
         
         self.userDescription = bio;
         [self addSubview:self.userDescription];
-        [bio release];
         yCoordinatePointer = yCoordinatePointer + self.userDescription.frame.size.height + 6;
     } 
     
@@ -196,7 +179,6 @@
         location.font = [UIFont fontWithName:@"Helvetica" size:12];
         self.userLocation = location;
         [self addSubview:self.userLocation];
-        [location release];
         
         UIImage *locationIcon = [UIImage imageNamed:@"flag_orange.png"];
         UIImageView *locationIconView = [[UIImageView alloc] initWithImage:locationIcon];
@@ -205,19 +187,18 @@
                                             16, 
                                             16);
         [self addSubview:locationIconView];
-        [locationIconView release];
     } 
     
-    UIView *horizontalBar = [[[UIView alloc] initWithFrame:CGRectMake(10, kTopBadgeHeight, self.frame.size.width - 20, 1)] autorelease];
+    UIView *horizontalBar = [[UIView alloc] initWithFrame:CGRectMake(10, kTopBadgeHeight, self.frame.size.width - 20, 1)];
     horizontalBar.backgroundColor = [UIColor lightGrayColor];
     horizontalBar.autoresizingMask = 0x3f;
     [self addSubview:horizontalBar];
     
-    UIView *leftVerticalBar = [[[UIView alloc] initWithFrame:CGRectMake(((self.frame.size.width - 20)/3) + 10, kTopBadgeHeight, 1, 55)] autorelease];
+    UIView *leftVerticalBar = [[UIView alloc] initWithFrame:CGRectMake(((self.frame.size.width - 20)/3) + 10, kTopBadgeHeight, 1, 55)];
     leftVerticalBar.backgroundColor = [UIColor lightGrayColor];
     [self addSubview:leftVerticalBar];
     
-    UIView *rightVerticalBar = [[[UIView alloc] initWithFrame:CGRectMake(((self.frame.size.width - 20)/3)*2 + 10, kTopBadgeHeight, 1, 55)] autorelease];
+    UIView *rightVerticalBar = [[UIView alloc] initWithFrame:CGRectMake(((self.frame.size.width - 20)/3)*2 + 10, kTopBadgeHeight, 1, 55)];
     rightVerticalBar.backgroundColor = [UIColor lightGrayColor];
     [self addSubview:rightVerticalBar];
     
@@ -230,7 +211,6 @@
     shared.font = [UIFont boldSystemFontOfSize:20];
     shared.backgroundColor = [UIColor clearColor];
     [self addSubview:shared];
-    [shared release];
     
     UILabel *sharedLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, kTopBadgeHeight + 30, 80, 20)];
     NSString *sharedLabelStr = [NSString stringWithFormat:@"Shared Stor%@",
@@ -240,7 +220,6 @@
     sharedLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
     sharedLabel.backgroundColor = [UIColor clearColor];
     [self addSubview:sharedLabel];
-    [sharedLabel release];
     
     
     // Following
@@ -252,7 +231,6 @@
     following.font = [UIFont boldSystemFontOfSize:20];
     following.backgroundColor = [UIColor clearColor];
     [self addSubview:following];
-    [following release];
     
     UILabel *followingLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, kTopBadgeHeight + 30, 80, 20)];
     NSString *followingLabelStr = [NSString stringWithFormat:@"Following"];
@@ -261,7 +239,6 @@
     followingLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
     followingLabel.backgroundColor = [UIColor clearColor];
     [self addSubview:followingLabel];
-    [followingLabel release];
     
     
     // Followers
@@ -273,7 +250,6 @@
     followers.font = [UIFont boldSystemFontOfSize:20];
     followers.backgroundColor = [UIColor clearColor];
     [self addSubview:followers];
-    [followers release];
     
     UILabel *followersLabel = [[UILabel alloc] initWithFrame:CGRectMake(220, kTopBadgeHeight + 30, 80, 20)];
     NSString *followersLabelStr = [NSString stringWithFormat:@"Follower%@", 
@@ -283,7 +259,6 @@
     followersLabel.font = [UIFont fontWithName:@"Helvetica" size:12];
     followersLabel.backgroundColor = [UIColor clearColor];
     [self addSubview:followersLabel];
-    [followersLabel release];
 }
 
 - (void)initProfile {
@@ -334,12 +309,10 @@
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         NSLog(@"ERROR");
-        [results release];
         return;
     } 
     
     [self.followButton setTitle:@"Following" forState:UIControlStateNormal];
-    [results release];
 }
 
 
@@ -351,13 +324,11 @@
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         NSLog(@"ERROR");
-        [results release];
         return;
     } 
     
     NSLog(@"results %@", results);
     [self.followButton setTitle:@"Follow" forState:UIControlStateNormal];
-    [results release];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request

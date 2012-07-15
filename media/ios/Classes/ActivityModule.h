@@ -19,10 +19,10 @@
     NSString *activitiesUsername;
 }
 
-@property (nonatomic, retain) NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) UITableView *activitiesTable;
-@property (nonatomic, retain) NSArray *activitiesArray;
-@property (nonatomic, retain) NSString *activitiesUsername;
+@property (nonatomic) NewsBlurAppDelegate *appDelegate;
+@property (nonatomic, strong) UITableView *activitiesTable;
+@property (nonatomic) NSArray *activitiesArray;
+@property (nonatomic) NSString *activitiesUsername;
 
 - (void)refreshWithActivities:(NSDictionary *)activitiesDict;
 

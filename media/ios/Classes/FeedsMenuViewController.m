@@ -32,8 +32,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
-    self.menuOptions = [[[NSArray alloc]
-                        initWithObjects:@"Account", @"Preferences", @"Logout", nil] autorelease];
+    self.menuOptions = [[NSArray alloc]
+                        initWithObjects:@"Account", @"Preferences", @"Logout", nil];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.toolbar.hidden = YES;
@@ -59,13 +59,6 @@
 	return YES;
 }
 
-- (void)dealloc {   
-    [appDelegate release];
-    [menuOptions release];
-    [toolbar release];
-    [menuTableView release];
-    [super dealloc];
-}
 
 - (IBAction)tapCancelButton:(UIBarButtonItem *)sender {
     [appDelegate hideFeedsMenu];
@@ -91,9 +84,9 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier]; 
     
     if (cell == nil) {
-        cell = [[[UITableViewCell alloc]
+        cell = [[UITableViewCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
-                reuseIdentifier:CellIndentifier] autorelease];
+                reuseIdentifier:CellIndentifier];
     }
     
     cell.textLabel.text = [self.menuOptions objectAtIndex:[indexPath row]];

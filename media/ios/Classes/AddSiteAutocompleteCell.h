@@ -14,8 +14,8 @@
     UILabel *feedSubs;
 }
 
-@property (nonatomic, retain) IBOutlet UILabel *feedTitle;
-@property (nonatomic, retain) IBOutlet UILabel *feedUrl;
-@property (nonatomic, retain) IBOutlet UILabel *feedSubs;
+@property (nonatomic) IBOutlet UILabel *feedTitle;
+@property (nonatomic) IBOutlet UILabel *feedUrl;
+@property (nonatomic) IBOutlet UILabel *feedSubs;
 
 @end

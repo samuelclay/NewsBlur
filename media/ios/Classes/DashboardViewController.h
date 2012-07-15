@@ -22,11 +22,11 @@
     ActivityModule *activitiesModule;
 }
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (retain, nonatomic) IBOutlet UILabel *interactionsLabel;
-@property (retain, nonatomic) IBOutlet UILabel *activitesLabel;
-@property (retain, nonatomic) IBOutlet InteractionsModule *interactionsModule;
-@property (retain, nonatomic) IBOutlet ActivityModule *activitiesModule;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) IBOutlet UILabel *interactionsLabel;
+@property (nonatomic) IBOutlet UILabel *activitesLabel;
+@property (nonatomic) IBOutlet InteractionsModule *interactionsModule;
+@property (nonatomic) IBOutlet ActivityModule *activitiesModule;
 
 - (IBAction)doLogout:(id)sender;
 - (void)refreshInteractions;

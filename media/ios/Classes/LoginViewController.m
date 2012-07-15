@@ -144,20 +144,6 @@
 }
 
 
-- (void)dealloc {
-    [appDelegate release];
-    [usernameInput release];
-    [passwordInput release];
-    [emailInput release];
-    [jsonString release];
-    [signUpView release];
-    [logInView release];
-    [signUpUsernameInput release];
-    [signUpPasswordInput release];
-    [selectSignUpButton release];
-    [selectLoginButton release];
-    [super dealloc];
-}
 
 
 
@@ -239,7 +225,6 @@
         [appDelegate reloadFeedsView:YES];
     }
     
-    [results release];
 }
 
 
@@ -296,7 +281,6 @@
         [self dismissModalViewControllerAnimated:NO];
     }
     
-    [results release];    
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request

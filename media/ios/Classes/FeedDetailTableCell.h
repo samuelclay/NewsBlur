@@ -20,11 +20,11 @@
     UIView *feedGradient;
 }
 
-@property (nonatomic, retain) IBOutlet UILabel *storyTitle;
-@property (nonatomic, retain) IBOutlet UILabel *storyAuthor;
-@property (nonatomic, retain) IBOutlet UILabel *storyDate;
-@property (nonatomic, retain) IBOutlet UIImageView *storyUnreadIndicator;
+@property (nonatomic) IBOutlet UILabel *storyTitle;
+@property (nonatomic) IBOutlet UILabel *storyAuthor;
+@property (nonatomic) IBOutlet UILabel *storyDate;
+@property (nonatomic) IBOutlet UIImageView *storyUnreadIndicator;
 
-@property (nonatomic, retain) IBOutlet UIView *feedGradient;
+@property (nonatomic) IBOutlet UIView *feedGradient;
 
 @end

@@ -50,25 +50,25 @@
 - (void)hideFolderPicker;
 - (IBAction)checkSiteAddress;
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic, retain) IBOutlet UITextField *inFolderInput;
-@property (nonatomic, retain) IBOutlet UITextField *addFolderInput;
-@property (nonatomic, retain) IBOutlet UITextField *siteAddressInput;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) IBOutlet UITextField *inFolderInput;
+@property (nonatomic) IBOutlet UITextField *addFolderInput;
+@property (nonatomic) IBOutlet UITextField *siteAddressInput;
 
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *addButton;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *cancelButton;
-@property (nonatomic, retain) IBOutlet UIPickerView *folderPicker;
-@property (nonatomic, retain) IBOutlet UITableView *siteTable;
-@property (nonatomic, retain) IBOutlet UIScrollView *siteScrollView;
-@property (nonatomic, retain) NSMutableData * jsonString;
-@property (nonatomic, retain) NSMutableArray *autocompleteResults;
+@property (nonatomic) IBOutlet UIBarButtonItem *addButton;
+@property (nonatomic) IBOutlet UIBarButtonItem *cancelButton;
+@property (nonatomic) IBOutlet UIPickerView *folderPicker;
+@property (nonatomic) IBOutlet UITableView *siteTable;
+@property (nonatomic) IBOutlet UIScrollView *siteScrollView;
+@property (nonatomic) NSMutableData * jsonString;
+@property (nonatomic) NSMutableArray *autocompleteResults;
 
-@property (nonatomic, retain) IBOutlet UINavigationBar *navBar;
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView *activityIndicator;
-@property (nonatomic, retain) IBOutlet UIActivityIndicatorView *siteActivityIndicator;
-@property (nonatomic, retain) IBOutlet UILabel *addingLabel;
-@property (nonatomic, retain) IBOutlet UILabel *errorLabel;
-@property (nonatomic, retain) IBOutlet UISegmentedControl *addTypeControl;
+@property (nonatomic) IBOutlet UINavigationBar *navBar;
+@property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property (nonatomic) IBOutlet UIActivityIndicatorView *siteActivityIndicator;
+@property (nonatomic) IBOutlet UILabel *addingLabel;
+@property (nonatomic) IBOutlet UILabel *errorLabel;
+@property (nonatomic) IBOutlet UISegmentedControl *addTypeControl;
 
 @property (nonatomic, readwrite) BOOL hasAutomaticallyAddedSiteAddress;
 

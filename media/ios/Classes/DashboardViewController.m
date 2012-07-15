@@ -49,7 +49,7 @@
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     CGRect frame = CGRectMake(0, 0, 400, 44);
-    UILabel *label = [[[UILabel alloc] initWithFrame:frame] autorelease];
+    UILabel *label = [[UILabel alloc] initWithFrame:frame];
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont boldSystemFontOfSize:16.0];
     label.textAlignment = UITextAlignmentCenter;
@@ -60,14 +60,6 @@
     [self repositionDashboard];
 }
 
-- (void)dealloc {
-    [appDelegate release];
-    [interactionsLabel release];
-    [interactionsModule release];
-    [activitesLabel release];
-    [activitiesModule release];
-    [super dealloc];
-}
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
@@ -123,7 +115,7 @@
 }
 
 # pragma mark
-# pragma Interactions
+# pragma mark Interactions
 
 - (void)refreshInteractions {
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/interactions?user_id=%@",
@@ -145,7 +137,6 @@
                              initWithDictionary:[responseString JSONValue]];
     
     appDelegate.dictUserInteractions = [results objectForKey:@"interactions"];
-    [results release];
 
     InteractionsModule *interactions = [[InteractionsModule alloc] init];
     interactions.frame = CGRectMake(20, 100, 438, 300);
@@ -153,7 +144,6 @@
     self.interactionsModule = interactions;
     [self.view addSubview:self.interactionsModule];
     [self repositionDashboard];
-    [interactions release];
 } 
 
 - (void)requestFailed:(ASIHTTPRequest *)request {    
@@ -161,7 +151,7 @@
 }
 
 # pragma mark
-# pragma Activities
+# pragma mark Activities
 
 - (void)refreshActivity {
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/activities?user_id=%@",
@@ -182,7 +172,6 @@
                              initWithDictionary:[responseString JSONValue]];
     
     appDelegate.dictUserActivities = results;
-    [results release];
     
     ActivityModule *activity = [[ActivityModule alloc] init];
     activity.frame = CGRectMake(20, 510, 438, 300);
@@ -190,7 +179,6 @@
     self.activitiesModule = activity;
     [self.view addSubview:self.activitiesModule];
     [self repositionDashboard];
-    [activity release];
 }
 
 @end

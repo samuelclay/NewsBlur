@@ -48,27 +48,27 @@
 
 - (void)animateLoop;
 
-@property (nonatomic, retain) IBOutlet NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 
-@property (nonatomic, retain) IBOutlet UITextField *usernameInput;
-@property (nonatomic, retain) IBOutlet UITextField *passwordInput;
-@property (nonatomic, retain) IBOutlet UITextField *emailInput;
-@property (retain, nonatomic) IBOutlet UITextField *signUpUsernameInput;
-@property (retain, nonatomic) IBOutlet UITextField *signUpPasswordInput;
-@property (retain, nonatomic) IBOutlet UIButton *selectSignUpButton;
-@property (retain, nonatomic) IBOutlet UIButton *selectLoginButton;
+@property (nonatomic) IBOutlet UITextField *usernameInput;
+@property (nonatomic) IBOutlet UITextField *passwordInput;
+@property (nonatomic) IBOutlet UITextField *emailInput;
+@property (nonatomic) IBOutlet UITextField *signUpUsernameInput;
+@property (nonatomic) IBOutlet UITextField *signUpPasswordInput;
+@property (nonatomic) IBOutlet UIButton *selectSignUpButton;
+@property (nonatomic) IBOutlet UIButton *selectLoginButton;
 
-@property (retain, nonatomic) IBOutlet UIView *signUpView;
-@property (retain, nonatomic) IBOutlet UIView *logInView;
+@property (nonatomic) IBOutlet UIView *signUpView;
+@property (nonatomic) IBOutlet UIView *logInView;
 
-@property (nonatomic, retain) NSMutableData * jsonString;
-@property (nonatomic, retain) IBOutlet UILabel *errorLabel;
-@property (nonatomic, retain) IBOutlet UISegmentedControl *loginControl;
+@property (nonatomic) NSMutableData * jsonString;
+@property (nonatomic) IBOutlet UILabel *errorLabel;
+@property (nonatomic) IBOutlet UISegmentedControl *loginControl;
 
-@property (nonatomic, retain) IBOutlet UILabel *usernameLabel;
-@property (nonatomic, retain) IBOutlet UILabel *usernameOrEmailLabel;
-@property (nonatomic, retain) IBOutlet UILabel *passwordLabel;
-@property (nonatomic, retain) IBOutlet UILabel *emailLabel;
-@property (nonatomic, retain) IBOutlet UILabel *passwordOptionalLabel;
+@property (nonatomic) IBOutlet UILabel *usernameLabel;
+@property (nonatomic) IBOutlet UILabel *usernameOrEmailLabel;
+@property (nonatomic) IBOutlet UILabel *passwordLabel;
+@property (nonatomic) IBOutlet UILabel *emailLabel;
+@property (nonatomic) IBOutlet UILabel *passwordOptionalLabel;
 
 @end

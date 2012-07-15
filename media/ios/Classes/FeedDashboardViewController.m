@@ -60,8 +60,4 @@
     }
 }
 
-- (void)dealloc {
-    [toolbar release];
-    [super dealloc];
-}
 @end
