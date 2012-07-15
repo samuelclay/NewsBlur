@@ -40,6 +40,7 @@
 @synthesize lastUpdate;
 @synthesize imageCache;
 @synthesize popoverController;
+@synthesize currentRowAtIndexPath;
 
 #pragma mark -
 #pragma mark Globals
@@ -90,8 +91,12 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     // If there is an active feed or a set of feeds readin the river, 
     // we need to update its table row to match the updated unread counts.
+    
+    self.currentRowAtIndexPath = [self.feedTitlesTable indexPathForSelectedRow];
+
     if (appDelegate.activeFeed || appDelegate.isRiverView) {        
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable 
@@ -109,6 +114,10 @@
             [self redrawUnreadCounts];
         }
     }
+    
+    [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
+                           animated:NO 
+                     scrollPosition:UITableViewScrollPositionNone];
 
 //    [self.intelligenceControl setImage:[UIImage imageNamed:@"16-List.png"] 
 //                     forSegmentAtIndex:0];
@@ -122,8 +131,8 @@
 
     [appDelegate showNavigationBar:animated];
     
-    [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
-                                      animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+//    [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
+//                                      animated:YES scrollPosition:UITableViewScrollPositionMiddle];
     
     [appDelegate showDashboard];
 }
@@ -131,6 +140,8 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
+    // have the selected cell deselect
+    [self.feedTitlesTable deselectRowAtIndexPath:self.currentRowAtIndexPath animated:YES];
     // reset all feed detail specific data
     appDelegate.activeFeed = nil; 
     appDelegate.isSocialView = NO;
@@ -598,6 +609,9 @@
     appDelegate.isRiverView = NO;
         
     [appDelegate loadFeedDetailView];
+    
+    NSLog(@"indexPathForSelectedRow %@", [self.feedTitlesTable indexPathForSelectedRow]);
+
 }
 
 - (CGFloat)tableView:(UITableView *)tableView 

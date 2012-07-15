@@ -176,6 +176,7 @@ static CGFloat *psColors = nil;
         font = [UIFont fontWithName:@"Helvetica" size:12.6];
     }
 
+    
     if (isSocial) {
         [self.feedFavicon drawInRect:CGRectMake(7.0, 7.0, 32.0, 32.0)];
         [feedTitle 

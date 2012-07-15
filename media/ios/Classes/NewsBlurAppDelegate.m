@@ -415,7 +415,9 @@
 - (void)showDashboard {
     self.inStoryDetail = NO;
     self.inFeedDetail = NO;
-    [self.splitStoryDetailNavigationController popToRootViewControllerAnimated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.splitStoryDetailNavigationController popToRootViewControllerAnimated:YES];        
+    }
 }
 
 

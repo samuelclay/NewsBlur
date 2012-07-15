@@ -125,6 +125,8 @@
     } else {
         settingsButton.enabled = YES;
     }
+    
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -134,6 +136,12 @@
 
 - (void)viewDidAppear:(BOOL)animated { 
 	[super viewDidAppear:animated];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        // have the selected cell deselect
+        [self.storyTitlesTable deselectRowAtIndexPath:[self.storyTitlesTable indexPathForSelectedRow]
+                                             animated:YES];
+    }
 }
 
 
@@ -519,7 +527,8 @@
     // River view gradient
     if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
         UIView *feedTitleBar = [self makeFeedTitleBar:feed cell:cell makeRect:CGRectMake(0, 1, 12, cell.frame.size.height)];
-        [cell.feedGradient addSubview:feedTitleBar];
+        cell.feedGradient = feedTitleBar;
+        [cell addSubview:cell.feedGradient];
         
         // top border
         UIView *topBorder = [[UIView alloc] init];
@@ -569,7 +578,7 @@
     cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
     cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
     cell.storyUnreadIndicator.alpha = 0.15f;
-    cell.feedGradient.alpha = 0.25f;
+    //cell.feedGradient.alpha = 0.25f;
     cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
     if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
         cell.storyTitle.textColor = UIColorFromRGB(0x979797);

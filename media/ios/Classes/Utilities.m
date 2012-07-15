@@ -58,7 +58,7 @@ static NSMutableDictionary *imageCache;
             
             // Save image to disk
             UIImage *image = [imageCache objectForKey:filename];
-            [UIImageJPEGRepresentation(image, 1.0) writeToFile:path atomically:YES];
+            [UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
         }
     } copy]);
 }

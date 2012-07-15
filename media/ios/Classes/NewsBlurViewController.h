@@ -53,6 +53,7 @@
 @property (nonatomic) NSCache *imageCache;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
 @property (nonatomic) UIPopoverController *popoverController;
+@property (nonatomic) NSIndexPath *currentRowAtIndexPath;
 
 - (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader refreshFeeds:(BOOL)refreshFeeds;
