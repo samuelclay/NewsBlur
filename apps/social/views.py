@@ -709,6 +709,9 @@ def like_comment(request):
     comment_user_id = request.POST['comment_user_id']
     format = request.REQUEST.get('format', 'json')
     
+    if comment_user_id == request.user.pk:
+        return json.json_response(request, {'code': -1, 'message': 'You cannot favorite your own shared story comment.'})
+        
     shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
                                             story_feed_id=feed_id, 
                                             story_guid=story_id)
@@ -721,6 +724,19 @@ def like_comment(request):
         shared_story.comments[:30],
     ))
 
+    MActivity.new_comment_like(user_id=request.user.pk,
+                               comment_user_id=comment['user_id'],
+                               story_feed_id=feed_id,
+                               story_id=story_id,
+                               story_title=shared_story.story_title,
+                               comments=shared_story.comments)
+    MInteraction.new_comment_like(user_id=request.user.pk, 
+                                  comment_user_id=comment_user_id,
+                                  story_feed_id=feed_id,
+                                  story_id=story_id,
+                                  story_title=shared_story.story_title,
+                                  comments=shared_story.comments)
+                                       
     if format == 'html':
         comment = MSharedStory.attach_users_to_comment(comment, profiles)
         return render_to_response('social/story_comment.xhtml', {

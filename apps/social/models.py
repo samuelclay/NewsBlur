@@ -1786,6 +1786,19 @@ class MInteraction(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
+    
+    @classmethod
+    def new_comment_like(cls, user_id, comment_user_id, story_feed_id, story_id, story_title, comments):
+        params = {
+            'user_id': comment_user_id,
+            'with_user_id': user_id,
+            'category': 'comment_like',
+            'title': story_title,
+            'feed_id': story_feed_id,
+            'content_id': story_id,
+            'content': comments,
+        }
+        cls.objects.create(**params)
 
     @classmethod
     def new_reply_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, original_message=None):
@@ -1947,6 +1960,19 @@ class MActivity(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
+            
+    @classmethod
+    def new_comment_like(cls, user_id, comment_user_id, story_feed_id, story_id, story_title, comments):
+        params = {
+            'user_id': user_id,
+            'with_user_id': comment_user_id,
+            'category': 'comment_like',
+            'feed_id': story_feed_id,
+            'content_id': story_id,
+            'title': story_title,
+            'content': comments,
+        }
+        cls.objects.create(**params)
     
     @classmethod
     def new_shared_story(cls, user_id, story_title, comments, story_feed_id, story_id, share_date=None):

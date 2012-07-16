@@ -63,6 +63,21 @@
                     </div>
                 {% endif %}
             {% endif %}
+            
+            {% if interaction.category == 'comment_like' %}
+                <img class="NB-interaction-photo" src="{{ interaction.photo_url }}"  data-user-id="{{ interaction.with_user_id }}">
+                <div class="NB-interaction-date">
+                    {{ interaction.time_since }} ago
+                </div>
+                <div class="NB-interaction-title">
+                    <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
+                        {{ interaction.with_user.username }}
+                    </span> favorited your comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ interaction.title|safe|truncatewords:6 }}</span>:
+                    <div class="NB-interaction-content">
+                        "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ interaction.content|truncatewords:16 }}</span>"
+                    </div>
+                </div>
+            {% endif %}
         </li>
         {% endfor %}
     </ul>

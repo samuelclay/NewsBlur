@@ -34,6 +34,9 @@ NEWSBLUR.Views.ProfileThumb = Backbone.View.extend({
     
     create: function(user_id, options) {
         var user = NEWSBLUR.assets.user_profiles.find(user_id);
+        if (!user && user_id == NEWSBLUR.Globals.user_id) {
+            user = NEWSBLUR.assets.user_profile;
+        }
         return new NEWSBLUR.Views.ProfileThumb(_.extend({}, {model: user}, options));
     }
     
