@@ -971,9 +971,11 @@
     self.visibleUnreadCount = 0;
     self.activeFeedStoryLocations = [NSMutableArray array];
     self.activeFeedStoryLocationIds = [NSMutableArray array];
+    NSLog(@"inside calculateStoryLocaiton and self.storyCount is %i", self.storyCount);
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
         int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+        NSLog(@"story score is %i and self.selectedIntelligence is %i", score, self.selectedIntelligence);
         if (score >= self.selectedIntelligence) {
             NSNumber *location = [NSNumber numberWithInt:i];
             [self.activeFeedStoryLocations addObject:location];

@@ -124,8 +124,7 @@
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
-    }
-    
+    }    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -165,8 +164,7 @@
     // add user to dict for use with sharing and replying
     NSArray *selfUserProfile = [NSArray arrayWithObject:appDelegate.dictUserProfile];
     appDelegate.activeFeedUserProfiles = selfUserProfile;
-    NSLog(@"selfUserProfile is %@", selfUserProfile);
-    
+      
     NSString *theFeedDetailURL;
     
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
@@ -218,7 +216,6 @@
     // add user to dict for use with sharing and replying
     NSArray *selfUserProfile = [NSArray arrayWithObject:appDelegate.dictUserProfile];
     appDelegate.activeFeedUserProfiles = selfUserProfile;
-    NSLog(@"selfUserProfile is %@", selfUserProfile);
     
     if (!self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
@@ -337,7 +334,6 @@
 //        NSLog(@"# of user profiles added: %i", appDelegate.activeFeedUserProfiles.count);
 //        NSLog(@"user profiles added: %@", appDelegate.activeFeedUserProfiles);
     }
-    NSLog(@"appDelegate.activeFeedUserProfiles is %@", appDelegate.activeFeedUserProfiles);
     
     [self renderStories:confirmedNewStories];
 }
@@ -364,14 +360,7 @@
                                                      inSection:0]];
         }
         
-        if (self.feedPage < 3 && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.storyTitlesTable reloadData];
-        } else {
-            [self.storyTitlesTable beginUpdates];
-            [self.storyTitlesTable insertRowsAtIndexPaths:indexPaths 
-                                         withRowAnimation:UITableViewRowAnimationNone];
-            [self.storyTitlesTable endUpdates]; 
-        }
+        [self.storyTitlesTable reloadData];
 
     } else if (newVisibleStoriesCount > 0) {
         [self.storyTitlesTable reloadData];
@@ -380,14 +369,7 @@
                (self.feedPage > 15 && 
                 existingStoriesCount >= [appDelegate unreadCount])) {
         self.pageFinished = YES;
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:existingStoriesCount 
-                                                    inSection:0];
-        NSArray *indexPaths = [NSArray arrayWithObject:indexPath];
-        [self.storyTitlesTable beginUpdates];
-        [self.storyTitlesTable reloadRowsAtIndexPaths:indexPaths 
-                                     withRowAnimation:UITableViewRowAnimationNone];
-        [self.storyTitlesTable endUpdates];
-        //[self.storyTitlesTable reloadData];
+        [self.storyTitlesTable reloadData];
     }
         
     self.pageFetching = NO;
@@ -395,6 +377,12 @@
     [self performSelector:@selector(checkScroll)
                withObject:nil
                afterDelay:0.2];
+    
+    NSLog(@"newStoriesCount %i, existingStoriesCount %i, newVisibleStoriesCount %i, selectedIntelligence %i", 
+          newStoriesCount,
+          existingStoriesCount,
+          newVisibleStoriesCount,
+          appDelegate.selectedIntelligence);
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
