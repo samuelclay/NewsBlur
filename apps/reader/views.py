@@ -321,6 +321,7 @@ def load_feeds_flat(request):
         "social_feeds": social_feeds,
         "social_profile": social_profile,
         "user": user.username,
+        "user_profile": user.profile,
         "iphone_version": iphone_version,
     }
     return data
@@ -333,7 +334,6 @@ def refresh_feeds(request):
     feed_ids = request.REQUEST.getlist('feed_id')
     check_fetch_status = request.REQUEST.get('check_fetch_status')
     favicons_fetching = request.REQUEST.getlist('favicons_fetching')
-    start = datetime.datetime.utcnow()
     
     social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
     feed_ids = list(set(feed_ids) - set(social_feed_ids))
@@ -375,10 +375,8 @@ def refresh_feeds(request):
                 feeds[duplicate_feed.duplicate_feed_id] = {'id': duplicate_feed.feed_id}
 
     if settings.DEBUG or check_fetch_status:
-        diff = datetime.datetime.utcnow()-start
-        timediff = float("%s.%.2s" % (diff.seconds, (diff.microseconds / 1000)))
-        logging.user(request, "~FBRefreshing %s feeds (%s seconds) (%s/%s)" % (
-            len(feeds.keys()), timediff, check_fetch_status, len(favicons_fetching)))
+        logging.user(request, "~FBRefreshing %s feeds (%s/%s)" % (
+            len(feeds.keys()), check_fetch_status, len(favicons_fetching)))
         
     return {'feeds': feeds, 'social_feeds': social_feeds}
 
@@ -504,8 +502,8 @@ def load_single_feed(request, feed_id):
     diff3 = checkpoint3-start
     timediff = time.time()-start
     last_update = relative_timesince(feed.last_update)
-    logging.user(request, "~FYLoading feed: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s(%s)/%.4s~SN)" % (
-        feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', timediff,
+    logging.user(request, "~FYLoading feed: ~SB%s%s ~SN(~SB%.4ss/%.4ss(%s)/%.4ss~SN)" % (
+        feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '',
         diff1, diff2, userstories_db and userstories_db.count() or '~SN0~SB', diff3))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
     
@@ -721,9 +719,9 @@ def load_river_stories(request):
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s seconds, %s/%s "
+    logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
                                "stories, ~SN%s/%s/%s feeds)" % 
-                               (page, timediff, len(stories), len(mstories), len(found_feed_ids), 
+                               (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids)))
     
     return dict(stories=stories, classifiers=classifiers, elapsed_time=timediff)
@@ -911,7 +909,10 @@ def mark_feed_as_read(request):
                     logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
             except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
                 continue
-    
+
+        if not sub:
+            continue
+        
         try:
             sub.mark_feed_read()
         except IntegrityError:

@@ -162,10 +162,8 @@ def load_social_stories(request, user_id, username=None):
     
     diff1 = checkpoint1-start
     diff2 = checkpoint2-start
-    timediff = time.time()-start
-    logging.user(request, "~FYLoading ~FMshared stories~FY: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s~SN)" % (
-    social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', timediff,
-    diff1, diff2))
+    logging.user(request, "~FYLoading ~FMshared stories~FY: ~SB%s%s ~SN(~SB%.4ss/%.4ss~SN)" % (
+    social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', diff1, diff2))
 
     return {
         "stories": stories, 
@@ -699,10 +697,90 @@ def find_friends(request):
     if not profiles:
         profiles = MSocialProfile.objects.filter(email__icontains=query)[:3]
     if not profiles:
-        profiles = MSocialProfile.objects.filter(blog_title__icontains=query)[:3]
+        profiles = MSocialProfile.objects.filter(blurblog_title__icontains=query)[:3]
     
     return dict(profiles=profiles)
+
+@ajax_login_required
+def like_comment(request):
+    code     = 1
+    feed_id  = int(request.POST['story_feed_id'])
+    story_id = request.POST['story_id']
+    comment_user_id = request.POST['comment_user_id']
+    format = request.REQUEST.get('format', 'json')
     
+    if comment_user_id == request.user.pk:
+        return json.json_response(request, {'code': -1, 'message': 'You cannot favorite your own shared story comment.'})
+        
+    shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
+                                            story_feed_id=feed_id, 
+                                            story_guid=story_id)
+    shared_story.add_liking_user(request.user.pk)
+    comment, profiles = shared_story.comment_with_author_and_profiles()
+
+    comment_user = User.objects.get(pk=shared_story.user_id)
+    logging.user(request, "~BB~FMLiking comment by ~SB%s~SN: %s" % (
+        comment_user.username, 
+        shared_story.comments[:30],
+    ))
+
+    MActivity.new_comment_like(user_id=request.user.pk,
+                               comment_user_id=comment['user_id'],
+                               story_feed_id=feed_id,
+                               story_id=story_id,
+                               story_title=shared_story.story_title,
+                               comments=shared_story.comments)
+    MInteraction.new_comment_like(user_id=request.user.pk, 
+                                  comment_user_id=comment_user_id,
+                                  story_feed_id=feed_id,
+                                  story_id=story_id,
+                                  story_title=shared_story.story_title,
+                                  comments=shared_story.comments)
+                                       
+    if format == 'html':
+        comment = MSharedStory.attach_users_to_comment(comment, profiles)
+        return render_to_response('social/story_comment.xhtml', {
+            'comment': comment,
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'code': code, 
+            'comment': comment, 
+            'user_profiles': profiles,
+        })
+        
+@ajax_login_required
+def remove_like_comment(request):
+    code     = 1
+    feed_id  = int(request.POST['story_feed_id'])
+    story_id = request.POST['story_id']
+    comment_user_id = request.POST['comment_user_id']
+    format = request.REQUEST.get('format', 'json')
+    
+    shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
+                                            story_feed_id=feed_id, 
+                                            story_guid=story_id)
+    shared_story.remove_liking_user(request.user.pk)
+    comment, profiles = shared_story.comment_with_author_and_profiles()
+    
+    comment_user = User.objects.get(pk=shared_story.user_id)
+    logging.user(request, "~BB~FMRemoving like on comment by ~SB%s~SN: %s" % (
+        comment_user.username, 
+        shared_story.comments[:30],
+    ))
+    
+    if format == 'html':
+        comment = MSharedStory.attach_users_to_comment(comment, profiles)
+        return render_to_response('social/story_comment.xhtml', {
+            'comment': comment,
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'code': code, 
+            'comment': comment, 
+            'user_profiles': profiles,
+        })
+        
 def shared_stories_rss_feed(request, user_id, username):
     try:
         user = User.objects.get(pk=user_id)

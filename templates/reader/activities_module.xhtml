@@ -46,6 +46,19 @@
                 </div>
             {% endif %}
 
+            {% if activity.category == 'comment_like' %}
+                <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}" data-feed-id="{{ activity.feed_id }}">
+                <div class="NB-interaction-date">
+                    {{ activity.time_since }} ago
+                </div>
+                <div class="NB-interaction-title">
+                    {{ username }} favorited <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>'s comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|safe|truncatewords:6 }}</span>:
+                    <div class="NB-interaction-content">
+                        "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ activity.content|truncatewords:16 }}</span>"
+                    </div>
+                </div>
+            {% endif %}
+
             {% if activity.category == 'sharedstory' %}
                 <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}" data-feed-id="{{ activity.feed_id }}">
                 <div class="NB-interaction-date">
@@ -62,7 +75,7 @@
             {% endif %}
             
             {% if activity.category == 'star' %}
-                <img class="NB-interaction-photo" src="{{ MEDIA_URL }}img/reader/star_blue.png">
+                <img class="NB-interaction-photo" src="{{ MEDIA_URL }}img/icons/silk/time.png">
                 <div class="NB-interaction-date">
                     {{ activity.time_since }} ago
                 </div>

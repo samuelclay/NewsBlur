@@ -4726,7 +4726,7 @@
                 self.close_social_profile();
                 self.open_feed(feed_id);
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-sharedstory .NB-interaction-sharedstory-title, .NB-interaction-sharedstory .NB-interaction-sharedstory-content, .NB-interaction-sharedstory .NB-interaction-photo, .NB-activity-sharedstory .NB-interaction-sharedstory-title, .NB-activity-sharedstory .NB-interaction-sharedstory-content, .NB-activity-sharedstory .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-interaction-sharedstory .NB-interaction-sharedstory-title, .NB-interaction-sharedstory .NB-interaction-sharedstory-content, .NB-interaction-sharedstory .NB-interaction-photo, .NB-activity-sharedstory .NB-interaction-sharedstory-title, .NB-activity-sharedstory .NB-interaction-sharedstory-content, .NB-activity-sharedstory .NB-interaction-photo, .NB-interaction-comment_like .NB-interaction-sharedstory-title, .NB-activity-comment_like .NB-interaction-sharedstory-title' }, function($t, $p){
                 e.preventDefault();
                 var $interaction = $t.closest('.NB-interaction');
                 var feed_id = $interaction.data('feedId');
@@ -4747,12 +4747,14 @@
                     });
                 }
             }); 
-            $.targetIs(e, { tagSelector: '.NB-activity-comment_reply .NB-interaction-reply-content, .NB-activity-comment_reply .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-activity-comment_reply .NB-interaction-reply-content, .NB-activity-comment_reply .NB-interaction-photo, .NB-interaction-comment_like .NB-interaction-content, .NB-interaction-comment_like .NB-interaction-photo, .NB-activity-comment_like .NB-interaction-content, .NB-activity-comment_like .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
                 var $interaction = $t.closest('.NB-interaction');
-                var feed_id = 'social:' + $interaction.data('userId');
+                var user_id = $interaction.hasClass('NB-interaction-comment_like') ?
+                                NEWSBLUR.Globals.user_id : 
+                                $interaction.data('userId');
+                var feed_id = 'social:' + user_id;
                 var story_id = $interaction.data('contentId');
-                var user_id = $interaction.data('userId');
                 var username = $interaction.data('username');
                 
                 self.close_social_profile();

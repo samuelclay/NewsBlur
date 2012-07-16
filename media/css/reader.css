@@ -1322,7 +1322,7 @@ background: transparent;
     width: 16px;
     height: 16px;
     margin: -3px 6px -2px 0;
-    background: transparent url('/media/embed/reader/star_blue.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/silk/time.png') no-repeat 0 1px;
     float: left;
     display: none;
 }
@@ -2016,7 +2016,7 @@ background: transparent;
     right: 28px;
     top: 26px;
     font-size: 10px;
-    background: transparent url('/media/embed/reader/star_blue.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/silk/time.png') no-repeat 0 1px;
     padding-left: 20px;
     text-shadow: 1px 1px 0 #E6E6E6;
     color: #808080;
@@ -2058,24 +2058,25 @@ background: transparent;
     line-height: 20px;
     overflow: hidden;
 }
-#story_pane .NB-story-comment .NB-user-avatar {
+#story_pane .NB-story-comment .NB-story-comment-author-avatar.NB-user-avatar,
+#story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
     position: absolute;
     left: 6px;
     top: 6px;
     cursor: pointer;
 }
-#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+#story_pane .NB-story-comment .NB-story-comment-author-avatar.NB-user-avatar.NB-story-comment-reshare {
     top: 22px;
     left: 6px;
     z-index: 1;
 }
-#story_pane .NB-story-comment .NB-user-avatar img {
+#story_pane .NB-story-comment .NB-story-comment-author-avatar.NB-user-avatar img {
     border-radius: 6px;
     margin: 2px 0 0 1px;
     width: 38px;
     height: 38px;
 }
-#story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare img {
+#story_pane .NB-story-comment .NB-story-comment-author-avatar.NB-user-avatar.NB-story-comment-reshare img {
     height: 24px;
     width: 24px;
 }
@@ -2091,7 +2092,7 @@ background: transparent;
 }
 #story_pane .NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
     top: 8px;
-    left: 12px;
+    left: 14px;
 }
 #story_pane .NB-story-comment .NB-story-comment-username {
     float: left;
@@ -2109,12 +2110,44 @@ background: transparent;
     font-weight: bold;
     float: left;
 }
+#story_pane .NB-story-comment .NB-story-comment-likes {
+    overflow: hidden;
+    height: 14px;
+    margin: 3px 2px 0;
+}
+#story_pane .NB-story-comment .NB-story-comment-like {
+    float: left;
+    width: 16px;
+    background: transparent url('/media/embed/reader/star_grey.png') no-repeat center 0;
+    text-transform: uppercase;
+    padding: 1px 6px 1px 2px;
+    height: 11px;
+}
+#story_pane .NB-story-comment .NB-story-comment-like:hover,
+#story_pane .NB-story-comment .NB-story-comment-like.NB-active {
+    cursor: pointer;
+    background: transparent url('/media/embed/reader/star_green.png') no-repeat center 0;
+}
+#story_pane .NB-story-comment .NB-story-comment-like:active {
+    cursor: pointer;
+}
+#story_pane .NB-story-comment .NB-story-comment-likes-users {
+    display: inline-block;
+}
+#story_pane .NB-story-comment .NB-story-comment-likes-users .NB-story-share-profile .NB-user-avatar {
+    width: auto;
+    height: auto;
+}
+#story_pane .NB-story-comment .NB-story-comment-likes-users .NB-story-share-profile .NB-user-avatar img {
+    width: 12px;
+    height: 12px;
+}
 #story_pane .NB-story-comment .NB-story-comment-content {
     float: left;
     color: #303030;
 }
 #story_pane .NB-story-comment .NB-story-comment-reply-button {
-    padding: 4px 24px 4px 12px;
+    padding: 4px 8px 4px 12px;
     float: left;
     cursor: pointer;
 }
@@ -2125,6 +2158,7 @@ background: transparent;
     padding: 1px 4px;
     line-height: 9px;
     font-size: 9px;
+    height: 9px;
 }
 #story_pane .NB-story-comment .NB-story-comment-reply-button:hover .NB-story-comment-reply-button-wrapper {
     background-color: #DE772B;
@@ -2153,7 +2187,7 @@ background: transparent;
 }
 
 #story_pane .NB-story-comment-edit-button {
-    padding: 4px 24px 4px 12px;
+    padding: 4px 8px 4px 12px;
     float: left;
     cursor: pointer;
 }
@@ -2164,6 +2198,7 @@ background: transparent;
     padding: 1px 4px;
     line-height: 9px;
     font-size: 9px;
+    height: 9px;
 }
 #story_pane .NB-story-comment-edit-button:hover .NB-story-comment-edit-button-wrapper {
     background-color: #5073BC;
@@ -2379,7 +2414,7 @@ background: transparent;
     padding: 4px;
     height: 100%;
     float: right;
-    background: #EBF6DA url('/media/embed/reader/star_blue.png') no-repeat 8px 4px;
+    background: #EBF6DA url('/media/embed/icons/silk/time.png') no-repeat 8px 4px;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
@@ -2788,7 +2823,7 @@ background: transparent;
 /* ============================ */
 
 .NB-feeds-header-starred .NB-feeds-header-icon {
-    background: transparent url('/media/embed/reader/star_blue.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/silk/time.png') no-repeat 0 0;
 }
 
 .NB-feeds-header-starred .NB-feeds-header-count {
@@ -5255,13 +5290,13 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/bullet_orange.png') no-repeat 0 1px;
 }
 .NB-menu-manage .NB-menu-manage-story-star .NB-menu-manage-image {
-    background: transparent url('/media/embed/reader/star_blue.png') no-repeat 0 0px;
+    background: transparent url('/media/embed/icons/silk/time.png') no-repeat 0 1px;
 }
 .NB-menu-manage .NB-menu-manage-story-open .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/house.png') no-repeat 0 1px;
 }
 .NB-menu-manage.NB-story-starred .NB-menu-manage-story-star .NB-menu-manage-image {
-    background: transparent url('/media/embed/reader/star_blue.png') no-repeat 0 0px;
+    background: transparent url('/media/embed/icons/silk/time.png') no-repeat 0 1px;
     opacity: .55;
 }
 .NB-menu-manage .NB-menu-manage-confirm,

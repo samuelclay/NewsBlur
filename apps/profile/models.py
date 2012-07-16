@@ -15,6 +15,7 @@ from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
 from apps.rss_feeds.tasks import NewFeeds
 from utils import log as logging
+from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup
@@ -45,6 +46,19 @@ class Profile(models.Model):
     def __unicode__(self):
         return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
     
+    def to_json(self):
+        return {
+            'is_premium': self.is_premium,
+            'preferences': json.decode(self.preferences),
+            'tutorial_finished': self.tutorial_finished,
+            'hide_getting_started': self.hide_getting_started,
+            'has_setup_feeds': self.has_setup_feeds,
+            'has_found_friends': self.has_found_friends,
+            'has_trained_intelligence': self.has_trained_intelligence,
+            'hide_mobile': self.hide_mobile,
+            'dashboard_date': self.dashboard_date
+        }
+        
     def save(self, *args, **kwargs):
         if not self.secret_token:
             self.secret_token = generate_secret_token(self.user.username, 12)

@@ -44,7 +44,7 @@ def json_encode(data, *args, **kwargs):
         # i.e. in the case of django.newforms.utils.ErrorList, which extends
         # the type "list". Oh man, that was a dumb mistake!
         if hasattr(data, 'to_json'):
-            ret = data.to_json()
+            ret = _any(data.to_json())
         elif hasattr(data, 'canonical'):
             ret = data.canonical()
         elif isinstance(data, list):
@@ -99,6 +99,8 @@ def json_encode(data, *args, **kwargs):
             ret[str(k)] = _any(v)
         return ret
     
+    if hasattr(data, 'to_json'):
+        data = data.to_json()
     ret = _any(data)
     return json.dumps(ret)
     # return cjson.encode(ret, encoding='utf-8', extension=lambda x: "\"%s\"" % str(x))

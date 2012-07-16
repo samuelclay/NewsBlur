@@ -924,9 +924,10 @@ class MSocialSubscription(mongo.Document):
         return social_subs
 
 class MCommentReply(mongo.EmbeddedDocument):
-    user_id                  = mongo.IntField()
-    publish_date             = mongo.DateTimeField()
-    comments                 = mongo.StringField()
+    user_id      = mongo.IntField()
+    publish_date = mongo.DateTimeField()
+    comments     = mongo.StringField()
+    liking_users = mongo.ListField(mongo.IntField())
     
     def to_json(self):
         reply = {
@@ -963,6 +964,7 @@ class MSharedStory(mongo.Document):
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     posted_to_services       = mongo.ListField(mongo.StringField(max_length=20))
     mute_email_users         = mongo.ListField(mongo.IntField())
+    liking_users             = mongo.ListField(mongo.IntField())
     emailed_reshare          = mongo.BooleanField(default=False)
     
     meta = {
@@ -1176,10 +1178,22 @@ class MSharedStory(mongo.Document):
             'comments': self.comments,
             'shared_date': relative_timesince(self.shared_date),
             'replies': [reply.to_json() for reply in self.replies],
+            'liking_users': self.liking_users,
             'source_user_id': self.source_user_id,
         }
         return comments
     
+    def comment_with_author_and_profiles(self):
+        comment = self.comments_with_author()
+        profile_user_ids = set([comment['user_id']])
+        reply_user_ids = [reply['user_id'] for reply in comment['replies']]
+        profile_user_ids = profile_user_ids.union(reply_user_ids)
+        profile_user_ids = profile_user_ids.union(comment['liking_users'])
+        profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
+        profiles = [profile.to_json(compact=True) for profile in profiles]
+
+        return comment, profiles
+        
     @classmethod
     def stories_with_comments_and_profiles(cls, stories, user_id, check_all=False, public=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1209,6 +1223,8 @@ class MSharedStory(mongo.Document):
                         story['public_comments'].append(comments)
                     if comments.get('source_user_id'):
                         profile_user_ids.add(comments['source_user_id'])
+                    if comments.get('liking_users'):
+                        profile_user_ids = profile_user_ids.union(comments['liking_users'])
                 all_comments = story['friend_comments'] + story['public_comments']
                 profile_user_ids = profile_user_ids.union([reply['user_id'] 
                                                            for c in all_comments
@@ -1266,6 +1282,15 @@ class MSharedStory(mongo.Document):
 
         return comment
         
+    def add_liking_user(self, user_id):
+        if user_id not in self.liking_users:
+            self.liking_users.append(user_id)
+            self.save()
+
+    def remove_liking_user(self, user_id):
+        if user_id in self.liking_users:
+            self.liking_users.remove(user_id)
+            self.save()
         
     def blurblog_permalink(self):
         profile = MSocialProfile.objects.get(user_id=self.user_id)
@@ -1761,6 +1786,19 @@ class MInteraction(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
+    
+    @classmethod
+    def new_comment_like(cls, user_id, comment_user_id, story_feed_id, story_id, story_title, comments):
+        params = {
+            'user_id': comment_user_id,
+            'with_user_id': user_id,
+            'category': 'comment_like',
+            'title': story_title,
+            'feed_id': story_feed_id,
+            'content_id': story_id,
+            'content': comments,
+        }
+        cls.objects.create(**params)
 
     @classmethod
     def new_reply_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, original_message=None):
@@ -1922,6 +1960,19 @@ class MActivity(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
+            
+    @classmethod
+    def new_comment_like(cls, user_id, comment_user_id, story_feed_id, story_id, story_title, comments):
+        params = {
+            'user_id': user_id,
+            'with_user_id': comment_user_id,
+            'category': 'comment_like',
+            'feed_id': story_feed_id,
+            'content_id': story_id,
+            'title': story_title,
+            'content': comments,
+        }
+        cls.objects.create(**params)
     
     @classmethod
     def new_shared_story(cls, user_id, story_title, comments, story_feed_id, story_id, share_date=None):
