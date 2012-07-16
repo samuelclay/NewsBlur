@@ -17,9 +17,7 @@
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
       'secret_token'            : "{{ user.profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
-      {% if user.pk %}
-        'user_id'                 : {{ user.pk }},
-      {% endif %}
+      {% if user.pk %}'user_id'                 : {{ user.pk }},{% endif %}
       'email'                   : "{{ user.email|safe }}",
       'MEDIA_URL'               : "{{ MEDIA_URL }}",
       'debug'                   : {{ debug|yesno:"true,false" }}
