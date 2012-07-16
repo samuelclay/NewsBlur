@@ -169,7 +169,7 @@
     // LOCATION
     if ([profile objectForKey:@"location"] != [NSNull null]) {
         UILabel *location = [[UILabel alloc] 
-                             initWithFrame:CGRectMake(kTopBadgeTextXCoordinate + 20, 
+                             initWithFrame:CGRectMake(kTopBadgeTextXCoordinate + 16, 
                                                       yCoordinatePointer, 
                                                       190, 
                                                       20)];
@@ -180,7 +180,7 @@
         self.userLocation = location;
         [self addSubview:self.userLocation];
         
-        UIImage *locationIcon = [UIImage imageNamed:@"flag_orange.png"];
+        UIImage *locationIcon = [UIImage imageNamed:@"7-location-place.png"];
         UIImageView *locationIconView = [[UIImageView alloc] initWithImage:locationIcon];
         locationIconView.Frame = CGRectMake(kTopBadgeTextXCoordinate,
                                             yCoordinatePointer + 2, 
