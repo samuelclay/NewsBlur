@@ -26,6 +26,8 @@
 
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>
+    <string name="menu_original">View original</string>
+    <string name="menu_share">Share</string>
     
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
@@ -41,7 +43,5 @@
     <string name="profile_replied_to">Replied to</string>
     <string name="profile_with_comment">with the comment</string>
     <string name="profile_shared_story">Shared the story</string>
-    
-    
     
 </resources>

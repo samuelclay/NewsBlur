@@ -36,8 +36,8 @@
 
         <TextView
             android:id="@+id/row_foldersumneg"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/negative_count_circle"
             android:gravity="center"
@@ -47,8 +47,8 @@
 
         <TextView
             android:id="@+id/row_foldersumneu"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/neutral_count_circle"
             android:gravity="center"
@@ -58,8 +58,8 @@
 
         <TextView
             android:id="@+id/row_foldersumpos"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
             android:background="@drawable/positive_count_circle"
             android:gravity="center"
             android:layout_marginRight="10dp"

@@ -8,6 +8,7 @@ import org.apache.http.HttpStatus;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -16,6 +17,7 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FolderStructure;
+import com.newsblur.domain.Story;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.ProfileResponse;
@@ -80,14 +82,22 @@ public class APIManager {
 		}
 	}
 	
-	public void getStoriesForFeed(String feedId) {
+	public StoriesResponse getStoriesForFeed(String feedId) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEEDS, feedId);
 		client.get(APIConstants.URL_FEEDS_STORIES, values);
 		final APIResponse response = client.get(APIConstants.URL_FEEDS_STORIES, values);
 		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
-		Log.d(TAG, "Response: " + response.responseString);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			Uri feedUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
+			for (Story story : storiesResponse.stories) {
+				contentResolver.insert(feedUri, story.getValues());
+			}
+			return storiesResponse;
+		} else {
+			return null;
+		}
 	}
 
 	public void getFolderFeedMapping() {

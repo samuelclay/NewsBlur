@@ -162,6 +162,7 @@ public class LoginFragment extends Fragment implements OnClickListener, Receiver
 				Log.d(TAG, "Synchronisation finished.");
 				final Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity(), SyncService.class);
 				intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, receiver);
+				intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FOLDER_UPDATE);
 				getActivity().startService(intent);
 			} else {
 				if (viewSwitcher != null) {

@@ -1,16 +1,15 @@
 package com.newsblur.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.newsblur.network.APIClient;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.StoriesResponse;
 
 /**
  * The SyncService is based on an app architecture that tries to place network calls
@@ -24,12 +23,19 @@ public class SyncService extends IntentService {
 
 	private static final String TAG = "SyncService";
 	public static final String EXTRA_STATUS_RECEIVER = "resultReceiverExtra";
+	public static final String EXTRA_TASK_FEED_ID = "taskFeedId";
+	
 	public final static int STATUS_RUNNING = 0;
 	public final static int STATUS_FINISHED = 1;
 	public final static int STATUS_ERROR = 2;
 	public static final int NOT_RUNNING = -1;
+	
+	public static final int EXTRA_TASK_FOLDER_UPDATE = 30;
+	public static final int EXTRA_TASK_FEED_UPDATE = 31;
+	
 	public APIClient apiClient;
 	private APIManager apiManager;
+	public static final String SYNCSERVICE_TASK = "syncservice_task";
 
 	public SyncService() {
 		super(TAG);
@@ -45,12 +51,27 @@ public class SyncService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		Log.d(TAG, "Received SyncService handleIntent call.");
 		final ResultReceiver receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
-		try {	
+		try {
 			if (receiver != null) {
 				receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 			}
-			apiManager.getFolderFeedMapping();
 			
+			switch (intent.getIntExtra(SYNCSERVICE_TASK , -1)) {
+			case EXTRA_TASK_FOLDER_UPDATE:
+				apiManager.getFolderFeedMapping();
+				break;
+			case EXTRA_TASK_FEED_UPDATE:
+				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
+					apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID));
+				} else {
+					Log.e(TAG, "No feed to refresh included in SyncRequest");
+					receiver.send(STATUS_ERROR, Bundle.EMPTY);
+				}
+				break;	
+			default:
+				Log.e(TAG, "SyncService called without relevant task assignment");
+				break;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.e(TAG, "Couldn't synchronise with Newsblur servers: " + e.getMessage(), e.getCause());
@@ -63,6 +84,8 @@ public class SyncService extends IntentService {
 
 		if (receiver != null) {
 			receiver.send(STATUS_FINISHED, Bundle.EMPTY);
+		} else {
+			Log.e(TAG, "No receiver attached to Sync?");
 		}
 	}
 

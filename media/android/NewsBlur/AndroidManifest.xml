@@ -34,6 +34,9 @@
         <activity
             android:name=".activity.Profile"
             android:label="@string/profile"/>
+        
+        <activity
+            android:name=".activity.Reading"/>
 
         <service android:name=".service.SyncService" />
 

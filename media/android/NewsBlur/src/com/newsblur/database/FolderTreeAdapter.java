@@ -32,4 +32,5 @@ public class FolderTreeAdapter extends SimpleCursorTreeAdapter {
 		return resolver.query(uri, null, null, new String[] { currentState }, null);
 	}
 	
+	
 }

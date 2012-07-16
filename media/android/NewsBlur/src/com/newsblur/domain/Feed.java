@@ -1,6 +1,7 @@
 package com.newsblur.domain;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
@@ -62,6 +63,25 @@ public class Feed {
 		values.put(DatabaseConstants.FEED_TITLE, title);
 		values.put(DatabaseConstants.FEED_UPDATED_SECONDS, lastUpdated);
 		return values;
+	}
+
+	public static Feed fromCursor(Cursor childCursor) {
+		Feed feed = new Feed();
+		childCursor.moveToFirst();
+		feed.active = Boolean.parseBoolean(childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ACTIVE)));
+		feed.address = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ADDRESS));
+		feed.favicon = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON));
+		feed.faviconColour = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
+		feed.faviconFade = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
+		feed.feedId = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ID));
+		feed.feedLink = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_LINK));
+		feed.lastUpdated = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_UPDATED_SECONDS));
+		feed.negativeCount = childCursor.getInt(childCursor.getColumnIndex(DatabaseConstants.FEED_NEGATIVE_COUNT));
+		feed.neutralCount = childCursor.getInt(childCursor.getColumnIndex(DatabaseConstants.FEED_NEUTRAL_COUNT));
+		feed.positiveCount = childCursor.getInt(childCursor.getColumnIndex(DatabaseConstants.FEED_POSITIVE_COUNT));
+		feed.subscribers = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_SUBSCRIBERS));
+		feed.title = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
+		return feed;
 	}
 	
 }

@@ -1,6 +1,7 @@
 package com.newsblur.fragment;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,17 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 import com.newsblur.R;
+import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FolderTreeAdapter;
+import com.newsblur.domain.Feed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.FolderTreeViewBinder;
 
-public class FolderFeedListFragment extends Fragment implements OnGroupClickListener {
+public class FolderFeedListFragment extends Fragment implements OnGroupClickListener, OnChildClickListener {
 
 	private ExpandableListView list;
 	private ContentResolver resolver;
@@ -58,6 +62,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
 		list.setAdapter(folderAdapter);
 		list.setOnGroupClickListener(this);
+		list.setOnChildClickListener(this);
 		return v;
 	}
 
@@ -92,6 +97,16 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 			group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
 		}
 		return false;
+	}
+
+	@Override
+	public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
+		final Intent intent = new Intent(getActivity(), Reading.class);
+		Cursor childCursor = folderAdapter.getChild(groupPosition, childPosition);
+		String feedId = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ID));
+		intent.putExtra(Reading.EXTRA_FEED, feedId);
+		getActivity().startActivity(intent);
+		return true;
 	}
 
 }

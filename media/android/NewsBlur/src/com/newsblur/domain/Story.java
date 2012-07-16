@@ -1,6 +1,7 @@
 package com.newsblur.domain;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -9,6 +10,8 @@ import com.newsblur.database.DatabaseConstants;
 public class Story {
 
 	public String id;
+	
+	@SerializedName("story_permalink")
 	public String permalink;
 
 	@SerializedName("share_count")
@@ -18,7 +21,7 @@ public class Story {
 	public Integer commentCount;
 
 	@SerializedName("read_status")
-	public Boolean read;
+	public int read;
 
 	@SerializedName("story_tags")
 	public String[] tags;
@@ -43,7 +46,7 @@ public class Story {
 
 	@SerializedName("intelligence_feed")
 	public String intelligenceFeed;
-
+	
 	@SerializedName("intelligence_authors")
 	public String intelligenceAuthors;
 
@@ -65,6 +68,22 @@ public class Story {
 		values.put(DatabaseConstants.STORY_READ, read);
 		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
 		return values;
+	}
+	
+	public static Story fromCursor(final Cursor cursor) {
+		Story story = new Story();
+		story.authors = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_AUTHORS));
+		story.content = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_CONTENT));
+		story.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TITLE));
+		story.date = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_DATE));
+		story.permalink = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_PERMALINK));
+		story.intelligenceAuthors = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_AUTHORS));
+		story.tags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS)), ",");
+		story.intelligenceFeed = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
+		story.read = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ));
+		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
+		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
+		return story;
 	}
 
 }

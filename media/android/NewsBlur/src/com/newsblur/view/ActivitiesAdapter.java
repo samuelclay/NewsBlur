@@ -63,18 +63,19 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		final ActivitiesResponse activity = getItem(position);
 		SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
 		
+		ClickableSpan usernameClick = new ClickableSpan() {
+			@Override
+			public void onClick(View widget) {
+				Intent i = new Intent(context, Profile.class);
+				i.putExtra(Profile.USER_ID, activity.id);
+				context.startActivity(i);
+			}
+		};
+		
 		if (TextUtils.equals(activity.category, "follow")) {
 			stringBuilder.append(startedFollowing);
 			stringBuilder.append(" ");
 			stringBuilder.append(activity.user.username);
-			ClickableSpan usernameClick = new ClickableSpan() {
-				@Override
-				public void onClick(View widget) {
-					Intent i = new Intent(context, Profile.class);
-					i.putExtra(Profile.USER_ID, activity.id);
-					context.startActivity(i);
-				}
-			};
 			stringBuilder.setSpan(darkgray, 0, startedFollowing.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(usernameClick, startedFollowing.length() + 1, startedFollowing.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(highlight, startedFollowing.length() + 1, startedFollowing.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -86,6 +87,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 			stringBuilder.append(activity.content);
 			stringBuilder.append("\"");
 			stringBuilder.setSpan(darkgray, 0, repliedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			stringBuilder.setSpan(usernameClick, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(highlight, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(midgray, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		} else if (TextUtils.equals(activity.category, "sharedstory")) {
