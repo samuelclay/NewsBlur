@@ -714,7 +714,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
                           commentsString];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-
+    NSLog(@"/n/n/nCOMMENT STRING IS %@", commentsString);
 }
 
 - (void)scrolltoBottom {

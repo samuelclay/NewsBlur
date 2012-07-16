@@ -59,7 +59,7 @@
     [self.navigationItem.titleView sizeToFit];
 }
 
-- (void)viewWillAppear:(BOOL)animated {    
+- (void)viewWillAppear:(BOOL)animated {
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
@@ -126,7 +126,6 @@
         settingsButton.enabled = YES;
     }
     
-
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -163,6 +162,11 @@
 }
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
+    // add user to dict for use with sharing and replying
+    NSArray *selfUserProfile = [NSArray arrayWithObject:appDelegate.dictUserProfile];
+    appDelegate.activeFeedUserProfiles = selfUserProfile;
+    NSLog(@"selfUserProfile is %@", selfUserProfile);
+    
     NSString *theFeedDetailURL;
     
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
@@ -211,6 +215,11 @@
 #pragma mark River of News
 
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
+    // add user to dict for use with sharing and replying
+    NSArray *selfUserProfile = [NSArray arrayWithObject:appDelegate.dictUserProfile];
+    appDelegate.activeFeedUserProfiles = selfUserProfile;
+    NSLog(@"selfUserProfile is %@", selfUserProfile);
+    
     if (!self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
         self.pageFetching = YES;
@@ -323,15 +332,12 @@
             confirmedNewUserProfiles = [newUserProfiles copy];
         }
         
-        if (self.feedPage == 1) {
-            [appDelegate setFeedUserProfiles:confirmedNewUserProfiles];
-        } else if (newUserProfiles.count > 0) {        
-            [appDelegate addFeedUserProfiles:confirmedNewUserProfiles];
-        }
-        
+        [appDelegate addFeedUserProfiles:confirmedNewUserProfiles];
+//        NSLog(@"activeFeedUserProfiles is %@", appDelegate.activeFeedUserProfiles);
 //        NSLog(@"# of user profiles added: %i", appDelegate.activeFeedUserProfiles.count);
 //        NSLog(@"user profiles added: %@", appDelegate.activeFeedUserProfiles);
     }
+    NSLog(@"appDelegate.activeFeedUserProfiles is %@", appDelegate.activeFeedUserProfiles);
     
     [self renderStories:confirmedNewStories];
 }
@@ -573,18 +579,25 @@
 }
 
 - (void)changeRowStyleToRead:(FeedDetailTableCell *)cell {
-    cell.storyAuthor.textColor = UIColorFromRGB(0x979797);
+    cell.storyAuthor.textColor = UIColorFromRGB(0xcccccc);
     cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:0.5];
     cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
     cell.storyUnreadIndicator.alpha = 0.15f;
-    //cell.feedGradient.alpha = 0.25f;
+    cell.feedGradient.alpha = 0.25f;
     cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
     if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
-        cell.storyTitle.textColor = UIColorFromRGB(0x979797);
+        cell.storyTitle.textColor = UIColorFromRGB(0xcccccc);
     } else {
         cell.storyTitle.textColor = [UIColor colorWithRed:0.15f green:0.25f blue:0.25f alpha:0.9];
     }
+    
+//    for (CALayer *layer in [cell.feedGradient.layer sublayers]) {
+//        if ([[layer name] isEqualToString:@"feedColorBarBorder"]) {
+////            layer.backgroundColor = UIColorFromRGB(0xcccccc).CGColor;
+//        }
+//    }
+
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -647,6 +660,7 @@
     feedColorBar.frame = rect;
     feedColorBar.backgroundColor = UIColorFromRGB(color).CGColor;
     feedColorBar.opacity = 1;
+    feedColorBar.name = @"feedColorBarBorder";
     [gradientView.layer addSublayer:feedColorBar]; 
 
     return gradientView;

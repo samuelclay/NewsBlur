@@ -610,9 +610,6 @@
     appDelegate.isRiverView = NO;
         
     [appDelegate loadFeedDetailView];
-    
-    NSLog(@"indexPathForSelectedRow %@", [self.feedTitlesTable indexPathForSelectedRow]);
-
 }
 
 - (CGFloat)tableView:(UITableView *)tableView 

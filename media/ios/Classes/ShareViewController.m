@@ -191,7 +191,19 @@
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
+    
+    // update the current story and the master array
     appDelegate.activeStory = [results objectForKey:@"story"];
+    for (int i = 0; i < appDelegate.activeFeedStories.count; i++)  {
+        NSDictionary *feedStory = [appDelegate.activeFeedStories objectAtIndex:i];
+        NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
+        NSString *currentStoryId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
+        if ([storyId isEqualToString: currentStoryId]){
+            //            appDelegate.activeFeedStories
+        }
+    }
+    
+    
     self.commentField.text = nil;
     [appDelegate refreshComments];
 }
