@@ -6,6 +6,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         "click .NB-user-avatar": "open_social_profile_modal",
         "click .NB-story-comment-username": "open_social_profile_modal",
         "click .NB-story-comment-reply-button": "open_reply",
+        "click .NB-story-comment-like": "like_comment",
         "click .NB-story-comment-share-edit-button": "toggle_feed_story_share_dialog",
         "click .NB-story-comment-reply .NB-modal-submit-button": "save_social_comment_reply"
     },
@@ -15,19 +16,27 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         if (!this.options.on_social_page) {
             this.user = NEWSBLUR.assets.user_profiles.find(this.model.get('user_id'));
         }
+        this.model.bind('change:liking_users', this.render, this);
+        this.model.bind('change:liking_users', this.call_out_like, this);
     },
     
     render: function() {
         this.model.set('comments', this.model.get('comments').replace(/\n+/g, '<br><br>'));
         var reshare_class = this.model.get('source_user_id') ? 'NB-story-comment-reshare' : '';
+        var has_likes = _.any(this.model.get('liking_users'));
+        var liked = _.contains(this.model.get('liking_users'), NEWSBLUR.Globals.user_id);
 
         var $comment = $.make('div', [
-            $.make('div', { className: 'NB-user-avatar ' + reshare_class }, [
+            $.make('div', { className: 'NB-story-comment-author-avatar NB-user-avatar ' + reshare_class }, [
                 $.make('img', { src: this.user.get('photo_url') })
             ]),
             $.make('div', { className: 'NB-story-comment-author-container' }, [
                 (this.model.get('source_user_id') && $.make('div', { className: 'NB-story-comment-reshares' }, [
                     NEWSBLUR.Views.ProfileThumb.create(this.model.get('source_user_id')).render().el
+                ])),
+                (has_likes && $.make('div', { className: 'NB-story-comment-likes NB-right' }, [
+                    $.make('div', { className: 'NB-story-comment-like ' + (liked ? 'NB-active' : '') }),
+                    this.render_liking_users()
                 ])),
                 $.make('div', { className: 'NB-story-comment-username' }, this.user.get('username')),
                 $.make('div', { className: 'NB-story-comment-date' }, this.model.get('shared_date') + ' ago'),
@@ -36,7 +45,10 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                 ])),
                 $.make('div', { className: 'NB-story-comment-reply-button' }, [
                     $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, 'reply')
-                ])
+                ]),
+                (!has_likes && this.model.get('user_id') != NEWSBLUR.Globals.user_id && $.make('div', { className: 'NB-story-comment-likes NB-left' }, [
+                    $.make('div', { className: 'NB-story-comment-like' })
+                ]))
             ]),
             $.make('div', { className: 'NB-story-comment-content' }, this.model.get('comments')),
             this.make_story_share_comment_replies()
@@ -59,6 +71,47 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         return $replies;
     },
     
+    render_liking_users: function() {
+        var $users = $.make('div', { className: 'NB-story-comment-likes-users' });
+
+        _.each(this.model.get('liking_users'), function(user_id) { 
+            var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id).render().el;
+            $users.append($thumb);
+        });
+        
+        return $users;
+    },
+    
+    call_out_like: function() {
+        var $like = this.$('.NB-story-comment-like');
+        var liked = _.contains(this.model.get('liking_users'), NEWSBLUR.Globals.user_id);
+        
+        $like.attr({'title': liked ? 'Favorited!' : 'Unfavorited'});
+        $like.tipsy({
+            gravity: 'sw',
+            fade: true,
+            trigger: 'manual',
+            offsetOpposite: -1
+        });
+        var tipsy = $like.data('tipsy');
+        _.defer(function() {
+            tipsy.enable();
+            tipsy.show();
+        });
+
+        $like.animate({
+            'opacity': 1
+        }, {
+            'duration': 850,
+            'queue': false,
+            'complete': function() {
+                if (tipsy.enabled) {
+                    tipsy.hide();
+                    tipsy.disable();
+                }
+            }
+        });
+    },
     
     // ==========
     // = Events =
@@ -158,6 +211,24 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                 NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
             }
         }, this));
+    },
+    
+    like_comment: function() {
+        var liking_user_ids = this.model.get('liking_users') || [];
+        var comment_user_id = this.model.get('user_id');
+        var liked = _.contains(liking_user_ids, NEWSBLUR.Globals.user_id);
+        
+        if (!liked) {
+            this.model.set('liking_users', _.union(liking_user_ids, NEWSBLUR.Globals.user_id));
+            NEWSBLUR.assets.like_comment(this.options.story.id, 
+                                         this.options.story.get('story_feed_id'),
+                                         comment_user_id);
+        } else {
+            this.model.set('liking_users', _.without(liking_user_ids, NEWSBLUR.Globals.user_id));
+            NEWSBLUR.assets.remove_like_comment(this.options.story.id, 
+                                                this.options.story.get('story_feed_id'),
+                                                comment_user_id);
+        }
     }
     
 });

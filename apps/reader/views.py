@@ -909,7 +909,10 @@ def mark_feed_as_read(request):
                     logging.user(request, "~FMMarking feed as read: ~SB%s" % (feed,))
             except (Feed.DoesNotExist, UserSubscription.DoesNotExist):
                 continue
-    
+
+        if not sub:
+            continue
+        
         try:
             sub.mark_feed_read()
         except IntegrityError:

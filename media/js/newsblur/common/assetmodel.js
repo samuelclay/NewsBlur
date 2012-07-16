@@ -277,6 +277,36 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, pre_callback, error_callback);
     },
     
+    like_comment: function(story_id, story_feed_id, comment_user_id, callback, error_callback) {
+        var pre_callback = _.bind(function(data) {
+            if (data.user_profiles) {
+                this.add_user_profiles(data.user_profiles);
+            }
+            callback && callback(data);
+        }, this);
+        
+        this.make_request('/social/like_comment', {
+            story_id: story_id,
+            story_feed_id: story_feed_id,
+            comment_user_id: comment_user_id
+        }, pre_callback, error_callback);
+    },
+    
+    remove_like_comment: function(story_id, story_feed_id, comment_user_id, callback, error_callback) {
+        var pre_callback = _.bind(function(data) {
+            if (data.user_profiles) {
+                this.add_user_profiles(data.user_profiles);
+            }
+            callback && callback(data);
+        }, this);
+        
+        this.make_request('/social/remove_like_comment', {
+            story_id: story_id,
+            story_feed_id: story_feed_id,
+            comment_user_id: comment_user_id
+        }, pre_callback, error_callback);
+    },
+    
     add_user_profiles: function(user_profiles) {
         var profiles = _.reject(user_profiles, _.bind(function(profile) {
             return profile.id in this.user_profiles._byId;
