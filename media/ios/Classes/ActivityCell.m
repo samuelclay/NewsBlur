@@ -56,8 +56,10 @@
         [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
         [attrStr setTextColor:UIColorFromRGB(0x333333)];
         
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:username]];
-        [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        if (![username isEqualToString:@"You"]){
+            [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:username]];
+            [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        }
         
         [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:withUserUsername]];
         [attrStr setTextBold:YES range:[txt rangeOfString:withUserUsername]];
@@ -73,8 +75,10 @@
         [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
         [attrStr setTextColor:UIColorFromRGB(0x333333)];
         
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:username]];
-        [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        if (![username isEqualToString:@"You"]){
+            [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:username]];
+            [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        }
         
         [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:withUserUsername]];
         [attrStr setTextBold:YES range:[txt rangeOfString:withUserUsername]];
@@ -90,8 +94,10 @@
         [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
         [attrStr setTextColor:UIColorFromRGB(0x333333)];
         
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:username]];
-        [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        if (![username isEqualToString:@"You"]){
+            [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:username]];
+            [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        }
         
         [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:title]];
         

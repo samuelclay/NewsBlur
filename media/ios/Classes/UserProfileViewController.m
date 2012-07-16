@@ -190,6 +190,14 @@
         [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
     }
     
+    // test for YOURSELF == USER
+    
+    // check follow button status
+    NSString *currentUserName = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"username"]];    
+    if ([currentUserName isEqualToString:self.activitiesUsername]) {
+        self.activitiesUsername = @"You";
+    }
+        
     // Profile Badge
     if (indexPath.section == 0) {
         [cell addSubview:self.profileBadge];

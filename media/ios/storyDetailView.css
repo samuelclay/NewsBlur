@@ -2,27 +2,27 @@
  * Font Size Style
  */
 
-.NB-extra-small {
+.NB-extra-small .NB-story {
     line-height: 1.6em;
     font-size: 12px;
 }
 
-.NB-small {
+.NB-small .NB-story {
     line-height: 1.6em;
     font-size: 14px;
 }
 
-.NB-medium {
+.NB-medium .NB-story{
     line-height: 1.6em;
     font-size: 16px;
 }
 
-.NB-large {
+.NB-large .NB-story {
     line-height: 1.6em;
     font-size: 18px;
 }
 
-.NB-extra-large {
+.NB-extra-large .NB-story {
     line-height: 1.6em;
     font-size: 22px;
 }
@@ -120,6 +120,7 @@ body {
     font-size: 14px;
     line-height: 120%;
     overflow: hidden;
+    font-family: Helvetica;
 }
 
 .NB-story-author {

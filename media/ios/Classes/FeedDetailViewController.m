@@ -159,11 +159,7 @@
     [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
 }
 
-- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
-    // add user to dict for use with sharing and replying
-    NSArray *selfUserProfile = [NSArray arrayWithObject:appDelegate.dictUserProfile];
-    appDelegate.activeFeedUserProfiles = selfUserProfile;
-      
+- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {      
     NSString *theFeedDetailURL;
     
     if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
@@ -179,7 +175,6 @@
                                 NEWSBLUR_URL,
                                 [appDelegate.activeFeed objectForKey:@"user_id"],
                                 self.feedPage];
-            NSLog(@"calling%@", theFeedDetailURL);
         } else {
             theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/feed/%@/?page=%d", 
                                 NEWSBLUR_URL,
@@ -211,11 +206,7 @@
 #pragma mark -
 #pragma mark River of News
 
-- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
-    // add user to dict for use with sharing and replying
-    NSArray *selfUserProfile = [NSArray arrayWithObject:appDelegate.dictUserProfile];
-    appDelegate.activeFeedUserProfiles = selfUserProfile;
-    
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {    
     if (!self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
         self.pageFetching = YES;
@@ -328,7 +319,13 @@
             confirmedNewUserProfiles = [newUserProfiles copy];
         }
         
-        [appDelegate addFeedUserProfiles:confirmedNewUserProfiles];
+        
+        if (self.feedPage == 1) {
+            [appDelegate setFeedUserProfiles:confirmedNewUserProfiles];
+        } else if (newUserProfiles.count > 0) {        
+            [appDelegate addFeedUserProfiles:confirmedNewUserProfiles];
+        }
+        
 //        NSLog(@"activeFeedUserProfiles is %@", appDelegate.activeFeedUserProfiles);
 //        NSLog(@"# of user profiles added: %i", appDelegate.activeFeedUserProfiles.count);
 //        NSLog(@"user profiles added: %@", appDelegate.activeFeedUserProfiles);
@@ -376,12 +373,6 @@
     [self performSelector:@selector(checkScroll)
                withObject:nil
                afterDelay:0.2];
-    
-    NSLog(@"newStoriesCount %i, existingStoriesCount %i, newVisibleStoriesCount %i, selectedIntelligence %i", 
-          newStoriesCount,
-          existingStoriesCount,
-          newVisibleStoriesCount,
-          appDelegate.selectedIntelligence);
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {

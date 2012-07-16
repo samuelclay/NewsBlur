@@ -50,23 +50,49 @@
 
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    UIBarButtonItem *originalButton = [[UIBarButtonItem alloc] 
+                                       initWithTitle:@"Original" 
+                                       style:UIBarButtonItemStyleBordered 
+                                       target:self 
+                                       action:@selector(showOriginalSubview:)
+                                       ];
+    
+    UIBarButtonItem *fontSettingsButton = [[UIBarButtonItem alloc] 
+                                           initWithTitle:@"Aa" 
+                                           style:UIBarButtonItemStyleBordered 
+                                           target:self 
+                                           action:@selector(toggleFontSize:)
+                                           ];
+    
+    UIImage *slide = [UIImage imageNamed: appDelegate.splitStoryController.isShowingMaster ? @"slide_left.png" : @"slide_right.png"];
+    UIBarButtonItem *toggleButton = [[UIBarButtonItem alloc]
+                                     initWithImage:slide
+                                     style:UIBarButtonItemStylePlain
+                                     target:self
+                                     action:@selector(toggleView)];
+    
+    self.toggleViewButton = toggleButton;
+    self.loadingIndicator = [[UIActivityIndicatorView alloc] 
+                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    
+    self.webView.scalesPageToFit = NO; 
+    self.webView.multipleTouchEnabled = NO;
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.navigationItem.hidesBackButton = YES;
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
     } else {
         UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         backBtn.frame = CGRectMake(0, 0, 51, 31);
         [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
         [backBtn addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
         UIBarButtonItem *back = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
-        self.navigationItem.backBarButtonItem = back;  
+        self.navigationItem.backBarButtonItem = back; 
+        
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
     }
-    
-    self.loadingIndicator = [[UIActivityIndicatorView alloc] 
-                         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    
-    self.webView.scalesPageToFit = NO; 
-    self.webView.multipleTouchEnabled = NO;
-    [super viewDidLoad];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -76,6 +102,15 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self initStory];
 	[super viewWillAppear:animated];
+    
+    if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
+        if (UIInterfaceOrientationIsPortrait(orientation)) {
+            self.navigationItem.leftBarButtonItem = self.toggleViewButton;
+        } else {
+            self.navigationItem.leftBarButtonItem = nil;
+        }
+    }
 }
 
 - (void)initStory {
@@ -89,42 +124,6 @@
         self.webView.scalesPageToFit = YES;
     }
     [self.loadingIndicator stopAnimating];    
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    UIBarButtonItem *originalButton = [[UIBarButtonItem alloc] 
-                                       initWithTitle:@"Original" 
-                                       style:UIBarButtonItemStyleBordered 
-                                       target:self 
-                                       action:@selector(showOriginalSubview:)
-                                       ];
-    
-    UIBarButtonItem *fontSettingsButton = [[UIBarButtonItem alloc] 
-                                       initWithTitle:@"Aa" 
-                                       style:UIBarButtonItemStyleBordered 
-                                       target:self 
-                                       action:@selector(toggleFontSize:)
-                                       ];
-    
-    UIImage *slide = [UIImage imageNamed: appDelegate.splitStoryController.isShowingMaster ? @"slide_left.png" : @"slide_right.png"];
-    
-    UIBarButtonItem *toggleButton = [[UIBarButtonItem alloc]
-                        initWithImage:slide
-                        style:UIBarButtonItemStylePlain
-                        target:self
-                        action:@selector(toggleView)];
-    
-    self.toggleViewButton = toggleButton;
-    
-    if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
-        self.navigationItem.leftBarButtonItem = self.toggleViewButton;
-
-    } else {
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
-    }
-
-	[super viewDidAppear:animated];
 }
 
 - (void)toggleView {
@@ -156,6 +155,12 @@
         } else {
             UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
             self.navigationItem.titleView = titleLabel;
+        }
+        
+        if (UIInterfaceOrientationIsPortrait(fromInterfaceOrientation)) {
+            self.navigationItem.leftBarButtonItem = nil;
+        } else {
+            self.navigationItem.leftBarButtonItem = self.toggleViewButton;
         }
         
         [appDelegate adjustStoryDetailWebView];
@@ -383,7 +388,7 @@
     headerString = [NSString stringWithFormat:@
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
-                    "<meta name=\"viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
+                    "<meta name=\"viewport\" id=\"\viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
 
 
                     contentWidth];
@@ -434,21 +439,21 @@
                             "<html>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@\">"
-                            "    <div class=\"%@\" id=\"NB-font-style\">"
                             "    %@" // storyHeader
-                            "    <div class=\"%@\" id=\"NB-font-size\">"
-                            "        <div class=\"NB-story\">%@ </div>"
-                            "    </div>" // font-size
-                            "    <div id=\"NB-comments-wrapper\">%@</div>" // comments
-                            "        %@" // share
+                            "    <div class=\"%@\" id=\"NB-font-style\">"
+                            "       <div class=\"%@\" id=\"NB-font-size\">"
+                            "           <div class=\"NB-story\">%@</div>"
+                            "       </div>" // font-size
                             "    </div>" // font-style
+                            "    <div id=\"NB-comments-wrapper\">%@</div>" // comments
+                            "    %@" // share
                             "    %@"
                             "</body>"
                             "</html>",
                             headerString,
                             contentWidthClass,
-                            fontStyleClass,
                             storyHeader, 
+                            fontStyleClass,
                             fontSizeClass,
                             [appDelegate.activeStory objectForKey:@"story_content"],
                             commentsString,
@@ -834,9 +839,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)changeWebViewWidth:(int)width {
     int contentWidth = self.view.frame.size.width;
+    NSLog(@"content width in changeWebViewWidth is %i", contentWidth);
     NSString *contentWidthClass;
     
-    if (contentWidth > 700) {
+    if (contentWidth > 740) {
         contentWidthClass = @"NB-ipad-wide";
     } else if (contentWidth > 420) {
         contentWidthClass = @"NB-ipad-narrow";
@@ -845,8 +851,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     NSString *jsString = [[NSString alloc] initWithFormat:
-                          @"document.getElementsByTagName('body')[0].setAttribute('class', '%@');",
-                          contentWidthClass];
+                          @"document.getElementsByTagName('body')[0].setAttribute('class', '%@');document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%i;initial-scale=1; maximum-scale=1.0; user-scalable=0;\");",
+                          contentWidthClass,
+                          contentWidth];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
 
