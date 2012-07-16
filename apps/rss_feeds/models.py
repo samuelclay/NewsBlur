@@ -1,11 +1,13 @@
 import difflib
 import datetime
+import time
 import random
 import re
 import math
 import mongoengine as mongo
 import zlib
 import hashlib
+import redis
 from collections import defaultdict
 from operator import itemgetter
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
@@ -1286,6 +1288,9 @@ class MStory(mongo.Document):
         return hashlib.sha1(self.story_guid).hexdigest()
     
     def save(self, *args, **kwargs):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        r.zadd('F:%s' % self.story_feed_id, self.guid_hash, time.mktime(self.story_date.timetuple()))
+        
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
         if self.story_content:
