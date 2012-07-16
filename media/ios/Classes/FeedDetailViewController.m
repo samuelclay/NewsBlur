@@ -176,13 +176,13 @@
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
         }
         if (appDelegate.isSocialView) {
-            theFeedDetailURL = [NSString stringWithFormat:@"http://%@/social/stories/%@?page=%d", 
+            theFeedDetailURL = [NSString stringWithFormat:@"http://%@/social/stories/%@/?page=%d", 
                                 NEWSBLUR_URL,
                                 [appDelegate.activeFeed objectForKey:@"user_id"],
                                 self.feedPage];
-
+            NSLog(@"calling%@", theFeedDetailURL);
         } else {
-            theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/feed/%@?page=%d", 
+            theFeedDetailURL = [NSString stringWithFormat:@"http://%@/reader/feed/%@/?page=%d", 
                                 NEWSBLUR_URL,
                                 [appDelegate.activeFeed objectForKey:@"id"],
                                 self.feedPage];
