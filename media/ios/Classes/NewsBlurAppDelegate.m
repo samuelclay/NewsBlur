@@ -955,12 +955,16 @@
 
 - (void)markFeedAllRead:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+    NSDictionary *feed = self.isSocialView ? [self.dictSocialFeeds objectForKey:feedIdStr] : [self.dictFeeds objectForKey:feedIdStr];
     
     [feed setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
     [feed setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
     [feed setValue:[NSNumber numberWithInt:0] forKey:@"ng"];
-    [self.dictFeeds setValue:feed forKey:feedIdStr];    
+    if (self.isSocialView) {
+        [self.dictSocialFeeds setValue:feed forKey:feedIdStr];    
+    } else {
+        [self.dictFeeds setValue:feed forKey:feedIdStr];    
+    }
 }
 
 - (void)calculateStoryLocations {

@@ -259,10 +259,11 @@
     [self loadFavicons];
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
-    //if (appDelegate.feedsViewController.view.window) {
+
+    // set title only if on current controller
+    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
         [appDelegate setTitle:[results objectForKey:@"user"]];
-    //}
-    
+    }
 
     // adding user avatar to left
     NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
@@ -1000,7 +1001,7 @@
 - (void)loadAvatars {
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
     dispatch_async(queue, ^{
-        for (id feed_id in appDelegate.dictSocialFeeds) {
+        for (NSString *feed_id in [appDelegate.dictSocialFeeds allKeys]) {
             NSDictionary *feed = [appDelegate.dictSocialFeeds objectForKey:feed_id];
             NSURL *imageURL = [NSURL URLWithString:[feed objectForKey:@"photo_url"]];
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
