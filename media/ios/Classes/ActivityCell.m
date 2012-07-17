@@ -40,6 +40,7 @@
     self.activityLabel = [[[OHAttributedLabel alloc] init] autorelease];
     self.activityLabel.frame = CGRectMake(10, 10, 280, 120);
     self.activityLabel.backgroundColor = [UIColor clearColor];
+    self.activityLabel.automaticallyAddLinksForType = NO;
 
     NSString *category = [activity objectForKey:@"category"];
     NSString *content = [activity objectForKey:@"content"];
@@ -132,9 +133,24 @@
         
     // star and feedsub are always private.
     } else if ([category isEqualToString:@"star"]) {
-        self.activityLabel.text = [NSString stringWithFormat:@"You saved %@", content];
+        NSString *txt = [NSString stringWithFormat:@"%@ saved %@: %@", content];
+        NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txt];
+        
+        [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
+        [attrStr setTextColor:UIColorFromRGB(0x333333)];
+        
+        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:content]];
+        
+        self.activityLabel.attributedText = attrStr;
     } else if ([category isEqualToString:@"feedsub"]) {
-        self.activityLabel.text = [NSString stringWithFormat:@"You subscribed to %@", content];
+        NSString *txt = [NSString stringWithFormat:@"You subscribed to %@", content];
+        NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txt];
+        
+        [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
+        [attrStr setTextColor:UIColorFromRGB(0x333333)];
+
+        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:content]];
+        self.activityLabel.attributedText = attrStr;
     }
     
     [self.activityLabel sizeToFit];

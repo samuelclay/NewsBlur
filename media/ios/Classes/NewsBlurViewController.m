@@ -100,7 +100,7 @@
     appDelegate.activeFeed = nil; 
     appDelegate.isSocialView = NO;
     appDelegate.isRiverView = NO;
-    appDelegate.isTryFeed = NO;
+    appDelegate.inFindingStoryMode = NO;
     [MBProgressHUD hideHUDForView:appDelegate.splitStoryDetailNavigationController.view animated:NO];
     
     
@@ -753,10 +753,12 @@
     if (button.tag == 1) {
         [appDelegate setActiveFolder:@"Everything"];
         for (NSString *folderName in self.activeFeedLocations) {
-            NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
-            NSArray *folderFeeds = [self.activeFeedLocations objectForKey:folderName];
-            for (int l=0; l < [folderFeeds count]; l++) {
-                [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+            if (![folderName isEqualToString:@""]) { // remove all blurblugs which is a blank folder name
+                NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+                NSArray *folderFeeds = [self.activeFeedLocations objectForKey:folderName];
+                for (int l=0; l < [folderFeeds count]; l++) {
+                    [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+                }
             }
         }
     } else {

@@ -17,12 +17,14 @@
     UITableView *activitiesTable;
     NSArray *activitiesArray;
     NSString *activitiesUsername;
+    UIPopoverController *popoverController;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) UITableView *activitiesTable;
 @property (nonatomic) NSArray *activitiesArray;
 @property (nonatomic) NSString *activitiesUsername;
+@property (nonatomic, strong) UIPopoverController *popoverController;
 
 - (void)refreshWithActivities:(NSDictionary *)activitiesDict;
 

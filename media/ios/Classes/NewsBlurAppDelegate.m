@@ -59,7 +59,7 @@
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isShowingShare;
-@synthesize isTryFeed;
+@synthesize inFindingStoryMode;
 @synthesize tryFeedStoryId;
 @synthesize popoverHasFeedView;
 @synthesize inStoryDetail;
@@ -409,7 +409,7 @@
         if ([[self.splitStoryDetailNavigationController viewControllers] containsObject:self.feedDashboardViewController]) {
             //[self.storyDetailViewController initStory];
         } else {
-            if (self.isTryFeed) {
+            if (self.inFindingStoryMode) {
                 [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:NO];
                 MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.splitStoryDetailNavigationController.view animated:YES];
                 HUD.labelText = @"Finding Story...";
@@ -421,13 +421,21 @@
     }  
 }
 
-- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId {
+- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social {
     
-    NSDictionary *feed = [self.dictSocialFeeds objectForKey:feedId];
+    NSDictionary *feed;
+    
+    if (social) {
+        feed = [self.dictSocialFeeds objectForKey:feedId];
+        [self setIsSocialView:YES];
+        [self setInFindingStoryMode:YES];
+    } else {
+        feed = [self.dictFeeds objectForKey:feedId];
+        [self setIsSocialView:NO];
+        [self setInFindingStoryMode:NO];
+    }
     
     [self setTryFeedStoryId:contentId];
-    [self setIsTryFeed:YES];
-    [self setIsSocialView:YES];
     [self setActiveFeed:feed];
     [self setActiveFolder:nil];
     

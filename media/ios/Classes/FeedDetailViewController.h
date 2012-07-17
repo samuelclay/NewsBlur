@@ -30,7 +30,6 @@
     UIBarButtonItem * feedMarkReadButton;
     UISegmentedControl * intelligenceControl;
     UIPopoverController *popoverController;
-    BOOL foundTryFeed;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -46,7 +45,6 @@
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
-@property (nonatomic, readwrite) BOOL foundTryFeed;
 
 - (void)resetFeedDetail;
 - (void)fetchNextPage:(void(^)())callback;

@@ -35,7 +35,6 @@
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize intelligenceControl;
-@synthesize foundTryFeed;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -62,7 +61,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     self.pageFinished = NO;
-    self.foundTryFeed = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
     if (appDelegate.isRiverView || appDelegate.isSocialView) {
@@ -225,6 +223,8 @@
             }
         }
         
+        NSLog(@"appDelegate.activeFolderFeeds is %@", appDelegate.activeFolderFeeds);
+        
         NSString *theFeedDetailURL = [NSString stringWithFormat:
                                       @"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
                                       NEWSBLUR_URL,
@@ -234,6 +234,7 @@
         
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
+                NSLog(@"theFeedDetailURL is %@", theFeedDetailURL);
         [request setDelegate:self];
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -372,7 +373,7 @@
     self.pageFetching = NO;
     
     // test for tryfeed
-    if (appDelegate.isTryFeed && !self.foundTryFeed) {
+    if (appDelegate.inFindingStoryMode && appDelegate.tryFeedStoryId) {
         for (int i = 0; i < appDelegate.activeFeedStories.count; i++) {
             NSString *storyIdStr = [[appDelegate.activeFeedStories objectAtIndex:i] objectForKey:@"id"];
             if ([storyIdStr isEqualToString:appDelegate.tryFeedStoryId]) {
@@ -387,7 +388,7 @@
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
 
                 [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
-                self.foundTryFeed = YES;
+                appDelegate.inFindingStoryMode = NO;
                 
                 UITableViewCell *cell = [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
                 [self changeRowStyleToRead:cell];
@@ -583,7 +584,7 @@
         [self loadStory:cell atRow:location]; 
     }
     
-    self.foundTryFeed = YES;
+    appDelegate.inFindingStoryMode = NO;
     [MBProgressHUD hideHUDForView:appDelegate.splitStoryDetailNavigationController.view animated:YES];
 }
 
@@ -684,7 +685,7 @@
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
     if (maximumOffset - currentOffset <= 60.0 || 
-        (appDelegate.isTryFeed && !self.foundTryFeed)) {
+        (appDelegate.inFindingStoryMode)) {
         if (appDelegate.isRiverView) {
             [self fetchRiverPage:self.feedPage+1 withCallback:nil];
         } else {

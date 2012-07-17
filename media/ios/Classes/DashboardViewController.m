@@ -138,11 +138,15 @@
     
     appDelegate.dictUserInteractions = [results objectForKey:@"interactions"];
 
-    InteractionsModule *interactions = [[InteractionsModule alloc] init];
-    interactions.frame = CGRectMake(20, 100, 438, 300);
-    [interactions refreshWithInteractions:appDelegate.dictUserInteractions];
-    self.interactionsModule = interactions;
-    [self.view addSubview:self.interactionsModule];
+    if (self.interactionsModule == nil) {
+        InteractionsModule *interactions = [[InteractionsModule alloc] init];
+        interactions.frame = CGRectMake(20, 100, 438, 300);
+        self.interactionsModule = interactions;
+        [self.view addSubview:self.interactionsModule];
+    }
+    
+    [self.interactionsModule refreshWithInteractions:appDelegate.dictUserInteractions];
+
     [self repositionDashboard];
 } 
 
@@ -173,11 +177,15 @@
     
     appDelegate.dictUserActivities = results;
     
-    ActivityModule *activity = [[ActivityModule alloc] init];
-    activity.frame = CGRectMake(20, 510, 438, 300);
-    [activity refreshWithActivities:appDelegate.dictUserActivities];
-    self.activitiesModule = activity;
-    [self.view addSubview:self.activitiesModule];
+    if (self.activitiesModule == nil) {
+        ActivityModule *activity = [[ActivityModule alloc] init];
+        activity.frame = CGRectMake(20, 510, 438, 300);
+        self.activitiesModule = activity;
+        [self.view addSubview:self.activitiesModule];
+    }
+    
+    [self.activitiesModule refreshWithActivities:appDelegate.dictUserActivities];
+
     [self repositionDashboard];
 }
 
