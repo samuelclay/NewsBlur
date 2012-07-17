@@ -243,7 +243,7 @@ def setup_common():
     config_pgbouncer()
     # setup_mongoengine()
     # setup_forked_mongoengine()
-    setup_pymongo_repo()
+    # setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
     configure_nginx()
@@ -362,7 +362,7 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
+    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
     
     put('config/pystartup.py', '.pystartup')
     with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -636,6 +636,11 @@ def setup_task_motd():
     
 def enable_celery_supervisor():
     put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+    
+def enable_celerybeat():
+    with cd(env.NEWSBLUR_PATH):
+        run('mkdir -p data')
+    put('config/supervisor_celerybeat.conf', '/etc/supervisor/conf.d/celerybeat.conf', use_sudo=True)
     
 def copy_task_settings():
     with settings(warn_only=True):
