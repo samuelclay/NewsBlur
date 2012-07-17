@@ -568,7 +568,7 @@ def load_starred_stories(request):
 
 @json.json_view
 def load_river_stories(request):
-    limit             = 6
+    limit             = 12
     start             = time.time()
     user              = get_user(request)
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]

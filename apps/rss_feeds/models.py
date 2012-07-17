@@ -865,13 +865,15 @@ class Feed(models.Model):
         if self.active_subscribers <= 1 and self.premium_subscribers < 1:
             trim_cutoff = 100
         elif self.active_subscribers <= 3  and self.premium_subscribers < 2:
-            trim_cutoff = 150
-        elif self.active_subscribers <= 5  and self.premium_subscribers < 3:
             trim_cutoff = 200
-        elif self.active_subscribers <= 10 and self.premium_subscribers < 4:
+        elif self.active_subscribers <= 5  and self.premium_subscribers < 3:
             trim_cutoff = 300
-        elif self.active_subscribers <= 25 and self.premium_subscribers < 5:
+        elif self.active_subscribers <= 10 and self.premium_subscribers < 4:
+            trim_cutoff = 350
+        elif self.active_subscribers <= 20 and self.premium_subscribers < 5:
             trim_cutoff = 400
+        elif self.active_subscribers <= 25 and self.premium_subscribers < 5:
+            trim_cutoff = 450
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
@@ -884,14 +886,16 @@ class Feed(models.Model):
                 return
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
-            extra_stories.delete()
+            for story in extra_stories:
+                story.delete()
             if verbose:
                 print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
             userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=story_trim_date)
             if userstories.count():
                 if verbose:
                     print "Found %s user stories. Deleting..." % userstories.count()
-                userstories.delete()
+                for userstory in userstories:
+                    userstory.delete()
         
     def get_stories(self, offset=0, limit=25, force=False):
         stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
@@ -1304,11 +1308,21 @@ class MStory(mongo.Document):
             self.story_content_type = self.story_content_type[:story_content_type_max]
         super(MStory, self).save(*args, **kwargs)
     
+    def delete(self, *args, **kwargs):
+        self.remove_from_redis()
+        
+        super(MStory, self).delete(*args, **kwargs)
+        
     def sync_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         r.sadd('F:%s' % self.story_feed_id, self.id)
         r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
     
+    def remove_from_redis(self):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        r.srem('F:%s' % self.story_feed_id, self.id)
+        r.zrem('zF:%s' % self.story_feed_id, self.id)
+
     @classmethod
     def sync_all_redis(cls, story_feed_id=None):
         stories = cls.objects.all()

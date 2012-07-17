@@ -18,7 +18,6 @@ class UserSubscriptionManager(models.Manager):
                 feed_id = kwargs['feed_id']
             dupe_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
             if dupe_feed:
-                print "DUPE: %s" % dupe_feed
                 feed = dupe_feed[0].feed
                 if 'feed' in kwargs: 
                     kwargs['feed'] = feed
