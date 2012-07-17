@@ -1,3 +1,4 @@
+import sys
 from django.db import models
 from apps.rss_feeds.models import DuplicateFeed
 from utils import log as logging
@@ -6,19 +7,27 @@ class UserSubscriptionManager(models.Manager):
     def get(self, *args, **kwargs):
         try:
             return super(UserSubscriptionManager, self).get(*args, **kwargs)
-        except:
+        except self.model.DoesNotExist:
             if isinstance(kwargs.get('feed'), int):
                 feed_id = kwargs.get('feed')
             elif 'feed' in kwargs:
                 feed_id = kwargs['feed'].pk
             elif 'feed__pk' in kwargs:
                 feed_id = kwargs['feed__pk']
+            elif 'feed_id' in kwargs:
+                feed_id = kwargs['feed_id']
             dupe_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
             if dupe_feed:
+                print "DUPE: %s" % dupe_feed
                 feed = dupe_feed[0].feed
                 if 'feed' in kwargs: 
                     kwargs['feed'] = feed
                 elif 'feed__pk' in kwargs:
                     kwargs['feed__pk'] = feed.pk
+                elif 'feed_id' in kwargs:
+                    kwargs['feed_id'] = feed.pk
                 logging.debug(" ---> [%s] ~BRFound dupe UserSubscription: ~SB%s (%s)" % (getattr(kwargs.get('user'), 'username'), feed, feed_id))
                 return super(UserSubscriptionManager, self).get(*args, **kwargs)
+            else:
+                exc_info = sys.exc_info()
+                raise exc_info[0], None, exc_info[2]

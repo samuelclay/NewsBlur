@@ -1288,8 +1288,7 @@ class MStory(mongo.Document):
         return hashlib.sha1(self.story_guid).hexdigest()
     
     def save(self, *args, **kwargs):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        r.zadd('F:%s' % self.story_feed_id, self.guid_hash, time.mktime(self.story_date.timetuple()))
+        self.sync_redis()
         
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
@@ -1305,6 +1304,19 @@ class MStory(mongo.Document):
             self.story_content_type = self.story_content_type[:story_content_type_max]
         super(MStory, self).save(*args, **kwargs)
     
+    def sync_redis(self):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        r.sadd('F:%s' % self.story_feed_id, self.id)
+        r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
+    
+    @classmethod
+    def sync_all_redis(cls, story_feed_id=None):
+        stories = cls.objects.all()
+        if story_feed_id:
+            stories = stories.filter(story_feed_id=story_feed_id)
+        for story in stories:
+            story.sync_redis()
+        
     def count_comments(self):
         from apps.social.models import MSharedStory
         params = {

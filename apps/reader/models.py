@@ -1,4 +1,7 @@
 import datetime
+import time
+import redis
+import hashlib
 import mongoengine as mongo
 from utils import log as logging
 from utils import json_functions as json
@@ -82,6 +85,59 @@ class UserSubscription(models.Model):
             else:
                 self.delete()
                 
+    def unread_stories(self):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        
+        stories_key         = 'F:%s' % (self.feed_id)
+        read_stories_key    = 'RS:%s:%s' % (self.user_id, self.feed_id)
+        unread_stories_key  = 'U:%s:%s' % (self.user_id, self.feed_id)
+        r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+        
+        sorted_stories_key          = 'zF:%s' % (self.feed_id)
+        unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
+        r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+        
+        current_time    = int(time.time())
+        mark_read_time  = time.mktime(self.mark_read_date.timetuple())
+        story_guids = r.zrevrangebyscore(unread_ranked_stories_key, current_time, mark_read_time)
+        
+        return story_guids
+        
+    @classmethod
+    def unread_feed_stories(cls, user_id, feed_ids):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+
+        if not isinstance(feed_ids, list):
+            feed_ids = [feed_ids]
+
+        unread_ranked_stories_keys  = 'zU:%s' % (user_id)
+        r.delete(unread_ranked_stories_keys)
+        
+        for feed_id in feed_ids:
+            us = cls.objects.get(user=user_id, feed=feed_id)
+
+            stories_key         = 'F:%s' % (feed_id)
+            read_stories_key    = 'RS:%s:%s' % (user_id, feed_id)
+            unread_stories_key  = 'U:%s:%s' % (user_id, feed_id)
+            r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+        
+            sorted_stories_key          = 'zF:%s' % (feed_id)
+            unread_ranked_stories_key   = 'zU:%s:%s' % (user_id, feed_id)
+            r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+            
+            current_time                = int(time.time())
+            mark_read_time              = time.mktime(us.mark_read_date.timetuple())
+            story_guids = r.zrevrangebyscore(unread_ranked_stories_key, current_time, 
+                                             mark_read_time, withscores=True)
+
+            if story_guids:
+                r.zadd(unread_ranked_stories_keys, **dict(story_guids))
+            
+        story_guids = r.zrevrange(unread_ranked_stories_keys, 0, 6)
+        
+        return story_guids
+        
+        
     @classmethod
     def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False, auto_active=True):
         feed = None
@@ -474,6 +530,20 @@ class MUserStory(mongo.Document):
         'index_drop_dups': True,
     }
     
+    def save(self, *args, **kwargs):
+        self.sync_redis()
+        
+        super(MUserStory, self).save(*args, **kwargs)
+        
+    def delete(self, *args, **kwargs):
+        self.remove_from_redis()
+        
+        super(MUserStory, self).delete(*args, **kwargs)
+        
+    @property
+    def guid_hash(self):
+        return hashlib.sha1(self.story_id).hexdigest()
+        
     @classmethod
     def delete_old_stories(cls, feed_id):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -486,6 +556,32 @@ class MUserStory(mongo.Document):
             mark_read_date = usersub.mark_read_date
         cls.objects(user_id=user_id, feed_id=feed_id, read_date__lte=mark_read_date).delete()
     
+    @property
+    def story_db_id(self):
+        if self.story:
+            return self.story.id
+
+        try:
+            story = MStory.objects.get(story_feed_id=self.feed_id, story_guid=self.story_id)
+            return story.id
+        except MStory.DoesNotExist:
+            return
+            
+    def sync_redis(self):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        if self.story_db_id:
+            r.sadd('RS:%s:%s' % (self.user_id, self.feed_id), self.story_db_id)
+
+    def remove_from_redis(self):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        if self.story_db_id:
+            r.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.story_db_id)
+        
+    @classmethod
+    def sync_all_redis(cls):
+        read_stories = cls.objects.all()
+        for read_story in read_stories:
+            read_story.sync_redis()
         
 class UserSubscriptionFolders(models.Model):
     """

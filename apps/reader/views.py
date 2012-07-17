@@ -879,9 +879,12 @@ def mark_story_as_unread(request):
                                                                story_guid_hash=story.guid_hash)
     dirty_count = social_subs and social_subs.count()
     dirty_count = ("(%s social_subs)" % dirty_count) if dirty_count else ""
-        
-    m = MUserStory.objects(user_id=request.user.pk, feed_id=feed_id, story_id=story_id)
-    m.delete()
+    
+    try:
+        m = MUserStory.objects.get(user_id=request.user.pk, feed_id=feed_id, story_id=story_id)
+        m.delete()
+    except MUserStory.DoesNotExist:
+        logging.user(request, "~BY~SB~FRCouldn't find read story to mark as unread.")
     
     logging.user(request, "~FY~SBUnread~SN story in feed: %s %s" % (feed, dirty_count))
     
