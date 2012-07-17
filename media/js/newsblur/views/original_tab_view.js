@@ -489,7 +489,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                     .unbind('click.NB-taskbar')
                     .bind('click.NB-taskbar', _.bind(function(e) {
                     var href = $(this).attr('href');
-                    if (href.indexOf('#') == 0) {
+                    if (href && href.indexOf('#') == 0) {
                         e.preventDefault();
                         var $footnote = $('a[name='+href.substr(1)+'], [id='+href.substr(1)+']',
                                           $iframe_contents);
