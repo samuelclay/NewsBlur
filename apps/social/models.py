@@ -1720,7 +1720,7 @@ class MInteraction(mongo.Document):
             'title': self.title,
             'content': self.content,
             'with_user_id': self.with_user_id,
-            'feed_id': self.feed_id,
+            'feed_id': 'social:%s' % self.feed_id,
             'content_id': self.content_id,
         }
         
