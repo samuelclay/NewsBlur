@@ -3567,7 +3567,8 @@
                 self.model.preference('lock_mouse_indicator', 0);
                 $('.NB-callout-text', $callout).text('Unlocked');
             } else {
-                self.model.preference('lock_mouse_indicator', this.cache.mouse_position_y);
+                
+                self.model.preference('lock_mouse_indicator', this.cache.mouse_position_y - NEWSBLUR.app.story_list.cache.story_pane_position);
                 $('.NB-callout-text', $callout).text('Locked');
             }
             
