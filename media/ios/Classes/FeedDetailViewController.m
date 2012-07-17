@@ -372,7 +372,7 @@
     self.pageFetching = NO;
     
     // test for tryfeed
-    if (appDelegate.isTryFeed) {
+    if (appDelegate.isTryFeed && !self.foundTryFeed) {
         for (int i = 0; i < appDelegate.activeFeedStories.count; i++) {
             NSString *storyIdStr = [[appDelegate.activeFeedStories objectAtIndex:i] objectForKey:@"id"];
             if ([storyIdStr isEqualToString:appDelegate.tryFeedStoryId]) {
@@ -396,8 +396,6 @@
             }
         }
     }
-    
-    
     
     [self performSelector:@selector(checkScroll)
                withObject:nil
@@ -584,6 +582,9 @@
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
         [self loadStory:cell atRow:location]; 
     }
+    
+    self.foundTryFeed = YES;
+    [MBProgressHUD hideHUDForView:appDelegate.splitStoryDetailNavigationController.view animated:YES];
 }
 
 - (void)changeRowStyleToRead:(FeedDetailTableCell *)cell {

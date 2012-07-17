@@ -425,7 +425,7 @@
     
     NSDictionary *feed = [self.dictSocialFeeds objectForKey:feedId];
     
-    [self setTryFeedStoryId:@"http://techcrunch.com/?p=576238"];
+    [self setTryFeedStoryId:contentId];
     [self setIsTryFeed:YES];
     [self setIsSocialView:YES];
     [self setActiveFeed:feed];
