@@ -35,7 +35,7 @@ urlpatterns = patterns('',
     url(r'zebra/',          include('zebra.urls',  namespace="zebra",  app_name='zebra')),
 )
 
-if settings.DEVELOPMENT:
+if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^media/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),
