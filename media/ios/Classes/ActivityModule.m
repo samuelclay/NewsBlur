@@ -75,7 +75,9 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     ActivityCell *activityCell = [[ActivityCell alloc] init];
-    int height = [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername] + 20;
+    int height = [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
+                                  withUsername:self.activitiesUsername 
+                                     withWidth:self.frame.size.width] + 20;
     return height;
 }
 
@@ -95,7 +97,9 @@
     int activitesCount = [self.activitiesArray count];
     if (activitesCount >= (indexPath.row + 1)) {
         ActivityCell *activityCell = [[ActivityCell alloc] init];
-        [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername];
+        [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
+                         withUsername:self.activitiesUsername
+                            withWidth:self.frame.size.width];
         [cell.contentView addSubview:activityCell];
     }    
     return cell;

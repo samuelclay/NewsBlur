@@ -31,14 +31,10 @@
 }
 */
 
-- (void)dealloc {
-    [activityLabel release];
-    [super dealloc];
-}
 
-- (int)refreshActivity:(NSDictionary *)activity withUsername:(NSString *)username {
-    self.activityLabel = [[[OHAttributedLabel alloc] init] autorelease];
-    self.activityLabel.frame = CGRectMake(10, 10, 280, 120);
+- (int)refreshActivity:(NSDictionary *)activity withUsername:(NSString *)username withWidth:(int)width {
+    self.activityLabel = [[OHAttributedLabel alloc] init];
+    self.activityLabel.frame = CGRectMake(10, 10, width - 20, 120);
     self.activityLabel.backgroundColor = [UIColor clearColor];
     self.activityLabel.automaticallyAddLinksForType = NO;
 

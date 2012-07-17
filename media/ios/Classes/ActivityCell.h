@@ -13,9 +13,9 @@
     OHAttributedLabel *activityLabel;
 }
 
-@property (retain, nonatomic) OHAttributedLabel *activityLabel;
+@property (nonatomic, strong) OHAttributedLabel *activityLabel;
 
-- (int)refreshActivity:(NSDictionary *)activity withUsername:(NSString *)username;
+- (int)refreshActivity:(NSDictionary *)activity withUsername:(NSString *)username withWidth:(int)width;
 - (NSString *)stripFormatting:(NSString *)str;
 
 @end

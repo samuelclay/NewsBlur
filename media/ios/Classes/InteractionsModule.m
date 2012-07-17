@@ -11,6 +11,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "DashboardViewController.h"
 #import "UserProfileViewController.h"
+#import "InteractionCell.h"
 
 @implementation InteractionsModule
 
@@ -52,9 +53,14 @@
 #pragma mark -
 #pragma mark Table View - Interactions List
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    InteractionCell *interactionCell = [[InteractionCell alloc] init];
+    int height = [interactionCell refreshInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width] + 20;
+    return height;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -76,32 +82,17 @@
         cell = [[UITableViewCell alloc] 
                  initWithStyle:UITableViewCellStyleDefault 
                  reuseIdentifier:CellIdentifier];
+    } else {
+        [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
     }
     
     int userInteractions = [appDelegate.dictUserInteractions count];
     if (userInteractions) {
-        cell.textLabel.font = [UIFont systemFontOfSize:13];        
-        NSDictionary *interaction = [appDelegate.dictUserInteractions objectAtIndex:indexPath.row];
-        NSString *category = [interaction objectForKey:@"category"];
-        NSString *content = [interaction objectForKey:@"content"];
-        NSString *title = [interaction objectForKey:@"title"];
-        NSString *username = [[interaction objectForKey:@"with_user"] objectForKey:@"username"];
-        
-        if ([category isEqualToString:@"follow"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ is now following you", username];
-            
-        } else if ([category isEqualToString:@"comment_reply"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ replied to your comment: %@", username, content];
-        
-        } else if ([category isEqualToString:@"reply_reply"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ replied to your reply: %@", username, content];
-            
-        } else if ([category isEqualToString:@"story_reshare"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ re-shared: %@.", username, title];
-        }
+        InteractionCell *interactionCell = [[InteractionCell alloc] init];
+        [cell.contentView addSubview:interactionCell];
+        [interactionCell refreshInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth: self.frame.size.width];
+    }    
 
-    }
-    
     return cell;
 }
 
