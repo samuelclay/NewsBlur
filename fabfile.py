@@ -620,6 +620,13 @@ def setup_redis():
 def setup_db_munin():
     sudo('cp -rs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
 
+def enable_celerybeat():
+    with cd(env.NEWSBLUR_PATH):
+        run('mkdir -p data')
+    put('config/supervisor_celerybeat.conf', '/etc/supervisor/conf.d/celerybeat.conf', use_sudo=True)
+    put('config/supervisor_celeryd_beat.conf', '/etc/supervisor/conf.d/celeryd_beat.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
     
 # ================
 # = Setup - Task =
@@ -636,11 +643,6 @@ def setup_task_motd():
     
 def enable_celery_supervisor():
     put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
-    
-def enable_celerybeat():
-    with cd(env.NEWSBLUR_PATH):
-        run('mkdir -p data')
-    put('config/supervisor_celerybeat.conf', '/etc/supervisor/conf.d/celerybeat.conf', use_sudo=True)
     
 def copy_task_settings():
     with settings(warn_only=True):
