@@ -3,13 +3,14 @@
 <plist version="1.0">
 <dict>
        <key>Label</key>
-       <string>com.redis</string>
+       <string>com.mongo.mongod</string>
        <key>RunAtLoad</key>
        <true/>
        <key>ProgramArguments</key>
        <array>
-               <string>/usr/local/bin/redis-server</string>
-               <string>/Users/sclay/projects/newsblur/config/redis.conf</string>
+               <string>/usr/local/bin/mongod</string>
+               <string>--config</string>
+               <string>/Users/sclay/projects/data/mongo.conf</string>
        </array>
 </dict>
 </plist>

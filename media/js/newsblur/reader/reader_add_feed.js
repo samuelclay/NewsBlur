@@ -25,6 +25,10 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
         this.focus_add_feed();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+        
+        var $add = $('.NB-add-url', this.$modal);
+        $add.bind('focus', $.rescope(this.handle_focus_add_site, this));
+        $add.bind('blur', $.rescope(this.handle_blur_add_site, this));
     },
     
     make_modal: function() {
@@ -122,8 +126,16 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
             },
             select: function(e, ui) {
                 $add.val(ui.item.value);
-                self.save_add_url();
+                // self.save_add_url();
                 return false;
+            },
+            search: function(e, ui) {
+            },
+            open: function(e, ui) {
+            },
+            close: function(e, ui) {
+            },
+            change: function(e, ui) {
             }
         }).data("autocomplete")._renderItem = function(ul, item) {
             return $.make('li', [
@@ -134,6 +146,16 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
                 ])
             ]).data("item.autocomplete", item).appendTo(ul);
         };
+    },
+    
+    handle_focus_add_site: function() {
+        var $add = $('.NB-add-url', this.$modal);
+        $add.autocomplete('search');
+    },
+    
+    handle_blur_add_site: function() {
+        var $add = $('.NB-add-url', this.$modal);
+        $add.autocomplete('close');
     },
     
     setup_chosen: function() {

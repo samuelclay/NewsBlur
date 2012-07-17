@@ -3707,6 +3707,9 @@ form.opml_import_form input {
     width: 300px;
     margin-bottom: 16px;
 }
+.NB-add input[type=text].ui-autocomplete-loading {
+  background: white url('/media/embed/reader/recycle_spinner.gif') no-repeat right 2px;
+}
 .NB-add .NB-add-add-folder input[type=text] {
     width: 376px;
 }
