@@ -68,6 +68,8 @@
     BOOL popoverHasFeedView;
     BOOL inStoryDetail;
     BOOL inFeedDetail;
+    BOOL isTryFeed;
+    NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
     NSString * activeFolder;
     NSDictionary * activeComment;
@@ -124,6 +126,8 @@
 @property (readwrite) NSString * activeUserProfileId;
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
+@property (nonatomic, readwrite) BOOL isTryFeed;
+@property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic, readwrite) BOOL isShowingShare;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
@@ -177,6 +181,7 @@
 - (void)showAddSite;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
+- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId;
 - (void)showDashboard;
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;

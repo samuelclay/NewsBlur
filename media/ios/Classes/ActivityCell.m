@@ -38,12 +38,12 @@
 
 - (int)refreshActivity:(NSDictionary *)activity withUsername:(NSString *)username {
     self.activityLabel = [[[OHAttributedLabel alloc] init] autorelease];
-    self.activityLabel.frame = CGRectMake(10, 10, 280, 80);
+    self.activityLabel.frame = CGRectMake(10, 10, 280, 120);
     self.activityLabel.backgroundColor = [UIColor clearColor];
 
     NSString *category = [activity objectForKey:@"category"];
     NSString *content = [activity objectForKey:@"content"];
-    NSString *title = [activity objectForKey:@"title"];
+    NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [activity objectForKey:@"title"]]];
     
     if ([category isEqualToString:@"follow"]) {
 
@@ -67,9 +67,10 @@
         self.activityLabel.attributedText = attrStr;
                 
     } else if ([category isEqualToString:@"comment_reply"]) {
+        NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
         NSString *withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
         
-        NSString* txt = [NSString stringWithFormat:@"%@ replied to %@:\n\"%@\"", username, withUserUsername, content];  
+        NSString* txt = [NSString stringWithFormat:@"%@ replied to %@: %@", username, withUserUsername, comment];  
         NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txt];
         
         [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
@@ -83,12 +84,37 @@
         [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:withUserUsername]];
         [attrStr setTextBold:YES range:[txt rangeOfString:withUserUsername]];
  
-        [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:13] range:[txt rangeOfString:content]];
+        [attrStr setTextColor:UIColorFromRGB(0x999999) range:[txt rangeOfString:comment]];  
 
         self.activityLabel.attributedText = attrStr;
         
+    } else if ([category isEqualToString:@"comment_like"]) {
+        NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
+        NSString *withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
+        NSString* txt = [NSString stringWithFormat:@"%@ favorited %@'s comment on %@: %@", username, withUserUsername, title, comment];
+        NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txt];
+        
+        [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
+        [attrStr setTextColor:UIColorFromRGB(0x333333)];
+        
+        if (![username isEqualToString:@"You"]){
+            [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:username]];
+            [attrStr setTextBold:YES range:[txt rangeOfString:username]];
+        }
+        
+        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:withUserUsername]];
+        [attrStr setTextBold:YES range:[txt rangeOfString:withUserUsername]];
+        
+        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:title]];
+
+        [attrStr setTextColor:UIColorFromRGB(0x999999) range:[txt rangeOfString:comment]];        
+        
+        self.activityLabel.attributedText = attrStr;
+        
+        
     } else if ([category isEqualToString:@"sharedstory"]) {
-        NSString* txt = [NSString stringWithFormat:@"%@ shared %@:\n\"%@\"", username, title, content];
+        NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
+        NSString *txt = [NSString stringWithFormat:@"%@ shared %@: %@", username, title, comment];
         NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txt];
         
         [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
@@ -100,17 +126,14 @@
         }
         
         [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:title]];
-        
-        [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:13] range:[txt rangeOfString:content]];
-        
+                
+        [attrStr setTextColor:UIColorFromRGB(0x666666) range:[txt rangeOfString:comment]]; 
         self.activityLabel.attributedText = attrStr;
         
-        // star and feedsub are always private.
+    // star and feedsub are always private.
     } else if ([category isEqualToString:@"star"]) {
         self.activityLabel.text = [NSString stringWithFormat:@"You saved %@", content];
-        
     } else if ([category isEqualToString:@"feedsub"]) {
-        
         self.activityLabel.text = [NSString stringWithFormat:@"You subscribed to %@", content];
     }
     
@@ -120,6 +143,16 @@
     
     int height = self.activityLabel.frame.size.height;
     return height;
+}
+
+- (NSString *)stripFormatting:(NSString *)str {
+    while ([str rangeOfString:@"  "].location != NSNotFound) {
+        str = [str stringByReplacingOccurrencesOfString:@"  " withString:@" "];
+    }
+    while ([str rangeOfString:@"\n"].location != NSNotFound) {
+        str = [str stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+    }
+    return str;
 }
 
 @end

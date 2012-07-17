@@ -30,6 +30,7 @@
     UIBarButtonItem * feedMarkReadButton;
     UISegmentedControl * intelligenceControl;
     UIPopoverController *popoverController;
+    BOOL foundTryFeed;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -45,7 +46,7 @@
 @property (nonatomic, readwrite) int feedPage;
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
-
+@property (nonatomic, readwrite) BOOL foundTryFeed;
 
 - (void)resetFeedDetail;
 - (void)fetchNextPage:(void(^)())callback;
@@ -56,6 +57,7 @@
 - (void)renderStories:(NSArray *)newStories;
 - (void)scrollViewDidScroll:(UIScrollView *)scroll;
 - (IBAction)selectIntelligence;
+- (void)changeIntelligence:(NSInteger)newLevel;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
 - (void)checkScroll;
 - (UIView *)makeFeedTitleBar:(NSDictionary *)feed cell:(UITableViewCell *)cell makeRect:(CGRect)rect;
@@ -70,6 +72,7 @@
 - (void)changeActiveFeedDetailRow;
 - (void)changeRowStyleToRead:(UITableViewCell *)cell;
 - (void)instafetchFeed;
+- (void)loadStory:(UITableViewCell *)cell atRow:(int)row;
 
 - (void)loadFaviconsFromActiveFeed;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;

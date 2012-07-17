@@ -59,6 +59,8 @@
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isShowingShare;
+@synthesize isTryFeed;
+@synthesize tryFeedStoryId;
 @synthesize popoverHasFeedView;
 @synthesize inStoryDetail;
 @synthesize inFeedDetail;
@@ -407,9 +409,29 @@
         if ([[self.splitStoryDetailNavigationController viewControllers] containsObject:self.feedDashboardViewController]) {
             //[self.storyDetailViewController initStory];
         } else {
-            [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:YES];
+            if (self.isTryFeed) {
+                [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:NO];
+                MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.splitStoryDetailNavigationController.view animated:YES];
+                HUD.labelText = @"Finding Story...";
+            } else {
+                [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:YES];
+            }
+
         }
     }  
+}
+
+- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId {
+    
+    NSDictionary *feed = [self.dictSocialFeeds objectForKey:feedId];
+    
+    [self setTryFeedStoryId:@"http://techcrunch.com/?p=576238"];
+    [self setIsTryFeed:YES];
+    [self setIsSocialView:YES];
+    [self setActiveFeed:feed];
+    [self setActiveFolder:nil];
+    
+    [self loadFeedDetailView];
 }
 
 - (void)showDashboard {

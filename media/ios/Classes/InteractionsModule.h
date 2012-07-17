@@ -14,11 +14,13 @@
     NewsBlurAppDelegate *appDelegate;
     UITableView *interactionsTable;
     NSMutableArray *interactionsArray;
+    UIPopoverController *popoverController;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) UITableView *interactionsTable;
 @property (nonatomic) NSArray *interactionsArray;
+@property (nonatomic, strong) UIPopoverController *popoverController;
 
 - (void)refreshWithInteractions:(NSMutableArray *)interactions;
 

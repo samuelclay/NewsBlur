@@ -54,24 +54,6 @@
 }
 
 - (void)viewDidLoad {
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
-    if ([userPreferences integerForKey:@"selectedIntelligence"] == 2) {
-        NSLog(@"Show FOCUS stories");
-        self.viewShowingAllFeeds = NO;
-        [self.intelligenceControl setSelectedSegmentIndex:2];
-        [appDelegate setSelectedIntelligence:1];
-    } else if ([userPreferences integerForKey:@"selectedIntelligence"] == 1) {
-        NSLog(@"Show UNREAD stories");
-        self.viewShowingAllFeeds = NO;
-        [self.intelligenceControl setSelectedSegmentIndex:1];
-        [appDelegate setSelectedIntelligence:0];
-    } else {
-        NSLog(@"Show ALL stories");
-        self.viewShowingAllFeeds = YES;
-        [self.intelligenceControl setSelectedSegmentIndex:0];
-        [appDelegate setSelectedIntelligence:0];
-    }
     
     [appDelegate showNavigationBar:NO];
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
@@ -92,6 +74,36 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    if ([userPreferences integerForKey:@"selectedIntelligence"] == 1) {
+        NSLog(@"Show FOCUS stories");
+        self.viewShowingAllFeeds = NO;
+        [self.intelligenceControl setSelectedSegmentIndex:2];
+        [appDelegate setSelectedIntelligence:1];
+    } else if ([userPreferences integerForKey:@"selectedIntelligence"] == 0) {
+        NSLog(@"Show UNREAD stories");
+        self.viewShowingAllFeeds = NO;
+        [self.intelligenceControl setSelectedSegmentIndex:1];
+        [appDelegate setSelectedIntelligence:0];
+    } else { // default state, ALL stories
+        NSLog(@"Show ALL stories");
+        self.viewShowingAllFeeds = YES;
+        [self.intelligenceControl setSelectedSegmentIndex:0];
+        [appDelegate setSelectedIntelligence:0];
+    }
+    
+    // have the selected cell deselect
+    [self.feedTitlesTable deselectRowAtIndexPath:self.currentRowAtIndexPath animated:YES];
+    // reset all feed detail specific data
+    appDelegate.activeFeed = nil; 
+    appDelegate.isSocialView = NO;
+    appDelegate.isRiverView = NO;
+    appDelegate.isTryFeed = NO;
+    [MBProgressHUD hideHUDForView:appDelegate.splitStoryDetailNavigationController.view animated:NO];
+    
+    
     // If there is an active feed or a set of feeds readin the river, 
     // we need to update its table row to match the updated unread counts.
     
@@ -139,13 +151,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    // have the selected cell deselect
-    [self.feedTitlesTable deselectRowAtIndexPath:self.currentRowAtIndexPath animated:YES];
-    // reset all feed detail specific data
-    appDelegate.activeFeed = nil; 
-    appDelegate.isSocialView = NO;
-    appDelegate.isRiverView = NO;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -781,31 +786,33 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
     if (selectedSegmentIndex == 0) {
         hud.labelText = @"All Stories";
-        [userPreferences setInteger:0 forKey:@"selectedIntelligence"];
+        [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
-        if (appDelegate.selectedIntelligence == 1) {
+        if (appDelegate.selectedIntelligence != 0) {
+            int previousLevel = appDelegate.selectedIntelligence;
             [appDelegate setSelectedIntelligence:0];
-            [self updateFeedsWithIntelligence:1 newLevel:0];
+            [self updateFeedsWithIntelligence:previousLevel newLevel:0];
             [self redrawUnreadCounts]; 
         }
         self.viewShowingAllFeeds = YES;
         [self switchSitesUnread];
     } else if(selectedSegmentIndex == 1) {
         hud.labelText = @"Unread Stories";
-        [userPreferences setInteger:1 forKey:@"selectedIntelligence"];
+        [userPreferences setInteger:0 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
-        if (appDelegate.selectedIntelligence == 1) {
+        if (appDelegate.selectedIntelligence != 0) {
+            int previousLevel = appDelegate.selectedIntelligence;
             [appDelegate setSelectedIntelligence:0];
-            [self updateFeedsWithIntelligence:1 newLevel:0];
+            [self updateFeedsWithIntelligence:previousLevel newLevel:0];
             [self redrawUnreadCounts];
         }
         self.viewShowingAllFeeds = NO;
         [self switchSitesUnread];
     } else {
         hud.labelText = @"Focus Stories";
-        [userPreferences setInteger:2 forKey:@"selectedIntelligence"];
+        [userPreferences setInteger:1 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
         if (self.viewShowingAllFeeds == YES) {

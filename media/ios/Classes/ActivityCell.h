@@ -16,5 +16,6 @@
 @property (retain, nonatomic) OHAttributedLabel *activityLabel;
 
 - (int)refreshActivity:(NSDictionary *)activity withUsername:(NSString *)username;
+- (NSString *)stripFormatting:(NSString *)str;
 
 @end

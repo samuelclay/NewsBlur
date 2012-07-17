@@ -17,6 +17,7 @@
 @synthesize appDelegate;
 @synthesize interactionsTable;
 @synthesize interactionsArray;
+@synthesize popoverController;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -96,7 +97,7 @@
             cell.textLabel.text = [NSString stringWithFormat:@"%@ replied to your reply: %@", username, content];
             
         } else if ([category isEqualToString:@"story_reshare"]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@ re-shared: %@ | %@", username, title, content];
+            cell.textLabel.text = [NSString stringWithFormat:@"%@ re-shared: %@.", username, title];
         }
 
     }
@@ -115,14 +116,23 @@
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             
             UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-
-            UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:appDelegate.userProfileViewController];
-            [popoverController setPopoverContentSize:CGSizeMake(320, 416)];
-            [popoverController presentPopoverFromRect:cell.bounds 
+            self.popoverController = [[UIPopoverController alloc] initWithContentViewController:appDelegate.userProfileViewController];
+            [self.popoverController setPopoverContentSize:CGSizeMake(320, 416)];
+            [self.popoverController presentPopoverFromRect:cell.bounds 
                                      inView:cell 
                    permittedArrowDirections:UIPopoverArrowDirectionAny 
                                    animated:YES];
-        }
+         } else if ([category isEqualToString:@"comment_reply"]) {
+             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"feed_id"]];
+             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"content_id"]];
+             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr];
+         } else if ([category isEqualToString:@"reply_reply"] || 
+                    [category isEqualToString:@"story_reshare"]) {
+             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[interaction objectForKey:@"with_user"] objectForKey:@"id"]];
+             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"content_id"]];
+             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr];
+         }
+
     }
 }
 

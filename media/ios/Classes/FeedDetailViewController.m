@@ -35,6 +35,7 @@
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize intelligenceControl;
+@synthesize foundTryFeed;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -61,6 +62,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     self.pageFinished = NO;
+    self.foundTryFeed = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
     if (appDelegate.isRiverView || appDelegate.isSocialView) {
@@ -70,7 +72,6 @@
         self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         self.storyTitlesTable.separatorColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
     }
-    
     
     // set center title
     UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
@@ -124,7 +125,7 @@
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
-    }    
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -162,7 +163,8 @@
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {      
     NSString *theFeedDetailURL;
     
-    if ([appDelegate.activeFeed objectForKey:@"id"] != nil && !self.pageFetching && !self.pageFinished) {
+    if (!self.pageFetching && !self.pageFinished) {
+    
         self.feedPage = page;
         self.pageFetching = YES;
         int storyCount = appDelegate.storyCount;
@@ -181,7 +183,6 @@
                                 [appDelegate.activeFeed objectForKey:@"id"],
                                 self.feedPage];
         }
-        
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
@@ -270,7 +271,7 @@
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
-    
+        
     if (!(appDelegate.isRiverView || appDelegate.isSocialView) && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
         return;
     }
@@ -284,7 +285,7 @@
         }
         [self loadFaviconsFromActiveFeed];
     }
-    
+        
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [NSMutableArray array];
     if ([appDelegate.activeFeedStories count]) {
@@ -369,6 +370,34 @@
     }
         
     self.pageFetching = NO;
+    
+    // test for tryfeed
+    if (appDelegate.isTryFeed) {
+        for (int i = 0; i < appDelegate.activeFeedStories.count; i++) {
+            NSString *storyIdStr = [[appDelegate.activeFeedStories objectAtIndex:i] objectForKey:@"id"];
+            if ([storyIdStr isEqualToString:appDelegate.tryFeedStoryId]) {
+                NSDictionary *feed = [appDelegate.activeFeedStories objectAtIndex:i];
+                
+                int score = [NewsBlurAppDelegate computeStoryScore:[feed objectForKey:@"intelligence"]];
+                
+                if (score < appDelegate.selectedIntelligence) {
+                    [self changeIntelligence:score];
+                }
+                int locationOfStoryId = [appDelegate locationOfStoryId:storyIdStr];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
+
+                [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
+                self.foundTryFeed = YES;
+                
+                UITableViewCell *cell = [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
+                [self changeRowStyleToRead:cell];
+                [self loadStory:cell atRow:indexPath.row]; 
+                [MBProgressHUD hideHUDForView:appDelegate.splitStoryDetailNavigationController.view animated:YES];
+            }
+        }
+    }
+    
+    
     
     [self performSelector:@selector(checkScroll)
                withObject:nil
@@ -538,21 +567,22 @@
     if (rowIndex == indexPath.row) {
         [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
     }
-
+    
 	return cell;
+}
+
+- (void)loadStory:(UITableViewCell *)cell atRow:(int)row {
+    [self changeRowStyleToRead:cell];
+    [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:row]];
+    [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
+    [appDelegate loadStoryDetailView];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < [appDelegate.activeFeedStoryLocations count]) {
-        
         FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
-        [self changeRowStyleToRead:cell];
-       
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:location]];
-        [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
-        [appDelegate loadStoryDetailView];
-
+        [self loadStory:cell atRow:location]; 
     }
 }
 
@@ -652,7 +682,8 @@
     NSInteger currentOffset = self.storyTitlesTable.contentOffset.y;
     NSInteger maximumOffset = self.storyTitlesTable.contentSize.height - self.storyTitlesTable.frame.size.height;
     
-    if (maximumOffset - currentOffset <= 60.0) {
+    if (maximumOffset - currentOffset <= 60.0 || 
+        (appDelegate.isTryFeed && !self.foundTryFeed)) {
         if (appDelegate.isRiverView) {
             [self fetchRiverPage:self.feedPage+1 withCallback:nil];
         } else {
@@ -663,6 +694,14 @@
 
 - (IBAction)selectIntelligence {
     NSInteger newLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
+    [self changeIntelligence:newLevel];
+    
+    [self performSelector:@selector(checkScroll)
+                withObject:nil
+                afterDelay:1.0];
+}
+
+- (void)changeIntelligence:(NSInteger)newLevel {
     NSInteger previousLevel = [appDelegate selectedIntelligence];
     NSMutableArray *insertIndexPaths = [NSMutableArray array];
     NSMutableArray *deleteIndexPaths = [NSMutableArray array];
@@ -671,9 +710,13 @@
     
     if (newLevel < previousLevel) {
         [appDelegate setSelectedIntelligence:newLevel];
+        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
+        [userPreferences setInteger:(newLevel + 1) forKey:@"selectedIntelligence"];
+        [userPreferences synchronize];
+        
         [appDelegate calculateStoryLocations];
     }
-
+    
     for (int i=0; i < [[appDelegate activeFeedStoryLocations] count]; i++) {
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:i] intValue];
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
@@ -716,10 +759,6 @@
                                      withRowAnimation:UITableViewRowAnimationNone];
     }
     [self.storyTitlesTable endUpdates];
-    
-    [self performSelector:@selector(checkScroll)
-                withObject:nil
-                afterDelay:1.0];
 }
 
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow {
@@ -1079,7 +1118,7 @@
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
-
+    
     [self renderStories:[results objectForKey:@"stories"]];    
 }
 
