@@ -91,7 +91,12 @@ class UserSubscription(models.Model):
         stories_key         = 'F:%s' % (self.feed_id)
         read_stories_key    = 'RS:%s:%s' % (self.user_id, self.feed_id)
         unread_stories_key  = 'U:%s:%s' % (self.user_id, self.feed_id)
-        r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+        if not r.exists(stories_key):
+            return []
+        elif not r.exists(read_stories_key):
+            unread_stories_key = stories_key
+        else:
+            r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
         
         sorted_stories_key          = 'zF:%s' % (self.feed_id)
         unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
@@ -104,14 +109,18 @@ class UserSubscription(models.Model):
         return story_guids
         
     @classmethod
-    def unread_feed_stories(cls, user_id, feed_ids):
+    def unread_feed_stories(cls, user_id, feed_ids, offset=0, limit=6):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
 
         if not isinstance(feed_ids, list):
             feed_ids = [feed_ids]
 
         unread_ranked_stories_keys  = 'zU:%s' % (user_id)
-        r.delete(unread_ranked_stories_keys)
+        if offset and r.exists(unread_ranked_stories_keys):
+            story_guids = r.zrevrange(unread_ranked_stories_keys, offset, limit)
+            return story_guids
+        else:
+            r.delete(unread_ranked_stories_keys)
         
         for feed_id in feed_ids:
             us = cls.objects.get(user=user_id, feed=feed_id)
@@ -119,7 +128,12 @@ class UserSubscription(models.Model):
             stories_key         = 'F:%s' % (feed_id)
             read_stories_key    = 'RS:%s:%s' % (user_id, feed_id)
             unread_stories_key  = 'U:%s:%s' % (user_id, feed_id)
-            r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+            if not r.exists(stories_key):
+                continue
+            elif not r.exists(read_stories_key):
+                unread_stories_key = stories_key
+            else:
+                r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
         
             sorted_stories_key          = 'zF:%s' % (feed_id)
             unread_ranked_stories_key   = 'zU:%s:%s' % (user_id, feed_id)
@@ -133,7 +147,7 @@ class UserSubscription(models.Model):
             if story_guids:
                 r.zadd(unread_ranked_stories_keys, **dict(story_guids))
             
-        story_guids = r.zrevrange(unread_ranked_stories_keys, 0, 6)
+        story_guids = r.zrevrange(unread_ranked_stories_keys, offset, limit)
         
         return story_guids
         
