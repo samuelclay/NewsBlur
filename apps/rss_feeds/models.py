@@ -701,6 +701,20 @@ class Feed(models.Model):
         
         return feed
 
+    @classmethod
+    def get_by_id(cls, feed_id):
+        feed = None
+        
+        try:
+            feed = Feed.objects.get(pk=feed_id)
+        except Feed.DoesNotExist:
+            # Feed has been merged after updating. Find the right feed.
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
+            if duplicate_feeds:
+                feed = duplicate_feeds[0].feed
+                
+        return feed
+                
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = {
             ENTRY_NEW:0,
