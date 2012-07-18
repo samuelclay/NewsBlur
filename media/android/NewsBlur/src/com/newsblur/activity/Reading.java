@@ -3,19 +3,13 @@ package com.newsblur.activity;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
-import android.view.View;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -29,7 +23,6 @@ import com.newsblur.domain.Story;
 import com.newsblur.service.DetachableResultReceiver;
 import com.newsblur.service.DetachableResultReceiver.Receiver;
 import com.newsblur.service.SyncService;
-import com.newsblur.util.UIUtils;
 
 public class Reading extends SherlockFragmentActivity {
 
@@ -96,18 +89,28 @@ public class Reading extends SherlockFragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		int currentItem = pager.getCurrentItem();
+		Story story = readingAdapter.getStory(currentItem);
+		
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
 			return true;
 		case R.id.menu_reading_original:
-			int currentItem = pager.getCurrentItem();
-			Story story = readingAdapter.getStory(currentItem);
 			if (story != null) {
 				Intent i = new Intent(Intent.ACTION_VIEW);
 				i.setData(Uri.parse(story.permalink));
 				startActivity(i);
 			}
+			return true;
+		case R.id.menu_shared:
+			Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+			intent.setType("text/plain");
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+			intent.putExtra(Intent.EXTRA_SUBJECT, story.title);
+			final String shareString = getResources().getString(R.string.share);
+			intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new String[] { story.title, story.permalink }));
+			startActivity(Intent.createChooser(intent, "Share using"));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);	

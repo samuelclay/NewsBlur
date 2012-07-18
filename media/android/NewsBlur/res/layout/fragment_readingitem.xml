@@ -2,8 +2,77 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/list_background"
     android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/list_background"
+        android:padding="10dp" >
+
+        <TextView
+            android:id="@+id/reading_item_authors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:gravity="center_vertical|right"
+            android:minWidth="80dp"
+            android:textColor="@color/lightgray"
+            android:textSize="11dp" />
+
+        <TextView
+            android:id="@+id/reading_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/reading_item_title"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="80dp"
+            android:layout_toLeftOf="@id/reading_item_authors"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/reading_item_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/reading_item_title"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/lightgray"
+            android:textSize="11dp"
+            android:textStyle="italic" />
+
+        <ImageView
+            android:id="@+id/reading_item_comment"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_alignBottom="@id/reading_item_date"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/reading_item_title"
+            android:scaleType="fitCenter"
+            android:src="@drawable/favourite" />
+
+        <TextView
+            android:id="@+id/reading_item_comment_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/reading_item_date"
+            android:layout_marginRight="3dp"
+            android:layout_toLeftOf="@id/reading_item_comment"
+            android:textSize="12dp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/darkgray" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/lightgray" />
 
     <WebView
         android:id="@+id/reading_webview"

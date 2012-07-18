@@ -30,6 +30,7 @@
 	<string name="description_activity_icon">An icon illustrating the user\'s activity</string>
 	<string name="description_follow_button">Follow or unfollow a user</string>
 
+	<string name="share" formatted="false">\"%s\" - %s (via Newsblur)</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
