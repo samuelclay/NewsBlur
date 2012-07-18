@@ -258,7 +258,7 @@ class UserSubscription(models.Model):
         self.oldest_unread_story_date = now
         self.needs_unread_recalc = False
 
-        MUserStory.delete_marked_as_read_stories(self.user_id, self.feed_id)
+        MUserStory.delete_old_stories(self.user_id, self.feed_id)
         
         self.save()
         
@@ -556,6 +556,11 @@ class MUserStory(mongo.Document):
         if not mark_read_date:
             usersub = UserSubscription.objects.get(user__pk=user_id, feed__pk=feed_id)
             mark_read_date = usersub.mark_read_date
+        
+        # Next line forces only old read stories to be removed, just in case newer stories
+        # come in as unread because they're being shared.
+        mark_read_date = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+
         cls.objects(user_id=user_id, feed_id=feed_id, read_date__lte=mark_read_date).delete()
     
     @property
