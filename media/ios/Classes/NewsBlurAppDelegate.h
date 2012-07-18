@@ -14,7 +14,7 @@
 #define FEED_TITLE_GRADIENT_TAG 100003
 #define FEED_DASHBOARD_VIEW_TAG 100004
 #define SHARE_MODAL_HEIGHT 120
-#define DASHBOARD_TITLE @"NewsBlur Dashboard"
+#define DASHBOARD_TITLE @"NewsBlur"
 
 @class NewsBlurViewController;
 @class DashboardViewController;
@@ -95,7 +95,7 @@
     NSMutableDictionary * dictActiveFeeds;
     NSDictionary * dictSocialFeeds;
     NSDictionary * dictUserProfile;
-    NSMutableArray * dictUserInteractions;
+    NSArray * dictUserInteractions;
     NSDictionary * dictUserActivities;
     NSMutableArray * dictFoldersArray;
 }
@@ -156,7 +156,7 @@
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
 @property (nonatomic) NSDictionary *dictUserProfile;
-@property (nonatomic) NSMutableArray *dictUserInteractions;
+@property (nonatomic) NSArray *dictUserInteractions;
 @property (nonatomic) NSDictionary *dictUserActivities;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
 

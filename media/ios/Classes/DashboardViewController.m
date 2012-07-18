@@ -123,7 +123,7 @@
     
     if (self.interactionsModule == nil) {
         InteractionsModule *interactions = [[InteractionsModule alloc] init];
-        interactions.frame = CGRectMake(0, 65, self.view.frame.size.width, self.view.frame.size.height - 65);
+        interactions.frame = CGRectMake(0, 40, self.view.frame.size.width, self.view.frame.size.height - 40);
         self.interactionsModule = interactions;
         [self.view insertSubview:self.interactionsModule
                     belowSubview:self.header];

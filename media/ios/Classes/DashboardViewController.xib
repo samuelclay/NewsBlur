@@ -35,13 +35,14 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUIImageView" id="920060310">
+					<object class="IBUIImageView" id="1015350658">
 						<reference key="NSNextResponder" ref="766721923"/>
 						<int key="NSvFlags">274</int>
 						<string key="NSFrameSize">{478, 65}</string>
 						<reference key="NSSuperview" ref="766721923"/>
 						<reference key="NSWindow"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIOpaque">NO</bool>
 						<int key="IBUIContentMode">9</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -54,7 +55,7 @@
 				<string key="NSFrameSize">{478, 1004}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="920060310"/>
+				<reference key="NSNextKeyView" ref="1015350658"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
 					<bytes key="NSWhite">MQA</bytes>
@@ -81,7 +82,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">header</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="920060310"/>
+						<reference key="destination" ref="1015350658"/>
 					</object>
 					<int key="connectionID">21</int>
 				</object>
@@ -109,13 +110,13 @@
 						<int key="objectID">2</int>
 						<reference key="object" ref="766721923"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="920060310"/>
+							<reference ref="1015350658"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">20</int>
-						<reference key="object" ref="920060310"/>
+						<reference key="object" ref="1015350658"/>
 						<reference key="parent" ref="766721923"/>
 					</object>
 				</array>

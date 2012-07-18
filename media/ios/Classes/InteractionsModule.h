@@ -19,6 +19,7 @@
     
     BOOL pageFetching;
     BOOL pageFinished;
+    int interactionsPage;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
@@ -28,13 +29,13 @@
 
 @property (nonatomic, readwrite) BOOL pageFetching;
 @property (nonatomic, readwrite) BOOL pageFinished;
+@property (readwrite) int interactionsPage;
 
 - (void)fetchInteractionsDetail:(int)page;
 - (void)finishLoadInteractions:(ASIHTTPRequest *)request;
-- (void)refreshWithInteractions:(NSMutableArray *)interactions;
+- (void)refreshWithInteractions:(NSArray *)interactions;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 
-- (void)fetchNextPage:(void(^)())callback;
 - (void)checkScroll;
 
 @end
