@@ -575,7 +575,7 @@
     
     if (isSocial) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
-        cell.feedFavicon = [Utilities getImage:feedIdStr];
+        cell.feedFavicon = [Utilities getImage:feedIdStr isSocial:YES];
     } else {
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
         cell.feedFavicon = [Utilities getImage:feedIdStr];

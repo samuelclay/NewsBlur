@@ -24,10 +24,13 @@ static NSMutableDictionary *imageCache;
     } else {
         NSLog(@"%@ has no image!!!", filename);
     }
-    
 }
 
 + (UIImage *)getImage:(NSString *)filename {
+    return [self getImage:filename isSocial:NO];
+}
+
++ (UIImage *)getImage:(NSString *)filename isSocial:(BOOL)isSocial {
     UIImage *image;
     image = [imageCache objectForKey:filename];
     
@@ -43,7 +46,12 @@ static NSMutableDictionary *imageCache;
     if (image) {  
         return image;
     } else {
-        return [UIImage imageNamed:@"world.png"];
+        if (isSocial) {
+            return [UIImage imageNamed:@"user.png"];
+        } else {
+            return [UIImage imageNamed:@"world.png"];
+        }
+
     }
 }
 

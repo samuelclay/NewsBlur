@@ -76,6 +76,11 @@
 #pragma mark Get Interactions
 
 - (void)fetchInteractionsDetail:(int)page {
+    if (page == 1) {
+        self.pageFetching = NO;
+        self.pageFinished = NO;
+        appDelegate.dictUserInteractions = nil;
+    }
     if (!self.pageFetching && !self.pageFinished) {
         self.interactionsPage = page;
         self.pageFetching = YES;
@@ -86,6 +91,7 @@
                                page];
 
         NSURL *url = [NSURL URLWithString:urlString];
+        NSLog(@"url is %@", url);
         ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
 
         [request setDidFinishSelector:@selector(finishLoadInteractions:)];
@@ -123,7 +129,7 @@
         appDelegate.dictUserInteractions = [appDelegate.dictUserInteractions arrayByAddingObjectsFromArray:newInteractions];
     }
     
-    if ([confirmedInteractions count] == 0 || self.interactionsPage > 100) {
+    if ([confirmedInteractions count] == 0 || self.interactionsPage > 15) {
         self.pageFinished = YES;
     }
     [self refreshWithInteractions:appDelegate.dictUserInteractions];

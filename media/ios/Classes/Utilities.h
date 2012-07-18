@@ -14,6 +14,7 @@
 
 + (void)saveImage:(UIImage *)image feedId:(NSString *)filename;
 + (UIImage *)getImage:(NSString *)filename;
++ (UIImage *)getImage:(NSString *)filename isSocial:(BOOL)isSocial;
 + (void)saveimagesToDisk;
 + (UIImage *)roundCorneredImage:(UIImage *)orig radius:(CGFloat)r;
 
