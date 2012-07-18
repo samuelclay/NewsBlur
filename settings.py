@@ -1,6 +1,7 @@
 import sys
 import logging
 import os
+import datetime
 from mongoengine import connect
 import redis
 from utils import jammit
@@ -21,7 +22,7 @@ NEWSBLUR_URL = 'http://www.newsblur.com'
 # = Directory Declaractions =
 # ===========================
 
-CURRENT_DIR   = os.path.dirname(__file__)
+CURRENT_DIR   = os.getcwd()
 NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),)
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
@@ -37,9 +38,10 @@ IMAGE_MASK    = os.path.join(CURRENT_DIR, 'media/img/mask.png')
 
 if '/utils' not in ' '.join(sys.path):
     sys.path.append(UTILS_ROOT)
+
 if '/vendor' not in ' '.join(sys.path):
     sys.path.append(VENDOR_ROOT)
-    
+
 # ===================
 # = Global Settings =
 # ===================
@@ -238,7 +240,7 @@ if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
     )
-    
+
 # ==========
 # = Stripe =
 # ==========
@@ -270,6 +272,10 @@ CELERY_ROUTES = {
         "queue": "update_feeds",
         "binding_key": "update_feeds"
     },
+    "beat-tasks": {
+        "queue": "beat_tasks",
+        "binding_key": "beat_tasks"
+    },
 }
 CELERY_QUEUES = {
     "work_queue": {
@@ -292,6 +298,11 @@ CELERY_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "update_feeds"
     },
+    "beat_tasks": {
+        "exchange": "beat_tasks",
+        "exchange_type": "direct",
+        "binding_key": "beat_tasks"
+    },
 }
 CELERY_DEFAULT_QUEUE = "work_queue"
 BROKER_BACKEND = "redis"
@@ -299,7 +310,7 @@ BROKER_URL = "redis://db01:6379/0"
 CELERY_REDIS_HOST = "db01"
 
 CELERYD_PREFETCH_MULTIPLIER = 1
-CELERY_IMPORTS              = ("apps.rss_feeds.tasks", "apps.social.tasks", )
+CELERY_IMPORTS              = ("apps.rss_feeds.tasks", "apps.social.tasks", "apps.reader.tasks",)
 CELERYD_CONCURRENCY         = 4
 CELERY_IGNORE_RESULT        = True
 CELERY_ACKS_LATE            = True # Retry if task fails
@@ -307,28 +318,51 @@ CELERYD_MAX_TASKS_PER_CHILD = 10
 CELERYD_TASK_TIME_LIMIT     = 12 * 30
 CELERY_DISABLE_RATE_LIMITS  = True
 
+CELERYBEAT_SCHEDULE = {
+    'freshen-homepage': {
+        'task': 'freshen-homepage',
+        'schedule': datetime.timedelta(hours=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'task-feeds': {
+        'task': 'task-feeds',
+        'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'collect-stats': {
+        'task': 'collect-stats',
+        'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'collect-feedback': {
+        'task': 'collect-feedback',
+        'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+}
+
 # ====================
 # = Database Routers =
 # ====================
 
 class MasterSlaveRouter(object):
     """A router that sets up a simple master/slave configuration"""
-
+    
     def db_for_read(self, model, **hints):
         "Point all read operations to a random slave"
         return 'slave'
-
+    
     def db_for_write(self, model, **hints):
         "Point all write operations to the master"
         return 'default'
-
+    
     def allow_relation(self, obj1, obj2, **hints):
         "Allow any relation between two objects in the db pool"
         db_list = ('slave','default')
         if obj1._state.db in db_list and obj2._state.db in db_list:
             return True
         return None
-
+    
     def allow_syncdb(self, db, model):
         "Explicitly put all models on all databases."
         return True
@@ -357,6 +391,7 @@ try:
     from gunicorn_conf import *
 except ImportError, e:
     pass
+
 from local_settings import *
 
 COMPRESS = not DEBUG
@@ -397,3 +432,4 @@ JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
 if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.SqldumpMiddleware',)
+

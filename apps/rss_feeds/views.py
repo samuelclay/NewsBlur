@@ -2,7 +2,7 @@ import datetime
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.decorators.http import condition
-from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse, Http404
 from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -28,7 +28,6 @@ def search_feed(request):
         return dict(code=-1, message="Please provide a URL/address.")
         
     feed = Feed.get_feed_from_url(address, create=False, aggressive=True, offset=offset)
-    
     if feed:
         return feed.canonical()
     else:
@@ -90,7 +89,7 @@ def feed_autocomplete(request):
             ).order_by('-num_subscribers')[:5]
     
     logging.user(request, "~FRAdd Search: ~SB%s ~FG(%s matches)" % (query, len(feeds),))
-    
+
     feeds = [{
         'value': feed.feed_address,
         'label': feed.feed_title,
@@ -173,7 +172,10 @@ def exception_retry(request):
     user = get_user(request)
     feed_id = get_argument_or_404(request, 'feed_id')
     reset_fetch = json.decode(request.POST['reset_fetch'])
-    feed = get_object_or_404(Feed, pk=feed_id)
+    feed = Feed.get_by_id(feed_id)
+    
+    if not feed:
+        raise Http404
     
     feed.next_scheduled_update = datetime.datetime.utcnow()
     feed.has_page_exception = False

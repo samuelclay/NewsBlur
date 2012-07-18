@@ -3707,6 +3707,9 @@ form.opml_import_form input {
     width: 300px;
     margin-bottom: 16px;
 }
+.NB-add input[type=text].ui-autocomplete-loading {
+  background: white url('/media/embed/reader/recycle_spinner.gif') no-repeat right 2px;
+}
 .NB-add .NB-add-add-folder input[type=text] {
     width: 376px;
 }
@@ -5618,9 +5621,8 @@ form.opml_import_form input {
   margin-top: 7px;
 }
 .NB-modal-tutorial .NB-page {
-  height: 446px;
-  overflow-x: hidden;
-  overflow-y: auto;
+/*  height: 446px;*/
+  overflow: hidden;
 }
 .NB-modal-tutorial .NB-page.NB-page-1 {
   display: block;
@@ -5689,7 +5691,7 @@ form.opml_import_form input {
   display: block;
   overflow: hidden;
   width: 240px;
-  height: auto;
+  height: 122px;
 }
 .NB-modal-tutorial .NB-page-3 #story_titles .story {
   padding-right: 0;

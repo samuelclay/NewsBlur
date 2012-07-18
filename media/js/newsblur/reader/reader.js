@@ -3567,7 +3567,8 @@
                 self.model.preference('lock_mouse_indicator', 0);
                 $('.NB-callout-text', $callout).text('Unlocked');
             } else {
-                self.model.preference('lock_mouse_indicator', this.cache.mouse_position_y);
+                
+                self.model.preference('lock_mouse_indicator', this.cache.mouse_position_y - NEWSBLUR.app.story_list.cache.story_pane_position);
                 $('.NB-callout-text', $callout).text('Locked');
             }
             
@@ -5008,7 +5009,9 @@
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();
-                if (self.flags.river_view) {
+                if (self.flags.social_view) {
+                    self.mark_feed_as_read();
+                } else if (self.flags.river_view) {
                     self.mark_folder_as_read();
                 } else {
                     self.mark_feed_as_read();

@@ -243,7 +243,7 @@ def setup_common():
     config_pgbouncer()
     # setup_mongoengine()
     # setup_forked_mongoengine()
-    setup_pymongo_repo()
+    # setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
     configure_nginx()
@@ -362,11 +362,11 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
+    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
     
     put('config/pystartup.py', '.pystartup')
-    with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
-        sudo('python setup.py install')
+    # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
+    #     sudo('python setup.py install')
         
     with settings(warn_only=True):
         sudo('su -c \'echo "import sys; sys.setdefaultencoding(\\\\"utf-8\\\\")" > /usr/lib/python2.7/sitecustomize.py\'')
@@ -620,6 +620,13 @@ def setup_redis():
 def setup_db_munin():
     sudo('cp -rs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
 
+def enable_celerybeat():
+    with cd(env.NEWSBLUR_PATH):
+        run('mkdir -p data')
+    put('config/supervisor_celerybeat.conf', '/etc/supervisor/conf.d/celerybeat.conf', use_sudo=True)
+    put('config/supervisor_celeryd_beat.conf', '/etc/supervisor/conf.d/celeryd_beat.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
     
 # ================
 # = Setup - Task =
