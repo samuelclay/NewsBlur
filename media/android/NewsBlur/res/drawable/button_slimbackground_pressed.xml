@@ -12,11 +12,10 @@
                 android:top="1dp" />
 
             <corners
-                android:bottomLeftRadius="13dp"
-                android:bottomRightRadius="13dp"
-                android:topLeftRadius="13dp"
-                android:topRightRadius="13dp" />
-            
+                android:bottomLeftRadius="4dp"
+                android:bottomRightRadius="4dp"
+                android:topLeftRadius="4dp"
+                android:topRightRadius="4dp" />
         </shape>
     </item>
     <item>
@@ -31,10 +30,10 @@
                 android:startColor="@color/darkorange" />
 
             <corners
-                android:bottomLeftRadius="12dp"
-                android:bottomRightRadius="12dp"
-                android:topLeftRadius="12dp"
-                android:topRightRadius="12dp" />
+                android:bottomLeftRadius="3dp"
+                android:bottomRightRadius="3dp"
+                android:topLeftRadius="3dp"
+                android:topRightRadius="3dp" />
         </shape>
     </item>
 

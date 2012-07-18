@@ -16,6 +16,11 @@
     
     <string name="hello">Hello World!</string>
     
+    <string name="dialog_title">Alert</string>
+    
+    <string name="follow_error">There was a problem following the user. Check your internet connection and try again.</string>
+    <string name="unfollow_error">There was a problem unfollowing the user. Check your internet connection and try again.</string>
+    
     <string name="description_login_button">Press to log in.</string>
     <string name="description_login_logo">NewsBlur Logo</string>
     <string name="description_signup_button">Press to sign up</string>
@@ -23,12 +28,9 @@
 	<string name="description_profile_picture">The user\'s profile picture</string>
 	<string name="description_row_folder_icon">folder icon</string>
 	<string name="description_activity_icon">An icon illustrating the user\'s activity</string>
+	<string name="description_follow_button">Follow or unfollow a user</string>
 
-    <string name="menu_profile">Profile</string>
-    <string name="menu_refresh">Refresh</string>
-    <string name="menu_original">View original</string>
-    <string name="menu_share">Share</string>
-    
+	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
     <string name="profile_following">FOLLOWING</string>
@@ -43,5 +45,13 @@
     <string name="profile_replied_to">Replied to</string>
     <string name="profile_with_comment">with the comment</string>
     <string name="profile_shared_story">Shared the story</string>
+    <string name="profile_button_follow">Follow</string>
+    <string name="profile_button_unfollow">Unfollow</string>
+    
+    <string name="menu_profile">Profile</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_original">View original</string>
+    <string name="menu_share">Share</string>
+    
     
 </resources>

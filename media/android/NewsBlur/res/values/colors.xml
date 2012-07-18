@@ -9,7 +9,9 @@
     <color name="lightgray">#dddddd</color>
     <color name="lightorange">#d98800</color>
     <color name="darkorange">#b44a00</color>
-
+	<color name="lightgreen">#3b8207</color>
+    <color name="darkgreen">#134c00</color>
+    
     <color name="half_black">#7000</color>
     <color name="transparent">#0000</color>
     <color name="half_darkgray">#77434343</color>

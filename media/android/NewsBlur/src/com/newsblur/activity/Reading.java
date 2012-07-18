@@ -62,15 +62,6 @@ public class Reading extends SherlockFragmentActivity {
 		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
 		setTitle(feed.title);
 
-		if (!TextUtils.isEmpty(feed.favicon)) {
-			BitmapFactory.Options options = new BitmapFactory.Options();
-			final byte[] data = Base64.decode(feed.favicon, Base64.DEFAULT);
-			Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
-			bitmap = Bitmap.createScaledBitmap(bitmap, 200, 200, true);
-			bitmap = UIUtils.roundCorners(bitmap, 15);
-			getSupportActionBar().setLogo(new BitmapDrawable(bitmap));
-		}
-
 		syncFragment = (SyncReadingUpdaterFragment) fragmentManager.findFragmentByTag(SyncReadingUpdaterFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncReadingUpdaterFragment();

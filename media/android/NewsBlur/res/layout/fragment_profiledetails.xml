@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical" >
 
@@ -9,13 +9,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal" >
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:gravity="center_vertical" >
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
 
             <ImageView
                 android:id="@+id/profile_picture"
@@ -25,11 +26,31 @@
                 android:contentDescription="@string/description_profile_picture"
                 android:scaleType="fitCenter"
                 android:src="@drawable/person" />
+
+            <Button
+                android:id="@+id/profile_follow_button"
+                style="@style/slimGreenButton"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/description_follow_button"
+                android:text="@string/profile_button_follow"
+                android:textSize="11dp"
+                android:visibility="gone" />
+            
+            <Button
+                android:id="@+id/profile_unfollow_button"
+                style="@style/slimButton"
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/description_follow_button"
+                android:text="@string/profile_button_unfollow"
+                android:textSize="11dp"
+                android:visibility="gone" />            
         </LinearLayout>
 
         <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center_vertical" >
 
             <TextView
@@ -71,7 +92,7 @@
                 android:layout_toRightOf="@id/profile_location_icon"
                 android:textColor="@color/lightgray"
                 android:textSize="12dp" />
-            
+
             <TextView
                 android:id="@+id/profile_website"
                 android:layout_width="fill_parent"

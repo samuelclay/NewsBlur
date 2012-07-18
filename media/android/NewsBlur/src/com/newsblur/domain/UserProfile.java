@@ -51,6 +51,12 @@ public class UserProfile {
 
 	@SerializedName("feed_link")
 	public String feedLink;
+	
+	@SerializedName("followed_by_you")
+	public boolean followedByYou;
+	
+	@SerializedName("following_you")
+	public boolean followsYou;
 
 	@SerializedName("popular_publishers")
 	public Publisher[] popularPublishers;

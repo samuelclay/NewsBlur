@@ -66,7 +66,7 @@ public class PrefsUtil {
 		user.subscriptionCount = preferences.getInt(PrefConstants.USER_SUBSCRIBER_COUNT, 0);
 		user.username = preferences.getString(PrefConstants.USER_USERNAME, null);
 		user.website = preferences.getString(PrefConstants.USER_WEBSITE, null);
-		
+
 		return user;
 	}
 
@@ -78,18 +78,22 @@ public class PrefsUtil {
 			connection = url.openConnection();
 			connection.setUseCaches(true);
 			bitmap = BitmapFactory.decodeStream( (InputStream) connection.getContent());
-			
+
 			File file = context.getCacheDir();
 			File imageFile = new File(file.getPath() + "/userProfilePicture");
 			bitmap.compress(CompressFormat.PNG, 100, new FileOutputStream(imageFile));
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static Bitmap getUserImage(final Context context) {
-		 return BitmapFactory.decodeFile(context.getCacheDir().getPath() + "/userProfilePicture");
+		if (context != null) {
+			return BitmapFactory.decodeFile(context.getCacheDir().getPath() + "/userProfilePicture");
+		} else {
+			return null;
+		}
 	}
 
 

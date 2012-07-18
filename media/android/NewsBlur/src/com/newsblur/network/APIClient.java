@@ -112,7 +112,7 @@ public class APIClient {
 			parameters.add(builder.toString());
 		}
 		final String parameterString = TextUtils.join("&", parameters);
-
+		
 		try {
 			final URL url = new URL(urlString);
 			connection = (HttpURLConnection) url.openConnection();
@@ -120,13 +120,21 @@ public class APIClient {
 			connection.setRequestMethod("POST");
 			connection.setFixedLengthStreamingMode(parameterString.getBytes().length);
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			
+			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
+			if (cookie != null) {
+				connection.setRequestProperty("Cookie", cookie);
+			}
+			
 			final PrintWriter printWriter = new PrintWriter(connection.getOutputStream());
 			printWriter.print(parameterString);
 			printWriter.close();
 
 			return extractResponse(url, connection);
 		} catch (IOException e) {
-			Log.d(TAG, "Error opening POST connection to " + urlString + ": " + e.getLocalizedMessage(), e.getCause());
+			Log.e(TAG, "Error opening POST connection to " + urlString + ": " + e.getLocalizedMessage(), e.getCause());
+			
 			return new APIResponse();
 		} finally {
 			if (connection != null) {

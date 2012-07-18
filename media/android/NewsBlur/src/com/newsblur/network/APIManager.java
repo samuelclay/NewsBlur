@@ -99,6 +99,30 @@ public class APIManager {
 			return null;
 		}
 	}
+	
+	public boolean followUser(final String userId) {
+		final APIClient client = new APIClient(context);
+		final ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_USERID, userId);
+		final APIResponse response = client.post(APIConstants.URL_FOLLOW, values);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean unfollowUser(final String userId) {
+		final APIClient client = new APIClient(context);
+		final ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_USERID, userId);
+		final APIResponse response = client.post(APIConstants.URL_UNFOLLOW, values);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public void getFolderFeedMapping() {
 		final APIClient client = new APIClient(context);

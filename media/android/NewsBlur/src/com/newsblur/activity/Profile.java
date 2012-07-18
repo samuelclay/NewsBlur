@@ -101,7 +101,7 @@ public class Profile extends SherlockFragmentActivity {
 
 		@Override
 		protected void onPostExecute(Void result) {
-			if (user != null) {
+			if (user != null && detailsFragment != null && activitiesFragment != null) {
 				detailsFragment.setUser(user, TextUtils.isEmpty(userId));
 				activitiesFragment.setActivities(activities);
 			}
