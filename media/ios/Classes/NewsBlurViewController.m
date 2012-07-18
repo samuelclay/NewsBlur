@@ -20,8 +20,8 @@
 #import "Utilities.h"
 
 
-#define kTableViewRowHeight 40;
-#define kBlurblogTableViewRowHeight 46;
+#define kTableViewRowHeight 36;
+#define kBlurblogTableViewRowHeight 56;
 
 @implementation NewsBlurViewController
 
@@ -96,6 +96,9 @@
     
     // have the selected cell deselect
     [self.feedTitlesTable deselectRowAtIndexPath:self.currentRowAtIndexPath animated:YES];
+    self.feedTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.feedTitlesTable.backgroundColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
+    
     // reset all feed detail specific data
     appDelegate.activeFeed = nil; 
     appDelegate.isSocialView = NO;
@@ -309,7 +312,7 @@
     appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
     appDelegate.dictUserActivities = [results objectForKey:@"activities"];
     [appDelegate.dashboardViewController refreshInteractions];
-    [appDelegate.dashboardViewController refreshActivity];
+//    [appDelegate.dashboardViewController refreshActivity];
 
     // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
@@ -635,13 +638,13 @@
     int headerLabelHeight, folderImageViewY, disclosureImageViewY;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        headerLabelHeight = 24;
+        headerLabelHeight = 28;
         folderImageViewY = 4;
-        disclosureImageViewY = 5;
+        disclosureImageViewY = 7;
     } else {
         headerLabelHeight = 20;
-        folderImageViewY = 2;
-        disclosureImageViewY = 3;
+        folderImageViewY = 4;
+        disclosureImageViewY = 4;
     }
         
     // create the parent view that will hold header Label
@@ -651,7 +654,7 @@
     
     
     UIView *borderBottom = [[UIView alloc] 
-                             initWithFrame:CGRectMake(0.0, headerLabelHeight, 
+                             initWithFrame:CGRectMake(0.0, 0, 
                                                       tableView.bounds.size.width, 1.0)];
     borderBottom.backgroundColor = [UIColorFromRGB(0xB7BDC6) colorWithAlphaComponent:0.5];
     borderBottom.opaque = NO;
@@ -669,22 +672,32 @@
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (section == 0) {
         headerLabel.text = @"BLURBLOGS";
-        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-                                      colorWithAlphaComponent:0.8];
+//        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
+//                                      colorWithAlphaComponent:0.8];
     } else if (section == 1) {
-        headerLabel.text = @"EVERYTHING";
-        customView.backgroundColor = [UIColorFromRGB(0xE6DDD7)
-                                      colorWithAlphaComponent:0.8];
+        headerLabel.text = @"ALL SITES";
+//        customView.backgroundColor = [UIColorFromRGB(0xE6DDD7)
+//                                      colorWithAlphaComponent:0.8];
     } else {
         headerLabel.text = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
-        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-                                      colorWithAlphaComponent:0.8];
+//        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
+//                                      colorWithAlphaComponent:0.8];
     }
+    
+    customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
+                                  colorWithAlphaComponent:0.8];
     [customView addSubview:headerLabel];
     
-    UIImage *folderImage = [UIImage imageNamed:@"folder.png"];
+    UIImage *folderImage;
+    if (section == 0) {
+        folderImage = [UIImage imageNamed:@"group.png"];
+    } else if (section == 1) {
+        folderImage = [UIImage imageNamed:@"archive.png"];
+    } else {
+        folderImage = [UIImage imageNamed:@"folder_2.png"];
+    }
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
-    folderImageView.frame = CGRectMake(12.0, folderImageViewY, 16.0, 16.0);
+    folderImageView.frame = CGRectMake(10.0, folderImageViewY, 20.0, 20.0);
     [customView addSubview:folderImageView];
 
     if (section != 0) {    
@@ -733,7 +746,11 @@
 //        return 0;
 //    }
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
-        return 25;
+        if ([tableView.dataSource tableView:tableView numberOfRowsInSection:section] == 0) {
+            return 0;
+        } else {
+            return 28;
+        }
     }else{
         return 21;
     }
@@ -929,6 +946,12 @@
                                     withRowAnimation:UITableViewRowAnimationNone];
     }
     [self.feedTitlesTable endUpdates];
+    
+    // scrolls to the top and fixes header rendering bug
+    CGPoint offsetOne = CGPointMake(0, 1);
+    CGPoint offset = CGPointMake(0, 0);
+    [self.feedTitlesTable setContentOffset:offsetOne animated:NO];
+    [self.feedTitlesTable setContentOffset:offset animated:NO];
 
     [self calculateFeedLocations:YES];
 }

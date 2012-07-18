@@ -12,6 +12,8 @@
 #import "DashboardViewController.h"
 #import "UserProfileViewController.h"
 #import "InteractionCell.h"
+#import "ASIHTTPRequest.h"
+#import "JSON.h"
 
 @implementation InteractionsModule
 
@@ -35,19 +37,56 @@
 
 
 - (void)refreshWithInteractions:(NSMutableArray *)interactions {
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];   
+ 
     self.interactionsArray = interactions;
     
     self.interactionsTable = [[UITableView alloc] init];
     self.interactionsTable.dataSource = self;
     self.interactionsTable.delegate = self;
     self.interactionsTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-    self.interactionsTable.layer.cornerRadius = 10;
+//    self.interactionsTable.layer.cornerRadius = 10;
     self.interactionsTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
     [self addSubview:self.interactionsTable];    
     [self.interactionsTable reloadData];
     
+}
+
+
+#pragma mark -
+#pragma mark Get Interactions
+
+- (void)fetchInteractionsDetail:(int)page {
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/interactions?user_id=%@&page=%i",
+                           NEWSBLUR_URL,
+                           [appDelegate.dictUserProfile objectForKey:@"user_id"],
+                           page];
+
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+
+    [request setDidFinishSelector:@selector(finishLoadInteractions:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)finishLoadInteractions:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    
+    appDelegate.dictUserInteractions = [results objectForKey:@"interactions"];
+    
+    [self refreshWithInteractions:appDelegate.dictUserInteractions];
+    
+    //    [self repositionDashboard];
+} 
+
+- (void)requestFailed:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
 }
 
 #pragma mark -
@@ -58,9 +97,18 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+
+    #define MINIMUM_INTERACTION_HEIGHT 78
+    
     InteractionCell *interactionCell = [[InteractionCell alloc] init];
-    int height = [interactionCell refreshInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width] + 20;
-    return height;
+    int height = [interactionCell refreshInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width] + 30;
+    NSLog(@"height is %i", height);
+    if (height < MINIMUM_INTERACTION_HEIGHT) {
+        return MINIMUM_INTERACTION_HEIGHT;
+    } else {
+        return height;
+    }
+
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

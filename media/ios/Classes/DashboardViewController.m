@@ -20,6 +20,7 @@
 @synthesize interactionsModule;
 @synthesize activitesLabel;
 @synthesize activitiesModule;
+@synthesize header;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -40,6 +41,7 @@
     [self setInteractionsModule:nil];
     [self setActivitesLabel:nil];
     [self setActivitiesModule:nil];
+    [self setHeader:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -57,7 +59,7 @@
     label.text = DASHBOARD_TITLE;
     self.navigationItem.titleView = label;
     
-    [self repositionDashboard];
+//    [self repositionDashboard];
 }
 
 
@@ -66,46 +68,46 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [self repositionDashboard];
+//    [self repositionDashboard];
 }
 
 - (void)repositionDashboard {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
 	if (UIInterfaceOrientationIsPortrait(orientation)) {
-        self.interactionsLabel.frame = CGRectMake(151,
-                                                  42,
+        self.interactionsLabel.frame = CGRectMake((self.view.frame.size.width - 320) / 2,
+                                                  ((self.view.frame.size.height - 640) / 3) - 50,
                                                   self.interactionsLabel.frame.size.width,
                                                   self.interactionsLabel.frame.size.height);
-        self.interactionsModule.frame = CGRectMake(self.interactionsModule.frame.origin.x,
-                                                   self.interactionsModule.frame.origin.y,
-                                                   440,
-                                                   self.interactionsModule.frame.size.height);
-        self.activitesLabel.frame = CGRectMake(151,
-                                               494,
+        self.interactionsModule.frame = CGRectMake((self.view.frame.size.width - 320) / 2,
+                                                   (self.view.frame.size.height - 640) / 3,
+                                                   320,
+                                                   320);
+        self.activitesLabel.frame = CGRectMake((self.view.frame.size.width - 320) / 2,
+                                               ((self.view.frame.size.height - 640) / 3) * 2 + 320 - 50,
                                                self.activitesLabel.frame.size.width,
                                                self.activitesLabel.frame.size.height);
-        self.activitiesModule.frame = CGRectMake(20, 
-                                                 555, 
-                                                 440, 
-                                                 self.interactionsModule.frame.size.height);
+        self.activitiesModule.frame = CGRectMake((self.view.frame.size.width - 320) / 2, 
+                                                 ((self.view.frame.size.height - 640) / 3) * 2 + 320, 
+                                                 320, 
+                                                 320);
     } else {
-        self.interactionsLabel.frame = CGRectMake(80,
-                                                  self.interactionsLabel.frame.origin.y,
+        self.interactionsLabel.frame = CGRectMake((self.view.frame.size.width - 640) / 3,
+                                                  (self.view.frame.size.height - 320) / 2 - 50,
                                                   self.interactionsLabel.frame.size.width,
                                                   self.interactionsLabel.frame.size.height);
-        self.interactionsModule.frame = CGRectMake(self.interactionsModule.frame.origin.x,
-                                                   self.interactionsModule.frame.origin.y,
+        self.interactionsModule.frame = CGRectMake((self.view.frame.size.width - 640) / 3,
+                                                   (self.view.frame.size.height - 320) / 2,
                                                    320,
-                                                   self.interactionsModule.frame.size.height);
+                                                   320);
         
-        self.activitesLabel.frame = CGRectMake(450,
-                                                  self.interactionsLabel.frame.origin.y,
+        self.activitesLabel.frame = CGRectMake(((self.view.frame.size.width - 640) / 3) * 2 + 320,
+                                                  (self.view.frame.size.height - 320) / 2 - 50,
                                                   self.activitesLabel.frame.size.width,
                                                   self.activitesLabel.frame.size.height);
-        self.activitiesModule.frame = CGRectMake(380, 
-                                                 100, 
+        self.activitiesModule.frame = CGRectMake(((self.view.frame.size.width - 640) / 3) * 2 + 320,
+                                                 (self.view.frame.size.height - 320) / 2,
                                                  320, 
-                                                 self.interactionsModule.frame.size.height);        
+                                                 320);        
     }
     
 }
@@ -118,37 +120,17 @@
 # pragma mark Interactions
 
 - (void)refreshInteractions {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/interactions?user_id=%@",
-                           NEWSBLUR_URL,
-                           [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     
-    [request setDidFinishSelector:@selector(finishLoadInteractions:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
-}
-
-- (void)finishLoadInteractions:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
-    
-    appDelegate.dictUserInteractions = [results objectForKey:@"interactions"];
-
     if (self.interactionsModule == nil) {
         InteractionsModule *interactions = [[InteractionsModule alloc] init];
-        interactions.frame = CGRectMake(20, 100, 438, 300);
+        interactions.frame = CGRectMake(0, 65, self.view.frame.size.width, self.view.frame.size.height - 65);
         self.interactionsModule = interactions;
-        [self.view addSubview:self.interactionsModule];
+        [self.view insertSubview:self.interactionsModule
+                    belowSubview:self.header];
     }
     
-    [self.interactionsModule refreshWithInteractions:appDelegate.dictUserInteractions];
-
-    [self repositionDashboard];
-} 
+    [self.interactionsModule fetchInteractionsDetail:1];    
+}
 
 - (void)requestFailed:(ASIHTTPRequest *)request {    
     NSLog(@"Error in finishLoadInteractions is %@", [request error]);
@@ -179,14 +161,14 @@
     
     if (self.activitiesModule == nil) {
         ActivityModule *activity = [[ActivityModule alloc] init];
-        activity.frame = CGRectMake(20, 510, 438, 300);
+        activity.frame = CGRectMake(20, 510, 320, 320);
         self.activitiesModule = activity;
         [self.view addSubview:self.activitiesModule];
     }
     
     [self.activitiesModule refreshWithActivities:appDelegate.dictUserActivities];
 
-    [self repositionDashboard];
+//    [self repositionDashboard];
 }
 
 @end

@@ -8,6 +8,8 @@
 
 #import "InteractionCell.h"
 #import "NSAttributedString+Attributes.h"
+#import "UIImageView+AFNetworking.h"
+#import "Utilities.h"
 
 @implementation InteractionCell
 
@@ -31,9 +33,15 @@
  }
  */
 
-- (int)refreshInteraction:(NSDictionary *)interaction withWidth:(int)width {
+- (int)refreshInteraction:(NSDictionary *)interaction withWidth:(int)width {    
+    UIImageView *avatarView = [[UIImageView alloc] init];
+    [avatarView setImageWithURL:[NSURL URLWithString:[[interaction objectForKey:@"with_user"] objectForKey:@"photo_url"]]];
+    
+    avatarView.frame = CGRectMake(20, 15, 48, 48);
+    [self addSubview:avatarView];
+
     self.interactionLabel = [[OHAttributedLabel alloc] init];
-    self.interactionLabel.frame = CGRectMake(10, 10, width - 20, 120);
+    self.interactionLabel.frame = CGRectMake(83, 14, width - 83 - 20, 120);
     self.interactionLabel.backgroundColor = [UIColor clearColor];
     self.interactionLabel.automaticallyAddLinksForType = NO;
     
@@ -41,9 +49,10 @@
     NSString *content = [interaction objectForKey:@"content"];
     NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [interaction objectForKey:@"title"]]];
     NSString *username = [[interaction objectForKey:@"with_user"] objectForKey:@"username"];
+    NSString *time = [[NSString stringWithFormat:@"%@ ago", [interaction objectForKey:@"time_since"]] uppercaseString];
     
     if ([category isEqualToString:@"follow"]) {        
-        NSString* txt = [NSString stringWithFormat:@"%@ is now following you", username];        
+        NSString* txt = [NSString stringWithFormat:@"%@ is now following you. \n%@", username, time];        
         NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txt];
         
         // for those calls we don't specify a range so it affects the whole string
@@ -52,13 +61,16 @@
         
         [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:username]];
         [attrStr setTextBold:YES range:[txt rangeOfString:username]];
-                
+        
+        [attrStr setTextColor:UIColorFromRGB(0x999999) range:[txt rangeOfString:time]];
+        [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:11] range:[txt rangeOfString:time]];
+        
         self.interactionLabel.attributedText = attrStr;
         
     } else if ([category isEqualToString:@"comment_reply"]) {
         NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
         
-        NSString* txt = [NSString stringWithFormat:@"%@ replied to your comment: %@", username, comment];  
+        NSString* txt = [NSString stringWithFormat:@"%@ replied to your comment:\n%@", username, comment];  
         NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txt];
         
         [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
@@ -76,7 +88,7 @@
     } else if ([category isEqualToString:@"reply_reply"]) {
         NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
         
-        NSString* txt = [NSString stringWithFormat:@"%@ replied to your reply: %@", username, comment];  
+        NSString* txt = [NSString stringWithFormat:@"%@ replied to your reply:\n%@", username, comment];  
         NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txt];
         
         [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
@@ -95,7 +107,7 @@
         NSString *txt;
         NSString *comment = [NSString stringWithFormat:@"\"%@\"", content];
         if (![content isEqualToString:@""]) {
-            txt = [NSString stringWithFormat:@"%@ re-shared %@: %@", username, title, comment];
+            txt = [NSString stringWithFormat:@"%@ re-shared %@:\n%@", username, title, comment];
         } else {
             txt = [NSString stringWithFormat:@"%@ re-shared %@.", username, title];
         }
@@ -111,6 +123,8 @@
         
         [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txt rangeOfString:title]];
         [attrStr setTextColor:UIColorFromRGB(0x666666) range:[txt rangeOfString:comment]]; 
+        
+        
 
         self.interactionLabel.attributedText = attrStr;        
     }

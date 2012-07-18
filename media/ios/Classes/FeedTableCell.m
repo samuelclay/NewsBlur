@@ -91,15 +91,15 @@ static CGFloat *psColors = nil;
     
     UIColor *backgroundColor;
     
-    if (self.isSocial) {
-        backgroundColor = self.selected || self.highlighted ? 
-                          [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : 
-                          UIColorFromRGB(0xe9e9ee);
-    } else {
+//    if (self.isSocial) {
+//        backgroundColor = self.selected || self.highlighted ? 
+//                          [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : 
+//                          UIColorFromRGB(0xe9e9ee);
+//    } else {
         backgroundColor = self.selected || self.highlighted ? 
                           [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : 
                           [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
-    }
+//    }
     
     [backgroundColor set];
     CGContextFillRect(context, r);
@@ -123,7 +123,7 @@ static CGFloat *psColors = nil;
     
     if(_positiveCount > 0){     
         [positiveBackgroundColor set];
-        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 10, psWidth, 18);
+        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, self.isSocial ? 18: 10, psWidth, 18);
         [UIView drawLinearGradientInRect:rr colors:psColors];
         [UIView drawRoundRectangleInRect:rr withRadius:5];
         
@@ -138,7 +138,7 @@ static CGFloat *psColors = nil;
     }
     if(_neutralCount > 0 && appDelegate.selectedIntelligence <= 0){     
         [neutralBackgroundColor set];
-        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 10, ntWidth, 18);
+        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, self.isSocial ? 18: 10, ntWidth, 18);
         [UIView drawRoundRectangleInRect:rr withRadius:5];
 //        [UIView drawLinearGradientInRect:rr colors:ntColors];
         
@@ -178,16 +178,16 @@ static CGFloat *psColors = nil;
 
     
     if (isSocial) {
-        [self.feedFavicon drawInRect:CGRectMake(7.0, 7.0, 32.0, 32.0)];
+        [self.feedFavicon drawInRect:CGRectMake(10.0, 7.0, 42.0, 42.0)];
         [feedTitle 
-         drawInRect:CGRectMake(46, 14.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 8, 20.0) 
+         drawInRect:CGRectMake(60, 18, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 8, 20.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentLeft];
     } else {
-        [self.feedFavicon drawInRect:CGRectMake(12.0, 11.0, 16.0, 16.0)];
+        [self.feedFavicon drawInRect:CGRectMake(17.0, 11.0, 16.0, 16.0)];
         [feedTitle 
-         drawInRect:CGRectMake(34.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
+         drawInRect:CGRectMake(40.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentLeft];

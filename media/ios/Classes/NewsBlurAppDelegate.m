@@ -446,7 +446,7 @@
     self.inStoryDetail = NO;
     self.inFeedDetail = NO;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.splitStoryDetailNavigationController popToRootViewControllerAnimated:YES];        
+        [self.splitStoryDetailNavigationController popToRootViewControllerAnimated:NO];        
     }
 }
 
@@ -695,7 +695,7 @@
 
 - (void)hideStoryDetailView {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.splitStoryDetailNavigationController popToRootViewControllerAnimated:YES];
+        [self.splitStoryDetailNavigationController popToRootViewControllerAnimated:NO];
         [self.navigationController popToRootViewControllerAnimated:YES];
     } else {
         [self.navigationController popViewControllerAnimated:YES];

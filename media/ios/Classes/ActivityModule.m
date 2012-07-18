@@ -47,7 +47,7 @@
     self.activitiesTable.dataSource = self;
     self.activitiesTable.delegate = self;
     self.activitiesTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-    self.activitiesTable.layer.cornerRadius = 10;
+//    self.activitiesTable.layer.cornerRadius = 10;
     self.activitiesTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
     [self addSubview:self.activitiesTable];    

@@ -20,6 +20,7 @@
     UILabel *activitesLabel;
     InteractionsModule *interactionsModule;
     ActivityModule *activitiesModule;
+    UIImageView *header;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -27,6 +28,7 @@
 @property (nonatomic) IBOutlet UILabel *activitesLabel;
 @property (nonatomic) IBOutlet InteractionsModule *interactionsModule;
 @property (nonatomic) IBOutlet ActivityModule *activitiesModule;
+@property (nonatomic) IBOutlet UIImageView *header;
 
 - (IBAction)doLogout:(id)sender;
 - (void)refreshInteractions;
