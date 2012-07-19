@@ -21,7 +21,7 @@
 
 
 #define kTableViewRowHeight 36;
-#define kBlurblogTableViewRowHeight 56;
+#define kBlurblogTableViewRowHeight 48;
 
 @implementation NewsBlurViewController
 
@@ -94,8 +94,6 @@
         [appDelegate setSelectedIntelligence:0];
     }
     
-    // have the selected cell deselect
-    [self.feedTitlesTable deselectRowAtIndexPath:self.currentRowAtIndexPath animated:YES];
     self.feedTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.feedTitlesTable.backgroundColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
     
@@ -154,6 +152,9 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
+                                        animated:YES];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

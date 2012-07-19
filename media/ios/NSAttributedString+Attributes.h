@@ -72,7 +72,9 @@
 -(void)setTextBold:(BOOL)isBold range:(NSRange)range;
 
 -(void)setTextAlignment:(CTTextAlignment)alignment lineBreakMode:(CTLineBreakMode)lineBreakMode;
+-(void)setTextAlignment:(CTTextAlignment)alignment lineBreakMode:(CTLineBreakMode)lineBreakMode lineHeight:(CGFloat)lineHeight;
 -(void)setTextAlignment:(CTTextAlignment)alignment lineBreakMode:(CTLineBreakMode)lineBreakMode range:(NSRange)range;
+-(void)setTextAlignment:(CTTextAlignment)alignment lineBreakMode:(CTLineBreakMode)lineBreakMode range:(NSRange)range lineHeight:(CGFloat)lineHeight;
 @end
 
 

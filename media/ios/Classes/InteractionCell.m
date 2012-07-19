@@ -10,6 +10,7 @@
 #import "NSAttributedString+Attributes.h"
 #import "UIImageView+AFNetworking.h"
 #import "Utilities.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation InteractionCell
 
@@ -39,12 +40,15 @@
     [avatarView setImageWithURL:[NSURL URLWithString:[[interaction objectForKey:@"with_user"] objectForKey:@"photo_url"]]
         placeholderImage:placeholder];
     
+//    avatarView.layer.cornerRadius = 6;
+//    avatarView.layer.masksToBounds = YES;
+    
     avatarView.frame = CGRectMake(20, 15, 48, 48);
     [self addSubview:avatarView];
 
     self.interactionLabel = [[OHAttributedLabel alloc] init];
-    self.interactionLabel.frame = CGRectMake(83, 14, 365, 120);
-    self.interactionLabel.backgroundColor = [UIColor clearColor];
+    self.interactionLabel.frame = CGRectMake(83, 14, 365, 200);
+    self.interactionLabel.backgroundColor = [UIColor whiteColor];
     self.interactionLabel.automaticallyAddLinksForType = NO;
     
     NSString *category = [interaction objectForKey:@"category"];
@@ -85,10 +89,11 @@
         
     [attrStr setTextColor:UIColorFromRGB(0x999999) range:[txtWithTime rangeOfString:time]];
     [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:10] range:[txtWithTime rangeOfString:time]];
-
+//    [attrStr setTextAlignment:kCTLeftTextAlignment lineBreakMode:kCTLineBreakByTruncatingTail range:[txtWithTime rangeOfString:time] lineHeight:20.0];
+    [attrStr setTextAlignment:kCTLeftTextAlignment lineBreakMode:kCTLineBreakByWordWrapping lineHeight:4];
     self.interactionLabel.attributedText = attrStr; 
     
-
+    
     [self.interactionLabel sizeToFit];
     
     

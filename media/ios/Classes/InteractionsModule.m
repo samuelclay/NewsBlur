@@ -91,7 +91,6 @@
                                page];
 
         NSURL *url = [NSURL URLWithString:urlString];
-        NSLog(@"url is %@", url);
         ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
 
         [request setDidFinishSelector:@selector(finishLoadInteractions:)];
@@ -165,6 +164,7 @@
     } else {
         return height;
     }
+
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
