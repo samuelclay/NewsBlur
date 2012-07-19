@@ -15,6 +15,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.ReadingAdapter;
@@ -39,6 +40,9 @@ public class Reading extends SherlockFragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
+		requestWindowFeature(Window.FEATURE_PROGRESS);
+	    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+	    
 		super.onCreate(savedInstanceBundle);
 		setContentView(R.layout.activity_reading);
 
@@ -47,14 +51,15 @@ public class Reading extends SherlockFragmentActivity {
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		readingAdapter = new ReadingAdapter(fragmentManager, this, feedId);
-		getSupportLoaderManager().initLoader(READING_LOADER , null, readingAdapter);
-
+		
 		contentResolver = getContentResolver();
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 
 		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
 		setTitle(feed.title);
 
+		getSupportLoaderManager().initLoader(READING_LOADER , null, readingAdapter);
+		
 		syncFragment = (SyncReadingUpdaterFragment) fragmentManager.findFragmentByTag(SyncReadingUpdaterFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncReadingUpdaterFragment();
@@ -64,16 +69,17 @@ public class Reading extends SherlockFragmentActivity {
 
 		pager = (ViewPager) findViewById(R.id.reading_pager);
 		pager.setAdapter(readingAdapter);
+		setProgressBarVisibility(true);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getSupportMenuInflater();
-	    inflater.inflate(R.menu.reading, menu);
-	    return true;
+		inflater.inflate(R.menu.reading, menu);
+		return true;
 	}
-	
+
 	public void triggerRefresh() {
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
@@ -85,13 +91,14 @@ public class Reading extends SherlockFragmentActivity {
 	public void redrawUI() {
 		Log.d(TAG, "Redrawing reading pager...");
 		getSupportLoaderManager().restartLoader(READING_LOADER, null, readingAdapter);
+		setProgressBarVisibility(false);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int currentItem = pager.getCurrentItem();
 		Story story = readingAdapter.getStory(currentItem);
-		
+
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
@@ -154,7 +161,6 @@ public class Reading extends SherlockFragmentActivity {
 				break;
 			}
 		}
-
 	}
 
 

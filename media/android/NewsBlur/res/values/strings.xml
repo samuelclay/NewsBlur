@@ -17,6 +17,7 @@
     <string name="hello">Hello World!</string>
     
     <string name="dialog_title">Alert</string>
+    <string name="loading">Loading…</string>
     
     <string name="follow_error">There was a problem following the user. Check your internet connection and try again.</string>
     <string name="unfollow_error">There was a problem unfollowing the user. Check your internet connection and try again.</string>

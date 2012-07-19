@@ -7,18 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
-import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
-import com.newsblur.util.ImageLoader;
 
 public class ReadingItemFragment extends Fragment {
 
 	final Story story;
-	private ImageLoader imageLoader;
 	
 	public ReadingItemFragment() {
 		story = null;
@@ -32,7 +28,6 @@ public class ReadingItemFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_readingitem, null);
 		
 		WebView web = (WebView) view.findViewById(R.id.reading_webview);
-		imageLoader = new ImageLoader(getActivity());	
 		setupWebview(web);
 		setupItemMetadata(view);
 		
