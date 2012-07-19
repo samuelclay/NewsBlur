@@ -2414,17 +2414,17 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
                     ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
-                            $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest'),
-                            $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first')
-                        ]),
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
-                            $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
-                            $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
-                        ])
-                    ]),
+                    // $.make('li', { className: 'NB-menu-separator' }),
+                    // $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
+                    //     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
+                    //         $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest'),
+                    //         $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first')
+                    //     ]),
+                    //     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
+                    //         $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
+                    //         $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
+                    //     ])
+                    // ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -2743,7 +2743,7 @@
                     });
 
                     $manage_menu_container.corner('br 8px');
-                    $('li', $manage_menu_container).each(function() {
+                    $manage_menu_container.find('.NB-menu-manage > li').each(function() {
                         $(this).prependTo($(this).parent());
                     });
                 } else {
@@ -2887,10 +2887,16 @@
 
             var order = NEWSBLUR.assets.view_setting(feed_id, 'order');
             var read_filter = NEWSBLUR.assets.view_setting(feed_id, 'read_filter');
-            $('.NB-view-setting-order-oldest', $manage_menu).toggleClass('NB-active', order == 'oldest');
-            $('.NB-view-setting-order-newest', $manage_menu).toggleClass('NB-active', order != 'oldest');
-            $('.NB-view-setting-readfilter-unread', $manage_menu).toggleClass('NB-active', read_filter == 'unread');
-            $('.NB-view-setting-readfilter-all', $manage_menu).toggleClass('NB-active', read_filter != 'unread');
+            var $oldest = $('.NB-view-setting-order-oldest', $manage_menu);
+            var $newest = $('.NB-view-setting-order-newest', $manage_menu);
+            var $unread = $('.NB-view-setting-readfilter-unread', $manage_menu);
+            var $all = $('.NB-view-setting-readfilter-all', $manage_menu);
+            $oldest.toggleClass('NB-active', order == 'oldest');
+            $newest.toggleClass('NB-active', order != 'oldest');
+            $oldest.text('Oldest' + (order == 'oldest' ? ' first' : ''));
+            $newest.text('Newest' + (order != 'oldest' ? ' first' : ''));
+            $unread.toggleClass('NB-active', read_filter == 'unread');
+            $all.toggleClass('NB-active', read_filter != 'unread');
         },
         
         // ========================
