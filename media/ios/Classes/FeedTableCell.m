@@ -91,15 +91,15 @@ static CGFloat *psColors = nil;
     
     UIColor *backgroundColor;
     
-//    if (self.isSocial) {
-//        backgroundColor = self.selected || self.highlighted ? 
-//                          [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : 
-//                          UIColorFromRGB(0xe9e9ee);
-//    } else {
+    if (self.isSocial) {
+        backgroundColor = self.selected || self.highlighted ? 
+                          [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : 
+                          UIColorFromRGB(0xe9e9ee);
+    } else {
         backgroundColor = self.selected || self.highlighted ? 
                           [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : 
                           [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
-//    }
+    }
     
     [backgroundColor set];
     CGContextFillRect(context, r);

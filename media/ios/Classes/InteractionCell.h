@@ -17,5 +17,4 @@
 
 - (int)refreshInteraction:(NSDictionary *)interaction withWidth:(int)width;
 - (NSString *)stripFormatting:(NSString *)str;
-- (NSString *)addHTMLFormatting:(NSString *)str;
 @end

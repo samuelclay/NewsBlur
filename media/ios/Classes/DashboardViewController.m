@@ -58,58 +58,11 @@
     label.textColor = [UIColor whiteColor];
     label.text = DASHBOARD_TITLE;
     self.navigationItem.titleView = label;
-    
-//    [self repositionDashboard];
 }
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
-}
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-//    [self repositionDashboard];
-}
-
-- (void)repositionDashboard {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
-	if (UIInterfaceOrientationIsPortrait(orientation)) {
-        self.interactionsLabel.frame = CGRectMake((self.view.frame.size.width - 320) / 2,
-                                                  ((self.view.frame.size.height - 640) / 3) - 50,
-                                                  self.interactionsLabel.frame.size.width,
-                                                  self.interactionsLabel.frame.size.height);
-        self.interactionsModule.frame = CGRectMake((self.view.frame.size.width - 320) / 2,
-                                                   (self.view.frame.size.height - 640) / 3,
-                                                   320,
-                                                   320);
-        self.activitesLabel.frame = CGRectMake((self.view.frame.size.width - 320) / 2,
-                                               ((self.view.frame.size.height - 640) / 3) * 2 + 320 - 50,
-                                               self.activitesLabel.frame.size.width,
-                                               self.activitesLabel.frame.size.height);
-        self.activitiesModule.frame = CGRectMake((self.view.frame.size.width - 320) / 2, 
-                                                 ((self.view.frame.size.height - 640) / 3) * 2 + 320, 
-                                                 320, 
-                                                 320);
-    } else {
-        self.interactionsLabel.frame = CGRectMake((self.view.frame.size.width - 640) / 3,
-                                                  (self.view.frame.size.height - 320) / 2 - 50,
-                                                  self.interactionsLabel.frame.size.width,
-                                                  self.interactionsLabel.frame.size.height);
-        self.interactionsModule.frame = CGRectMake((self.view.frame.size.width - 640) / 3,
-                                                   (self.view.frame.size.height - 320) / 2,
-                                                   320,
-                                                   320);
-        
-        self.activitesLabel.frame = CGRectMake(((self.view.frame.size.width - 640) / 3) * 2 + 320,
-                                                  (self.view.frame.size.height - 320) / 2 - 50,
-                                                  self.activitesLabel.frame.size.width,
-                                                  self.activitesLabel.frame.size.height);
-        self.activitiesModule.frame = CGRectMake(((self.view.frame.size.width - 640) / 3) * 2 + 320,
-                                                 (self.view.frame.size.height - 320) / 2,
-                                                 320, 
-                                                 320);        
-    }
-    
 }
 
 - (IBAction)doLogout:(id)sender {
@@ -127,6 +80,8 @@
         self.interactionsModule = interactions;
         [self.view insertSubview:self.interactionsModule
                     belowSubview:self.header];
+        
+        self.interactionsModule.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     }
     
     [self.interactionsModule fetchInteractionsDetail:1];    
@@ -168,7 +123,6 @@
     
     [self.activitiesModule refreshWithActivities:appDelegate.dictUserActivities];
 
-//    [self repositionDashboard];
 }
 
 @end

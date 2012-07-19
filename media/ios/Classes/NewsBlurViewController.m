@@ -94,8 +94,10 @@
         [appDelegate setSelectedIntelligence:0];
     }
     
-    self.feedTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.feedTitlesTable.backgroundColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
+//    self.feedTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone; // DO NOT USE. THIS BREAKS SHIT.
+    UIColor *bgColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
+    self.feedTitlesTable.separatorColor = bgColor;
+    self.feedTitlesTable.backgroundColor = bgColor;
     
     // reset all feed detail specific data
     appDelegate.activeFeed = nil; 
@@ -369,7 +371,6 @@
         }];
         [sortedFolders setValue:sortedArray forKey:f];
     }
-    
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
 
@@ -480,6 +481,7 @@
     NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
     NSMutableArray *indexPaths = [NSMutableArray array];
     
+    // if show all sites, calculate feeds and mark visible
     if (self.viewShowingAllFeeds) {
         [self calculateFeedLocations:NO];
     }
@@ -503,8 +505,16 @@
             
             int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
             
-            if (!self.viewShowingAllFeeds ||
-                (self.viewShowingAllFeeds && ![self.stillVisibleFeeds objectForKey:feedIdStr])) {
+//            BOOL isUser = [[NSString stringWithFormat:@"%@", feedId]
+//                           isEqualToString:
+//                           [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]]];
+            
+            // if unread
+            if (!self.viewShowingAllFeeds) {
+                if (maxScore < intelligenceLevel) {
+                    [indexPaths addObject:indexPath];
+                }
+            } else if (self.viewShowingAllFeeds && ![self.stillVisibleFeeds objectForKey:feedIdStr]) {
                 if (maxScore < intelligenceLevel) {
                     [indexPaths addObject:indexPath];
                 }
@@ -512,6 +522,13 @@
         }
     }
     
+    if (self.viewShowingAllFeeds) {
+        NSLog(@"this many sites to add");
+    } else {
+        NSLog(@"deleted %@", indexPaths);
+    }
+    
+    // if show unreads, calculate feeds and mark visible
     if (!self.viewShowingAllFeeds) {
         [self calculateFeedLocations:YES];
     }
@@ -522,6 +539,7 @@
             [self.feedTitlesTable insertRowsAtIndexPaths:indexPaths 
                                         withRowAnimation:UITableViewRowAnimationNone];
         } else {
+
             [self.feedTitlesTable deleteRowsAtIndexPaths:indexPaths 
                                         withRowAnimation:UITableViewRowAnimationNone];
         }
@@ -557,11 +575,18 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView 
                      cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *feed;
-    static NSString *FeedCellIdentifier = @"FeedCellIdentifier";
+
+    NSString *CellIdentifier;
     
-    FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:FeedCellIdentifier];    
+    if (indexPath.section == 0) {
+        CellIdentifier = @"BlurblogCellIdentifier";
+    } else {
+        CellIdentifier = @"FeedCellIdentifier";
+    }
+        
+    FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];    
     if (cell == nil) {
-        cell = [[FeedTableCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:@"FeedCellIdentifier"];
+        cell = [[FeedTableCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:CellIdentifier];
         cell.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     
@@ -870,6 +895,9 @@
             NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
             NSDictionary *feed;
             
+//            BOOL isUser = [feedIdStr isEqualToString:
+//                           [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]]];
+            
             if ([appDelegate isSocialFeed:feedIdStr]) {
                 feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr]; 
             } else {
@@ -969,7 +997,6 @@
     if (markVisible) {
         self.visibleFeeds = [NSMutableDictionary dictionary];
     }
-    
     for (NSString *folderName in appDelegate.dictFoldersArray) {
         NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
         NSMutableArray *feedLocations = [NSMutableArray array];
@@ -981,15 +1008,22 @@
                 feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
             } else {
                 feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-            }                
+            }      
+            
+//            BOOL isUser = [[NSString stringWithFormat:@"%@", feedId]
+//                           isEqualToString:
+//                           [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]]];
 
             if (self.viewShowingAllFeeds) {
                 NSNumber *location = [NSNumber numberWithInt:f];
                 [feedLocations addObject:location];
             } else {
                 int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
+//                if ([folderName isEqualToString:@""]){
 //                NSLog(@"Computing score for %@: %d in %d (markVisible: %d)", 
 //                        [feed objectForKey:@"feed_title"], maxScore, appDelegate.selectedIntelligence, markVisible);
+//                }
+                               
                 if (maxScore >= appDelegate.selectedIntelligence) {
                     NSNumber *location = [NSNumber numberWithInt:f];
                     [feedLocations addObject:location];
@@ -998,9 +1032,16 @@
                     }
                 }
             }
+
         }
+        if ([folderName isEqualToString:@""]){
+            NSLog(@"feedLocations count is %i: ", [feedLocations count]);
+        }
+//            NSLog(@"feedLocations %@", feedLocations);
         [self.activeFeedLocations setObject:feedLocations forKey:folderName];
+        
     }
+    NSLog(@"second here");
 //    NSLog(@"Active feed locations %@", self.activeFeedLocations);
 }
 

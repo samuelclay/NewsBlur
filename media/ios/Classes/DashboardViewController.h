@@ -33,8 +33,6 @@
 - (IBAction)doLogout:(id)sender;
 - (void)refreshInteractions;
 - (void)refreshActivity;
-- (void)finishLoadInteractions:(ASIHTTPRequest *)request;
 - (void)finishLoadActivities:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-- (void)repositionDashboard;
 @end

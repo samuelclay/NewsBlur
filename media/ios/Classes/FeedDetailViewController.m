@@ -227,8 +227,6 @@
             }
         }
         
-        NSLog(@"appDelegate.activeFolderFeeds is %@", appDelegate.activeFolderFeeds);
-        
         NSString *theFeedDetailURL = [NSString stringWithFormat:
                                       @"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
                                       NEWSBLUR_URL,
