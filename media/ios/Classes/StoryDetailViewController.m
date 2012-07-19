@@ -389,7 +389,7 @@
     headerString = [NSString stringWithFormat:@
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
                     "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
-                    "<meta name=\"viewport\" id=\"\viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
+                    "<meta name=\"viewport\" id=\"viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
 
 
                     contentWidth];
@@ -724,9 +724,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)scrolltoBottom {
-    NSString *jsString = [[NSString alloc] initWithFormat:@
-                          "window.scrollTo(0, document.body.scrollHeight);"];
-    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    CGPoint bottomOffset = CGPointMake(0, self.webView.scrollView.contentSize.height - self.webView.bounds.size.height);
+    [self.webView.scrollView setContentOffset:bottomOffset animated:YES];
 }
 
    
@@ -852,7 +851,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
     
     NSString *jsString = [[NSString alloc] initWithFormat:
-                          @"document.getElementsByTagName('body')[0].setAttribute('class', '%@');document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%i;initial-scale=1; maximum-scale=1.0; user-scalable=0;\");",
+                          @"document.getElementsByTagName('body')[0].setAttribute('class', '%@');"
+                          "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%i;initial-scale=1; maximum-scale=1.0; user-scalable=0;\");",
                           contentWidthClass,
                           contentWidth];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];

@@ -270,6 +270,8 @@
         
         self.shareViewController.view.hidden = NO;
         
+
+        
         [UIView animateWithDuration:0.35 animations:^{
             self.shareViewController.view.frame = CGRectMake(0, 
                                                         newShareYCoordinate, 
@@ -310,6 +312,7 @@
 - (void)hideShareView:(BOOL)resetComment {
     if (resetComment) {
         self.shareViewController.commentField.text = @"";
+        [self.shareViewController.commentField resignFirstResponder];
     }
     
     self.isShowingShare = NO;

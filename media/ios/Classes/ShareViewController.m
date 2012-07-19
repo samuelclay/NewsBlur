@@ -270,7 +270,12 @@
                      animations:^{
                          self.view.frame = shareViewFrame;
                          appDelegate.storyDetailViewController.webView.frame = storyDetailViewFrame;
-                     } completion:nil];
+                     } completion:^(BOOL finished) {
+                        [appDelegate.storyDetailViewController scrolltoBottom];
+                         
+                     }];
+    
+    
 }
 
 @end
