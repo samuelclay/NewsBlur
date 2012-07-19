@@ -200,7 +200,7 @@ class UserSubscription(models.Model):
         self.oldest_unread_story_date = now
         self.needs_unread_recalc = False
 
-        MUserStory.delete_old_stories(self.user_id, self.feed_id)
+        # MUserStory.delete_old_stories(self.user_id, self.feed_id)
         
         self.save()
         
