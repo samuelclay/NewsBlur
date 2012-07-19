@@ -527,7 +527,7 @@ def profile(request):
     profile_ids = set(user_profile['followers_youknow'] + user_profile['followers_everybody'] + 
                       user_profile['following_youknow'] + user_profile['following_everybody'])
     profiles = MSocialProfile.profiles(profile_ids)
-    activities = MActivity.user(user_id, page=1, public=True)
+    activities, _ = MActivity.user(user_id, page=1, public=True)
     logging.user(request, "~BB~FRLoading social profile: %s" % user_profile['username'])
         
     payload = {
@@ -873,12 +873,14 @@ def load_interactions(request):
     if not user_id:
         user_id = get_user(request).pk
     page = max(1, int(request.REQUEST.get('page', 1)))
-    interactions = MInteraction.user(user_id, page=page)
+    limit = request.REQUEST.get('limit')
+    interactions, has_next_page = MInteraction.user(user_id, page=page, limit=limit)
     format = request.REQUEST.get('format', None)
     
     data = {
         'interactions': interactions,
         'page': page,
+        'has_next_page': has_next_page
     }
     
     if format == 'html':
@@ -898,12 +900,14 @@ def load_activities(request):
         
     public = user_id != request.user.pk
     page = max(1, int(request.REQUEST.get('page', 1)))
-    activities = MActivity.user(user_id, page=page, public=public)
+    limit = request.REQUEST.get('limit')
+    activities, has_next_page = MActivity.user(user_id, page=page, limit=limit, public=public)
     format = request.REQUEST.get('format', None)
     
     data = {
         'activities': activities,
         'page': page,
+        'has_next_page': has_next_page,
         'username': (user.username if public else 'You'),
     }
     

@@ -268,10 +268,11 @@ def stripe_form(request):
 def load_activities(request):
     user = get_user(request)
     page = max(1, int(request.REQUEST.get('page', 1)))
-    activities = MActivity.user(user.pk, page=page)
+    activities, has_next_page = MActivity.user(user.pk, page=page)
 
     return {
         'activities': activities,
         'page': page,
+        'has_next_page': has_next_page,
         'username': 'You',
     }
