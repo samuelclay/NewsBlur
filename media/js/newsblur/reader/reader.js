@@ -2308,9 +2308,16 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-settings' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-controls' }, [
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-feed-order' }, [
+                            $.make('li', { className: 'NB-feed-order-oldest' }, 'Oldest'),
+                            $.make('li', { className: 'NB-feed-order-newest NB-active' }, 'Newest first')
+                        ]),
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-feed-unreads' }, [
+                            $.make('li', { className: 'NB-feed-unreads-all  NB-active' }, 'All stories'),
+                            $.make('li', { className: 'NB-feed-unreads-only' }, 'Unread only')
+                        ])
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
@@ -2319,11 +2326,15 @@
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-recommend' }, [
+                    // $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-recommend' }, [
+                    //     $.make('div', { className: 'NB-menu-manage-image' }),
+                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
+                    // ]),
+                    // $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-settings' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
                     ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-move NB-menu-manage-feed-move' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Move to folder')
@@ -2907,7 +2918,7 @@
             var $select = $('select', $confirm);
             if (_.isNumber(feed_id)) {
                 var feed      = this.model.get_feed(feed_id);
-                var feed_view = feed.get_view($feed);
+                var feed_view = feed.get_view($feed, true);
                 var in_folder = feed_view.options.folder_title;
             } else {
                 folder_view = NEWSBLUR.assets.folders.get_view($feed);
@@ -4173,15 +4184,6 @@
                 self.mark_feed_as_read(feed_id, $t);
                 $t.fadeOut(400);
             });
-            $.targetIs(e, { tagSelector: '.NB-feedbar-statistics' }, function($t, $p){
-                self.open_feed_statistics_modal();
-            });
-            $.targetIs(e, { tagSelector: '.NB-feedbar-train-feed' }, function($t, $p){
-                e.preventDefault();
-                if (!$('.NB-task-manage').hasClass('NB-disabled')) {
-                    self.open_feed_intelligence_modal(1, self.active_feed, !self.flags.social_view);
-                }
-            }); 
             $.targetIs(e, { tagSelector: '.NB-story-title-indicator' }, function($t, $p){
                 e.preventDefault();
                 self.show_hidden_story_titles();
@@ -4360,6 +4362,10 @@
                 e.stopPropagation();
             });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-move-confirm' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+            });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-controls' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
             });  

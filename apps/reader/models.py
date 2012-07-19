@@ -84,9 +84,10 @@ class UserSubscription(models.Model):
                     break
             else:
                 self.delete()
-                
-    def unread_stories(self, withscores=False):
+    
+    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        ignore_user_stories = False
         
         stories_key         = 'F:%s' % (self.feed_id)
         read_stories_key    = 'RS:%s:%s' % (self.user_id, self.feed_id)
@@ -94,48 +95,64 @@ class UserSubscription(models.Model):
 
         if not r.exists(stories_key):
             return []
-        elif not r.exists(read_stories_key):
+        elif read_filter != 'unread' or not r.exists(read_stories_key):
+            ignore_user_stories = True
             unread_stories_key = stories_key
         else:
             r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-    
         sorted_stories_key          = 'zF:%s' % (self.feed_id)
         unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time())
         mark_read_time  = time.mktime(self.mark_read_date.timetuple())
-        story_guids = r.zrevrangebyscore(unread_ranked_stories_key, current_time, 
-                                         mark_read_time, withscores=withscores)
+        if order == 'oldest':
+            byscorefunc = r.zrangebyscore
+            min_score = mark_read_time
+            max_score = current_time
+        else:
+            byscorefunc = r.zrevrangebyscore
+            min_score = current_time
+            max_score = mark_read_time
+        story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
+                                  max_score, start=offset, num=limit,
+                                  withscores=withscores)
 
-        r.delete(unread_ranked_stories_key)
-        if r.exists(read_stories_key):
+        r.expire(unread_ranked_stories_key, 24*60*60)
+        if not ignore_user_stories:
             r.delete(unread_stories_key)
         
-        return story_guids
+        return story_ids
         
     @classmethod
-    def unread_feed_stories(cls, user_id, feed_ids, offset=0, limit=6):
+    def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-
+        
+        if order == 'oldest':
+            range_func = r.zrange
+        else:
+            range_func = r.zrevrange
+            
         if not isinstance(feed_ids, list):
             feed_ids = [feed_ids]
 
         unread_ranked_stories_keys  = 'zU:%s' % (user_id)
         if offset and r.exists(unread_ranked_stories_keys):
-            story_guids = r.zrevrange(unread_ranked_stories_keys, offset, limit)
+            story_guids = range_func(unread_ranked_stories_keys, offset, limit)
             return story_guids
         else:
             r.delete(unread_ranked_stories_keys)
 
         for feed_id in feed_ids:
             us = cls.objects.get(user=user_id, feed=feed_id)
-            story_guids = us.unread_stories(withscores=True)
+            story_guids = us.get_stories(offset=offset, limit=limit, 
+                                         order=order, read_filter=read_filter, 
+                                         withscores=True)
 
             if story_guids:
                 r.zadd(unread_ranked_stories_keys, **dict(story_guids))
             
-        story_guids = r.zrevrange(unread_ranked_stories_keys, offset, limit)
+        story_guids = range_func(unread_ranked_stories_keys, offset, limit)
         r.expire(unread_ranked_stories_keys, 24*60*60)
         
         return story_guids
@@ -257,8 +274,10 @@ class UserSubscription(models.Model):
         self.unread_count_updated = now
         self.oldest_unread_story_date = now
         self.needs_unread_recalc = False
-
-        MUserStory.delete_old_stories(self.user_id, self.feed_id)
+        
+        # No longer removing old user read stories, since they're needed for social,
+        # and they get cleaned up automatically when new stories come in.
+        # MUserStory.delete_old_stories(self.user_id, self.feed_id)
         
         self.save()
         

@@ -394,6 +394,8 @@ def load_single_feed(request, feed_id):
     offset       = int(request.REQUEST.get('offset', 0))
     limit        = int(request.REQUEST.get('limit', 6))
     page         = int(request.REQUEST.get('page', 1))
+    order        = request.REQUEST.get('order', 'newest')
+    read_filter  = request.REQUEST.get('read_filter', 'all')
     dupe_feed_id = None
     userstories_db = None
     user_profiles = {}
@@ -401,19 +403,21 @@ def load_single_feed(request, feed_id):
 
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
-        
-    try:
-        feed = Feed.objects.get(id=feed_id)
-    except Feed.DoesNotExist:
-        feed_address = request.REQUEST.get('feed_address')
-        dupe_feed = DuplicateFeed.objects.filter(duplicate_address=feed_address)
-        if dupe_feed:
-            feed = dupe_feed[0].feed
-            dupe_feed_id = feed_id
-        else:
-            raise Http404
-        
-    stories = feed.get_stories(offset, limit)
+
+    feed_address = request.REQUEST.get('feed_address')
+    feed = Feed.get_by_id(feed_id, feed_address=feed_address)
+    if not feed:
+        raise Http404
+
+    usersub = UserSubscription.objects.get(user=user, feed=feed)
+    
+    if read_filter == 'unread' or order == 'oldest':
+        story_ids = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
+        story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+        mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
+        stories = Feed.format_stories(mstories)
+    else:
+        stories = feed.get_stories(offset, limit)
     try:
         stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
     except redis.ConnectionError:
@@ -433,7 +437,6 @@ def load_single_feed(request, feed_id):
     
     checkpoint1 = time.time()
     
-    usersub = UserSubscription.objects.get(user=user, feed=feed)
     userstories = []
     if usersub and stories:
         story_ids = [story['id'] for story in stories]
@@ -574,6 +577,8 @@ def load_river_stories(request):
     feed_ids          = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
     original_feed_ids = list(feed_ids)
     page              = int(request.REQUEST.get('page', 1))
+    order             = request.REQUEST.get('order', 'newest')
+    read_filter       = request.REQUEST.get('read_filter', 'unread')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
     if not feed_ids: 
@@ -583,8 +588,10 @@ def load_river_stories(request):
     offset = (page-1) * limit
     limit = page * limit - 1
     
-    story_ids = UserSubscription.unread_feed_stories(user.pk, feed_ids, offset=offset, limit=limit)
-    mstories = MStory.objects(id__in=story_ids)
+    story_ids = UserSubscription.feed_stories(user.pk, feed_ids, offset=offset, limit=limit,
+                                              order=order, read_filter=read_filter)
+    story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+    mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
     stories = Feed.format_stories(mstories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     

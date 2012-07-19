@@ -995,11 +995,17 @@ background: transparent;
   margin-left: 24px;
 }
 
+#story_titles .NB-feedbar .NB-feedbar-settings {
+    background: transparent url("/media/embed/icons/silk/cog.png") no-repeat center center;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    padding: 0 24px 0 12px;
+}
 #story_titles .NB-feedbar .NB-feedbar-train-feed {
     background: transparent url("/media/embed/icons/silk/bricks.png") no-repeat center center;
     width: 16px;
     height: 16px;
-/*    display: none;*/
     cursor: pointer;
     padding: 0 0 0 38px;
 }
@@ -1007,7 +1013,6 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/chart_curve.png') no-repeat center center;    
     width: 16px;
     height: 16px;
-/*    display: none;*/
     cursor: pointer;
     margin:3px 0 0 -6px;
     padding:0 24px 0 6px;
@@ -5305,6 +5310,37 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-confirm,
 .NB-menu-manage .NB-menu-manage-delete-confirm {
     display: none;
+}
+
+.NB-menu-manage .NB-menu-manage-controls {
+    overflow: hidden;
+    background: none;
+    padding: 2px 0 4px;
+}
+.NB-menu-manage li.NB-menu-manage-controls:hover {
+    overflow: hidden;
+    background: none;
+    cursor: default;
+}
+.NB-menu-manage .NB-menu-manage-controls .segmented-control {
+    display: inline-block;
+    margin: 4px 0 0 36px;
+    height: 14px;
+    width: auto;
+    color: white;
+    overflow: hidden;
+    text-align: center;
+}
+.NB-menu-manage .NB-menu-manage-controls .segmented-control:last-child {
+}
+.NB-menu-manage .NB-menu-manage-controls .segmented-control li {
+    clear: none;
+    padding: 1px 12px 0;
+    font-size: 10px;
+    color: #E0E0E0;
+}
+.NB-menu-manage .NB-menu-manage-controls .segmented-control li.NB-active {
+    color: white;
 }
 
 /* ==================== */
