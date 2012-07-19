@@ -117,10 +117,18 @@ def set_account_settings(request):
 def set_view_setting(request):
     code = 1
     feed_id = request.POST['feed_id']
-    feed_view_setting = request.POST['feed_view_setting']
-    
+    feed_view_setting = request.POST.get('feed_view_setting')
+    feed_order_setting = request.POST.get('feed_order_setting')
+    feed_read_filter_setting = request.POST.get('feed_read_filter_setting')
     view_settings = json.decode(request.user.profile.view_settings)
-    view_settings[feed_id] = feed_view_setting
+    
+    setting = view_settings.get(feed_id, {})
+    if isinstance(setting, basestring): setting = {'v': setting}
+    if feed_view_setting: setting['v'] = feed_view_setting
+    if feed_order_setting: setting['o'] = feed_order_setting
+    if feed_read_filter_setting: setting['r'] = feed_read_filter_setting
+    
+    view_settings[feed_id] = setting
     request.user.profile.view_settings = json.encode(view_settings)
     request.user.profile.save()
     

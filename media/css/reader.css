@@ -5315,7 +5315,7 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-controls {
     overflow: hidden;
     background: none;
-    padding: 2px 0 4px;
+    padding: 2px 0 3px;
 }
 .NB-menu-manage li.NB-menu-manage-controls:hover {
     overflow: hidden;

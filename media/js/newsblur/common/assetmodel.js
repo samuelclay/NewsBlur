@@ -387,7 +387,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.make_request('/reader/feed/'+feed_id,
                 {
                     page: page,
-                    feed_address: this.feeds.get(feed_id).get('feed_address')
+                    feed_address: this.feeds.get(feed_id).get('feed_address'),
+                    order: this.view_setting(feed_id, 'order'),
+                    read_filter: this.view_setting(feed_id, 'read_filter')
                 }, pre_callback,
                 error_callback,
                 {
@@ -507,7 +509,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/river_stories', {
             feeds: feeds,
             page: page,
-            read_stories_count: this.read_stories_river_count
+            order: this.view_setting(feed_id, 'order'),
+            read_filter: this.view_setting(feed_id, 'read_filter')
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -525,7 +528,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var user_id = this.get_feed(feed_id).get('user_id');
 
         this.make_request('/social/stories/'+user_id+'/', {
-            page: page
+            page: page,
+            order: this.view_setting(feed_id, 'order'),
+            read_filter: this.view_setting(feed_id, 'read_filter')
         }, pre_callback, error_callback, {
             'ajax_group': (page > 1 ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -900,16 +905,35 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, null);
     },
     
-    view_setting: function(feed_id, feed_view_setting, callback) {
-        if (typeof feed_view_setting == 'undefined') {
-            return NEWSBLUR.Preferences.view_settings[feed_id+''] || NEWSBLUR.Preferences.default_view;
+    view_setting: function(feed_id, setting, callback) {
+        if (_.isUndefined(setting) || _.isString(setting)) {
+            setting = setting || 'view';
+            var s = setting.substr(0, 1);
+            var feed = NEWSBLUR.Preferences.view_settings[feed_id+''];
+            var default_setting = NEWSBLUR.Preferences['default_' + setting];
+            if (setting == 'read_filter' && _.string.contains(feed_id, 'river:')) {
+                default_setting = 'unread';
+            }
+            return feed && feed[s] || default_setting;
         }
         
-        NEWSBLUR.Preferences.view_settings[feed_id+''] = feed_view_setting;
-        this.make_request('/profile/set_view_setting', {
-            'feed_id': feed_id+'',
-            'feed_view_setting': feed_view_setting
-        }, callback, null);
+        var view_settings = _.clone(NEWSBLUR.Preferences.view_settings[feed_id+'']) || {};
+        if (_.isString(view_settings)) {
+            view_settings = {'view': view_settings};
+        }
+        var params = {'feed_id': feed_id+''};
+        _.each(['view', 'order', 'read_filter'], function(facet) {
+            if (setting[facet]) {
+                view_settings[facet.substr(0, 1)] = setting[facet];
+                params['feed_'+facet+'_setting'] = setting[facet];
+            }
+        });
+        
+        if (!_.isEqual(NEWSBLUR.Preferences.view_settings[feed_id+''], view_settings)) {
+            NEWSBLUR.Preferences.view_settings[feed_id+''] = view_settings;
+            this.make_request('/profile/set_view_setting', params, callback, null);
+            return true;
+        }
     },
     
     collapsed_folders: function(folder_title, is_collapsed, callback) {
