@@ -91,7 +91,7 @@ class PageImporter(object):
         except (requests.exceptions.RequestException, 
                 requests.packages.urllib3.exceptions.HTTPError), e:
             logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
-            mail_feed_error_to_admin(self.feed, e, local_vars=locals())
+            # mail_feed_error_to_admin(self.feed, e, local_vars=locals())
             return self.fetch_page(urllib_fallback=True, requests_exception=e)
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
