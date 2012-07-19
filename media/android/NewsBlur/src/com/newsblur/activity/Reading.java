@@ -116,7 +116,7 @@ public class Reading extends SherlockFragmentActivity {
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 			intent.putExtra(Intent.EXTRA_SUBJECT, story.title);
 			final String shareString = getResources().getString(R.string.share);
-			intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new String[] { story.title, story.permalink }));
+			intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[] { story.title, story.permalink }));
 			startActivity(Intent.createChooser(intent, "Share using"));
 			return true;
 		default:

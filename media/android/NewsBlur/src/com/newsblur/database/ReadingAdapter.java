@@ -37,7 +37,7 @@ public class ReadingAdapter extends FragmentStatePagerAdapter implements LoaderM
 			return loadingFragment;
 		} else {
 			cursor.moveToPosition(position);
-			return new ReadingItemFragment(Story.fromCursor(cursor));
+			return ReadingItemFragment.newInstance(Story.fromCursor(cursor));
 		}
 	}
 

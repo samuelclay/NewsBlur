@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -14,19 +15,31 @@ import com.newsblur.domain.Story;
 
 public class ReadingItemFragment extends Fragment {
 
-	final Story story;
+	Story story;
+	LayoutInflater inflater;
 	
-	public ReadingItemFragment() {
-		story = null;
-	}
-	
-	public ReadingItemFragment(final Story story) {
-		this.story = story;
-	}
-	
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.fragment_readingitem, null);
+	public static ReadingItemFragment newInstance(Story story) { 
+		ReadingItemFragment readingFragment = new ReadingItemFragment();
 		
+		// Supply num input as an argument.
+        Bundle args = new Bundle();
+        args.putSerializable("story", story);
+        readingFragment.setArguments(args);
+        
+        return readingFragment;
+	}
+	
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		story = getArguments() != null ? (Story) getArguments().getSerializable("story") : null;
+	}
+	
+	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+		this.inflater = inflater;
+		
+		View view = inflater.inflate(R.layout.fragment_readingitem, null);
 		WebView web = (WebView) view.findViewById(R.id.reading_webview);
 		setupWebview(web);
 		setupItemMetadata(view);
@@ -39,11 +52,24 @@ public class ReadingItemFragment extends Fragment {
 		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
 		TextView itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
 		TextView itemCommentCount = (TextView) view.findViewById(R.id.reading_item_comment_count);
+		TextView itemShareCount = (TextView) view.findViewById(R.id.reading_item_share_count);
+		LinearLayout tagContainer = (LinearLayout) view.findViewById(R.id.reading_item_tags);
+		
+		if (story.tags != null || story.tags.length > 0) {
+			tagContainer.setVisibility(View.VISIBLE);
+			for (String tag : story.tags) {
+				View v = inflater.inflate(R.layout.tag_view, null);
+				TextView tagText = (TextView) v.findViewById(R.id.tag_text);
+				tagText.setText(tag);
+				tagContainer.addView(v);
+			}
+		}
 		
 		itemDate.setText(story.date);
 		itemTitle.setText(story.title);
 		itemAuthors.setText(story.authors);
 		itemCommentCount.setText(story.commentCount == null ? "0" : story.commentCount.toString());
+		itemShareCount.setText(story.shareCount == null ? "0" : story.shareCount.toString());
 	}
 
 	private void setupWebview(WebView web) {
@@ -55,7 +81,8 @@ public class ReadingItemFragment extends Fragment {
 		web.getSettings().setAppCachePath("/data/data/com.newsblur/cache");
 		web.getSettings().setAllowFileAccess(true);
 		web.getSettings().setAppCacheEnabled(true);
-		web.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+		web.setVerticalScrollBarEnabled(false);
+		
 		StringBuilder builder = new StringBuilder();
 		// TODO: Define a better strategy for rescaling the HTML across device screen sizes and storying this HTML as boilderplate somewhere
 		builder.append("<html><head><meta name=\"viewport\" content=\"target-densitydpi=device-dpi\" /><link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body>");

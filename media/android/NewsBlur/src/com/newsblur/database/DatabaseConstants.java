@@ -43,6 +43,8 @@ public class DatabaseConstants {
 	public static final String STORY_TITLE = "title";
 	public static final String STORY_DATE = "date";
 	public static final String STORY_CONTENT = "content";
+	public static final String STORY_COMMENT_COUNT = "comment_count";
+	public static final String STORY_SHARE_COUNT = "share_count";
 	public static final String STORY_PERMALINK = "permalink";
 	public static final String STORY_AUTHORS = "authors";
 	public static final String STORY_INTELLIGENCE_AUTHORS = "intelligence_authors";
@@ -50,6 +52,7 @@ public class DatabaseConstants {
 	public static final String STORY_INTELLIGENCE_FEED = "intelligence_feed";
 	public static final String STORY_INTELLIGENCE_TITLE = "intelligence_title";
 	public static final String STORY_READ = "read";
+	public static final String STORY_TAGS = "tags";
 	public static final String STORY_FEED_ID = "feed_id";
 	
 	// Aggregated columns
