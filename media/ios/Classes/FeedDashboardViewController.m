@@ -13,7 +13,7 @@
 @implementation FeedDashboardViewController
 
 @synthesize appDelegate;
-@synthesize toolbar;
+@synthesize storyLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -36,28 +36,17 @@
 
 - (void)viewDidUnload
 {
-    [self setToolbar:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
 
-#pragma mark -
-#pragma mark Interactions
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    UITouch *theTouch = [touches anyObject];
-    
-    if ([theTouch view] == toolbar) {
-        CGPoint touchLocation = [theTouch locationInView:self.view];
-        CGFloat y = touchLocation.y;
-        [appDelegate dragFeedDetailView:y];        
-    }
+- (void)viewWillAppear:(BOOL)animated {
+    self.storyLabel.hidden = YES;
 }
 
 @end

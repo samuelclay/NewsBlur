@@ -390,12 +390,10 @@
                 NSIndexPath *indexPath = [NSIndexPath indexPathForRow:locationOfStoryId inSection:0];
 
                 [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
-                appDelegate.inFindingStoryMode = NO;
                 
                 UITableViewCell *cell = [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
                 [self changeRowStyleToRead:cell];
                 [self loadStory:cell atRow:indexPath.row]; 
-                [MBProgressHUD hideHUDForView:appDelegate.splitStoryDetailNavigationController.view animated:YES];
             }
         }
     }
@@ -585,9 +583,6 @@
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
         [self loadStory:cell atRow:location]; 
     }
-    
-    appDelegate.inFindingStoryMode = NO;
-    [MBProgressHUD hideHUDForView:appDelegate.splitStoryDetailNavigationController.view animated:YES];
 }
 
 - (void)changeRowStyleToRead:(FeedDetailTableCell *)cell {

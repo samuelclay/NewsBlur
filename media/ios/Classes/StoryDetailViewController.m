@@ -343,6 +343,7 @@
 
 - (void)showStory {
     appDelegate.inStoryDetail = YES;
+    [appDelegate hideFindingStoryHUD];
     [appDelegate hideShareView:YES];
     
     int activeLocation = appDelegate.locationOfActiveStory;    

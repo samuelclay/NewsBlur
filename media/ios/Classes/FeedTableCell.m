@@ -108,24 +108,24 @@ static CGFloat *psColors = nil;
     rect.size.width -= 18; // Scrollbar padding
     
     int psWidth = _positiveCount == 0 ? 0 : _positiveCount < 10 ? 
-                    18 : _positiveCount < 100 ? 24 : 30;
+                    14 : _positiveCount < 100 ? 22 : 28;
     int ntWidth = _neutralCount  == 0 ? 0 : _neutralCount < 10 ? 
-                    18 : _neutralCount  < 100 ? 24 : 30;
+                    14 : _neutralCount  < 100 ? 22 : 28;
     int ngWidth = _negativeCount == 0 ? 0 : _negativeCount < 10 ? 
-                    18 : _negativeCount < 100 ? 24 : 30;
+                    14 : _negativeCount < 100 ? 22 : 28;
     
     int psOffset = _positiveCount == 0 ? 0 : psWidth - 20;
     int ntOffset = _neutralCount  == 0 ? 0 : ntWidth - 20;
     int ngOffset = _negativeCount == 0 ? 0 : ngWidth - 20;
     
-    int psPadding = _positiveCount == 0 ? 0 : 4;
-    int ntPadding = _neutralCount  == 0 ? 0 : 4;
+    int psPadding = _positiveCount == 0 ? 0 : 2;
+    int ntPadding = _neutralCount  == 0 ? 0 : 2;
     
     if(_positiveCount > 0){     
         [positiveBackgroundColor set];
-        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, self.isSocial ? 14: 10, psWidth, 18);
+        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, self.isSocial ? 14: 9, psWidth, 17);
         [UIView drawLinearGradientInRect:rr colors:psColors];
-        [UIView drawRoundRectangleInRect:rr withRadius:8];
+        [UIView drawRoundRectangleInRect:rr withRadius:4];
         
         [indicatorWhiteColor set];
         
@@ -138,8 +138,8 @@ static CGFloat *psColors = nil;
     }
     if(_neutralCount > 0 && appDelegate.selectedIntelligence <= 0){     
         [neutralBackgroundColor set];
-        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, self.isSocial ? 14: 10, ntWidth, 18);
-        [UIView drawRoundRectangleInRect:rr withRadius:8];
+        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, self.isSocial ? 14: 9, ntWidth, 17);
+        [UIView drawRoundRectangleInRect:rr withRadius:4];
 //        [UIView drawLinearGradientInRect:rr colors:ntColors];
         
         [indicatorBlackColor set];
@@ -152,8 +152,8 @@ static CGFloat *psColors = nil;
     }
     if(_negativeCount > 0 && appDelegate.selectedIntelligence <= -1){       
         [negativeBackgroundColor set];
-        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntWidth - ntPadding - ngOffset, 10, ngWidth, 18);
-        [UIView drawRoundRectangleInRect:rr withRadius:8];
+        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntWidth - ntPadding - ngOffset, self.isSocial ? 14: 9, ngWidth, 17);
+        [UIView drawRoundRectangleInRect:rr withRadius:4];
 //        [UIView drawLinearGradientInRect:rr colors:ngColors];
         
         [indicatorWhiteColor set];
@@ -177,16 +177,16 @@ static CGFloat *psColors = nil;
     }
 
     if (isSocial) {
-        [self.feedFavicon drawInRect:CGRectMake(12.0, 6.0, 36.0, 36.0)];
+        [self.feedFavicon drawInRect:CGRectMake(12.0, 5.0, 36.0, 36.0)];
         [feedTitle 
-         drawInRect:CGRectMake(56, 14, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 8, 20.0) 
+         drawInRect:CGRectMake(56, 13, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 8, 20.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentLeft];
     } else {
-        [self.feedFavicon drawInRect:CGRectMake(12.0, 11.0, 16.0, 16.0)];
+        [self.feedFavicon drawInRect:CGRectMake(12.0, 9.0, 16.0, 16.0)];
         [feedTitle 
-         drawInRect:CGRectMake(36.0, 11.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
+         drawInRect:CGRectMake(36.0, 9.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentLeft];

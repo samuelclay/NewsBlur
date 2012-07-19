@@ -176,6 +176,9 @@
 - (void)showUserProfileModal;
 - (void)hideUserProfileModal;
 - (void)showFindFriends;
+- (void)showFindingStoryHUD;
+- (void)hideFindingStoryHUD;
+- (void)showNoSelectedStoryLabel;
 
 
 - (void)showAddSite;

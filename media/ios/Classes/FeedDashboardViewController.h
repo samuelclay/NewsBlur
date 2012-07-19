@@ -12,10 +12,12 @@
 
 @interface FeedDashboardViewController : UIViewController {
     NewsBlurAppDelegate *appDelegate;
+    UILabel *storyLabel;
+
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 
-@property (nonatomic) IBOutlet UIToolbar *toolbar;
+@property (nonatomic) IBOutlet UILabel *storyLabel;
 
 @end

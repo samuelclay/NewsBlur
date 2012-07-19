@@ -85,7 +85,7 @@
         self.interactionsPage = page;
         self.pageFetching = YES;
         self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/social/interactions?user_id=%@&page=%i",
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/social/interactions?user_id=%@&page=%i&limit=10",
                                NEWSBLUR_URL,
                                [appDelegate.dictUserProfile objectForKey:@"user_id"],
                                page];
@@ -128,7 +128,7 @@
         appDelegate.dictUserInteractions = [appDelegate.dictUserInteractions arrayByAddingObjectsFromArray:newInteractions];
     }
     
-    if ([confirmedInteractions count] == 0 || self.interactionsPage > 15) {
+    if ([confirmedInteractions count] == 0 || self.interactionsPage > 100) {
         self.pageFinished = YES;
     }
     [self refreshWithInteractions:appDelegate.dictUserInteractions];

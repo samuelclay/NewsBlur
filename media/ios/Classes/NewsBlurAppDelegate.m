@@ -239,6 +239,20 @@
     }
 }
 
+- (void)showFindingStoryHUD {
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.splitStoryDetailNavigationController.view animated:YES];
+    HUD.labelText = @"Finding Story...";
+}
+
+- (void)hideFindingStoryHUD {
+    [MBProgressHUD hideHUDForView:self.splitStoryDetailNavigationController.view animated:YES];
+    self.inFindingStoryMode = NO;
+}
+
+- (void)showNoSelectedStoryLabel {
+    self.feedDashboardViewController.storyLabel.hidden = NO;  
+}
+
 - (void)showShareView:(NSString *)userId 
           setUsername:(NSString *)username {
     self.isShowingShare = YES;
@@ -410,11 +424,11 @@
             //[self.storyDetailViewController initStory];
         } else {
             if (self.inFindingStoryMode) {
+                [self showFindingStoryHUD];
                 [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:NO];
-                MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.splitStoryDetailNavigationController.view animated:YES];
-                HUD.labelText = @"Finding Story...";
             } else {
                 [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:YES];
+                [self showNoSelectedStoryLabel];
             }
 
         }

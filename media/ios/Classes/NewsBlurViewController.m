@@ -21,7 +21,7 @@
 
 
 #define kTableViewRowHeight 36;
-#define kBlurblogTableViewRowHeight 48;
+#define kBlurblogTableViewRowHeight 47;
 
 @implementation NewsBlurViewController
 
@@ -665,7 +665,7 @@
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         headerLabelHeight = 28;
-        folderImageViewY = 4;
+        folderImageViewY = 3;
         disclosureImageViewY = 7;
     } else {
         headerLabelHeight = 20;
@@ -677,10 +677,16 @@
     UIControl* customView = [[UIControl alloc] 
                               initWithFrame:CGRectMake(0.0, 0.0, 
                                                        tableView.bounds.size.width, headerLabelHeight + 1)];
+    UIView *borderTop = [[UIView alloc] 
+                            initWithFrame:CGRectMake(0.0, 0, 
+                                                     tableView.bounds.size.width, 1.0)];
+    borderTop.backgroundColor = UIColorFromRGB(0xe0e0e0);
+    borderTop.opaque = NO;
+    [customView addSubview:borderTop];
     
     
     UIView *borderBottom = [[UIView alloc] 
-                             initWithFrame:CGRectMake(0.0, 0, 
+                             initWithFrame:CGRectMake(0.0, headerLabelHeight, 
                                                       tableView.bounds.size.width, 1.0)];
     borderBottom.backgroundColor = [UIColorFromRGB(0xB7BDC6) colorWithAlphaComponent:0.5];
     borderBottom.opaque = NO;
@@ -715,15 +721,18 @@
     [customView addSubview:headerLabel];
     
     UIImage *folderImage;
+    int folderImageViewX = 10;
+    
     if (section == 0) {
         folderImage = [UIImage imageNamed:@"group.png"];
     } else if (section == 1) {
         folderImage = [UIImage imageNamed:@"archive.png"];
+        folderImageViewX = 9;
     } else {
         folderImage = [UIImage imageNamed:@"folder_2.png"];
     }
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
-    folderImageView.frame = CGRectMake(10.0, folderImageViewY, 20.0, 20.0);
+    folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
     [customView addSubview:folderImageView];
 
     if (section != 0) {    
