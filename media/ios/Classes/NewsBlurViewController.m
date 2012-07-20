@@ -1044,13 +1044,12 @@
 
         }
         if ([folderName isEqualToString:@""]){
-            NSLog(@"feedLocations count is %i: ", [feedLocations count]);
+//            NSLog(@"feedLocations count is %i: ", [feedLocations count]);
         }
 //            NSLog(@"feedLocations %@", feedLocations);
         [self.activeFeedLocations setObject:feedLocations forKey:folderName];
         
     }
-    NSLog(@"second here");
 //    NSLog(@"Active feed locations %@", self.activeFeedLocations);
 }
 

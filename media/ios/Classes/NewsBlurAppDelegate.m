@@ -253,13 +253,17 @@
     self.feedDashboardViewController.storyLabel.hidden = NO;  
 }
 
-- (void)showShareView:(NSString *)userId 
-          setUsername:(NSString *)username {
+- (void)showShareView:(NSString *)type 
+            setUserId:(NSString *)userId 
+          setUsername:(NSString *)username 
+      setCommentIndex:(NSString *)commentIndex {
     self.isShowingShare = YES;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // add shareViewController to storyDetail
         [self.storyDetailViewController.view addSubview:self.shareViewController.view];    
-        [self.shareViewController setSiteInfo:userId setUsername:username]; 
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
+
+        
         self.shareViewController.view.frame = CGRectMake(0, 
                                                     self.storyDetailViewController.view.frame.size.height, 
                                                     self.storyDetailViewController.view.frame.size.width, 
@@ -288,7 +292,7 @@
     } else {
         ShareViewController *shareView = [[ShareViewController alloc] init];
         self.shareViewController = shareView;
-        [self.shareViewController setSiteInfo:userId setUsername:username]; 
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
         [self.navigationController presentModalViewController:self.shareViewController animated:YES];
     }
 }

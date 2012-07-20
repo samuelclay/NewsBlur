@@ -193,6 +193,7 @@
 		43C95C48158BEC450086C69B /* GoogleReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C95C46158BEC440086C69B /* GoogleReaderViewController.m */; };
 		43C95C49158BEC450086C69B /* GoogleReaderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */; };
 		43C95C4B158BF8810086C69B /* google_reader_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C4A158BF8810086C69B /* google_reader_selected_background.png */; };
+		43D818A315B940C200733444 /* DataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 43D818A215B940C200733444 /* DataUtilities.m */; };
 		43E8856015951F930032022E /* reader.css in Resources */ = {isa = PBXBuildFile; fileRef = 43E8855F15951F930032022E /* reader.css */; };
 		43F44B1C159D8DBC00F48F8A /* FeedTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F44B1B159D8D7200F48F8A /* FeedTableCell.m */; };
 		43F6A79915B0C57F0092EE91 /* flag_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F6A79815B0C57F0092EE91 /* flag_orange.png */; };
@@ -525,6 +526,8 @@
 		43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "AddSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/AddSiteViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "AddSiteAutocompleteCell~ipad.xib"; path = "Resources-iPad/Classes/AddSiteAutocompleteCell~ipad.xib"; sourceTree = SOURCE_ROOT; };
 		43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MoveSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/MoveSiteViewController~ipad.xib"; sourceTree = "<group>"; };
+		43D818A115B940C200733444 /* DataUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataUtilities.h; sourceTree = "<group>"; };
+		43D818A215B940C200733444 /* DataUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataUtilities.m; sourceTree = "<group>"; };
 		43E8855F15951F930032022E /* reader.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = reader.css; path = ../reader.css; sourceTree = "<group>"; };
 		43F44B1A159D8D7200F48F8A /* FeedTableCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedTableCell.h; sourceTree = "<group>"; };
 		43F44B1B159D8D7200F48F8A /* FeedTableCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedTableCell.m; sourceTree = "<group>"; };
@@ -754,6 +757,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				43D8189F15B9404D00733444 /* Models */,
 				437F974715ACA0C50007136B /* Dashboard */,
 				431B857415A1324200DCE497 /* Story */,
 				431B857315A131C300DCE497 /* Feeds */,
@@ -764,6 +768,8 @@
 				FFD1D7301459B63500E46F89 /* BaseViewController.m */,
 				FFE5322D144C8AC300ACFDE0 /* Utilities.h */,
 				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
+				43D818A115B940C200733444 /* DataUtilities.h */,
+				43D818A215B940C200733444 /* DataUtilities.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1174,6 +1180,13 @@
 				437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */,
 			);
 			name = "Resources-iPad";
+			sourceTree = "<group>";
+		};
+		43D8189F15B9404D00733444 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 		78095E23128EF30C00230C8E /* ASI */ = {
@@ -1911,6 +1924,7 @@
 				43A3914B15B73A7B0074B212 /* AFURLConnectionOperation.m in Sources */,
 				43A3914C15B73A7B0074B212 /* AFXMLRequestOperation.m in Sources */,
 				43A3914D15B73A7B0074B212 /* UIImageView+AFNetworking.m in Sources */,
+				43D818A315B940C200733444 /* DataUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

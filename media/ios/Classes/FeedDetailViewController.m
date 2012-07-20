@@ -1138,6 +1138,12 @@
 
 - (void)loadFaviconsFromActiveFeed {
     NSArray * keys = [appDelegate.dictActiveFeeds allKeys];
+    
+    if (![keys count]) {
+        // if no new favicons, return
+        return;
+    }
+    
     NSString *feedIdsQuery = [NSString stringWithFormat:@"?feed_ids=%@", 
                                [[keys valueForKey:@"description"] componentsJoinedByString:@"&feed_ids="]];        
     NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/favicons%@",

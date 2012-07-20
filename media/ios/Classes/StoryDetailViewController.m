@@ -284,7 +284,7 @@
         userEditButton = [NSString stringWithFormat:@
                           "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button\">"
                             "<div class=\"NB-story-comment-edit-button-wrapper\">"
-                                "<a href=\"http://ios.newsblur.com/share\">edit</a>"
+                                "<a href=\"http://ios.newsblur.com/edit-share\">edit</a>"
                             "</div>"
                           "</div>"
                           ];
@@ -331,22 +331,35 @@
                         [commentDict objectForKey:@"user_id"],
                         [user objectForKey:@"username"],
                         [commentDict objectForKey:@"comments"],
-                        [self getReplies:[commentDict objectForKey:@"replies"]]]; 
+                        [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
 
     return comment;
 }
 
-- (NSString *)getReplies:(NSArray *)replies {
+- (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId {
     NSString *repliesString = @"";
     if (replies.count > 0) {
         repliesString = [repliesString stringByAppendingString:@"<div class=\"NB-story-comment-replies\">"];
         for (int i = 0; i < replies.count; i++) {
-            NSDictionary *reply_dict = [replies objectAtIndex:i];
-            NSDictionary *user = [self getUser:[[reply_dict objectForKey:@"user_id"] intValue]];
-//            NSString *editStr = [NSString stringWithFormat:@
-//                                 "   <div class=\"NB-story-comment-edit-button NB-story-comment-reply-edit-button\">"
-//                                 "       <div class=\"NB-story-comment-edit-button-wrapper\">edit</div>"            
-//                                 "   </div>"];
+            NSDictionary *replyDict = [replies objectAtIndex:i];
+            NSDictionary *user = [self getUser:[[replyDict objectForKey:@"user_id"] intValue]];
+
+            NSString *userEditButton = @"";
+            NSString *replyUserId = [NSString stringWithFormat:@"%@", [replyDict objectForKey:@"user_id"]];
+            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+            
+            if ([replyUserId isEqualToString:currentUserId]) {
+                userEditButton = [NSString stringWithFormat:@
+                                  "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button\">"
+                                  "<div class=\"NB-story-comment-edit-button-wrapper\">"
+                                  "<a href=\"http://ios.newsblur.com/edit-reply/%@/%@/%i\">edit</a>"
+                                  "</div>"
+                                  "</div>",
+                                  commentUserId,
+                                  replyUserId,
+                                  i // comment number in array
+                                  ];
+            }
             
             NSString *reply = [NSString stringWithFormat:@
                                 "<div class=\"NB-story-comment-reply\">"
@@ -355,13 +368,15 @@
                                 "   </a>"
                                 "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
                                 "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
+                                "    %@" //User Edit Button>"
                                 "   <div class=\"NB-story-comment-reply-content\">%@</div>"
                                 "</div>",
                                [user objectForKey:@"user_id"],  
                                [user objectForKey:@"photo_url"],
                                [user objectForKey:@"username"],  
-                               [reply_dict objectForKey:@"publish_date"],
-                               [reply_dict objectForKey:@"comments"]];
+                               [replyDict objectForKey:@"publish_date"],
+                               userEditButton,
+                               [replyDict objectForKey:@"comments"]];
             repliesString = [repliesString stringByAppendingString:reply];
         }
         repliesString = [repliesString stringByAppendingString:@"</div>"];
@@ -576,7 +591,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // the pathComponents do not work correctly unless it is a correctly formed url
     // Is there a better way?  Someone show me the light
     if ([[url host] isEqualToString: @"ios.newsblur.com"]){
-        if ([action isEqualToString:@"reply"]) {
+        if ([action isEqualToString:@"reply"] || 
+            [action isEqualToString:@"edit-reply"] ||
+            [action isEqualToString:@"edit-share"]) {
             appDelegate.activeComment = nil;
             // search for the comment from friends comments
             NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
@@ -600,11 +617,29 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                     }
                 }
             }
-            [appDelegate showShareView:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]
-                           setUsername:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:3]]];
-            return NO;
+            
+            if ([action isEqualToString:@"reply"]) {
+                [appDelegate showShareView:@"reply"
+                                 setUserId:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]
+                               setUsername:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:3]]
+                           setCommentIndex:nil]; 
+            } else if ([action isEqualToString:@"edit-reply"]) {
+                [appDelegate showShareView:@"edit-reply"
+                                 setUserId:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]
+                               setUsername:nil
+                           setCommentIndex:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:4]]];
+            } else if ([action isEqualToString:@"edit-share"]) {
+                [appDelegate showShareView:@"edit-share"
+                                 setUserId:nil
+                               setUsername:nil
+                           setCommentIndex:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:3]]];
+            }
+            return NO; 
         } else if ([action isEqualToString:@"share"]) {
-            [appDelegate showShareView:nil setUsername:nil];
+            [appDelegate showShareView:@"share"
+                             setUserId:nil
+                           setUsername:nil
+                       setCommentIndex:nil];
             return NO; 
         } else if ([action isEqualToString:@"show-profile"]) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
@@ -768,10 +803,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 } 
 
 - (void)refreshComments {
-    NSString *friendsCommentString = [self getComments:@"friends"];    
+    NSString *commentString = [self getComments:@"friends"];    
     NSString *jsString = [[NSString alloc] initWithFormat:@
-                          "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
-                          friendsCommentString];
+                          //"document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
+                          
+                          
+                          "document.write(%@)",
+                          commentString];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
 

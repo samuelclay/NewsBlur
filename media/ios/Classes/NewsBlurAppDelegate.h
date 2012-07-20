@@ -199,7 +199,7 @@
 - (void)hideStoryDetailView;
 - (void)changeActiveFeedDetailRow;
 - (void)dragFeedDetailView:(float)y;
-- (void)showShareView:(NSString *)userId setUsername:(NSString *)username;
+- (void)showShareView:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setCommentIndex:(NSString *)commentIndex;
 - (void)hideShareView:(BOOL)resetComment;
 - (void)refreshComments;
 - (void)resetShareComments;

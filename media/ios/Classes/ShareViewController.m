@@ -11,6 +11,7 @@
 #import "StoryDetailViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Utilities.h"
+#import "DataUtilities.h"
 #import "JSON.h"
 #import "ASIHTTPRequest.h"
 
@@ -107,14 +108,41 @@
     [userPreferences synchronize];
 }
 
-- (void)setSiteInfo:(NSString *)userId setUsername:(NSString *)username {
-    if (userId) {
+- (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setCommentIndex:(NSString *)commentIndex {
+    
+    if ([type isEqualToString: @"edit-reply"]) {
+        [submitButton setTitle:@"Save"];
+        facebookButton.hidden = YES;
+        twitterButton.hidden = YES;
+        [toolbarTitle setTitle:[NSString stringWithFormat:@"Edit Your Reply"]];
+        [submitButton setAction:(@selector(doReplyToComment:))];
+
+        // get old comment
+        NSArray *replies = [appDelegate.activeComment objectForKey:@"replies"];
+        int commentIdx = [commentIndex intValue];
+        self.commentField.text = [[replies objectAtIndex:commentIdx] objectForKey:@"comments"];
+    } else if ([type isEqualToString: @"reply"]) {
         [submitButton setTitle:@"Reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
         [toolbarTitle setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         [submitButton setAction:(@selector(doReplyToComment:))];
-    } else {
+    } else if ([type isEqualToString: @"edit-share"]) {
+        facebookButton.hidden = NO;
+        twitterButton.hidden = NO;
+        
+        // get old comment
+        self.commentField.text = [appDelegate.activeComment objectForKey:@"comments"];
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [toolbarTitle setTitle:@"Edit Your Comment"];
+            [submitButton setTitle:@"Save"];
+        } else {
+            [toolbarTitle setTitle:@"Edit"];
+            [submitButton setTitle:@"Save"];
+        }
+        [submitButton setAction:(@selector(doShareThisStory:))];
+    } else if ([type isEqualToString: @"share"]) {
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -123,7 +151,6 @@
         } else {
             [toolbarTitle setTitle:@"Post"];
             [submitButton setTitle:@"Share"];
-            NSLog(@"set title");
         }
         [submitButton setAction:(@selector(doShareThisStory:))];
     }
@@ -183,7 +210,7 @@
 }
 
 - (void)finishAddReply:(ASIHTTPRequest *)request {
-    NSLog(@"%@", [request responseString]);
+    NSLog(@"/n/n/n%@/n/n/n/", [request responseString]);;
     NSLog(@"Successfully added.");
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
@@ -191,6 +218,12 @@
     
     // add the comment into the activeStory dictionary
     NSDictionary *comment = [results objectForKey:@"comment"];
+    NSArray *userProfiles = [results objectForKey:@"user_profiles"];
+    
+    appDelegate.activeFeedUserProfiles = [DataUtilities 
+                                          updateUserProfiles:appDelegate.activeFeedUserProfiles 
+                                          withNewUserProfiles:userProfiles];
+    
     NSString *commentUserId = [NSString stringWithFormat:@"%@", [comment objectForKey:@"user_id"]];
     BOOL foundComment = NO;
     
@@ -223,6 +256,8 @@
                 [newPublicComments addObject:[publicComments objectAtIndex:i]];
             }
         }
+        [newActiveStory setValue:[NSArray arrayWithArray:publicComments] forKey:@"public_comments"];
+    } else {
         [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
     }
     
@@ -231,9 +266,7 @@
 }
 
 - (void)finishAddComment:(ASIHTTPRequest *)request {
-    NSLog(@"%@", [request responseString]);
-    NSLog(@"Successfully added.");
-
+    NSLog(@"/n/n/n%@/n/n/n/", [request responseString]);
     
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 

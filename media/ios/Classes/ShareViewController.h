@@ -20,7 +20,7 @@
 @property ( nonatomic) IBOutlet UIBarButtonItem *submitButton;
 @property ( nonatomic) IBOutlet UIBarButtonItem *toolbarTitle;
 
-- (void)setSiteInfo:(NSString *)userId setUsername:(NSString *)username;
+- (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setCommentIndex:(NSString *)commentIndex;
 - (void)clearComments;
 - (IBAction)doCancelButton:(id)sender;
 - (IBAction)doToggleButton:(id)sender;

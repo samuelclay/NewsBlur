@@ -66,7 +66,7 @@
 - (void)changeFontSize:(NSString *)fontSize;
 - (NSString *)getComments:(NSString *)type;
 - (NSString *)getComment:(NSDictionary *)commentDict;
-- (NSString *)getReplies:(NSArray *)replies;
+- (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId;
 - (NSString *)getAvatars:(BOOL)areFriends;
 - (NSDictionary *)getUser:(int)user_id;
 
