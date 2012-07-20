@@ -1,0 +1,168 @@
+#!/usr/bin/perl -w
+# Plugin to monitor pg_stat_activity
+#
+# Copyright Dalibo <cedric.villemain@dalibo.com> 2007
+# Based on a plugin (postgres_block_read_) from Björn Ruberg <bjorn@linpro.no>
+#
+# Licenced under GPL v2.
+#
+# Usage:
+#
+#       Symlink into /etc/munin/plugins/ and add the monitored
+#       database to the filename. e.g.:
+#
+#       ln -s /usr/share/munin/plugins/pg__connections \
+#         /etc/munin/plugins/pg_<databasename>_connections
+#       This should, however, be given through autoconf and suggest.
+#
+#       If required, give username, password and/or Postgresql server
+#       host through environment variables.
+#
+#       You must also activate Postgresql statistics. See
+#       http://www.postgresql.org/docs/8.1/interactive/monitoring-stats.html
+#       for how to enable this. Specifically, the following lines must
+#       exist in your postgresql.conf:
+#
+#           stats_start_collector = true
+#           stats_block_level = true
+#
+#
+# Parameters:
+#
+#       config   (required)
+#
+# Config variables:
+#
+#       dbhost     - Which database server to use. Defaults to
+#                    'localhost'.
+#       dbname     - Which database to use. Defaults to template1
+#       dbuser     - A Postgresql user account with read permission to
+#                    the given database. Defaults to
+#                    'postgres'. Anyway, Munin must be told which user
+#                    this plugin should be run as.
+#       dbpass     - The corresponding password, if
+#                    applicable. Default to undef. Remember that
+#                    pg_hba.conf must be configured accordingly.
+#
+# Magic markers
+#%# family=auto
+#%# capabilities=autoconf
+
+use strict;
+use DBI;
+use vars qw ( $debug $configure  );
+use constant _PGMINI => 70400;
+
+my $dbhost = $ENV{'dbhost'} || '';
+my $dbname = $ENV{'dbname'} || 'template1';
+my $dbuser = $ENV{'dbuser'} || 'postgres';
+my $dbport = $ENV{'dbport'} || '5432';
+my $dbpass = $ENV{'dbpass'} || '';
+my $statscope = $ENV{'statscope'} || 'user';
+
+my $dsn = "DBI:Pg:dbname=$dbname";
+$dsn   .=";host=$dbhost;port=$dbport" if $dbhost;
+my $pg_server_version;
+
+if (exists $ARGV[0]) {
+  if ($ARGV[0] eq 'autoconf') {
+    # Check for DBD::Pg
+    if (! eval "require DBD::Pg;") {
+      print "no (DBD::Pg not found)";
+      exit 1;
+    }
+    my $dbh = DBI->connect ($dsn,
+                            $dbuser,
+                            $dbpass,
+                            {RaiseError =>1});
+    if ($dbh) {
+      $pg_server_version = $dbh->{'pg_server_version'};
+      if ($pg_server_version < (_PGMINI)) {
+        $pg_server_version =~ /(\d)(\d){2,2}(\d){2,2}/;
+        print "PostgreSQL Server version " . (_PGMINI) . " or above is needed. Current is $1.$2.$3 \n";
+				exit 1;
+      }
+      print "yes\n";
+      exit 0;
+    } else {
+      print "no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr;
+      exit 1;
+    }
+  } elsif ($ARGV[0] eq 'debug') {
+    # Set debug flag
+    $debug = 1;
+  } elsif ($ARGV[0] eq 'config') {
+    # Set config flag
+    $configure = 1;
+  }
+}
+
+if ($configure) {
+  print "graph_title PostgreSQL connections to $dbname\n";
+  print "graph_vlabel Number / \${graph_period}\n";
+  print "graph_category Postgresql \n";
+  print "graph_info Connections to $dbname, sum=waiting+active\n";
+  print "graph_args --base 1000\n";
+
+  print "waiting.label Waiting \n";
+  print "waiting.draw AREA\n";
+  print "waiting.type GAUGE\n";
+  print "waiting.min 0\n";
+  print "waiting.info Number of connections waiting for a lock to release\n";
+
+  print "active.label Active \n";
+  print "active.draw STACK\n";
+  print "active.type GAUGE\n";
+  print "active.min 0\n";
+  print "active.info Number of active connections \n";
+
+  print "idle.label Idle\n";
+  print "idle.draw LINE\n";
+  print "idle.type GAUGE\n";
+  print "idle.min 0\n";
+  print "idle.info Number of idle connections (including 'idle in transaction')\n";
+}
+else {
+  print "# $dsn\n" if $debug;
+  my $dbh = DBI->connect ($dsn,
+                          $dbuser,
+                          $dbpass,
+                          {RaiseError =>1});
+  unless($dbh) {
+    die ("no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr."\n");
+  }
+  my $sql = "select count(*), waiting from pg_stat_activity ";
+  $sql   .= " where datname = ? group by waiting ";
+  print "# $sql\n" if $debug;
+  my $sth = $dbh->prepare($sql);
+  $sth->execute($dbname);
+  printf ("# Rows: %d\n",  $sth->rows) if $debug;
+  if ($sth->rows > 0) {
+  	my $c_waiting = 0;
+    my $c_active  = 0;
+    while (my ($count, $waiting) = $sth->fetchrow_array()) {
+      if ($waiting) {
+        $c_waiting = $count;
+      } else {
+        $c_active = $count;
+      }
+  	}
+    print "waiting.value $c_waiting\n";
+    print "active.value $c_active\n";
+  }
+
+  $sql = "select count(*) from pg_stat_activity ";
+  $sql   .= " where datname = ? and current_query like '<IDLE>%'";
+  print "# $sql\n" if $debug;
+  $sth = $dbh->prepare($sql);
+  $sth->execute($dbname);
+  printf ("# Rows: %d\n",  $sth->rows) if $debug;
+  if ($sth->rows > 0) {
+    my ($idle) = $sth->fetchrow_array();
+    print "idle.value $idle\n";
+	}
+
+}
+
+exit 0;
+

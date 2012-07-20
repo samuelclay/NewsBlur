@@ -1,0 +1,195 @@
+#!/usr/bin/perl -w
+# Plugin to monitor pg_statio_*_tables (user by default)
+#
+# Copyright Dalibo <cedric.villemain@dalibo.com> 2007
+# Based on a plugin (postgres_block_read_) from Björn Ruberg <bjorn@linpro.no>
+#
+# Licenced under GPL v2.
+#
+# Usage:
+#
+#       Symlink into /etc/munin/plugins/ and add the monitored
+#       database to the filename. e.g.:
+#
+#       ln -s /usr/share/munin/plugins/pg__statio_tables \
+#         /etc/munin/plugins/pg_<databasename>_statio_tables
+#       This should, however, be given through autoconf and suggest.
+#
+#       If required, give username, password and/or Postgresql server
+#       host through environment variables.
+#
+#       You must also activate Postgresql statistics. See
+#       http://www.postgresql.org/docs/8.1/interactive/monitoring-stats.html
+#       for how to enable this. Specifically, the following lines must
+#       exist in your postgresql.conf:
+#
+#           stats_start_collector = true
+#           stats_block_level = true
+#
+#
+# Parameters:
+#
+#       config   (required)
+#
+# Config variables:
+#
+#       dbhost     - Which database server to use. Defaults to
+#                    'localhost'.
+#       dbname     - Which database to use. Defaults to template1
+#       dbuser     - A Postgresql user account with read permission to
+#                    the given database. Defaults to
+#                    'postgres'. Anyway, Munin must be told which user
+#                    this plugin should be run as.
+#       dbpass     - The corresponding password, if
+#                    applicable. Default to undef. Remember that
+#                    pg_hba.conf must be configured accordingly.
+#
+# Magic markers
+#%# family=auto
+#%# capabilities=autoconf
+
+use strict;
+use DBI;
+use vars qw ( $debug $configure  );
+use constant _PGMINI => 70400;
+
+my $dbhost = $ENV{'dbhost'} || '';
+my $dbname = $ENV{'dbname'} || 'template1';
+my $dbuser = $ENV{'dbuser'} || 'postgres';
+my $dbport = $ENV{'dbport'} || '5432';
+my $dbpass = $ENV{'dbpass'} || '';
+my $statscope = $ENV{'statscope'} || 'user';
+
+my $dsn = "DBI:Pg:dbname=$dbname";
+$dsn   .=";host=$dbhost;port=$dbport" if $dbhost;
+my $pg_server_version;
+
+if (exists $ARGV[0]) {
+  if ($ARGV[0] eq 'autoconf') {
+    # Check for DBD::Pg
+    if (! eval "require DBD::Pg;") {
+      print "no (DBD::Pg not found)";
+      exit 1;
+    }
+    my $dbh = DBI->connect ($dsn,
+                            $dbuser,
+                            $dbpass,
+                            {RaiseError =>1});
+    if ($dbh) {
+      $pg_server_version = $dbh->{'pg_server_version'};
+      if ($pg_server_version < (_PGMINI)) {
+        $pg_server_version =~ /(\d)(\d){2,2}(\d){2,2}/;
+        print "PostgreSQL Server version " . (_PGMINI) . " or above is needed. Current is $1.$2.$3 \n";
+				exit 1;
+      }
+      print "yes\n";
+      exit 0;
+    } else {
+      print "no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr;
+      exit 1;
+    }
+  } elsif ($ARGV[0] eq 'debug') {
+    # Set debug flag
+    $debug = 1;
+  } elsif ($ARGV[0] eq 'config') {
+    # Set config flag
+    $configure = 1;
+  }
+}
+
+if ($configure) {
+  print "graph_title PostgreSQL statio $statscope tables from $dbname\n";
+  print "graph_info  Read from memory and from disk for indexes, tables, toasted indexes and toasted tables\n";
+  print "graph_vlabel Read from disk | Read from memory\n/\${graph_period}\n";
+  print "graph_category Postgresql \n";
+  print "graph_args --base 1000\n";
+
+  print "heap_blks_read.label Heap block read\n";
+  print "heap_blks_read.graph no\n";
+  print "heap_blks_read.draw LINE\n";
+  print "heap_blks_read.type DERIVE\n";
+  print "heap_blks_read.min 0\n";
+  print "heap_blks_read.info Number of heap block read\n";
+
+  print "heap_blks_hit.label Heap\n";
+  print "heap_blks_hit.negative heap_blks_read\n";
+  print "heap_blks_hit.draw LINE\n";
+  print "heap_blks_hit.type DERIVE\n";
+  print "heap_blks_hit.min 0\n";
+  print "heap_blks_hit.info Number of heap block read/hit\n";
+
+  print "idx_blks_read.label Index block read\n";
+  print "idx_blks_read.graph no\n";
+  print "idx_blks_read.draw LINE\n";
+  print "idx_blks_read.type DERIVE\n";
+  print "idx_blks_read.min 0\n";
+  print "idx_blks_read.info Number of index block read\n";
+
+  print "idx_blks_hit.label Index\n";
+  print "idx_blks_hit.negative idx_blks_read\n";
+  print "idx_blks_hit.draw LINE\n";
+  print "idx_blks_hit.type DERIVE\n";
+  print "idx_blks_hit.min 0\n";
+  print "idx_blks_hit.info Number of index block read/hit\n";
+
+  print "toast_blks_read.label Toasted block read\n";
+  print "toast_blks_read.graph no\n";
+  print "toast_blks_read.draw LINE\n";
+  print "toast_blks_read.type DERIVE\n";
+  print "toast_blks_read.min 0\n";
+  print "toast_blks_read.info Number of toasted block read\n";
+
+  print "toast_blks_hit.label Toasted\n";
+  print "toast_blks_hit.negative toast_blks_read\n";
+  print "toast_blks_hit.draw LINE\n";
+  print "toast_blks_hit.type DERIVE\n";
+  print "toast_blks_hit.min 0\n";
+  print "toast_blks_hit.info Number of toasted block read/hit\n";
+
+  print "tidx_blks_read.label Toasted index block read\n";
+  print "tidx_blks_read.graph no\n";
+  print "tidx_blks_read.draw LINE\n";
+  print "tidx_blks_read.type DERIVE\n";
+  print "tidx_blks_read.min 0\n";
+  print "tidx_blks_read.info Number of toasted index block read\n";
+
+  print "tidx_blks_hit.label Toasted index\n";
+  print "tidx_blks_hit.negative tidx_blks_read\n";
+  print "tidx_blks_hit.draw LINE\n";
+  print "tidx_blks_hit.type DERIVE\n";
+  print "tidx_blks_hit.min 0\n";
+  print "tidx_blks_hit.info Number of toasted index block read/hit\n";
+}
+else {
+  print "# $dsn\n" if $debug;
+  my $dbh = DBI->connect ($dsn,
+                          $dbuser,
+                          $dbpass,
+                          {RaiseError =>1});
+  die ("no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr."\n")
+    unless($dbh);
+
+  my $sql = "select sum(heap_blks_read), sum(heap_blks_hit), ";
+  $sql 	 .= "       sum(idx_blks_read), sum(idx_blks_hit), ";
+  $sql 	 .= "       sum(toast_blks_read), sum(toast_blks_hit), ";
+  $sql 	 .= "       sum(tidx_blks_read), sum(tidx_blks_hit) ";
+  $sql 	 .= "from pg_statio_" . $statscope . "_tables;";
+  print "# $sql\n" if $debug;
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+  printf ("# Rows: %d\n",  $sth->rows) if $debug;
+  if ($sth->rows > 0) {
+    my ($heap_blks_read, $heap_blks_hit, $idx_blks_read, $idx_blks_hit, $toast_blks_read, $toast_blks_hit, $tidx_blks_read, $tidx_blks_hit) = $sth->fetchrow_array();
+    print "heap_blks_read.value $heap_blks_read\n";
+    print "heap_blks_hit.value $heap_blks_hit\n";
+    print "idx_blks_read.value $idx_blks_read\n";
+    print "idx_blks_hit.value $idx_blks_hit\n";
+    print "toast_blks_read.value $toast_blks_read\n";
+    print "toast_blks_hit.value $toast_blks_hit\n";
+    print "tidx_blks_read.value $tidx_blks_read\n";
+    print "tidx_blks_hit.value $tidx_blks_hit\n";
+  }
+}
+
+exit 0;
+
