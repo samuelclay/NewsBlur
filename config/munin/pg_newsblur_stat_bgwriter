@@ -1,0 +1,179 @@
+#!/usr/bin/perl -w
+# Plugin to monitor pg_stat_bgwriter
+#
+# Copyright Dalibo <cedric.villemain@dalibo.com> 2008
+# Based on a plugin (postgres_block_read_) from Björn Ruberg <bjorn@linpro.no>
+#
+# Licenced under GPL v2.
+#
+# Usage:
+#
+#       Symlink into /etc/munin/plugins/ and add the monitored
+#       database to the filename. e.g.:
+#
+#       ln -s /usr/share/munin/plugins/pg__stat_bgwriter \
+#         /etc/munin/plugins/pg_<databasename>_stat_bgwriter
+#       This should, however, be given through autoconf and suggest.
+#
+#       If required, give username, password and/or Postgresql server
+#       host through environment variables.
+#
+#       You must also activate Postgresql statistics. See
+#       http://www.postgresql.org/docs/8.1/interactive/monitoring-stats.html
+#       for how to enable this. Specifically, the following lines must
+#       exist in your postgresql.conf:
+#
+#           stats_start_collector = true
+#           stats_block_level = true
+#
+#
+# Parameters:
+#
+#       config   (required)
+#
+# Config variables:
+#
+#       dbhost     - Which database server to use. Defaults to
+#                    'localhost'.
+#       dbname     - Which database to use. Defaults to template1
+#       dbuser     - A Postgresql user account with read permission to
+#                    the given database. Defaults to
+#                    'postgres'. Anyway, Munin must be told which user
+#                    this plugin should be run as.
+#       dbpass     - The corresponding password, if
+#                    applicable. Default to undef. Remember that
+#                    pg_hba.conf must be configured accordingly.
+#
+# Magic markers
+#%# family=auto
+#%# capabilities=autoconf
+
+use strict;
+use DBI;
+use vars qw ( $debug $configure  );
+use constant _PGMINI => 80300;
+
+my $dbhost = $ENV{'dbhost'} || '';
+my $dbname = $ENV{'dbname'} || 'template1';
+my $dbuser = $ENV{'dbuser'} || 'postgres';
+my $dbport = $ENV{'dbport'} || '5432';
+my $dbpass = $ENV{'dbpass'} || '';
+my $statscope = $ENV{'statscope'} || 'user';
+
+my $dsn = "DBI:Pg:dbname=$dbname";
+$dsn   .=";host=$dbhost;port=$dbport" if $dbhost;
+my $pg_server_version;
+
+if (exists $ARGV[0]) {
+  if ($ARGV[0] eq 'autoconf') {
+    # Check for DBD::Pg
+    if (! eval "require DBD::Pg;") {
+      print "no (DBD::Pg not found)";
+      exit 1;
+    }
+    my $dbh = DBI->connect ($dsn,
+                            $dbuser,
+                            $dbpass,
+                            {RaiseError =>1});
+    if ($dbh) {
+      $pg_server_version = $dbh->{'pg_server_version'};
+      if ($pg_server_version < (_PGMINI)) {
+        $pg_server_version =~ /(\d)(\d){2,2}(\d){2,2}/;
+        print "PostgreSQL Server version " . (_PGMINI) . " or above is needed. Current is $1.$2.$3 \n";
+				exit 1;
+      }
+      print "yes\n";
+      exit 0;
+    } else {
+      print "no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr;
+      exit 1;
+    }
+  } elsif ($ARGV[0] eq 'debug') {
+    # Set debug flag
+    $debug = 1;
+  } elsif ($ARGV[0] eq 'config') {
+    # Set config flag
+    $configure = 1;
+  }
+}
+
+if ($configure) {
+  print "graph_title PostgreSQL stat bgwriter\n";
+  print "graph_vlabel Number / \${graph_period}\n";
+  print "graph_category Postgresql \n";
+  print "graph_args --base 1000\n";
+
+  print "checkpoints_timed.label Checkpoints issued because of checkpoint_timeout\n";
+  print "checkpoints_timed.draw LINE\n";
+  print "checkpoints_timed.type DERIVE\n";
+  print "checkpoints_timed.min 0\n";
+  print "checkpoints_timed.graph_info Number of scheduled checkpoints\n";
+
+  print "checkpoints_req.label Checkpoint issued by request\n";
+  print "checkpoints_req.draw LINE\n";
+  print "checkpoints_req.type DERIVE\n";
+  print "checkpoints_req.min 0\n";
+  print "checkpoints_req.graph_info Number of requested checkpoint\n";
+
+  print "buffers_checkpoint.label Buffers write when checkpoint occured\n";
+  print "buffers_checkpoint.draw LINE\n";
+  print "buffers_checkpoint.type DERIVE\n";
+  print "buffers_checkpoint.min 0\n";
+  print "buffers_checkpoint.graph_info Number of buffers written when checkpoint \n";
+
+  print "buffers_clean.label Buffers write for cleaning\n";
+  print "buffers_clean.draw LINE\n";
+  print "buffers_clean.type DERIVE\n";
+  print "buffers_clean.min 0\n";
+  print "buffers_clean.graph_info Number of buffers written when cleaning\n";
+
+  print "maxwritten_clean.label Times cleaning scan is stopped because exceed bgwriter_lru_maxpages\n";
+  print "maxwritten_clean.draw LINE\n";
+  print "maxwritten_clean.type DERIVE\n";
+  print "maxwritten_clean.min 0\n";
+  print "maxwritten_clean.graph_info Number of stop in cleaning\n";
+
+  print "buffers_backend.label Number of buffers written by backends\n";
+  print "buffers_backend.draw LINE\n";
+  print "buffers_backend.type DERIVE\n";
+  print "buffers_backend.min 0\n";
+  print "buffers_backend.graph_info Number of buffers written by backends\n";
+
+  print "buffers_alloc.label Total number of buffers allocated\n";
+  print "buffers_alloc.draw LINE\n";
+  print "buffers_alloc.type DERIVE\n";
+  print "buffers_alloc.min 0\n";
+  print "buffers_alloc.graph_info Total number of buffers allocated\n";
+} else {
+  print "# $dsn\n" if $debug;
+  my $dbh = DBI->connect ($dsn,
+                          $dbuser,
+                          $dbpass,
+                          {RaiseError =>1});
+  die ("no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr."\n")
+  	unless($dbh);
+  $pg_server_version = $dbh->{'pg_server_version'};
+
+  my $sql = "select checkpoints_timed, checkpoints_req, ";
+  $sql 	 .= "       buffers_checkpoint, buffers_clean, ";
+  $sql 	 .= "       maxwritten_clean, buffers_backend, ";
+  $sql 	 .= "       buffers_alloc ";
+  $sql 	 .= "from pg_stat_bgwriter;";
+  print "# $sql\n" if $debug;
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+  printf ("# Rows: %d\n",  $sth->rows) if $debug;
+  if ($sth->rows > 0) {
+    my ($checkpoints_timed, $checkpoints_req, $buffers_checkpoint, $buffers_clean, $maxwritten_clean, $buffers_backend, $buffers_alloc) = $sth->fetchrow_array();
+    print "checkpoints_timed.value $checkpoints_timed\n";
+    print "checkpoints_req.value $checkpoints_req\n";
+    print "buffers_checkpoint.value $buffers_checkpoint\n";
+    print "buffers_clean.value $buffers_clean\n";
+    print "maxwritten_clean.value $maxwritten_clean\n";
+    print "buffers_backend.value $buffers_backend\n";
+    print "buffers_alloc.value $buffers_alloc\n";
+	}
+}
+
+exit 0;
+

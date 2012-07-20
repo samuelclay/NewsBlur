@@ -92,7 +92,7 @@ def set_account_settings(request):
             message = "This username is already taken. Try something different."
     
     if request.user.email != post_settings['email']:
-        if not User.objects.filter(email=post_settings['email']).count():
+        if not post_settings['email'] or not User.objects.filter(email=post_settings['email']).count():
             request.user.email = post_settings['email']
             request.user.save()
         else:
