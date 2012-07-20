@@ -52,8 +52,6 @@ public class ReadingItemFragment extends Fragment {
 		TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
 		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
 		TextView itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
-		TextView itemCommentCount = (TextView) view.findViewById(R.id.reading_item_comment_count);
-		TextView itemShareCount = (TextView) view.findViewById(R.id.reading_item_share_count);
 		GridLayout tagContainer = (GridLayout) view.findViewById(R.id.reading_item_tags);
 		
 		if (story.tags != null || story.tags.length > 0) {
@@ -69,8 +67,6 @@ public class ReadingItemFragment extends Fragment {
 		itemDate.setText(story.date);
 		itemTitle.setText(story.title);
 		itemAuthors.setText(story.authors);
-		itemCommentCount.setText(story.commentCount == null ? "0" : story.commentCount.toString());
-		itemShareCount.setText(story.shareCount == null ? "0" : story.shareCount.toString());
 	}
 
 	private void setupWebview(WebView web) {

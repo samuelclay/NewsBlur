@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -61,14 +62,20 @@ public class Reading extends SherlockFragmentActivity {
 
 		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
 		setTitle(feed.title);
-
-		GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { Color.parseColor(feed.faviconColour), Color.parseColor(feed.faviconFade)});
+		
 		View view = findViewById(R.id.reading_floatbar);
+		GradientDrawable gradient;
+		int borderColor = Color.BLACK;
+		if (!TextUtils.equals(feed.faviconColour, "#null") && !TextUtils.equals(feed.faviconFade, "#null")) {
+			gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { Color.parseColor(feed.faviconColour), Color.parseColor(feed.faviconFade)});
+			borderColor = Color.parseColor(feed.faviconBorder);
+		} else {
+			gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { Color.DKGRAY, Color.LTGRAY });
+		}
 		view.setBackgroundDrawable(gradient);
-
-		int border = Color.parseColor(feed.faviconBorder);
-		findViewById(R.id.reading_divider).setBackgroundColor(border)
-;		findViewById(R.id.reading_divider_bottom).setBackgroundColor(border);
+		findViewById(R.id.reading_divider).setBackgroundColor(borderColor);
+		findViewById(R.id.reading_divider_bottom).setBackgroundColor(borderColor);
+				
 		
 		getSupportLoaderManager().initLoader(READING_LOADER , null, readingAdapter);
 

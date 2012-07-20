@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/reading_divider"
         android:minHeight="8dp"
-        android:alpha="0.8" />
+        android:alpha="0.7" />
 
     <View
         android:id="@+id/reading_divider_bottom"
