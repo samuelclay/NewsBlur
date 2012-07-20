@@ -637,8 +637,11 @@ def setup_redis():
     sudo('/etc/init.d/redis start')
 
 def setup_db_munin():
-    sudo('cp -rs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
-    sudo('cp -rs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+    sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+    sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+    with cd(env.VENDOR_PATH):
+        run('git clone git://github.com/samuel/python-munin.git')
+        run('sudo python python-munin/setup.py install')
 
 def enable_celerybeat():
     with cd(env.NEWSBLUR_PATH):
