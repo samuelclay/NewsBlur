@@ -300,7 +300,8 @@ del {
     float: none;
 }
 
-#story_pane .NB-story-comment .NB-story-comment-reply-button-wrapper a {
+#story_pane .NB-story-comment .NB-story-comment-reply-button-wrapper a,
+#story_pane .NB-story-comment .NB-story-comment-edit-button-wrapper a {
     color: #fff;
 }
 

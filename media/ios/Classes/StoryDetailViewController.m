@@ -209,14 +209,17 @@
     return avatarString;
 }
 
-- (NSString *)getComments {
+- (NSString *)getComments:(NSString *)type {
     NSString *comments = @"";
 //    NSLog(@"the comment string is %@", [appDelegate.activeStory objectForKey:@"share_count"]);
 //    NSLog(@"appDelegate.activeStory is %@", appDelegate.activeStory);
     if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] &&
         [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
         
-        NSArray *comments_array = [appDelegate.activeStory objectForKey:@"friend_comments"];            
+        NSDictionary *story = appDelegate.activeStory;
+        NSArray *friendsCommentsArray =  [story objectForKey:@"friend_comments"];   
+        NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];   
+                
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@
                                                       "<div class=\"NB-feed-story-comments\">"
                                                       "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
@@ -238,10 +241,30 @@
                                                       [self getAvatars:YES]
                                                       ]];
 
-        for (int i = 0; i < comments_array.count; i++) {
-            NSString *comment = [self getComment:[comments_array objectAtIndex:i]];
+        // add friends comments
+        for (int i = 0; i < friendsCommentsArray.count; i++) {
+            NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
             comments = [comments stringByAppendingString:comment];
         }
+        
+        if ([[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
+            NSString *publicCommentHeader = [NSString stringWithFormat:@
+                                             "<div class=\"NB-story-comments-public-header-wrapper\">"
+                                             "<div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
+                                             "</div>",
+                                             [[story objectForKey:@"comment_count_public"] intValue],
+                                             [[story objectForKey:@"comment_count_public"] intValue] == 1 ? @"" : @"s"];
+            
+            comments = [comments stringByAppendingString:publicCommentHeader];
+            
+            // add friends comments
+            for (int i = 0; i < publicCommentsArray.count; i++) {
+                NSString *comment = [self getComment:[publicCommentsArray objectAtIndex:i]];
+                comments = [comments stringByAppendingString:comment];
+            }
+        }
+
+
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
     }
     
@@ -253,6 +276,19 @@
     NSDictionary *user = [self getUser:[[commentDict objectForKey:@"user_id"] intValue]];
     NSString *userAvatarClass = @"NB-user-avatar";
     NSString *userReshareString = @"";
+    NSString *userEditButton = @"";
+    NSString *commentUserId = [NSString stringWithFormat:@"%@", [commentDict objectForKey:@"user_id"]];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    
+    if ([commentUserId isEqualToString:currentUserId]) {
+        userEditButton = [NSString stringWithFormat:@
+                          "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button\">"
+                            "<div class=\"NB-story-comment-edit-button-wrapper\">"
+                                "<a href=\"http://ios.newsblur.com/share\">edit</a>"
+                            "</div>"
+                          "</div>"
+                          ];
+    }
 
     if ([commentDict objectForKey:@"source_user_id"] != [NSNull null]) {
         userAvatarClass = @"NB-user-avatar NB-story-comment-reshare";
@@ -274,6 +310,7 @@
                         "   %@"
                         "    <div class=\"NB-story-comment-username\">%@</div>"
                         "    <div class=\"NB-story-comment-date\">%@ ago</div>"
+                        "    %@" //User Edit Button>"
                         "    <div class=\"NB-story-comment-reply-button\">"
                         "        <div class=\"NB-story-comment-reply-button-wrapper\">"
                         "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">reply</a>"
@@ -287,10 +324,10 @@
                         userAvatarClass,
                         [commentDict objectForKey:@"user_id"],
                         [user objectForKey:@"photo_url"],
-                         userReshareString,
-
+                        userReshareString,
                         [user objectForKey:@"username"],
                         [commentDict objectForKey:@"shared_date"],
+                        userEditButton,
                         [commentDict objectForKey:@"user_id"],
                         [user objectForKey:@"username"],
                         [commentDict objectForKey:@"comments"],
@@ -354,7 +391,7 @@
     }
     
     [appDelegate resetShareComments];
-    NSString *commentsString = [self getComments];    
+    NSString *commentString = [self getComments:@"friends"];       
     NSString *headerString;
     NSString *sharingHtmlString;
     NSString *footerString;
@@ -446,7 +483,9 @@
                             "           <div class=\"NB-story\">%@</div>"
                             "       </div>" // font-size
                             "    </div>" // font-style
-                            "    <div id=\"NB-comments-wrapper\">%@</div>" // comments
+                            "    <div id=\"NB-comments-wrapper\">"
+                            "       %@" // friends comments
+                            "    </div>" 
                             "    %@" // share
                             "    %@"
                             "</body>"
@@ -457,7 +496,7 @@
                             fontStyleClass,
                             fontSizeClass,
                             [appDelegate.activeStory objectForKey:@"story_content"],
-                            commentsString,
+                            commentString,
                             sharingHtmlString,
                             footerString
                             ];
@@ -538,13 +577,27 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // Is there a better way?  Someone show me the light
     if ([[url host] isEqualToString: @"ios.newsblur.com"]){
         if ([action isEqualToString:@"reply"]) {
-            NSArray *comments = [appDelegate.activeStory objectForKey:@"comments"];
-            for (int i = 0; i < comments.count; i++) {
+            appDelegate.activeComment = nil;
+            // search for the comment from friends comments
+            NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
+            for (int i = 0; i < friendComments.count; i++) {
                 NSString *userId = [NSString stringWithFormat:@"%@", 
-                                    [[comments objectAtIndex:i] objectForKey:@"user_id"]];
+                                    [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
                 if([userId isEqualToString:[NSString stringWithFormat:@"%@", 
                                             [urlComponents objectAtIndex:2]]]){
-                    appDelegate.activeComment = [comments objectAtIndex:i];
+                    appDelegate.activeComment = [friendComments objectAtIndex:i];
+                }
+            }
+            
+            if (appDelegate.activeComment == nil) {
+                NSArray *publicComments = [appDelegate.activeStory objectForKey:@"public_comments"];
+                for (int i = 0; i < publicComments.count; i++) {
+                    NSString *userId = [NSString stringWithFormat:@"%@", 
+                                        [[publicComments objectAtIndex:i] objectForKey:@"user_id"]];
+                    if([userId isEqualToString:[NSString stringWithFormat:@"%@", 
+                                                [urlComponents objectAtIndex:2]]]){
+                        appDelegate.activeComment = [publicComments objectAtIndex:i];
+                    }
                 }
             }
             [appDelegate showShareView:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]
@@ -715,12 +768,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 } 
 
 - (void)refreshComments {
-    NSString *commentsString = [self getComments];    
+    NSString *friendsCommentString = [self getComments:@"friends"];    
     NSString *jsString = [[NSString alloc] initWithFormat:@
                           "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
-                          commentsString];
+                          friendsCommentString];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-    NSLog(@"/n/n/nCOMMENT STRING IS %@", commentsString);
 }
 
 - (void)scrolltoBottom {
@@ -839,7 +891,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)changeWebViewWidth:(int)width {
     int contentWidth = self.view.frame.size.width;
-    NSLog(@"content width in changeWebViewWidth is %i", contentWidth);
     NSString *contentWidthClass;
     
     if (contentWidth > 740) {

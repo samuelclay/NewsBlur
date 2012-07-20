@@ -312,8 +312,9 @@
 - (void)hideShareView:(BOOL)resetComment {
     if (resetComment) {
         self.shareViewController.commentField.text = @"";
-        [self.shareViewController.commentField resignFirstResponder];
     }
+    
+    [self.shareViewController.commentField resignFirstResponder];
     
     self.isShowingShare = NO;
     
@@ -897,7 +898,7 @@
         feed = [self.dictSocialFeeds objectForKey:feedIdStr];
         
         [otherFriendFeeds removeObject:feedId];
-         NSLog(@"otherFriendFeeds is %@", otherFriendFeeds);
+//         NSLog(@"otherFriendFeeds is %@", otherFriendFeeds);
         
         
     } else {

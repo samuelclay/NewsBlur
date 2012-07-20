@@ -177,35 +177,97 @@
     [request setPostValue:commentField.text forKey:@"reply_comments"]; 
     
     [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishAddComment:)];
+    [request setDidFinishSelector:@selector(finishAddReply:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
+}
+
+- (void)finishAddReply:(ASIHTTPRequest *)request {
+    NSLog(@"%@", [request responseString]);
+    NSLog(@"Successfully added.");
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    
+    // add the comment into the activeStory dictionary
+    NSDictionary *comment = [results objectForKey:@"comment"];
+    NSString *commentUserId = [NSString stringWithFormat:@"%@", [comment objectForKey:@"user_id"]];
+    BOOL foundComment = NO;
+    
+    NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
+    NSMutableArray *newFriendsComments = [[NSMutableArray alloc] init];
+    for (int i = 0; i < friendComments.count; i++) {
+        NSString *userId = [NSString stringWithFormat:@"%@", 
+                            [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
+        if([userId isEqualToString:commentUserId]){
+            [newFriendsComments addObject:comment];
+            foundComment = YES;
+        } else {
+            [newFriendsComments addObject:[friendComments objectAtIndex:i]];
+        }
+    }
+    
+    // make mutable copy
+    NSMutableDictionary *newActiveStory = [appDelegate.activeStory mutableCopy];
+    [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
+    
+    if (!foundComment) {
+        NSArray *publicComments = [appDelegate.activeStory objectForKey:@"public_comments"];
+        NSMutableArray *newPublicComments = [[NSMutableArray alloc] init];
+        for (int i = 0; i < publicComments.count; i++) {
+            NSString *userId = [NSString stringWithFormat:@"%@", 
+                                [[publicComments objectAtIndex:i] objectForKey:@"user_id"]];
+            if([userId isEqualToString:commentUserId]){
+                [newPublicComments addObject:comment];
+            } else {
+                [newPublicComments addObject:[publicComments objectAtIndex:i]];
+            }
+        }
+        [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
+    }
+    
+    NSDictionary *newStory = [NSDictionary dictionaryWithDictionary:newActiveStory];
+    [self replaceStory:newStory];
 }
 
 - (void)finishAddComment:(ASIHTTPRequest *)request {
     NSLog(@"%@", [request responseString]);
     NSLog(@"Successfully added.");
-    [commentField resignFirstResponder];
-    [appDelegate hideShareView:YES];
+
     
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     
-    // update the current story and the master array
-    appDelegate.activeStory = [results objectForKey:@"story"];
+    [self replaceStory:[results objectForKey:@"story"]];
+}
+
+- (void)replaceStory:(NSDictionary *)newStory {
+    [commentField resignFirstResponder];
+    [appDelegate hideShareView:YES];
+    
+    // update the current story and the activeFeedStories
+    appDelegate.activeStory = newStory;
+    
+    NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
+    
     for (int i = 0; i < appDelegate.activeFeedStories.count; i++)  {
         NSDictionary *feedStory = [appDelegate.activeFeedStories objectAtIndex:i];
         NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
         NSString *currentStoryId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
         if ([storyId isEqualToString: currentStoryId]){
-            //            appDelegate.activeFeedStories
+            [newActiveFeedStories addObject:newStory];
+        } else {
+            [newActiveFeedStories addObject:[appDelegate.activeFeedStories objectAtIndex:i]];
         }
     }
+    
+    appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     
     self.commentField.text = nil;
     [appDelegate refreshComments];
+    
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {

@@ -64,7 +64,7 @@
 - (void)hideToggleFontSize;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
-- (NSString *)getComments;
+- (NSString *)getComments:(NSString *)type;
 - (NSString *)getComment:(NSDictionary *)commentDict;
 - (NSString *)getReplies:(NSArray *)replies;
 - (NSString *)getAvatars:(BOOL)areFriends;

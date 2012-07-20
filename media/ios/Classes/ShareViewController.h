@@ -26,5 +26,8 @@
 - (IBAction)doToggleButton:(id)sender;
 - (IBAction)doShareThisStory:(id)sender;
 - (IBAction)doReplyToComment:(id)sender;
+- (void)finishAddComment:(ASIHTTPRequest *)request;
+- (void)finishAddReply:(ASIHTTPRequest *)request;
+- (void)replaceStory:(NSDictionary *)newStory;
 
 @end

@@ -307,6 +307,12 @@
     
     // Adding new user profiles to appDelegate.activeFeedUserProfiles
     NSArray *newUserProfiles = [results objectForKey:@"user_profiles"];
+    
+    // add self to user profiles
+    if (self.feedPage == 1) {
+        newUserProfiles = [newUserProfiles arrayByAddingObject:appDelegate.dictUserProfile];
+    }
+    
     if ([newUserProfiles count]){
         NSMutableArray *confirmedNewUserProfiles = [NSMutableArray array];
         if ([appDelegate.activeFeedUserProfiles count]) {
