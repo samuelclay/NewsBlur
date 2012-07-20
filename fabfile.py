@@ -52,6 +52,13 @@ env.roledefs ={
              'task05.newsblur.com', 
              'task06.newsblur.com', 
              'task07.newsblur.com'],
+    'vps': ['task01.newsblur.com', 
+            'task02.newsblur.com', 
+            'task03.newsblur.com', 
+            'task04.newsblur.com', 
+            'app01.newsblur.com', 
+            'app02.newsblur.com', 
+            'app03.newsblur.com'],
 }
 
 # ================
@@ -81,6 +88,10 @@ def db():
 def task():
     server()
     env.roles = ['task']
+    
+def vps():
+    server()
+    env.roles = ['vps']
     
 # ==========
 # = Deploy =
