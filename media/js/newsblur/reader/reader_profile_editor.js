@@ -85,7 +85,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                 $.make('fieldset', [
                     $.make('legend', 'Custom CSS for your Blurblog'),
                     $.make('div', { className: 'NB-modal-section NB-profile-editor-blurblog-custom-css'}, [
-                        $.make('textarea', { 'className': 'NB-profile-blurblog-css', name: 'css' })
+                        $.make('textarea', { 'className': 'NB-profile-blurblog-css', name: 'css' }, this.profile.get('custom_css'))
                     ])
                 ]),
                 $.make('div', { className: 'NB-modal-submit-grey NB-blurblog-save-button NB-modal-submit-button' }, 'Change your blurblog settings above')
@@ -144,6 +144,10 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         });
     },
     
+    populate_data: function() {
+        $('textarea[name=css]', this.$modal).val(this.profile.get('custom_css'));
+    },
+    
     make_profile_section: function() {
         var $badge = $('.NB-friends-findfriends-profile', this.$modal).empty();
         var $profile_badge;
@@ -199,6 +203,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             this.make_profile_section();
             this.make_profile_photo_chooser();
             this.choose_color();
+            this.populate_data();
             callback && callback();
         }, this));
     },
