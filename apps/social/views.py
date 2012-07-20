@@ -39,21 +39,36 @@ def request_invite(request):
     
 @json.json_view
 def load_social_stories(request, user_id, username=None):
-    start = time.time()
-    user = get_user(request)
+    start          = time.time()
+    user           = get_user(request)
     social_user_id = int(user_id)
-    social_user = get_object_or_404(User, pk=social_user_id)
-    offset = int(request.REQUEST.get('offset', 0))
-    limit = int(request.REQUEST.get('limit', 6))
-    page = request.REQUEST.get('page')
+    social_user    = get_object_or_404(User, pk=social_user_id)
+    offset         = int(request.REQUEST.get('offset', 0))
+    limit          = int(request.REQUEST.get('limit', 6))
+    page           = request.REQUEST.get('page')
+    order          = request.REQUEST.get('order', 'newest')
+    read_filter    = request.REQUEST.get('read_filter', 'all')
+
     if page: offset = limit * (int(page) - 1)
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     social_profile = MSocialProfile.objects.get(user_id=social_user.pk)
-    mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
-    stories = Feed.format_stories(mstories)
+    try:
+        socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
+    except MSocialSubscription.DoesNotExist:
+        socialsub = None
     
+    if socialsub and (read_filter == 'unread' or order == 'oldest'):
+        story_ids = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
+        story_date_order = "%sshared_date" % ('' if order == 'oldest' else '-')
+        mstories = MSharedStory.objects(user_id=social_user.pk,
+                                        story__pk__in=story_ids).order_by(story_date_order)
+        stories = Feed.format_stories(mstories)
+    else:
+        mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
+        stories = Feed.format_stories(mstories)
+
     if not stories:
         return dict(stories=[])
     
@@ -62,10 +77,6 @@ def load_social_stories(request, user_id, username=None):
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
-    try:
-        socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
-    except MSocialSubscription.DoesNotExist:
-        socialsub = None
     usersubs = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids)
     usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersubs_map.keys())))
@@ -317,7 +328,7 @@ def mark_story_as_shared(request):
         story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
         story_values = dict(user_id=request.user.pk, comments=comments, 
-                            has_comments=bool(comments))
+                            has_comments=bool(comments), story_db_id=story.id)
         story_db.update(story_values)
         shared_story = MSharedStory.objects.create(**story_db)
         if source_user_id:

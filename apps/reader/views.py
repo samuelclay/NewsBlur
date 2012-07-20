@@ -408,10 +408,13 @@ def load_single_feed(request, feed_id):
     feed = Feed.get_by_id(feed_id, feed_address=feed_address)
     if not feed:
         raise Http404
-
-    usersub = UserSubscription.objects.get(user=user, feed=feed)
     
-    if read_filter == 'unread' or order == 'oldest':
+    try:
+        usersub = UserSubscription.objects.get(user=user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        usersub = None
+    
+    if usersub and (read_filter == 'unread' or order == 'oldest'):
         story_ids = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
         story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
         mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
@@ -438,7 +441,7 @@ def load_single_feed(request, feed_id):
     checkpoint1 = time.time()
     
     userstories = []
-    if usersub and stories:
+    if stories:
         story_ids = [story['id'] for story in stories]
         userstories_db = MUserStory.objects(user_id=user.pk,
                                             feed_id=feed.pk,
