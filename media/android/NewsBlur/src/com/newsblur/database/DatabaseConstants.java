@@ -17,6 +17,7 @@ public class DatabaseConstants {
 	public static final String FEED_UPDATED_SECONDS = "updated_seconds";
 	public static final String FEED_FAVICON_FADE = "favicon_fade";
 	public static final String FEED_FAVICON_COLOUR = "favicon_colour";
+	public static final String FEED_FAVICON_BORDER = "favicon_border";
 	public static final String FEED_ACTIVE = "active";
 	public static final String FEED_FAVICON = "favicon";
 	public static final String FEED_POSITIVE_COUNT = "ps";
@@ -24,7 +25,7 @@ public class DatabaseConstants {
 	public static final String FEED_NEGATIVE_COUNT = "ng";
 	
 	public static final String[] FEED_COLUMNS = {
-		FEED_ACTIVE, FEED_ID, FEED_TITLE, FEED_LINK, FEED_ADDRESS, FEED_SUBSCRIBERS, FEED_UPDATED_SECONDS, FEED_FAVICON_FADE, FEED_FAVICON_COLOUR, 
+		FEED_ACTIVE, FEED_ID, FEED_TITLE, FEED_LINK, FEED_ADDRESS, FEED_SUBSCRIBERS, FEED_UPDATED_SECONDS, FEED_FAVICON_FADE, FEED_FAVICON_COLOUR, FEED_FAVICON_BORDER,
 		FEED_FAVICON, FEED_POSITIVE_COUNT, FEED_NEUTRAL_COUNT, FEED_NEGATIVE_COUNT
 	};
 	

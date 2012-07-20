@@ -18,35 +18,38 @@
 
         <TextView
             android:id="@+id/row_feednegative"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/negative_count_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/negative_count_rect"
             android:gravity="center"
+            android:padding="5dp"
             android:textColor="@color/white"
             android:textSize="12dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/row_feedneutral"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/neutral_count_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/neutral_count_rect"
             android:gravity="center"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="12dp"
+            android:padding="5dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/row_feedpositive"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/positive_count_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/positive_count_rect"
             android:gravity="center"
             android:textColor="@color/white"
             android:textSize="12dp"
+            android:padding="4dp"
             android:textStyle="bold" />
     </LinearLayout>
 

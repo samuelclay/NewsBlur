@@ -2,6 +2,7 @@ package com.newsblur.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,7 @@ public class ReadingItemFragment extends Fragment {
 		TextView itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
 		TextView itemCommentCount = (TextView) view.findViewById(R.id.reading_item_comment_count);
 		TextView itemShareCount = (TextView) view.findViewById(R.id.reading_item_share_count);
-		LinearLayout tagContainer = (LinearLayout) view.findViewById(R.id.reading_item_tags);
+		GridLayout tagContainer = (GridLayout) view.findViewById(R.id.reading_item_tags);
 		
 		if (story.tags != null || story.tags.length > 0) {
 			tagContainer.setVisibility(View.VISIBLE);
@@ -82,6 +83,7 @@ public class ReadingItemFragment extends Fragment {
 		web.getSettings().setAllowFileAccess(true);
 		web.getSettings().setAppCacheEnabled(true);
 		web.setVerticalScrollBarEnabled(false);
+		web.setHorizontalScrollBarEnabled(false);
 		
 		StringBuilder builder = new StringBuilder();
 		// TODO: Define a better strategy for rescaling the HTML across device screen sizes and storying this HTML as boilderplate somewhere

@@ -3,6 +3,8 @@ package com.newsblur.activity;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -24,6 +27,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.service.DetachableResultReceiver;
 import com.newsblur.service.DetachableResultReceiver.Receiver;
 import com.newsblur.service.SyncService;
+import com.newsblur.util.UIUtils;
 
 public class Reading extends SherlockFragmentActivity {
 
@@ -41,8 +45,8 @@ public class Reading extends SherlockFragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
-	    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-	    
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
 		super.onCreate(savedInstanceBundle);
 		setContentView(R.layout.activity_reading);
 
@@ -51,15 +55,23 @@ public class Reading extends SherlockFragmentActivity {
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		readingAdapter = new ReadingAdapter(fragmentManager, this, feedId);
-		
+
 		contentResolver = getContentResolver();
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 
 		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
 		setTitle(feed.title);
 
-		getSupportLoaderManager().initLoader(READING_LOADER , null, readingAdapter);
+		GradientDrawable gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { Color.parseColor(feed.faviconColour), Color.parseColor(feed.faviconFade)});
+		View view = findViewById(R.id.reading_floatbar);
+		view.setBackgroundDrawable(gradient);
+
+		int border = Color.parseColor(feed.faviconBorder);
+		findViewById(R.id.reading_divider).setBackgroundColor(border)
+;		findViewById(R.id.reading_divider_bottom).setBackgroundColor(border);
 		
+		getSupportLoaderManager().initLoader(READING_LOADER , null, readingAdapter);
+
 		syncFragment = (SyncReadingUpdaterFragment) fragmentManager.findFragmentByTag(SyncReadingUpdaterFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncReadingUpdaterFragment();
@@ -68,7 +80,12 @@ public class Reading extends SherlockFragmentActivity {
 		}
 
 		pager = (ViewPager) findViewById(R.id.reading_pager);
+		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
+		pager.setPageMarginDrawable(R.drawable.divider_light);
+
 		pager.setAdapter(readingAdapter);
+
+
 		setProgressBarVisibility(true);
 	}
 
@@ -151,7 +168,9 @@ public class Reading extends SherlockFragmentActivity {
 			switch (resultCode) {
 			case SyncService.STATUS_FINISHED:
 				Log.d(TAG, "Synchronisation finished.");
-				((Reading) getActivity()).redrawUI();
+				if (getActivity() != null) {
+					((Reading) getActivity()).redrawUI();
+				}
 				break;
 			case SyncService.STATUS_RUNNING:
 				Log.d(TAG, "Synchronisation running.");

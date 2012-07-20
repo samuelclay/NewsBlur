@@ -1,17 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" >
 
     <android.support.v4.view.ViewPager
         android:id="@+id/reading_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    
+
     <View
+        android:id="@+id/reading_divider"
         android:layout_width="fill_parent"
-        android:layout_height="8dip"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/orangeline_shadow" />
-    
+        android:layout_height="1dip"
+        android:layout_alignParentTop="true" />
+
+    <LinearLayout
+        android:id="@+id/reading_floatbar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/reading_divider"
+        android:minHeight="8dp"
+        android:alpha="0.8" />
+
+    <View
+        android:id="@+id/reading_divider_bottom"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_below="@id/reading_floatbar" />
+
 </RelativeLayout>

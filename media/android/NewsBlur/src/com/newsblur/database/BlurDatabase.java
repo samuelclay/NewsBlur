@@ -32,7 +32,8 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.FEED_NEGATIVE_COUNT + INTEGER + ", " +
 		DatabaseConstants.FEED_NEUTRAL_COUNT + INTEGER + ", " +
 		DatabaseConstants.FEED_FAVICON + TEXT + ", " +
-		DatabaseConstants.FEED_FAVICON_FADE + TEXT + ", " + 
+		DatabaseConstants.FEED_FAVICON_FADE + TEXT + ", " +
+		DatabaseConstants.FEED_FAVICON_BORDER + TEXT + ", " +
 		DatabaseConstants.FEED_LINK + TEXT + ", " + 
 		DatabaseConstants.FEED_SUBSCRIBERS + TEXT + ", " +
 		DatabaseConstants.FEED_TITLE + TEXT + ", " + 

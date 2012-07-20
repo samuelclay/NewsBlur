@@ -2,13 +2,13 @@
 <com.newsblur.view.NonfocusScrollview xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white" >
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-         >
+        android:paddingTop="9dp" >
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -17,26 +17,30 @@
             android:padding="10dp" >
 
             <TextView
+                android:id="@+id/reading_item_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="5dp"
+                android:shadowColor="@color/darkgray"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                android:textStyle="bold" />
+
+            <TextView
                 android:id="@+id/reading_item_authors"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
+                android:layout_below="@id/reading_item_title"
                 android:gravity="center_vertical|right"
                 android:minWidth="80dp"
                 android:textColor="@color/lightgray"
                 android:textSize="11dp" />
-
-            <TextView
-                android:id="@+id/reading_item_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginBottom="5dp"
-                android:layout_marginRight="80dp"
-                android:layout_toLeftOf="@id/reading_item_authors"
-                android:textColor="@color/white"
-                android:textSize="18dp"
-                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/reading_item_date"
@@ -44,24 +48,18 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_below="@id/reading_item_title"
+                android:layout_marginBottom="5dp"
                 android:layout_marginRight="10dp"
                 android:textColor="@color/lightgray"
                 android:textSize="11dp"
                 android:textStyle="italic" />
 
             <LinearLayout
-                android:id="@+id/reading_item_tags"
+                android:id="@+id/reading_item_counts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/reading_item_date"
-                android:visibility="invisible" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/reading_item_date"
                 android:layout_alignParentRight="true"
-                android:layout_below="@id/reading_item_title"
+                android:layout_below="@id/reading_item_date"
                 android:gravity="center_vertical"
                 android:orientation="horizontal" >
 
@@ -94,6 +92,17 @@
                     android:layout_height="18dp"
                     android:src="@drawable/favourite" />
             </LinearLayout>
+
+            <android.support.v7.widget.GridLayout
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/reading_item_tags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/reading_item_date"
+                android:layout_marginTop="5dp"
+                android:layout_toLeftOf="@id/reading_item_counts"
+                android:visibility="invisible"
+                app:columnCount="5" />
         </RelativeLayout>
 
         <View
@@ -112,4 +121,5 @@
             android:layout_height="match_parent"
             android:scrollbars="none" />
     </LinearLayout>
+
 </com.newsblur.view.NonfocusScrollview>

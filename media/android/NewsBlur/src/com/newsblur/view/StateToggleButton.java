@@ -38,19 +38,19 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 
 		imageStateOne = new ImageView(context);
 		imageStateOne.setId(AppConstants.STATE_ALL);
-		imageStateOne.setImageResource(R.drawable.negative_count_circle);
+		imageStateOne.setImageResource(R.drawable.negative_count_rect);
 		imageStateOne.setLayoutParams(new LayoutParams(length, length));
 
 		LayoutParams centerParams = new LayoutParams(length, length);
 		centerParams.setMargins(marginSide, marginTop, marginSide, marginTop);
 		imageStateTwo = new ImageView(context);
 		imageStateTwo.setId(AppConstants.STATE_SOME);
-		imageStateTwo.setImageResource(R.drawable.neutral_count_circle);
+		imageStateTwo.setImageResource(R.drawable.neutral_count_rect);
 		imageStateTwo.setLayoutParams(centerParams);
 
 		imageStateThree = new ImageView(context);
 		imageStateThree.setId(AppConstants.STATE_BEST);
-		imageStateThree.setImageResource(R.drawable.positive_count_circle);
+		imageStateThree.setImageResource(R.drawable.positive_count_rect);
 		imageStateThree.setLayoutParams(new LayoutParams(length, length));
 
 		imageStateOne.setOnClickListener(this);

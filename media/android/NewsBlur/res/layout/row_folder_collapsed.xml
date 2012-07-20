@@ -36,35 +36,38 @@
 
         <TextView
             android:id="@+id/row_foldersumneg"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/negative_count_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/negative_count_rect"
             android:gravity="center"
+            android:padding="5dp"
             android:textColor="@color/white"
-            android:textSize="7dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/row_foldersumneu"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/neutral_count_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/neutral_count_rect"
             android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="7dp"
+            android:padding="5dp"
+            android:textColor="@color/black"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/row_foldersumpos"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:background="@drawable/positive_count_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/positive_count_rect"
             android:gravity="center"
-            android:layout_marginRight="10dp"
+            android:padding="5dp"
             android:textColor="@color/white"
-            android:textSize="7dp"
+            android:textSize="12dp"
             android:textStyle="bold" />
     </LinearLayout>
 
