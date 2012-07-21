@@ -320,7 +320,7 @@
     appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
     appDelegate.dictUserActivities = [results objectForKey:@"activities"];
     [appDelegate.dashboardViewController refreshInteractions];
-//    [appDelegate.dashboardViewController refreshActivity];
+    [appDelegate.dashboardViewController refreshActivity];
 
     // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];

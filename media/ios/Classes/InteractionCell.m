@@ -15,42 +15,57 @@
 @implementation InteractionCell
 
 @synthesize interactionLabel;
+@synthesize avatarView;
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        interactionLabel = nil;
+        avatarView = nil;
+        
+        // create the label and the avatar
+        UIImageView *avatar = [[UIImageView alloc] initWithFrame:CGRectZero];
+        self.avatarView = avatar;
+        [self.contentView addSubview:avatar];
+        
+        OHAttributedLabel *interaction = [[OHAttributedLabel alloc] initWithFrame:CGRectZero];
+        interaction.backgroundColor = [UIColor whiteColor];
+        interaction.automaticallyAddLinksForType = NO;
+        self.interactionLabel = interaction;
+        [self.contentView addSubview:interaction];
     }
+    
     return self;
 }
 
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect
- {
- // Drawing code
- }
- */
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    // determine outer bounds
+    CGRect contentRect = self.contentView.bounds;
+    
+    // position avatar to bounds
+    self.avatarView.frame = CGRectMake(20, 15, 48, 48);
+        
+    // position label to bounds
+    CGRect labelRect = contentRect;
+    labelRect.origin.x = labelRect.origin.x + 83;
+    labelRect.origin.y = labelRect.origin.y + 14;
+    labelRect.size.width = contentRect.size.width - 83 - 20;
+    self.interactionLabel.frame = labelRect;
+}
 
-- (int)refreshInteraction:(NSDictionary *)interaction withWidth:(int)width {    
-    UIImageView *avatarView = [[UIImageView alloc] init];
+
+- (int)setInteraction:(NSDictionary *)interaction withWidth:(int)width {
+    // must set the height again for dynamic height in heightForRowAtIndexPath in 
+    CGRect interactionLabelRect = self.interactionLabel.bounds;
+    interactionLabelRect.size.width = width - 83 - 40;
+    self.interactionLabel.frame = interactionLabelRect;
+
     UIImage *placeholder = [UIImage imageNamed:@"user"];
-    [avatarView setImageWithURL:[NSURL URLWithString:[[interaction objectForKey:@"with_user"] objectForKey:@"photo_url"]]
+    [self.avatarView setImageWithURL:[NSURL URLWithString:[[interaction objectForKey:@"with_user"] objectForKey:@"photo_url"]]
         placeholderImage:placeholder];
-    
-//    avatarView.layer.cornerRadius = 6;
-//    avatarView.layer.masksToBounds = YES;
-    
-    avatarView.frame = CGRectMake(20, 15, 48, 48);
-    [self addSubview:avatarView];
-
-    self.interactionLabel = [[OHAttributedLabel alloc] init];
-    self.interactionLabel.frame = CGRectMake(83, 14, 365, 200);
-    self.interactionLabel.backgroundColor = [UIColor whiteColor];
-    self.interactionLabel.automaticallyAddLinksForType = NO;
-    
+        
     NSString *category = [interaction objectForKey:@"category"];
     NSString *content = [interaction objectForKey:@"content"];
     NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [interaction objectForKey:@"title"]]];
@@ -89,18 +104,15 @@
         
     [attrStr setTextColor:UIColorFromRGB(0x999999) range:[txtWithTime rangeOfString:time]];
     [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:10] range:[txtWithTime rangeOfString:time]];
-//    [attrStr setTextAlignment:kCTLeftTextAlignment lineBreakMode:kCTLineBreakByTruncatingTail range:[txtWithTime rangeOfString:time] lineHeight:20.0];
     [attrStr setTextAlignment:kCTLeftTextAlignment lineBreakMode:kCTLineBreakByWordWrapping lineHeight:4];
     self.interactionLabel.attributedText = attrStr; 
     
-    
     [self.interactionLabel sizeToFit];
     
-    
-    [self addSubview:self.interactionLabel];
     int height = self.interactionLabel.frame.size.height;
     return height;
 }
+
 
 - (NSString *)stripFormatting:(NSString *)str {
     while ([str rangeOfString:@"  "].location != NSNotFound) {

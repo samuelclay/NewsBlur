@@ -9,12 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "OHAttributedLabel.h"
 
-@interface InteractionCell : UIView {
+@interface InteractionCell : UITableViewCell {
     OHAttributedLabel *interactionLabel;
+    UIImageView *avatarView;
 }
 
 @property (retain, nonatomic) OHAttributedLabel *interactionLabel;
+@property (retain, nonatomic) UIImageView *avatarView;
 
-- (int)refreshInteraction:(NSDictionary *)interaction withWidth:(int)width;
+- (int)setInteraction:(NSDictionary *)interaction withWidth:(int)width;
 - (NSString *)stripFormatting:(NSString *)str;
 @end

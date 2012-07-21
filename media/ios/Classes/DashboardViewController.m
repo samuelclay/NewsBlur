@@ -18,6 +18,8 @@
 @synthesize appDelegate;
 @synthesize interactionsModule;
 @synthesize activitiesModule;
+@synthesize toolbar;
+@synthesize segmentedButton;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -31,12 +33,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    self.toolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 - (void)viewDidUnload {
     [self setAppDelegate:nil];
     [self setInteractionsModule:nil];
     [self setActivitiesModule:nil];
+    [self setToolbar:nil];
+    [self setSegmentedButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -55,7 +60,6 @@
     self.navigationItem.titleView = label;
 }
 
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
@@ -68,21 +72,26 @@
 # pragma mark Interactions
 
 - (void)refreshInteractions {
-    
-//    if (self.interactionsModule == nil) {
-//        InteractionsModule *interactions = [[InteractionsModule alloc] init];
-//        interactions.frame = CGRectMake(0, 44, self.view.frame.size.width, self.view.frame.size.height - 44);
-//        self.interactionsModule = interactions;
-//        [self.view addSubview:self.interactionsModule];
-//        
-//        self.interactionsModule.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-//    }
-    
     [self.interactionsModule fetchInteractionsDetail:1];    
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {    
     NSLog(@"Error in finishLoadInteractions is %@", [request error]);
+}
+
+- (IBAction)tapSegmentedButton:(id)sender {
+    int selectedSegmentIndex = [self.segmentedButton selectedSegmentIndex];
+    
+    if (selectedSegmentIndex == 0) {
+        self.interactionsModule.hidden = NO;
+        self.activitiesModule.hidden = YES;
+    } else if (selectedSegmentIndex == 1) {
+        self.interactionsModule.hidden = YES;
+        self.activitiesModule.hidden = NO;
+    } else if (selectedSegmentIndex == 2) {
+        NSLog(@"3");
+
+    }
 }
 
 # pragma mark
@@ -92,7 +101,7 @@
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/activities?user_id=%@",
                            NEWSBLUR_URL,
                            [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    
+    NSLog(@"urlString is %@", urlString);
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     [request setDidFinishSelector:@selector(finishLoadActivities:)];

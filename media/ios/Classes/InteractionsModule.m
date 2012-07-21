@@ -158,7 +158,7 @@
     }
     
     InteractionCell *interactionCell = [[InteractionCell alloc] init];
-    int height = [interactionCell refreshInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width] + 30;
+    int height = [interactionCell setInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width] + 30;
     if (height < MINIMUM_INTERACTION_HEIGHT) {
         return MINIMUM_INTERACTION_HEIGHT;
     } else {
@@ -179,28 +179,19 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView 
-                             dequeueReusableCellWithIdentifier:CellIdentifier];
+    InteractionCell *cell = [tableView 
+                             dequeueReusableCellWithIdentifier:@"InteractionCell"];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] 
-                 initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:CellIdentifier];
-    } else {
-        [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
+        cell = [[InteractionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"InteractionCell"];
     }
     
-    int userInteractions = [appDelegate.dictUserInteractions count];
-    
-    if (indexPath.row >= userInteractions) {
+
+    if (indexPath.row >= [appDelegate.dictUserInteractions count]) {
+        // add in loading cell
         return [self makeLoadingCell];
-    }
-    
-    if (userInteractions) {
-        InteractionCell *interactionCell = [[InteractionCell alloc] init];
-        [cell.contentView addSubview:interactionCell];
-        [interactionCell refreshInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth: self.frame.size.width];
+    } else {
+        // update the cell information
+        [cell setInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth: self.frame.size.width];
     }
     
     return cell;
