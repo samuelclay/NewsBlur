@@ -437,7 +437,7 @@
             }
 
         }
-    }  
+    }
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social {
@@ -454,6 +454,11 @@
         [self setInFindingStoryMode:NO];
     }
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.navigationController dismissModalViewControllerAnimated:YES];
+    }
+        
     [self setTryFeedStoryId:contentId];
     [self setActiveFeed:feed];
     [self setActiveFolder:nil];
@@ -651,12 +656,8 @@
         feedTitle = [activeFeed objectForKey:@"feed_title"];
     }
     
-    self.storyDetailViewController.navigationItem.titleView = nil;
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if ([[self.splitStoryDetailNavigationController viewControllers] containsObject:self.storyDetailViewController]) {
-            [self.storyDetailViewController initStory];
-        } else {
+        if (![[self.splitStoryDetailNavigationController viewControllers] containsObject:self.storyDetailViewController]) {
             [self.splitStoryDetailNavigationController pushViewController:self.storyDetailViewController animated:YES];
         }
     } else{
@@ -664,15 +665,13 @@
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
         UINavigationController *navController = self.navigationController;   
         [navController pushViewController:storyDetailViewController animated:YES];
+        //self.storyDetailViewController.navigationItem.titleView = nil;
         [navController.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil]];
         navController.navigationItem.hidesBackButton = YES;
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
     
     [self.storyDetailViewController initStory];
-    
-
-    
 }
 
 - (void)navigationController:(UINavigationController *)navController 

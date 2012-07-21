@@ -104,7 +104,7 @@
     appDelegate.activeFeed = nil; 
     appDelegate.isSocialView = NO;
     appDelegate.isRiverView = NO;
-    appDelegate.inFindingStoryMode = NO;
+//    appDelegate.inFindingStoryMode = NO;
     [MBProgressHUD hideHUDForView:appDelegate.splitStoryDetailNavigationController.view animated:NO];
     
     
@@ -184,6 +184,10 @@
     CGRect buttonFrame = avatar.frame;
     buttonFrame.size = CGSizeMake(32, 32);
     avatar.frame = buttonFrame;
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [self.feedTitlesTable reloadData];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -781,12 +785,13 @@
 //    if ([[folder stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
 //        return 0;
 //    }
+    
+    if ([tableView.dataSource tableView:tableView numberOfRowsInSection:section] == 0) {
+        return 0;
+    }
+    
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
-        if ([tableView.dataSource tableView:tableView numberOfRowsInSection:section] == 0) {
-            return 0;
-        } else {
-            return 28;
-        }
+        return 28;
     }else{
         return 21;
     }

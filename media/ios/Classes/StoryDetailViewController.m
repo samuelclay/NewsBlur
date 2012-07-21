@@ -111,6 +111,8 @@
             self.navigationItem.leftBarButtonItem = nil;
         }
     }
+    
+    [self setActiveStory];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -130,14 +132,11 @@
 
 - (void)initStory {
     id storyId = [appDelegate.activeStory objectForKey:@"id"];
-    if (self.activeStoryId != storyId) {
-        [appDelegate pushReadStory:storyId];
-        [self setActiveStory];
-        [self showStory];
-        [self markStoryAsRead];   
-        [self setNextPreviousButtons];
-        self.webView.scalesPageToFit = YES;
-    }
+    [appDelegate pushReadStory:storyId];
+    [self showStory];
+    [self markStoryAsRead];   
+    [self setNextPreviousButtons];
+    self.webView.scalesPageToFit = YES;
     [self.loadingIndicator stopAnimating];    
 }
 
@@ -177,9 +176,9 @@
         } else {
             self.navigationItem.leftBarButtonItem = self.toggleViewButton;
         }
-        
-        [appDelegate adjustStoryDetailWebView];
     }
+    
+    [appDelegate adjustStoryDetailWebView];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -596,7 +595,10 @@
             [Utilities getImage:feedIdStr];
         UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
         titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
-        self.navigationItem.titleView = titleImageView;   
+        titleImageView.hidden = YES;
+        self.navigationItem.titleView = titleImageView; 
+        titleImageView.hidden = NO;
+
     }
 }
 
