@@ -124,7 +124,7 @@
         int commentIdx = [commentIndex intValue];
         self.commentField.text = [[replies objectAtIndex:commentIdx] objectForKey:@"comments"];
     } else if ([type isEqualToString: @"reply"]) {
-        self.activeCommentIndex = 0;
+        self.activeCommentIndex = -1;
         [submitButton setTitle:@"Reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
@@ -209,7 +209,7 @@
     [request setPostValue:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
     [request setPostValue:commentField.text forKey:@"reply_comments"]; 
     
-    if (self.activeCommentIndex) {
+    if (self.activeCommentIndex != -1) {
         NSDictionary *activeComment = [[appDelegate.activeComment objectForKey:@"replies"] objectAtIndex:self.activeCommentIndex];
         [request setPostValue:[activeComment objectForKey:@"comments"] forKey:@"original_message"]; 
     }

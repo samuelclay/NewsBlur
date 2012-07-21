@@ -95,6 +95,7 @@
 								<string key="NSFrame">{{75, 8}, {170, 30}}</string>
 								<reference key="NSSuperview" ref="895374018"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBSegmentControlStyle">2</int>
 								<int key="IBNumberOfSegments">3</int>
@@ -639,6 +640,7 @@
 							<string>activitesLabel</string>
 							<string>activitiesModule</string>
 							<string>appDelegate</string>
+							<string>header</string>
 							<string>interactionsLabel</string>
 							<string>interactionsModule</string>
 						</object>
@@ -647,6 +649,7 @@
 							<string>UILabel</string>
 							<string>ActivityModule</string>
 							<string>NewsBlurAppDelegate</string>
+							<string>UIImageView</string>
 							<string>UILabel</string>
 							<string>InteractionsModule</string>
 						</object>
@@ -658,6 +661,7 @@
 							<string>activitesLabel</string>
 							<string>activitiesModule</string>
 							<string>appDelegate</string>
+							<string>header</string>
 							<string>interactionsLabel</string>
 							<string>interactionsModule</string>
 						</object>
@@ -674,6 +678,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">header</string>
+								<string key="candidateClassName">UIImageView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">interactionsLabel</string>
@@ -698,12 +706,12 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
-							<string>toolbar</string>
+							<string>storyLabel</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NewsBlurAppDelegate</string>
-							<string>UIToolbar</string>
+							<string>UILabel</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -711,7 +719,7 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
-							<string>toolbar</string>
+							<string>storyLabel</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -720,8 +728,8 @@
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">toolbar</string>
-								<string key="candidateClassName">UIToolbar</string>
+								<string key="name">storyLabel</string>
+								<string key="candidateClassName">UILabel</string>
 							</object>
 						</object>
 					</object>

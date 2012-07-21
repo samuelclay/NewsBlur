@@ -19,6 +19,7 @@
 #import "Base64.h"
 #import "Utilities.h"
 #import "JSON.h"
+#import "NSString+HTML.h"
 
 @implementation StoryDetailViewController
 
@@ -111,6 +112,21 @@
         }
     }
 }
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    UITouch *theTouch = [touches anyObject];
+    CGPoint touchLocation = [theTouch locationInView:self.view];
+    CGFloat y = touchLocation.y;
+    [appDelegate dragFeedDetailView:y];        
+}
+
+- (void)viewDidUnload {
+    [self setButtonNextStory:nil];
+    [self setInnerView:nil];
+    [super viewDidUnload];
+}
+
+
 
 - (void)initStory {
     id storyId = [appDelegate.activeStory objectForKey:@"id"];
@@ -302,6 +318,8 @@
                              [sourceUser objectForKey:@"photo_url"]];
     } 
     
+    NSString *commentContent = [self textToHtml:[commentDict objectForKey:@"comments"]];
+    
     NSString *comment = [NSString stringWithFormat:@
                         "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
                         "<div class=\"%@\"><a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a></div>"
@@ -329,7 +347,7 @@
                         userEditButton,
                         [commentDict objectForKey:@"user_id"],
                         [user objectForKey:@"username"],
-                        [commentDict objectForKey:@"comments"],
+                        commentContent,
                         [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
 
     return comment;
@@ -360,6 +378,8 @@
                                   ];
             }
             
+            NSString *commentContent = [self textToHtml:[replyDict objectForKey:@"comments"]];
+            
             NSString *reply = [NSString stringWithFormat:@
                                 "<div class=\"NB-story-comment-reply\">"
                                 "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
@@ -375,7 +395,7 @@
                                [user objectForKey:@"username"],  
                                [replyDict objectForKey:@"publish_date"],
                                userEditButton,
-                               [replyDict objectForKey:@"comments"]];
+                               commentContent];
             repliesString = [repliesString stringByAppendingString:reply];
         }
         repliesString = [repliesString stringByAppendingString:@"</div>"];
@@ -1021,16 +1041,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate showOriginalStory:url];
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    UITouch *theTouch = [touches anyObject];
-    CGPoint touchLocation = [theTouch locationInView:self.view];
-    CGFloat y = touchLocation.y;
-    [appDelegate dragFeedDetailView:y];        
+- (NSString *)textToHtml:(NSString*)htmlString {
+    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"&"  withString:@"&amp;"];
+    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"<"  withString:@"&lt;"];
+    htmlString = [htmlString stringByReplacingOccurrencesOfString:@">"  withString:@"&gt;"];
+    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"""" withString:@"&quot;"];    
+    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"'"  withString:@"&#039;"];
+    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"];
+    return htmlString;
 }
 
-- (void)viewDidUnload {
-    [self setButtonNextStory:nil];
-    [self setInnerView:nil];
-    [super viewDidUnload];
-}
 @end

@@ -96,8 +96,9 @@
     
 //    self.feedTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone; // DO NOT USE. THIS BREAKS SHIT.
     UIColor *bgColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
-    self.feedTitlesTable.separatorColor = bgColor;
     self.feedTitlesTable.backgroundColor = bgColor;
+    
+    self.feedTitlesTable.separatorColor = [UIColor clearColor];
     
     // reset all feed detail specific data
     appDelegate.activeFeed = nil; 

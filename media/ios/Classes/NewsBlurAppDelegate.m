@@ -650,7 +650,8 @@
     } else {
         feedTitle = [activeFeed objectForKey:@"feed_title"];
     }
-    [self.storyDetailViewController initStory];
+    
+    self.storyDetailViewController.navigationItem.titleView = nil;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if ([[self.splitStoryDetailNavigationController viewControllers] containsObject:self.storyDetailViewController]) {
@@ -667,6 +668,11 @@
         navController.navigationItem.hidesBackButton = YES;
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
+    
+    [self.storyDetailViewController initStory];
+    
+
+    
 }
 
 - (void)navigationController:(UINavigationController *)navController 
