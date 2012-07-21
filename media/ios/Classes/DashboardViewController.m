@@ -16,11 +16,9 @@
 @implementation DashboardViewController
 
 @synthesize appDelegate;
-@synthesize interactionsLabel;
 @synthesize interactionsModule;
-@synthesize activitesLabel;
 @synthesize activitiesModule;
-@synthesize header;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -37,11 +35,8 @@
 
 - (void)viewDidUnload {
     [self setAppDelegate:nil];
-    [self setInteractionsLabel:nil];
     [self setInteractionsModule:nil];
-    [self setActivitesLabel:nil];
     [self setActivitiesModule:nil];
-    [self setHeader:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -74,15 +69,14 @@
 
 - (void)refreshInteractions {
     
-    if (self.interactionsModule == nil) {
-        InteractionsModule *interactions = [[InteractionsModule alloc] init];
-        interactions.frame = CGRectMake(0, 40, self.view.frame.size.width, self.view.frame.size.height - 40);
-        self.interactionsModule = interactions;
-        [self.view insertSubview:self.interactionsModule
-                    belowSubview:self.header];
-        
-        self.interactionsModule.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    }
+//    if (self.interactionsModule == nil) {
+//        InteractionsModule *interactions = [[InteractionsModule alloc] init];
+//        interactions.frame = CGRectMake(0, 44, self.view.frame.size.width, self.view.frame.size.height - 44);
+//        self.interactionsModule = interactions;
+//        [self.view addSubview:self.interactionsModule];
+//        
+//        self.interactionsModule.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+//    }
     
     [self.interactionsModule fetchInteractionsDetail:1];    
 }
