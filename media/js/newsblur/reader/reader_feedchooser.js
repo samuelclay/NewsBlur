@@ -60,7 +60,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   return false;
               })
             ]),
-            $.make('div', { className: 'NB-feedchooser-type NB-last'}, [
+            $.make('div', { className: 'NB-feedchooser-type NB-last', style: 'position: relative'}, [
+              $.make('div', { className: 'NB-feedchooser-porpoise' }, 'OR'),
+
               $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
                     $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Super-Mega'),
@@ -105,21 +107,30 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   $.make('div', { className: 'NB-feedchooser-dollar' }, [
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-1' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
-                            $.make('div', { className: 'NB-feedchooser-dollar-image' }),
+                            $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png' })
+                            ]),
                             '$12/year'
                           ]),
                           $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($1/month)')
                       ]),
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-2' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
-                            $.make('div', { className: 'NB-feedchooser-dollar-image' }),
+                            $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: -26px;top: 1px" }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_m.png', style: "position: absolute; left: 0px;top: 2px"  })
+                            ]),
                             '$24/year'
                           ]),
                           $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($2/month)')
                       ]),
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-3' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
-                            $.make('div', { className: 'NB-feedchooser-dollar-image' }),
+                            $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: -58px;top: 0" }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_m.png', style: "position: absolute; left: -31px;top: 2px" }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_l.png', style: "position: absolute; left: 0; top: 0" })
+                            ]),
                             '$36/year'
                           ]),
                           $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($3/month)')
@@ -205,8 +216,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     open_modal: function() {
         var self = this;
         this.$modal.modal({
-            'minWidth': 780,
-            'maxWidth': 780,
+            'minWidth': 860,
+            'maxWidth': 860,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {

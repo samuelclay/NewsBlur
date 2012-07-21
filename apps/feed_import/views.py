@@ -14,9 +14,12 @@ from django.contrib.auth import login as login_user
 from django.shortcuts import render_to_response
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
-from apps.feed_import.models import OAuthToken, OPMLImporter, OPMLExporter, GoogleReaderImporter
+from apps.feed_import.models import OAuthToken, GoogleReaderImporter
+from apps.feed_import.models import OPMLImporter, OPMLExporter, UploadedOPML
+from apps.feed_import.tasks import ProcessOPML
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required, get_user
+from utils.feed_functions import TimeoutError
 
 
 @ajax_login_required
@@ -31,11 +34,24 @@ def opml_upload(request):
             logging.user(request, "~FR~SBOPML upload starting...")
             file = request.FILES['file']
             xml_opml = file.read()
+            UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
+            
             opml_importer = OPMLImporter(xml_opml, request.user)
-            folders = opml_importer.process()
-            feeds = UserSubscription.objects.filter(user=request.user).values()
-            payload = dict(folders=folders, feeds=feeds)
-            logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
+            try:
+                folders = opml_importer.try_processing()
+            except TimeoutError:
+                folders = None
+                ProcessOPML.delay(request.user.pk)
+                feed_count = opml_importer.count_feeds_in_opml()
+                logging.user(request, "~FR~SBOPML pload took too long, found %s feeds. Tasking..." % feed_count)
+                payload = dict(folders=folders, delayed=True, feed_count=feed_count)
+                code = 2
+                message = ""
+
+            if folders:
+                feeds = UserSubscription.objects.filter(user=request.user).values()
+                payload = dict(folders=folders, feeds=feeds)
+                logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
             
             request.session['import_from_google_reader'] = False
         else:

@@ -1,5 +1,6 @@
 import datetime
 import oauth2 as oauth
+import mongoengine as mongo
 from collections import defaultdict
 from StringIO import StringIO
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
@@ -13,7 +14,7 @@ from apps.rss_feeds.models import Feed, DuplicateFeed, MStarredStory
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json, urlnorm
 from utils import log as logging
-
+from utils.feed_functions import timelimit
     
 class OAuthToken(models.Model):
     user = models.OneToOneField(User, null=True, blank=True)
@@ -96,12 +97,17 @@ class OPMLImporter(Importer):
     def __init__(self, opml_xml, user):
         self.user = user
         self.opml_xml = opml_xml
-
+    
+    def try_processing(self):
+        folders = timelimit(20)(self.process)()
+        return folders
+        
     def process(self):
-        outline = opml.from_string(self.opml_xml)
         self.clear_feeds()
+        outline = opml.from_string(self.opml_xml)
         folders = self.process_outline(outline)
         UserSubscriptionFolders.objects.create(user=self.user, folders=json.encode(folders))
+        
         return folders
         
     def process_outline(self, outline):
@@ -169,7 +175,30 @@ class OPMLImporter(Importer):
                     us.save()
                 folders.append(feed_db.pk)
         return folders
+    
+    def count_feeds_in_opml(self):
         
+        opml_count = len(opml.from_string(self.opml_xml))
+        sub_count = UserSubscription.objects.filter(user=self.user).count()
+        return opml_count + sub_count
+        
+
+class UploadedOPML(mongo.Document):
+    user_id = mongo.IntField()
+    opml_file = mongo.StringField()
+    upload_date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "%s: %s characters" % (user.username, len(self.opml_file))
+    
+    meta = {
+        'collection': 'uploaded_opml',
+        'allow_inheritance': False,
+        'order': '-upload_date',
+        'indexes': ['user_id', '-upload_date'],
+    }
+    
 
 class GoogleReaderImporter(Importer):
     

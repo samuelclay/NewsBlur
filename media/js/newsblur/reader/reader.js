@@ -774,11 +774,14 @@
             this.hide_progress_bar();
         },
         
-        open_dialog_after_feeds_loaded: function() {
+        open_dialog_after_feeds_loaded: function(options) {
+            options = options || {};
             if (!NEWSBLUR.Globals.is_authenticated) return;
             
             if (!NEWSBLUR.assets.folders.length || !NEWSBLUR.assets.preference('has_setup_feeds')) {
-                if (NEWSBLUR.assets.preference('has_setup_feeds')) {
+                if (options.delayed_import || this.flags.delayed_import) {
+                    this.setup_ftux_add_feed_callout("Check your email...");
+                } else if (NEWSBLUR.assets.preference('has_setup_feeds')) {
                     this.setup_ftux_add_feed_callout();
                 } else if (!NEWSBLUR.intro || !NEWSBLUR.intro.flags.open) {
                     _.defer(_.bind(this.open_intro_modal, this), 100);
@@ -3774,11 +3777,11 @@
         // = FTUX =
         // ========
         
-        setup_ftux_add_feed_callout: function() {
+        setup_ftux_add_feed_callout: function(message) {
             var self = this;
             if (this.flags['bouncing_callout']) return;
             
-            $('.NB-callout-ftux .NB-callout-text').text('First things first...');
+            $('.NB-callout-ftux .NB-callout-text').text(message || 'First things first...');
             $('.NB-callout-ftux').corner('5px');
             $('.NB-callout-ftux').css({
                 'opacity': 0,
