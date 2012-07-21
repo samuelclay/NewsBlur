@@ -215,6 +215,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
         $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text('Delete Share');
         $share_sideoption.text(shared_text).closest('.NB-sideoption');
+        $comments_sideoptions.val(this.model.get('shared_comments'));
         
         if (this.options.on_social_page) {
             this.model.social_page_story.$el.toggleClass('NB-story-shared', this.model.get('shared'));

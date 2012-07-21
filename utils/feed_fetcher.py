@@ -217,12 +217,14 @@ class ProcessFeed:
         start_date = datetime.datetime.utcnow()
         # end_date = datetime.datetime.utcnow()
         story_guids = []
+        stories = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry)
             if story.get('published') < start_date:
                 start_date = story.get('published')
             # if story.get('published') > end_date:
             #     end_date = story.get('published')
+            stories.append(story)
             story_guids.append(story.get('guid') or story.get('link'))
 
         existing_stories = list(MStory.objects(
@@ -236,7 +238,8 @@ class ProcessFeed:
         #     | (Q(story_guid__in=story_guids)),
         #     story_feed=self.feed
         # ).order_by('-story_date')
-        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, verbose=self.options['verbose'])
+        ret_values = self.feed.add_update_stories(stories, existing_stories,
+                                                  verbose=self.options['verbose'])
 
         if ((not self.feed.is_push or self.options.get('force'))
             and hasattr(self.fpf, 'feed') and 
