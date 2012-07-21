@@ -176,14 +176,15 @@ class OPMLImporter(Importer):
                 if not us.needs_unread_recalc:
                     us.needs_unread_recalc = True
                     us.save()
-                folders.append(feed_db.pk)
+                if feed_db.pk not in folders:
+                    folders.append(feed_db.pk)
+
         return folders
     
     def count_feeds_in_opml(self):
-        
         opml_count = len(opml.from_string(self.opml_xml))
         sub_count = UserSubscription.objects.filter(user=self.user).count()
-        return opml_count + sub_count
+        return max(sub_count, opml_count)
         
 
 class UploadedOPML(mongo.Document):
@@ -238,7 +239,7 @@ class GoogleReaderImporter(Importer):
         for item in self.feeds:
             folders = self.process_item(item, folders)
 
-        self.rearrange_folders(folders)
+        folders = self.rearrange_folders(folders)
         logging.user(self.user, "~BB~FW~SBGoogle Reader import: ~BT~FW%s" % (self.subscription_folders))
         UserSubscriptionFolders.objects.get_or_create(user=self.user, defaults=dict(
                                                       folders=json.encode(self.subscription_folders)))
@@ -293,10 +294,11 @@ class GoogleReaderImporter(Importer):
                 us.needs_unread_recalc = True
                 us.save()
             if not category: category = "Root"
-            folders[category].append(feed_db.pk)
+            if feed_db.pk not in folders[category]:
+                folders[category].append(feed_db.pk)
         except Exception, e:
             logging.info(' *** -> Exception: %s: %s' % (e, item))
-            
+
         return folders
         
     def rearrange_folders(self, folders, depth=0):
