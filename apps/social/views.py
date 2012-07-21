@@ -25,6 +25,7 @@ from utils.user_functions import get_user, ajax_login_required
 from utils.view_functions import render_to
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
+from utils.story_functions import strip_tags, linkify
 from utils import jennyholzer
 from vendor.timezones.utilities import localtime_for_timezone
 
@@ -150,7 +151,7 @@ def load_social_stories(request, user_id, username=None):
             shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'],
                                                  user.profile.timezone)
             story['shared_date'] = format_story_link_date__long(shared_date, now)
-            story['shared_comments'] = shared_stories[story['id']]['comments']
+            story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
 
         story['intelligence'] = {
             'feed': apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
@@ -354,7 +355,7 @@ def mark_story_as_shared(request):
     stories, profiles = MSharedStory.stories_with_comments_and_profiles([story], request.user.pk,
                                                                         check_all=check_all)
     story = stories[0]
-    story['shared_comments'] = shared_story['comments'] or ""
+    story['shared_comments'] = strip_tags(shared_story['comments'] or "")
     
     if post_to_services:
         for service in post_to_services:
@@ -449,7 +450,7 @@ def save_comment_reply(request):
         replies = []
         for story_reply in shared_story.replies:
             if (story_reply.user_id == reply.user_id and 
-                story_reply.comments == original_message):
+                strip_tags(story_reply.comments) == original_message):
                 reply.publish_date = story_reply.publish_date
                 replies.append(reply)
             else:
@@ -911,7 +912,7 @@ def load_activities(request):
         
     public = user_id != request.user.pk
     page = max(1, int(request.REQUEST.get('page', 1)))
-    limit = request.REQUEST.get('limit')
+    limit = request.REQUEST.get('limit', 4)
     activities, has_next_page = MActivity.user(user_id, page=page, limit=limit, public=public)
     format = request.REQUEST.get('format', None)
     

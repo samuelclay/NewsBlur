@@ -29,7 +29,7 @@ from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
-from utils.story_functions import pre_process_story
+from utils.story_functions import strip_tags
 from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
@@ -727,8 +727,6 @@ class Feed(models.Model):
         }
 
         for story in stories:
-            story = pre_process_story(story)
-            
             if not story.get('title'):
                 continue
                 
@@ -986,8 +984,8 @@ class Feed(models.Model):
                     if not tagname or tagname == ' ':
                         continue
                     fcat.append(tagname)
-        fcat = [t[:250] for t in fcat]
-        return fcat[:12]
+        fcat = [strip_tags(t)[:250] for t in fcat[:12]]
+        return fcat
     
     def get_permalink(self, entry):
         link = entry.get('link')

@@ -52,6 +52,13 @@ env.roledefs ={
              'task05.newsblur.com', 
              'task06.newsblur.com', 
              'task07.newsblur.com'],
+    'vps': ['task01.newsblur.com', 
+            'task02.newsblur.com', 
+            'task03.newsblur.com', 
+            'task04.newsblur.com', 
+            'app01.newsblur.com', 
+            'app02.newsblur.com', 
+            'app03.newsblur.com'],
 }
 
 # ================
@@ -81,6 +88,10 @@ def db():
 def task():
     server()
     env.roles = ['task']
+    
+def vps():
+    server()
+    env.roles = ['vps']
     
 # ==========
 # = Deploy =
@@ -363,7 +374,7 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
+    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests psutil')
     
     put('config/pystartup.py', '.pystartup')
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):

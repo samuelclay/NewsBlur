@@ -214,6 +214,23 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                 
         logging.user(self.user, "~BB~FM~SBSending email for social beta: %s" % self.user.email)
     
+    def send_upload_opml_finished_email(self, feed_count):
+        if not self.user.email:
+            print "Please provide an email address."
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_upload_opml_finished.txt', locals())
+        html    = render_to_string('mail/email_upload_opml_finished.xhtml', locals())
+        subject = "Your OPML upload is complete. Get going with NewsBlur!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+                
+        logging.user(self.user, "~BB~FM~SBSending email for OPML upload: %s" % self.user.email)
+    
     def autologin_url(self, next=None):
         return reverse('autologin', kwargs={
             'username': self.user.username, 

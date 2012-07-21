@@ -627,6 +627,26 @@ class UserSubscriptionFolders(models.Model):
         verbose_name_plural = "folders"
         verbose_name = "folder"
     
+    def compact(self):
+        folders = json.decode(self.folders)
+        
+        def _compact(folder):
+            new_folder = []
+            for item in folder:
+                if isinstance(item, int) and item not in new_folder:
+                    new_folder.append(item)
+                elif isinstance(item, dict):
+                    for f_k, f_v in item.items():
+                        new_folder.append({f_k: _compact(f_v)})
+            return new_folder
+        
+        new_folders = _compact(folders)
+        logging.info(" ---> Compacting from %s to %s" % (folders, new_folders))
+        new_folders = json.encode(new_folders)
+        logging.info(" ---> Compacting from %s to %s" % (len(self.folders), len(new_folders)))
+        self.folders = new_folders
+        self.save()
+        
     def add_folder(self, parent_folder, folder):
         if self.folders:
             user_sub_folders = json.decode(self.folders)

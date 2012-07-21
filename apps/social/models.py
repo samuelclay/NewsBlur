@@ -25,7 +25,7 @@ from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
 from utils.feed_functions import relative_timesince
-from utils.story_functions import truncate_chars
+from utils.story_functions import truncate_chars, strip_tags, linkify
 from utils import json_functions as json
 
 RECOMMENDATIONS_LIMIT = 5
@@ -476,6 +476,10 @@ class MSocialProfile(mongo.Document):
     def send_email_for_new_follower(self, follower_user_id):
         user = User.objects.get(pk=self.user_id)
         if not user.email or not user.profile.send_emails or self.user_id == follower_user_id:
+            if not user.email:
+                logging.user(user, "~BB~FMNo email to send to, skipping.")
+            elif not user.profile.send_emails:
+                logging.user(user, "~BB~FMDisabled emails, skipping.")
             return
         
         emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,
@@ -1072,6 +1076,10 @@ class MSharedStory(mongo.Document):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
         
+        self.comments = linkify(strip_tags(self.comments))
+        for reply in self.replies:
+            reply.comments = linkify(strip_tags(reply.comments))
+        
         self.shared_date = self.shared_date or datetime.datetime.utcnow()
         self.has_replies = bool(len(self.replies))
 
@@ -1455,6 +1463,10 @@ class MSharedStory(mongo.Document):
             user = User.objects.get(pk=user_id)
 
             if not user.email or not user.profile.send_emails:
+                if not user.email:
+                    logging.user(user, "~BB~FMNo email to send to, skipping.")
+                elif not user.profile.send_emails:
+                    logging.user(user, "~BB~FMDisabled emails, skipping.")
                 continue
             
             mute_url = "http://%s%s" % (
@@ -1495,6 +1507,10 @@ class MSharedStory(mongo.Document):
                                                          story_guid=self.story_guid)
                                                          
         if not original_user.email or not original_user.profile.send_emails:
+            if not original_user.email:
+                logging.user(original_user, "~BB~FMNo email to send to, skipping.")
+            elif not original_user.profile.send_emails:
+                logging.user(original_user, "~BB~FMDisabled emails, skipping.")
             return
             
         story_feed = Feed.objects.get(pk=self.story_feed_id)
