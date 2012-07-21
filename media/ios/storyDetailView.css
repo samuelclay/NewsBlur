@@ -1,0 +1,352 @@
+/**
+ * Font Size Style
+ */
+
+.NB-extra-small .NB-story {
+    line-height: 1.6em;
+    font-size: 12px;
+}
+
+.NB-small .NB-story {
+    line-height: 1.6em;
+    font-size: 14px;
+}
+
+.NB-medium .NB-story{
+    line-height: 1.6em;
+    font-size: 16px;
+}
+
+.NB-large .NB-story {
+    line-height: 1.6em;
+    font-size: 18px;
+}
+
+.NB-extra-large .NB-story {
+    line-height: 1.6em;
+    font-size: 22px;
+}
+
+.NB-san-serif {
+    font-family: Helvetica;
+}
+
+.NB-serif {
+    font-family: georgia;
+}
+
+/**
+ * iPad Wide Style
+ */
+
+.NB-ipad-wide .NB-header {
+    padding: 15px 90px;
+}
+
+.NB-ipad-wide .NB-feed-story-comments {
+    margin: 30px 0px !important;
+}
+
+.NB-ipad-wide .NB-story {
+    margin: 30px 90px;
+}
+
+.NB-ipad-wide .NB-share-inner-wrapper {
+    margin: 0 90px;
+}
+
+.NB-ipad-wide .NB-story img {
+    max-width: 540px !important;
+}
+
+/**
+ * iPad Narrow Style
+ */
+
+.NB-ipad-narrow .NB-header {
+    padding: 15px 30px;
+}
+
+.NB-ipad-narrow .NB-story {
+    margin: 25px 30px;
+}
+
+.NB-ipad-narrow .NB-feed-story-comments {
+    margin: 30px 0px !important;
+}
+
+.NB-ipad-narrow .NB-share-inner-wrapper {
+    margin: 0 30px;
+}
+
+.NB-ipad-narrow .NB-story img {
+    max-width: 400px !important;
+}
+
+/**
+ * iPhone Style
+ */
+
+.NB-iphone .NB-header {
+    padding: 12px 12px;
+}
+
+.NB-iphone .NB-story {
+    margin: 12px 12px;
+}
+
+.NB-iphone .NB-feed-story-comments {
+    margin: 30px 0px !important;
+}
+
+.NB-iphone .NB-share-inner-wrapper {
+    margin: 0 12px;
+}
+
+.NB-iphone .NB-story img {
+    max-width: 290px !important;
+}
+
+
+/**
+ * Universal Style
+ */
+
+body {
+    text-rendering: optimizeLegibility;
+    margin: 0;
+    background: #f6f6f6;
+    -webkit-text-size-adjust: none; 
+    font-size: 14px;
+    line-height: 120%;
+    overflow: hidden;
+    font-family: Helvetica;
+}
+
+.NB-story-author {
+    color: #969696;
+    text-transform: uppercase;
+    margin: 4px 8px 0px 0;
+    text-shadow: 0 1px 0 #F9F9F9;
+    float: left;
+}
+
+.NB-story-tags {
+    overflow: hidden;
+    padding: 5px 0 0 0;
+    text-transform: uppercase;
+}
+
+.NB-story-tag {
+    float: left;
+    font-weight: normal;
+    padding: 0px 4px 0px;
+    margin: 0px 4px 4px 0;
+    background-color: #C6CBC3;
+    color: #505050;
+    text-shadow: 0 1px 0 #E7E7E7;
+    -webkit-border-radius: 4px;
+}
+
+.NB-story-date {
+    color: #454D6C;
+}
+
+.NB-story-author {
+    font-size: 10px;
+    line-height: 12px
+}
+
+.NB-story-tags {
+    line-height: 12px;
+}
+
+.NB-story-tag {
+    font-size: 9px;
+}
+
+.NB-story-date {
+    font-size: 11px;
+    line-height: 13px;
+}
+
+.NB-story h1, 
+.NB-story h2,
+.NB-story h3,
+.NB-story h4,
+.NB-story h5,
+.NB-story h6,
+.NB-story div,
+.NB-story table,
+.NB-story span,
+.NB-story pre,
+.NB-story code {
+    overflow: auto;
+}
+
+a {
+    text-decoration: none;
+}
+
+.NB-story blockquote {
+    background-color: #F0F0F0;
+    border-left: 1px solid #9B9B9B;
+    padding: .5em 2em;
+    margin: 0 0 20px 20px;
+}
+
+div + p {
+    margin: 20px 0px 20px 0;
+}
+
+.NB-story p {
+    margin: 0px 0px 20px 0;
+    clear: both;
+}
+
+.NB-story small {
+    font-size: 11px;
+}
+
+.NB-header {
+    font-size: 22px;
+    line-height: 1.2em;
+    font-weight: 600;
+    background-color: #E0E0E0;
+    border-bottom: 1px solid #A0A0A0;
+    text-shadow: 1px 1px 0 #EFEFEF;
+    overflow: hidden;
+    max-width: none;
+}
+
+.NB-story {
+    overflow: hidden;
+}
+
+.NB-story a.NB-contains-image { 
+    display: block;
+}
+
+.NB-story div {
+    max-width: 100%;
+}
+.NB-story img {
+    margin: 0 auto;
+    height: auto !important;
+    max-width: 100%;
+    display: none;
+}
+
+.NB-story img.NB-large-image {
+    margin: 0 auto 20px !important;
+    padding: 5px;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.NB-story img.NB-medium-image {
+    margin: 0 20px 10px 0  !important;
+    padding: 5px;
+    display: block !important;
+    width: auto;
+    height: auto;
+    display: inline-block;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.NB-story img.NB-small-image {
+    display: inline-block;
+}
+
+.NB-feed-story-comments {
+    clear: both;
+}
+
+#story_pane .nb-feed-story-comments {
+    max-width: none;
+}
+
+.NB-story-title {
+    clear: left;
+    margin: 8px 0 4px;
+}
+
+ins {
+    text-decoration: none;
+}
+
+del {
+    display: none;
+}
+
+/* Comments */
+
+/* Disable certain interactions on touch devices */
+#story_pane .NB-story-comment { 
+    -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+    -webkit-highlight: none; 
+    -webkit-tap-highlight-color: rgba(0,0,0,0); 
+}
+
+
+#story_pane .NB-story-comment .NB-story-comment-content {
+    float: none;
+}
+
+#story_pane .NB-story-comment .NB-story-comment-reply-button-wrapper a,
+#story_pane .NB-story-comment .NB-story-comment-edit-button-wrapper a {
+    color: #fff;
+}
+
+/* Sharing */
+
+a.NB-show-profile {
+    display: inline-block;
+}
+.NB-share-wrapper { 
+    -webkit-touch-callout: none; 
+    -webkit-text-size-adjust: none; 
+    -webkit-user-select: none; 
+    -webkit-highlight: none; 
+    -webkit-tap-highlight-color: rgba(0,0,0,0); 
+}
+
+.NB-share-button,
+.NB-save-button {
+  -moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+  	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+  	box-shadow:inset 0px 1px 0px 0px #ffffff;
+  	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #dfdfdf) );
+  	background:-moz-linear-gradient( center top, #ffffff 5%, #dfdfdf 100% );
+  	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dfdfdf');
+  	background-color:#ffffff;
+  	-moz-border-radius:6px;
+  	-webkit-border-radius:6px;
+  	border-radius:6px;
+  	border:1px solid #dcdcdc;
+  	display:inline-block;
+  	color:#261c26;
+  	font-family:arial;
+  	font-size:15px;
+  	font-weight:bold;
+  	padding:6px 24px;
+  	text-decoration:none;
+  	text-shadow:1px 1px 0px #ffffff;
+  	margin: 30px 30px 30px 0;
+}
+
+.NB-share-button.active,
+.NB-save-button.active {
+  	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ffffff) );
+  	background:-moz-linear-gradient( center top, #dfdfdf 5%, #ffffff 100% );
+  	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ffffff');
+  	background-color:#dfdfdf;
+}
+

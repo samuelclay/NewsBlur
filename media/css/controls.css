@@ -18,7 +18,7 @@ ul.segmented-control {
 
 .segmented-control li {
     background: none;
-    background-color: #898989;
+    background-color: #909090;
     float: left;
     margin-left: 1px;
     cursor: pointer;
@@ -26,15 +26,13 @@ ul.segmented-control {
     padding: 0;
 }
 
-.segmented-control li,
-.segmented-control.alt li.NB-active,
-.segmented-control.alt li.NB-active:active {
+.segmented-control li {
     background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .1)), to(rgba(255, 255, 255, 0)));
     
     background-image: -moz-linear-gradient(0 0 -90deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, 0));
 }
 
-.segmented-control li, .segmented-control.alt li.NB-active {
+.segmented-control li {
     -webkit-box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .1);
     -moz-box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .1);
     box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .1);
@@ -71,16 +69,12 @@ ul.segmented-control {
     height: 25px;
 }
 
-.segmented-control a,
-.segmented-control.alt li.NB-active a {
+.segmented-control a {
     color: #262626;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .15);
 }
 
-.segmented-control li:active {background-color: #525252;}
-
-.segmented-control li:active a,
-.segmented-control.alt li:active a {
+.segmented-control li:active a {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .1);
     position: relative;
     top: 1px;
@@ -96,7 +90,7 @@ ul.segmented-control {
         -moz-linear-gradient(0% 0% -90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .1)),
         url(/media/img/reader/background-control.png);
     
-    background-color: #595959;
+    background-color: #898989;
     
     -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, .15),
                         inset 0 0 5px rgba(0, 0, 0, .1);
@@ -123,8 +117,6 @@ ul.segmented-control {
                 inset 0 0 5px rgba(0, 0, 0, .1);
 }
 
-
-.segmented-control.alt li.NB-active {background-color: #4e4e4e;}
 
 .segmented-control li.NB-active a {color: #fff; text-shadow: 0 1px 0 #000;}
 

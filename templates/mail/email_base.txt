@@ -1,16 +1,17 @@
 {% block body %}{% endblock body %}
 
-- Samuel Clay, @samuelclay
+- Samuel & Roy
 
 -----------------------------------------------------------------------------
 
-Stay up to date and in touch with me, yr. developer, in a few different ways:
+NewsBlur is your social news reader. A new sound of an old instrument.
 
-    * Follow @samuelclay on Twitter: http://twitter.com/samuelclay/
+Stay up to date and in touch with us, yr. developers, in a few different ways:
+
     * Follow @newsblur on Twitter: http://twitter.com/newsblur/
     * Follow @samuelclay on GitHub: http://github.com/samuelclay/
 
-{% block resources_header %}There are a few resources you can use if you end up loving NewsBlur:{% endblock resources_header %}
+{% block resources_header %}To get the most out of NewsBlur, here are a few resources:{% endblock resources_header %}
 
     * Read the NewsBlur Blog: http://blog.newsblur.com
     * Get support on NewsBlur's Get Satisfaction: http://getsatisfaction.com/newsblur/

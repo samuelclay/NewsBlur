@@ -145,7 +145,7 @@ these after the installation below.
  4. Run the development server. At this point, all dependencies should be installed and no
     additional configuration is needed. If you find that something is not working at this
     point, please email the resulting output to Samuel Clay at 
-    [samuel@ofbrooklyn.com](samuel@ofbrooklyn.com).
+    [samuel@newsblur.com](samuel@newsblur.com).
  
         ./manage.py runserver
  
@@ -230,7 +230,7 @@ reader, and feed importer. To run the test suite:
 ## Author
 
  * Created by [Samuel Clay](http://www.samuelclay.com).
- * Email address: <samuel@ofbrooklyn.com>
+ * Email address: <samuel@newsblur.com>
  * [@samuelclay](http://twitter.com/samuelclay) on Twitter.
  
 

@@ -2,14 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Label</key>
-	<string>com.redis</string>
-	<key>RunAtLoad</key>
-	<true/>
-	<key>ProgramArguments</key>
-	<array>
-		<string>/usr/local/bin/redis-server</string>
-		<string>/Users/sclay/projects/newsblur/config/redis.conf</string>
-	</array>
+       <key>Label</key>
+       <string>com.redis</string>
+       <key>RunAtLoad</key>
+       <true/>
+       <key>ProgramArguments</key>
+       <array>
+               <string>/usr/local/bin/redis-server</string>
+               <string>/Users/sclay/projects/newsblur/config/redis.conf</string>
+       </array>
 </dict>
 </plist>

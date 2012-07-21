@@ -81,7 +81,7 @@ class OPMLExporter:
         
     def fetch_feeds(self):
         subs = UserSubscription.objects.filter(user=self.user)
-        self.feeds = dict((sub.feed.pk, sub.canonical()) for sub in subs)
+        self.feeds = dict((sub.feed_id, sub.canonical()) for sub in subs)
         
 
 class Importer:
@@ -144,9 +144,9 @@ class OPMLImporter(Importer):
                 else:
                     feed_data['active_subscribers'] = 1
                     feed_data['num_subscribers'] = 1
-                    feed_db, _ = Feed.objects.get_or_create(feed_address=feed_address,
-                                                            feed_link=feed_link,
-                                                            defaults=dict(**feed_data))
+                    feed_db, _ = Feed.find_or_create(feed_address=feed_address, 
+                                                     feed_link=feed_link,
+                                                     defaults=dict(**feed_data))
 
                 if user_feed_title == feed_db.feed_title:
                     user_feed_title = None
@@ -163,6 +163,9 @@ class OPMLImporter(Importer):
                 )
                 if self.user.profile.is_premium and not us.active:
                     us.active = True
+                    us.save()
+                if not us.needs_unread_recalc:
+                    us.needs_unread_recalc = True
                     us.save()
                 folders.append(feed_db.pk)
         return folders
@@ -239,15 +242,11 @@ class GoogleReaderImporter(Importer):
             if duplicate_feed:
                 feed_db = duplicate_feed[0].feed
             else:
-                feed_data = dict(feed_address=feed_address, feed_link=feed_link, feed_title=feed_title)
+                feed_data = dict(feed_title=feed_title)
                 feed_data['active_subscribers'] = 1
                 feed_data['num_subscribers'] = 1
-                feeds = Feed.objects.filter(feed_address=feed_address,
-                                            branch_from_feed__isnull=True).order_by('-num_subscribers')
-                if feeds:
-                    feed_db = feeds[0]
-                else:
-                    feed_db = Feed.objects.create(**feed_data)
+                feed_db, _ = Feed.find_or_create(feed_address=feed_address, feed_link=feed_link,
+                                                 defaults=dict(**feed_data))
 
             us, _ = UserSubscription.objects.get_or_create(
                 feed=feed_db, 
@@ -258,10 +257,13 @@ class GoogleReaderImporter(Importer):
                     'active': self.user.profile.is_premium,
                 }
             )
+            if not us.needs_unread_recalc:
+                us.needs_unread_recalc = True
+                us.save()
             if not category: category = "Root"
             folders[category].append(feed_db.pk)
         except Exception, e:
-            logging.info(' *** -> Exception: %s' % e)
+            logging.info(' *** -> Exception: %s: %s' % (e, item))
             
         return folders
         

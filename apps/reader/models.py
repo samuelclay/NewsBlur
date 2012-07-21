@@ -5,7 +5,6 @@ from utils import json_functions as json
 from django.db import models, IntegrityError
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.cache import cache
 from mongoengine.queryset import OperationError
 from apps.reader.managers import UserSubscriptionManager
 from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
@@ -42,6 +41,9 @@ class UserSubscription(models.Model):
 
     def __unicode__(self):
         return '[' + self.feed.feed_title + '] '
+        
+    class Meta:
+        unique_together = ("user", "feed")
     
     def canonical(self, full=False, include_favicon=True, classifiers=None):
         feed               = self.feed.canonical(full=full, include_favicon=include_favicon)
@@ -51,6 +53,7 @@ class UserSubscription(models.Model):
         feed['ng']         = self.unread_count_negative
         feed['active']     = self.active
         feed['feed_opens'] = self.feed_opens
+        feed['subscribed'] = True
         if classifiers:
             feed['classifiers'] = classifiers
         if not self.active and self.user.profile.is_premium:
@@ -69,7 +72,7 @@ class UserSubscription(models.Model):
         try:
             super(UserSubscription, self).save(*args, **kwargs)
         except IntegrityError:
-            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=self.feed.pk)
+            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=self.feed_id)
             for duplicate_feed in duplicate_feeds:
                 already_subscribed = UserSubscription.objects.filter(user=self.user, feed=duplicate_feed.feed)
                 if not already_subscribed:
@@ -80,7 +83,7 @@ class UserSubscription(models.Model):
                 self.delete()
                 
     @classmethod
-    def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False):
+    def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False, auto_active=True):
         feed = None
         us = None
     
@@ -100,7 +103,7 @@ class UserSubscription(models.Model):
                 user=user,
                 defaults={
                     'needs_unread_recalc': True,
-                    'active': True,
+                    'active': auto_active,
                 }
             )
             code = 1
@@ -118,12 +121,22 @@ class UserSubscription(models.Model):
             user_sub_folders = add_object_to_folder(feed.pk, folder, user_sub_folders)
             user_sub_folders_object.folders = json.encode(user_sub_folders)
             user_sub_folders_object.save()
-        
-            feed.setup_feed_for_premium_subscribers()
+            
+            if auto_active:
+                us.active = True
+            else:
+                feed_count = cls.objects.filter(user=user).count()
+                if feed_count < 64 or user.profile.is_premium:
+                    us.active = True
+            us.save()
         
             if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
-                feed.update()
-
+                feed = feed.update()
+            
+            from apps.social.models import MActivity
+            MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
+            feed.setup_feed_for_premium_subscribers()
+        
         return code, message, us
     
     @classmethod
@@ -155,7 +168,8 @@ class UserSubscription(models.Model):
                 'id': feed_id,
             }
             if not sub.feed.fetched_once or check_fetch_status:
-                feeds[feed_id]['not_yet_fetched'] = not sub.feed.fetched_once
+                feeds[feed_id]['fetched_once'] = sub.feed.fetched_once
+                feeds[feed_id]['not_yet_fetched'] = not sub.feed.fetched_once # Legacy. Dammit.
             if sub.feed.favicon_fetching:
                 feeds[feed_id]['favicon_fetching'] = True
             if sub.feed.has_feed_exception or sub.feed.has_page_exception:
@@ -185,7 +199,8 @@ class UserSubscription(models.Model):
         self.unread_count_updated = now
         self.oldest_unread_story_date = now
         self.needs_unread_recalc = False
-        MUserStory.delete_marked_as_read_stories(self.user.pk, self.feed.pk)
+
+        MUserStory.delete_marked_as_read_stories(self.user_id, self.feed_id)
         
         self.save()
         
@@ -206,21 +221,21 @@ class UserSubscription(models.Model):
         
         for story_id in set(story_ids):
             try:
-                story = MStory.objects.get(story_feed_id=self.feed.pk, story_guid=story_id)
+                story = MStory.objects.get(story_feed_id=self.feed_id, story_guid=story_id)
             except MStory.DoesNotExist:
                 # Story has been deleted, probably by feed_fetcher.
                 continue
             except MStory.MultipleObjectsReturned:
-                continue
+                story = MStory.objects.filter(story_feed_id=self.feed_id, story_guid=story_id)[0]
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
-            m = MUserStory(story=story, user_id=self.user.pk, 
-                           feed_id=self.feed.pk, read_date=date, 
+            m = MUserStory(story=story, user_id=self.user_id, 
+                           feed_id=self.feed_id, read_date=date, 
                            story_id=story_id, story_date=story.story_date)
             try:
                 m.save()
             except OperationError, e:
-                original_m = MUserStory.objects.get(user_id=self.user.pk, feed_id=self.feed.pk, story_id=story_id)
+                original_m = MUserStory.objects.get(user_id=self.user_id, feed_id=self.feed_id, story_id=story_id)
                 logging.user(request, "~BRMarked story as read error: %s" % (e))
                 logging.user(request, "~BRMarked story as read: %s" % (story_id))
                 logging.user(request, "~BROrigin story as read: %s" % (m.story.story_guid))
@@ -232,7 +247,7 @@ class UserSubscription(models.Model):
                 original_m.story_date = story.story_date
                 original_m.save()
             except OperationError, e:
-                logging.user(request, "~BRCan't even save: %s" % (original_m.story_id))
+                logging.user(request, "~BR~SKCan't even save: %s" % (original_m.story_id))
                 pass
                 
         return data
@@ -263,13 +278,13 @@ class UserSubscription(models.Model):
         else:
             self.mark_read_date = date_delta
 
-        read_stories = MUserStory.objects(user_id=self.user.pk,
-                                          feed_id=self.feed.pk,
+        read_stories = MUserStory.objects(user_id=self.user_id,
+                                          feed_id=self.feed_id,
                                           read_date__gte=self.mark_read_date)
         # if not silent:
         #     logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
         read_stories_ids = [us.story_id for us in read_stories]
-        stories_db = stories_db or MStory.objects(story_feed_id=self.feed.pk,
+        stories_db = stories_db or MStory.objects(story_feed_id=self.feed_id,
                                                   story_date__gte=date_delta)
         # if not silent:
         #     logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
@@ -282,14 +297,14 @@ class UserSubscription(models.Model):
                 unread_stories_db.append(story)
                 if story.story_date < oldest_unread_story_date:
                     oldest_unread_story_date = story.story_date
-        stories = Feed.format_stories(unread_stories_db, self.feed.pk)
+        stories = Feed.format_stories(unread_stories_db, self.feed_id)
         # if not silent:
         #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         
-        classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        classifier_authors = list(MClassifierAuthor.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        classifier_titles  = list(MClassifierTitle.objects(user_id=self.user.pk, feed_id=self.feed.pk))
-        classifier_tags    = list(MClassifierTag.objects(user_id=self.user.pk, feed_id=self.feed.pk))
+        classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, feed_id=self.feed_id, social_user_id=0))
+        classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, feed_id=self.feed_id))
+        classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, feed_id=self.feed_id))
+        classifier_tags    = list(MClassifierTag.objects(user_id=self.user_id, feed_id=self.feed_id))
 
         # if not silent:
         #     logging.info(' ---> [%s]    Classifiers: %s (%s)' % (self.user, datetime.datetime.now() - now, classifier_feeds.count() + classifier_authors.count() + classifier_tags.count() + classifier_titles.count()))
@@ -322,7 +337,7 @@ class UserSubscription(models.Model):
         
         # if not silent:
         #     logging.info(' ---> [%s]    End classifiers: %s' % (self.user, datetime.datetime.now() - now))
-            
+
         self.unread_count_positive = feed_scores['positive']
         self.unread_count_neutral = feed_scores['neutral']
         self.unread_count_negative = feed_scores['negative']
@@ -336,8 +351,6 @@ class UserSubscription(models.Model):
             self.unread_count_neutral == 0 and
             self.unread_count_negative == 0):
             self.mark_feed_read()
-        
-        cache.delete('usersub:%s' % self.user.id)
         
         if not silent:
             logging.info(' ---> [%s] Computing scores: %s (%s/%s/%s)' % (self.user, self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
@@ -365,9 +378,10 @@ class UserSubscription(models.Model):
             return
         
         # Switch read stories
-        user_stories = MUserStory.objects(user_id=self.user.pk, feed_id=old_feed.pk)
+        user_stories = MUserStory.objects(user_id=self.user_id, feed_id=old_feed.pk)
         if user_stories.count() > 0:
             logging.info(" ---> %s read stories" % user_stories.count())
+
         for user_story in user_stories:
             user_story.feed_id = new_feed.pk
             duplicate_story = user_story.story
@@ -387,7 +401,7 @@ class UserSubscription(models.Model):
                 user_story.delete()
         
         def switch_feed_for_classifier(model):
-            duplicates = model.objects(feed_id=old_feed.pk, user_id=self.user.pk)
+            duplicates = model.objects(feed_id=old_feed.pk, user_id=self.user_id)
             if duplicates.count():
                 logging.info(" ---> Switching %s %s" % (duplicates.count(), model))
             for duplicate in duplicates:
@@ -437,10 +451,7 @@ class UserSubscription(models.Model):
             usf.folders = json.encode(folders)
             usf.save()
             
-    class Meta:
-        unique_together = ("user", "feed")
-        
-        
+
 class MUserStory(mongo.Document):
     """
     Stories read by the user. These are deleted as the mark_read_date for the
@@ -449,7 +460,7 @@ class MUserStory(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'story_id'))
     feed_id = mongo.IntField()
     read_date = mongo.DateTimeField()
-    story_id = mongo.StringField()
+    story_id = mongo.StringField(unique_with=('user_id', 'feed_id'))
     story_date = mongo.DateTimeField()
     story = mongo.ReferenceField(MStory)
     
@@ -544,7 +555,7 @@ class UserSubscriptionFolders(models.Model):
                         return
             if user_sub:
                 user_sub.delete()
-            MUserStory.objects(user_id=self.user.pk, feed_id=feed_id).delete()
+            MUserStory.objects(user_id=self.user_id, feed_id=feed_id).delete()
 
     def delete_folder(self, folder_to_delete, in_folder, feed_ids_in_folder, commit_delete=True):
         def _find_folder_in_folders(old_folders, folder_name, feeds_to_delete, deleted_folder=None):
@@ -571,7 +582,7 @@ class UserSubscriptionFolders(models.Model):
         self.save()
 
         if commit_delete:
-          UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
+            UserSubscription.objects.filter(user=self.user, feed__in=feeds_to_delete).delete()
           
         return deleted_folder
         

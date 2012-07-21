@@ -1,0 +1,23 @@
+//
+// Prefix header for all source files of the 'NewsBlur' target in the 'NewsBlur' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import <UIKit/UIKit.h>
+//    #import "TestFlight.h"
+
+    #define UIColorFromRGB(rgbValue) [UIColor \
+    colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+    green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+    blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
+//    #define BACKGROUND_REFRESH_SECONDS -5
+    #define BACKGROUND_REFRESH_SECONDS -10*60
+
+//    #define NEWSBLUR_URL [NSString stringWithFormat:@"nb.local.host"]
+    #define NEWSBLUR_URL [NSString stringWithFormat:@"dev.newsblur.com"]
+
+    #define NEWSBLUR_ORANGE 0xAE5D15
+
+#endif

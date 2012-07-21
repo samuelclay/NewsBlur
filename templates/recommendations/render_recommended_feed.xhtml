@@ -7,6 +7,12 @@
       Recommended Site
     {% endif %}
     <div class="NB-module-header-right">
+      {% if user.is_staff and not unmoderated %}
+        <div class="NB-recommended-show-moderation-wrapper">
+          <a href="#" class="NB-recommended-show-moderation" class="NB-splash-link" onclick="$('.NB-recommended-unmoderated').show();">Moderate</a>
+        </div>
+      {% endif %}
+
       {% if has_next_page or has_previous_page %}
         <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if not has_next_page %}NB-disabled{% endif %}"></a>
         <a href="#" class="NB-module-direction NB-module-previous-page {% if not has_previous_page %}NB-disabled{% endif %}"></a>
@@ -26,7 +32,7 @@
     </div>
   </h5>
   
-  <div class="NB-recommended" data-feed-id="{{ recommended_feed.feed.pk }}">
+  <div class="NB-recommended" data-feed-id="{{ recommended_feed.feed_id }}">
     <div class="NB-recommended-statistics NB-javascript"></div>
     <div class="NB-recommended-intelligence NB-javascript"></div>
     <img class="NB-recommended-favicon" src="data:image/png;base64,{{ feed_icon.data }}" />
@@ -43,12 +49,12 @@
         <div class="NB-recommended-added">Subscribed</div>
       {% else %}
         <div class="NB-recommended-try NB-modal-submit-green NB-modal-submit-button NB-javascript">Try</div>
-        <div class="NB-recommended-add NB-modal-submit-close NB-modal-submit-button NB-javascript">Add</div>
+        <div class="NB-recommended-add NB-modal-submit-grey NB-modal-submit-button NB-javascript">Add</div>
       {% endif %}
       {% if unmoderated %}
         <input type="text" class="NB-recommended-moderation-date" name="date" value="{{ today|date:"Y-m-d" }}" />
         <div class="NB-recommended-approve NB-modal-submit-green NB-modal-submit-button NB-javascript">Approve</div>
-        <div class="NB-recommended-decline NB-modal-submit-close NB-modal-submit-button NB-javascript">Decline</div>
+        <div class="NB-recommended-decline NB-modal-submit-grey NB-modal-submit-button NB-javascript">Decline</div>
       {% endif %}
     </div>
   </div>

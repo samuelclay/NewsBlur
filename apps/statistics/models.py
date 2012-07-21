@@ -2,7 +2,9 @@ import datetime
 import mongoengine as mongo
 import urllib2
 from django.db.models import Avg, Count
-from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, FeedLoadtime
+from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, MFeedPushHistory
+from apps.rss_feeds.models import FeedLoadtime
+from apps.social.models import MSharedStory
 from apps.profile.models import Profile
 from utils import json_functions as json
 
@@ -37,14 +39,17 @@ class MStatistics(mongo.Document):
     def all(cls):
         values = dict([(stat.key, stat.value) for stat in cls.objects.all()])
         for key, value in values.items():
-            if key in ('avg_time_taken', 'sites_loaded'):
+            if key in ('avg_time_taken', 'sites_loaded', 'stories_shared'):
                 values[key] = json.decode(value)
             elif key in ('feeds_fetched', 'premium_users', 'standard_users', 'latest_sites_loaded',
-                         'max_sites_loaded'):
+                         'max_sites_loaded', 'max_stories_shared'):
                 values[key] = int(value)
             elif key in ('latest_avg_time_taken', 'max_avg_time_taken'):
                 values[key] = float(value)
-                
+        
+        values['total_sites_loaded'] = sum(values['sites_loaded']) if 'sites_loaded' in values else 0
+        values['total_stories_shared'] = sum(values['stories_shared']) if 'stories_shared' in values else 0
+
         return values
         
     @classmethod
@@ -59,6 +64,8 @@ class MStatistics(mongo.Document):
         print "Standard users: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_sites_loaded(last_day)
         print "Sites loaded: %s" % (datetime.datetime.now() - now)
+        cls.collect_statistics_stories_shared(last_day)
+        print "Stories shared: %s" % (datetime.datetime.now() - now)
         
     @classmethod
     def collect_statistics_feeds_fetched(cls, last_day=None):
@@ -67,9 +74,11 @@ class MStatistics(mongo.Document):
         last_month = datetime.datetime.now() - datetime.timedelta(days=30)
         
         feeds_fetched = MFeedFetchHistory.objects.filter(fetch_date__gte=last_day).count()
-        cls.objects(key='feeds_fetched').update_one(upsert=True, key='feeds_fetched', value=feeds_fetched)
+        cls.objects(key='feeds_fetched').update_one(upsert=True, set__key='feeds_fetched', set__value=feeds_fetched)
         pages_fetched = MPageFetchHistory.objects.filter(fetch_date__gte=last_day).count()
-        cls.objects(key='pages_fetched').update_one(upsert=True, key='pages_fetched', value=pages_fetched)
+        cls.objects(key='pages_fetched').update_one(upsert=True, set__key='pages_fetched', set__value=pages_fetched)
+        feeds_pushed = MFeedPushHistory.objects.filter(push_date__gte=last_day).count()
+        cls.objects(key='feeds_pushed').update_one(upsert=True, set__key='feeds_pushed', set__value=feeds_pushed)
         
         from utils.feed_functions import timelimit, TimeoutError
         @timelimit(60)
@@ -78,6 +87,7 @@ class MStatistics(mongo.Document):
             MPageFetchHistory.objects(fetch_date__lt=last_day, status_code__in=[200, 304]).delete()
             MFeedFetchHistory.objects(fetch_date__lt=last_month).delete()
             MPageFetchHistory.objects(fetch_date__lt=last_month).delete()
+            MFeedPushHistory.objects(push_date__lt=last_month).delete()
         try:
             delete_old_history()
         except TimeoutError:
@@ -91,7 +101,7 @@ class MStatistics(mongo.Document):
             last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
             
         premium_users = Profile.objects.filter(last_seen_on__gte=last_day, is_premium=True).count()
-        cls.objects(key='premium_users').update_one(upsert=True, key='premium_users', value=premium_users)
+        cls.objects(key='premium_users').update_one(upsert=True, set__key='premium_users', set__value=premium_users)
         
         return premium_users
     
@@ -101,7 +111,7 @@ class MStatistics(mongo.Document):
             last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
         
         standard_users = Profile.objects.filter(last_seen_on__gte=last_day, is_premium=False).count()
-        cls.objects(key='standard_users').update_one(upsert=True, key='standard_users', value=standard_users)
+        cls.objects(key='standard_users').update_one(upsert=True, set__key='standard_users', set__value=standard_users)
         
         return standard_users
     
@@ -135,7 +145,39 @@ class MStatistics(mongo.Document):
             ('max_avg_time_taken',      max(1, max(avg_time_taken))),
         )
         for key, value in values:
-            cls.objects(key=key).update_one(upsert=True, key=key, value=value)
+            cls.objects(key=key).update_one(upsert=True, set__key=key, set__value=value)
+            
+    @classmethod
+    def collect_statistics_stories_shared(cls, last_day=None):
+        if not last_day:
+            last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
+        now = datetime.datetime.now()
+        stories_shared = []
+        
+        for hour in range(24):
+            start_hours_ago = now - datetime.timedelta(hours=hour)
+            end_hours_ago = now - datetime.timedelta(hours=hour+1)
+            shares = MSharedStory.objects.filter(
+                shared_date__lte=start_hours_ago, 
+                shared_date__gte=end_hours_ago
+            ).count()
+            stories_shared.append(shares)
+
+        stories_shared.reverse()
+        
+        values = (
+            ('stories_shared',        json.encode(stories_shared)),
+            ('latest_stories_shared', stories_shared[-1]),
+            ('max_stories_shared',    max(stories_shared)),
+        )
+        for key, value in values:
+            cls.objects(key=key).update_one(upsert=True, set__key=key, set__value=value)
+    
+    @classmethod
+    def delete_old_stats(cls):
+        now = datetime.datetime.now()
+        old_age = now - datetime.timedelta(days=7)
+        FeedLoadtime.objects.filter(date_accessed__lte=old_age).delete()
 
 class MFeedback(mongo.Document):
     date    = mongo.StringField()
@@ -175,6 +217,6 @@ class MFeedback(mongo.Document):
     
     @classmethod
     def all(cls):
-        feedbacks = cls.objects.all()[:5]
+        feedbacks = cls.objects.all()[:4]
 
         return feedbacks

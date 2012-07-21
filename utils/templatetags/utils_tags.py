@@ -1,22 +1,77 @@
 from django.contrib.sites.models import Site
-from django import template
 from django.conf import settings
-from utils.user_functions import get_user
+from django import template
+from apps.reader.forms import FeatureForm
+from apps.reader.models import Feature
+from apps.social.models import MInteraction, MActivity, MSocialProfile
 from vendor.timezones.utilities import localtime_for_timezone
+from utils.user_functions import get_user
 
 register = template.Library()
 
 @register.simple_tag
 def current_domain():
     current_site = Site.objects.get_current()
-    return current_site and current_site.domain
+    return current_site and current_site.domain.replace('www', 'dev')
 
 @register.simple_tag(takes_context=True)
 def localdatetime(context, date, date_format):
     user = get_user(context['user'])
     date = localtime_for_timezone(date, user.profile.timezone).strftime(date_format)
     return date
+    
+@register.inclusion_tag('reader/features_module.xhtml', takes_context=True)
+def render_features_module(context):
+    user         = get_user(context['user'])
+    features     = Feature.objects.all()[:3]
+    feature_form = FeatureForm() if user.is_staff else None
+
+    return {
+        'user': user,
+        'features': features,
+        'feature_form': feature_form,
+    }
+          
+@register.inclusion_tag('reader/recommended_users.xhtml', takes_context=True)
+def render_recommended_users(context):
+    user    = get_user(context['user'])
+    profile = MSocialProfile.profile(user.pk)
+
+    return {
+        'user': user,
+        'profile': profile,
+    }
+          
+@register.inclusion_tag('reader/interactions_module.xhtml', takes_context=True)
+def render_interactions_module(context, page=1):
+    user = get_user(context['user'])
+    interactions = MInteraction.user(user.pk, page)
         
+    return {
+        'user': user,
+        'interactions': interactions,
+        'page': page,
+        'MEDIA_URL': context['MEDIA_URL'],
+    }
+    
+@register.inclusion_tag('reader/activities_module.xhtml', takes_context=True)
+def render_activities_module(context, page=1):
+    user = get_user(context['user'])
+    activities = MActivity.user(user.pk, page)
+    
+    return {
+        'user': user,
+        'activities': activities,
+        'page': page,
+        'username': 'You',
+        'MEDIA_URL': context['MEDIA_URL'],
+    }
+
+@register.filter
+def get(h, key):
+    print h, key
+    return h[key]
+    
 @register.filter
 def get_range( value ):
     """
