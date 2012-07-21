@@ -88,8 +88,10 @@ class OPMLExporter:
 class Importer:
 
     def clear_feeds(self):
-        UserSubscriptionFolders.objects.filter(user=self.user).delete()
         UserSubscription.objects.filter(user=self.user).delete()
+
+    def clear_folders(self):
+        UserSubscriptionFolders.objects.filter(user=self.user).delete()
 
     
 class OPMLImporter(Importer):
@@ -104,8 +106,9 @@ class OPMLImporter(Importer):
         
     def process(self):
         self.clear_feeds()
-        outline = opml.from_string(self.opml_xml)
+        outline = opml.from_string(str(self.opml_xml))
         folders = self.process_outline(outline)
+        self.clear_folders()
         UserSubscriptionFolders.objects.create(user=self.user, folders=json.encode(folders))
         
         return folders
