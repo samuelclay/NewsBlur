@@ -23,6 +23,7 @@
 @synthesize toolbarTitle;
 @synthesize commentField;
 @synthesize appDelegate;
+@synthesize activeCommentIndex;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -35,7 +36,6 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     commentField.layer.borderWidth = 1.0f;
     commentField.layer.cornerRadius = 8;
@@ -50,6 +50,7 @@
     }
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
+    [super viewDidLoad];
 }
 
 - (void)viewDidUnload
@@ -116,17 +117,20 @@
         twitterButton.hidden = YES;
         [toolbarTitle setTitle:[NSString stringWithFormat:@"Edit Your Reply"]];
         [submitButton setAction:(@selector(doReplyToComment:))];
-
+        self.activeCommentIndex = [commentIndex intValue];
+        
         // get old comment
         NSArray *replies = [appDelegate.activeComment objectForKey:@"replies"];
         int commentIdx = [commentIndex intValue];
         self.commentField.text = [[replies objectAtIndex:commentIdx] objectForKey:@"comments"];
     } else if ([type isEqualToString: @"reply"]) {
+        self.activeCommentIndex = 0;
         [submitButton setTitle:@"Reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
         [toolbarTitle setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         [submitButton setAction:(@selector(doReplyToComment:))];
+        self.commentField.text = @"";
     } else if ([type isEqualToString: @"edit-share"]) {
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
@@ -138,7 +142,7 @@
             [toolbarTitle setTitle:@"Edit Your Comment"];
             [submitButton setTitle:@"Save"];
         } else {
-            [toolbarTitle setTitle:@"Edit"];
+            [toolbarTitle setTitle:@"Edit Comment"];
             [submitButton setTitle:@"Save"];
         }
         [submitButton setAction:(@selector(doShareThisStory:))];
@@ -149,10 +153,11 @@
             [toolbarTitle setTitle:@"Post to Blurblog"];
             [submitButton setTitle:@"Share this Story"];
         } else {
-            [toolbarTitle setTitle:@"Post"];
+            [toolbarTitle setTitle:@"Post to Blurblog"];
             [submitButton setTitle:@"Share"];
         }
         [submitButton setAction:(@selector(doShareThisStory:))];
+        self.commentField.text = @"";
     }
 }
 
@@ -189,6 +194,7 @@
         return;
     }
     
+    
     NSLog(@"REPLY TO COMMENT, %@", appDelegate.activeComment);
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/save_comment_reply",
                            NEWSBLUR_URL];
@@ -203,6 +209,11 @@
     [request setPostValue:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
     [request setPostValue:commentField.text forKey:@"reply_comments"]; 
     
+    if (self.activeCommentIndex) {
+        NSDictionary *activeComment = [[appDelegate.activeComment objectForKey:@"replies"] objectAtIndex:self.activeCommentIndex];
+        [request setPostValue:[activeComment objectForKey:@"comments"] forKey:@"original_message"]; 
+    }
+    
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishAddReply:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -210,7 +221,7 @@
 }
 
 - (void)finishAddReply:(ASIHTTPRequest *)request {
-    NSLog(@"/n/n/n%@/n/n/n/", [request responseString]);;
+    NSLog(@"\n\n\n%@\n\n\n", [request responseString]);;
     NSLog(@"Successfully added.");
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
@@ -245,6 +256,7 @@
     [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
     
     if (!foundComment) {
+        foundComment = NO;
         NSArray *publicComments = [appDelegate.activeStory objectForKey:@"public_comments"];
         NSMutableArray *newPublicComments = [[NSMutableArray alloc] init];
         for (int i = 0; i < publicComments.count; i++) {
@@ -252,10 +264,12 @@
                                 [[publicComments objectAtIndex:i] objectForKey:@"user_id"]];
             if([userId isEqualToString:commentUserId]){
                 [newPublicComments addObject:comment];
+                foundComment = YES;
             } else {
                 [newPublicComments addObject:[publicComments objectAtIndex:i]];
             }
         }
+
         [newActiveStory setValue:[NSArray arrayWithArray:publicComments] forKey:@"public_comments"];
     } else {
         [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
@@ -266,8 +280,6 @@
 }
 
 - (void)finishAddComment:(ASIHTTPRequest *)request {
-    NSLog(@"/n/n/n%@/n/n/n/", [request responseString]);
-    
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];

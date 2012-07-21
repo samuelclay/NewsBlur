@@ -284,10 +284,10 @@
         userEditButton = [NSString stringWithFormat:@
                           "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button\">"
                             "<div class=\"NB-story-comment-edit-button-wrapper\">"
-                                "<a href=\"http://ios.newsblur.com/edit-share\">edit</a>"
+                                "<a href=\"http://ios.newsblur.com/edit-share/%@\">edit</a>"
                             "</div>"
-                          "</div>"
-                          ];
+                          "</div>",
+                          commentUserId];
     }
 
     if ([commentDict objectForKey:@"source_user_id"] != [NSNull null]) {
@@ -632,7 +632,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                 [appDelegate showShareView:@"edit-share"
                                  setUserId:nil
                                setUsername:nil
-                           setCommentIndex:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:3]]];
+                           setCommentIndex:nil];
             }
             return NO; 
         } else if ([action isEqualToString:@"share"]) {
@@ -805,11 +805,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)refreshComments {
     NSString *commentString = [self getComments:@"friends"];    
     NSString *jsString = [[NSString alloc] initWithFormat:@
-                          //"document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
-                          
-                          
-                          "document.write(%@)",
+                          "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
                           commentString];
+    NSLog(@"jsString is \n%@", jsString);
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
 

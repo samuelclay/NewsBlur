@@ -11,6 +11,7 @@
 
 @interface ShareViewController : UIViewController <ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
+    int activeCommentIndex;
 }
 
 @property ( nonatomic) IBOutlet UITextView *commentField;
@@ -19,6 +20,7 @@
 @property ( nonatomic) IBOutlet UIButton *twitterButton;
 @property ( nonatomic) IBOutlet UIBarButtonItem *submitButton;
 @property ( nonatomic) IBOutlet UIBarButtonItem *toolbarTitle;
+@property (nonatomic) int activeCommentIndex;
 
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setCommentIndex:(NSString *)commentIndex;
 - (void)clearComments;

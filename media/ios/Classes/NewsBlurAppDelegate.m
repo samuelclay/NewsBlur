@@ -290,10 +290,8 @@
             [self.storyDetailViewController scrolltoBottom];
         }];
     } else {
-        ShareViewController *shareView = [[ShareViewController alloc] init];
-        self.shareViewController = shareView;
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
         [self.navigationController presentModalViewController:self.shareViewController animated:YES];
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
     }
 }
 
@@ -311,7 +309,6 @@
                                                              newStoryHeight);
     }
 }
-
 
 - (void)hideShareView:(BOOL)resetComment {
     if (resetComment) {
