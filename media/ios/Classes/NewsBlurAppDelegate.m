@@ -650,7 +650,8 @@
     } else {
         feedTitle = [activeFeed objectForKey:@"feed_title"];
     }
-        
+    [self.storyDetailViewController initStory];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if ([[self.splitStoryDetailNavigationController viewControllers] containsObject:self.storyDetailViewController]) {
             [self.storyDetailViewController initStory];
@@ -683,7 +684,6 @@
         navController.navigationItem.leftBarButtonItem = backButton;
         viewController.navigationItem.hidesBackButton = YES;
         navController.navigationItem.hidesBackButton = YES;
-        
     }
 }
 

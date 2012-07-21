@@ -669,7 +669,7 @@
         disclosureImageViewY = 7;
     } else {
         headerLabelHeight = 20;
-        folderImageViewY = 4;
+        folderImageViewY = 0;
         disclosureImageViewY = 4;
     }
         

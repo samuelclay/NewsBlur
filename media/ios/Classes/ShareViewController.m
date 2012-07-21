@@ -256,7 +256,6 @@
     [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
     
     if (!foundComment) {
-        foundComment = NO;
         NSArray *publicComments = [appDelegate.activeStory objectForKey:@"public_comments"];
         NSMutableArray *newPublicComments = [[NSMutableArray alloc] init];
         for (int i = 0; i < publicComments.count; i++) {
@@ -264,7 +263,6 @@
                                 [[publicComments objectAtIndex:i] objectForKey:@"user_id"]];
             if([userId isEqualToString:commentUserId]){
                 [newPublicComments addObject:comment];
-                foundComment = YES;
             } else {
                 [newPublicComments addObject:[publicComments objectAtIndex:i]];
             }

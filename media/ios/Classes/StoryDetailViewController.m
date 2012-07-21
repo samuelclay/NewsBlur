@@ -100,7 +100,6 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self initStory];
 	[super viewWillAppear:animated];
     
     if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
@@ -138,7 +137,7 @@
     Class viewClass = [appDelegate.navigationController.visibleViewController class];
     if (viewClass == [appDelegate.feedDetailViewController class] ||
         viewClass == [appDelegate.feedsViewController class]) {
-        self.activeStoryId = nil;
+//        self.activeStoryId = nil;
         [webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@""]];
     }
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -803,11 +802,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 } 
 
 - (void)refreshComments {
-    NSString *commentString = [self getComments:@"friends"];    
+    NSString *commentString = [self getComments:@"friends"];  
     NSString *jsString = [[NSString alloc] initWithFormat:@
                           "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
                           commentString];
-    NSLog(@"jsString is \n%@", jsString);
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
 
