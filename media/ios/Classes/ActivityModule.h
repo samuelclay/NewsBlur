@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @class NewsBlurAppDelegate;
+@class ASIHTTPRequest;
 
 @interface ActivityModule : UIView
     <UITableViewDelegate, 
@@ -18,6 +19,10 @@
     NSArray *activitiesArray;
     NSString *activitiesUsername;
     UIPopoverController *popoverController;
+        
+    BOOL pageFetching;
+    BOOL pageFinished;
+    int activitiesPage;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
@@ -26,6 +31,16 @@
 @property (nonatomic) NSString *activitiesUsername;
 @property (nonatomic, strong) UIPopoverController *popoverController;
 
-- (void)refreshWithActivities:(NSDictionary *)activitiesDict;
+@property (nonatomic, readwrite) BOOL pageFetching;
+@property (nonatomic, readwrite) BOOL pageFinished;
+@property (readwrite) int activitiesPage;
+
+- (void)refreshWithActivities:(NSArray *)activities withUsername:(NSString *)username;
+
+- (void)fetchActivitiesDetail:(int)page;
+- (void)finishLoadActivities:(ASIHTTPRequest *)request;
+- (void)requestFailed:(ASIHTTPRequest *)request;
+
+- (void)checkScroll;
 
 @end

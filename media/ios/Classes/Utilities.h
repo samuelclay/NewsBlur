@@ -15,6 +15,7 @@
 + (void)saveImage:(UIImage *)image feedId:(NSString *)filename;
 + (UIImage *)getImage:(NSString *)filename;
 + (UIImage *)getImage:(NSString *)filename isSocial:(BOOL)isSocial;
++ (void)drawLinearGradientWithRect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor;
 + (void)saveimagesToDisk;
 + (UIImage *)roundCorneredImage:(UIImage *)orig radius:(CGFloat)r;
 

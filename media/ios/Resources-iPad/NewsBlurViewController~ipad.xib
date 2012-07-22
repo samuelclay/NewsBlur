@@ -95,7 +95,6 @@
 								<string key="NSFrame">{{75, 8}, {170, 30}}</string>
 								<reference key="NSSuperview" ref="895374018"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBSegmentControlStyle">2</int>
 								<int key="IBNumberOfSegments">3</int>
@@ -165,11 +164,14 @@
 								<int key="IBUISystemItemIdentifier">5</int>
 							</object>
 							<object class="IBUIBarButtonItem" id="550003902">
+								<object class="NSCustomResource" key="IBUIImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">add_button.png</string>
+								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<float key="IBUIWidth">42</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="895374018"/>
-								<int key="IBUISystemItemIdentifier">4</int>
 							</object>
 						</object>
 						<reference key="IBUITintColor" ref="131787584"/>
@@ -623,54 +625,71 @@
 					<string key="className">DashboardViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">doLogout:</string>
-						<string key="NS.object.0">id</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doLogout:</string>
+							<string>tapSegmentedButton:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+						</object>
 					</object>
 					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">doLogout:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">doLogout:</string>
-							<string key="candidateClassName">id</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>doLogout:</string>
+							<string>tapSegmentedButton:</string>
+						</object>
+						<object class="NSArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">doLogout:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">tapSegmentedButton:</string>
+								<string key="candidateClassName">id</string>
+							</object>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>activitesLabel</string>
 							<string>activitiesModule</string>
 							<string>appDelegate</string>
-							<string>header</string>
-							<string>interactionsLabel</string>
+							<string>feedbackWebView</string>
 							<string>interactionsModule</string>
+							<string>segmentedButton</string>
+							<string>toolbar</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>UILabel</string>
 							<string>ActivityModule</string>
 							<string>NewsBlurAppDelegate</string>
-							<string>UIImageView</string>
-							<string>UILabel</string>
+							<string>UIWebView</string>
 							<string>InteractionsModule</string>
+							<string>UISegmentedControl</string>
+							<string>UIToolbar</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>activitesLabel</string>
 							<string>activitiesModule</string>
 							<string>appDelegate</string>
-							<string>header</string>
-							<string>interactionsLabel</string>
+							<string>feedbackWebView</string>
 							<string>interactionsModule</string>
+							<string>segmentedButton</string>
+							<string>toolbar</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBToOneOutletInfo">
-								<string key="name">activitesLabel</string>
-								<string key="candidateClassName">UILabel</string>
-							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">activitiesModule</string>
 								<string key="candidateClassName">ActivityModule</string>
@@ -680,16 +699,20 @@
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">header</string>
-								<string key="candidateClassName">UIImageView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">interactionsLabel</string>
-								<string key="candidateClassName">UILabel</string>
+								<string key="name">feedbackWebView</string>
+								<string key="candidateClassName">UIWebView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">interactionsModule</string>
 								<string key="candidateClassName">InteractionsModule</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">segmentedButton</string>
+								<string key="candidateClassName">UISegmentedControl</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">toolbar</string>
+								<string key="candidateClassName">UIToolbar</string>
 							</object>
 						</object>
 					</object>
@@ -2426,6 +2449,10 @@
 		</object>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
+		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
+			<string key="NS.key.0">add_button.png</string>
+			<string key="NS.object.0">{32, 24}</string>
+		</object>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>
 </archive>

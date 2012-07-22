@@ -124,7 +124,6 @@
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/activities?user_id=%@&limit=10",
                            NEWSBLUR_URL,
                            [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    NSLog(@"urlString is %@", urlString);
     NSURL *url = [NSURL URLWithString:urlString];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     [request setDidFinishSelector:@selector(finishLoadActivities:)];
@@ -147,7 +146,13 @@
         [self.view addSubview:self.activitiesModule];
     }
     
-    [self.activitiesModule refreshWithActivities:appDelegate.dictUserActivities];
+    NSArray *activities = [appDelegate.dictUserActivities objectForKey:@"activities"];
+    NSString *username = [appDelegate.dictUserActivities objectForKey:@"username"];
+    if (!username) {
+        username = [[appDelegate.dictUserActivities objectForKey:@"user_profile"] objectForKey:@"username"];
+    }
+    
+    [self.activitiesModule refreshWithActivities:activities withUsername:username];
 
 }
 

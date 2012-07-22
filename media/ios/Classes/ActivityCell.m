@@ -1,6 +1,6 @@
 //
 //  ActivityCell.m
-//  NewsBlur
+//  NewsBluractivity
 //
 //  Created by Roy Yang on 7/13/12.
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
@@ -49,9 +49,6 @@
     // determine outer bounds
     CGRect contentRect = self.contentView.bounds;
     
-    // position avatar to bounds
-    self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
-    
     // position label to bounds
     CGRect labelRect = contentRect;
     labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
@@ -66,9 +63,7 @@
     CGRect activityLabelRect = self.activityLabel.bounds;
     activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
     self.activityLabel.frame = activityLabelRect;
-    
-
-
+    self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
 
     NSString *category = [activity objectForKey:@"category"];
     NSString *content = [activity objectForKey:@"content"];
@@ -78,9 +73,6 @@
     NSString *withUserUsername = @"";
     NSString* txt;
     
-    NSLog(@"category is %@", category);
-    
-
     if ([category isEqualToString:@"follow"] ||
         [category isEqualToString:@"comment_reply"] ||
         [category isEqualToString:@"comment_like"] ||
@@ -88,18 +80,16 @@
         UIImage *placeholder = [UIImage imageNamed:@"user"];
         [self.faviconView setImageWithURL:[NSURL URLWithString:[[activity objectForKey:@"with_user"] objectForKey:@"photo_url"]]
                          placeholderImage:placeholder];
-        NSLog(@"this is %@", [[activity objectForKey:@"with_user"] objectForKey:@"photo_url"]);
     } else {
         UIImage *placeholder = [UIImage imageNamed:@"user"];
         NSString *faviconUrl = [NSString stringWithFormat:@"http://%@/rss_feeds/icon/%i", 
                                 NEWSBLUR_URL,
-                                [activity objectForKey:@"feed_id"]];
+                                [[activity objectForKey:@"feed_id"] intValue]];
+        NSLog(@"faviconUrl is %@", faviconUrl);
         [self.faviconView setImageWithURL:[NSURL URLWithString:faviconUrl ]
                          placeholderImage:placeholder];
-        self.faviconView.contentMode = UIViewContentModeCenter;
-        [self.faviconView.layer setBorderColor: [UIColorFromRGB(0xcccccc) CGColor]];
-        [self.faviconView.layer setBorderWidth: 1.0];
-
+        self.faviconView.contentMode = UIViewContentModeScaleAspectFit;
+        self.faviconView.frame = CGRectMake(leftMargin+16, topMargin, 16, 16);
     }
     
     
@@ -155,7 +145,8 @@
     [self.activityLabel sizeToFit];
     
     int height = self.activityLabel.frame.size.height;
-    return height;
+    
+    return MAX(height, self.faviconView.frame.size.height);
 }
 
 - (NSString *)stripFormatting:(NSString *)str {

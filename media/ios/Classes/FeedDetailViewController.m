@@ -458,6 +458,11 @@
         cell.imageView.image = resizedSpacer;
         [cell.imageView addSubview:spinner];
         [spinner startAnimating];
+        
+        UIView *topBorder = [[UIView alloc] init];
+        topBorder.frame = CGRectMake(12, 0, self.view.frame.size.width, 1);
+        topBorder.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
+        [cell addSubview:topBorder]; 
     }
     
     return cell;
@@ -573,6 +578,19 @@
         [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
     }
     
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = cell.bounds;
+    gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(0xd2e6fd) CGColor], (id)[UIColorFromRGB(0xb0d1f9) CGColor], nil];
+    [cell.selectedBackgroundView.layer addSublayer:gradient];
+    CALayer *topBorder = [CALayer layer];
+    topBorder.frame = CGRectMake(0, 0, cell.bounds.size.width, 1);
+    topBorder.backgroundColor = [UIColorFromRGB(0x6eadf5) CGColor];
+    [cell.selectedBackgroundView.layer addSublayer:topBorder];
+    CALayer *bottomBorder = [CALayer layer];
+    bottomBorder.frame = CGRectMake(0, cell.bounds.size.height, cell.bounds.size.width, 1);
+    bottomBorder.backgroundColor = [UIColorFromRGB(0x6eadf5) CGColor];
+    [cell.selectedBackgroundView.layer addSublayer:bottomBorder];
+    
 	return cell;
 }
 
@@ -635,7 +653,7 @@
     titleLabel.shadowOffset = CGSizeMake(0, 1);
     titleLabel.textColor = UIColorFromRGB(0x606060);
     titleLabel.frame = CGRectMake(40, 3, self.view.frame.size.width - 60, 20);
-    titleLabel.highlightedTextColor = UIColorFromRGB(0xE0E0E0);
+    titleLabel.highlightedTextColor = [UIColor blackColor];
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
     UIImage *titleImage = [Utilities getImage:feedIdStr];

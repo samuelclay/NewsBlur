@@ -31,9 +31,10 @@
 @property (nonatomic, readwrite) BOOL pageFinished;
 @property (readwrite) int interactionsPage;
 
+- (void)refreshWithInteractions:(NSArray *)interactions;
+
 - (void)fetchInteractionsDetail:(int)page;
 - (void)finishLoadInteractions:(ASIHTTPRequest *)request;
-- (void)refreshWithInteractions:(NSArray *)interactions;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 
 - (void)checkScroll;

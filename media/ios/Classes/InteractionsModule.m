@@ -8,10 +8,8 @@
 
 #import "InteractionsModule.h"
 #import "NewsBlurAppDelegate.h"
-#import <QuartzCore/QuartzCore.h>
-#import "DashboardViewController.h"
-#import "UserProfileViewController.h"
 #import "InteractionCell.h"
+#import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
 #import "JSON.h"
 

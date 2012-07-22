@@ -65,9 +65,9 @@
 									<int key="NSColorSpace">2</int>
 									<bytes key="NSRGB">MC4xNDUwOTgwNDU1IDAuMTc2NDcwNTkyNiAwLjQyMzUyOTQ0NjEAA</bytes>
 								</object>
-								<object class="NSColor" key="IBUIHighlightedColor">
+								<object class="NSColor" key="IBUIHighlightedColor" id="489802745">
 									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC44MTU3MDU0MTg2IDAuODIxNTk4MjMxOCAwLjkxNjQwMjIyMDcAA</bytes>
+									<bytes key="NSRGB">MC42IDAuNiAwLjYAA</bytes>
 								</object>
 								<string key="IBUIShadowOffset">{0, 1}</string>
 								<int key="IBUIBaselineAdjustment">1</int>
@@ -104,9 +104,9 @@
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MCAwIDAAA</bytes>
 								</object>
-								<object class="NSColor" key="IBUIHighlightedColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC45Mzk5NzgyNDE5IDAuOTM4OTkxNjY1OCAwLjk3NDUzMTExNDEAA</bytes>
+								<object class="NSColor" key="IBUIHighlightedColor" id="899050980">
+									<int key="NSColorSpace">3</int>
+									<bytes key="NSWhite">MC4zMzMzMzMzMzMzAA</bytes>
 								</object>
 								<object class="NSColor" key="IBUIShadowColor">
 									<int key="NSColorSpace">1</int>
@@ -148,10 +148,7 @@
 									<int key="NSColorSpace">2</int>
 									<bytes key="NSRGB">MC41ODgyMzUzMTg3IDAuNTg4MjM1MzE4NyAwLjU4ODIzNTMxODcAA</bytes>
 								</object>
-								<object class="NSColor" key="IBUIHighlightedColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC44MTU3MDU0MTg2IDAuODIxNTk4MjMxOCAwLjkxNjQwMjIyMDcAA</bytes>
-								</object>
+								<reference key="IBUIHighlightedColor" ref="489802745"/>
 								<string key="IBUIShadowOffset">{0, 1}</string>
 								<int key="IBUIBaselineAdjustment">1</int>
 								<float key="IBUIMinimumFontSize">10</float>
@@ -231,9 +228,9 @@
 									<int key="NSColorSpace">2</int>
 									<bytes key="NSRGB">MC4xNDUwOTgwNDU1IDAuMTc2NDcwNTkyNiAwLjQyMzUyOTQ0NjEAA</bytes>
 								</object>
-								<object class="NSColor" key="IBUIHighlightedColor">
+								<object class="NSColor" key="IBUIHighlightedColor" id="370784959">
 									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC44MTU3MDU0MTg2IDAuODIxNTk4MjMxOCAwLjkxNjQwMjIyMDcAA</bytes>
+									<bytes key="NSRGB">MC42IDAuNiAwLjYAA</bytes>
 								</object>
 								<string key="IBUIShadowOffset">{0, 1}</string>
 								<int key="IBUIBaselineAdjustment">1</int>
@@ -258,10 +255,7 @@
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<string key="IBUIText">Long label with a story title the size of Texas.</string>
 								<reference key="IBUITextColor" ref="461383602"/>
-								<object class="NSColor" key="IBUIHighlightedColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC45Mzk5NzgyNDE5IDAuOTM4OTkxNjY1OCAwLjk3NDUzMTExNDEAA</bytes>
-								</object>
+								<reference key="IBUIHighlightedColor" ref="899050980"/>
 								<object class="NSColor" key="IBUIShadowColor">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MSAxIDEgMAA</bytes>
@@ -290,10 +284,7 @@
 									<int key="NSColorSpace">2</int>
 									<bytes key="NSRGB">MC41ODgyMzUzMTg3IDAuNTg4MjM1MzE4NyAwLjU4ODIzNTMxODcAA</bytes>
 								</object>
-								<object class="NSColor" key="IBUIHighlightedColor">
-									<int key="NSColorSpace">1</int>
-									<bytes key="NSRGB">MC44MTU3MDU0MTg2IDAuODIxNTk4MjMxOCAwLjkxNjQwMjIyMDcAA</bytes>
-								</object>
+								<reference key="IBUIHighlightedColor" ref="370784959"/>
 								<string key="IBUIShadowOffset">{0, 1}</string>
 								<int key="IBUIBaselineAdjustment">1</int>
 								<float key="IBUIMinimumFontSize">10</float>

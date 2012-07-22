@@ -9,8 +9,9 @@
 #import "ActivityModule.h"
 #import "ActivityCell.h"
 #import "NewsBlurAppDelegate.h"
-#import "UserProfileViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "ASIHTTPRequest.h"
+#import "JSON.h"
 
 @implementation ActivityModule
 
@@ -19,6 +20,9 @@
 @synthesize activitiesArray;
 @synthesize activitiesUsername;
 @synthesize popoverController;
+@synthesize pageFetching;
+@synthesize pageFinished;
+@synthesize activitiesPage;
 
 #define MINIMUM_INTERACTION_HEIGHT 48 + 30
 
@@ -31,26 +35,106 @@
     return self;
 }
 
-
-- (void)refreshWithActivities:(NSDictionary *)activitiesDict {
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];   
-    self.activitiesArray = [activitiesDict objectForKey:@"activities"];
-    self.activitiesUsername = [activitiesDict objectForKey:@"username"];
-    
-    if (!self.activitiesUsername) {
-        self.activitiesUsername = [[activitiesDict objectForKey:@"user_profile"] objectForKey:@"username"];
-    }
-    
+- (void)layoutSubviews {
+    [super layoutSubviews];
     self.activitiesTable = [[UITableView alloc] init];
     self.activitiesTable.dataSource = self;
     self.activitiesTable.delegate = self;
     self.activitiesTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);;
     self.activitiesTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
-    [self addSubview:self.activitiesTable];    
+    [self addSubview:self.activitiesTable];   
+}
+    
+- (void)refreshWithActivities:(NSArray *)activities withUsername:(NSString *)username {
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];   
+    self.activitiesArray = activities;
+    self.activitiesUsername = username;
+
     [self.activitiesTable reloadData];
+    
+    self.pageFetching = NO;
+    
+    [self performSelector:@selector(checkScroll)
+               withObject:nil
+               afterDelay:0.1];
 }
 
+- (void)checkScroll {
+    NSInteger currentOffset = self.activitiesTable.contentOffset.y;
+    NSInteger maximumOffset = self.activitiesTable.contentSize.height - self.activitiesTable.frame.size.height;
+    
+    if (maximumOffset - currentOffset <= 60.0) {
+        [self fetchInteractionsDetail:self.activitiesPage + 1];
+    }
+}
+
+#pragma mark -
+#pragma mark Get Interactions
+
+- (void)fetchInteractionsDetail:(int)page {
+    if (page == 1) {
+        self.pageFetching = NO;
+        self.pageFinished = NO;
+        appDelegate.dictUserActivities = nil;
+    }
+    if (!self.pageFetching && !self.pageFinished) {
+        self.activitiesPage = page;
+        self.pageFetching = YES;
+        self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/social/activities?user_id=%@&page=%i&limit=10",
+                               NEWSBLUR_URL,
+                               [appDelegate.dictUserProfile objectForKey:@"user_id"],
+                               page];
+        
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+        
+        [request setDidFinishSelector:@selector(finishLoadInteractions:)];
+        [request setDidFailSelector:@selector(requestFailed:)];
+        [request setDelegate:self];
+        [request startAsynchronous];
+    }
+}
+
+- (void)finishLoadActivities:(ASIHTTPRequest *)request {
+    self.pageFetching = NO;
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    
+    NSArray *newActivities = [results objectForKey:@"interactions"];
+    NSMutableArray *confirmedActivities = [NSMutableArray array];
+    if ([appDelegate.dictUserActivities count]) {
+        NSMutableSet *activitiesDate = [NSMutableSet set];
+        for (id activity in appDelegate.dictUserActivities) {
+            [activitiesDate addObject:[activity objectForKey:@"date"]];
+        }
+        for (id activity in newActivities) {
+            if (![activitiesDate containsObject:[activity objectForKey:@"date"]]) {
+                [confirmedActivities addObject:activity];
+            }
+        }
+    } else {
+        confirmedActivities = [newActivities copy];
+    }
+    
+//    if (self.activitiesPage == 1) {
+//        appDelegate.dictUserActivities = confirmedActivities;
+//    } else {
+//        appDelegate.dictUserActivities = [appDelegate.dictUserActivities arrayByAddingObjectsFromArray:newActivities];
+//    }
+//    
+//    if ([confirmedInteractions count] == 0 || self.activitiesTable > 100) {
+//        self.pageFinished = YES;
+//    }
+//    [self refreshWithInteractions:appDelegate.dictUserInteractions withUsername:self.activitiesUsername];
+} 
+
+- (void)requestFailed:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
+}
 
 #pragma mark -
 #pragma mark Table View - Interactions List
@@ -78,11 +162,8 @@
     
     ActivityCell *activityCell = [[ActivityCell alloc] init];
     int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername  withWidth:self.frame.size.width] + 30;
-    if (height < MINIMUM_INTERACTION_HEIGHT) {
-        return MINIMUM_INTERACTION_HEIGHT;
-    } else {
-        return height;
-    }
+    
+    return height;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
