@@ -9,6 +9,7 @@
 #import "ActivityModule.h"
 #import "ActivityCell.h"
 #import "NewsBlurAppDelegate.h"
+#import "UserProfileViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
 #import "JSON.h"

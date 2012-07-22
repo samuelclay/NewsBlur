@@ -512,10 +512,10 @@
                             "           <div class=\"NB-story\">%@</div>"
                             "       </div>" // font-size
                             "    </div>" // font-style
+                            "    %@" // share
                             "    <div id=\"NB-comments-wrapper\">"
                             "       %@" // friends comments
                             "    </div>" 
-                            "    %@" // share
                             "    %@"
                             "</body>"
                             "</html>",
@@ -525,8 +525,8 @@
                             fontStyleClass,
                             fontSizeClass,
                             [appDelegate.activeStory objectForKey:@"story_content"],
-                            commentString,
                             sharingHtmlString,
+                            commentString,
                             footerString
                             ];
 

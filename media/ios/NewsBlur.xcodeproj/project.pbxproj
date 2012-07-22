@@ -195,6 +195,12 @@
 		43C95C49158BEC450086C69B /* GoogleReaderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */; };
 		43C95C4B158BF8810086C69B /* google_reader_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C4A158BF8810086C69B /* google_reader_selected_background.png */; };
 		43D818A315B940C200733444 /* DataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 43D818A215B940C200733444 /* DataUtilities.m */; };
+		43E8381E15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43E8381615BC73EA000553BE /* FirstTimeUserAddFriendsViewController.m */; };
+		43E8381F15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43E8381715BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib */; };
+		43E8382015BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43E8381915BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m */; };
+		43E8382115BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43E8381A15BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib */; };
+		43E8382215BC73EB000553BE /* FirstTimeUserAddSitesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43E8381C15BC73EB000553BE /* FirstTimeUserAddSitesViewController.m */; };
+		43E8382315BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43E8381D15BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib */; };
 		43E8856015951F930032022E /* reader.css in Resources */ = {isa = PBXBuildFile; fileRef = 43E8855F15951F930032022E /* reader.css */; };
 		43F44B1C159D8DBC00F48F8A /* FeedTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F44B1B159D8D7200F48F8A /* FeedTableCell.m */; };
 		43F6A79915B0C57F0092EE91 /* flag_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F6A79815B0C57F0092EE91 /* flag_orange.png */; };
@@ -324,7 +330,7 @@
 		433323C4158963BB0025064D /* orange_button@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "orange_button@2x.png"; sourceTree = "<group>"; };
 		433323CA158968ED0025064D /* FirstTimeUserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstTimeUserViewController.h; sourceTree = "<group>"; };
 		433323CB158968ED0025064D /* FirstTimeUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstTimeUserViewController.m; sourceTree = "<group>"; };
-		433323CC158968ED0025064D /* FirstTimeUserViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FirstTimeUserViewController.xib; path = Classes/FirstTimeUserViewController.xib; sourceTree = "<group>"; };
+		433323CC158968ED0025064D /* FirstTimeUserViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FirstTimeUserViewController.xib; sourceTree = "<group>"; };
 		43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontSettingsViewController.h; sourceTree = "<group>"; };
 		43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontSettingsViewController.m; sourceTree = "<group>"; };
 		43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontSettingsViewController.xib; path = Classes/FontSettingsViewController.xib; sourceTree = "<group>"; };
@@ -531,6 +537,15 @@
 		43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MoveSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/MoveSiteViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D818A115B940C200733444 /* DataUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataUtilities.h; sourceTree = "<group>"; };
 		43D818A215B940C200733444 /* DataUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataUtilities.m; sourceTree = "<group>"; };
+		43E8381515BC73EA000553BE /* FirstTimeUserAddFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstTimeUserAddFriendsViewController.h; sourceTree = "<group>"; };
+		43E8381615BC73EA000553BE /* FirstTimeUserAddFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstTimeUserAddFriendsViewController.m; sourceTree = "<group>"; };
+		43E8381715BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FirstTimeUserAddFriendsViewController.xib; sourceTree = "<group>"; };
+		43E8381815BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstTimeUserAddNewsBlurViewController.h; sourceTree = "<group>"; };
+		43E8381915BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstTimeUserAddNewsBlurViewController.m; sourceTree = "<group>"; };
+		43E8381A15BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FirstTimeUserAddNewsBlurViewController.xib; sourceTree = "<group>"; };
+		43E8381B15BC73EB000553BE /* FirstTimeUserAddSitesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstTimeUserAddSitesViewController.h; sourceTree = "<group>"; };
+		43E8381C15BC73EB000553BE /* FirstTimeUserAddSitesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstTimeUserAddSitesViewController.m; sourceTree = "<group>"; };
+		43E8381D15BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FirstTimeUserAddSitesViewController.xib; sourceTree = "<group>"; };
 		43E8855F15951F930032022E /* reader.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = reader.css; path = ../reader.css; sourceTree = "<group>"; };
 		43F44B1A159D8D7200F48F8A /* FeedTableCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedTableCell.h; sourceTree = "<group>"; };
 		43F44B1B159D8D7200F48F8A /* FeedTableCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedTableCell.m; sourceTree = "<group>"; };
@@ -904,6 +919,16 @@
 			children = (
 				433323CA158968ED0025064D /* FirstTimeUserViewController.h */,
 				433323CB158968ED0025064D /* FirstTimeUserViewController.m */,
+				433323CC158968ED0025064D /* FirstTimeUserViewController.xib */,
+				43E8381B15BC73EB000553BE /* FirstTimeUserAddSitesViewController.h */,
+				43E8381C15BC73EB000553BE /* FirstTimeUserAddSitesViewController.m */,
+				43E8381D15BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib */,
+				43E8381515BC73EA000553BE /* FirstTimeUserAddFriendsViewController.h */,
+				43E8381615BC73EA000553BE /* FirstTimeUserAddFriendsViewController.m */,
+				43E8381715BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib */,
+				43E8381815BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.h */,
+				43E8381915BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m */,
+				43E8381A15BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib */,
 				43C95C45158BEC440086C69B /* GoogleReaderViewController.h */,
 				43C95C46158BEC440086C69B /* GoogleReaderViewController.m */,
 				784B50EA127E3F68008F90EA /* LoginViewController.h */,
@@ -1172,7 +1197,6 @@
 				43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */,
 				437AA8AC15922D13005463F5 /* FeedDashboardViewController.xib */,
 				431B856715A0C45200DCE497 /* FriendsListViewController.xib */,
-				433323CC158968ED0025064D /* FirstTimeUserViewController.xib */,
 				43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */,
 				43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */,
 				43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */,
@@ -1794,6 +1818,9 @@
 				43B6A27C15B6989100CEA2E6 /* archive.png in Resources */,
 				43B6A27D15B6989100CEA2E6 /* archive@2x.png in Resources */,
 				43A3912415B733CA0074B212 /* dashboard_style.png in Resources */,
+				43E8381F15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib in Resources */,
+				43E8382115BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib in Resources */,
+				43E8382315BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1931,6 +1958,9 @@
 				43A3914D15B73A7B0074B212 /* UIImageView+AFNetworking.m in Sources */,
 				43D818A315B940C200733444 /* DataUtilities.m in Sources */,
 				4383DCD615BB8B88007E6611 /* SmallActivityCell.m in Sources */,
+				43E8381E15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.m in Sources */,
+				43E8382015BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m in Sources */,
+				43E8382215BC73EB000553BE /* FirstTimeUserAddSitesViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

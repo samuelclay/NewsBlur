@@ -22,6 +22,9 @@
 @class FeedsMenuViewController;
 @class FeedDashboardViewController;
 @class FirstTimeUserViewController;
+@class FirstTimeUserAddSitesViewController;
+@class FirstTimeUserAddFriendsViewController;
+@class FirstTimeUserAddNewsBlurViewController;
 @class FriendsListViewController;
 @class FontSettingsViewController;
 @class GoogleReaderViewController;
@@ -35,14 +38,19 @@
 @class UserProfileViewController;
 
 
-@interface NewsBlurAppDelegate : BaseViewController 
-                                <UIApplicationDelegate, UIAlertViewDelegate>  {
+@interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate>  {
     UIWindow *window;
     MGSplitViewController *splitStoryController;
+    UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
     UINavigationController *splitStoryDetailNavigationController;
     UINavigationController *findFriendsNavigationController;
 
+    FirstTimeUserViewController *firstTimeUserViewController;
+    FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
+    FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
+    FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
+                                    
     DashboardViewController *dashboardViewController;
     NewsBlurViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
@@ -50,7 +58,7 @@
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
     FeedDetailViewController *feedDetailViewController;
-    FirstTimeUserViewController *firstTimeUserViewController;
+
     GoogleReaderViewController *googleReaderViewController;
     StoryDetailViewController *storyDetailViewController;
     ShareViewController *shareViewController;
@@ -102,6 +110,7 @@
 
 @property (nonatomic) IBOutlet UIWindow *window;
 @property (nonatomic) IBOutlet MGSplitViewController *splitStoryController;
+@property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
 @property (nonatomic, readonly) IBOutlet UINavigationController *navigationController;
 @property (nonatomic, readonly) IBOutlet UINavigationController *findFriendsNavigationController;
 @property (nonatomic, readonly) IBOutlet UINavigationController *splitStoryDetailNavigationController;
@@ -111,7 +120,6 @@
 @property (nonatomic) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
-@property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
 @property (nonatomic) IBOutlet GoogleReaderViewController *googleReaderViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
@@ -121,6 +129,11 @@
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
 @property (nonatomic) IBOutlet UserProfileViewController *userProfileViewController;
+
+@property (nonatomic) IBOutlet FirstTimeUserViewController *firstTimeUserViewController;
+@property (nonatomic) IBOutlet FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
+@property (nonatomic) IBOutlet FirstTimeUserAddFriendsViewController *firstTimeUserAddFriendsViewController;
+@property (nonatomic) IBOutlet FirstTimeUserAddNewsBlurViewController *firstTimeUserAddNewsBlurViewController;
 
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;

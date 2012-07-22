@@ -10,21 +10,26 @@
 
 
 @interface FeedDetailTableCell : UITableViewCell {
-    // Feed view
+    // All views
     UILabel *storyTitle;
     UILabel *storyAuthor;
     UILabel *storyDate;
     UIImageView *storyUnreadIndicator;
     
-    // River view
+    // River view    
+    UILabel *siteTitle;
+    UIImageView *siteFavicon;
     UIView *feedGradient;
 }
+
+@property (nonatomic) IBOutlet UIView *feedGradient;
+@property (nonatomic) IBOutlet UILabel *siteTitle;
+@property (nonatomic) IBOutlet UIImageView *siteFavicon;
+
+@property (nonatomic) IBOutlet UIImageView *storyUnreadIndicator;
 
 @property (nonatomic) IBOutlet UILabel *storyTitle;
 @property (nonatomic) IBOutlet UILabel *storyAuthor;
 @property (nonatomic) IBOutlet UILabel *storyDate;
-@property (nonatomic) IBOutlet UIImageView *storyUnreadIndicator;
-
-@property (nonatomic) IBOutlet UIView *feedGradient;
 
 @end

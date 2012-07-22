@@ -15,6 +15,8 @@
 @synthesize storyAuthor;
 @synthesize storyDate;
 @synthesize storyUnreadIndicator;
+@synthesize siteTitle;
+@synthesize siteFavicon;
 @synthesize feedGradient;
 
 - (id)initWithStyle:(UITableViewCellStyle)style 

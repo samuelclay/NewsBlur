@@ -32,6 +32,7 @@
 
 @synthesize window;
 
+@synthesize ftuxNavigationController;
 @synthesize splitStoryController;
 @synthesize navigationController;
 @synthesize findFriendsNavigationController;
@@ -42,7 +43,6 @@
 @synthesize feedsMenuViewController;
 @synthesize feedDetailViewController;
 @synthesize feedDashboardViewController;
-@synthesize firstTimeUserViewController;
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
@@ -52,6 +52,11 @@
 @synthesize moveSiteViewController;
 @synthesize originalStoryViewController;
 @synthesize userProfileViewController;
+
+@synthesize firstTimeUserViewController;
+@synthesize firstTimeUserAddSitesViewController;
+@synthesize firstTimeUserAddFriendsViewController;
+@synthesize firstTimeUserAddNewsBlurViewController;
 
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize activeUsername;
@@ -357,20 +362,27 @@
     
     [self.feedsViewController.feedTitlesTable reloadData];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.splitStoryController presentModalViewController:loginViewController animated:YES];
+        [self.splitStoryController presentModalViewController:loginViewController animated:NO];
     } else {
         [feedsMenuViewController dismissModalViewControllerAnimated:NO];
-        [self.navigationController presentModalViewController:loginViewController animated:YES];
+        [self.navigationController presentModalViewController:loginViewController animated:NO];
     }
         
 }
 
 - (void)showFirstTimeUser {
+    UINavigationController *ftux = [[UINavigationController alloc] initWithRootViewController:self.firstTimeUserViewController];
+    
+    ftux.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
+    self.ftuxNavigationController = ftux;
+    
     [loginViewController dismissModalViewControllerAnimated:NO];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.splitStoryController presentModalViewController:firstTimeUserViewController animated:YES];
+        self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self.splitStoryController presentModalViewController:self.ftuxNavigationController animated:YES];
     } else {
-        [self.navigationController presentModalViewController:loginViewController animated:YES];
+        [self.navigationController presentModalViewController:self.ftuxNavigationController animated:YES];
     }
 }
 
@@ -380,7 +392,7 @@
 }
 
 - (void)addedGoogleReader {
-    [firstTimeUserViewController selectGoogleReaderButton];
+//    [firstTimeUserViewController selectGoogleReaderButton];
 }
 
 - (void)showMoveSite {
