@@ -895,10 +895,6 @@
 				43F6A79C15B0CDC60092EE91 /* ActivityCell.m */,
 				4383DCD415BB8B87007E6611 /* SmallActivityCell.h */,
 				4383DCD515BB8B88007E6611 /* SmallActivityCell.m */,
-				437F977015AE70E30007136B /* InteractionsModule.h */,
-				437F977115AE70E30007136B /* InteractionsModule.m */,
-				43ABBCA815B53A1400EA3111 /* InteractionCell.h */,
-				43ABBCA915B53A1400EA3111 /* InteractionCell.m */,
 			);
 			name = Social;
 			sourceTree = "<group>";
@@ -1111,6 +1107,10 @@
 			children = (
 				437F974915ACA0ED0007136B /* DashboardViewController.h */,
 				437F974A15ACA0ED0007136B /* DashboardViewController.m */,
+				437F977015AE70E30007136B /* InteractionsModule.h */,
+				437F977115AE70E30007136B /* InteractionsModule.m */,
+				43ABBCA815B53A1400EA3111 /* InteractionCell.h */,
+				43ABBCA915B53A1400EA3111 /* InteractionCell.m */,
 			);
 			name = Dashboard;
 			sourceTree = "<group>";

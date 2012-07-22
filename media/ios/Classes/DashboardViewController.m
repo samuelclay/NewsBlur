@@ -13,11 +13,14 @@
 #import "UserProfileViewController.h"
 #import "JSON.h"
 
+#define FEEDBACK_URL @"http://dev.newsblur.com/about"
+
 @implementation DashboardViewController
 
 @synthesize appDelegate;
 @synthesize interactionsModule;
 @synthesize activitiesModule;
+@synthesize feedbackWebView;
 @synthesize toolbar;
 @synthesize segmentedButton;
 
@@ -34,9 +37,22 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.toolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    self.interactionsModule.hidden = NO;
+    self.activitiesModule.hidden = YES;
+    self.feedbackWebView.hidden = YES;
+    self.feedbackWebView.delegate = self;
     
-    self.interactionsModule.hidden = YES;
-    self.activitiesModule.hidden = NO;
+    // preload feedback
+    self.feedbackWebView.scalesPageToFit = YES;
+    
+    
+    NSString *urlAddress = FEEDBACK_URL;
+    //Create a URL object.
+    NSURL *url = [NSURL URLWithString:urlAddress];
+    //URL Requst Object
+    NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
+    //Load the request in the UIWebView.
+    [self.feedbackWebView loadRequest:requestObj];
 }
 
 - (void)viewDidUnload {
@@ -45,6 +61,7 @@
     [self setActivitiesModule:nil];
     [self setToolbar:nil];
     [self setSegmentedButton:nil];
+    [self setFeedbackWebView:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -88,12 +105,15 @@
     if (selectedSegmentIndex == 0) {
         self.interactionsModule.hidden = NO;
         self.activitiesModule.hidden = YES;
+        self.feedbackWebView.hidden = YES;
     } else if (selectedSegmentIndex == 1) {
         self.interactionsModule.hidden = YES;
         self.activitiesModule.hidden = NO;
+        self.feedbackWebView.hidden = YES;
     } else if (selectedSegmentIndex == 2) {
-        NSLog(@"3");
-
+        self.interactionsModule.hidden = YES;
+        self.activitiesModule.hidden = YES;
+        self.feedbackWebView.hidden = NO;
     }
 }
 
@@ -131,4 +151,19 @@
 
 }
 
+# pragma mark
+# pragma mark Feedback
+
+- (BOOL)webView:(UIWebView *)webView 
+shouldStartLoadWithRequest:(NSURLRequest *)request 
+ navigationType:(UIWebViewNavigationType)navigationType {
+    NSURL *url = [request URL];
+    NSString *urlString = [NSString stringWithFormat:@"%@", url];
+
+    if ([urlString isEqualToString: FEEDBACK_URL]){
+        return YES;
+    } else {
+        return NO;
+    }
+}
 @end

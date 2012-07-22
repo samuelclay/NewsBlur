@@ -12,11 +12,13 @@
 @class ASIHTTPRequest;
 @class InteractionsModule;
 @class ActivityModule;
+@class FeedbackModule;
 
-@interface DashboardViewController : UIViewController <UIPopoverControllerDelegate> {
+@interface DashboardViewController : UIViewController <UIPopoverControllerDelegate, UIWebViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     InteractionsModule *interactionsModule;
     ActivityModule *activitiesModule;
+    UIWebView *feedbackWebView;
     UIToolbar *toolbar;
     UISegmentedControl *segmentedButton;
 }
@@ -24,6 +26,8 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet InteractionsModule *interactionsModule;
 @property (nonatomic) IBOutlet ActivityModule *activitiesModule;
+@property (nonatomic) IBOutlet UIWebView *feedbackWebView;
+
 @property (nonatomic) IBOutlet UIToolbar *toolbar;
 @property (nonatomic) IBOutlet UISegmentedControl *segmentedButton;
 
