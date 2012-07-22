@@ -9,13 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "OHAttributedLabel.h"
 
-@interface ActivityCell : UIView {
+@interface ActivityCell : UITableViewCell {
     OHAttributedLabel *activityLabel;
+    UIImageView *faviconView;
 }
 
 @property (nonatomic, strong) OHAttributedLabel *activityLabel;
+@property (nonatomic, strong) UIImageView *faviconView;
 
-- (int)refreshActivity:(NSDictionary *)activity withUsername:(NSString *)username withWidth:(int)width;
+- (int)setActivity:(NSDictionary *)activity withUsername:(NSString *)username withWidth:(int)width;
 - (NSString *)stripFormatting:(NSString *)str;
 
 @end

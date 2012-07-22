@@ -148,7 +148,7 @@
 
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 00;
+    return 0;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -158,7 +158,7 @@
     }
     
     InteractionCell *interactionCell = [[InteractionCell alloc] init];
-    int height = [interactionCell setInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width] + 30;
+    int height = [interactionCell setInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width];
     if (height < MINIMUM_INTERACTION_HEIGHT) {
         return MINIMUM_INTERACTION_HEIGHT;
     } else {

@@ -34,6 +34,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.toolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
+    self.interactionsModule.hidden = YES;
+    self.activitiesModule.hidden = NO;
 }
 
 - (void)viewDidUnload {
@@ -98,7 +101,7 @@
 # pragma mark Activities
 
 - (void)refreshActivity {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/activities?user_id=%@",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/activities?user_id=%@&limit=10",
                            NEWSBLUR_URL,
                            [appDelegate.dictUserProfile objectForKey:@"user_id"]];
     NSLog(@"urlString is %@", urlString);

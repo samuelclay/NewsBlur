@@ -70,5 +70,4 @@
 - (NSString *)getAvatars:(BOOL)areFriends;
 - (NSDictionary *)getUser:(int)user_id;
 
-- (NSString *)textToHtml:(NSString*)htmlString;
 @end

@@ -316,9 +316,7 @@
                              "</div>",
                              [sourceUser objectForKey:@"photo_url"]];
     } 
-    
-    NSString *commentContent = [self textToHtml:[commentDict objectForKey:@"comments"]];
-    
+        
     NSString *comment = [NSString stringWithFormat:@
                         "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
                         "<div class=\"%@\"><a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a></div>"
@@ -346,7 +344,7 @@
                         userEditButton,
                         [commentDict objectForKey:@"user_id"],
                         [user objectForKey:@"username"],
-                        commentContent,
+                        [commentDict objectForKey:@"comments"],
                         [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
 
     return comment;
@@ -376,9 +374,7 @@
                                   i // comment number in array
                                   ];
             }
-            
-            NSString *commentContent = [self textToHtml:[replyDict objectForKey:@"comments"]];
-            
+                        
             NSString *reply = [NSString stringWithFormat:@
                                 "<div class=\"NB-story-comment-reply\">"
                                 "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
@@ -394,7 +390,7 @@
                                [user objectForKey:@"username"],  
                                [replyDict objectForKey:@"publish_date"],
                                userEditButton,
-                               commentContent];
+                               [replyDict objectForKey:@"comments"]];
             repliesString = [repliesString stringByAppendingString:reply];
         }
         repliesString = [repliesString stringByAppendingString:@"</div>"];
@@ -1041,16 +1037,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory 
                                        objectForKey:@"story_permalink"]];
     [appDelegate showOriginalStory:url];
-}
-
-- (NSString *)textToHtml:(NSString*)htmlString {
-    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"&"  withString:@"&amp;"];
-    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"<"  withString:@"&lt;"];
-    htmlString = [htmlString stringByReplacingOccurrencesOfString:@">"  withString:@"&gt;"];
-    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"""" withString:@"&quot;"];    
-    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"'"  withString:@"&#039;"];
-    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"\n" withString:@"<br>"];
-    return htmlString;
 }
 
 @end

@@ -49,6 +49,7 @@
 		437F974D15ACA0ED0007136B /* DashboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437F974B15ACA0ED0007136B /* DashboardViewController.xib */; };
 		437F976F15AE21290007136B /* ActivityModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F976E15AE21280007136B /* ActivityModule.m */; };
 		437F977215AE70E30007136B /* InteractionsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F977115AE70E30007136B /* InteractionsModule.m */; };
+		4383DCD615BB8B88007E6611 /* SmallActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4383DCD515BB8B88007E6611 /* SmallActivityCell.m */; };
 		439DAB201590DA350019B0EB /* FeedsMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */; };
 		439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */; };
 		43A3912415B733CA0074B212 /* dashboard_style.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A3912315B733CA0074B212 /* dashboard_style.png */; };
@@ -343,6 +344,8 @@
 		437F976E15AE21280007136B /* ActivityModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityModule.m; sourceTree = "<group>"; };
 		437F977015AE70E30007136B /* InteractionsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractionsModule.h; sourceTree = "<group>"; };
 		437F977115AE70E30007136B /* InteractionsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InteractionsModule.m; sourceTree = "<group>"; };
+		4383DCD415BB8B87007E6611 /* SmallActivityCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmallActivityCell.h; sourceTree = "<group>"; };
+		4383DCD515BB8B88007E6611 /* SmallActivityCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmallActivityCell.m; sourceTree = "<group>"; };
 		439DAB1D1590DA350019B0EB /* FeedsMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedsMenuViewController.h; sourceTree = "<group>"; };
 		439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedsMenuViewController.m; sourceTree = "<group>"; };
 		439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FeedsMenuViewController.xib; path = ../Classes/FeedsMenuViewController.xib; sourceTree = "<group>"; };
@@ -890,6 +893,8 @@
 				437F976E15AE21280007136B /* ActivityModule.m */,
 				43F6A79B15B0CDC60092EE91 /* ActivityCell.h */,
 				43F6A79C15B0CDC60092EE91 /* ActivityCell.m */,
+				4383DCD415BB8B87007E6611 /* SmallActivityCell.h */,
+				4383DCD515BB8B88007E6611 /* SmallActivityCell.m */,
 				437F977015AE70E30007136B /* InteractionsModule.h */,
 				437F977115AE70E30007136B /* InteractionsModule.m */,
 				43ABBCA815B53A1400EA3111 /* InteractionCell.h */,
@@ -1925,6 +1930,7 @@
 				43A3914C15B73A7B0074B212 /* AFXMLRequestOperation.m in Sources */,
 				43A3914D15B73A7B0074B212 /* UIImageView+AFNetworking.m in Sources */,
 				43D818A315B940C200733444 /* DataUtilities.m in Sources */,
+				4383DCD615BB8B88007E6611 /* SmallActivityCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

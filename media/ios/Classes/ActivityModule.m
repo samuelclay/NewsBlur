@@ -20,17 +20,15 @@
 @synthesize activitiesUsername;
 @synthesize popoverController;
 
+#define MINIMUM_INTERACTION_HEIGHT 48 + 30
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
+        // initialize code here
     }
     return self;
-}
-
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
 }
 
 
@@ -46,8 +44,7 @@
     self.activitiesTable = [[UITableView alloc] init];
     self.activitiesTable.dataSource = self;
     self.activitiesTable.delegate = self;
-    self.activitiesTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
-//    self.activitiesTable.layer.cornerRadius = 10;
+    self.activitiesTable.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);;
     self.activitiesTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
     [self addSubview:self.activitiesTable];    
@@ -73,35 +70,34 @@
     }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
+    int activitiesCount = [self.activitiesArray count];
+    if (indexPath.row >= activitiesCount) {
+        return MINIMUM_INTERACTION_HEIGHT;
+    }
+    
     ActivityCell *activityCell = [[ActivityCell alloc] init];
-    int height = [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
-                                  withUsername:self.activitiesUsername 
-                                     withWidth:self.frame.size.width] + 20;
-    return height;
+    int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername  withWidth:self.frame.size.width] + 30;
+    if (height < MINIMUM_INTERACTION_HEIGHT) {
+        return MINIMUM_INTERACTION_HEIGHT;
+    } else {
+        return height;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView 
-                             dequeueReusableCellWithIdentifier:CellIdentifier];
+    ActivityCell *cell = [tableView 
+                             dequeueReusableCellWithIdentifier:@"ActivityCell"];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] 
+        cell = [[ActivityCell alloc] 
                  initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:CellIdentifier];
-    } else {
-        [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
-    }
+                 reuseIdentifier:@"ActivityCell"];
+    } 
     
-    int activitesCount = [self.activitiesArray count];
-    if (activitesCount >= (indexPath.row + 1)) {
-        ActivityCell *activityCell = [[ActivityCell alloc] init];
-        [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
-                         withUsername:self.activitiesUsername
-                            withWidth:self.frame.size.width];
-        [cell.contentView addSubview:activityCell];
-    }    
+    [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
+                     withUsername:self.activitiesUsername
+                        withWidth:self.frame.size.width];
+
     return cell;
 }
 
@@ -141,9 +137,5 @@
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
-
-
-
-
 
 @end

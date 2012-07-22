@@ -9,8 +9,6 @@
 #import "InteractionCell.h"
 #import "NSAttributedString+Attributes.h"
 #import "UIImageView+AFNetworking.h"
-#import "Utilities.h"
-#import <QuartzCore/QuartzCore.h>
 
 @implementation InteractionCell
 
@@ -39,19 +37,26 @@
 }
 
 - (void)layoutSubviews {
+    #define topMargin 15
+    #define bottomMargin 15
+    #define leftMargin 20
+    #define rightMargin 20
+    #define avatarSize 48
+    
     [super layoutSubviews];
     
     // determine outer bounds
     CGRect contentRect = self.contentView.bounds;
     
     // position avatar to bounds
-    self.avatarView.frame = CGRectMake(20, 15, 48, 48);
+    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
         
     // position label to bounds
     CGRect labelRect = contentRect;
-    labelRect.origin.x = labelRect.origin.x + 83;
-    labelRect.origin.y = labelRect.origin.y + 14;
-    labelRect.size.width = contentRect.size.width - 83 - 20;
+    labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
+    labelRect.origin.y = labelRect.origin.y + topMargin - 1;
+    labelRect.size.width = contentRect.size.width - leftMargin - avatarSize - leftMargin - rightMargin;
+    labelRect.size.height = contentRect.size.height - topMargin - bottomMargin;
     self.interactionLabel.frame = labelRect;
 }
 
@@ -59,7 +64,7 @@
 - (int)setInteraction:(NSDictionary *)interaction withWidth:(int)width {
     // must set the height again for dynamic height in heightForRowAtIndexPath in 
     CGRect interactionLabelRect = self.interactionLabel.bounds;
-    interactionLabelRect.size.width = width - 83 - 40;
+    interactionLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
     self.interactionLabel.frame = interactionLabelRect;
 
     UIImage *placeholder = [UIImage imageNamed:@"user"];
@@ -86,6 +91,8 @@
         } else {
             txt = [NSString stringWithFormat:@"%@ re-shared %@:\n%@", username, title, comment];
         }
+    } else if ([category isEqualToString:@"comment_like"]) {
+        txt = [NSString stringWithFormat:@"%@ favorited your comments on %@:\n%@", username, title, comment]; 
     }
     
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];
@@ -112,7 +119,6 @@
     int height = self.interactionLabel.frame.size.height;
     return height;
 }
-
 
 - (NSString *)stripFormatting:(NSString *)str {
     while ([str rangeOfString:@"  "].location != NSNotFound) {

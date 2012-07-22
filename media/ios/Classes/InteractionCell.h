@@ -19,4 +19,5 @@
 
 - (int)setInteraction:(NSDictionary *)interaction withWidth:(int)width;
 - (NSString *)stripFormatting:(NSString *)str;
+
 @end

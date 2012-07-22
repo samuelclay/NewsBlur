@@ -9,8 +9,7 @@
 #import "UserProfileViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "ProfileBadge.h"
-#import "ActivityModule.h"
-#import "ActivityCell.h"
+#import "SmallActivityCell.h"
 #import "ASIHTTPRequest.h"
 #import "JSON.h"
 #import "Utilities.h"
@@ -165,8 +164,8 @@
     if (indexPath.section == 0) {
         return 180;
     } else {
-        ActivityCell *activityCell = [[ActivityCell alloc] init];
-        int height = [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
+        SmallActivityCell *activityCell = [[SmallActivityCell alloc] init];
+        int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
                                       withUsername:self.activitiesUsername
                                          withWidth:self.view.frame.size.width - 20] + 20;
         return height;
@@ -178,46 +177,44 @@
         
     if (indexPath.section == 0) {
         CellIdentifier = @"ProfileBadgeCellIdentifier";
-    } else {
-        CellIdentifier = @"ActivityCellIdentifier";
-    }
-    
-    UITableViewCell *cell = [tableView 
-                             dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] 
-                 initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:CellIdentifier];
-    } else {
-        [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
-    }
-    
-    // test for YOURSELF == USER
-    
-    // check follow button status
-    NSString *currentUserName = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"username"]];    
-    if ([currentUserName isEqualToString:self.activitiesUsername]) {
-        self.activitiesUsername = @"You";
-    }
+        UITableViewCell *cell = [tableView 
+                                 dequeueReusableCellWithIdentifier:CellIdentifier];
         
-    // Profile Badge
-    if (indexPath.section == 0) {
+        
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] 
+                    initWithStyle:UITableViewCellStyleDefault 
+                    reuseIdentifier:CellIdentifier];
+        } else {
+            [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
+        }
+        
+        // check follow button status
+        NSString *currentUserName = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"username"]];    
+        if ([currentUserName isEqualToString:self.activitiesUsername]) {
+            self.activitiesUsername = @"You";
+        }
+        
         [cell addSubview:self.profileBadge];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    // User Activities
+        return cell;
     } else {
-        int activitesCount = [self.activitiesArray count];
-        if (activitesCount >= (indexPath.row + 1)) {
-            ActivityCell *activityCell = [[ActivityCell alloc] init];
-            activityCell.tag = 1;
-            [activityCell refreshActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
-                             withUsername:self.activitiesUsername
-                                withWidth:self.view.frame.size.width - 20];
-            [cell.contentView addSubview:activityCell];
-        }
+        CellIdentifier = @"ActivityCellIdentifier";
+        
+        SmallActivityCell *cell = [tableView 
+                              dequeueReusableCellWithIdentifier:@"ActivityCell"];
+        if (cell == nil) {
+            cell = [[SmallActivityCell alloc] 
+                    initWithStyle:UITableViewCellStyleDefault 
+                    reuseIdentifier:@"ActivityCell"];
+        } 
+        
+        [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
+             withUsername:self.activitiesUsername
+                withWidth:self.view.frame.size.width];
+        
+            return cell;
     }
-
-    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
