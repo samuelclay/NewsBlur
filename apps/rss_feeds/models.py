@@ -1337,13 +1337,15 @@ class MStory(mongo.Document):
         
     def sync_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        r.sadd('F:%s' % self.story_feed_id, self.id)
-        r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
+        if self.id:
+            r.sadd('F:%s' % self.story_feed_id, self.id)
+            r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
     
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        r.srem('F:%s' % self.story_feed_id, self.id)
-        r.zrem('zF:%s' % self.story_feed_id, self.id)
+        if self.id:
+            r.srem('F:%s' % self.story_feed_id, self.id)
+            r.zrem('zF:%s' % self.story_feed_id, self.id)
 
     @classmethod
     def sync_all_redis(cls, story_feed_id=None):

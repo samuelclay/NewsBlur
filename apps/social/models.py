@@ -757,7 +757,7 @@ class MSocialSubscription(mongo.Document):
         if not ignore_user_stories:
             r.delete(unread_stories_key)
         
-        return story_ids
+        return [story_id for story_id in story_ids if story_id]
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):
@@ -1246,9 +1246,10 @@ class MSharedStory(mongo.Document):
         if not redis_conn:
             redis_conn = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
 
-        redis_conn.sadd('SF:%s' % self.user_id, self.story_db_id)
-        redis_conn.zadd('zSF:%s' % self.user_id, self.story_db_id,
-                        time.mktime(self.shared_date.timetuple()))
+        if self.story_db_id:
+            redis_conn.sadd('SF:%s' % self.user_id, self.story_db_id)
+            redis_conn.zadd('zSF:%s' % self.user_id, self.story_db_id,
+                            time.mktime(self.shared_date.timetuple()))
     
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
