@@ -1066,9 +1066,6 @@ class MSharedStory(mongo.Document):
             if story:
                 logging.debug(" ***> Shared story didn't have story_db_id. Adding found id: %s" % story.id)
                 self.story_db_id = story.id
-                
-        self.sync_redis_shares()
-        self.sync_redis_story()
         
         if self.story_content:
             self.story_content_z = zlib.compress(self.story_content)
@@ -1088,6 +1085,9 @@ class MSharedStory(mongo.Document):
         
         author, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
         author.count_follows()
+        
+        self.sync_redis_shares()
+        self.sync_redis_story()
         
         MActivity.new_shared_story(user_id=self.user_id, story_title=self.story_title, 
                                    comments=self.comments, story_feed_id=self.story_feed_id,
