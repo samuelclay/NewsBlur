@@ -3327,7 +3327,7 @@ form.opml_import_form input {
     bottom: 0;
     right: 0;
     overflow-y: auto;
-    margin: 56px 0;
+    margin: 32px 0;
 }
 
 .NB-splash-info {
@@ -3357,8 +3357,12 @@ form.opml_import_form input {
   bottom: inherit;
   border-bottom: 1px solid #C9CDE0;
 }
+.NB-body-main .NB-splash-info.NB-splash-top {
+    height: 30px;
+}
 .NB-splash-info.NB-splash-bottom {
   border-top: 1px solid #E9ECF6;
+  height: 30px;
 }
 .NB-splash-info .NB-splash-title {
     position: absolute;
@@ -3372,69 +3376,58 @@ form.opml_import_form input {
 .NB-splash-info.NB-splash-top .NB-splash-title {
     top: 0px;
     bottom: inherit;
-    right: 166px;
+    right: 24px;
     width: 312px;
     height: 55px;
 }
+.NB-body-main .NB-splash-info.NB-splash-top .NB-splash-title {
+    display: none;
+}
 
 .NB-splash-info .NB-splash-links {
-    position: absolute;
-    right: 0px;
-    width: 80px;
-    text-align: right;
-    bottom: 0;
+    float: right;
     display: block;
     line-height: 16px;
-    margin: 0;
-    padding: 0;
     text-shadow: 1px 1px 0 #F0F0F0;
     list-style: none;
     white-space: nowrap;
     z-index: 1;
-}
-
-.NB-splash-bottom .NB-splash-links-2 {
-    right: 82px;
-}
-.NB-splash-info.NB-splash-top .NB-splash-links {
-    top: 0;
-    width: 164px;
+    margin: 0;
+    padding: 0;
 }
 
 .NB-splash-info .NB-splash-links .NB-splash-link {
   display: block;
   line-height: 12px;
-  margin: 1px 0;
-  padding: 0;
-  width: 100%;
+  margin: 0;
   float: left;
 }
-.NB-splash-info .NB-splash-links .NB-splash-link.NB-first {
-  clear: both;
-}
-
 
 .NB-splash-info .NB-splash-links .NB-splash-link a {
-  background-color: #F3F6F9;
   margin: 0;
-  padding: 2px 4px;
+  padding: 9px 12px 9px 20px;
+  display: block;
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+}
+.NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
+    padding-top: 0;
+    margin-top: -1px;
 }
 
-.NB-splash-info .NB-splash-links .NB-splash-link a:hover {
-  background-color: #E9ECF6;
-}
 .NB-splash-info .NB-splash-links .NB-splash-link-github a:hover {
-  background: #E9ECF6 url('/media/embed/reader/github_icon.png') no-repeat 0 0;
+  background: transparent url('/media/embed/reader/octocat.png') no-repeat 0 7px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-getsatisfaction a:hover {
-  background: #E9ECF6 url('/media/embed/reader/getsatisfaction.png') no-repeat 0 0;
+  background: transparent url('/media/embed/reader/getsatisfaction.png') no-repeat 0 7px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-blog a:hover {
-  background: #E9ECF6 url('/media/embed/reader/ofbrooklyn_icon.png') no-repeat 0 0;
+  background: transparent url('/media/embed/reader/ofbrooklyn_icon.png') no-repeat 0 7px;
 }
-
 .NB-splash-info .NB-splash-links .NB-splash-link-twitter a:hover {
-  background: #E9ECF6 url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
+  background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 7px;
 }
 
 .NB-splash-info .NB-splash-links a {
@@ -3456,6 +3449,33 @@ form.opml_import_form input {
 .NB-static a:hover,
 .NB-splash-link:hover {
     color: #A85B40;
+}
+
+.NB-module-logo, .NB-module-login {
+    height: 264px;
+}
+.NB-module-logo {
+    text-align: center;
+    line-height: 32px;
+    font-size: 20px;
+}
+.NB-module-logo .NB-module-logo-image {
+    margin: 12px 0 0;
+}
+.NB-module-logo .NB-module-logo-tagline {
+    margin: 36px 0 42px;
+}
+.NB-module-logo .NB-module-logo-tagline b {
+    padding: 2px 8px;
+    background-color: #F0F0F0;
+    font-weight: normal;
+    border-radius: 4px;
+    color: #191F37;
+    text-shadow: 0 1px 0 #FFF;
+}
+.NB-module-logo .NB-module-logo-elsewhere {
+    font-size: 16px;
+    color: #797979;
 }
 
 /* ============== */
