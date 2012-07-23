@@ -43,7 +43,8 @@ env.roledefs ={
            'db03.newsblur.com', 
            'db04.newsblur.com', 
            'db05.newsblur.com', 
-           'db06.newsblur.com'],
+           'db06.newsblur.com', 
+           'db07.newsblur.com'],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
              'task03.newsblur.com', 
@@ -51,6 +52,13 @@ env.roledefs ={
              'task05.newsblur.com', 
              'task06.newsblur.com', 
              'task07.newsblur.com'],
+    'vps': ['task01.newsblur.com', 
+            'task02.newsblur.com', 
+            'task03.newsblur.com', 
+            'task04.newsblur.com', 
+            'app01.newsblur.com', 
+            'app02.newsblur.com', 
+            'app03.newsblur.com'],
 }
 
 # ================
@@ -80,6 +88,10 @@ def db():
 def task():
     server()
     env.roles = ['task']
+    
+def vps():
+    server()
+    env.roles = ['vps']
     
 # ==========
 # = Deploy =
@@ -362,7 +374,7 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests')
+    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests psutil')
     
     put('config/pystartup.py', '.pystartup')
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -385,11 +397,20 @@ def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
     put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     sudo('echo "START=1" > /etc/default/pgbouncer')
-    sudo('/etc/init.d/pgbouncer stop')
+    sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
         sudo('pkill pgbouncer')
         run('sleep 2')
-    sudo('/etc/init.d/pgbouncer start')
+    sudo('/etc/init.d/pgbouncer start', pty=False)
+
+def bounce_pgbouncer():
+    sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
+    run('sleep 4')
+    with settings(warn_only=True):
+        sudo('pkill pgbouncer')
+        run('sleep 4')
+    run('sudo /etc/init.d/pgbouncer start', pty=False)
+    run('sleep 2')
     
 def config_monit():
     put('config/monit.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
@@ -440,7 +461,7 @@ def setup_sudoers():
     sudo('su - root -c "echo \\\\"%s ALL=(ALL) NOPASSWD: ALL\\\\" >> /etc/sudoers"' % env.user)
 
 def setup_nginx():
-    NGINX_VERSION = '1.2.0'
+    NGINX_VERSION = '1.2.2'
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             sudo("groupadd nginx")
@@ -592,6 +613,15 @@ def setup_postgres(standby=False):
     sudo('/etc/init.d/postgresql stop')
     sudo('/etc/init.d/postgresql start')
 
+def copy_postgres_to_standby():
+    slave = 'db02'
+    # Make sure you can ssh from master to slave and back.
+    # Need to give postgres accounts keys in authroized_keys.
+    
+    sudo('su postgres -c "psql -c \\"SELECT pg_start_backup(\'label\', true)\\""', pty=False)
+    sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.1/main postgres@%s:/var/lib/postgresql/9.1/ --exclude postmaster.pid\"' % slave, pty=False)
+    sudo('su postgres -c "psql -c \\"SELECT pg_stop_backup()\\""', pty=False)
+    
 def setup_mongo():
     sudo('apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10')
     # sudo('echo "deb http://downloads.mongodb.org/distros/ubuntu 10.10 10gen" >> /etc/apt/sources.list.d/10gen.list')
@@ -618,7 +648,11 @@ def setup_redis():
     sudo('/etc/init.d/redis start')
 
 def setup_db_munin():
-    sudo('cp -rs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+    sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+    sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
+    with cd(env.VENDOR_PATH):
+        run('git clone git://github.com/samuel/python-munin.git')
+        run('sudo python python-munin/setup.py install')
 
 def enable_celerybeat():
     with cd(env.NEWSBLUR_PATH):

@@ -1,0 +1,208 @@
+#!/usr/bin/perl -w
+# Plugin to monitor pg_stat_*_tables (user by default)
+#
+# Copyright Dalibo <cedric.villemain@dalibo.com> 2007
+# Based on a plugin (postgres_block_read_) from Björn Ruberg <bjorn@linpro.no>
+#
+# Licenced under GPL v2.
+#
+# Usage:
+#
+#       Symlink into /etc/munin/plugins/ and add the monitored
+#       database to the filename. e.g.:
+#
+#       ln -s /usr/share/munin/plugins/pg__stat_tables \
+#         /etc/munin/plugins/pg_<databasename>_stat_tables
+#       This should, however, be given through autoconf and suggest.
+#
+#       If required, give username, password and/or Postgresql server
+#       host through environment variables.
+#
+#       You must also activate Postgresql statistics. See
+#       http://www.postgresql.org/docs/8.1/interactive/monitoring-stats.html
+#       for how to enable this. Specifically, the following lines must
+#       exist in your postgresql.conf:
+#
+#           stats_start_collector = true
+#           stats_block_level = true
+#
+#
+# Parameters:
+#
+#       config   (required)
+#
+# Config variables:
+#
+#       dbhost     - Which database server to use. Defaults to
+#                    'localhost'.
+#       dbname     - Which database to use. Defaults to template1
+#       dbuser     - A Postgresql user account with read permission to
+#                    the given database. Defaults to
+#                    'postgres'. Anyway, Munin must be told which user
+#                    this plugin should be run as.
+#       dbpass     - The corresponding password, if
+#                    applicable. Default to undef. Remember that
+#                    pg_hba.conf must be configured accordingly.
+#
+# Magic markers
+#%# family=auto
+#%# capabilities=autoconf
+
+use strict;
+use DBI;
+use vars qw ( $debug $configure  );
+use constant _PGMINI => 70400;
+
+my $dbhost = $ENV{'dbhost'} || '';
+my $dbname = $ENV{'dbname'} || 'template1';
+my $dbuser = $ENV{'dbuser'} || 'postgres';
+my $dbport = $ENV{'dbport'} || '5432';
+my $dbpass = $ENV{'dbpass'} || '';
+my $statscope = $ENV{'statscope'} || 'user';
+
+my $dsn = "DBI:Pg:dbname=$dbname";
+$dsn   .=";host=$dbhost;port=$dbport" if $dbhost;
+my $pg_server_version;
+
+if (exists $ARGV[0]) {
+  if ($ARGV[0] eq 'autoconf') {
+    # Check for DBD::Pg
+    if (! eval "require DBD::Pg;") {
+      print "no (DBD::Pg not found)";
+      exit 1;
+    }
+    my $dbh = DBI->connect ($dsn,
+                            $dbuser,
+                            $dbpass,
+                            {RaiseError =>1});
+    if ($dbh) {
+      $pg_server_version = $dbh->{'pg_server_version'};
+      if ($pg_server_version < (_PGMINI)) {
+        $pg_server_version =~ /(\d)(\d){2,2}(\d){2,2}/;
+        print "PostgreSQL Server version " . (_PGMINI) . " or above is needed. Current is $1.$2.$3 \n";
+				exit 1;
+      }
+      print "yes\n";
+      exit 0;
+    } else {
+      print "no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr;
+      exit 1;
+    }
+  } elsif ($ARGV[0] eq 'debug') {
+    # Set debug flag
+    $debug = 1;
+  } elsif ($ARGV[0] eq 'config') {
+    # Set config flag
+    $configure = 1;
+  }
+}
+
+print "# $dsn\n" if $debug;
+my $dbh = DBI->connect ($dsn,
+                        $dbuser,
+                        $dbpass,
+                        {RaiseError =>1});
+
+die ("no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr."\n") unless($dbh);
+$pg_server_version = $dbh->{'pg_server_version'};
+
+if ($configure) {
+  print "graph_title PostgreSQL stat $statscope tables from $dbname\n";
+  print "graph_vlabel Number / \${graph_period}\n";
+  print "graph_info Scan, fetch, insertion, deletion, updates ... all except analyze and vacuum last execution date.\n";
+  print "graph_category Postgresql \n";
+  print "graph_args --base 1000\n";
+
+  print "seq_scan.label Sequential scans initiated\n";
+  print "seq_scan.draw LINE\n";
+  print "seq_scan.type DERIVE\n";
+  print "seq_scan.min 0\n";
+  print "seq_scan.info Number of sequential scans initiated\n";
+
+  print "seq_tup_read.label Sequential tuple read\n";
+  print "seq_tup_read.draw LINE\n";
+  print "seq_tup_read.type DERIVE\n";
+  print "seq_tup_read.min 0\n";
+  print "seq_tup_read.info Number of tuple fetch\n";
+
+  print "idx_scan.label Index scans initiated\n";
+  print "idx_scan.draw LINE\n";
+  print "idx_scan.type DERIVE\n";
+  print "idx_scan.min 0\n";
+  print "idx_scan.info Number of index scans initiated\n";
+
+  print "idx_tup_fetch.label Index tuple fetch\n";
+  print "idx_tup_fetch.draw LINE\n";
+  print "idx_tup_fetch.type DERIVE\n";
+  print "idx_tup_fetch.min 0\n";
+  print "idx_tup_fetch.info Number of index tuple fetch\n";
+
+  print "n_tup_ins.label Tuples inserted \n";
+  print "n_tup_ins.draw LINE\n";
+  print "n_tup_ins.type DERIVE\n";
+  print "n_tup_ins.min 0\n";
+  print "n_tup_ins.info Number of tuple inserted\n";
+
+  print "n_tup_upd.label Tuples updated\n";
+  print "n_tup_upd.draw LINE\n";
+  print "n_tup_upd.type DERIVE\n";
+  print "n_tup_upd.min 0\n";
+  print "n_tup_upd.info Number of tuple updated\n";
+
+  print "n_tup_del.label Tuples deleted\n";
+  print "n_tup_del.draw LINE\n";
+  print "n_tup_del.type DERIVE\n";
+  print "n_tup_del.min 0\n";
+  print "n_tup_del.info Number of tuple deleted\n";
+
+  if ($pg_server_version > 80300) {
+    print "n_tup_hot_upd.label Rows updated using HOT\n";
+    print "n_tup_hot_upd.draw LINE\n";
+    print "n_tup_hot_upd.type DERIVE\n";
+    print "n_tup_hot_upd.min 0\n";
+    print "n_tup_hot_upd.info Number of row updated by HOT\n";
+
+    print "n_live_tup.label Rows alive\n";
+    print "n_live_tup.draw LINE\n";
+    print "n_live_tup.type DERIVE\n";
+    print "n_live_tup.min 0\n";
+    print "n_live_tup.info Number of live row\n";
+
+    print "n_dead_tup.label Rows dead\n";
+    print "n_dead_tup.draw LINE\n";
+    print "n_dead_tup.type DERIVE\n";
+    print "n_dead_tup.min 0\n";
+    print "n_dead_tup.info Number of dead row\n";
+  }
+} else {
+
+  my $sql = "select sum(seq_scan), sum(seq_tup_read), ";
+  $sql 	 .= "       sum(idx_scan), sum(idx_tup_fetch), ";
+  $sql 	 .= "       sum(n_tup_ins), sum(n_tup_upd), sum(n_tup_del) ";
+  if ($pg_server_version > 80300){
+		$sql   .= ", sum(n_tup_hot_upd), sum(n_live_tup), sum(n_dead_tup) ";
+  }
+  $sql 	 .= " from pg_stat_".$statscope."_tables;";
+  print "# $sql\n" if $debug;
+  my $sth = $dbh->prepare($sql);
+  $sth->execute();
+  printf ("# Rows: %d\n",  $sth->rows) if $debug;
+  if ($sth->rows > 0) {
+    my ($seq_scan, $seq_tup_read, $idx_scan, $idx_tup_fetch, $n_tup_ins, $n_tup_upd, $n_tup_del, $n_tup_hot_upd, $n_live_tup, $n_dead_tup) = $sth->fetchrow_array();
+    print "seq_scan.value $seq_scan\n";
+    print "seq_tup_read.value $seq_tup_read\n";
+    print "idx_scan.value $idx_scan\n";
+    print "idx_tup_fetch.value $idx_tup_fetch\n";
+    print "n_tup_ins.value $n_tup_ins\n";
+    print "n_tup_upd.value $n_tup_upd\n";
+    print "n_tup_del.value $n_tup_del\n";
+    if ($pg_server_version > 80300){
+			print "n_tup_hot_upd.value $n_tup_hot_upd\n";
+			print "n_live_tup.value $n_live_tup\n";
+      print "n_dead_tup.value $n_dead_tup\n";
+    }
+  }
+}
+
+exit 0;
+

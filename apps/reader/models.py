@@ -200,7 +200,7 @@ class UserSubscription(models.Model):
         self.oldest_unread_story_date = now
         self.needs_unread_recalc = False
 
-        MUserStory.delete_marked_as_read_stories(self.user_id, self.feed_id)
+        # MUserStory.delete_old_stories(self.user_id, self.feed_id)
         
         self.save()
         
@@ -484,6 +484,11 @@ class MUserStory(mongo.Document):
         if not mark_read_date:
             usersub = UserSubscription.objects.get(user__pk=user_id, feed__pk=feed_id)
             mark_read_date = usersub.mark_read_date
+        
+        # Next line forces only old read stories to be removed, just in case newer stories
+        # come in as unread because they're being shared.
+        mark_read_date = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+
         cls.objects(user_id=user_id, feed_id=feed_id, read_date__lte=mark_read_date).delete()
     
         
@@ -503,6 +508,26 @@ class UserSubscriptionFolders(models.Model):
         verbose_name_plural = "folders"
         verbose_name = "folder"
     
+    def compact(self):
+        folders = json.decode(self.folders)
+        
+        def _compact(folder):
+            new_folder = []
+            for item in folder:
+                if isinstance(item, int) and item not in new_folder:
+                    new_folder.append(item)
+                elif isinstance(item, dict):
+                    for f_k, f_v in item.items():
+                        new_folder.append({f_k: _compact(f_v)})
+            return new_folder
+        
+        new_folders = _compact(folders)
+        logging.info(" ---> Compacting from %s to %s" % (folders, new_folders))
+        new_folders = json.encode(new_folders)
+        logging.info(" ---> Compacting from %s to %s" % (len(self.folders), len(new_folders)))
+        self.folders = new_folders
+        self.save()
+        
     def add_folder(self, parent_folder, folder):
         if self.folders:
             user_sub_folders = json.decode(self.folders)

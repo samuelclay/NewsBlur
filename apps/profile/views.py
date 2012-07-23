@@ -92,7 +92,7 @@ def set_account_settings(request):
             message = "This username is already taken. Try something different."
     
     if request.user.email != post_settings['email']:
-        if not User.objects.filter(email=post_settings['email']).count():
+        if not post_settings['email'] or not User.objects.filter(email=post_settings['email']).count():
             request.user.email = post_settings['email']
             request.user.save()
         else:
@@ -260,10 +260,11 @@ def stripe_form(request):
 def load_activities(request):
     user = get_user(request)
     page = max(1, int(request.REQUEST.get('page', 1)))
-    activities = MActivity.user(user.pk, page=page)
+    activities, has_next_page = MActivity.user(user.pk, page=page)
 
     return {
         'activities': activities,
         'page': page,
+        'has_next_page': has_next_page,
         'username': 'You',
     }

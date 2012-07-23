@@ -1,0 +1,129 @@
+#!/usr/bin/perl -w
+# Plugin to monitor database size.
+#
+# Copyright Dalibo <cedric.villemain@dalibo.com> 2007
+# Based on a plugin (postgres_block_read_) from Björn Ruberg <bjorn@linpro.no>
+#
+# Licenced under GPL v2.
+#
+# Usage:
+#
+#       Symlink into /etc/munin/plugins/ and add the monitored
+#       database to the filename. e.g.:
+#
+#       ln -s /usr/share/munin/plugins/pg__db_size \
+#         /etc/munin/plugins/pg_<databasename>_db_size
+#       This should, however, be given through autoconf and suggest.
+#
+#       If required, give username, password and/or Postgresql server
+#       host through environment variables.
+#
+#
+# Parameters:
+#
+#       config   (required)
+#
+# Config variables:
+#
+#       dbhost     - Which database server to use. Defaults to
+#                    'localhost'.
+#       dbname     - Which database to use. Defaults to template1
+#       dbuser     - A Postgresql user account with read permission to
+#                    the given database. Defaults to
+#                    'postgres'. Anyway, Munin must be told which user
+#                    this plugin should be run as.
+#       dbpass     - The corresponding password, if
+#                    applicable. Default to undef. Remember that
+#                    pg_hba.conf must be configured accordingly.
+#
+# The config variables need to be write like this :
+# [pg_foobase*]
+# user foouser
+# env.dbname foobase
+#
+# Magic markers
+#%# family=auto
+#%# capabilities=autoconf
+
+use strict;
+use DBI;
+use vars qw ( $debug $configure  );
+use constant _PGMINI => 70400;
+
+my $dbhost = $ENV{'dbhost'} || '';
+my $dbname = $ENV{'dbname'} || 'template1';
+my $dbuser = $ENV{'dbuser'} || 'postgres';
+my $dbport = $ENV{'dbport'} || '5432';
+my $dbpass = $ENV{'dbpass'} || '';
+my $statscope = $ENV{'statscope'} || 'user';
+
+my $dsn = "DBI:Pg:dbname=$dbname";
+$dsn   .=";host=$dbhost;port=$dbport" if $dbhost;
+my $pg_server_version;
+
+if (exists $ARGV[0]) {
+  if ($ARGV[0] eq 'autoconf') {
+    # Check for DBD::Pg
+    if (! eval "require DBD::Pg;") {
+      print "no (DBD::Pg not found)";
+      exit 1;
+    }
+    my $dbh = DBI->connect ($dsn,
+                            $dbuser,
+                            $dbpass,
+                            {RaiseError =>1});
+    if ($dbh) {
+      $pg_server_version = $dbh->{'pg_server_version'};
+      if ($pg_server_version < (_PGMINI)) {
+        $pg_server_version =~ /(\d)(\d){2,2}(\d){2,2}/;
+        print "PostgreSQL Server version " . (_PGMINI) . " or above is needed. Current is $1.$2.$3 \n";
+				exit 1;
+      }
+      print "yes\n";
+      exit 0;
+    } else {
+      print "no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr;
+      exit 1;
+    }
+  } elsif ($ARGV[0] eq 'debug') {
+    # Set debug flag
+    $debug = 1;
+  } elsif ($ARGV[0] eq 'config') {
+    # Set config flag
+    $configure = 1;
+  }
+}
+
+if ($configure) {
+  print "graph_title $dbname database size\n";
+  print "graph_vlabel Bytes\n";
+  print "graph_category Postgresql \n";
+  print "graph_args --base 1024\n";
+  print "graph_info $dbname database size evolution\n";
+
+  print "db_size.label size\n";
+  print "db_size.draw AREA\n";
+  print "db_size.type GAUGE\n";
+  print "db_size.min 0\n";
+  print "db_size.info $dbname size\n";
+}
+else {
+  print "# $dsn\n" if $debug;
+  my $dbh = DBI->connect ($dsn,
+                          $dbuser,
+                          $dbpass,
+                          {RaiseError =>1});
+  unless($dbh) {
+    die ("no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr."\n");
+  }
+  my $sql = "select pg_database_size(?);";
+  print "# $sql\n" if $debug;
+  my $sth = $dbh->prepare($sql);
+  $sth->execute($dbname);
+  printf ("# Rows: %d\n",  $sth->rows) if $debug;
+  if ($sth->rows > 0) {
+    my ($db_size) = $sth->fetchrow_array();
+    print "db_size.value $db_size\n";
+  }
+}
+exit 0;

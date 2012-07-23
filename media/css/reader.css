@@ -2049,6 +2049,7 @@ background: transparent;
     max-width: 700px;
     border-top: 2px solid #353535;
     border-bottom: 1px solid #353535;
+    clear: both;
 }
 #story_pane .NB-story-comment {
     border-top: 1px solid #A6A6A6;
@@ -5621,9 +5622,8 @@ form.opml_import_form input {
   margin-top: 7px;
 }
 .NB-modal-tutorial .NB-page {
-  height: 446px;
-  overflow-x: hidden;
-  overflow-y: auto;
+/*  height: 446px;*/
+  overflow: hidden;
 }
 .NB-modal-tutorial .NB-page.NB-page-1 {
   display: block;
@@ -5692,7 +5692,7 @@ form.opml_import_form input {
   display: block;
   overflow: hidden;
   width: 240px;
-  height: auto;
+  height: 122px;
 }
 .NB-modal-tutorial .NB-page-3 #story_titles .story {
   padding-right: 0;
@@ -5872,6 +5872,13 @@ form.opml_import_form input {
     min-height: 234px;
 }
 
+.NB-modal-intro .NB-intro-import-delayed {
+    color: #808080;
+    margin: 12px 0 0;
+    font-size: 12px;
+    text-align: center;
+    display: none;
+}
 .NB-modal-intro .NB-intro-import {
     width: 300px;
     float: left;
@@ -6337,16 +6344,15 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-modal-subtitle {
-  font-weight: normal;
-  font-size: 12px;
-  color: #606060;
-  text-shadow: 1px 1px 0 #F0F0F0;
-  width: 715px;
+    font-weight: normal;
+    font-size: 12px;
+    color: #606060;
+    text-shadow: 1px 1px 0 #F0F0F0;
+    width: 715px;
 }
 .NB-modal-feedchooser .NB-modal-subtitle b {
-/*  margin: 0 0 4px 0;*/
     padding-right: 8px;
-  color: #303030;
+    color: #303030;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-subtitle-type-prefix {
@@ -6354,19 +6360,33 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedchooser-type {
-  float: left;
-  width: 345px;
-  margin: 0 12px 0 0;
-  padding: 0 12px 0 0;
+    float: left;
+    width: 345px;
+    margin: 0 52px 0 26px;
+    padding: 0;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-type.NB-last {
-  margin: 0 0 0 0;
-  padding: 0 0 0 24px;
-  margin-right: 0;
-  border-left: 1px solid #B0B0B0;
+    margin: 0 0 0 0;
+    padding: 0 0 0 52px;
+    margin-right: 0;
+    border-left: 1px solid #B0B0B0;
 }
 
+.NB-modal-feedchooser .NB-feedchooser-porpoise {
+    border-radius: 16px;
+    line-height: 48px;
+    color: #808080;
+    font-size: 18px;
+    padding: 8px 2px;
+    background-color: white;
+    position: absolute;
+    margin-top: -24px;
+    width: 30px;
+    text-align: center;
+    top: 50%;
+    left: -17px
+}
 .NB-modal-feedchooser .NB-feedchooser-info {
     overflow: hidden;
 }
@@ -6510,22 +6530,20 @@ form.opml_import_form input {
     position: absolute;
     width: 40px;
     height: 40px;
-    top: 0;
+    top: -10px;
     left: -40px;
+    display: none;
 }
 .NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-1 .NB-feedchooser-dollar-image {
-    top: -8px;
-    background: transparent url('/media/embed/reader/hamburgers.png') no-repeat 0 0;
+    display: block;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-2 .NB-feedchooser-dollar-image {
-    top: -8px;
-    background: transparent url('/media/embed/reader/hamburgers.png') no-repeat 0 -36px;
+    display: block;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-3 .NB-feedchooser-dollar-image {
-    top: -10px;
-    background: transparent url('/media/embed/reader/hamburgers.png') no-repeat 0 -72px;
+    display: block;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-month {

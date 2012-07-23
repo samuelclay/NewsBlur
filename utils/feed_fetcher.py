@@ -217,12 +217,14 @@ class ProcessFeed:
         start_date = datetime.datetime.utcnow()
         # end_date = datetime.datetime.utcnow()
         story_guids = []
+        stories = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry)
             if story.get('published') < start_date:
                 start_date = story.get('published')
             # if story.get('published') > end_date:
             #     end_date = story.get('published')
+            stories.append(story)
             story_guids.append(story.get('guid') or story.get('link'))
 
         existing_stories = list(MStory.objects(
@@ -236,7 +238,8 @@ class ProcessFeed:
         #     | (Q(story_guid__in=story_guids)),
         #     story_feed=self.feed
         # ).order_by('-story_date')
-        ret_values = self.feed.add_update_stories(self.fpf.entries, existing_stories, verbose=self.options['verbose'])
+        ret_values = self.feed.add_update_stories(stories, existing_stories,
+                                                  verbose=self.options['verbose'])
 
         if ((not self.feed.is_push or self.options.get('force'))
             and hasattr(self.fpf, 'feed') and 
@@ -253,9 +256,12 @@ class ProcessFeed:
                               self.feed.title[:30], hub_url))
                 PushSubscription.objects.subscribe(self_url, feed=self.feed, hub=hub_url)
         
-        logging.debug(u'   ---> [%-30s] ~FYParsed Feed: new=~FG~SB%s~SN~FY up=~FY~SB%s~SN same=~FY%s err=~FR~SB%s~SN~FY total=~SB%s' % (
+        logging.debug(u'   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (
                       self.feed.title[:30], 
-                      ret_values[ENTRY_NEW], ret_values[ENTRY_UPDATED], ret_values[ENTRY_SAME], ret_values[ENTRY_ERR],
+                      '~FG~SB' if ret_values[ENTRY_NEW] else '', ret_values[ENTRY_NEW],
+                      '~FY~SB' if ret_values[ENTRY_UPDATED] else '', ret_values[ENTRY_UPDATED],
+                      '~SB' if ret_values[ENTRY_SAME] else '', ret_values[ENTRY_SAME],
+                      '~FR~SB' if ret_values[ENTRY_ERR] else '', ret_values[ENTRY_ERR],
                       len(self.fpf.entries)))
         self.feed.update_all_statistics(full=bool(ret_values[ENTRY_NEW]), force=self.options['force'])
         self.feed.trim_feed()
@@ -444,7 +450,7 @@ class Dispatcher:
             if ret_entries[ENTRY_NEW]:
                 self.publish_to_subscribers(feed)
                 
-            done_msg = (u'%2s ---> [%-30s] ~FYProcessed in ~FG~SB%.4ss~FY~SN (~FB%s~FY) [%s]' % (
+            done_msg = (u'%2s ---> [%-30s] ~FYProcessed in ~FM~SB%.4ss~FY~SN (~FB%s~FY) [%s]' % (
                 identity, feed.feed_title[:30], delta,
                 feed.pk, self.feed_trans[ret_feed],))
             logging.debug(done_msg)

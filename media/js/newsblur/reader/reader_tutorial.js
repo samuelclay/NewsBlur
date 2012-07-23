@@ -469,6 +469,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         $.make('b', page_count)
       ]));
       this.set_title();
+      this.resize();
     },
     
     close: function() {

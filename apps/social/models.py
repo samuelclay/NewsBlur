@@ -24,7 +24,7 @@ from vendor import facebook
 from vendor import tweepy
 from utils import log as logging
 from utils.feed_functions import relative_timesince
-from utils.story_functions import truncate_chars
+from utils.story_functions import truncate_chars, strip_tags, linkify
 from utils import json_functions as json
 
 RECOMMENDATIONS_LIMIT = 5
@@ -475,6 +475,10 @@ class MSocialProfile(mongo.Document):
     def send_email_for_new_follower(self, follower_user_id):
         user = User.objects.get(pk=self.user_id)
         if not user.email or not user.profile.send_emails or self.user_id == follower_user_id:
+            if not user.email:
+                logging.user(user, "~BB~FMNo email to send to, skipping.")
+            elif not user.profile.send_emails:
+                logging.user(user, "~BB~FMDisabled emails, skipping.")
             return
         
         emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,
@@ -988,6 +992,10 @@ class MSharedStory(mongo.Document):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
         
+        self.comments = linkify(strip_tags(self.comments))
+        for reply in self.replies:
+            reply.comments = linkify(strip_tags(reply.comments))
+        
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         share_key = "S:%s:%s" % (self.story_feed_id, self.guid_hash)
         r.sadd(share_key, self.user_id)
@@ -1363,6 +1371,10 @@ class MSharedStory(mongo.Document):
             user = User.objects.get(pk=user_id)
 
             if not user.email or not user.profile.send_emails:
+                if not user.email:
+                    logging.user(user, "~BB~FMNo email to send to, skipping.")
+                elif not user.profile.send_emails:
+                    logging.user(user, "~BB~FMDisabled emails, skipping.")
                 continue
             
             mute_url = "http://%s%s" % (
@@ -1403,6 +1415,10 @@ class MSharedStory(mongo.Document):
                                                          story_guid=self.story_guid)
                                                          
         if not original_user.email or not original_user.profile.send_emails:
+            if not original_user.email:
+                logging.user(original_user, "~BB~FMNo email to send to, skipping.")
+            elif not original_user.profile.send_emails:
+                logging.user(original_user, "~BB~FMDisabled emails, skipping.")
             return
             
         story_feed = Feed.objects.get(pk=self.story_feed_id)
@@ -1725,16 +1741,18 @@ class MInteraction(mongo.Document):
         }
         
     @classmethod
-    def user(cls, user_id, page=1):
+    def user(cls, user_id, page=1, limit=None):
         user_profile = Profile.objects.get(user=user_id)
         dashboard_date = user_profile.dashboard_date or user_profile.last_seen_on
         page = max(1, page)
-        limit = 4 # Also set in template
+        limit = int(limit) if limit else 4
         offset = (page-1) * limit
         interactions_db = cls.objects.filter(user_id=user_id)[offset:offset+limit+1]
+        has_next_page = len(interactions_db) > limit
+        interactions_db = interactions_db[offset:offset+limit]
         with_user_ids = [i.with_user_id for i in interactions_db if i.with_user_id]
         social_profiles = dict((p.user_id, p) for p in MSocialProfile.objects.filter(user_id__in=with_user_ids))
-    
+        
         interactions = []
         for interaction_db in interactions_db:
             interaction = interaction_db.to_json()
@@ -1747,7 +1765,7 @@ class MInteraction(mongo.Document):
             interaction['is_new'] = interaction_db.date > dashboard_date
             interactions.append(interaction)
 
-        return interactions
+        return interactions, has_next_page
         
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
@@ -1881,17 +1899,20 @@ class MActivity(mongo.Document):
         }
         
     @classmethod
-    def user(cls, user_id, page=1, public=False):
+    def user(cls, user_id, page=1, limit=4, public=False):
         user_profile = Profile.objects.get(user=user_id)
         dashboard_date = user_profile.dashboard_date or user_profile.last_seen_on
         page = max(1, page)
-        limit = 4 # Also set in template
+        limit = int(limit)
         offset = (page-1) * limit
         
         activities_db = cls.objects.filter(user_id=user_id)
         if public:
             activities_db = activities_db.filter(category__nin=['star', 'feedsub'])
+            
         activities_db = activities_db[offset:offset+limit+1]
+        has_next_page = len(activities_db) > limit
+        activities_db = activities_db[offset:offset+limit]
         with_user_ids = [a.with_user_id for a in activities_db if a.with_user_id]
         social_profiles = dict((p.user_id, p) for p in MSocialProfile.objects.filter(user_id__in=with_user_ids))
         activities = []
@@ -1906,7 +1927,7 @@ class MActivity(mongo.Document):
             activity['with_user'] = social_profiles.get(activity_db.with_user_id)
             activities.append(activity)
         
-        return activities
+        return activities, has_next_page
             
     @classmethod
     def new_starred_story(cls, user_id, story_title, story_feed_id, story_id):

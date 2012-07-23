@@ -2,6 +2,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     initialize: function() {
         this.bind('change:selected', this.change_selected);
+        this.bind('change:shared_comments', this.populate_comments);
         this.bind('change:comments', this.populate_comments);
         this.bind('change:comment_count', this.populate_comments);
         this.populate_comments();

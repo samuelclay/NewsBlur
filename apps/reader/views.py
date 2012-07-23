@@ -44,6 +44,7 @@ from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import bunch
 from utils.story_functions import story_score
+from utils.story_functions import strip_tags
 from utils import log as logging
 from utils.view_functions import get_argument_or_404, render_to, is_true
 from utils.ratelimit import ratelimit
@@ -478,7 +479,7 @@ def load_single_feed(request, feed_id):
                 story['shared'] = True
                 shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'], user.profile.timezone)
                 story['shared_date'] = format_story_link_date__long(shared_date, now)
-                story['shared_comments'] = shared_stories[story['id']]['comments']
+                story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
         else:
             story['read_status'] = 1
         story['intelligence'] = {

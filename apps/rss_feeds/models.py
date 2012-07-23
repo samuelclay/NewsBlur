@@ -27,7 +27,7 @@ from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
-from utils.story_functions import pre_process_story
+from utils.story_functions import strip_tags
 from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
@@ -724,8 +724,6 @@ class Feed(models.Model):
         }
 
         for story in stories:
-            story = pre_process_story(story)
-            
             if not story.get('title'):
                 continue
                 
@@ -796,6 +794,7 @@ class Feed(models.Model):
                 # existing_story.story_date = story.get('published')
                 existing_story.story_title = story.get('title')
                 existing_story.story_content = story_content_diff
+                existing_story.story_latest_content = story_content
                 existing_story.story_original_content = original_content
                 existing_story.story_author_name = story.get('author')
                 existing_story.story_permalink = story_link
@@ -979,8 +978,8 @@ class Feed(models.Model):
                     if not tagname or tagname == ' ':
                         continue
                     fcat.append(tagname)
-        fcat = [t[:250] for t in fcat]
-        return fcat[:12]
+        fcat = [strip_tags(t)[:250] for t in fcat[:12]]
+        return fcat
     
     def get_permalink(self, entry):
         link = entry.get('link')
@@ -1002,14 +1001,17 @@ class Feed(models.Model):
         end_date = story_pub_date + datetime.timedelta(hours=8)
 
         for existing_story in existing_stories:
-            
             content_ratio = 0
             existing_story_pub_date = existing_story.story_date
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
             if (story_published_now or
                 (existing_story_pub_date > start_date and existing_story_pub_date < end_date)):
                 
-                if 'story_content_z' in existing_story:
+                if 'story_latest_content_z' in existing_story:
+                    existing_story_content = unicode(zlib.decompress(existing_story.story_latest_content_z))
+                elif 'story_latest_content' in existing_story:
+                    existing_story_content = existing_story.story_latest_content
+                elif 'story_content_z' in existing_story:
                     existing_story_content = unicode(zlib.decompress(existing_story.story_content_z))
                 elif 'story_content' in existing_story:
                     existing_story_content = existing_story.story_content
@@ -1048,7 +1050,7 @@ class Feed(models.Model):
                     story_has_changed = True
                     break
                     
-                if story_in_system:
+                if story_in_system and not story_has_changed:
                     if story_content != existing_story_content:
                         story_has_changed = True
                     if story_link != existing_story.story_permalink:
@@ -1057,7 +1059,7 @@ class Feed(models.Model):
                 
         
         # if story_has_changed or not story_in_system:
-            # print 'New/updated story: %s' % (story), 
+        #     print 'New/updated story: %s' % (story), 
         return story_in_system, story_has_changed
         
     def get_next_scheduled_update(self, force=False, verbose=True):
@@ -1277,6 +1279,8 @@ class MStory(mongo.Document):
     story_content_z          = mongo.BinaryField()
     story_original_content   = mongo.StringField()
     story_original_content_z = mongo.BinaryField()
+    story_latest_content     = mongo.StringField()
+    story_latest_content_z   = mongo.BinaryField()
     story_content_type       = mongo.StringField(max_length=255)
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
@@ -1308,6 +1312,9 @@ class MStory(mongo.Document):
         if self.story_original_content:
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
+        if self.story_latest_content:
+            self.story_latest_content_z = zlib.compress(self.story_latest_content)
+            self.story_latest_content = None
         if self.story_title and len(self.story_title) > story_title_max:
             self.story_title = self.story_title[:story_title_max]
         if self.story_content_type and len(self.story_content_type) > story_content_type_max:

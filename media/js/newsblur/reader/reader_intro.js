@@ -10,6 +10,7 @@ NEWSBLUR.ReaderIntro = function(options) {
         'twitter': {},
         'facebook': {}
     };
+    this.flags = {};
     this.autofollow = true;
     
     this.page_number = this.options.page_number;
@@ -79,6 +80,11 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
                         $.make('h4'),
                         $.make('div', { className: 'NB-intro-import-restart NB-modal-submit-grey NB-modal-submit-button' }, [
                             '&laquo; Restart and re-import your sites'
+                        ]),
+                        $.make('div', { className: 'NB-intro-import-delayed' }, [
+                            'There are too many sites to process...',
+                            $.make('br'),
+                            'You will be emailed within a minute or three.'
                         ])
                     ])
                 ]),
@@ -303,9 +309,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       } else if (page_number > page_count) {
           NEWSBLUR.assets.preference('has_setup_feeds', true);
           NEWSBLUR.reader.check_hide_getting_started();
-          this.close(function() {
-              NEWSBLUR.reader.open_dialog_after_feeds_loaded();
-          });
+          this.close(_.bind(function() {
+              NEWSBLUR.reader.open_dialog_after_feeds_loaded({delayed_import: this.flags.delayed_import});
+          }, this));
           return;
       } else if (page_number == 1) {
         $('.NB-tutorial-next-page-text', this.$modal).text("Let's Get Started ");
@@ -345,6 +351,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             if (NEWSBLUR.assets.feeds.size() && !this.options.force_import) {
                 page = 2;
                 $('.NB-intro-imports-sites', this.$modal).addClass('active');
+                $('.NB-intro-import-delayed', this.$modal).hide();
             } else {
                 page = 0;
                 $('.NB-intro-imports-start', this.$modal).addClass('active');
@@ -360,11 +367,12 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         this.count_feeds();
     },
     
-    count_feeds: function() {
-        var feed_count = NEWSBLUR.assets.feeds.size();
+    count_feeds: function(fake_feed_count) {
+        var feed_count = fake_feed_count || NEWSBLUR.assets.feeds.size();
         
         $(".NB-intro-imports-sites h4", this.$modal).text([
             'You are subscribed to ',
+            (fake_feed_count && 'at least '),
             Inflector.pluralize(' site', feed_count, true),
             '.'
         ].join(""));
@@ -464,10 +472,16 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var params = {
             url: NEWSBLUR.URLs['opml-upload'],
             type: 'POST',
+            dataType: 'json',
             success: function (data, status) {
                 NEWSBLUR.assets.load_feeds(function() {
                     $loading.removeClass('NB-active');
                     self.advance_import_carousel(2);
+                    if (data.payload.delayed) {
+                        NEWSBLUR.reader.flags.delayed_import = true;
+                        self.count_feeds(data.payload.feed_count);
+                        $('.NB-intro-import-delayed', self.$modal).show();
+                    }
                 });
                 NEWSBLUR.reader.load_recommended_feed();
             },

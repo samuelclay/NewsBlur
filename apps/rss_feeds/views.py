@@ -1,5 +1,4 @@
 import datetime
-import time
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.decorators.http import condition
@@ -90,7 +89,6 @@ def feed_autocomplete(request):
             ).order_by('-num_subscribers')[:5]
     
     logging.user(request, "~FRAdd Search: ~SB%s ~FG(%s matches)" % (query, len(feeds),))
-    time.sleep(1)
 
     feeds = [{
         'value': feed.feed_address,
