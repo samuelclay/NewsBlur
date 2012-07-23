@@ -43,7 +43,8 @@ class UserSubscription(models.Model):
     objects = UserSubscriptionManager()
 
     def __unicode__(self):
-        return '[' + self.feed.feed_title + '] '
+        return '[%s (%s): %s (%s)] ' % (self.user.username, self.user.pk, 
+                                        self.feed.feed_title, self.feed.pk)
         
     class Meta:
         unique_together = ("user", "feed")
@@ -94,6 +95,7 @@ class UserSubscription(models.Model):
         unread_stories_key  = 'U:%s:%s' % (self.user_id, self.feed_id)
 
         if not r.exists(stories_key):
+            print " ---> No stories on feed: %s" % self
             return []
         elif read_filter != 'unread' or not r.exists(read_stories_key):
             ignore_user_stories = True
@@ -115,6 +117,8 @@ class UserSubscription(models.Model):
             min_score = current_time
             max_score = mark_read_time
 
+        if settings.DEBUG:
+            print " ---> Unread all stories: %s" % r.zrevrange(unread_ranked_stories_key, 0, -1)
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)

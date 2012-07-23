@@ -1344,9 +1344,10 @@ class MStory(mongo.Document):
     def sync_redis(self, r=None):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
-
-        if self.id and self.story_date > SUBSCRIBER_EXPIRE:
+        DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        if settings.DEBUG:
+            print " ---> Syncing redis on story: %s (%s - %s)" % (self.id, self.story_date, self.story_date > DAYS_OF_UNREAD)
+        if self.id and self.story_date > DAYS_OF_UNREAD:
             r.sadd('F:%s' % self.story_feed_id, self.id)
             r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
     
@@ -1360,8 +1361,8 @@ class MStory(mongo.Document):
     @classmethod
     def sync_all_redis(cls, story_feed_id=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
-        stories = cls.objects.filter(story_date__gte=SUBSCRIBER_EXPIRE)
+        DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        stories = cls.objects.filter(story_date__gte=DAYS_OF_UNREAD)
         if story_feed_id:
             stories = stories.filter(story_feed_id=story_feed_id)
             r.delete('F:%s' % story_feed_id)
