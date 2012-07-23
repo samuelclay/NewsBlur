@@ -3,6 +3,7 @@ package com.newsblur.activity;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -34,14 +35,15 @@ public class Reading extends SherlockFragmentActivity {
 
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String TAG = "ReadingActivity";
+	public static final String EXTRA_POSITION = "feed_position";
 	private ViewPager pager;
-	private SyncReadingUpdaterFragment syncFragment;
 	private FragmentManager fragmentManager;
 	private ReadingAdapter readingAdapter;
 	private String feedId;
 	private final int READING_LOADER = 0x01;
 	private ContentResolver contentResolver;
 	private Feed feed;
+	private int passedPosition;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
@@ -53,16 +55,19 @@ public class Reading extends SherlockFragmentActivity {
 
 		fragmentManager = getSupportFragmentManager();
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
+		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		readingAdapter = new ReadingAdapter(fragmentManager, this, feedId);
-
 		contentResolver = getContentResolver();
-		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
+		
+		Uri storiesURI = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
+		Cursor stories = contentResolver.query(storiesURI, null, null, null, null);
+		readingAdapter = new ReadingAdapter(fragmentManager, this, feedId, stories);
 
+		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
 		setTitle(feed.title);
-		
+
 		View view = findViewById(R.id.reading_floatbar);
 		GradientDrawable gradient;
 		int borderColor = Color.BLACK;
@@ -73,49 +78,27 @@ public class Reading extends SherlockFragmentActivity {
 			gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { Color.DKGRAY, Color.LTGRAY });
 		}
 		view.setBackgroundDrawable(gradient);
+
 		findViewById(R.id.reading_divider).setBackgroundColor(borderColor);
 		findViewById(R.id.reading_divider_bottom).setBackgroundColor(borderColor);
-				
-		
-		getSupportLoaderManager().initLoader(READING_LOADER , null, readingAdapter);
 
-		syncFragment = (SyncReadingUpdaterFragment) fragmentManager.findFragmentByTag(SyncReadingUpdaterFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncReadingUpdaterFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncReadingUpdaterFragment.TAG).commit();
-			triggerRefresh();
-		}
+		getSupportLoaderManager().initLoader(READING_LOADER , null, readingAdapter);
 
 		pager = (ViewPager) findViewById(R.id.reading_pager);
 		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
 		pager.setPageMarginDrawable(R.drawable.divider_light);
-
+		
 		pager.setAdapter(readingAdapter);
-
-
-		setProgressBarVisibility(true);
+		pager.setCurrentItem(passedPosition);
+		
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.reading, menu);
 		return true;
-	}
-
-	public void triggerRefresh() {
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
-		intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
-		startService(intent);
-	}
-
-	public void redrawUI() {
-		Log.d(TAG, "Redrawing reading pager...");
-		getSupportLoaderManager().restartLoader(READING_LOADER, null, readingAdapter);
-		setProgressBarVisibility(false);
 	}
 
 	@Override
@@ -147,47 +130,5 @@ public class Reading extends SherlockFragmentActivity {
 			return super.onOptionsItemSelected(item);	
 		}
 	}
-
-	public static class SyncReadingUpdaterFragment extends Fragment implements Receiver {
-		public static final String TAG = "SyncReadingFragment";
-		private DetachableResultReceiver receiver;
-
-		public SyncReadingUpdaterFragment() {
-			receiver = new DetachableResultReceiver(new Handler());
-			receiver.setReceiver(this);
-		}
-
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			setRetainInstance(true);
-			Log.d(TAG, "Creating syncfragment");
-		}
-
-		@Override
-		public void onAttach(Activity activity) {
-			super.onAttach(activity);
-			Log.d(TAG, "Attached");
-		}
-
-		@Override
-		public void onReceiverResult(int resultCode, Bundle resultData) {
-			switch (resultCode) {
-			case SyncService.STATUS_FINISHED:
-				Log.d(TAG, "Synchronisation finished.");
-				if (getActivity() != null) {
-					((Reading) getActivity()).redrawUI();
-				}
-				break;
-			case SyncService.STATUS_RUNNING:
-				Log.d(TAG, "Synchronisation running.");
-				break;		
-			default:
-				Log.e(TAG, "Unrecognised response attempting to get reading data");
-				break;
-			}
-		}
-	}
-
 
 }

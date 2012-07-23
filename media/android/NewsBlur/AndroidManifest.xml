@@ -36,6 +36,9 @@
             android:label="@string/profile"/>
         
         <activity
+            android:name=".activity.ItemsList" />
+        
+        <activity
             android:name=".activity.Reading"/>
 
         <service android:name=".service.SyncService" />

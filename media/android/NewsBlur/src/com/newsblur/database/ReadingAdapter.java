@@ -23,13 +23,16 @@ public class ReadingAdapter extends FragmentStatePagerAdapter implements LoaderM
 	private Uri feedUri;
 	private String TAG = "ReadingAdapter";
 	private LoadingFragment loadingFragment; 
+	
 
-	public ReadingAdapter(final FragmentManager fragmentManager, final Context context, final String feedId) {
+	public ReadingAdapter(final FragmentManager fragmentManager, final Context context, final String feedId, final Cursor cursor) {
 		super(fragmentManager);
 		this.context = context;
+		this.cursor = cursor;
 		feedUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
 	}
-
+	
+	
 	@Override
 	public Fragment getItem(int position) {
 		if (cursor == null || cursor.getCount() == 0) {

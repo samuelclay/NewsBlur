@@ -27,7 +27,7 @@ public class Story implements Serializable {
 	public String commentCount;
 
 	@SerializedName("read_status")
-	public int read;
+	public String read;
 
 	@SerializedName("story_tags")
 	public String[] tags;
@@ -50,12 +50,9 @@ public class Story implements Serializable {
 	@SerializedName("story_feed_id")
 	public String feedId;
 
-	@SerializedName("intelligence_feed")
-	public String intelligenceFeed;
+	@SerializedName("intelligence")
+	public Intelligence intelligence = new Intelligence();
 	
-	@SerializedName("intelligence_authors")
-	public String intelligenceAuthors;
-
 	@SerializedName("intelligence_title")
 	public String intelligenceTitle;
 
@@ -69,10 +66,11 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_COMMENT_COUNT, commentCount);
 		values.put(DatabaseConstants.STORY_SHARE_COUNT, shareCount);
 		values.put(DatabaseConstants.STORY_AUTHORS, authors);
-		values.put(DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, intelligenceAuthors);
-		values.put(DatabaseConstants.STORY_INTELLIGENCE_FEED, intelligenceFeed);
+		values.put(DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, intelligence.intelligenceAuthors);
+		values.put(DatabaseConstants.STORY_INTELLIGENCE_FEED, intelligence.intelligenceFeed);
+		values.put(DatabaseConstants.STORY_INTELLIGENCE_TAGS, intelligence.intelligenceTags);
+		values.put(DatabaseConstants.STORY_INTELLIGENCE_TITLE, intelligence.intelligenceTitle);
 		values.put(DatabaseConstants.STORY_TAGS, TextUtils.join(",", tags));
-		values.put(DatabaseConstants.STORY_INTELLIGENCE_TITLE, intelligenceTitle);
 		values.put(DatabaseConstants.STORY_READ, read);
 		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
 		return values;
@@ -87,13 +85,29 @@ public class Story implements Serializable {
 		story.shareCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHARE_COUNT));
 		story.commentCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_COMMENT_COUNT));
 		story.permalink = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_PERMALINK));
-		story.intelligenceAuthors = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_AUTHORS));
-		story.intelligenceFeed = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
-		story.read = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ));
+		story.intelligence.intelligenceAuthors = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_AUTHORS));
+		story.intelligence.intelligenceFeed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
+		story.intelligence.intelligenceTags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));
+		story.intelligence.intelligenceTitle = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
+		story.read = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_READ));
 		story.tags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TAGS)), ",");
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
 		return story;
+	}
+	
+	private class Intelligence {
+		@SerializedName("feed")
+		public int intelligenceFeed = 0;
+		
+		@SerializedName("author")
+		public int intelligenceAuthors = 0;
+		
+		@SerializedName("tags")
+		public int intelligenceTags = 0;
+		
+		@SerializedName("title")
+		public int intelligenceTitle = 0;
 	}
 
 }

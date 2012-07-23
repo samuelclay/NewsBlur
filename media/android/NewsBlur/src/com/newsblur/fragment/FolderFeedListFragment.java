@@ -14,6 +14,7 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 import com.newsblur.R;
+import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -101,10 +102,10 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 
 	@Override
 	public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
-		final Intent intent = new Intent(getActivity(), Reading.class);
+		final Intent intent = new Intent(getActivity(), ItemsList.class);
 		Cursor childCursor = folderAdapter.getChild(groupPosition, childPosition);
 		String feedId = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ID));
-		intent.putExtra(Reading.EXTRA_FEED, feedId);
+		intent.putExtra(ItemsList.EXTRA_FEED, feedId);
 		getActivity().startActivity(intent);
 		return true;
 	}
