@@ -92,7 +92,7 @@ class UserSubscription(models.Model):
         if not skip_feed:
             self.feed.sync_redis()
         
-        userstories = MUserStory.objects.filter(feed_id=self.feed_id, user=self.user_id)
+        userstories = MUserStory.objects.filter(feed_id=self.feed_id, user_id=self.user_id)
         for userstory in userstories:
             userstory.sync_redis(r=r)
         
@@ -116,7 +116,7 @@ class UserSubscription(models.Model):
         unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
-        current_time    = int(time.time())
+        current_time    = int(time.time() + 60*60*24)
         mark_read_time  = int(time.mktime(self.mark_read_date.timetuple()))
         if order == 'oldest':
             byscorefunc = r.zrangebyscore

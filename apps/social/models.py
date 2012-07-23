@@ -739,7 +739,7 @@ class MSocialSubscription(mongo.Document):
         unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
-        current_time    = int(time.time())
+        current_time    = int(time.time() + 60*60*24)
         mark_read_time  = time.mktime(self.mark_read_date.timetuple())
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
