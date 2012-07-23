@@ -55,7 +55,7 @@ SINGLE_DAY = 60*60*24
 @never_cache
 @render_to('reader/feeds.xhtml')
 def index(request, **kwargs):
-    if request.method == "GET" and request.subdomain and request.subdomain != 'dev':
+    if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app02', 'www']:
         username = request.subdomain
         try:
             if '.' in username:
