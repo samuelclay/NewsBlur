@@ -481,7 +481,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView 
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    static NSString *cellIdentifier;
+    NSString *cellIdentifier;
     NSDictionary *feed ;
     
     if (appDelegate.isRiverView || appDelegate.isSocialView) {
@@ -512,7 +512,7 @@
                                                         dequeueReusableCellWithIdentifier:cellIdentifier]; 
     if (cell == nil) {
         cell = [[FeedDetailTableCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                          reuseIdentifier:cellIdentifier];
+                                          reuseIdentifier:nil];
     }
     
     

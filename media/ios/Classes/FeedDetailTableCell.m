@@ -32,7 +32,7 @@ static UIFont *indicatorFont = nil;
 #define rightMargin 18
 
 
-+ (void) initialize{
++ (void) initialize {
     if (self == [FeedDetailTableCell class]) {
         textFont = [UIFont boldSystemFontOfSize:18];
         indicatorFont = [UIFont boldSystemFontOfSize:12];
