@@ -884,7 +884,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         NEWSBLUR.Preferences[preference] = value;
         var preferences = {};
         preferences[preference] = value;
-        this.make_request('/profile/set_preference', preferences, callback, null);
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/profile/set_preference', preferences, callback, null);
+        } else {
+            if (callback) callback();
+        }
     },
     
     save_preferences: function(preferences, callback) {
