@@ -201,10 +201,38 @@
 						<int key="NSvFlags">256</int>
 						<object class="NSMutableArray" key="NSSubviews">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBUIImageView" id="851299854">
+								<reference key="NSNextResponder" ref="247257992"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrameSize">{12, 1}</string>
+								<reference key="NSSuperview" ref="247257992"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="272705678"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIUserInteractionEnabled">NO</bool>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+							</object>
+							<object class="IBUIView" id="272705678">
+								<reference key="NSNextResponder" ref="247257992"/>
+								<int key="NSvFlags">292</int>
+								<string key="NSFrame">{{12, 0}, {320, 1}}</string>
+								<reference key="NSSuperview" ref="247257992"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="111782255"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<object class="NSColor" key="IBUIBackgroundColor">
+									<int key="NSColorSpace">3</int>
+									<bytes key="NSWhite">MQA</bytes>
+									<object class="NSColorSpace" key="NSCustomColorSpace">
+										<int key="NSID">2</int>
+									</object>
+								</object>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+							</object>
 							<object class="IBUIView" id="111782255">
 								<reference key="NSNextResponder" ref="247257992"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrameSize">{12, 80}</string>
+								<string key="NSFrame">{{0, 1}, {12, 80}}</string>
 								<reference key="NSSuperview" ref="247257992"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="51013610"/>
@@ -348,7 +376,7 @@
 						<string key="NSFrameSize">{300, 79}</string>
 						<reference key="NSSuperview" ref="183700415"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="111782255"/>
+						<reference key="NSNextKeyView" ref="851299854"/>
 						<reference key="IBUIBackgroundColor" ref="692566874"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -438,14 +466,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">feedGradient</string>
-						<reference key="source" ref="183700415"/>
-						<reference key="destination" ref="111782255"/>
-					</object>
-					<int key="connectionID">43</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">siteFavicon</string>
 						<reference key="source" ref="183700415"/>
 						<reference key="destination" ref="51013610"/>
@@ -459,6 +479,30 @@
 						<reference key="destination" ref="69679995"/>
 					</object>
 					<int key="connectionID">51</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">feedColorBar</string>
+						<reference key="source" ref="183700415"/>
+						<reference key="destination" ref="111782255"/>
+					</object>
+					<int key="connectionID">58</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">feedColorBarBorder</string>
+						<reference key="source" ref="183700415"/>
+						<reference key="destination" ref="851299854"/>
+					</object>
+					<int key="connectionID">59</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">topBorder</string>
+						<reference key="source" ref="183700415"/>
+						<reference key="destination" ref="272705678"/>
+					</object>
+					<int key="connectionID">61</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -527,6 +571,8 @@
 							<reference ref="111782255"/>
 							<reference ref="69679995"/>
 							<reference ref="51013610"/>
+							<reference ref="851299854"/>
+							<reference ref="272705678"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -565,6 +611,18 @@
 						<reference key="object" ref="51013610"/>
 						<reference key="parent" ref="183700415"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">52</int>
+						<reference key="object" ref="851299854"/>
+						<reference key="parent" ref="183700415"/>
+						<string key="objectName">Color Bar - Top Border</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">53</int>
+						<reference key="object" ref="272705678"/>
+						<reference key="parent" ref="183700415"/>
+						<string key="objectName">Color Bar - Body</string>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -588,6 +646,8 @@
 					<string>44.IBPluginDependency</string>
 					<string>45.IBPluginDependency</string>
 					<string>5.IBPluginDependency</string>
+					<string>52.IBPluginDependency</string>
+					<string>53.IBPluginDependency</string>
 					<string>6.IBPluginDependency</string>
 					<string>9.IBPluginDependency</string>
 				</object>
@@ -600,6 +660,8 @@
 					<string>FeedDetailTableCell</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>FeedDetailTableCell</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -626,7 +688,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">51</int>
+			<int key="maxID">61</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -638,16 +700,19 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>feedGradient</string>
+							<string>feedColorBar</string>
+							<string>feedColorBarBorder</string>
 							<string>siteFavicon</string>
 							<string>siteTitle</string>
 							<string>storyAuthor</string>
 							<string>storyDate</string>
 							<string>storyTitle</string>
 							<string>storyUnreadIndicator</string>
+							<string>topBorder</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIImageView</string>
 							<string>UILabel</string>
@@ -655,24 +720,31 @@
 							<string>UILabel</string>
 							<string>UILabel</string>
 							<string>UIImageView</string>
+							<string>UIView</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>feedGradient</string>
+							<string>feedColorBar</string>
+							<string>feedColorBarBorder</string>
 							<string>siteFavicon</string>
 							<string>siteTitle</string>
 							<string>storyAuthor</string>
 							<string>storyDate</string>
 							<string>storyTitle</string>
 							<string>storyUnreadIndicator</string>
+							<string>topBorder</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
-								<string key="name">feedGradient</string>
+								<string key="name">feedColorBar</string>
+								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">feedColorBarBorder</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -698,6 +770,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">storyUnreadIndicator</string>
 								<string key="candidateClassName">UIImageView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">topBorder</string>
+								<string key="candidateClassName">UIView</string>
 							</object>
 						</object>
 					</object>

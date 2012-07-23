@@ -7,29 +7,41 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
+#import "ABTableViewCell.h"
 
-
-@interface FeedDetailTableCell : UITableViewCell {
+@interface FeedDetailTableCell : ABTableViewCell {
+    NewsBlurAppDelegate *appDelegate;
+    
     // All views
-    UILabel *storyTitle;
-    UILabel *storyAuthor;
-    UILabel *storyDate;
-    UIImageView *storyUnreadIndicator;
+    NSString *storyTitle;
+    NSString *storyAuthor;
+    NSString *storyDate;
+    UIImage *storyUnreadIndicator;
     
     // River view    
-    UILabel *siteTitle;
-    UIImageView *siteFavicon;
-    UIView *feedGradient;
+    NSString *siteTitle;
+    UIImage *siteFavicon;
+    BOOL isRead;
+    BOOL isRiverOrSocial;
+
+    UIColor *feedColorBar;
+    UIColor *feedColorBarTopBorder;
 }
 
-@property (nonatomic) IBOutlet UIView *feedGradient;
-@property (nonatomic) IBOutlet UILabel *siteTitle;
-@property (nonatomic) IBOutlet UIImageView *siteFavicon;
+@property (nonatomic) NSString *siteTitle;
+@property (nonatomic) UIImage *siteFavicon;
 
-@property (nonatomic) IBOutlet UIImageView *storyUnreadIndicator;
+@property (nonatomic) UIImage *storyUnreadIndicator;
 
-@property (nonatomic) IBOutlet UILabel *storyTitle;
-@property (nonatomic) IBOutlet UILabel *storyAuthor;
-@property (nonatomic) IBOutlet UILabel *storyDate;
+@property (nonatomic) NSString *storyTitle;
+@property (nonatomic) NSString *storyAuthor;
+@property (nonatomic) NSString *storyDate;
+
+@property (nonatomic) UIColor *feedColorBar;
+@property (nonatomic) UIColor *feedColorBarTopBorder;
+
+@property (readwrite) BOOL isRead;
+@property (readwrite) BOOL isRiverOrSocial;
 
 @end

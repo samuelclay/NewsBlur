@@ -490,23 +490,32 @@
         cellIdentifier = @"FeedDetailCellIdentifier";
     }
 
+//    FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView 
+//                                                        dequeueReusableCellWithIdentifier:cellIdentifier];
+//	if (cell == nil) {
+//		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedDetailTableCell"
+//                                                     owner:self
+//                                                   options:nil];
+//        for (id oneObject in nib) {
+//            if ([oneObject isKindOfClass:[FeedDetailTableCell class]]) {
+//                if (([(FeedDetailTableCell *)oneObject tag] == 0 && !(appDelegate.isRiverView || appDelegate.isSocialView)) ||
+//                    ([(FeedDetailTableCell *)oneObject tag] == 1 && (appDelegate.isRiverView || appDelegate.isSocialView))) {
+//                    cell = (FeedDetailTableCell *)oneObject;
+//                    break;
+//                }
+//
+//            }
+//        }
+//	}
+    
     FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView 
-                                                        dequeueReusableCellWithIdentifier:cellIdentifier];
-	if (cell == nil) {
-		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedDetailTableCell"
-                                                     owner:self
-                                                   options:nil];
-        for (id oneObject in nib) {
-            if ([oneObject isKindOfClass:[FeedDetailTableCell class]]) {
-                if (([(FeedDetailTableCell *)oneObject tag] == 0 && !(appDelegate.isRiverView || appDelegate.isSocialView)) ||
-                    ([(FeedDetailTableCell *)oneObject tag] == 1 && (appDelegate.isRiverView || appDelegate.isSocialView))) {
-                    cell = (FeedDetailTableCell *)oneObject;
-                    break;
-                }
-
-            }
-        }
-	}
+                                                        dequeueReusableCellWithIdentifier:cellIdentifier]; 
+    if (cell == nil) {
+        cell = [[FeedDetailTableCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                          reuseIdentifier:cellIdentifier];
+    }
+    
+    
     
     if (indexPath.row >= [[appDelegate activeFeedStoryLocations] count]) {
         return [self makeLoadingCell];
@@ -526,117 +535,93 @@
     } else {
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
     }
+        
+    NSString *siteTitle = [feed objectForKey:@"feed_title"];
+    cell.siteTitle = siteTitle; 
+
+    NSString *title = [story objectForKey:@"story_title"];
+    cell.storyTitle = [title stringByDecodingHTMLEntities];
+
+    cell.storyDate = [story objectForKey:@"short_parsed_date"];
     
     if ([[story objectForKey:@"story_authors"] class] != [NSNull class]) {
-        cell.storyAuthor.text = [[story objectForKey:@"story_authors"] 
-                                 uppercaseString];
+        cell.storyAuthor = [[story objectForKey:@"story_authors"] uppercaseString];
     } else {
-        cell.storyAuthor.text = @"";
+        cell.storyAuthor = @"";
     }
     
-    BOOL isStoryRead = [[story objectForKey:@"read_status"] intValue] == 1;
-    NSString *title = [story objectForKey:@"story_title"];
-    cell.storyTitle.text = [title stringByDecodingHTMLEntities];
-    cell.storyDate.text = [story objectForKey:@"short_parsed_date"];
-    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-    if (score > 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_green.png"];
-    } else if (score == 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_yellow.png"];
-    } else if (score < 0) {
-        cell.storyUnreadIndicator.image = [UIImage imageNamed:@"bullet_red.png"];
-    }
-    
-    // River view gradient
-    if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
-        UIView *feedTitleBar = [self makeFeedTitleBar:feed cell:cell makeRect:CGRectMake(0, 1, 12, cell.frame.size.height)];
-        cell.feedGradient = feedTitleBar;
-        [cell addSubview:cell.feedGradient];
-        
-        // top border
-        UIView *topBorder = [[UIView alloc] init];
-        topBorder.frame = CGRectMake(12, 0, self.view.frame.size.width, 1);
-        topBorder.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
-        [cell addSubview:topBorder]; 
-        
-        NSString *siteTitle = [feed objectForKey:@"feed_title"];
-        cell.siteTitle.text = siteTitle; 
-        
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
-        UIImage *titleImage = [Utilities getImage:feedIdStr];
-        [cell.siteFavicon setImage:titleImage];
-    }
-    
-    if (!isStoryRead) {
-        // Unread story
-        cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
-        cell.storyTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:13];
-        cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:1.0];
-        cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-        cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
-        cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-        cell.storyUnreadIndicator.alpha = 1;        
-    } else {
-        [self changeRowStyleToRead:cell];
-    }
-
-    int rowIndex = [appDelegate locationOfActiveStory];
-    if (rowIndex == indexPath.row) {
-        [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-    }
-    
-    CAGradientLayer *gradient = [CAGradientLayer layer];
-    gradient.frame = cell.bounds;
-    gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(0xd2e6fd) CGColor], (id)[UIColorFromRGB(0xb0d1f9) CGColor], nil];
-    [cell.selectedBackgroundView.layer addSublayer:gradient];
-    CALayer *topBorder = [CALayer layer];
-    topBorder.frame = CGRectMake(0, 0, cell.bounds.size.width, 1);
-    topBorder.backgroundColor = [UIColorFromRGB(0x6eadf5) CGColor];
-    [cell.selectedBackgroundView.layer addSublayer:topBorder];
-    CALayer *bottomBorder = [CALayer layer];
-    bottomBorder.frame = CGRectMake(0, cell.bounds.size.height, cell.bounds.size.width, 1);
-    bottomBorder.backgroundColor = [UIColorFromRGB(0x6eadf5) CGColor];
-    [cell.selectedBackgroundView.layer addSublayer:bottomBorder];
-    
-	return cell;
-}
-
-- (UIView *)makeFeedTitleBar:(NSDictionary *)feed cell:(UITableViewCell *)cell makeRect:(CGRect)rect {
-    UIView *gradientView = [[UIView alloc] init];
-    gradientView.opaque = YES;
-    
-    // top color border
+    // feed color bar border
     unsigned int colorBorder = 0;
+    NSString *faviconColor = [feed valueForKey:@"favicon_color"];
+
+    if ([faviconColor class] == [NSNull class]) {
+        faviconColor = @"505050";
+    }    
+    NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
+    [scannerBorder scanHexInt:&colorBorder];
+
+    cell.feedColorBar = UIColorFromRGB(colorBorder);
+    
+    // feed color bar border
     NSString *faviconFade = [feed valueForKey:@"favicon_fade"];
     if ([faviconFade class] == [NSNull class]) {
         faviconFade = @"505050";
     }    
-    NSScanner *scannerBorder = [NSScanner scannerWithString:faviconFade];
+    scannerBorder = [NSScanner scannerWithString:faviconFade];
     [scannerBorder scanHexInt:&colorBorder];
-    CALayer  *feedColorBarBorder = [CALayer layer];
-    feedColorBarBorder.frame = CGRectMake(0, 0, 12, 1);
-    feedColorBarBorder.backgroundColor = UIColorFromRGB(colorBorder).CGColor;
-    feedColorBarBorder.opacity = 1;
-    [gradientView.layer addSublayer:feedColorBarBorder];
+    cell.feedColorBarTopBorder =  UIColorFromRGB(colorBorder);
     
-    // favicon color bar
-    unsigned int color = 0;
-    NSString *faviconColor = [feed valueForKey:@"favicon_color"];
-    if ([faviconColor class] == [NSNull class]) {
-        faviconColor = @"505050";
+    // favicon
+    cell.siteFavicon = [Utilities getImage:feedIdStr];
+    
+    // undread indicator
+    
+    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    if (score > 0) {
+        cell.storyUnreadIndicator = [UIImage imageNamed:@"bullet_green.png"];
+    } else if (score == 0) {
+        cell.storyUnreadIndicator = [UIImage imageNamed:@"bullet_yellow.png"];
+    } else if (score < 0) {
+        cell.storyUnreadIndicator = [UIImage imageNamed:@"bullet_red.png"];
     }
-    NSScanner *scanner = [NSScanner scannerWithString:faviconColor];
-    [scanner scanHexInt:&color];
-    CALayer *feedColorBar = [CALayer layer];
-    feedColorBar.frame = rect;
-    feedColorBar.backgroundColor = UIColorFromRGB(color).CGColor;
-    feedColorBar.opacity = 1;
-    feedColorBar.name = @"feedColorBarBorder";
-    [gradientView.layer addSublayer:feedColorBar]; 
-    
-    return gradientView;
-}
 
+    
+    cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
+
+
+//    if (!isStoryRead) {
+//        // Unread story
+//        cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
+//        cell.storyTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:13];
+//        cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:1.0];
+//        cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+//        cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
+//        cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+//        cell.storyUnreadIndicator.alpha = 1;        
+//    } else {
+//        [self changeRowStyleToRead:cell];
+//    }
+//
+//    int rowIndex = [appDelegate locationOfActiveStory];
+//    if (rowIndex == indexPath.row) {
+//        [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+//    }
+//    
+//    CAGradientLayer *gradient = [CAGradientLayer layer];
+//    gradient.frame = cell.bounds;
+//    gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(0xd2e6fd) CGColor], (id)[UIColorFromRGB(0xb0d1f9) CGColor], nil];
+//    [cell.selectedBackgroundView.layer addSublayer:gradient];
+//    CALayer *topBorder = [CALayer layer];
+//    topBorder.frame = CGRectMake(0, 0, cell.bounds.size.width, 1);
+//    topBorder.backgroundColor = [UIColorFromRGB(0x6eadf5) CGColor];
+//    [cell.selectedBackgroundView.layer addSublayer:topBorder];
+//    CALayer *bottomBorder = [CALayer layer];
+//    bottomBorder.frame = CGRectMake(0, cell.bounds.size.height, cell.bounds.size.width, 1);
+//    bottomBorder.backgroundColor = [UIColorFromRGB(0x6eadf5) CGColor];
+//    [cell.selectedBackgroundView.layer addSublayer:bottomBorder];
+    
+	return cell;
+}
 
 - (void)loadStory:(UITableViewCell *)cell atRow:(int)row {
     [self changeRowStyleToRead:cell];
@@ -654,22 +639,23 @@
 }
 
 - (void)changeRowStyleToRead:(FeedDetailTableCell *)cell {
-    cell.storyAuthor.textColor = UIColorFromRGB(0xcccccc);
-    cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-    cell.storyDate.textColor = UIColorFromRGB(0xbabdd1);
-    cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
-    cell.storyUnreadIndicator.alpha = 0.15f;
-    cell.feedGradient.alpha = 0.25f;
-    cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
-    if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
-        cell.storyTitle.textColor = UIColorFromRGB(0xcccccc);
-        cell.siteTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
-        cell.siteTitle.textColor = UIColorFromRGB(0xc0c0c0);
-        cell.siteFavicon.alpha = 0.15f;
-    } else {
-        cell.storyTitle.textColor = UIColorFromRGB(0x606060);
-        cell.siteTitle.textColor = UIColorFromRGB(0x606060);
-    }
+//    cell.storyAuthor.textColor = UIColorFromRGB(0xcccccc);
+//    cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
+//    cell.storyDate.textColor = UIColorFromRGB(0xbabdd1);
+//    cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
+//    cell.storyUnreadIndicator.alpha = 0.15f;
+//    cell.feedColorBar.alpha = 0.25f;
+//    cell.feedColorBarBorder.alpha = 0.25f;
+//    cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
+//    if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
+//        cell.storyTitle.textColor = UIColorFromRGB(0xcccccc);
+//        cell.siteTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
+//        cell.siteTitle.textColor = UIColorFromRGB(0xc0c0c0);
+//        cell.siteFavicon.alpha = 0.15f;
+//    } else {
+//        cell.storyTitle.textColor = UIColorFromRGB(0x606060);
+//        cell.siteTitle.textColor = UIColorFromRGB(0x606060);
+//    }
 
 }
 
