@@ -153,14 +153,16 @@
             this.make_content_pane_feed_counter();
             this.position_mouse_indicator();
             
-            this.switch_taskbar_view(view, flag);
+            this.switch_taskbar_view(view, {
+                skip_save_type: flag,
+                resize: true
+            });
             NEWSBLUR.app.story_titles.fill_out();
             this.flags.fetch_story_locations_in_feed_view = this.flags.fetch_story_locations_in_feed_view ||
                                                             _.throttle(function() {
                                                                 NEWSBLUR.app.story_list.reset_story_positions();
                                                             }, 2000);
             this.flags.fetch_story_locations_in_feed_view();
-            console.log(["resize_window", view, flag]);
         },
         
         apply_resizable_layout: function(refresh) {
@@ -1053,10 +1055,13 @@
         },
         
         set_correct_story_view_for_feed: function(feed_id, view) {
-            var feed = this.model.get_feed(feed_id);
+            var feed = NEWSBLUR.assets.get_feed(feed_id);
             var $original_tabs = $('.task_view_page, .task_view_story');
             var $page_tab = $('.task_view_page');
-            view = view || this.model.view_setting(feed_id);
+            if (!view) {
+                view = NEWSBLUR.assets.view_setting(feed_id);
+                if (_.isObject(view)) view = view['v'];
+            }
 
             if (feed && feed.get('disabled_page')) {
                 view = 'feed';
@@ -1471,7 +1476,7 @@
                     // NEWSBLUR.log(['turn on feed view', this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
                     this.flags['page_view_showing_feed_view'] = true;
                     this.flags['feed_view_showing_story_view'] = false;
-                    this.switch_taskbar_view('feed', 'page');
+                    this.switch_taskbar_view('feed', {skip_save_type: 'page'});
                     NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
                 }
             } else {
@@ -1484,7 +1489,7 @@
                   // NEWSBLUR.log(['turn off story view', this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
                   this.flags['page_view_showing_feed_view'] = false;
                   this.flags['feed_view_showing_story_view'] = false;
-                  this.switch_taskbar_view(this.story_view, true);
+                  this.switch_taskbar_view(this.story_view, {skip_save_type: true});
               }
             }
         },
@@ -2022,8 +2027,9 @@
         // = Taskbar - Story =
         // ===================
         
-        switch_taskbar_view: function(view, skip_save_type) {
-            // NEWSBLUR.log(['switch_taskbar_view', view, skip_save_type]);
+        switch_taskbar_view: function(view, options) {
+            options = options || {};
+            // NEWSBLUR.log(['switch_taskbar_view', view, options.skip_save_type]);
             var self = this;
             var $story_pane = this.$s.$story_pane;
             var feed = this.model.get_feed(this.active_feed);
@@ -2036,24 +2042,24 @@
             } else if ($('.task_button_view.task_view_'+view).hasClass('NB-disabled')) {
                 return;
             }
-            // NEWSBLUR.log(['$button', $button, this.flags['page_view_showing_feed_view'], $button.hasClass('NB-active'), skip_save_type]);
+
             var $taskbar_buttons = $('.NB-taskbar .task_button_view');
             var $feed_view = this.$s.$feed_view;
             var $feed_iframe = this.$s.$feed_iframe;
             var $page_to_feed_arrow = $('.NB-taskbar .NB-task-view-page-to-feed-arrow');
             var $feed_to_story_arrow = $('.NB-taskbar .NB-task-view-feed-to-story-arrow');
             
-            if (!skip_save_type && this.story_view != view) {
+            if (!options.skip_save_type && this.story_view != view) {
                 this.model.view_setting(this.active_feed, view);
             }
             
             $page_to_feed_arrow.hide();
             $feed_to_story_arrow.hide();
             this.flags['page_view_showing_feed_view'] = false;
-            if (skip_save_type == 'page') {
+            if (options.skip_save_type == 'page') {
                 $page_to_feed_arrow.show();
                 this.flags['page_view_showing_feed_view'] = true;
-            } else if (skip_save_type == 'story') {
+            } else if (options.skip_save_type == 'story') {
                 $feed_to_story_arrow.show();
                 this.flags['feed_view_showing_story_view'] = true;
             } else {
@@ -2072,7 +2078,10 @@
                 if (this.flags['iframe_prevented_from_loading']) {
                     NEWSBLUR.app.original_tab_view.load_feed_iframe();
                 }
-                NEWSBLUR.app.original_tab_view.scroll_to_selected_story(this.active_story, {immediate: true});
+                NEWSBLUR.app.original_tab_view.scroll_to_selected_story(this.active_story, {
+                    immediate: true,
+                    only_if_hidden: options.resize
+                });
                 
                 $story_pane.animate({
                     'left': 0
@@ -2082,7 +2091,10 @@
                     'queue': false
                 });
             } else if (view == 'feed') {
-                NEWSBLUR.app.story_list.scroll_to_selected_story(this.active_story, {immediate: true});
+                NEWSBLUR.app.story_list.scroll_to_selected_story(this.active_story, {
+                    immediate: true,
+                    only_if_hidden: options.resize
+                });
                 NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
                 
                 $story_pane.animate({
@@ -3925,11 +3937,11 @@
         // =====================
         
         load_recommended_feeds: function() {
-          // Reload recommended feeds every 10 minutes.
+          // Reload recommended feeds every 60 minutes.
           clearInterval(this.locks.load_recommended_feed);
           this.locks.load_recommended_feed = setInterval(_.bind(function() {
               this.load_recommended_feed(0, true);
-          }, this), 10*60*1000);
+          }, this), 60*60*1000);
         },
         
         load_feed_in_tryfeed_view: function(feed_id, options) {
