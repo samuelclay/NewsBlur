@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+void drawLinearGradient(CGContextRef context, CGRect rect, CGColorRef startColor, 
+                        CGColorRef  endColor);
+
 @interface Utilities : NSObject <NSCacheDelegate> {
     NSCache *imageCache;
 }

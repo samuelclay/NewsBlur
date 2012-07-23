@@ -67,13 +67,16 @@
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
-    if (appDelegate.isRiverView || appDelegate.isSocialView) {
-        self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
-        //self.storyTitlesTable.separatorColor = [UIColor clearColor];
-    } else {
-        self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        self.storyTitlesTable.separatorColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
-    }
+//    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+//        self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
+//        //self.storyTitlesTable.separatorColor = [UIColor clearColor];
+//    } else {
+//        self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+//        self.storyTitlesTable.separatorColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
+//    }
+    
+    self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
+
     
     // set center title
     UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
@@ -397,8 +400,7 @@
 
                 [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionBottom];
                 
-                UITableViewCell *cell = [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
-                [self changeRowStyleToRead:cell];
+                FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
                 [self loadStory:cell atRow:indexPath.row]; 
             }
         }
@@ -516,7 +518,6 @@
     }
     
     
-    
     if (indexPath.row >= [[appDelegate activeFeedStoryLocations] count]) {
         return [self makeLoadingCell];
     }
@@ -585,46 +586,23 @@
         cell.storyUnreadIndicator = [UIImage imageNamed:@"bullet_red.png"];
     }
 
-    
     cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
 
+    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+        cell.isRiverOrSocial = YES;
+    }
 
-//    if (!isStoryRead) {
-//        // Unread story
-//        cell.storyTitle.textColor = [UIColor colorWithRed:0.1f green:0.1f blue:0.1f alpha:1.0];
-//        cell.storyTitle.font = [UIFont fontWithName:@"Helvetica-Bold" size:13];
-//        cell.storyAuthor.textColor = [UIColor colorWithRed:0.58f green:0.58f blue:0.58f alpha:1.0];
-//        cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-//        cell.storyDate.textColor = [UIColor colorWithRed:0.14f green:0.18f blue:0.42f alpha:1.0];
-//        cell.storyDate.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-//        cell.storyUnreadIndicator.alpha = 1;        
-//    } else {
-//        [self changeRowStyleToRead:cell];
-//    }
-//
-//    int rowIndex = [appDelegate locationOfActiveStory];
-//    if (rowIndex == indexPath.row) {
-//        [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-//    }
-//    
-//    CAGradientLayer *gradient = [CAGradientLayer layer];
-//    gradient.frame = cell.bounds;
-//    gradient.colors = [NSArray arrayWithObjects:(id)[UIColorFromRGB(0xd2e6fd) CGColor], (id)[UIColorFromRGB(0xb0d1f9) CGColor], nil];
-//    [cell.selectedBackgroundView.layer addSublayer:gradient];
-//    CALayer *topBorder = [CALayer layer];
-//    topBorder.frame = CGRectMake(0, 0, cell.bounds.size.width, 1);
-//    topBorder.backgroundColor = [UIColorFromRGB(0x6eadf5) CGColor];
-//    [cell.selectedBackgroundView.layer addSublayer:topBorder];
-//    CALayer *bottomBorder = [CALayer layer];
-//    bottomBorder.frame = CGRectMake(0, cell.bounds.size.height, cell.bounds.size.width, 1);
-//    bottomBorder.backgroundColor = [UIColorFromRGB(0x6eadf5) CGColor];
-//    [cell.selectedBackgroundView.layer addSublayer:bottomBorder];
+    int rowIndex = [appDelegate locationOfActiveStory];
+    if (rowIndex == indexPath.row) {
+        [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+    }
     
 	return cell;
 }
 
-- (void)loadStory:(UITableViewCell *)cell atRow:(int)row {
-    [self changeRowStyleToRead:cell];
+- (void)loadStory:(FeedDetailTableCell *)cell atRow:(int)row {
+    cell.isRead = YES;
+    [cell setNeedsLayout];
     [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:row]];
     [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
     [appDelegate loadStoryDetailView];
@@ -632,31 +610,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < [appDelegate.activeFeedStoryLocations count]) {
-        FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];
+        FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];        
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
         [self loadStory:cell atRow:location]; 
     }
-}
-
-- (void)changeRowStyleToRead:(FeedDetailTableCell *)cell {
-//    cell.storyAuthor.textColor = UIColorFromRGB(0xcccccc);
-//    cell.storyAuthor.font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
-//    cell.storyDate.textColor = UIColorFromRGB(0xbabdd1);
-//    cell.storyDate.font = [UIFont fontWithName:@"Helvetica" size:10];
-//    cell.storyUnreadIndicator.alpha = 0.15f;
-//    cell.feedColorBar.alpha = 0.25f;
-//    cell.feedColorBarBorder.alpha = 0.25f;
-//    cell.storyTitle.font = [UIFont fontWithName:@"Helvetica" size:12];
-//    if ((appDelegate.isRiverView || appDelegate.isSocialView) && cell) {
-//        cell.storyTitle.textColor = UIColorFromRGB(0xcccccc);
-//        cell.siteTitle.font = [UIFont fontWithName:@"Helvetica" size:11];
-//        cell.siteTitle.textColor = UIColorFromRGB(0xc0c0c0);
-//        cell.siteFavicon.alpha = 0.15f;
-//    } else {
-//        cell.storyTitle.textColor = UIColorFromRGB(0x606060);
-//        cell.siteTitle.textColor = UIColorFromRGB(0x606060);
-//    }
-
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -1061,7 +1018,6 @@
                                   animated:YES 
                             scrollPosition:UITableViewScrollPositionNone];
     
-    FeedDetailTableCell *cell = (FeedDetailTableCell *) [storyTitlesTable cellForRowAtIndexPath:indexPath];
     // check to see if the cell is completely visible
     CGRect cellRect = [storyTitlesTable rectForRowAtIndexPath:indexPath];
     
@@ -1069,7 +1025,6 @@
     
     BOOL completelyVisible = CGRectContainsRect(storyTitlesTable.frame, cellRect);
     
-    [self changeRowStyleToRead:cell];
     if (!completelyVisible) {
         [storyTitlesTable scrollToRowAtIndexPath:offsetIndexPath 
                                 atScrollPosition:UITableViewScrollPositionTop 

@@ -12,6 +12,7 @@
 #import "Utilities.h"
 
 @class NewsBlurAppDelegate;
+@class FeedDetailTableCell;
 
 @interface FeedDetailViewController : BaseViewController 
 <UITableViewDelegate, UITableViewDataSource, 
@@ -58,7 +59,6 @@
 - (void)changeIntelligence:(NSInteger)newLevel;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
 - (void)checkScroll;
-- (UIView *)makeFeedTitleBar:(NSDictionary *)feed cell:(UITableViewCell *)cell makeRect:(CGRect)rect;
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender;
 - (IBAction)doOpenSettingsActionSheet;
@@ -68,9 +68,8 @@
 - (void)openMoveView;
 - (void)showUserProfilePopover;
 - (void)changeActiveFeedDetailRow;
-- (void)changeRowStyleToRead:(UITableViewCell *)cell;
 - (void)instafetchFeed;
-- (void)loadStory:(UITableViewCell *)cell atRow:(int)row;
+- (void)loadStory:(FeedDetailTableCell *)cell atRow:(int)row;
 
 - (void)loadFaviconsFromActiveFeed;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;

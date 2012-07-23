@@ -291,17 +291,26 @@
     NSString *userAvatarClass = @"NB-user-avatar";
     NSString *userReshareString = @"";
     NSString *userEditButton = @"";
+    NSString *userLikeButton = @"";
     NSString *commentUserId = [NSString stringWithFormat:@"%@", [commentDict objectForKey:@"user_id"]];
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
     
     if ([commentUserId isEqualToString:currentUserId]) {
         userEditButton = [NSString stringWithFormat:@
-                          "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button\">"
+                          "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button NB-button\">"
                             "<div class=\"NB-story-comment-edit-button-wrapper\">"
                                 "<a href=\"http://ios.newsblur.com/edit-share/%@\">edit</a>"
                             "</div>"
                           "</div>",
                           commentUserId];
+    } else {
+        userLikeButton = [NSString stringWithFormat:@
+                          "<div class=\"NB-story-comment-like-button NB-button\">"
+                          "<div class=\"NB-story-comment-like-button-wrapper\">"
+                          "<a href=\"http://ios.newsblur.com/edit-share/%@\">like</a>"
+                          "</div>"
+                          "</div>",
+                          commentUserId]; 
     }
 
     if ([commentDict objectForKey:@"source_user_id"] != [NSNull null]) {
@@ -324,12 +333,13 @@
                         "   %@"
                         "    <div class=\"NB-story-comment-username\">%@</div>"
                         "    <div class=\"NB-story-comment-date\">%@ ago</div>"
-                        "    %@" //User Edit Button>"
-                        "    <div class=\"NB-story-comment-reply-button\">"
+                        "    <div class=\"NB-story-comment-reply-button NB-button\">"
                         "        <div class=\"NB-story-comment-reply-button-wrapper\">"
                         "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">reply</a>"
                         "        </div>"
                         "    </div>"
+                        "    %@" //User Edit Button>"
+                        "    %@" //User Like Button>"
                         "</div>"
                         "<div class=\"NB-story-comment-content\">%@</div>"
                         "%@"
@@ -341,9 +351,10 @@
                         userReshareString,
                         [user objectForKey:@"username"],
                         [commentDict objectForKey:@"shared_date"],
-                        userEditButton,
                         [commentDict objectForKey:@"user_id"],
                         [user objectForKey:@"username"],
+                        userEditButton,
+                        userLikeButton,
                         [commentDict objectForKey:@"comments"],
                         [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
 
@@ -364,7 +375,7 @@
             
             if ([replyUserId isEqualToString:currentUserId]) {
                 userEditButton = [NSString stringWithFormat:@
-                                  "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button\">"
+                                  "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button NB-button\">"
                                   "<div class=\"NB-story-comment-edit-button-wrapper\">"
                                   "<a href=\"http://ios.newsblur.com/edit-reply/%@/%@/%i\">edit</a>"
                                   "</div>"
@@ -530,7 +541,7 @@
                             footerString
                             ];
 
-//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     

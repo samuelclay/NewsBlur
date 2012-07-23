@@ -24,6 +24,7 @@
     UIImage *siteFavicon;
     BOOL isRead;
     BOOL isRiverOrSocial;
+    BOOL hasAlpha;
 
     UIColor *feedColorBar;
     UIColor *feedColorBarTopBorder;
@@ -43,5 +44,8 @@
 
 @property (readwrite) BOOL isRead;
 @property (readwrite) BOOL isRiverOrSocial;
+@property (readwrite) BOOL hasAlpha;
 
+- (UIImage *)imageByApplyingAlpha:(UIImage *)image withAlpha:(CGFloat) alpha;
+    
 @end

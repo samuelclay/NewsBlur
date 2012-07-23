@@ -15,6 +15,7 @@
 static UIFont *textFont = nil;
 static UIFont *indicatorFont = nil;
 
+
 @implementation FeedDetailTableCell
 
 @synthesize storyTitle;
@@ -27,6 +28,7 @@ static UIFont *indicatorFont = nil;
 @synthesize isRiverOrSocial;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
+@synthesize hasAlpha;
 
 #define leftMargin 39
 #define rightMargin 18
@@ -39,24 +41,36 @@ static UIFont *indicatorFont = nil;
     }
 }
 
-
-
 - (void) drawContentView:(CGRect)r highlighted:(BOOL)highlighted {
+    int adjustForSocial = 3;
+    if (self.isRiverOrSocial) {
+        adjustForSocial = 20; 
+    }
 
     CGContextRef context = UIGraphicsGetCurrentContext();
     
+    CGRect rect = CGRectInset(r, 12, 12);
+    rect.size.width -= 18; // Scrollbar padding
+
     // set the background color
     UIColor *backgroundColor;
     if (self.selected || self.highlighted) {
         backgroundColor = [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0];
+        
+        // gradient start
+//        CGRect fullRect = self.bounds;
+//        CGColorRef top = [UIColorFromRGB(0xd2e6fd) CGColor];
+//        CGColorRef bottom = [UIColorFromRGB(0xb0d1f9) CGColor];
+//        drawLinearGradient(context, fullRect, top, bottom);
+//        backgroundColor = [UIColor clearColor];
+        // gradient end
+        
     } else {
         backgroundColor = [UIColor whiteColor];
     }
     [backgroundColor set];
     
     CGContextFillRect(context, r);
-    CGRect rect = CGRectInset(r, 12, 12);
-    rect.size.width -= 18; // Scrollbar padding
 
     // set site title
     UIColor *textColor;
@@ -71,32 +85,33 @@ static UIFont *indicatorFont = nil;
         
     }
     if (self.selected || self.highlighted) {
-        textColor = [UIColor whiteColor];
+        textColor = UIColorFromRGB(0xffffff); //0x686868 
     }
     [textColor set];
     
-    
-    [self.siteTitle 
-     drawInRect:CGRectMake(leftMargin, 8, rect.size.width - rightMargin, 21) 
-     withFont:font
-     lineBreakMode:UILineBreakModeTailTruncation 
-     alignment:UITextAlignmentLeft];
-    
-    if (self.isRead) {
-        font = [UIFont fontWithName:@"Helvetica" size:14];
-        textColor = UIColorFromRGB(0xc0c0c0);
-    } else {
-        textColor = UIColorFromRGB(0x333333);
-        font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
+    if (self.isRiverOrSocial) {
+        [self.siteTitle 
+         drawInRect:CGRectMake(leftMargin, 6, rect.size.width - rightMargin, 21) 
+         withFont:font
+         lineBreakMode:UILineBreakModeTailTruncation 
+         alignment:UITextAlignmentLeft];
+        
+        if (self.isRead) {
+            font = [UIFont fontWithName:@"Helvetica" size:12];
+            textColor = UIColorFromRGB(0xc0c0c0);
+            
+        } else {
+            textColor = UIColorFromRGB(0x333333);
+            font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
+        }
+        if (self.selected || self.highlighted) {
+            textColor = UIColorFromRGB(0xffffff);
+        }
+        [textColor set];
     }
-    if (self.selected || self.highlighted) {
-        textColor = [UIColor whiteColor];
-    }
-    [textColor set];
-
     
     [self.storyTitle 
-     drawInRect:CGRectMake(leftMargin, 26, rect.size.width - rightMargin, 20.0) 
+     drawInRect:CGRectMake(leftMargin, 6 + adjustForSocial, rect.size.width - rightMargin, 30.0) 
      withFont:font
      lineBreakMode:UILineBreakModeTailTruncation 
      alignment:UITextAlignmentLeft];
@@ -110,12 +125,12 @@ static UIFont *indicatorFont = nil;
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
     if (self.selected || self.highlighted) {
-        textColor = [UIColor whiteColor];
+        textColor = UIColorFromRGB(0xffffff);
     }
     [textColor set];
 
     [self.storyAuthor 
-     drawInRect:CGRectMake(leftMargin, 62, (rect.size.width - rightMargin) / 2 - 10, 15.0) 
+     drawInRect:CGRectMake(leftMargin, 42 + adjustForSocial, (rect.size.width - rightMargin) / 2 - 10, 15.0) 
      withFont:font
      lineBreakMode:UILineBreakModeTailTruncation 
      alignment:UITextAlignmentLeft];
@@ -131,35 +146,54 @@ static UIFont *indicatorFont = nil;
     }
     
     if (self.selected || self.highlighted) {
-        textColor = [UIColor whiteColor];
+        textColor = UIColorFromRGB(0xffffff);
     }
     [textColor set];
     
     [self.storyDate 
-         drawInRect:CGRectMake(leftMargin + (rect.size.width - rightMargin) / 2 - 10, 62, (rect.size.width - rightMargin) / 2 + 10, 15.0) 
+         drawInRect:CGRectMake(leftMargin + (rect.size.width - rightMargin) / 2 - 10, 42 + adjustForSocial, (rect.size.width - rightMargin) / 2 + 10, 15.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentRight];
     
-    // top border
-    UIColor *gray = UIColorFromRGB(0xcccccc);
-    
-    CGContextSetStrokeColor(context, CGColorGetComponents([gray CGColor]));
-
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 10.0f, 0.0f);
-    CGContextAddLineToPoint(context, 400, 0.0f);
-    CGContextStrokePath(context);
-    
-    // top border    
-    CGContextSetStrokeColor(context, CGColorGetComponents([feedColorBarTopBorder CGColor]));
-    if (self.isRead) {
-        CGContextSetAlpha(context, 0.25);
+    if (self.highlighted || self.selected) {
+        // top border
+        UIColor *blue = UIColorFromRGB(0x6eadf5);
+        
+        CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
+        
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, 0, 0);
+        CGContextAddLineToPoint(context, self.bounds.size.width, 0);
+        CGContextStrokePath(context);
+        
+        // bottom border    
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, 0, self.bounds.size.height);
+        CGContextAddLineToPoint(context, self.bounds.size.width, self.bounds.size.height);
+        CGContextStrokePath(context);
+    } else {
+        // top border
+        UIColor *gray = UIColorFromRGB(0xcccccc);
+        
+        CGContextSetStrokeColor(context, CGColorGetComponents([gray CGColor]));
+        
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, 10.0f, 0.0f);
+        CGContextAddLineToPoint(context, self.bounds.size.width, 0.0f);
+        CGContextStrokePath(context);
+        
+        // feed bar border    
+        CGContextSetStrokeColor(context, CGColorGetComponents([feedColorBarTopBorder CGColor]));
+        if (self.isRead) {
+            CGContextSetAlpha(context, 0.25);
+        }
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, 0.0f, 0.5f);
+        CGContextAddLineToPoint(context, 10.0, 0.0f);
+        CGContextStrokePath(context);
     }
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 0.0f, 0.0f);
-    CGContextAddLineToPoint(context, 10.0, 0.0f);
-    CGContextStrokePath(context);
+
 
     // feed bar
     CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor]));
@@ -168,14 +202,48 @@ static UIFont *indicatorFont = nil;
     }
     CGContextSetLineWidth(context, 10.0f);
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 5.0f, 1.0f);
+    CGContextMoveToPoint(context, 5.0f, 0.5f);
     CGContextAddLineToPoint(context, 5.0f, 81.0f);
     CGContextStrokePath(context);
     
     // site favicon
+    if (self.isRead && !self.hasAlpha) {
+        if (self.isRiverOrSocial) {
+            self.siteFavicon = [self imageByApplyingAlpha:self.siteFavicon withAlpha:0.25];
+        }
+        self.storyUnreadIndicator = [self imageByApplyingAlpha:self.storyUnreadIndicator withAlpha:0.15];
+        self.hasAlpha = YES;
+    }
     
-    [self.siteFavicon drawInRect:CGRectMake(18.0, 6.0, 16.0, 16.0)];
-    [self.storyUnreadIndicator drawInRect:CGRectMake(18, 34, 16, 16)];
+    if (self.isRiverOrSocial) {
+        [self.siteFavicon drawInRect:CGRectMake(18.0, 6.0, 16.0, 16.0)];
+        [self.storyUnreadIndicator drawInRect:CGRectMake(18, 34, 16, 16)];
+    } else {
+        [self.storyUnreadIndicator drawInRect:CGRectMake(18, 24, 16, 16)];
+    }
+
+}
+
+- (UIImage *)imageByApplyingAlpha:(UIImage *)image withAlpha:(CGFloat) alpha {
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0f);
+    
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGRect area = CGRectMake(0, 0, image.size.width, image.size.height);
+    
+    CGContextScaleCTM(ctx, 1, -1);
+    CGContextTranslateCTM(ctx, 0, -area.size.height);
+    
+    CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
+
+    CGContextSetAlpha(ctx, alpha);
+    
+    CGContextDrawImage(ctx, area, image.CGImage);
+    
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return newImage;
 }
 
 
