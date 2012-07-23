@@ -105,7 +105,7 @@ class UserSubscription(models.Model):
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time())
-        mark_read_time  = time.mktime(self.mark_read_date.timetuple())
+        mark_read_time  = int(time.mktime(self.mark_read_date.timetuple()))
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
             min_score = mark_read_time
@@ -114,6 +114,7 @@ class UserSubscription(models.Model):
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
             max_score = mark_read_time
+        print "Order: %s, Min: %s, max: %s (%s)" % (order, min_score, max_score, self.mark_read_date)
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)

@@ -1211,7 +1211,7 @@
             this.cache['river_feeds_with_unreads'] = feeds;
             this.hide_stories_error();
             this.show_stories_progress_bar(feeds.length);
-            this.model.fetch_river_stories(this.active_folder, feeds, 1, 
+            this.model.fetch_river_stories(this.active_feed, feeds, 1, 
                 _.bind(this.post_open_river_stories, this), this.show_stories_error, true);
         },
         
@@ -2472,10 +2472,6 @@
                         $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
                             $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest'),
                             $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first')
-                        ]),
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
-                            $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
-                            $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),

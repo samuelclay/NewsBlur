@@ -633,10 +633,10 @@ def load_river_stories(request):
     
     # Just need to format stories
     for story in stories:
+        story['read_status'] = 0
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
-        story['read_status'] = 0
         if story['id'] in starred_stories:
             story['starred'] = True
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
