@@ -25,7 +25,7 @@ from utils.user_functions import get_user, ajax_login_required
 from utils.view_functions import render_to
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
-from utils.story_functions import strip_tags, linkify
+from utils.story_functions import strip_tags
 from utils import jennyholzer
 from vendor.timezones.utilities import localtime_for_timezone
 
@@ -285,7 +285,7 @@ def story_public_comments(request):
         }, context_instance=RequestContext(request))
     else:
         return json.json_response(request, {
-            'comments': stories[0]['comments'], 
+            'comments': stories[0]['public_comments'], 
             'user_profiles': profiles,
         })
 
