@@ -86,6 +86,16 @@ class UserSubscription(models.Model):
             else:
                 self.delete()
     
+    def sync_redis(self, skip_feed=False):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        
+        if not skip_feed:
+            self.feed.sync_redis()
+        
+        userstories = MUserStory.objects.filter(feed_id=self.feed_id, user=self.user_id)
+        for userstory in userstories:
+            userstory.sync_redis(r=r)
+        
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         ignore_user_stories = False
@@ -598,8 +608,10 @@ class MUserStory(mongo.Document):
         except MStory.DoesNotExist:
             return
             
-    def sync_redis(self):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+    def sync_redis(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+
         if self.story_db_id:
             read_story_key = 'RS:%s:%s' % (self.user_id, self.feed_id)
             r.sadd(read_story_key, self.story_db_id)
