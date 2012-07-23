@@ -22,7 +22,6 @@
     UIBarButtonItem *buttonPrevious;
     UIBarButtonItem *buttonNext;
     UIBarButtonItem *activity;
-    UIBarButtonItem *toggleViewButton;
     UIActivityIndicatorView *loadingIndicator;
     UIPopoverController *popoverController;
 }
@@ -37,15 +36,13 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonPrevious;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonNext;
 @property (nonatomic) IBOutlet UIBarButtonItem *activity;
-@property (nonatomic) IBOutlet UIBarButtonItem *toggleViewButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
-@property (nonatomic) UIPopoverController *popoverController;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonNextStory;
+@property (nonatomic) UIPopoverController *popoverController;
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;
-- (void)toggleView;
 - (void)showStory;
 - (void)scrolltoBottom;
 - (void)showOriginalSubview:(id)sender;

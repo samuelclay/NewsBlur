@@ -35,9 +35,8 @@
 @synthesize activity;
 @synthesize loadingIndicator;
 @synthesize feedTitleGradient;
-@synthesize popoverController;
 @synthesize buttonNextStory;
-@synthesize toggleViewButton;
+@synthesize popoverController;
 
 #pragma mark -
 #pragma mark View boilerplate
@@ -66,25 +65,16 @@
                                            target:self 
                                            action:@selector(toggleFontSize:)
                                            ];
-    
-    UIImage *slide = [UIImage imageNamed: appDelegate.splitStoryController.isShowingMaster ? @"slide_left.png" : @"slide_right.png"];
-    UIBarButtonItem *toggleButton = [[UIBarButtonItem alloc]
-                                     initWithImage:slide
-                                     style:UIBarButtonItemStylePlain
-                                     target:self
-                                     action:@selector(toggleView)];
-    
-    self.toggleViewButton = toggleButton;
+
     self.loadingIndicator = [[UIActivityIndicatorView alloc] 
                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
     self.webView.scalesPageToFit = NO; 
     self.webView.multipleTouchEnabled = NO;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.navigationItem.hidesBackButton = YES;
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
-    } else {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         backBtn.frame = CGRectMake(0, 0, 51, 31);
         [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
@@ -102,16 +92,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-    
-    if (UI_USER_INTERFACE_IDIOM()== UIUserInterfaceIdiomPad) {
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
-        if (UIInterfaceOrientationIsPortrait(orientation)) {
-            self.navigationItem.leftBarButtonItem = self.toggleViewButton;
-        } else {
-            self.navigationItem.leftBarButtonItem = nil;
-        }
-    }
-    
+        
     [self setActiveStory];
 }
 
@@ -128,8 +109,6 @@
     [super viewDidUnload];
 }
 
-
-
 - (void)initStory {
     id storyId = [appDelegate.activeStory objectForKey:@"id"];
     [appDelegate pushReadStory:storyId];
@@ -140,44 +119,16 @@
     [self.loadingIndicator stopAnimating];    
 }
 
-- (void)toggleView {
-    if (appDelegate.splitStoryController.isShowingMaster){
-        [appDelegate animateHidingMasterView];
-    } else {
-        [appDelegate animateShowingMasterView];
-    }
-}
-
 - (void)viewDidDisappear:(BOOL)animated {
-    Class viewClass = [appDelegate.navigationController.visibleViewController class];
-    if (viewClass == [appDelegate.feedDetailViewController class] ||
-        viewClass == [appDelegate.feedsViewController class]) {
-//        self.activeStoryId = nil;
-        [webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@""]];
-    }
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [popoverController dismissPopoverAnimated:YES];
-        [appDelegate hideShareView:YES];
-    }
+//    Class viewClass = [appDelegate.navigationController.visibleViewController class];
+//    if (viewClass == [appDelegate.feedDetailViewController class] ||
+//        viewClass == [appDelegate.feedsViewController class]) {
+////        self.activeStoryId = nil;
+//        [webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@""]];
+//    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        // copy the title from the master view to detail view
-        if (appDelegate.splitStoryController.isShowingMaster) {
-            self.navigationItem.titleView = nil;
-        } else {
-            UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-            self.navigationItem.titleView = titleLabel;
-        }
-        
-        if (UIInterfaceOrientationIsPortrait(fromInterfaceOrientation)) {
-            self.navigationItem.leftBarButtonItem = nil;
-        } else {
-            self.navigationItem.leftBarButtonItem = self.toggleViewButton;
-        }
-    }
-    
     [appDelegate adjustStoryDetailWebView];
 }
 
@@ -499,12 +450,13 @@
                           [tag_array componentsJoinedByString:@"</div><div class=\"NB-story-tag\">"]];
         }
     }
-    NSString *storyHeader = [NSString stringWithFormat:@"<div class=\"NB-header\">"
+    NSString *storyHeader = [NSString stringWithFormat:@
+                             "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
                              "<div class=\"NB-story-date\">%@</div>"
                              "<div class=\"NB-story-title\">%@</div>"
                              "%@"
                              "%@"
-                             "</div>", 
+                             "</div></div>", 
                              [story_tags length] ? 
                              [appDelegate.activeStory 
                               objectForKey:@"long_parsed_date"] : 
@@ -541,7 +493,7 @@
                             footerString
                             ];
 
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -688,37 +640,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (popoverController == nil) {
-            popoverController = [[UIPopoverController alloc]
-                                 initWithContentViewController:appDelegate.userProfileViewController];
-            
-            popoverController.delegate = self;
-        } else {
-            if (popoverController.isPopoverVisible) {
-                [popoverController dismissPopoverAnimated:YES];
-                return;
-            }
-            
-            [popoverController setContentViewController:appDelegate.userProfileViewController];
-        }
-        
-        [popoverController setPopoverContentSize:CGSizeMake(320, 416)];
-        
-        // only adjust for the bar if user is scrolling
-        if (appDelegate.isRiverView || appDelegate.isSocialView) {
-            if (self.webView.scrollView.contentOffset.y == -19) {
-                y = y + 19;
-            }
-        } else {
-            if (self.webView.scrollView.contentOffset.y == -9) {
-                y = y + 9;
-            }
-        }  
-        
-        [popoverController presentPopoverFromRect:CGRectMake(x, y, width, height) 
-                                           inView:self.view 
-                         permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                         animated:YES];
+
     } else {
         [appDelegate showUserProfileModal];
     }
@@ -973,43 +895,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (IBAction)toggleFontSize:(id)sender {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (popoverController == nil) {
-            popoverController = [[UIPopoverController alloc]
-                                 initWithContentViewController:appDelegate.fontSettingsViewController];
-            
-            popoverController.delegate = self;
-        } else {
-            if (popoverController.isPopoverVisible) {
-                [popoverController dismissPopoverAnimated:YES];
-                return;
-            }
-            
-            [popoverController setContentViewController:appDelegate.fontSettingsViewController];
-        }
-        
-        [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
-        
-        [popoverController presentPopoverFromBarButtonItem:sender
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    } else {
-        FontSettingsViewController *fontSettings = [[FontSettingsViewController alloc] init];
-        appDelegate.fontSettingsViewController = fontSettings;
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:appDelegate.fontSettingsViewController];
-        
-        // adding Done button
-        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                       initWithTitle:@"Done" 
-                                       style:UIBarButtonItemStyleDone 
-                                       target:self 
-                                       action:@selector(hideToggleFontSize)];
-        
-        appDelegate.fontSettingsViewController.navigationItem.rightBarButtonItem = donebutton;
-        appDelegate.fontSettingsViewController.navigationItem.title = @"Style";
-        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        [self presentModalViewController:navController animated:YES];
-        
-    }
+    FontSettingsViewController *fontSettings = [[FontSettingsViewController alloc] init];
+    appDelegate.fontSettingsViewController = fontSettings;
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:appDelegate.fontSettingsViewController];
+    
+    // adding Done button
+    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                   initWithTitle:@"Done" 
+                                   style:UIBarButtonItemStyleDone 
+                                   target:self 
+                                   action:@selector(hideToggleFontSize)];
+    
+    appDelegate.fontSettingsViewController.navigationItem.rightBarButtonItem = donebutton;
+    appDelegate.fontSettingsViewController.navigationItem.title = @"Style";
+    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    [self presentModalViewController:navController animated:YES];
 }
 
 - (void)hideToggleFontSize {

@@ -71,8 +71,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillShowNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
     } else {
         [self.commentField becomeFirstResponder];
     }
@@ -318,57 +318,36 @@
     NSLog(@"Error: %@", error);
 }
 
--(void)keyboardWillHide:(NSNotification*)notification
-{
-    
+-(void)keyboardWillShowOrHide:(NSNotification*)notification {
     NSDictionary *userInfo = notification.userInfo;
     NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
     
-    CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+//    CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
     CGRect shareViewFrame = self.view.frame;
     CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.webView.frame;
     
-    //NSLog(@"Keyboard y is %f", keyboardFrame.size.height);
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
-	if (UIInterfaceOrientationIsPortrait(orientation)) {
-        shareViewFrame.origin.y = shareViewFrame.origin.y + keyboardFrame.size.height;
-        storyDetailViewFrame.size.height = storyDetailViewFrame.size.height + keyboardFrame.size.height;
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    
+    if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
+        if (UIInterfaceOrientationIsPortrait(orientation)) {
+            shareViewFrame.origin.y = 576;
+            storyDetailViewFrame.size.height = 576;
+        } else {
+            shareViewFrame.origin.y = 232;
+            storyDetailViewFrame.size.height = 232;
+        }
     } else {
-        shareViewFrame.origin.y = shareViewFrame.origin.y + keyboardFrame.size.width;
-        storyDetailViewFrame.size.height = storyDetailViewFrame.size.height + keyboardFrame.size.width;
+        if (UIInterfaceOrientationIsPortrait(orientation)) {
+            shareViewFrame.origin.y = 840;
+            storyDetailViewFrame.size.height = 840;
+        } else {
+            shareViewFrame.origin.y = 584;
+            storyDetailViewFrame.size.height = 584;
+        }
     }
 
-    [UIView animateWithDuration:duration 
-                          delay:0 
-                        options:UIViewAnimationOptionBeginFromCurrentState | curve 
-                     animations:^{
-        self.view.frame = shareViewFrame;
-        appDelegate.storyDetailViewController.webView.frame = storyDetailViewFrame;
-    } completion:nil];
-}
-
--(void)keyboardWillShow:(NSNotification*)notification
-{
-    NSDictionary *userInfo = notification.userInfo;
-    NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
-    
-    CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    
-    CGRect shareViewFrame = self.view.frame;
-    CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.webView.frame;
-    
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;        
-	if (UIInterfaceOrientationIsPortrait(orientation)) {
-        shareViewFrame.origin.y = shareViewFrame.origin.y - keyboardFrame.size.height;
-        storyDetailViewFrame.size.height = storyDetailViewFrame.size.height - keyboardFrame.size.height;
-    } else {
-        shareViewFrame.origin.y = shareViewFrame.origin.y - keyboardFrame.size.width;
-        storyDetailViewFrame.size.height = storyDetailViewFrame.size.height - keyboardFrame.size.width;
-    }
-    
     [UIView animateWithDuration:duration 
                           delay:0 
                         options:UIViewAnimationOptionBeginFromCurrentState | curve 
@@ -379,8 +358,6 @@
                         [appDelegate.storyDetailViewController scrolltoBottom];
                          
                      }];
-    
-    
 }
 
 @end

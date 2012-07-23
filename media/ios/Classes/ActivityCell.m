@@ -65,8 +65,6 @@
     // must set the height again for dynamic height in heightForRowAtIndexPath in 
     CGRect activityLabelRect = self.activityLabel.bounds;
     activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
-    NSLog(@"width - leftMargin - avatarSize - leftMargin - rightMargin, %i, %i, %i, %i, %i", width, leftMargin , avatarSize , leftMargin , rightMargin);
-    NSLog(@"width is %@", activityLabelRect.size.width);
     self.activityLabel.frame = activityLabelRect;
     self.faviconView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
 

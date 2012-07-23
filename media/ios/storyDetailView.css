@@ -40,7 +40,11 @@
  */
 
 .NB-ipad-wide .NB-header {
-    padding: 15px 90px;
+    padding: 15px 0;
+}
+
+.NB-ipad-wide .NB-header .NB-header-inner {
+    margin: 0px 90px;
 }
 
 .NB-ipad-wide .NB-story {

@@ -14,6 +14,7 @@
 #define FEED_TITLE_GRADIENT_TAG 100003
 #define FEED_DASHBOARD_VIEW_TAG 100004
 #define SHARE_MODAL_HEIGHT 120
+#define STORY_TITLES_HEIGHT 240
 #define DASHBOARD_TITLE @"NewsBlur"
 
 @class NewsBlurViewController;
@@ -29,6 +30,7 @@
 @class FontSettingsViewController;
 @class GoogleReaderViewController;
 @class StoryDetailViewController;
+@class StoryDetailContainerViewController;
 @class ShareViewController;
 @class LoginViewController;
 @class AddSiteViewController;
@@ -61,6 +63,7 @@
 
     GoogleReaderViewController *googleReaderViewController;
     StoryDetailViewController *storyDetailViewController;
+    StoryDetailContainerViewController *storyDetailContainerViewController;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
@@ -77,6 +80,7 @@
     BOOL inStoryDetail;
     BOOL inFeedDetail;
     BOOL inFindingStoryMode;
+    BOOL hasBottomStoryTitles;
     NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
     NSString * activeFolder;
@@ -122,6 +126,7 @@
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet GoogleReaderViewController *googleReaderViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
+@property (nonatomic) IBOutlet StoryDetailContainerViewController *storyDetailContainerViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
@@ -140,6 +145,7 @@
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
+@property (nonatomic, readwrite) BOOL hasBottomStoryTitles;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic, readwrite) BOOL isShowingShare;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
@@ -202,6 +208,9 @@
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;
+- (void)slideInStoryTitles;
+- (void)slideOutStoryTitlesWithAnimation:(BOOL)animated;
+- (void)calibrateStoryTitles;
 - (void)adjustShareModal;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)hideNavigationBar:(BOOL)animated;
