@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
        <key>Label</key>
-       <string>com.redis</string>
+       <string>com.redis.redis-server</string>
        <key>RunAtLoad</key>
        <true/>
        <key>ProgramArguments</key>
