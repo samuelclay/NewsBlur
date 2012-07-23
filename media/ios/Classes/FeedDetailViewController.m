@@ -460,12 +460,12 @@
         cell.imageView.image = resizedSpacer;
         [cell.imageView addSubview:spinner];
         [spinner startAnimating];
-        
-        UIView *topBorder = [[UIView alloc] init];
-        topBorder.frame = CGRectMake(0, 0, self.view.frame.size.width, 1);
-        topBorder.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
-        [cell addSubview:topBorder]; 
     }
+    
+    UIView *topBorder = [[UIView alloc] init];
+    topBorder.frame = CGRectMake(0, 0, self.view.frame.size.width, 1);
+    topBorder.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
+    [cell addSubview:topBorder]; 
     
     return cell;
 }

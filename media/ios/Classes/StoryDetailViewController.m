@@ -276,6 +276,8 @@
                              "</div>",
                              [sourceUser objectForKey:@"photo_url"]];
     } 
+    
+    NSString *commentContent = [self textToHtml:[commentDict objectForKey:@"comments"]];
         
     NSString *comment = [NSString stringWithFormat:@
                         "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
@@ -306,7 +308,7 @@
                         [user objectForKey:@"username"],
                         userEditButton,
                         userLikeButton,
-                        [commentDict objectForKey:@"comments"],
+                        commentContent,
                         [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
 
     return comment;
@@ -336,6 +338,8 @@
                                   i // comment number in array
                                   ];
             }
+            
+            NSString *replyContent = [self textToHtml:[replyDict objectForKey:@"comments"]];
                         
             NSString *reply = [NSString stringWithFormat:@
                                 "<div class=\"NB-story-comment-reply\">"
@@ -352,7 +356,7 @@
                                [user objectForKey:@"username"],  
                                [replyDict objectForKey:@"publish_date"],
                                userEditButton,
-                               [replyDict objectForKey:@"comments"]];
+                               replyContent];
             repliesString = [repliesString stringByAppendingString:reply];
         }
         repliesString = [repliesString stringByAppendingString:@"</div>"];
@@ -566,7 +570,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType {
     NSURL *url = [request URL];
     NSArray *urlComponents = [url pathComponents];
-    NSString *action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
+    NSString *action = @"";
+    if ([urlComponents count] > 1) {
+         action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
+    }
+                              
     // HACK: Using ios.newsblur.com to intercept the javascript share, reply, and edit events.
     // the pathComponents do not work correctly unless it is a correctly formed url
     // Is there a better way?  Someone show me the light
@@ -757,6 +765,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *jsString = [[NSString alloc] initWithFormat:@
                           "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
                           commentString];
+    NSLog(@"JSSTRING IS %@\n\n\n", jsString);
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
 
@@ -948,6 +957,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory 
                                        objectForKey:@"story_permalink"]];
     [appDelegate showOriginalStory:url];
+}
+
+- (NSString *)textToHtml:(NSString*)htmlString {
+    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"'"  withString:@"&#039;"];
+    return htmlString;
 }
 
 @end

@@ -266,32 +266,32 @@
           setUsername:(NSString *)username 
       setCommentIndex:(NSString *)commentIndex {
     self.isShowingShare = YES;
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // add shareViewController to storyDetail
-        [self.storyDetailViewController.view addSubview:self.shareViewController.view];    
+        [self.storyDetailContainerViewController.view addSubview:self.shareViewController.view];    
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
 
         
         self.shareViewController.view.frame = CGRectMake(0, 
-                                                    self.storyDetailViewController.view.frame.size.height, 
-                                                    self.storyDetailViewController.view.frame.size.width, 
+                                                    self.storyDetailContainerViewController.view.frame.size.height, 
+                                                    self.storyDetailContainerViewController.view.frame.size.width, 
                                                     0);
         
-        int newShareYCoordinate = self.storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
-        int newStoryHeight = self.storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
+        int newShareYCoordinate = self.storyDetailContainerViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
+        int newStoryHeight = self.storyDetailContainerViewController.view.frame.size.height - SHARE_MODAL_HEIGHT + 44;
 
-        [UIView animateWithDuration:0.35 animations:^{
+        [UIView animateWithDuration:0.35 animations:^{            
             self.shareViewController.view.frame = CGRectMake(0, 
                                                         newShareYCoordinate, 
-                                                        self.storyDetailViewController.view.frame.size.width, 
+                                                        self.storyDetailContainerViewController.view.frame.size.width, 
                                                         SHARE_MODAL_HEIGHT);
+            self.storyDetailViewController.view.frame = CGRectMake(0,
+                                                                   0,
+                                                                   self.storyDetailContainerViewController.view.frame.size.width,
+                                                                   newStoryHeight);
         } completion:^(BOOL finished) {
-            self.storyDetailViewController.webView.frame = CGRectMake(0,
-                                                              0,
-                                                              self.storyDetailViewController.view.frame.size.width,
-                                                              newStoryHeight);
             [self.shareViewController.commentField becomeFirstResponder];
-            [self.storyDetailViewController scrolltoBottom];
         }];
     } else {
         [self.navigationController presentModalViewController:self.shareViewController animated:YES];
@@ -323,17 +323,16 @@
     
     self.isShowingShare = NO;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        storyDetailViewController.webView.frame = CGRectMake(0,
-                                                             0,
-                                                             storyDetailViewController.view.frame.size.width,
-                                                             storyDetailViewController.view.frame.size.height - 44);
-        
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
         [UIView animateWithDuration:0.35 animations:^{
             shareViewController.view.frame = CGRectMake(0, 
-                                                        storyDetailViewController.view.frame.size.height,
-                                                        storyDetailViewController.view.frame.size.width,
+                                                        storyDetailContainerViewController.view.frame.size.height,
+                                                        storyDetailContainerViewController.view.frame.size.width,
                                                         0);
+            storyDetailViewController.view.frame = CGRectMake(0,
+                                                              0,
+                                                              storyDetailContainerViewController.view.frame.size.width,
+                                                              storyDetailContainerViewController.view.frame.size.height);
         } completion:^(BOOL finished) {
             [shareViewController.view removeFromSuperview];
         }]; 

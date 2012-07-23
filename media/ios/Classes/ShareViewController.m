@@ -111,6 +111,7 @@
 
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setCommentIndex:(NSString *)commentIndex {
     
+    
     if ([type isEqualToString: @"edit-reply"]) {
         [submitButton setTitle:@"Save"];
         facebookButton.hidden = YES;
@@ -122,7 +123,7 @@
         // get old comment
         NSArray *replies = [appDelegate.activeComment objectForKey:@"replies"];
         int commentIdx = [commentIndex intValue];
-        self.commentField.text = [[replies objectAtIndex:commentIdx] objectForKey:@"comments"];
+        self.commentField.text = [self stringByStrippingHTML:[[replies objectAtIndex:commentIdx] objectForKey:@"comments"]];
     } else if ([type isEqualToString: @"reply"]) {
         self.activeCommentIndex = -1;
         [submitButton setTitle:@"Reply"];
@@ -136,7 +137,7 @@
         twitterButton.hidden = NO;
         
         // get old comment
-        self.commentField.text = [appDelegate.activeComment objectForKey:@"comments"];
+        self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [toolbarTitle setTitle:@"Edit Your Comment"];
@@ -211,7 +212,7 @@
     
     if (self.activeCommentIndex != -1) {
         NSDictionary *activeComment = [[appDelegate.activeComment objectForKey:@"replies"] objectAtIndex:self.activeCommentIndex];
-        [request setPostValue:[activeComment objectForKey:@"comments"] forKey:@"original_message"]; 
+        [request setPostValue:[self stringByStrippingHTML:[activeComment objectForKey:@"comments"]] forKey:@"original_message"]; 
     }
     
     [request setDelegate:self];
@@ -226,7 +227,6 @@
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
-    
     // add the comment into the activeStory dictionary
     NSDictionary *comment = [results objectForKey:@"comment"];
     NSArray *userProfiles = [results objectForKey:@"user_profiles"];
@@ -285,6 +285,12 @@
     [self replaceStory:[results objectForKey:@"story"]];
 }
 
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
+}
+
 - (void)replaceStory:(NSDictionary *)newStory {
     [commentField resignFirstResponder];
     [appDelegate hideShareView:YES];
@@ -310,12 +316,6 @@
     
     self.commentField.text = nil;
     [appDelegate refreshComments];
-    
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
 }
 
 -(void)keyboardWillShowOrHide:(NSNotification*)notification {
@@ -358,6 +358,14 @@
                         [appDelegate.storyDetailViewController scrolltoBottom];
                          
                      }];
+}
+
+-(NSString *)stringByStrippingHTML:(NSString *)s {
+    NSRange r;
+
+    while ((r = [s rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch]).location != NSNotFound)
+        s = [s stringByReplacingCharactersInRange:r withString:@""];
+    return s; 
 }
 
 @end

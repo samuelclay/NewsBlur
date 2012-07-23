@@ -30,6 +30,7 @@
 - (IBAction)doReplyToComment:(id)sender;
 - (void)finishAddComment:(ASIHTTPRequest *)request;
 - (void)finishAddReply:(ASIHTTPRequest *)request;
-- (void)replaceStory:(NSDictionary *)newStory;
+- (void)requestFailed:(ASIHTTPRequest *)request;- (void)replaceStory:(NSDictionary *)newStory;
+- (NSString *) stringByStrippingHTML:(NSString *)s;
 
 @end
