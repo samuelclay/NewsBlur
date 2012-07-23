@@ -1145,6 +1145,8 @@ class MSharedStory(mongo.Document):
         for story in shared_stories:
             story.story_feed_id = original_feed_id
             story.save()
+            story.sync_redis_shares()
+            story.sync_redis_story()
         
     @classmethod
     def collect_popular_stories(cls):

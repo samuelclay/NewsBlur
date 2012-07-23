@@ -185,6 +185,9 @@ class Feed(models.Model):
             # Feed has been deleted. Just ignore it.
             return
     
+    def sync_redis(self):
+        return MStory.sync_all_redis(self.pk)
+        
     @classmethod
     def find_or_create(cls, feed_address, feed_link, *args, **kwargs):
         feeds = cls.objects.filter(feed_address=feed_address, feed_link=feed_link)
@@ -701,6 +704,9 @@ class Feed(models.Model):
         feed.last_update = datetime.datetime.utcnow()
         feed.set_next_scheduled_update()
         
+        if options['force']:
+            feed.sync_redis()
+            
         return feed
 
     @classmethod
@@ -1335,25 +1341,34 @@ class MStory(mongo.Document):
         
         super(MStory, self).delete(*args, **kwargs)
         
-    def sync_redis(self):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        if self.id:
+    def sync_redis(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+
+        if self.id and self.story_date > SUBSCRIBER_EXPIRE:
             r.sadd('F:%s' % self.story_feed_id, self.id)
             r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
     
-    def remove_from_redis(self):
-        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+    def remove_from_redis(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         if self.id:
             r.srem('F:%s' % self.story_feed_id, self.id)
             r.zrem('zF:%s' % self.story_feed_id, self.id)
 
     @classmethod
     def sync_all_redis(cls, story_feed_id=None):
-        stories = cls.objects.all()
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        stories = cls.objects.filter(story_date__gte=SUBSCRIBER_EXPIRE)
         if story_feed_id:
             stories = stories.filter(story_feed_id=story_feed_id)
+            r.delete('F:%s' % story_feed_id)
+            r.delete('zF:%s' % story_feed_id)
+            
         for story in stories:
-            story.sync_redis()
+            story.sync_redis(r)
         
     def count_comments(self):
         from apps.social.models import MSharedStory
