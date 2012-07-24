@@ -88,7 +88,6 @@
         NSString *faviconUrl = [NSString stringWithFormat:@"http://%@/rss_feeds/icon/%i", 
                                 NEWSBLUR_URL,
                                 [[activity objectForKey:@"feed_id"] intValue]];
-        NSLog(@"faviconUrl is %@", faviconUrl);
         [self.faviconView setImageWithURL:[NSURL URLWithString:faviconUrl ]
                          placeholderImage:placeholder];
         self.faviconView.contentMode = UIViewContentModeScaleAspectFit;

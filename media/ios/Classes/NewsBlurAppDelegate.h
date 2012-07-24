@@ -38,6 +38,7 @@
 @class OriginalStoryViewController;
 @class MGSplitViewController;
 @class UserProfileViewController;
+@class NBContainerViewController;
 
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate>  {
@@ -47,6 +48,7 @@
     UINavigationController *navigationController;
     UINavigationController *splitStoryDetailNavigationController;
     UINavigationController *findFriendsNavigationController;
+    NBContainerViewController *masterContainerViewController;
 
     FirstTimeUserViewController *firstTimeUserViewController;
     FirstTimeUserAddSitesViewController *firstTimeUserAddSitesViewController;
@@ -118,6 +120,7 @@
 @property (nonatomic, readonly) IBOutlet UINavigationController *navigationController;
 @property (nonatomic, readonly) IBOutlet UINavigationController *findFriendsNavigationController;
 @property (nonatomic, readonly) IBOutlet UINavigationController *splitStoryDetailNavigationController;
+@property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic) IBOutlet FeedsMenuViewController *feedsMenuViewController;

@@ -8,6 +8,7 @@
 
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
+#import "NBContainerViewController.h"
 #import "FeedDetailViewController.h"
 #import "DashboardViewController.h"
 #import "FeedDashboardViewController.h"
@@ -38,6 +39,7 @@
 @synthesize navigationController;
 @synthesize findFriendsNavigationController;
 @synthesize splitStoryDetailNavigationController;
+@synthesize masterContainerViewController;
 @synthesize googleReaderViewController;
 @synthesize dashboardViewController;
 @synthesize feedsViewController;
@@ -122,8 +124,8 @@
         self.splitStoryDetailNavigationController.viewControllers = [NSArray arrayWithObject:self.dashboardViewController];
         self.splitStoryController.viewControllers = [NSArray arrayWithObjects:navigationController, splitStoryDetailNavigationController, nil];
         
-        [window addSubview:self.splitStoryController.view];
-        self.window.rootViewController = self.splitStoryController;
+        [window addSubview:self.masterContainerViewController.view];
+        self.window.rootViewController = self.masterContainerViewController;
     } else {
         self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
         [window addSubview:self.navigationController.view];
@@ -435,18 +437,19 @@
     [feedDetailViewController fetchFeedDetail:1 withCallback:nil];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if ([[self.splitStoryDetailNavigationController viewControllers] containsObject:self.feedDashboardViewController]) {
-            //[self.storyDetailViewController initStory];
-        } else {
-            if (self.inFindingStoryMode) {
-                [self showFindingStoryHUD];
-                [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:NO];
-            } else {
-                [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:YES];
-                [self showNoSelectedStoryLabel];
-            }
-
-        }
+        [self.masterContainerViewController transitionToFeedDetail];
+//        if ([[self.splitStoryDetailNavigationController viewControllers] containsObject:self.feedDashboardViewController]) {
+//            //[self.storyDetailViewController initStory];
+//        } else {
+//            if (self.inFindingStoryMode) {
+//                [self showFindingStoryHUD];
+//                [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:NO];
+//            } else {
+//                [self.splitStoryDetailNavigationController pushViewController:self.feedDashboardViewController animated:YES];
+//                [self showNoSelectedStoryLabel];
+//            }
+//
+//        }
     }
 }
 

@@ -35,6 +35,7 @@
 		433D24851582EEC800AE9E72 /* NewsBlurViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */; };
 		433D24861582EECA00AE9E72 /* OriginalStoryViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */; };
 		433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */; };
+		436ACA8D15BF1088004E01CC /* NBContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 436ACA8C15BF1088004E01CC /* NBContainerViewController.m */; };
 		43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */; };
 		43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */; };
 		437AA8AD15922D13005463F5 /* FeedDashboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8AB15922D13005463F5 /* FeedDashboardViewController.m */; };
@@ -331,6 +332,8 @@
 		433323CA158968ED0025064D /* FirstTimeUserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstTimeUserViewController.h; sourceTree = "<group>"; };
 		433323CB158968ED0025064D /* FirstTimeUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstTimeUserViewController.m; sourceTree = "<group>"; };
 		433323CC158968ED0025064D /* FirstTimeUserViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FirstTimeUserViewController.xib; sourceTree = "<group>"; };
+		436ACA8B15BF1088004E01CC /* NBContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBContainerViewController.h; sourceTree = "<group>"; };
+		436ACA8C15BF1088004E01CC /* NBContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBContainerViewController.m; sourceTree = "<group>"; };
 		43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontSettingsViewController.h; sourceTree = "<group>"; };
 		43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontSettingsViewController.m; sourceTree = "<group>"; };
 		43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontSettingsViewController.xib; path = Classes/FontSettingsViewController.xib; sourceTree = "<group>"; };
@@ -789,6 +792,8 @@
 				FFE5322E144C8AC300ACFDE0 /* Utilities.m */,
 				43D818A115B940C200733444 /* DataUtilities.h */,
 				43D818A215B940C200733444 /* DataUtilities.m */,
+				436ACA8B15BF1088004E01CC /* NBContainerViewController.h */,
+				436ACA8C15BF1088004E01CC /* NBContainerViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1963,6 +1968,7 @@
 				43E8382015BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m in Sources */,
 				43E8382215BC73EB000553BE /* FirstTimeUserAddSitesViewController.m in Sources */,
 				43DACC3F15BDE47F004A938B /* StoryDetailContainerViewController.m in Sources */,
+				436ACA8D15BF1088004E01CC /* NBContainerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
