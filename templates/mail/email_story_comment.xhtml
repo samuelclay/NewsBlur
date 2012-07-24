@@ -135,7 +135,7 @@
             <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
         </div>
         <div class="NB-story-comment-content">
-            {{ comment.comments|linebreaksbr }}
+            {{ comment.comments|linebreaksbr|safe }}
         </div>
         {% if comment.replies %}
         <div class="NB-story-comment-replies">
@@ -146,7 +146,7 @@
                 </a>
                 <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
                 <div class="NB-story-comment-date NB-story-comment-reply-date">{{ reply.publish_date }} ago</div>
-                <div class="NB-story-comment-reply-content">{{ reply.comments }}</div>
+                <div class="NB-story-comment-reply-content">{{ reply.comments|safe }}</div>
             </div>
             {% endfor %}
         </div>
