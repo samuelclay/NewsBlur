@@ -160,7 +160,7 @@ class UserSubscription(models.Model):
 
         for feed_id in feed_ids:
             us = cls.objects.get(user=user_id, feed=feed_id)
-            story_guids = us.get_stories(offset=offset, limit=limit, 
+            story_guids = us.get_stories(offset=0, limit=200, 
                                          order=order, read_filter=read_filter, 
                                          withscores=True)
 
