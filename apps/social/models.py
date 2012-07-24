@@ -651,7 +651,9 @@ class MSocialSubscription(mongo.Document):
     @classmethod
     def feeds(cls, *args, **kwargs):
         user_id = kwargs['user_id']
-        params = dict(user_id=user_id)
+        params = {
+            'user_id': user_id,
+        }
         if 'subscription_user_id' in kwargs:
             params["subscription_user_id"] = kwargs["subscription_user_id"]
         social_subs = cls.objects.filter(**params)
@@ -667,6 +669,9 @@ class MSocialSubscription(mongo.Document):
             # Fetch user profiles of subscriptions
             social_profiles = MSocialProfile.profile_feeds(social_user_ids)
             for user_id, social_sub in social_subs.items():
+                if social_profiles[user_id]['shared_stories_count'] <= 0:
+                    continue
+                    
                 # Combine subscription read counts with feed/user info
                 feed = dict(social_sub.items() + social_profiles[user_id].items())
                 social_feeds.append(feed)
