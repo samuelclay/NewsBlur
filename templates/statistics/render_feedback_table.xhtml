@@ -6,7 +6,7 @@
         <td class="NB-module-feature-date">{{ feedback.date }}</td>
         <td class="NB-module-feature-description">
           <span class="NB-module-feature-tag NB-tag-{{ feedback.style }}">{{ feedback.style }}</span>
-          <a href="{{ feedback.url }}">{{ feedback.subject|typogrify }}</a>
+          <a href="{{ feedback.url }}" target="_blank">{{ feedback.subject|typogrify }}</a>
         </td>
       </tr>
     {% endfor %}

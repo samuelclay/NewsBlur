@@ -181,6 +181,10 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         
         if (!story) return;
         
+        if (options.only_if_hidden && this.$el.isScrollVisible($story, true)) {
+            return;
+        }
+        
         if (!NEWSBLUR.assets.preference('animations') ||
             NEWSBLUR.reader.story_view == 'feed' ||
             NEWSBLUR.reader.story_view == 'story' ||

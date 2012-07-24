@@ -53,7 +53,7 @@ NEWSBLUR.log = function(msg) {
             return $(ret);
         },
     
-        isScrollVisible: function($elem) {
+        isScrollVisible: function($elem, partial) {
             var docViewTop = 0; // $(this).scrollTop();
             var docViewBottom = docViewTop + $(this).height();
             var docOffset = $(this).offset().top;
@@ -61,9 +61,16 @@ NEWSBLUR.log = function(msg) {
             var elemTop = $elem.offset().top - docOffset;
             var elemBottom = elemTop + $elem.outerHeight();
 
-            // NEWSBLUR.log(['isScrollVisible', docViewTop, docViewBottom, docOffset, elemTop, elemBottom]);
+            // NEWSBLUR.log(['isScrollVisible', docViewTop, docViewBottom, elemTop, elemBottom]);
             
-            return ((elemTop >= docViewTop) && (elemBottom <= docViewBottom));
+            if (partial) {
+                var topVisible = ((elemTop >= docViewTop) && (elemTop <= docViewBottom));
+                var bottomVisible = ((elemBottom <= docViewBottom) && (elemBottom >= docViewTop));
+                var centerVisible = (elemTop <= docViewTop) && (elemBottom >= docViewBottom);
+                return topVisible || bottomVisible || centerVisible;
+            } else {
+                return ((elemTop >= docViewTop) && (elemBottom <= docViewBottom));
+            }
         },
         
         // Align an element relative to a target element's coordinates. Forces the

@@ -76,6 +76,10 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             $story = $('.NB-feed-story-comments', $story);
         }
         
+        if (options.only_if_hidden && this.$el.isScrollVisible($story, true)) {
+            return;
+        }
+        
         clearTimeout(NEWSBLUR.reader.locks.scrolling);
         NEWSBLUR.reader.flags.scrolling_by_selecting_story_title = true;
         this.$el.scrollable().stop();
