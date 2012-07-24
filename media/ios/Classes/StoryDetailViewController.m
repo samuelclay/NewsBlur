@@ -38,6 +38,7 @@
 @synthesize buttonNextStory;
 @synthesize popoverController;
 @synthesize topToolbar;
+@synthesize bottomPlaceholderToolbar;
 
 #pragma mark -
 #pragma mark View boilerplate
@@ -93,6 +94,8 @@
                                        initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
         self.topToolbar.items = [NSArray arrayWithObjects:backButton, nil];
         self.topToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+        self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+
     }
 }
 
@@ -121,6 +124,7 @@
     [self setButtonNextStory:nil];
     [self setInnerView:nil];
     [self setTopToolbar:nil];
+    [self setBottomPlaceholderToolbar:nil];
     [super viewDidUnload];
 }
 
@@ -389,7 +393,8 @@
 }
 
 - (void)showStory {
-    appDelegate.inStoryDetail = YES;
+    self.webView.hidden = NO;
+    self.bottomPlaceholderToolbar.hidden = YES;
     [appDelegate hideFindingStoryHUD];
     [appDelegate hideShareView:YES];
     

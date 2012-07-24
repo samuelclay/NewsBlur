@@ -154,6 +154,9 @@
     [self.view addSubview:self.storyDetailViewController.view];
     [self.storyDetailViewController didMoveToParentViewController:self];
     
+    self.storyDetailViewController.webView.hidden = YES;
+    self.storyDetailViewController.bottomPlaceholderToolbar.hidden = NO;
+    
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation)) {
         self.storyDetailViewController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT);

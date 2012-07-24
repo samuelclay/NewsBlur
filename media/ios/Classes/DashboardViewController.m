@@ -21,6 +21,7 @@
 @synthesize interactionsModule;
 @synthesize activitiesModule;
 @synthesize feedbackWebView;
+@synthesize topToolbar;
 @synthesize toolbar;
 @synthesize segmentedButton;
 
@@ -42,6 +43,8 @@
     self.feedbackWebView.hidden = YES;
     self.feedbackWebView.delegate = self;
     
+    self.topToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
     // preload feedback
     self.feedbackWebView.scalesPageToFit = YES;
     
@@ -53,6 +56,7 @@
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
     //Load the request in the UIWebView.
     [self.feedbackWebView loadRequest:requestObj];
+
 }
 
 - (void)viewDidUnload {
@@ -62,22 +66,14 @@
     [self setToolbar:nil];
     [self setSegmentedButton:nil];
     [self setFeedbackWebView:nil];
+    [self setTopToolbar:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
-    CGRect frame = CGRectMake(0, 0, 400, 44);
-    UILabel *label = [[UILabel alloc] initWithFrame:frame];
-    label.backgroundColor = [UIColor clearColor];
-    label.font = [UIFont boldSystemFontOfSize:16.0];
-    label.textAlignment = UITextAlignmentCenter;
-    label.textColor = [UIColor whiteColor];
-    label.text = DASHBOARD_TITLE;
-    self.navigationItem.titleView = label;
+
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

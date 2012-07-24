@@ -179,6 +179,7 @@ body {
 .NB-story pre,
 .NB-story code {
     overflow: auto;
+    clear: both;
 }
 
 a {
@@ -189,7 +190,7 @@ a {
     background-color: #F0F0F0;
     border-left: 1px solid #9B9B9B;
     padding: 10px 20px;
-    margin: 0 0 20px 0px;
+    margin: 20px 0;
 }
 
 div + p {
@@ -242,9 +243,8 @@ div + p {
     height: auto;
     display: block;
     float: none;
+    clear: both;
 }
- 
- 
 
 .NB-story img.NB-small-image {
     display: inline-block;
