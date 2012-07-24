@@ -4710,7 +4710,7 @@
             $.targetIs(e, { tagSelector: '.NB-interaction-comment_reply .NB-interaction-reply-content, .NB-interaction-reply_reply .NB-interaction-reply-content, .NB-interaction-comment_reply .NB-interaction-photo' }, function($t, $p){
                 e.preventDefault();
                 var $interaction = $t.closest('.NB-interaction');
-                var feed_id = 'social:' + $interaction.data('feedId');
+                var feed_id = $interaction.data('feedId');
                 var story_id = $interaction.data('contentId');
                 var user_id = $interaction.data('userId');
                 var username = $interaction.data('username');
