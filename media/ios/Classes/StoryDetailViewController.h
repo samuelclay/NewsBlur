@@ -24,6 +24,7 @@
     UIBarButtonItem *activity;
     UIActivityIndicatorView *loadingIndicator;
     UIPopoverController *popoverController;
+    UIToolbar *topToolbar;
 }
 
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
@@ -40,6 +41,7 @@
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonNextStory;
 @property (nonatomic) UIPopoverController *popoverController;
+@property (nonatomic) IBOutlet UIToolbar *topToolbar;
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;
@@ -66,5 +68,6 @@
 - (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId;
 - (NSString *)getAvatars:(BOOL)areFriends;
 - (NSDictionary *)getUser:(int)user_id;
+- (void)transitionFromFeedDetail;
 
 @end

@@ -20,6 +20,7 @@
 #import "Utilities.h"
 #import "JSON.h"
 #import "NSString+HTML.h"
+#import "NBContainerViewController.h"
 
 @implementation StoryDetailViewController
 
@@ -37,6 +38,7 @@
 @synthesize feedTitleGradient;
 @synthesize buttonNextStory;
 @synthesize popoverController;
+@synthesize topToolbar;
 
 #pragma mark -
 #pragma mark View boilerplate
@@ -83,7 +85,20 @@
         self.navigationItem.backBarButtonItem = back; 
         
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
+    } else {
+//        UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//        backBtn.frame = CGRectMake(0, 0, 51, 31);
+//        [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
+//        [backBtn addTarget:self action:@selector(showUserProfilePopover) forControlEvents:UIControlEventTouchUpInside];
+        UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
+                                       initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
+        self.topToolbar.items = [NSArray arrayWithObjects:backButton, nil];
+        self.topToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
+}
+
+- (void)transitionFromFeedDetail {
+    [appDelegate.masterContainerViewController transitionFromFeedDetail];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -106,6 +121,7 @@
 - (void)viewDidUnload {
     [self setButtonNextStory:nil];
     [self setInnerView:nil];
+    [self setTopToolbar:nil];
     [super viewDidUnload];
 }
 

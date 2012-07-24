@@ -16,6 +16,10 @@
 
 @property (atomic, strong) IBOutlet NewsBlurAppDelegate *appDelegate;
 
-- (void)adjustDashboardFrame;
+
+- (void)adjustDashboardScreen;
+- (void)adjustFeedDetailScreen;
+
 - (void)transitionToFeedDetail;
+- (void)transitionFromFeedDetail;
 @end

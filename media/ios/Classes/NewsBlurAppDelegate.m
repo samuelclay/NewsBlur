@@ -362,7 +362,7 @@
     
     [self.feedsViewController.feedTitlesTable reloadData];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.splitStoryController presentModalViewController:loginViewController animated:NO];
+        [self.masterContainerViewController presentModalViewController:loginViewController animated:NO];
     } else {
         [feedsMenuViewController dismissModalViewControllerAnimated:NO];
         [self.navigationController presentModalViewController:loginViewController animated:NO];
@@ -420,15 +420,7 @@
     [self setFeedUserProfiles:nil];
     
     self.inFeedDetail = YES;
-    UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
-                                                                      style: UIBarButtonItemStyleBordered 
-                                                                     target: nil 
-                                                                     action: nil];
-    [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
-    UINavigationController *navController = self.navigationController;        
-    [navController pushViewController:feedDetailViewController animated:YES];
-    [self showNavigationBar:YES];
-    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+
     //    navController.navigationBar.tintColor = UIColorFromRGB(0x59f6c1);
     
     popoverHasFeedView = YES;
@@ -450,6 +442,17 @@
 //            }
 //
 //        }
+    } else {
+    
+        UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle: @"All" 
+                                                                          style: UIBarButtonItemStyleBordered 
+                                                                         target: nil 
+                                                                         action: nil];
+        [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
+        UINavigationController *navController = self.navigationController;        
+        [navController pushViewController:feedDetailViewController animated:YES];
+        [self showNavigationBar:YES];
+        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
 }
 
