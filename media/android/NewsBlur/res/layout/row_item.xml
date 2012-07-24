@@ -19,6 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/row_item_sidebar"
+        android:maxLines="2"
         android:textColor="@color/darkgray"
         android:textSize="18dp" />
 
@@ -38,8 +39,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/row_item_title"
         android:layout_marginTop="10dp"
-        android:layout_toRightOf="@id/row_item_sidebar"
         android:layout_toLeftOf="@id/row_item_date"
+        android:layout_toRightOf="@id/row_item_sidebar"
         android:textColor="@color/lightgray"
         android:textSize="12dp" />
 

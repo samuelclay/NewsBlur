@@ -16,6 +16,7 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri NEWSBLUR_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION);
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
 	public static final Uri STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
+	public static final Uri COMMENTS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/comments/");
 	public static final Uri FEED_FOLDER_MAP_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedfoldermap/");
 	public static final Uri FOLDERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/folders/");
 
@@ -27,6 +28,7 @@ public class FeedProvider extends ContentProvider {
 
 	private static final int ALL_FEEDS = 0;
 	private static final int FEED_STORIES = 1;
+	private static final int STORY_COMMENTS = 7;
 	private static final int ALL_FOLDERS = 2;
 	private static final int SPECIFIC_FOLDER = 3;
 	private static final int FEED_FOLDER_MAP = 4;
@@ -41,6 +43,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/", ALL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/#/", FEED_STORIES);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/comments/", STORY_COMMENTS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/", FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/*/", SPECIFIC_FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
@@ -90,6 +93,14 @@ public class FeedProvider extends ContentProvider {
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_ID)).build();
 			break;
 
+			// Inserting a comment
+		case STORY_COMMENTS:
+			db.beginTransaction();
+			db.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			break;	
+
 			// Inserting a story	
 		case FEED_STORIES:
 			db.beginTransaction();
@@ -97,51 +108,51 @@ public class FeedProvider extends ContentProvider {
 			db.setTransactionSuccessful();
 			db.endTransaction();
 			break;	
-			
+
 		case UriMatcher.NO_MATCH:
 			Log.d(TAG, "No match found for URI: " + uri.toString());
 			break;
 		}
-		db.close();
 		return resultUri;
 	}
 
 	@Override
 	public boolean onCreate() {
 		Log.d(TAG, "Creating provider and database.");
-		databaseHelper = new BlurDatabase(getContext().getApplicationContext());
+		databaseHelper = new BlurDatabase(getContext());
 		return true;
 	}
 
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 		final SQLiteDatabase db = databaseHelper.getReadableDatabase();
-		Cursor cursor = null;
 		switch (uriMatcher.match(uri)) {
 
 		// Query for all feeds (by default only return those that have unread items in them)
 		case ALL_FEEDS:
-			cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+			return db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
 					" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 					" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
 					" WHERE (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 " +
 					" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE", selectionArgs);
-			break;
 
-		// Query for a specific feed	
+			// Query for a specific feed	
 		case INDIVIDUAL_FEED:
-			cursor = db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE +
-					" WHERE " +  DatabaseConstants.FEED_ID + "= '" + uri.getLastPathSegment() + "'", selectionArgs);
-			break;	
-			
-		// Querying for a stories from a feed
+			return db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE +
+					" WHERE " +  DatabaseConstants.FEED_ID + "= '" + uri.getLastPathSegment() + "'", selectionArgs);	
+
+			// Querying for a stories from a feed
 		case FEED_STORIES:
 			selection = DatabaseConstants.STORY_FEED_ID + " = ?";
 			selectionArgs = new String[] { uri.getLastPathSegment() };
-			cursor = db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, null);
-			break;
+			return db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, null);
 
-		// Query for feeds with no folder mapping	
+			// Querying for a stories from a feed
+		case STORY_COMMENTS:
+			selection = DatabaseConstants.COMMENT_STORYID + " = ?";
+			return db.query(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_COLUMNS, selection, selectionArgs, null, null, null);
+
+			// Query for feeds with no folder mapping	
 		case FEED_FOLDER_MAP:
 			String nullFolderQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE + 
 			" LEFT JOIN " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
@@ -155,10 +166,9 @@ public class FeedProvider extends ContentProvider {
 				nullFolderBuilder.append(selectionArgs[0]);
 			}
 			nullFolderBuilder.append(" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE");
-			cursor = db.rawQuery(nullFolderBuilder.toString(), null);
-			break;
+			return db.rawQuery(nullFolderBuilder.toString(), null);
 
-		// Querying for feeds for a given folder	
+			// Querying for feeds for a given folder	
 		case SPECIFIC_FEED_FOLDER_MAP:
 			selection = DatabaseConstants.FOLDER_ID + " = ?";
 			String[] folderArguments = new String[] { uri.getLastPathSegment() };
@@ -175,10 +185,9 @@ public class FeedProvider extends ContentProvider {
 				builder.append(selectionArgs[0]);
 			}
 			builder.append(" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE");
-			cursor = db.rawQuery(builder.toString(), folderArguments);
-			break;
+			return db.rawQuery(builder.toString(), folderArguments);
 
-		// Querying for all folders with unread items
+			// Querying for all folders with unread items
 		case ALL_FOLDERS:
 			String folderQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
 			" LEFT JOIN " + DatabaseConstants.FOLDER_TABLE + 
@@ -194,15 +203,24 @@ public class FeedProvider extends ContentProvider {
 			}
 			folderBuilder.append(" ORDER BY ");
 			folderBuilder.append(DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE");
-			cursor = db.rawQuery(folderBuilder.toString(), null);
-			break;
+			return db.rawQuery(folderBuilder.toString(), null);
+
+		default:
+			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}
-		return cursor;
 	}
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		return 0;
+		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
+		
+		switch (uriMatcher.match(uri)) {
+		case INDIVIDUAL_FEED:
+			return db.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });
+			
+		default:
+			throw new UnsupportedOperationException("Unknown URI: " + uri);
+		}
 	}
 
 

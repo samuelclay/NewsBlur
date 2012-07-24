@@ -34,26 +34,43 @@ public class ImageLoader {
 		fileCache = new FileCache(context);
 		executorService = Executors.newFixedThreadPool(5);
 	}
-
-	public void DisplayImage(String url, ImageView imageView) {
-		imageViews.put(imageView, url);
-		Bitmap bitmap = memoryCache.get(url);
+	
+	public void displayImage(String url, String uid, ImageView imageView) {
+		imageViews.put(imageView, uid);
+		Bitmap bitmap = memoryCache.get(uid);
 		if (bitmap != null) {
 			imageView.setImageBitmap(bitmap);
 		} else {
-			queuePhoto(url, imageView);
+			queuePhoto(url, uid, imageView);
 			imageView.setImageResource(R.drawable.logo);
 		}
 	}
-
-	private void queuePhoto(String url, ImageView imageView) {
-		PhotoToLoad p = new PhotoToLoad(url, imageView);
-		executorService.submit(new PhotosLoader(p));
+	
+	// Display an image assuming it's in cache
+	public void displayImage(String uid, ImageView imageView) {
+		Bitmap bitmap = memoryCache.get(uid);
+		if (bitmap != null) {
+			imageView.setImageBitmap(bitmap);
+		} else {
+			File f= fileCache.getFile(uid);
+			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+			memoryCache.put(uid, bitmap);
+			imageView.setImageBitmap(bitmap);
+		}
 	}
 
-	private Bitmap getBitmap(String url) {
+	private void queuePhoto(String url, String uid, ImageView imageView) {
+		PhotoToLoad p = new PhotoToLoad(url, uid, imageView);
+		executorService.submit(new PhotosLoader(p));
+	}
+	
+	public boolean checkForImage(String uid) {
+		return (fileCache.getFile(uid) != null || memoryCache.get(uid) != null);
+	}
+
+	private Bitmap getBitmap(String url, String uid) {
 		
-		File f = fileCache.getFile(url);
+		File f = fileCache.getFile(uid);
 		Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 		
 		if (bitmap != null) {
@@ -88,8 +105,10 @@ public class ImageLoader {
 	private class PhotoToLoad {
 		public String url;
 		public ImageView imageView;
-		public PhotoToLoad(final String u, final ImageView i) {
+		public String uid;
+		public PhotoToLoad(final String u, final String id, final ImageView i) {
 			url = u; 
+			uid = id;
 			imageView = i;
 		}
 	}
@@ -107,8 +126,8 @@ public class ImageLoader {
 				return;
 			}
 			
-			Bitmap bmp = getBitmap(photoToLoad.url);
-			memoryCache.put(photoToLoad.url, bmp);
+			Bitmap bmp = getBitmap(photoToLoad.url, photoToLoad.uid);
+			memoryCache.put(photoToLoad.uid, bmp);
 			if (imageViewReused(photoToLoad)) {
 				return;
 			}
@@ -121,7 +140,7 @@ public class ImageLoader {
 
 	private boolean imageViewReused(PhotoToLoad photoToLoad){
 		final String tag = imageViews.get(photoToLoad.imageView);
-		return (tag == null || !tag.equals(photoToLoad.url));
+		return (tag == null || !tag.equals(photoToLoad.uid));
 	}
 
 	private class BitmapDisplayer implements Runnable {
@@ -146,6 +165,10 @@ public class ImageLoader {
 	public void clearCache() {
 		memoryCache.clear();
 		fileCache.clear();
+	}
+
+	public void cacheImage(String photoUrl, String userId) {
+		getBitmap(photoUrl, userId);
 	}
 
 }

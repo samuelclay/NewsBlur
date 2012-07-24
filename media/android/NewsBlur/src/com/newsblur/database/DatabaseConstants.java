@@ -33,6 +33,8 @@ public class DatabaseConstants {
 	public static final String FEED_FOLDER_FEED_ID = "feed_feed_id";
 	public static final String FEED_FOLDER_FOLDER_NAME = "feed_folder_name";
 	
+	public static final String COMMENT_TABLE = "comments";
+	
 	public static final String CLASSIFIER_TABLE = "classifiers";
 	public static final String CLASSIFIER_ID = BaseColumns._ID;
 	public static final String CLASSIFIER_TYPE = "type";
@@ -55,11 +57,23 @@ public class DatabaseConstants {
 	public static final String STORY_READ = "read";
 	public static final String STORY_TAGS = "tags";
 	public static final String STORY_FEED_ID = "feed_id";
+	public static final String STORY_SHARED_USER_IDS = "shared_user_ids";
+	
+	public static final String COMMENT_ID = BaseColumns._ID;
+	public static final String COMMENT_STORYID = "comment_storyid";
+	public static final String COMMENT_TEXT = "comment_text";
+	public static final String COMMENT_DATE = "comment_date";
+	public static final String COMMENT_SHAREDDATE = "comment_shareddate";
+	public static final String COMMENT_USERID = "comment_userid";
 	
 	// Aggregated columns
 	public static final String SUM_POS = "sum_postive";
 	public static final String SUM_NEUT = "sum_neutral";
 	public static final String SUM_NEG = "sum_negative";
+	
+	public static final String[] COMMENT_COLUMNS = {
+		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_USERID, COMMENT_DATE, COMMENT_SHAREDDATE
+	};
 	
 	public static final String[] FOLDER_COLUMNS = {
 		FOLDER_TABLE + "." + FOLDER_ID, FOLDER_TABLE + "." + FOLDER_NAME, " SUM(" + FEED_POSITIVE_COUNT + ") AS " + SUM_POS, " SUM(" + FEED_NEUTRAL_COUNT + ") AS " + SUM_NEUT, " SUM(" + FEED_NEGATIVE_COUNT + ") AS " + SUM_NEG
@@ -67,7 +81,8 @@ public class DatabaseConstants {
 	
 	public static final String[] STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_DATE, STORY_FEED_ID, STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TITLE,
-		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE
+		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE, STORY_SHARED_USER_IDS
 	};
-
+	
+	
 }

@@ -57,7 +57,7 @@ public class APIClient {
 				final StringBuilder builder = new StringBuilder();
 				builder.append((String) entry.getKey());
 				builder.append("=");
-				builder.append((String) entry.getValue());
+				builder.append(URLEncoder.encode((String) entry.getValue()));
 				parameters.add(builder.toString());
 			}
 			final String parameterString = TextUtils.join("&", parameters);

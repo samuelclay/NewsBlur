@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.newsblur.network.APIClient;
 import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.StoriesResponse;
 
 /**
  * The SyncService is based on an app architecture that tries to place network calls
@@ -25,13 +24,14 @@ public class SyncService extends IntentService {
 	public static final String EXTRA_STATUS_RECEIVER = "resultReceiverExtra";
 	public static final String EXTRA_TASK_FEED_ID = "taskFeedId";
 	
-	public final static int STATUS_RUNNING = 0;
-	public final static int STATUS_FINISHED = 1;
-	public final static int STATUS_ERROR = 2;
-	public static final int NOT_RUNNING = -1;
+	public final static int STATUS_RUNNING = 0x02;
+	public final static int STATUS_FINISHED = 0x03;
+	public final static int STATUS_ERROR = 0x04;
+	public static final int NOT_RUNNING = 0x01;
 	
 	public static final int EXTRA_TASK_FOLDER_UPDATE = 30;
 	public static final int EXTRA_TASK_FEED_UPDATE = 31;
+	public static final int EXTRA_TASK_REFRESH_COUNTS = 32;
 	
 	public APIClient apiClient;
 	private APIManager apiManager;
@@ -60,6 +60,9 @@ public class SyncService extends IntentService {
 			case EXTRA_TASK_FOLDER_UPDATE:
 				apiManager.getFolderFeedMapping();
 				break;
+			case EXTRA_TASK_REFRESH_COUNTS:
+				apiManager.refreshFeedCounts();
+				break;	
 			case EXTRA_TASK_FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
 					apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID));

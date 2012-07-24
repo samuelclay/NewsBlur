@@ -100,7 +100,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		followingCount.setText("" + user.followingCount);
 		
 		if (!viewingSelf) {
-			imageLoader.DisplayImage(user.photoUrl, imageView);
+			imageLoader.displayImage(user.photoUrl, user.userId, imageView);
 			if (user.followedByYou) {
 				unfollowButton.setVisibility(View.VISIBLE);
 				followButton.setVisibility(View.GONE);

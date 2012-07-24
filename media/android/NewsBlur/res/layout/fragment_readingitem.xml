@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.newsblur.view.NonfocusScrollview xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.newsblur"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingTop="9dp" >
 
@@ -54,7 +55,6 @@
                 android:textSize="11dp"
                 android:textStyle="italic" />
 
-
             <android.support.v7.widget.GridLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/reading_item_tags"
@@ -78,8 +78,51 @@
         <WebView
             android:id="@+id/reading_webview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:scrollbars="none" />
+
+        <RelativeLayout
+            android:id="@+id/reading_shared_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" >
+
+            <LinearLayout
+                android:id="@+id/reading_share_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/list_background"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/reading_sharedby"
+                    android:textColor="@color/white"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+
+                <android.support.v7.widget.GridLayout
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/reading_social_shareimages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:columnCount="8"
+                    app:useDefaultMargins="true" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/reading_comment_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/reading_share_bar"
+                android:background="@color/white"
+                android:orientation="vertical" />
+        </RelativeLayout>
     </LinearLayout>
 
 </com.newsblur.view.NonfocusScrollview>

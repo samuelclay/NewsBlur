@@ -15,11 +15,9 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
-import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FolderTreeAdapter;
-import com.newsblur.domain.Feed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.FolderTreeViewBinder;
@@ -50,6 +48,11 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		folderAdapter = new FolderTreeAdapter(getActivity(), cursor, R.layout.row_folder_collapsed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
 		folderAdapter.setViewBinder(viewBinder);
 	}
+	
+	public void hasUpdated() {
+		folderAdapter.getCursor().requery();
+		folderAdapter.notifyDataSetChanged();
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,7 +71,6 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 	}
 
 	public void changeState(int state) {
-		
 		String selection = null;
 		viewBinder.setState(state);
 		

@@ -1,38 +1,36 @@
 package com.newsblur.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
-import com.newsblur.domain.Story;
 import com.newsblur.fragment.ItemListFragment;
-import com.newsblur.service.DetachableResultReceiver;
-import com.newsblur.service.DetachableResultReceiver.Receiver;
+import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
 
-public class ItemsList extends SherlockFragmentActivity {
+public class ItemsList extends SherlockFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface {
 
 	public static final String EXTRA_FEED = "feedId";
 	private ItemListFragment itemListFragment;
 	private FragmentManager fragmentManager;
 	private final String FRAGMENT_TAG = "itemListFragment";
-	private SyncReadingUpdaterFragment syncFragment;
+	private SyncUpdateFragment syncFragment;
 	private String feedId;
 	private String TAG = "ItemsList";
 
 	@Override
 	protected void onCreate(Bundle bundle) {
+		requestWindowFeature(Window.FEATURE_PROGRESS);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getSupportFragmentManager();
@@ -54,66 +52,21 @@ public class ItemsList extends SherlockFragmentActivity {
 			listTransaction.commit();
 		}
 
-		syncFragment = (SyncReadingUpdaterFragment) fragmentManager.findFragmentByTag(SyncReadingUpdaterFragment.TAG);
+		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
-			syncFragment = new SyncReadingUpdaterFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncReadingUpdaterFragment.TAG).commit();
+			syncFragment = new SyncUpdateFragment();
+			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
 			triggerRefresh();
 		}
 	}
 
-	public void redrawUI() {
-		Log.d(TAG , "Redrawing UI");
-		itemListFragment.updated();
-	}
-
 	public void triggerRefresh() {
+		setSupportProgressBarIndeterminateVisibility(true);
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
 		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
 		intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
 		startService(intent);
-	}
-
-	public static class SyncReadingUpdaterFragment extends Fragment implements Receiver {
-		public static final String TAG = "SyncReadingFragment";
-		private DetachableResultReceiver receiver;
-
-		public SyncReadingUpdaterFragment() {
-			receiver = new DetachableResultReceiver(new Handler());
-			receiver.setReceiver(this);
-		}
-
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			setRetainInstance(true);
-			Log.d(TAG, "Creating syncfragment");
-		}
-
-		@Override
-		public void onAttach(Activity activity) {
-			super.onAttach(activity);
-			Log.d(TAG, "Attached");
-		}
-
-		@Override
-		public void onReceiverResult(int resultCode, Bundle resultData) {
-			switch (resultCode) {
-			case SyncService.STATUS_FINISHED:
-				Log.d(TAG, "Synchronisation finished.");
-				if (getActivity() != null) {
-					((ItemsList) getActivity()).redrawUI();
-				}
-				break;
-			case SyncService.STATUS_RUNNING:
-				Log.d(TAG, "Synchronisation running.");
-				break;		
-			default:
-				Log.e(TAG, "Unrecognised response attempting to get reading data");
-				break;
-			}
-		}
 	}
 
 	@Override
@@ -124,6 +77,20 @@ public class ItemsList extends SherlockFragmentActivity {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void updateAfterSync() {
+		Log.d(TAG , "Redrawing UI");
+		itemListFragment.updated();
+		setSupportProgressBarIndeterminateVisibility(false);
+	}
+
+	@Override
+	public void updateSyncStatus(boolean syncRunning) {
+		if (syncRunning) {
+			setSupportProgressBarIndeterminateVisibility(true);
+		}
 	}
 
 }

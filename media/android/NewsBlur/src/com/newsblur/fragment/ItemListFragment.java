@@ -82,8 +82,9 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		Log.d(TAG, "Load finished: " + cursor.getCount());
-		adapter.swapCursor(cursor);
+		if (cursor != null) {
+			adapter.swapCursor(cursor);
+		}
 	}
 	
 	public void updated() {

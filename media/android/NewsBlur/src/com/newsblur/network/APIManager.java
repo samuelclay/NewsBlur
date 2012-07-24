@@ -9,15 +9,18 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
+import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FolderStructure;
 import com.newsblur.domain.Story;
 import com.newsblur.network.domain.FeedFolderResponse;
+import com.newsblur.network.domain.FeedRefreshResponse;
 import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.StoriesResponse;
@@ -85,13 +88,23 @@ public class APIManager {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEEDS, feedId);
-		client.get(APIConstants.URL_FEEDS_STORIES, values);
-		final APIResponse response = client.get(APIConstants.URL_FEEDS_STORIES, values);
+		Uri feedUri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(feedId).build();
+		final APIResponse response = client.get(feedUri.toString(), values);
 		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			Uri feedUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
+			Uri storyUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
 			for (Story story : storiesResponse.stories) {
-				contentResolver.insert(feedUri, story.getValues());
+				contentResolver.insert(storyUri, story.getValues());
+				
+				for (Comment comment : story.comments) {
+					StringBuilder builder = new StringBuilder();
+					builder.append(story.id);
+					builder.append(story.feedId);
+					builder.append(comment.userId);
+					comment.storyId = story.id;
+					comment.id = (builder.toString());
+					contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
+				}
 			}
 			return storiesResponse;
 		} else {
@@ -157,6 +170,18 @@ public class APIManager {
 			return profileResponse;
 		} else {
 			return null;
+		}
+	}
+
+	public void refreshFeedCounts() {
+		final APIClient client = new APIClient(context);
+		final APIResponse response = client.get(APIConstants.URL_FEED_COUNTS);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			final FeedRefreshResponse feedCountUpdate = gson.fromJson(response.responseString, FeedRefreshResponse.class);
+			for (String feedId : feedCountUpdate.feedCounts.keySet()) {
+				Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
+				contentResolver.update(feedUri, feedCountUpdate.feedCounts.get(feedId).getValues(), null, null);
+			}
 		}
 	}
 

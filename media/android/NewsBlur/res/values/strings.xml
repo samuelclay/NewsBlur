@@ -30,7 +30,10 @@
 	<string name="description_row_folder_icon">folder icon</string>
 	<string name="description_activity_icon">An icon illustrating the user\'s activity</string>
 	<string name="description_follow_button">Follow or unfollow a user</string>
-
+	<string name="description_comment_user">Comment user image</string>
+	
+	<string name="reading_sharedby">SHARED BY: </string>
+	
 	<string name="share" formatted="false">\"%s\" - %s (via Newsblur)</string>
 	
     <string name="profile">Profile</string>
@@ -54,6 +57,5 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_original">View original</string>
     <string name="menu_share">Share</string>
-    
     
 </resources>

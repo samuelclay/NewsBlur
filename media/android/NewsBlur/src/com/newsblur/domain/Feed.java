@@ -86,6 +86,7 @@ public class Feed {
 		feed.positiveCount = childCursor.getInt(childCursor.getColumnIndex(DatabaseConstants.FEED_POSITIVE_COUNT));
 		feed.subscribers = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_SUBSCRIBERS));
 		feed.title = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
+		childCursor.close();
 		return feed;
 	}
 

@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,8 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -20,15 +17,11 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.ReadingAdapter;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
-import com.newsblur.service.DetachableResultReceiver;
-import com.newsblur.service.DetachableResultReceiver.Receiver;
-import com.newsblur.service.SyncService;
 import com.newsblur.util.UIUtils;
 
 public class Reading extends SherlockFragmentActivity {
@@ -47,9 +40,6 @@ public class Reading extends SherlockFragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
-		requestWindowFeature(Window.FEATURE_PROGRESS);
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
 		super.onCreate(savedInstanceBundle);
 		setContentView(R.layout.activity_reading);
 
@@ -58,12 +48,12 @@ public class Reading extends SherlockFragmentActivity {
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		contentResolver = getContentResolver();
 		
+		contentResolver = getContentResolver();
 		Uri storiesURI = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
 		Cursor stories = contentResolver.query(storiesURI, null, null, null, null);
 		readingAdapter = new ReadingAdapter(fragmentManager, this, feedId, stories);
-
+		
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
 		setTitle(feed.title);
