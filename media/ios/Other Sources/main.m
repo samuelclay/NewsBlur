@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NewsBlurAppDelegate.h"
+//#import "NewsBlurAppDelegate.h"
 
 int main(int argc, char *argv[]) {
     

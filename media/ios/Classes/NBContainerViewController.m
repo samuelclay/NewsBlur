@@ -15,7 +15,7 @@
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 250
-#define NB_DEFAULT_SLIDER_INTERVAL 3.4
+#define NB_DEFAULT_SLIDER_INTERVAL 0.4
 
 @interface NBContainerViewController ()
 
@@ -73,6 +73,15 @@
     [self addChildViewController:self.masterNavigationController];
     [self.view addSubview:self.masterNavigationController.view];
     [self.masterNavigationController didMoveToParentViewController:self];
+    
+    // set default x coordinate for feedDetailY from saved preferences
+//    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+//    NSInteger savedFeedDetailPortraitYCoordinate = [userPreferences integerForKey:@"feedDetailPortraitYCoordinate"];
+//    if (savedFeedDetailPortraitYCoordinate) {
+//        self.feedDetailPortraitYCoordinate = savedFeedDetailPortraitYCoordinate;
+//    } else {
+//        self.feedDetailPortraitYCoordinate = 960;
+//    }
 }
 
 - (void)viewWillLayoutSubviews {

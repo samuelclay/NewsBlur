@@ -8,7 +8,6 @@
 
 #import "StoryDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "MGSplitViewController.h"
 #import "NewsBlurViewController.h"
 #import "FeedDetailViewController.h"
 #import "FontSettingsViewController.h"

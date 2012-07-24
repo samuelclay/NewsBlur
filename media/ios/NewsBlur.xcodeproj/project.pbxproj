@@ -69,9 +69,6 @@
 		43A4C3DB15B00966008787B5 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A4C3C115B00966008787B5 /* libTestFlight.a */; };
 		43A4C3DC15B00966008787B5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3C215B00966008787B5 /* main.m */; };
 		43A4C3DD15B00966008787B5 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3C415B00966008787B5 /* MBProgressHUD.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		43A4C3DE15B00966008787B5 /* MGSplitCornersView.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3C615B00966008787B5 /* MGSplitCornersView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		43A4C3DF15B00966008787B5 /* MGSplitDividerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3C815B00966008787B5 /* MGSplitDividerView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		43A4C3E015B00966008787B5 /* MGSplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3CA15B00966008787B5 /* MGSplitViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		43A4C3E115B00966008787B5 /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3CD15B00966008787B5 /* NSString+HTML.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		43A4C3E215B00966008787B5 /* PullToRefreshView.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3CF15B00966008787B5 /* PullToRefreshView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		43A4C3E315B00966008787B5 /* StringHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3D115B00966008787B5 /* StringHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -391,12 +388,6 @@
 		43A4C3C215B00966008787B5 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = "Other Sources/main.m"; sourceTree = "<group>"; };
 		43A4C3C315B00966008787B5 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MBProgressHUD.h; path = "Other Sources/MBProgressHUD.h"; sourceTree = "<group>"; };
 		43A4C3C415B00966008787B5 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MBProgressHUD.m; path = "Other Sources/MBProgressHUD.m"; sourceTree = "<group>"; };
-		43A4C3C515B00966008787B5 /* MGSplitCornersView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSplitCornersView.h; path = "Other Sources/MGSplitCornersView.h"; sourceTree = "<group>"; };
-		43A4C3C615B00966008787B5 /* MGSplitCornersView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGSplitCornersView.m; path = "Other Sources/MGSplitCornersView.m"; sourceTree = "<group>"; };
-		43A4C3C715B00966008787B5 /* MGSplitDividerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSplitDividerView.h; path = "Other Sources/MGSplitDividerView.h"; sourceTree = "<group>"; };
-		43A4C3C815B00966008787B5 /* MGSplitDividerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGSplitDividerView.m; path = "Other Sources/MGSplitDividerView.m"; sourceTree = "<group>"; };
-		43A4C3C915B00966008787B5 /* MGSplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MGSplitViewController.h; path = "Other Sources/MGSplitViewController.h"; sourceTree = "<group>"; };
-		43A4C3CA15B00966008787B5 /* MGSplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MGSplitViewController.m; path = "Other Sources/MGSplitViewController.m"; sourceTree = "<group>"; };
 		43A4C3CC15B00966008787B5 /* NSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+HTML.h"; path = "Other Sources/NSString+HTML.h"; sourceTree = "<group>"; };
 		43A4C3CD15B00966008787B5 /* NSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+HTML.m"; path = "Other Sources/NSString+HTML.m"; sourceTree = "<group>"; };
 		43A4C3CE15B00966008787B5 /* PullToRefreshView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PullToRefreshView.h; path = "Other Sources/PullToRefreshView.h"; sourceTree = "<group>"; };
@@ -844,12 +835,6 @@
 				43A4C3C215B00966008787B5 /* main.m */,
 				43A4C3C315B00966008787B5 /* MBProgressHUD.h */,
 				43A4C3C415B00966008787B5 /* MBProgressHUD.m */,
-				43A4C3C515B00966008787B5 /* MGSplitCornersView.h */,
-				43A4C3C615B00966008787B5 /* MGSplitCornersView.m */,
-				43A4C3C715B00966008787B5 /* MGSplitDividerView.h */,
-				43A4C3C815B00966008787B5 /* MGSplitDividerView.m */,
-				43A4C3C915B00966008787B5 /* MGSplitViewController.h */,
-				43A4C3CA15B00966008787B5 /* MGSplitViewController.m */,
 				43A4C3CC15B00966008787B5 /* NSString+HTML.h */,
 				43A4C3CD15B00966008787B5 /* NSString+HTML.m */,
 				43A4C3CE15B00966008787B5 /* PullToRefreshView.h */,
@@ -1940,9 +1925,6 @@
 				43A4C3DA15B00966008787B5 /* GTMNString+HTML.m in Sources */,
 				43A4C3DC15B00966008787B5 /* main.m in Sources */,
 				43A4C3DD15B00966008787B5 /* MBProgressHUD.m in Sources */,
-				43A4C3DE15B00966008787B5 /* MGSplitCornersView.m in Sources */,
-				43A4C3DF15B00966008787B5 /* MGSplitDividerView.m in Sources */,
-				43A4C3E015B00966008787B5 /* MGSplitViewController.m in Sources */,
 				43A4C3E115B00966008787B5 /* NSString+HTML.m in Sources */,
 				43A4C3E215B00966008787B5 /* PullToRefreshView.m in Sources */,
 				43A4C3E315B00966008787B5 /* StringHelper.m in Sources */,

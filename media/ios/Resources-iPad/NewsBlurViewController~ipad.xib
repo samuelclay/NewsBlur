@@ -54,7 +54,7 @@
 								<reference key="NSSuperview" ref="382799673"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="895374018"/>
-								<object class="NSColor" key="IBUIBackgroundColor">
+								<object class="NSColor" key="IBUIBackgroundColor" id="320293827">
 									<int key="NSColorSpace">3</int>
 									<bytes key="NSWhite">MQA</bytes>
 								</object>
@@ -75,13 +75,7 @@
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="224086083"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<object class="NSColor" key="IBUIBackgroundColor">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MQA</bytes>
-							<object class="NSColorSpace" key="NSCustomColorSpace">
-								<int key="NSID">2</int>
-							</object>
-						</object>
+						<reference key="IBUIBackgroundColor" ref="320293827"/>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 					</object>
 					<object class="IBUIToolbar" id="895374018">
@@ -1844,99 +1838,6 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">MGSplitViewController</string>
-					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>showMasterPopover:</string>
-							<string>toggleMasterBeforeDetail:</string>
-							<string>toggleMasterView:</string>
-							<string>toggleSplitOrientation:</string>
-						</object>
-						<object class="NSArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>id</string>
-							<string>id</string>
-							<string>id</string>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>showMasterPopover:</string>
-							<string>toggleMasterBeforeDetail:</string>
-							<string>toggleMasterView:</string>
-							<string>toggleSplitOrientation:</string>
-						</object>
-						<object class="NSArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBActionInfo">
-								<string key="name">showMasterPopover:</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">toggleMasterBeforeDetail:</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">toggleMasterView:</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">toggleSplitOrientation:</string>
-								<string key="candidateClassName">id</string>
-							</object>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="outlets">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>delegate</string>
-							<string>detailViewController</string>
-							<string>masterViewController</string>
-						</object>
-						<object class="NSArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
-							<string>UIViewController</string>
-							<string>UIViewController</string>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>delegate</string>
-							<string>detailViewController</string>
-							<string>masterViewController</string>
-						</object>
-						<object class="NSArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBToOneOutletInfo">
-								<string key="name">delegate</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">detailViewController</string>
-								<string key="candidateClassName">UIViewController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">masterViewController</string>
-								<string key="candidateClassName">UIViewController</string>
-							</object>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/MGSplitViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">MoveSiteViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
@@ -2086,6 +1987,25 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">NBContainerViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">appDelegate</string>
+						<string key="NS.object.0">NewsBlurAppDelegate</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">appDelegate</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">appDelegate</string>
+							<string key="candidateClassName">NewsBlurAppDelegate</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/NBContainerViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">NewsBlurAppDelegate</string>
 					<string key="superclassName">BaseViewController</string>
 					<object class="NSMutableDictionary" key="outlets">
@@ -2108,12 +2028,12 @@
 							<string>ftuxNavigationController</string>
 							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
+							<string>masterContainerViewController</string>
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
 							<string>shareViewController</string>
-							<string>splitStoryController</string>
-							<string>splitStoryDetailNavigationController</string>
+							<string>storyDetailContainerViewController</string>
 							<string>storyDetailViewController</string>
 							<string>userProfileViewController</string>
 							<string>window</string>
@@ -2136,12 +2056,12 @@
 							<string>UINavigationController</string>
 							<string>GoogleReaderViewController</string>
 							<string>LoginViewController</string>
+							<string>NBContainerViewController</string>
 							<string>MoveSiteViewController</string>
 							<string>UINavigationController</string>
 							<string>OriginalStoryViewController</string>
 							<string>ShareViewController</string>
-							<string>MGSplitViewController</string>
-							<string>UINavigationController</string>
+							<string>StoryDetailContainerViewController</string>
 							<string>StoryDetailViewController</string>
 							<string>UserProfileViewController</string>
 							<string>UIWindow</string>
@@ -2167,12 +2087,12 @@
 							<string>ftuxNavigationController</string>
 							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
+							<string>masterContainerViewController</string>
 							<string>moveSiteViewController</string>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
 							<string>shareViewController</string>
-							<string>splitStoryController</string>
-							<string>splitStoryDetailNavigationController</string>
+							<string>storyDetailContainerViewController</string>
 							<string>storyDetailViewController</string>
 							<string>userProfileViewController</string>
 							<string>window</string>
@@ -2244,6 +2164,10 @@
 								<string key="candidateClassName">LoginViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">masterContainerViewController</string>
+								<string key="candidateClassName">NBContainerViewController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">moveSiteViewController</string>
 								<string key="candidateClassName">MoveSiteViewController</string>
 							</object>
@@ -2260,12 +2184,8 @@
 								<string key="candidateClassName">ShareViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">splitStoryController</string>
-								<string key="candidateClassName">MGSplitViewController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">splitStoryDetailNavigationController</string>
-								<string key="candidateClassName">UINavigationController</string>
+								<string key="name">storyDetailContainerViewController</string>
+								<string key="candidateClassName">StoryDetailContainerViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">storyDetailViewController</string>
@@ -2664,6 +2584,36 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
+					<string key="className">StoryDetailContainerViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">toggleFontSize:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">toggleFontSize:</string>
+						<object class="IBActionInfo" key="NS.object.0">
+							<string key="name">toggleFontSize:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="outlets">
+						<string key="NS.key.0">appDelegate</string>
+						<string key="NS.object.0">NewsBlurAppDelegate</string>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<string key="NS.key.0">appDelegate</string>
+						<object class="IBToOneOutletInfo" key="NS.object.0">
+							<string key="name">appDelegate</string>
+							<string key="candidateClassName">NewsBlurAppDelegate</string>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/StoryDetailContainerViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
 					<string key="className">StoryDetailViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
@@ -2725,8 +2675,8 @@
 							<string>feedTitleGradient</string>
 							<string>innerView</string>
 							<string>progressView</string>
-							<string>toggleViewButton</string>
 							<string>toolbar</string>
+							<string>topToolbar</string>
 							<string>webView</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -2740,7 +2690,7 @@
 							<string>UIView</string>
 							<string>UIView</string>
 							<string>UIProgressView</string>
-							<string>UIBarButtonItem</string>
+							<string>UIToolbar</string>
 							<string>UIToolbar</string>
 							<string>UIWebView</string>
 						</object>
@@ -2758,8 +2708,8 @@
 							<string>feedTitleGradient</string>
 							<string>innerView</string>
 							<string>progressView</string>
-							<string>toggleViewButton</string>
 							<string>toolbar</string>
+							<string>topToolbar</string>
 							<string>webView</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -2801,11 +2751,11 @@
 								<string key="candidateClassName">UIProgressView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">toggleViewButton</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
+								<string key="name">toolbar</string>
+								<string key="candidateClassName">UIToolbar</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">toolbar</string>
+								<string key="name">topToolbar</string>
 								<string key="candidateClassName">UIToolbar</string>
 							</object>
 							<object class="IBToOneOutletInfo">

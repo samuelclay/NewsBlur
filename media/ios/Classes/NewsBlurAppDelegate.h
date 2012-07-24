@@ -36,17 +36,14 @@
 @class AddSiteViewController;
 @class MoveSiteViewController;
 @class OriginalStoryViewController;
-@class MGSplitViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
 
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate>  {
     UIWindow *window;
-    MGSplitViewController *splitStoryController;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
-    UINavigationController *splitStoryDetailNavigationController;
     UINavigationController *findFriendsNavigationController;
     NBContainerViewController *masterContainerViewController;
 
@@ -82,7 +79,6 @@
     BOOL inStoryDetail;
     BOOL inFeedDetail;
     BOOL inFindingStoryMode;
-    BOOL hasBottomStoryTitles;
     NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
     NSString * activeFolder;
@@ -115,11 +111,9 @@
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
-@property (nonatomic) IBOutlet MGSplitViewController *splitStoryController;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
 @property (nonatomic, readonly) IBOutlet UINavigationController *navigationController;
 @property (nonatomic, readonly) IBOutlet UINavigationController *findFriendsNavigationController;
-@property (nonatomic, readonly) IBOutlet UINavigationController *splitStoryDetailNavigationController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic) IBOutlet NewsBlurViewController *feedsViewController;
@@ -148,7 +142,6 @@
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
-@property (nonatomic, readwrite) BOOL hasBottomStoryTitles;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic, readwrite) BOOL isShowingShare;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
@@ -190,8 +183,6 @@
 - (void)showLogin;
 - (void)showFeedsMenu;
 - (void)hideFeedsMenu;
-- (void)animateHidingMasterView;
-- (void)animateShowingMasterView;
 
 // social
 - (void)showUserProfile;
@@ -207,12 +198,9 @@
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social;
-- (void)showDashboard;
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;
-- (void)slideInStoryTitles;
-- (void)slideOutStoryTitlesWithAnimation:(BOOL)animated;
 - (void)calibrateStoryTitles;
 - (void)adjustShareModal;
 - (void)reloadFeedsView:(BOOL)showLoader;

@@ -12,6 +12,7 @@
 #import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
 #import "UserProfileViewController.h"
+#import "StoryDetailViewController.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
@@ -105,7 +106,7 @@
     appDelegate.isSocialView = NO;
     appDelegate.isRiverView = NO;
 //    appDelegate.inFindingStoryMode = NO;
-    [MBProgressHUD hideHUDForView:appDelegate.splitStoryDetailNavigationController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyDetailViewController.view animated:NO];
     
     
     // If there is an active feed or a set of feeds readin the river, 
@@ -150,7 +151,7 @@
 //    [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
 //                                      animated:YES scrollPosition:UITableViewScrollPositionMiddle];
     
-    [appDelegate showDashboard];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -277,9 +278,9 @@
     appDelegate.activeUsername = [results objectForKey:@"user"];
 
     // set title only if on current controller
-    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
+//    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
         [appDelegate setTitle:[results objectForKey:@"user"]];
-    }
+//    }
 
     // adding user avatar to left
     NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];

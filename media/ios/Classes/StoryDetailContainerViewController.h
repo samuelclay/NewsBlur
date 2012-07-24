@@ -17,10 +17,8 @@
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) IBOutlet UIBarButtonItem *toggleViewButton;
 @property (nonatomic) UIPopoverController *popoverController;
 
-- (void)toggleView;
 - (IBAction)toggleFontSize:(id)sender;
 
 @end
