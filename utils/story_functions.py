@@ -5,6 +5,7 @@ from django.utils.dateformat import DateFormat
 from django.utils.html import strip_tags as strip_tags_django
 from django.conf import settings
 from utils.tornado_escape import linkify as linkify_tornado
+from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 
 def story_score(story, bottom_delta=None):
     # A) Date - Assumes story is unread and within unread range
@@ -170,7 +171,7 @@ def strip_tags(html):
     return s.get_data()
 
 def linkify(*args, **kwargs):
-    return linkify_tornado(*args, **kwargs)
+    return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
     
 def truncate_chars(value, max_length):
     if len(value) <= max_length:

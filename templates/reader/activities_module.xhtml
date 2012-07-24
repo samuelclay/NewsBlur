@@ -69,7 +69,7 @@
                 </div>
                 {% if activity.content %}
                     <div class="NB-interaction-content">
-                        "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ activity.content|truncatewords:16 }}</span>"
+                        "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ activity.content|safe|truncatewords:16 }}</span>"
                     </div>
                 {% endif %}
             {% endif %}
