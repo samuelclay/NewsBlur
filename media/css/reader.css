@@ -3407,16 +3407,23 @@ form.opml_import_form input {
   margin: 0;
   padding: 9px 12px 9px 20px;
   display: block;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+  -webkit-transition: all .12s ease-out;
+  -moz-transition: all .12s ease-out;
+  -o-transition: all .12s ease-out;
+  -ms-transition: all .12s ease-out;
+  background: transparent url('/media/embed/reader/spacer_16.png') no-repeat 1px 0px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
     padding-top: 0;
     margin-top: -1px;
 }
 
+.NB-splash-info .NB-splash-links .NB-splash-link-about a:hover,
+.NB-splash-info .NB-splash-links .NB-splash-link-faq a:hover,
+.NB-splash-info .NB-splash-links .NB-splash-link-api a:hover,
+.NB-splash-info .NB-splash-links .NB-splash-link-press a:hover {
+  background: transparent url('/media/embed/favicon.png') no-repeat 0 7px;
+}
 .NB-splash-info .NB-splash-links .NB-splash-link-github a:hover {
   background: transparent url('/media/embed/reader/octocat.png') no-repeat 0 7px;
 }
