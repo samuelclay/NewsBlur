@@ -527,13 +527,7 @@
             }
         }
     }
-    
-    if (self.viewShowingAllFeeds) {
-        NSLog(@"this many sites to add");
-    } else {
-        NSLog(@"deleted %@", indexPaths);
-    }
-    
+        
     // if show unreads, calculate feeds and mark visible
     if (!self.viewShowingAllFeeds) {
         [self calculateFeedLocations:YES];

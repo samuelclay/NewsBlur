@@ -57,6 +57,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // adding HUD for progress bar
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
+    [self.progressView addGestureRecognizer:tap];
+    
+    // adding drag property for toolbars
+    
+    
+        
     UIBarButtonItem *originalButton = [[UIBarButtonItem alloc] 
                                        initWithTitle:@"Original" 
                                        style:UIBarButtonItemStyleBordered 
@@ -120,10 +128,16 @@
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    UITouch *theTouch = [touches anyObject];
-    CGPoint touchLocation = [theTouch locationInView:self.view];
-    CGFloat y = touchLocation.y;
-    [appDelegate dragFeedDetailView:y];        
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
+        UITouch *theTouch = [touches anyObject];
+        if ([theTouch.view isKindOfClass: UIToolbar.class]) {
+            CGPoint touchLocation = [theTouch locationInView:self.view];
+            CGFloat y = touchLocation.y;
+            [appDelegate.masterContainerViewController dragStoryToolbar:y];  
+        }
+    }
 }
 
 - (void)viewDidUnload {
@@ -138,7 +152,7 @@
     [appDelegate pushReadStory:storyId];
     [self showStory];
     [self markStoryAsRead];   
-    [self setNextPreviousButtons];
+    [self setNextPreviousButtons]; 
     self.webView.scalesPageToFit = YES;
     [self.loadingIndicator stopAnimating];    
 }
@@ -700,6 +714,23 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark -
 #pragma mark Actions
 
+- (IBAction)tapProgressBar:(id)sender {
+    
+    [MBProgressHUD hideHUDForView:self.view animated:NO];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	hud.mode = MBProgressHUDModeText;
+	hud.removeFromSuperViewOnHide = YES;  
+    int unreadCount = appDelegate.unreadCount;
+    if (unreadCount == 0) {
+        hud.labelText = @"No unread stories";
+    } else if (unreadCount == 1) {
+        hud.labelText = @"1 unread story";
+    } else {
+        hud.labelText = [NSString stringWithFormat:@"%i unread stories", unreadCount]; 
+    }
+	[hud hide:YES afterDelay:0.8];
+}
+
 - (void)setNextPreviousButtons {
     int nextIndex = [appDelegate indexOfNextUnreadStory];
     int unreadCount = [appDelegate unreadCount];
@@ -719,11 +750,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         (readStoryCount == 1 && 
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
             
-            [buttonPrevious setStyle:UIBarButtonItemStyleDone];
-            [buttonPrevious setTitle:@"Done"];
+            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
+            [buttonPrevious setTitle:@"Previous"];
+            [buttonPrevious setEnabled:NO];
         } else {
             [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
             [buttonPrevious setTitle:@"Previous"];
+            [buttonPrevious setEnabled:YES];
         }
     
     float unreads = (float)[appDelegate unreadCount];

@@ -22,4 +22,6 @@
 
 - (void)transitionToFeedDetail;
 - (void)transitionFromFeedDetail;
+
+- (void)dragStoryToolbar:(int)yCoordinate;
 @end

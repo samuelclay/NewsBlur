@@ -14,7 +14,7 @@
 #import "ShareViewController.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
-#define NB_DEFAULT_STORY_TITLE_HEIGHT 250
+#define NB_DEFAULT_STORY_TITLE_HEIGHT 960 - 591
 #define NB_DEFAULT_SLIDER_INTERVAL 0.4
 
 @interface NBContainerViewController ()
@@ -26,6 +26,7 @@
 @property (nonatomic, strong) DashboardViewController *dashboardViewController;
 @property (nonatomic, strong) StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, strong) ShareViewController *shareViewController;
+@property (readwrite) int storyTitlesYCoordinate;
 
 @property (readwrite) BOOL feedDetailIsVisible;
 
@@ -42,6 +43,7 @@
 @synthesize shareViewController;
 @synthesize feedDetailIsVisible;
 @synthesize storyNavigationController;
+@synthesize storyTitlesYCoordinate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -83,14 +85,14 @@
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.storyDetailViewController];
     self.storyNavigationController = nav;
     
-    // set default x coordinate for feedDetailY from saved preferences
-//    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-//    NSInteger savedFeedDetailPortraitYCoordinate = [userPreferences integerForKey:@"feedDetailPortraitYCoordinate"];
-//    if (savedFeedDetailPortraitYCoordinate) {
-//        self.feedDetailPortraitYCoordinate = savedFeedDetailPortraitYCoordinate;
-//    } else {
-//        self.feedDetailPortraitYCoordinate = 960;
-//    }
+    // set default y coordinate for feedDetailY from saved preferences
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    NSInteger savedStoryTitlesYCoordinate = [userPreferences integerForKey:@"storyTitlesYCoordinate"];
+    if (savedStoryTitlesYCoordinate) {
+        self.storyTitlesYCoordinate = savedStoryTitlesYCoordinate;
+    } else {
+        self.storyTitlesYCoordinate = 960 - NB_DEFAULT_STORY_TITLE_HEIGHT;
+    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -137,8 +139,8 @@
         if ([[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
             [self.masterNavigationController popViewControllerAnimated:NO];
         }
-        self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT);
-        self.feedDetailViewController.view.frame = CGRectMake(0, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT, vb.size.width, NB_DEFAULT_STORY_TITLE_HEIGHT);
+        self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
+        self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - self.storyTitlesYCoordinate);
         [self.view addSubview:self.feedDetailViewController.view];
         [self.masterNavigationController.view removeFromSuperview];
     } else {
@@ -172,22 +174,28 @@
     self.storyDetailViewController.webView.hidden = YES;
     self.storyDetailViewController.bottomPlaceholderToolbar.hidden = NO;
     self.storyDetailViewController.navigationItem.rightBarButtonItems = nil;
+    int unreadCount = appDelegate.unreadCount;
+    if (unreadCount == 0) {
+        self.storyDetailViewController.progressView.progress = 1;
+    } else {
+        self.storyDetailViewController.progressView.progress = 0;
+    }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation)) {
-        self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT);
-        self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT, vb.size.width, NB_DEFAULT_STORY_TITLE_HEIGHT);
+        self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, storyTitlesYCoordinate);
+        self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
         float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
         float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
         
         [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
-            self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT);
-            self.feedDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT, vb.size.width, NB_DEFAULT_STORY_TITLE_HEIGHT);
+            self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width, self.storyTitlesYCoordinate);
+            self.feedDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
             
             [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
-                self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT);
-                self.feedDetailViewController.view.frame = CGRectMake(0, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT, vb.size.width, NB_DEFAULT_STORY_TITLE_HEIGHT);
+                self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
+                self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
                 self.masterNavigationController.view.frame = CGRectMake( -NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
             } completion:^(BOOL finished) {
                 
@@ -221,12 +229,12 @@
         
         [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
             self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-            self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, 0, vb.size.width, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT);
-            self.feedDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT, vb.size.width, NB_DEFAULT_STORY_TITLE_HEIGHT);
+            self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, 0, vb.size.width, self.storyTitlesYCoordinate);
+            self.feedDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
             [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
-                self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT);
-                self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, vb.size.height - NB_DEFAULT_STORY_TITLE_HEIGHT, vb.size.width, NB_DEFAULT_STORY_TITLE_HEIGHT);
+                self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, self.storyTitlesYCoordinate);
+                self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
             } completion:^(BOOL finished) {
                 [self.storyNavigationController.view removeFromSuperview];
                 [self.feedDetailViewController.view removeFromSuperview];
@@ -237,6 +245,27 @@
 //        self.storyDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
 //        [self.dashboardViewController.view removeFromSuperview];
     }
+}
+
+- (void)dragStoryToolbar:(int)yCoordinate {
+//    NSLog(@"yCoordinate is %i", yCoordinate);
+    // account for top toolbar 
+    yCoordinate = yCoordinate + 44;
+    
+    if (yCoordinate > 344 && yCoordinate < 754) {
+        
+        // save coordinate
+        self.storyTitlesYCoordinate = yCoordinate;
+        NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
+        [userPreferences setInteger:yCoordinate forKey:@"storyTitlesYCoordinate"];
+        [userPreferences synchronize];
+        
+        // change frames
+        CGRect vb = [self.view bounds];
+        self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, yCoordinate);
+        self.feedDetailViewController.view.frame = CGRectMake(0, yCoordinate, vb.size.width, vb.size.height - yCoordinate);
+    }
+
 }
 
 

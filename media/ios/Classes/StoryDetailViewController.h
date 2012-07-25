@@ -45,6 +45,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 
+
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;
 - (void)showStory;
@@ -53,6 +54,7 @@
 - (IBAction)doNextUnreadStory;
 - (IBAction)doNextStory;
 - (IBAction)doPreviousStory;
+- (IBAction)tapProgressBar:(id)sender;
 - (void)changeWebViewWidth:(int)width;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)initStory;

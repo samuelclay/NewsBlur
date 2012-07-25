@@ -82,7 +82,7 @@
 					<object class="IBUIWebView" id="506862915">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">-2147483374</int>
-						<string key="NSFrame">{{0, -5}, {768, 941}}</string>
+						<string key="NSFrameSize">{768, 936}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="409639211"/>
@@ -4495,7 +4495,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBUIProgressView" id="484194819">
 								<reference key="NSNextResponder" ref="155973878"/>
 								<int key="NSvFlags">290</int>
-								<string key="NSFrame">{{356, 17}, {56, 11}}</string>
+								<string key="NSFrame">{{334, 17}, {100, 11}}</string>
 								<reference key="NSSuperview" ref="155973878"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="88679899"/>
@@ -4528,7 +4528,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							</object>
 							<object class="IBUIBarButtonItem" id="812131495">
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<float key="IBUIWidth">56</float>
+								<float key="IBUIWidth">100</float>
 								<reference key="IBUICustomView" ref="484194819"/>
 								<reference key="IBUIToolbar" ref="155973878"/>
 							</object>
@@ -4555,15 +4555,9 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 									<string key="NSResourceName">06-arrow-south.png</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<float key="IBUIWidth">46</float>
+								<float key="IBUIWidth">38</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="155973878"/>
-							</object>
-							<object class="IBUIBarButtonItem" id="108883138">
-								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<float key="IBUIWidth">12</float>
-								<reference key="IBUIToolbar" ref="155973878"/>
-								<int key="IBUISystemItemIdentifier">6</int>
 							</object>
 							<object class="IBUIBarButtonItem" id="1065495688">
 								<string key="IBUITitle">Next unread</string>
@@ -4597,7 +4591,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<string key="NSFrameSize">{768, 980}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView"/>
+				<reference key="NSNextKeyView" ref="506862915"/>
 				<reference key="IBUIBackgroundColor" ref="277502852"/>
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 			</object>
@@ -4757,14 +4751,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<reference ref="1036122720"/>
 							<reference ref="284060761"/>
 							<reference ref="812131495"/>
-							<reference ref="108883138"/>
 						</object>
 						<reference key="parent" ref="191373211"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">83</int>
-						<reference key="object" ref="108883138"/>
-						<reference key="parent" ref="155973878"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">47</int>
@@ -4856,7 +4844,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<string>63.IBPluginDependency</string>
 					<string>80.IBPluginDependency</string>
 					<string>82.IBPluginDependency</string>
-					<string>83.IBPluginDependency</string>
 					<string>86.IBPluginDependency</string>
 					<string>90.IBPluginDependency</string>
 				</object>
@@ -4870,7 +4857,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="NS.key.0">IBCocoaTouchFramework</string>
 						<integer value="0" key="NS.object.0"/>
 					</object>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -4899,7 +4885,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">94</int>
+			<int key="maxID">98</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -7048,10 +7034,12 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>doNextStory</string>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>tapProgressBar:</string>
 							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -7065,6 +7053,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>doNextStory</string>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>tapProgressBar:</string>
 							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -7082,6 +7071,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
+								<string key="name">tapProgressBar:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
 								<string key="name">toggleFontSize:</string>
 								<string key="candidateClassName">id</string>
 							</object>
@@ -7095,15 +7088,15 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>appDelegate</string>
 							<string>bottomPlaceholderToolbar</string>
 							<string>buttonAction</string>
-							<string>buttonBack</string>
 							<string>buttonNext</string>
 							<string>buttonNextStory</string>
 							<string>buttonPrevious</string>
 							<string>feedTitleGradient</string>
+							<string>fontSettingsButton</string>
 							<string>innerView</string>
+							<string>originalStoryButton</string>
 							<string>progressView</string>
 							<string>toolbar</string>
-							<string>topToolbar</string>
 							<string>webView</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -7115,11 +7108,11 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
+							<string>UIView</string>
 							<string>UIBarButtonItem</string>
 							<string>UIView</string>
-							<string>UIView</string>
+							<string>UIBarButtonItem</string>
 							<string>UIProgressView</string>
-							<string>UIToolbar</string>
 							<string>UIToolbar</string>
 							<string>UIWebView</string>
 						</object>
@@ -7132,15 +7125,15 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>appDelegate</string>
 							<string>bottomPlaceholderToolbar</string>
 							<string>buttonAction</string>
-							<string>buttonBack</string>
 							<string>buttonNext</string>
 							<string>buttonNextStory</string>
 							<string>buttonPrevious</string>
 							<string>feedTitleGradient</string>
+							<string>fontSettingsButton</string>
 							<string>innerView</string>
+							<string>originalStoryButton</string>
 							<string>progressView</string>
 							<string>toolbar</string>
-							<string>topToolbar</string>
 							<string>webView</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -7162,10 +7155,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">buttonBack</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">buttonNext</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
@@ -7182,8 +7171,16 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">fontSettingsButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">innerView</string>
 								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">originalStoryButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">progressView</string>
@@ -7191,10 +7188,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">toolbar</string>
-								<string key="candidateClassName">UIToolbar</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">topToolbar</string>
 								<string key="candidateClassName">UIToolbar</string>
 							</object>
 							<object class="IBToOneOutletInfo">
