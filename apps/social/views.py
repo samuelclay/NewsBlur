@@ -306,6 +306,10 @@ def mark_story_as_shared(request):
         story = MSharedStory.objects.filter(story_feed_id=feed_id, 
                                             story_guid=story_id).limit(1).first()
         if not story:
+            story = MStarredStory.objects.filter(story_feed_id=feed_id, 
+                                                 story_guid=story_id).limit(1).first()
+                                                
+        if not story:
             return json.json_response(request, {
                 'code': -1, 
                 'message': 'Could not find the original story and no copies could be found.'
