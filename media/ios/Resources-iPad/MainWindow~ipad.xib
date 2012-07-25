@@ -47,6 +47,7 @@
 				<string key="NSFrameSize">{768, 1024}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">1</int>
 					<bytes key="NSRGB">MSAxIDEAA</bytes>
@@ -245,17 +246,6 @@
 				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
-			<object class="IBUIViewController" id="688107379">
-				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
-					<int key="IBUIStatusBarStyle">2</int>
-				</object>
-				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-					<int key="IBUIInterfaceOrientation">1</int>
-					<int key="interfaceOrientation">1</int>
-				</object>
-				<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-				<bool key="IBUIHorizontal">NO</bool>
-			</object>
 			<object class="IBUIViewController" id="556336188">
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
 					<int key="IBUIStatusBarStyle">2</int>
@@ -268,6 +258,7 @@
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
 			<object class="IBUIViewController" id="375827920">
+				<string key="IBUITitle">Main Container View Controller</string>
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">
 					<int key="IBUIStatusBarStyle">2</int>
 				</object>
@@ -526,14 +517,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">storyDetailContainerViewController</string>
-						<reference key="source" ref="664661524"/>
-						<reference key="destination" ref="688107379"/>
-					</object>
-					<int key="connectionID">261</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">masterContainerViewController</string>
 						<reference key="source" ref="664661524"/>
 						<reference key="destination" ref="375827920"/>
@@ -683,14 +666,6 @@
 						<reference key="destination" ref="664661524"/>
 					</object>
 					<int key="connectionID">257</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">appDelegate</string>
-						<reference key="source" ref="688107379"/>
-						<reference key="destination" ref="664661524"/>
-					</object>
-					<int key="connectionID">262</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -874,11 +849,6 @@
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">260</int>
-						<reference key="object" ref="688107379"/>
-						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">264</int>
 						<reference key="object" ref="375827920"/>
 						<reference key="parent" ref="0"/>
@@ -940,8 +910,6 @@
 					<string>252.IBPluginDependency</string>
 					<string>253.CustomClassName</string>
 					<string>253.IBPluginDependency</string>
-					<string>260.CustomClassName</string>
-					<string>260.IBPluginDependency</string>
 					<string>264.CustomClassName</string>
 					<string>264.IBPluginDependency</string>
 					<string>3.CustomClassName</string>
@@ -1026,8 +994,6 @@
 					<string>FirstTimeUserAddFriendsViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>FirstTimeUserAddNewsBlurViewController</string>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<string>StoryDetailContainerViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>NBContainerViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1316,6 +1282,7 @@
 							<string>interactionsModule</string>
 							<string>segmentedButton</string>
 							<string>toolbar</string>
+							<string>topToolbar</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1324,6 +1291,7 @@
 							<string>UIWebView</string>
 							<string>InteractionsModule</string>
 							<string>UISegmentedControl</string>
+							<string>UIToolbar</string>
 							<string>UIToolbar</string>
 						</object>
 					</object>
@@ -1337,6 +1305,7 @@
 							<string>interactionsModule</string>
 							<string>segmentedButton</string>
 							<string>toolbar</string>
+							<string>topToolbar</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1362,6 +1331,10 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">toolbar</string>
+								<string key="candidateClassName">UIToolbar</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">topToolbar</string>
 								<string key="candidateClassName">UIToolbar</string>
 							</object>
 						</object>
@@ -3199,36 +3172,6 @@
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">StoryDetailContainerViewController</string>
-					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">toggleFontSize:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">toggleFontSize:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">toggleFontSize:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">appDelegate</string>
-						<string key="NS.object.0">NewsBlurAppDelegate</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">appDelegate</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">appDelegate</string>
-							<string key="candidateClassName">NewsBlurAppDelegate</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/StoryDetailContainerViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">StoryDetailViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<object class="NSMutableDictionary" key="actions">
@@ -3283,6 +3226,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>activity</string>
 							<string>appDelegate</string>
+							<string>bottomPlaceholderToolbar</string>
 							<string>buttonAction</string>
 							<string>buttonNext</string>
 							<string>buttonNextStory</string>
@@ -3298,6 +3242,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>UIBarButtonItem</string>
 							<string>NewsBlurAppDelegate</string>
+							<string>UIToolbar</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
@@ -3316,6 +3261,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>activity</string>
 							<string>appDelegate</string>
+							<string>bottomPlaceholderToolbar</string>
 							<string>buttonAction</string>
 							<string>buttonNext</string>
 							<string>buttonNextStory</string>
@@ -3336,6 +3282,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">bottomPlaceholderToolbar</string>
+								<string key="candidateClassName">UIToolbar</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">buttonAction</string>

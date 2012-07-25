@@ -26,6 +26,7 @@
     UIPopoverController *popoverController;
     UIToolbar *topToolbar;
     UIToolbar *bottomPlaceholderToolbar;
+    UIBarButtonItem *buttonBack;
 }
 
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
@@ -44,6 +45,7 @@
 @property (nonatomic) UIPopoverController *popoverController;
 @property (nonatomic) IBOutlet UIToolbar *topToolbar;
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
+@property (nonatomic) IBOutlet UIBarButtonItem *buttonBack;
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;

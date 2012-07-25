@@ -32,6 +32,7 @@
 @synthesize buttonPrevious;
 @synthesize buttonNext;
 @synthesize buttonAction;
+@synthesize buttonBack;
 @synthesize activity;
 @synthesize loadingIndicator;
 @synthesize feedTitleGradient;
@@ -92,7 +93,9 @@
 //        [backBtn addTarget:self action:@selector(showUserProfilePopover) forControlEvents:UIControlEventTouchUpInside];
         UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
                                        initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
-        self.topToolbar.items = [NSArray arrayWithObjects:backButton, nil];
+        
+        self.buttonBack = backButton;
+        self.topToolbar.items = [NSArray arrayWithObjects:buttonBack, nil];
         self.topToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
         self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 

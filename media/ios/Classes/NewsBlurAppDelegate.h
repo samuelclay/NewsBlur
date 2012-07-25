@@ -30,7 +30,6 @@
 @class FontSettingsViewController;
 @class GoogleReaderViewController;
 @class StoryDetailViewController;
-@class StoryDetailContainerViewController;
 @class ShareViewController;
 @class LoginViewController;
 @class AddSiteViewController;
@@ -62,7 +61,6 @@
 
     GoogleReaderViewController *googleReaderViewController;
     StoryDetailViewController *storyDetailViewController;
-    StoryDetailContainerViewController *storyDetailContainerViewController;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
@@ -122,7 +120,6 @@
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet GoogleReaderViewController *googleReaderViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
-@property (nonatomic) IBOutlet StoryDetailContainerViewController *storyDetailContainerViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;

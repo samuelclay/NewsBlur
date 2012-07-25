@@ -4859,6 +4859,9 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<object class="IBObjectRecord">
 						<int key="objectID">91</int>
 						<reference key="object" ref="794682016"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+						</object>
 						<reference key="parent" ref="191373211"/>
 					</object>
 				</object>
@@ -4929,7 +4932,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">93</int>
+			<int key="maxID">94</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -6525,7 +6528,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
 							<string>shareViewController</string>
-							<string>storyDetailContainerViewController</string>
 							<string>storyDetailViewController</string>
 							<string>userProfileViewController</string>
 							<string>window</string>
@@ -6553,7 +6555,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>UINavigationController</string>
 							<string>OriginalStoryViewController</string>
 							<string>ShareViewController</string>
-							<string>StoryDetailContainerViewController</string>
 							<string>StoryDetailViewController</string>
 							<string>UserProfileViewController</string>
 							<string>UIWindow</string>
@@ -6584,7 +6585,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>navigationController</string>
 							<string>originalStoryViewController</string>
 							<string>shareViewController</string>
-							<string>storyDetailContainerViewController</string>
 							<string>storyDetailViewController</string>
 							<string>userProfileViewController</string>
 							<string>window</string>
@@ -6674,10 +6674,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">shareViewController</string>
 								<string key="candidateClassName">ShareViewController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">storyDetailContainerViewController</string>
-								<string key="candidateClassName">StoryDetailContainerViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">storyDetailViewController</string>
@@ -7073,36 +7069,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/ShareViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">StoryDetailContainerViewController</string>
-					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">toggleFontSize:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">toggleFontSize:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">toggleFontSize:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">appDelegate</string>
-						<string key="NS.object.0">NewsBlurAppDelegate</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">appDelegate</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">appDelegate</string>
-							<string key="candidateClassName">NewsBlurAppDelegate</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/StoryDetailContainerViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

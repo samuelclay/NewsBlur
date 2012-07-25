@@ -122,6 +122,9 @@
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation)) {
+        // add the back button
+        self.storyDetailViewController.topToolbar.items = [NSArray arrayWithObjects:self.storyDetailViewController.buttonBack, nil];
+        
         if ([[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
             [self.masterNavigationController popViewControllerAnimated:NO];
         }
@@ -130,6 +133,9 @@
         [self.view addSubview:self.feedDetailViewController.view];
         [self.masterNavigationController.view removeFromSuperview];
     } else {
+        // remove the back button
+        self.storyDetailViewController.topToolbar.items = nil;
+        
         if (![[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
             [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];        
         }
@@ -137,7 +143,6 @@
         self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
         self.storyDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
     }
-
 }
 
 - (void)transitionToFeedDetail {

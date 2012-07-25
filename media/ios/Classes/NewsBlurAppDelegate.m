@@ -13,7 +13,6 @@
 #import "DashboardViewController.h"
 #import "FeedsMenuViewController.h"
 #import "StoryDetailViewController.h"
-#import "StoryDetailContainerViewController.h"
 #import "FirstTimeUserViewController.h"
 #import "FriendsListViewController.h"
 #import "GoogleReaderViewController.h"
@@ -46,7 +45,6 @@
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
-@synthesize storyDetailContainerViewController;
 @synthesize shareViewController;
 @synthesize loginViewController;
 @synthesize addSiteViewController;
