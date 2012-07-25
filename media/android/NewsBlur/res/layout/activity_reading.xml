@@ -19,8 +19,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/reading_divider"
-        android:minHeight="8dp"
-        android:alpha="0.7" />
+        android:alpha="0.7"
+        android:minHeight="8dp" />
+
+    <View
+        android:id="@+id/reading_divider_bottom"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_below="@id/reading_floatbar" />
 
     <View
         android:id="@+id/reading_divider_bottom"

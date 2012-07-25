@@ -4,13 +4,14 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -67,7 +68,10 @@ public class Reading extends SherlockFragmentActivity {
 		} else {
 			gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { Color.DKGRAY, Color.LTGRAY });
 		}
-		view.setBackgroundDrawable(gradient);
+		Drawable[] layers = new Drawable[2];
+		layers[0] = gradient;
+		layers[1] = getResources().getDrawable(R.drawable.shiny_plastic);
+		view.setBackgroundDrawable(new LayerDrawable(layers));
 
 		findViewById(R.id.reading_divider).setBackgroundColor(borderColor);
 		findViewById(R.id.reading_divider_bottom).setBackgroundColor(borderColor);

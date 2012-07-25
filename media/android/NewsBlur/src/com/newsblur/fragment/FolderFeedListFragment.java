@@ -5,9 +5,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -22,24 +26,24 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.FolderTreeViewBinder;
 
-public class FolderFeedListFragment extends Fragment implements OnGroupClickListener, OnChildClickListener {
+public class FolderFeedListFragment extends Fragment implements OnGroupClickListener, OnChildClickListener, OnCreateContextMenuListener {
 
 	private ExpandableListView list;
 	private ContentResolver resolver;
 	private FolderTreeAdapter folderAdapter;
 	private FolderTreeViewBinder viewBinder;
 	private int leftBound, rightBound;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		resolver = getActivity().getContentResolver();
 		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, null, null);
 		viewBinder = new FolderTreeViewBinder();
-		
+
 		leftBound = UIUtils.convertDPsToPixels(getActivity(), 20);
 		rightBound = UIUtils.convertDPsToPixels(getActivity(), 10);
-		
+
 		final String[] groupFrom = new String[] { DatabaseConstants.FOLDER_NAME, DatabaseConstants.SUM_POS, DatabaseConstants.SUM_NEG, DatabaseConstants.SUM_NEUT };
 		final int[] groupTo = new int[] { R.id.row_foldername, R.id.row_foldersumpos, R.id.row_foldersumneg, R.id.row_foldersumneu };
 		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON, DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.FEED_NEGATIVE_COUNT, DatabaseConstants.FEED_POSITIVE_COUNT };
@@ -48,7 +52,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		folderAdapter = new FolderTreeAdapter(getActivity(), cursor, R.layout.row_folder_collapsed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
 		folderAdapter.setViewBinder(viewBinder);
 	}
-	
+
 	public void hasUpdated() {
 		folderAdapter.getCursor().requery();
 		folderAdapter.notifyDataSetChanged();
@@ -58,11 +62,12 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
 		list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
-		
+		list.setOnCreateContextMenuListener(this);
+
 		Display display = getActivity().getWindowManager().getDefaultDisplay();
 		int width = display.getWidth();
 		list.setIndicatorBounds(width - leftBound, width - rightBound);
-		
+
 		list.setChildDivider(getActivity().getResources().getDrawable(R.drawable.divider_light));
 		list.setAdapter(folderAdapter);
 		list.setOnGroupClickListener(this);
@@ -70,22 +75,39 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		return v;
 	}
 
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		Log.d("Context", "ContextMenu created");
+		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+		//Only create a context menu for child items
+		switch(type) {
+		case 0:
+			menu.setHeaderTitle("Folder");
+			menu.add(0, 1, 0, "Mark folder read");
+		// Child (feed) item
+		case 1:
+			menu.setHeaderTitle("Feed");
+			menu.add(0, 1, 0, "Mar");
+		}
+	}
+
 	public void changeState(int state) {
 		String selection = null;
 		viewBinder.setState(state);
-		
+
 		switch (state) {
 		case (AppConstants.STATE_ALL):
 			selection = FeedProvider.INTELLIGENCE_ALL;
-			break;
+		break;
 		case (AppConstants.STATE_SOME):
 			selection = FeedProvider.INTELLIGENCE_SOME;
-			break;
+		break;
 		case (AppConstants.STATE_BEST):
 			selection = FeedProvider.INTELLIGENCE_BEST;
-			break;
+		break;
 		}
-		
+
 		folderAdapter.currentState = selection;
 		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { selection }, null);
 		folderAdapter.setGroupCursor(cursor);
@@ -111,5 +133,6 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		getActivity().startActivity(intent);
 		return true;
 	}
+
 
 }

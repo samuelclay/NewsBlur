@@ -18,8 +18,12 @@
     <color name="half_lightgray">#77dddddd</color>
     
     <color name="positive">#3B7613</color>
+    
+    <color name="darkneutral">#C59A00</color>
     <color name="neutral">#F6C000</color>
+    
     <color name="negative">#DE0000</color>
+    <color name="darknegative">#B20000</color>
     
     
 </resources>

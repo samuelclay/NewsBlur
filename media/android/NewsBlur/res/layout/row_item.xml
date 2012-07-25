@@ -8,8 +8,8 @@
 
     <TextView
         android:id="@+id/row_item_sidebar"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="15dp" />

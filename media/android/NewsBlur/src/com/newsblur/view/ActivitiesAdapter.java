@@ -95,7 +95,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 			stringBuilder.append(" \"");
 			stringBuilder.append(activity.title);
 			stringBuilder.append("\" ");
-			if (activity.content != null) {
+			if (!TextUtils.isEmpty(activity.content)) {
 				stringBuilder.append(withComment);
 				stringBuilder.append(": \"");
 				stringBuilder.append(activity.content);
@@ -103,7 +103,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 			}
 			stringBuilder.setSpan(darkgray, 0, sharedStory.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(highlight, sharedStory.length() + 1, sharedStory.length() + 2 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			if (activity.content != null) {
+			if (!TextUtils.isEmpty(activity.content)) {
 				stringBuilder.setSpan(midgray, sharedStory.length() + 4 + activity.title.length() + withComment.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
 		}

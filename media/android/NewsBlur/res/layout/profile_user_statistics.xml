@@ -8,7 +8,20 @@
     <TableRow
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
-
+        
+        <TextView
+            android:id="@+id/profile_sharedcount"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_marginRight="1dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:gravity="center_horizontal"
+            android:paddingTop="12dp"
+            android:textColor="@color/darkgray"
+            android:textSize="30dp"
+            android:textStyle="bold" />
+        
         <TextView
             android:id="@+id/profile_followingcount"
             android:layout_width="0dp"
@@ -35,24 +48,24 @@
             android:textSize="30dp"
             android:textStyle="bold" />
 
+    </TableRow>
+
+    <TableRow
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+       
         <TextView
-            android:id="@+id/profile_sharedcount"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_marginRight="1dp"
             android:layout_weight="1"
             android:background="@color/white"
             android:gravity="center_horizontal"
-            android:paddingTop="12dp"
+            android:paddingBottom="15dp"
+            android:paddingTop="3dp"
+            android:text="@string/profile_shared"
             android:textColor="@color/darkgray"
-            android:textSize="30dp"
-            android:textStyle="bold" />
-
-    </TableRow>
-
-    <TableRow
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+            android:textSize="11dp" />
 
         <TextView
             android:layout_width="0dp"
@@ -77,19 +90,6 @@
             android:paddingBottom="15dp"
             android:paddingTop="3dp"
             android:text="@string/profile_followers"
-            android:textColor="@color/darkgray"
-            android:textSize="11dp" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_marginRight="1dp"
-            android:layout_weight="1"
-            android:background="@color/white"
-            android:gravity="center_horizontal"
-            android:paddingBottom="15dp"
-            android:paddingTop="3dp"
-            android:text="@string/profile_shared"
             android:textColor="@color/darkgray"
             android:textSize="11dp" />
 

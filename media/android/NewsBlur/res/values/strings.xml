@@ -34,13 +34,13 @@
 	
 	<string name="reading_sharedby">SHARED BY: </string>
 	
-	<string name="share" formatted="false">\"%s\" - %s (via Newsblur)</string>
+	<string name="share" formatted="false">\"%s\" - %s (via NewsBlur)</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
     <string name="profile_following">FOLLOWING</string>
     <string name="profile_followers">FOLLOWERS</string>
-    <string name="profile_shared">SHARED</string>
+    <string name="profile_shared">SHARED STORIES</string>
     <string name="profile_subscribers">subscribers</string>
     <string name="profile_no_bio">No bio included</string>
     <string name="profile_no_location">Location not set</string>

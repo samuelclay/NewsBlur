@@ -22,3 +22,7 @@ blockquote {
 	font-style: italic;
 	margin-left: 10px;	
 }
+
+del {
+    display: none;
+}
