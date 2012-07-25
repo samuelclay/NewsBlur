@@ -277,7 +277,7 @@
 
     appDelegate.activeUsername = [results objectForKey:@"user"];
 
-    // set title only if on current controller
+    // set title only if on currestont controller
 //    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
         [appDelegate setTitle:[results objectForKey:@"user"]];
 //    }

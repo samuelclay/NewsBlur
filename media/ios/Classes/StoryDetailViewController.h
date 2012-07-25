@@ -24,9 +24,7 @@
     UIBarButtonItem *activity;
     UIActivityIndicatorView *loadingIndicator;
     UIPopoverController *popoverController;
-    UIToolbar *topToolbar;
     UIToolbar *bottomPlaceholderToolbar;
-    UIBarButtonItem *buttonBack;
 }
 
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
@@ -43,9 +41,9 @@
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonNextStory;
 @property (nonatomic) UIPopoverController *popoverController;
-@property (nonatomic) IBOutlet UIToolbar *topToolbar;
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
-@property (nonatomic) IBOutlet UIBarButtonItem *buttonBack;
+@property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
+@property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;

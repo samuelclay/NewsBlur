@@ -32,14 +32,16 @@
 @synthesize buttonPrevious;
 @synthesize buttonNext;
 @synthesize buttonAction;
-@synthesize buttonBack;
 @synthesize activity;
 @synthesize loadingIndicator;
 @synthesize feedTitleGradient;
 @synthesize buttonNextStory;
 @synthesize popoverController;
-@synthesize topToolbar;
+@synthesize fontSettingsButton;
+@synthesize originalStoryButton;
+
 @synthesize bottomPlaceholderToolbar;
+
 
 #pragma mark -
 #pragma mark View boilerplate
@@ -62,12 +64,15 @@
                                        action:@selector(showOriginalSubview:)
                                        ];
     
-    UIBarButtonItem *fontSettingsButton = [[UIBarButtonItem alloc] 
+    UIBarButtonItem *fontSettings = [[UIBarButtonItem alloc] 
                                            initWithTitle:@"Aa" 
                                            style:UIBarButtonItemStyleBordered 
                                            target:self 
                                            action:@selector(toggleFontSize:)
                                            ];
+    
+    self.originalStoryButton = originalButton;
+    self.fontSettingsButton = fontSettings;
 
     self.loadingIndicator = [[UIActivityIndicatorView alloc] 
                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -90,15 +95,13 @@
 //        UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
 //        backBtn.frame = CGRectMake(0, 0, 51, 31);
 //        [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
-//        [backBtn addTarget:self action:@selector(showUserProfilePopover) forControlEvents:UIControlEventTouchUpInside];
+//        [backBtn addTarget:self action:@selector(transitionFromFeedDetail) forControlEvents:UIControlEventTouchUpInside];
         UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
                                        initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
-        
-        self.buttonBack = backButton;
-        self.topToolbar.items = [NSArray arrayWithObjects:buttonBack, nil];
-        self.topToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 
+        self.navigationItem.leftBarButtonItem = backButton;
+        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+        self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
 }
 
@@ -126,7 +129,6 @@
 - (void)viewDidUnload {
     [self setButtonNextStory:nil];
     [self setInnerView:nil];
-    [self setTopToolbar:nil];
     [self setBottomPlaceholderToolbar:nil];
     [super viewDidUnload];
 }
@@ -398,6 +400,8 @@
 - (void)showStory {
     self.webView.hidden = NO;
     self.bottomPlaceholderToolbar.hidden = YES;
+    self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:self.originalStoryButton, self.fontSettingsButton, nil];
+    
     [appDelegate hideFindingStoryHUD];
     [appDelegate hideShareView:YES];
     
@@ -927,21 +931,43 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (IBAction)toggleFontSize:(id)sender {
-    FontSettingsViewController *fontSettings = [[FontSettingsViewController alloc] init];
-    appDelegate.fontSettingsViewController = fontSettings;
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:appDelegate.fontSettingsViewController];
-    
-    // adding Done button
-    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Done" 
-                                   style:UIBarButtonItemStyleDone 
-                                   target:self 
-                                   action:@selector(hideToggleFontSize)];
-    
-    appDelegate.fontSettingsViewController.navigationItem.rightBarButtonItem = donebutton;
-    appDelegate.fontSettingsViewController.navigationItem.title = @"Style";
-    navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    [self presentModalViewController:navController animated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (popoverController == nil) {
+            popoverController = [[UIPopoverController alloc]
+                                 initWithContentViewController:appDelegate.fontSettingsViewController];
+            
+            popoverController.delegate = self;
+        } else {
+            if (popoverController.isPopoverVisible) {
+                [popoverController dismissPopoverAnimated:YES];
+                return;
+            }
+            
+            [popoverController setContentViewController:appDelegate.fontSettingsViewController];
+        }
+        
+        [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
+        
+        [popoverController presentPopoverFromBarButtonItem:sender
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    } else {
+        FontSettingsViewController *fontSettings = [[FontSettingsViewController alloc] init];
+        appDelegate.fontSettingsViewController = fontSettings;
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:appDelegate.fontSettingsViewController];
+        
+        // adding Done button
+        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                       initWithTitle:@"Done" 
+                                       style:UIBarButtonItemStyleDone 
+                                       target:self 
+                                       action:@selector(hideToggleFontSize)];
+        
+        appDelegate.fontSettingsViewController.navigationItem.rightBarButtonItem = donebutton;
+        appDelegate.fontSettingsViewController.navigationItem.title = @"Style";
+        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+        [self presentModalViewController:navController animated:YES];
+        
+    }
 }
 
 - (void)hideToggleFontSize {
