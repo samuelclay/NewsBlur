@@ -39,7 +39,7 @@ class SqldumpMiddleware(object):
     def _instrument(self, original_method):
         def instrumented_method(*args, **kwargs):
             message = _mongodb_decode_wire_protocol(args[1][1])
-            if message['msg_id'] in self._used_msg_ids:
+            if not message or message['msg_id'] in self._used_msg_ids:
                 return original_method(*args, **kwargs)
             self._used_msg_ids.append(message['msg_id'])
             start = time()
@@ -69,13 +69,15 @@ def _mongodb_decode_wire_protocol(message):
     zidx = 20
     collection_name_size = message[zidx:].find('\0')
     collection_name = message[zidx:zidx+collection_name_size]
+    if '.system.' in collection_name:
+        return
     zidx += collection_name_size + 1
     skip, limit = struct.unpack('<ii', message[zidx:zidx+8])
     zidx += 8
     msg = ""
     try:
         if message[zidx:]:
-            msg = bson.decode_all(message[zidx:], as_class=dict, tz_aware=False)
+            msg = bson.decode_all(message[zidx:])
     except Exception, e:
         msg = 'invalid bson'
     return { 'op': op, 'collection': collection_name,
