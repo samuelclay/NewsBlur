@@ -49,7 +49,8 @@ def load_social_stories(request, user_id, username=None):
     page           = request.REQUEST.get('page')
     order          = request.REQUEST.get('order', 'newest')
     read_filter    = request.REQUEST.get('read_filter', 'all')
-
+    stories        = []
+    
     if page: offset = limit * (int(page) - 1)
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -63,9 +64,10 @@ def load_social_stories(request, user_id, username=None):
     if socialsub and (read_filter == 'unread' or order == 'oldest'):
         story_ids = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
         story_date_order = "%sshared_date" % ('' if order == 'oldest' else '-')
-        mstories = MSharedStory.objects(user_id=social_user.pk,
-                                        story__pk__in=story_ids).order_by(story_date_order)
-        stories = Feed.format_stories(mstories)
+        if story_ids:
+            mstories = MSharedStory.objects(user_id=social_user.pk,
+                                            story_db_id__in=story_ids).order_by(story_date_order)
+            stories = Feed.format_stories(mstories)
     else:
         mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
         stories = Feed.format_stories(mstories)

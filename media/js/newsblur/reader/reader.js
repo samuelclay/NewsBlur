@@ -2428,17 +2428,17 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
                     ]),
-                    // $.make('li', { className: 'NB-menu-separator' }),
-                    // $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
-                    //     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
-                    //         $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest'),
-                    //         $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first')
-                    //     ]),
-                    //     $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
-                    //         $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
-                    //         $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
-                    //     ])
-                    // ]),
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
+                            $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest'),
+                            $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first')
+                        ]),
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
+                            $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
+                            $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
+                        ])
+                    ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

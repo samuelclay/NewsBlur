@@ -729,9 +729,9 @@ class MSocialSubscription(mongo.Document):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         ignore_user_stories = False
         
-        stories_key         = 'SF:%s' % (self.user_id)
-        read_stories_key    = 'RS:%s:%s' % (self.user_id, self.feed_id)
-        unread_stories_key  = 'U:%s:%s' % (self.user_id, self.feed_id)
+        stories_key         = 'B:%s' % (self.subscription_user_id)
+        read_stories_key    = 'RS:%s' % (self.user_id)
+        unread_stories_key  = 'UB:%s:%s' % (self.user_id, self.subscription_user_id)
 
         if not r.exists(stories_key):
             return []
@@ -740,16 +740,18 @@ class MSocialSubscription(mongo.Document):
             unread_stories_key = stories_key
         else:
             r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-        sorted_stories_key          = 'zF:%s' % (self.feed_id)
-        unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
+            
+        sorted_stories_key          = 'zB:%s' % (self.subscription_user_id)
+        unread_ranked_stories_key   = 'zUB:%s:%s' % (self.user_id, self.subscription_user_id)
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)
-        mark_read_time  = time.mktime(self.mark_read_date.timetuple())
+        mark_read_time  = int(time.mktime(self.mark_read_date.timetuple()))
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
             min_score = mark_read_time
             max_score = current_time
+            print min_score, max_score
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
@@ -759,6 +761,7 @@ class MSocialSubscription(mongo.Document):
                                   withscores=withscores)
 
         r.expire(unread_ranked_stories_key, 24*60*60)
+
         if not ignore_user_stories:
             r.delete(unread_stories_key)
         
@@ -1054,7 +1057,8 @@ class MSharedStory(mongo.Document):
     meta = {
         'collection': 'shared_stories',
         'indexes': [('user_id', '-shared_date'), ('user_id', 'story_feed_id'), 
-                    'shared_date', 'story_guid', 'story_feed_id', 'story_db_id'],
+                    ('user_id', 'story_db_id'),
+                    'shared_date', 'story_guid', 'story_feed_id'],
         'index_drop_dups': True,
         'ordering': ['shared_date'],
         'allow_inheritance': False,
@@ -1065,13 +1069,6 @@ class MSharedStory(mongo.Document):
         return hashlib.sha1(self.story_guid).hexdigest()
         
     def save(self, *args, **kwargs):
-        if not self.story_db_id:
-            story = MStory.objects(story_feed_id=self.story_feed_id,
-                                   story_guid=self.story_guid).limit(1).first()
-            if story:
-                logging.debug(" ***> Shared story didn't have story_db_id. Adding found id: %s" % story.id)
-                self.story_db_id = story.id
-        
         if self.story_content:
             self.story_content_z = zlib.compress(self.story_content)
             self.story_content = None
@@ -1091,8 +1088,7 @@ class MSharedStory(mongo.Document):
         author, _ = MSocialProfile.objects.get_or_create(user_id=self.user_id)
         author.count_follows()
         
-        self.sync_redis_shares()
-        self.sync_redis_story()
+        self.sync_redis()
         
         MActivity.new_shared_story(user_id=self.user_id, story_title=self.story_title, 
                                    comments=self.comments, story_feed_id=self.story_feed_id,
@@ -1105,7 +1101,17 @@ class MSharedStory(mongo.Document):
         self.remove_from_redis()
 
         super(MSharedStory, self).delete(*args, **kwargs)
-        
+    
+    def ensure_story_db_id(self, save=True):
+        if not self.story_db_id:
+            story = MStory.objects(story_feed_id=self.story_feed_id,
+                                   story_guid=self.story_guid).limit(1).first()
+            if story:
+                logging.debug(" ***> Shared story didn't have story_db_id. Adding found id: %s" % story.id)
+                self.story_db_id = story.id
+                if save:
+                    self.save()
+                
     def set_source_user_id(self, source_user_id, original_comments=None):
         if source_user_id == self.user_id:
             return
@@ -1151,8 +1157,6 @@ class MSharedStory(mongo.Document):
         for story in shared_stories:
             story.story_feed_id = original_feed_id
             story.save()
-            story.sync_redis_shares()
-            story.sync_redis_story()
         
     @classmethod
     def collect_popular_stories(cls):
@@ -1237,7 +1241,11 @@ class MSharedStory(mongo.Document):
         for story in cls.objects.all():
             story.sync_redis_shares(redis_conn=r)
             story.sync_redis_story(redis_conn=s)
-            
+    
+    def sync_redis(self):
+        self.sync_redis_shares()
+        self.sync_redis_story()
+
     def sync_redis_shares(self, redis_conn=None):
         if not redis_conn:
             redis_conn = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -1253,10 +1261,13 @@ class MSharedStory(mongo.Document):
     def sync_redis_story(self, redis_conn=None):
         if not redis_conn:
             redis_conn = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-
+        
+        if not self.story_db_id:
+            self.ensure_story_db_id(save=True)
+            
         if self.story_db_id:
-            redis_conn.sadd('SF:%s' % self.user_id, self.story_db_id)
-            redis_conn.zadd('zSF:%s' % self.user_id, self.story_db_id,
+            redis_conn.sadd('B:%s' % self.user_id, self.story_db_id)
+            redis_conn.zadd('zB:%s' % self.user_id, self.story_db_id,
                             time.mktime(self.shared_date.timetuple()))
     
     def remove_from_redis(self):
@@ -1268,8 +1279,8 @@ class MSharedStory(mongo.Document):
         r.srem(comment_key, self.user_id)
 
         s = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        s.srem('SF:%s' % self.user_id, self.story.pk)
-        s.zrem('zSF:%s' % self.user_id, self.story.pk)
+        s.srem('B:%s' % self.user_id, self.story.pk)
+        s.zrem('zB:%s' % self.user_id, self.story.pk)
 
     def publish_update_to_subscribers(self):
         try:

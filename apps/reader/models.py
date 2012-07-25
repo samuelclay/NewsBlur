@@ -86,6 +86,14 @@ class UserSubscription(models.Model):
             else:
                 self.delete()
     
+    @classmethod
+    def sync_all_redis(cls, user_id, skip_feed=False):
+        us = cls.objects.filter(user=user_id)
+
+        for sub in us:
+            print sub
+            sub.sync_redis(skip_feed=skip_feed)
+        
     def sync_redis(self, skip_feed=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         
@@ -321,26 +329,12 @@ class UserSubscription(models.Model):
                 story = MStory.objects.filter(story_feed_id=self.feed_id, story_guid=story_id)[0]
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
-            m = MUserStory(story=story, user_id=self.user_id, 
-                           feed_id=self.feed_id, read_date=date, 
-                           story_id=story_id, story_date=story.story_date)
-            try:
-                m.save()
-            except OperationError, e:
-                original_m = MUserStory.objects.get(user_id=self.user_id, feed_id=self.feed_id, story_id=story_id)
-                logging.user(request, "~BRMarked story as read error: %s" % (e))
-                logging.user(request, "~BRMarked story as read: %s" % (story_id))
-                logging.user(request, "~BROrigin story as read: %s" % (m.story.story_guid))
-                logging.user(request, "~BRMarked story id:   %s" % (original_m.story_id))
-                logging.user(request, "~BROrigin story guid: %s" % (original_m.story.story_guid))
-                logging.user(request, "~BRRead now date: %s, original read: %s, story_date: %s." % (m.read_date, original_m.read_date, story.story_date))
-                original_m.story_id = story_id
-                original_m.read_date = date
-                original_m.story_date = story.story_date
-                original_m.save()
-            except OperationError, e:
-                logging.user(request, "~BR~SKCan't even save: %s" % (original_m.story_id))
-                pass
+            m, _ = MUserStory.objects.get_or_create(story=story, user_id=self.user_id, 
+                                                    feed_id=self.feed_id, defaults={
+                'read_date': date, 
+                'story_id': story_id, 
+                'story_date': story.story_date,
+            })
                 
         return data
     
