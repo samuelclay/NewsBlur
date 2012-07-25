@@ -695,6 +695,11 @@ def restore_postgres():
     sudo('su postgres -c "createdb newsblur -O newsblur"')
     sudo('su postgres -c "pg_restore --role=newsblur --dbname=newsblur backup_postgresql_%s.sql.gz"' % backup_date)
     
+def restore_mongo():
+    backup_date = '2012-07-24-09-00'
+    run('PYTHONPATH=/home/sclay/newsblur python s3.py get backup_mongo_%s.tgz' % backup_date)
+    run('tar -xf backup_mongo_%s.tgz' % backup_date)
+    run('mongorestore backup_mongo_%s' % backup_date)
     
 # ======
 # = S3 =
