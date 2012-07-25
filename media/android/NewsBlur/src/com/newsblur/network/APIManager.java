@@ -1,5 +1,6 @@
 package com.newsblur.network;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -9,7 +10,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,6 +24,7 @@ import com.newsblur.network.domain.FeedRefreshResponse;
 import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.StoriesResponse;
+import com.newsblur.serialization.DateStringTypeAdapter;
 import com.newsblur.serialization.FolderStructureTypeAdapter;
 import com.newsblur.util.PrefsUtil;
 
@@ -38,6 +39,7 @@ public class APIManager {
 		this.context = context;
 		final GsonBuilder builder = new GsonBuilder();
 		builder.registerTypeAdapter(FolderStructure.class, new FolderStructureTypeAdapter());
+		builder.registerTypeAdapter(Date.class, new DateStringTypeAdapter());
 		contentResolver = context.getContentResolver();
 		gson = builder.create();
 	}

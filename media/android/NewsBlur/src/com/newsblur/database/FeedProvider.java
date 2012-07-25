@@ -145,7 +145,7 @@ public class FeedProvider extends ContentProvider {
 		case FEED_STORIES:
 			selection = DatabaseConstants.STORY_FEED_ID + " = ?";
 			selectionArgs = new String[] { uri.getLastPathSegment() };
-			return db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, null);
+			return db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, DatabaseConstants.STORY_DATE + " DESC");
 
 			// Querying for a stories from a feed
 		case STORY_COMMENTS:

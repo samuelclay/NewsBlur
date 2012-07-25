@@ -1,6 +1,7 @@
 package com.newsblur.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -40,7 +41,7 @@ public class Story implements Serializable {
 	public String title;
 
 	@SerializedName("story_date")
-	public String date;
+	public Date date;
 
 	@SerializedName("story_content")
 	public String content;
@@ -61,7 +62,7 @@ public class Story implements Serializable {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
 		values.put(DatabaseConstants.STORY_TITLE, title);
-		values.put(DatabaseConstants.STORY_DATE, date);
+		values.put(DatabaseConstants.STORY_DATE, date.getTime());
 		values.put(DatabaseConstants.STORY_CONTENT, content);
 		values.put(DatabaseConstants.STORY_PERMALINK, permalink);
 		values.put(DatabaseConstants.STORY_COMMENT_COUNT, commentCount);
@@ -83,7 +84,7 @@ public class Story implements Serializable {
 		story.authors = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_AUTHORS));
 		story.content = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_CONTENT));
 		story.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TITLE));
-		story.date = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_DATE));
+		story.date = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_DATE)));
 		story.shareCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHARE_COUNT));
 		story.commentCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_COMMENT_COUNT));
 		story.permalink = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_PERMALINK));

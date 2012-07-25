@@ -1,7 +1,8 @@
 package com.newsblur.view;
 
+import java.util.Date;
+
 import android.database.Cursor;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
@@ -37,13 +38,17 @@ public class ItemViewBinder implements ViewBinder {
 			int title = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
 			if (authors + tags + feed + title > 0) {
 				view.setBackgroundResource(R.drawable.positive_count_circle);
-			} else if (authors + tags + feed + title == 0){
+			} else if (authors + tags + feed + title == 0) {
 				view.setBackgroundResource(R.drawable.neutral_count_circle);
 			} else {
 				view.setBackgroundResource(R.drawable.negative_count_circle);
 			}
 			
 			((TextView) view).setText("");
+			return true;
+		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_DATE)) {
+			Date date = new Date(cursor.getLong(columnIndex));
+			((TextView) view).setText(date.toLocaleString());
 			return true;
 		}
 		

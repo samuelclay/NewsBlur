@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -151,7 +150,7 @@ public class ReadingItemFragment extends Fragment {
 			}
 		}
 
-		itemDate.setText(story.date);
+		itemDate.setText(story.date.toGMTString());
 		itemTitle.setText(story.title);
 		itemAuthors.setText(story.authors);
 	}
