@@ -881,7 +881,7 @@ class Feed(models.Model):
             
     def trim_feed(self, verbose=False):
         from apps.reader.models import MUserStory
-        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         trim_cutoff = 500
         if self.active_subscribers <= 1 and self.premium_subscribers < 1:
             trim_cutoff = 100
@@ -914,10 +914,9 @@ class Feed(models.Model):
                 
             # Can't use the story_trim_date because some users may have shared stories from
             # this feed, but the trim date isn't past the two weeks of unreads.
-            userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=SUBSCRIBER_EXPIRE)
+            userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=DAYS_OF_UNREAD)
             if userstories.count():
-                if verbose:
-                    print "Found %s user stories. Deleting..." % userstories.count()
+                logging.debug("   ---> [%-30s] ~FBFound %s user stories. Deleting..." % (unicode(self)[:30], userstories.count()))
                 for userstory in userstories:
                     userstory.delete()
         
