@@ -108,7 +108,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-1' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
                             $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png' })
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: 8px;top: 9px"  })
                             ]),
                             '$12/year'
                           ]),
@@ -117,8 +117,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-2' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
                             $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: -26px;top: 1px" }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_m.png', style: "position: absolute; left: 0px;top: 2px"  })
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: -24px;top: 9px" }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_m.png', style: "position: absolute; left: 4px;top: 6px"  })
                             ]),
                             '$24/year'
                           ]),
@@ -127,9 +127,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-3' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
                             $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: -58px;top: 0" }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_m.png', style: "position: absolute; left: -31px;top: 2px" }),
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_l.png', style: "position: absolute; left: 0; top: 0" })
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: -58px;top: 10px" }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_m.png', style: "position: absolute; left: -31px;top: 8px" }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_l.png', style: "position: absolute; left: 0; top: 6px" })
                             ]),
                             '$36/year'
                           ]),

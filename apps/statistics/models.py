@@ -11,7 +11,7 @@ from utils import json_functions as json
 
 class MStatistics(mongo.Document):
     key   = mongo.StringField(unique=True)
-    value = mongo.StringField()
+    value = mongo.DynamicField()
     
     meta = {
         'collection': 'statistics',
@@ -37,7 +37,8 @@ class MStatistics(mongo.Document):
     
     @classmethod
     def all(cls):
-        values = dict([(stat.key, stat.value) for stat in cls.objects.all()])
+        stats = cls.objects.all()
+        values = dict([(stat.key, stat.value) for stat in stats])
         for key, value in values.items():
             if key in ('avg_time_taken', 'sites_loaded', 'stories_shared'):
                 values[key] = json.decode(value)

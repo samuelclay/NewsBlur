@@ -374,7 +374,7 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests psutil')
+    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil')
     
     put('config/pystartup.py', '.pystartup')
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):

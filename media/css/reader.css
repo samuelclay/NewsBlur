@@ -2596,7 +2596,6 @@ background: transparent;
   position: absolute;
   top: 0;
   margin: 2px 0 0 0;
-  width: 120px;
   height: 20px;
 }
 
@@ -2607,10 +2606,12 @@ background: transparent;
   font-weight: bold;
   color: #4E0A0B;
   text-shadow: 1px 1px 0 #D8D8D8;
+  float: left;
+  margin-left: 8px;
 }
 
 #story_taskbar .NB-feed-error .NB-feed-error-icon {
-    margin: 3px 0 0 0;
+    margin: 4px 0 0 0;
     width: 24px;
     height: 19px;
     background: transparent url('/media/embed/reader/warning.png') no-repeat 0 0;
@@ -3412,16 +3413,23 @@ form.opml_import_form input {
   margin: 0;
   padding: 9px 12px 9px 20px;
   display: block;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+  -webkit-transition: all .12s ease-out;
+  -moz-transition: all .12s ease-out;
+  -o-transition: all .12s ease-out;
+  -ms-transition: all .12s ease-out;
+  background: transparent url('/media/embed/reader/spacer_16.png') no-repeat 1px 0px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
     padding-top: 0;
     margin-top: -1px;
 }
 
+.NB-splash-info .NB-splash-links .NB-splash-link-about a:hover,
+.NB-splash-info .NB-splash-links .NB-splash-link-faq a:hover,
+.NB-splash-info .NB-splash-links .NB-splash-link-api a:hover,
+.NB-splash-info .NB-splash-links .NB-splash-link-press a:hover {
+  background: transparent url('/media/embed/favicon.png') no-repeat 0 7px;
+}
 .NB-splash-info .NB-splash-links .NB-splash-link-github a:hover {
   background: transparent url('/media/embed/reader/octocat.png') no-repeat 0 7px;
 }
@@ -6568,13 +6576,17 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value {
-    margin: 4px 0 4px 0;
-    padding: 0 0 0 36px;
+    padding: 4px 0 4px 36px;
     text-shadow: 1px 1px 0 #FFF8B1;
     clear: both;
     cursor: pointer;
     position: relative;
     opacity: .7;
+    
+    -webkit-transition: all .24s ease-out;
+    -moz-transition: all .24s ease-out;
+    -o-transition: all .24s ease-out;
+    -ms-transition: all .24s ease-out;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value:hover,
@@ -6588,18 +6600,28 @@ form.opml_import_form input {
     height: 40px;
     top: -10px;
     left: -40px;
-    display: none;
-}
-.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-1 .NB-feedchooser-dollar-image {
     display: block;
+    opacity: 0;
+    
+    -webkit-transition: all .24s ease-out;
+    -moz-transition: all .24s ease-out;
+    -o-transition: all .24s ease-out;
+    -ms-transition: all .24s ease-out;
+
+}
+.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-1 .NB-feedchooser-dollar-image,
+.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-1:hover .NB-feedchooser-dollar-image {
+    opacity: 1;
 }
 
-.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-2 .NB-feedchooser-dollar-image {
-    display: block;
+.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-2 .NB-feedchooser-dollar-image,
+.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-2:hover .NB-feedchooser-dollar-image {
+    opacity: 1;
 }
 
-.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-3 .NB-feedchooser-dollar-image {
-    display: block;
+.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-3 .NB-feedchooser-dollar-image,
+.NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-3:hover .NB-feedchooser-dollar-image {
+    opacity: 1;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-month {

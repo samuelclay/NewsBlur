@@ -94,7 +94,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown, !!error_callback, error_callback]);
                 
                 if (error_callback) {
-                    error_callback();
+                    error_callback(e, textStatus, errorThrown);
                 } else if ($.isFunction(callback)) {
                     var message = "Please create an account. Not much to do without an account.";
                     if (NEWSBLUR.Globals.is_authenticated) {

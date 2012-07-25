@@ -1220,7 +1220,7 @@
         post_open_river_stories: function(data, first_load) {
             // NEWSBLUR.log(['post_open_river_stories', data, this.active_feed]);
             if (!data) {
-              return this.show_stories_error();
+              return this.show_stories_error(data);
             }
             
             if (this.active_feed && this.active_feed.indexOf('river:') != -1) {
@@ -1356,7 +1356,7 @@
         post_open_social_stories: function(data, first_load) {
             // NEWSBLUR.log(['post_open_river_stories', data, this.active_feed, this.flags['select_story_in_feed']]);
             if (!data) {
-              return this.show_stories_error();
+              return this.show_stories_error(data);
             }
             
             if (this.active_feed && NEWSBLUR.utils.is_feed_social(this.active_feed)) {
@@ -1443,19 +1443,30 @@
             });
         },
         
-        show_stories_error: function() {
-            NEWSBLUR.log(["show_stories_error", arguments]);
+        show_stories_error: function(data) {
+            NEWSBLUR.log(["show_stories_error", data]);
             this.hide_stories_progress_bar();
             
             NEWSBLUR.app.original_tab_view.iframe_not_busting();
             this.model.flags['no_more_stories'] = true;
             
+            var message = "Oh no! <br> There was an error!";
+            if (data && data.status) {
+                if (data.status == 502) {
+                    message = "NewsBlur is down right now. <br> Try again soon.";
+                } else if (data.status == 503) {
+                    message = "NewsBlur is in maintenace mode. <br> Try again soon.";
+                }
+            }
             var $error = $.make('div', { className: 'NB-feed-error' }, [
                 $.make('div', { className: 'NB-feed-error-icon' }),
-                $.make('div', { className: 'NB-feed-error-text' }, 'Oh no! There was an error!')
+                $.make('div', { className: 'NB-feed-error-text' }, message)
             ]).css({'opacity': 0});
             
             this.$s.$story_taskbar.append($error);
+            if (NEWSBLUR.app.story_unread_counter) {
+                NEWSBLUR.app.story_unread_counter.remove();
+            }
             
             $error.animate({'opacity': 1}, {'duration': 500, 'queue': false});
             // Center the progress bar
