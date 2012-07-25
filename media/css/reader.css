@@ -6546,10 +6546,10 @@ form.opml_import_form input {
     position: relative;
     opacity: .7;
     
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    -webkit-transition: all .24s ease-out;
+    -moz-transition: all .24s ease-out;
+    -o-transition: all .24s ease-out;
+    -ms-transition: all .24s ease-out;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value:hover,
@@ -6566,10 +6566,10 @@ form.opml_import_form input {
     display: block;
     opacity: 0;
     
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    -webkit-transition: all .24s ease-out;
+    -moz-transition: all .24s ease-out;
+    -o-transition: all .24s ease-out;
+    -ms-transition: all .24s ease-out;
 
 }
 .NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected.NB-1 .NB-feedchooser-dollar-image,

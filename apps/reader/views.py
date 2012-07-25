@@ -419,11 +419,16 @@ def load_single_feed(request, feed_id):
             raise Http404
         
     stories = feed.get_stories(offset, limit)
+    
+    checkpoint1 = time.time()
+    
     try:
         stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
     except redis.ConnectionError:
         logging.user(request, "~BR~FK~SBRedis is unavailable for shared stories.")
 
+    checkpoint2 = time.time()
+    
     # Get intelligence classifier for user
     
     classifier_feeds   = list(MClassifierFeed.objects(user_id=user.pk, feed_id=feed_id, social_user_id=0))
@@ -435,8 +440,7 @@ def load_single_feed(request, feed_id):
                                            classifier_authors=classifier_authors, 
                                            classifier_titles=classifier_titles,
                                            classifier_tags=classifier_tags)
-    
-    checkpoint1 = time.time()
+    checkpoint3 = time.time()
     
     usersub = UserSubscription.objects.get(user=user, feed=feed)
     userstories = []
@@ -458,7 +462,7 @@ def load_single_feed(request, feed_id):
                                for story in shared_stories])
         userstories = set(us.story_id for us in userstories_db)
             
-    checkpoint2 = time.time()
+    checkpoint4 = time.time()
     
     for story in stories:
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
@@ -488,8 +492,6 @@ def load_single_feed(request, feed_id):
             'tags': apply_classifier_tags(classifier_tags, story),
             'title': apply_classifier_titles(classifier_titles, story),
         }
-
-    checkpoint3 = time.time()
     
     # Intelligence
     feed_tags = json.decode(feed.data.popular_tags) if feed.data.popular_tags else []
@@ -501,11 +503,14 @@ def load_single_feed(request, feed_id):
     diff1 = checkpoint1-start
     diff2 = checkpoint2-start
     diff3 = checkpoint3-start
+    diff4 = checkpoint4-start
     timediff = time.time()-start
     last_update = relative_timesince(feed.last_update)
-    logging.user(request, "~FYLoading feed: ~SB%s%s ~SN(~SB%.4ss/%.4ss(%s)/%.4ss~SN)" % (
-        feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '',
-        diff1, diff2, userstories_db and userstories_db.count() or '~SN0~SB', diff3))
+    time_breakdown = ("~SN~FR(~SB%.4s/%.4s/%.4s/%.4s(%s)~SN)" % (
+        diff1, diff2, diff3, diff4, userstories_db and userstories_db.count() or '~SN0~SB')
+        if timediff > 0.50 else "")
+    logging.user(request, "~FYLoading feed: ~SB%s%s %s" % (
+        feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', time_breakdown))
     FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
     
     data = dict(stories=stories, 
