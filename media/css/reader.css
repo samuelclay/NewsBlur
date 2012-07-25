@@ -6539,8 +6539,7 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value {
-    margin: 4px 0 4px 0;
-    padding: 0 0 0 36px;
+    padding: 4px 0 4px 36px;
     text-shadow: 1px 1px 0 #FFF8B1;
     clear: both;
     cursor: pointer;
