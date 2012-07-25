@@ -403,7 +403,6 @@ def load_single_feed(request, feed_id):
     userstories_db = None
     user_profiles = {}
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
-
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
         

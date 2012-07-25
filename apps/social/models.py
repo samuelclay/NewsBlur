@@ -245,11 +245,14 @@ class MSocialProfile(mongo.Document):
     @classmethod
     def sync_all_redis(cls):
         for profile in cls.objects.all():
-            profile.sync_redis()
+            profile.sync_redis(force=True)
     
-    def sync_redis(self):
+    def sync_redis(self, force=False):
+        self.following_user_ids = list(set(self.following_user_ids))
+        self.save()
+        
         for user_id in self.following_user_ids:
-            self.follow_user(user_id)
+            self.follow_user(user_id, force=force)
         
         self.follow_user(self.user_id)
     
@@ -377,16 +380,19 @@ class MSocialProfile(mongo.Document):
         if not skip_save:
             self.save()
         
-    def follow_user(self, user_id, check_unfollowed=False):
+    def follow_user(self, user_id, check_unfollowed=False, force=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
         if check_unfollowed and user_id in self.unfollowed_user_ids:
             return
         
-        if user_id in self.following_user_ids:
-            return
+        logging.debug(" ---> ~FB~SB%s~SN (%s) following %s" % (self.username, self.user_id, user_id))
+
+        if user_id not in self.following_user_ids:
+            self.following_user_ids.append(user_id)
+            if not force:
+                return
             
-        self.following_user_ids.append(user_id)
         if user_id in self.unfollowed_user_ids:
             self.unfollowed_user_ids.remove(user_id)
         self.count_follows()
@@ -414,8 +420,9 @@ class MSocialProfile(mongo.Document):
         socialsub.needs_unread_recalc = True
         socialsub.save()
         
-        from apps.social.tasks import EmailNewFollower
-        EmailNewFollower.delay(follower_user_id=self.user_id, followee_user_id=user_id)
+        if not force:
+            from apps.social.tasks import EmailNewFollower
+            EmailNewFollower.delay(follower_user_id=self.user_id, followee_user_id=user_id)
         
         return socialsub
     

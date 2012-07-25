@@ -2591,7 +2591,6 @@ background: transparent;
   position: absolute;
   top: 0;
   margin: 2px 0 0 0;
-  width: 120px;
   height: 20px;
 }
 
@@ -2602,10 +2601,12 @@ background: transparent;
   font-weight: bold;
   color: #4E0A0B;
   text-shadow: 1px 1px 0 #D8D8D8;
+  float: left;
+  margin-left: 8px;
 }
 
 #story_taskbar .NB-feed-error .NB-feed-error-icon {
-    margin: 3px 0 0 0;
+    margin: 4px 0 0 0;
     width: 24px;
     height: 19px;
     background: transparent url('/media/embed/reader/warning.png') no-repeat 0 0;
