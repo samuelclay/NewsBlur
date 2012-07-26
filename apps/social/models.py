@@ -383,11 +383,6 @@ class MSocialProfile(mongo.Document):
         if check_unfollowed and user_id in self.unfollowed_user_ids:
             return
         
-        following_key = "F:%s:F" % (self.user_id)
-        r.sadd(following_key, user_id)
-        follower_key = "F:%s:f" % (user_id)
-        r.sadd(follower_key, self.user_id)
-        
         if user_id in self.following_user_ids:
             return
             
@@ -405,6 +400,11 @@ class MSocialProfile(mongo.Document):
             followee.follower_user_ids.append(self.user_id)
             followee.count_follows()
             followee.save()
+        
+        following_key = "F:%s:F" % (self.user_id)
+        r.sadd(following_key, user_id)
+        follower_key = "F:%s:f" % (user_id)
+        r.sadd(follower_key, self.user_id)
         
         if self.user_id != user_id:
             MInteraction.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
