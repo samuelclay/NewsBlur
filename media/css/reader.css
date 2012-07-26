@@ -4858,7 +4858,7 @@ form.opml_import_form input {
     top: auto;
 }
 
-.NB-menu-manage li {
+.NB-menu-manage li.NB-menu-item {
     margin: 0 0 0 0;
     padding: 0;
     cursor: pointer;
@@ -4867,8 +4867,9 @@ form.opml_import_form input {
     background-color: #BAE3A8;
 }
 
-.NB-menu-manage li:hover:not(.NB-disabled),
-.NB-menu-manage li.NB-hover {
+.NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled),
+.NB-menu-manage li.NB-menu-item:hover:not(.NB-active),
+.NB-menu-manage li.NB-menu-item.NB-hover {
     background-color: #639510;
     color: white;
 }
@@ -4919,7 +4920,7 @@ form.opml_import_form input {
   text-shadow: 0 1px 0 #F0F0F0;
 }
 
-.NB-menu-manage li:hover:not(.NB-disabled) .NB-menu-manage-title {
+.NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled) .NB-menu-manage-title {
     text-shadow: 0 1px 0 #000;
 }
 
@@ -4939,7 +4940,7 @@ form.opml_import_form input {
   color: #718C7B;
 }
 
-.NB-menu-manage li:hover .NB-menu-manage-subtitle {
+.NB-menu-manage li.NB-menu-item:hover .NB-menu-manage-subtitle {
     color: #D2E2F8;
 }
 .NB-menu-manage .NB-menu-manage-title {
@@ -4957,11 +4958,6 @@ form.opml_import_form input {
   height: 18px;
   top: 5px;
   left: 10px;
-}
-
-.NB-menu-manage .NB-menu-manage-feed,
-.NB-menu-manage .NB-menu-manage-story {
-    position: relative;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info,
@@ -5109,7 +5105,7 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-confirm select {
     height: auto;
 }
-.NB-menu-manage li.NB-menu-manage-confirm:hover {
+.NB-menu-manage li.NB-menu-item.NB-menu-manage-confirm:hover {
     background-color: #BAE3A8;
     cursor: default;
 }
@@ -5368,10 +5364,13 @@ form.opml_import_form input {
     font-size: 10px;
     color: #E0E0E0;
 }
+.NB-menu-manage .NB-menu-manage-controls .segmented-control li:hover {
+    background-color: #639510;
+}
 .NB-menu-manage .NB-menu-manage-controls .segmented-control li.NB-active {
     color: white;
+    background-color: transparent;
 }
-
 /* ==================== */
 /* = Statistics Modal = */
 /* ==================== */

@@ -977,9 +977,9 @@ class Feed(models.Model):
             for tcat in entry.tags:
                 if hasattr(tcat, 'label') and tcat.label:
                     term = tcat.label
-                elif tcat.term:
+                elif hasattr(tcat, 'term') and tcat.term:
                     term = tcat.term
-                else:
+                elif not term:
                     continue
                 qcat = term.strip()
                 if ',' in qcat or '/' in qcat:
