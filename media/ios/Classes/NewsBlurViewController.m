@@ -8,6 +8,7 @@
 
 #import "NewsBlurViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "NBContainerViewController.h"
 #import "DashboardViewController.h"
 #import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
@@ -291,7 +292,7 @@
     
     UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
-    [userAvatarButton addTarget:self action:@selector(showUserProfilePopover:) forControlEvents:UIControlEventTouchUpInside];
+    [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
     [userAvatarButton setImage:userAvatarImage forState:UIControlStateNormal];
 
     UIBarButtonItem *userAvatar = [[UIBarButtonItem alloc] 
@@ -415,27 +416,10 @@
     
 }
 
-- (void)showUserProfilePopover:(id)sender {
+- (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (popoverController == nil) {
-            popoverController = [[UIPopoverController alloc]
-                                 initWithContentViewController:appDelegate.userProfileViewController];
-            
-            popoverController.delegate = self;
-        } else {
-            if (popoverController.isPopoverVisible) {
-                [popoverController dismissPopoverAnimated:YES];
-                return;
-            }
-            [popoverController setContentViewController:appDelegate.userProfileViewController];
-        }
-        
-        [popoverController setPopoverContentSize:CGSizeMake(320, 416)];
-        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem 
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                                  animated:YES];  
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {  
+        [appDelegate.masterContainerViewController showUserProfilePopover:self.navigationItem.leftBarButtonItem];
     } else {
         [appDelegate showUserProfileModal];
     }

@@ -9,6 +9,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "FeedDetailViewController.h"
 #import "NewsBlurAppDelegate.h"
+#import "NBContainerViewController.h"
 #import "FeedDetailTableCell.h"
 #import "ASIFormDataRequest.h"
 #import "UserProfileViewController.h"
@@ -18,6 +19,7 @@
 #import "JSON.h"
 #import "StringHelper.h"
 #import "Utilities.h"
+
 
 #define kTableViewRowHeight 65;
 #define kTableViewRiverRowHeight 81;
@@ -85,7 +87,7 @@
     // set right avatar title image
     if (appDelegate.isSocialView) {
         UIButton *titleImageButton = [appDelegate makeRightFeedTitle:appDelegate.activeFeed];
-        [titleImageButton addTarget:self action:@selector(showUserProfilePopover) forControlEvents:UIControlEventTouchUpInside];
+        [titleImageButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
         UIBarButtonItem *titleImageBarButton = [[UIBarButtonItem alloc] 
                                                  initWithCustomView:titleImageButton];
         self.navigationItem.rightBarButtonItem = titleImageBarButton;
@@ -982,27 +984,10 @@
     [appDelegate showMoveSite];
 }
 
-- (void)showUserProfilePopover {
+- (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"user_id"]];
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (popoverController == nil) {
-            popoverController = [[UIPopoverController alloc]
-                                 initWithContentViewController:appDelegate.userProfileViewController];
-            
-            popoverController.delegate = self;
-        } else {
-            if (popoverController.isPopoverVisible) {
-                [popoverController dismissPopoverAnimated:YES];
-                return;
-            }
-            [popoverController setContentViewController:appDelegate.userProfileViewController];
-        }
-        
-        [popoverController setPopoverContentSize:CGSizeMake(320, 416)];
-        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                                  animated:YES];  
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {  
+        [appDelegate.masterContainerViewController showUserProfilePopover:self.navigationItem.rightBarButtonItem];
     } else {
         [appDelegate showUserProfileModal];
     }

@@ -39,6 +39,7 @@
 @synthesize popoverController;
 @synthesize fontSettingsButton;
 @synthesize originalStoryButton;
+@synthesize buttonBack;
 
 @synthesize bottomPlaceholderToolbar;
 
@@ -79,6 +80,11 @@
                                            action:@selector(toggleFontSize:)
                                            ];
     
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
+                                   initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
+    
+    self.buttonBack = backButton;
+    
     self.originalStoryButton = originalButton;
     self.fontSettingsButton = fontSettings;
 
@@ -100,14 +106,6 @@
         
         self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
     } else {
-//        UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-//        backBtn.frame = CGRectMake(0, 0, 51, 31);
-//        [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
-//        [backBtn addTarget:self action:@selector(transitionFromFeedDetail) forControlEvents:UIControlEventTouchUpInside];
-        UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
-                                       initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
-
-        self.navigationItem.leftBarButtonItem = backButton;
         self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
         self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
@@ -136,6 +134,17 @@
             CGPoint touchLocation = [theTouch locationInView:self.view];
             CGFloat y = touchLocation.y;
             [appDelegate.masterContainerViewController dragStoryToolbar:y];  
+        }
+    }
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
+        UITouch *theTouch = [touches anyObject];
+        if ([theTouch.view isKindOfClass: UIToolbar.class]) {
+            [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];  
         }
     }
 }

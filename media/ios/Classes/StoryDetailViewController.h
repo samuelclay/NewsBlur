@@ -25,6 +25,8 @@
     UIActivityIndicatorView *loadingIndicator;
     UIPopoverController *popoverController;
     UIToolbar *bottomPlaceholderToolbar;
+    UIBarButtonItem *buttonBack;
+
 }
 
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
@@ -36,6 +38,7 @@
 @property (nonatomic) IBOutlet UIToolbar *toolbar;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonPrevious;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonNext;
+@property (nonatomic) UIBarButtonItem *buttonBack;
 @property (nonatomic) IBOutlet UIBarButtonItem *activity;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;

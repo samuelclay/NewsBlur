@@ -10,7 +10,7 @@
 
 @class NewsBlurAppDelegate;
 
-@interface NBContainerViewController : UIViewController {
+@interface NBContainerViewController : UIViewController <UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
 
@@ -19,9 +19,12 @@
 
 - (void)adjustDashboardScreen;
 - (void)adjustFeedDetailScreen;
+- (void)adjustFeedDetailScreenForStoryTitles;
 
 - (void)transitionToFeedDetail;
 - (void)transitionFromFeedDetail;
 
 - (void)dragStoryToolbar:(int)yCoordinate;
+- (void)showUserProfilePopover:(id)sender;
+
 @end

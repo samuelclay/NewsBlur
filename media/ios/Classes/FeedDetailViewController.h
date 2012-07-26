@@ -66,7 +66,7 @@
 - (void)deleteSite;
 - (void)deleteFolder;
 - (void)openMoveView;
-- (void)showUserProfilePopover;
+- (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;
 - (void)instafetchFeed;
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(int)row;

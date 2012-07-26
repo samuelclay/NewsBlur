@@ -198,17 +198,20 @@
     self.userProfileViewController = userProfileView;
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
     
-    // adding Done button
-    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                     initWithTitle:@"Done" 
-                                   style:UIBarButtonItemStyleDone 
-                                   target:self 
-                                   action:@selector(hideUserProfileModal)];
-    
-    self.userProfileViewController.navigationItem.rightBarButtonItem = donebutton;
-    self.userProfileViewController.navigationItem.title = @"Profile";
-    [self.navigationController presentModalViewController:navController animated:YES];
-    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        
+    } else {
+        // adding Done button
+        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                       initWithTitle:@"Done" 
+                                       style:UIBarButtonItemStyleDone 
+                                       target:self 
+                                       action:@selector(hideUserProfileModal)];
+        
+        self.userProfileViewController.navigationItem.rightBarButtonItem = donebutton;
+        self.userProfileViewController.navigationItem.title = @"Profile";
+        [self.navigationController presentModalViewController:navController animated:YES];
+    }
 }
 
 - (void)hideUserProfileModal {
@@ -1129,7 +1132,7 @@
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage;
         if (self.isRiverView) {
-            titleImage = [UIImage imageNamed:@"folder.png"];
+            titleImage = [UIImage imageNamed:@"folder_white.png"];
         } else {
             titleImage = [Utilities getImage:feedIdStr];
         }
@@ -1143,15 +1146,7 @@
 - (UIButton *)makeRightFeedTitle:(NSDictionary *)feed {
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
-    UIImage *titleImage;
-    if (self.isRiverView) {
-        titleImage = [UIImage imageNamed:@"folder.png"];
-    } else if (self.isRiverView) {
-        titleImage = [Utilities getImage:feedIdStr];
-    } else {
-        titleImage = [Utilities getImage:feedIdStr];
-    }
-    
+    UIImage *titleImage  = [Utilities getImage:feedIdStr];
 
     titleImage = [Utilities roundCorneredImage:titleImage radius:6];
     

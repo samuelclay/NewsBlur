@@ -79,7 +79,7 @@
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)refreshFeedList;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
-- (void)showUserProfilePopover:(id)sender;
+- (void)showUserProfile;
 - (void)showSettingsPopover:(id)sender;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 
