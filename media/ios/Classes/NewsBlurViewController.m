@@ -150,7 +150,7 @@
     [appDelegate showNavigationBar:animated];
     
 //    [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
-//                                      animated:YES scrollPosition:UITableViewScrollPositionMiddle];
+//                                      animated:YES scrollPosition:UITableViewScrollPositionMiddle];sto
     
 
 }
