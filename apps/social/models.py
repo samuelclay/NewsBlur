@@ -245,11 +245,14 @@ class MSocialProfile(mongo.Document):
     @classmethod
     def sync_all_redis(cls):
         for profile in cls.objects.all():
-            profile.sync_redis()
+            profile.sync_redis(force=True)
     
-    def sync_redis(self):
+    def sync_redis(self, force=False):
+        self.following_user_ids = list(set(self.following_user_ids))
+        self.save()
+        
         for user_id in self.following_user_ids:
-            self.follow_user(user_id)
+            self.follow_user(user_id, force=force)
         
         self.follow_user(self.user_id)
     
@@ -377,16 +380,19 @@ class MSocialProfile(mongo.Document):
         if not skip_save:
             self.save()
         
-    def follow_user(self, user_id, check_unfollowed=False):
+    def follow_user(self, user_id, check_unfollowed=False, force=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
         if check_unfollowed and user_id in self.unfollowed_user_ids:
             return
         
-        if user_id in self.following_user_ids:
-            return
+        logging.debug(" ---> ~FB~SB%s~SN (%s) following %s" % (self.username, self.user_id, user_id))
+
+        if user_id not in self.following_user_ids:
+            self.following_user_ids.append(user_id)
+            if not force:
+                return
             
-        self.following_user_ids.append(user_id)
         if user_id in self.unfollowed_user_ids:
             self.unfollowed_user_ids.remove(user_id)
         self.count_follows()
@@ -414,8 +420,9 @@ class MSocialProfile(mongo.Document):
         socialsub.needs_unread_recalc = True
         socialsub.save()
         
-        from apps.social.tasks import EmailNewFollower
-        EmailNewFollower.delay(follower_user_id=self.user_id, followee_user_id=user_id)
+        if not force:
+            from apps.social.tasks import EmailNewFollower
+            EmailNewFollower.delay(follower_user_id=self.user_id, followee_user_id=user_id)
         
         return socialsub
     
@@ -651,7 +658,9 @@ class MSocialSubscription(mongo.Document):
     @classmethod
     def feeds(cls, *args, **kwargs):
         user_id = kwargs['user_id']
-        params = dict(user_id=user_id)
+        params = {
+            'user_id': user_id,
+        }
         if 'subscription_user_id' in kwargs:
             params["subscription_user_id"] = kwargs["subscription_user_id"]
         social_subs = cls.objects.filter(**params)
@@ -667,6 +676,9 @@ class MSocialSubscription(mongo.Document):
             # Fetch user profiles of subscriptions
             social_profiles = MSocialProfile.profile_feeds(social_user_ids)
             for user_id, social_sub in social_subs.items():
+                if social_profiles[user_id]['shared_stories_count'] <= 0:
+                    continue
+                    
                 # Combine subscription read counts with feed/user info
                 feed = dict(social_sub.items() + social_profiles[user_id].items())
                 social_feeds.append(feed)
@@ -937,6 +949,7 @@ class MCommentReply(mongo.EmbeddedDocument):
         reply = {
             'user_id': self.user_id,
             'publish_date': relative_timesince(self.publish_date),
+            'date': self.publish_date,
             'comments': self.comments,
         }
         return reply
@@ -1185,6 +1198,7 @@ class MSharedStory(mongo.Document):
             'user_id': self.user_id,
             'comments': self.comments,
             'shared_date': relative_timesince(self.shared_date),
+            'date': self.shared_date,
             'replies': [reply.to_json() for reply in self.replies],
             'liking_users': self.liking_users,
             'source_user_id': self.source_user_id,

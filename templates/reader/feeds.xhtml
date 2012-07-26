@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load typogrify_tags recommendations_tags utils_tags statistics_tags %}
+{% load recommendations_tags utils_tags statistics_tags %}
 
 {% block extra_head_js %}
     <script>
@@ -24,11 +24,12 @@
     {% endif %}
 {% endblock %}
 
+{% block bodyclass %}NB-body-main{% endblock %}
 {% block content %}
 
 
 <h1 class="NB-splash-heading">NewsBlur</h1>
-<h2 class="NB-splash-heading">- A visual feed reader with intelligence.</h2>
+<h2 class="NB-splash-heading">- The best stories from your friends and favorite blogs, all in one place.</h2>
 
 <div id="NB-splash" style="left: {% firstof user_profile.feed_pane_size 240 %}px">
 
@@ -37,19 +38,131 @@
     {% if user.is_authenticated %}
         {% render_interactions_module %}
         {% render_activities_module %}
-    {% endif %}
+        
+        {% if recommended_feeds %}
+          {% render_recommended_feed recommended_feeds %}
+        {% endif %}
     
-    {% if not user.is_authenticated %}
+        {% if user.is_staff and unmoderated_feeds %}
+          {% render_recommended_feed unmoderated_feeds 1 %}
+        {% endif %}
+    
+    {% endif %}{% if not user.is_authenticated %}
+        
+        <div class="NB-module NB-module-logo">
+            <img src="{{ MEDIA_URL }}img/logo_newsblur.png" class="NB-module-logo-image" style="width: 312px; height: 55px;" />
+            <div class="NB-module-logo-tagline">
+                Focus on the best stories from<br><b>your friends</b> and <b>favorite blogs</b>
+            </div>
+            <div class="NB-module-logo-elsewhere">
+                FOR WEB, <a href="/iphone" class="NB-splash-link">iOS</a>, AND <a href="https://market.android.com/details?id=bitwrit.Blar" class="NB-splash-link">ANDROID</a>
+            </div>
+        </div>
+        
         {% render_features_module %}
+    
+        <div class="NB-module NB-module-howitworks" style="display: none">
+            <h5 class="NB-module-header">
+                <div class="NB-module-header-right">
+                    <a href="#" class="NB-module-direction NB-module-next-page"></a>
+                    <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
+                </div>
+                <div class="NB-module-header-left">
+                    How It Works
+                </div>
+            </h5>
+
+            <div class="NB-howitworks-page-indicators">
+                <a href="#" class="NB-module-page-indicator NB-active"></a>
+                <a href="#" class="NB-module-page-indicator"></a>
+                <a href="#" class="NB-module-page-indicator"></a>
+                <a href="#" class="NB-module-page-indicator"></a>
+                <a href="#" class="NB-module-page-indicator"></a>
+                <a href="#" class="NB-module-page-indicator"></a>
+            </div>
+
+            <div class="NB-howitworks-page NB-active">
+                <div class="NB-howitworks-page-image">
+                    <img src="{{ MEDIA_URL }}img/reader/howitworks_original.png" />
+                </div>
+                <table class="NB-howitworks-page-description">
+                    <tr>
+                        <td>
+                            Read the original site.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="NB-howitworks-page">
+                <div class="NB-howitworks-page-image">
+                    <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_like.png" />
+                </div>
+                <table class="NB-howitworks-page-description">
+                    <tr>
+                        <td>
+                            Easily train NewsBlur to highlight stories you like.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="NB-howitworks-page">
+                <div class="NB-howitworks-page-image">
+                    <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_dislike.png" />
+                </div>
+                <table class="NB-howitworks-page-description">
+                    <tr>
+                        <td>
+                            NewsBlur will filter out stories which you don't like.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="NB-howitworks-page">
+                <div class="NB-howitworks-page-image">
+                    <img src="{{ MEDIA_URL }}img/reader/howitworks_import.png" />
+                </div>
+                <table class="NB-howitworks-page-description">
+                    <tr>
+                        <td>
+                            Quickly import your sites from Google Reader.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="NB-howitworks-page">
+                <div class="NB-howitworks-page-image">
+                    <img src="{{ MEDIA_URL }}img/reader/howitworks_iphone.png" />
+                </div>
+                <table class="NB-howitworks-page-description">
+                    <tr>
+                        <td>
+                            Use the free iPhone app.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="NB-howitworks-page">
+                <div class="NB-howitworks-page-image">
+                    <img src="{{ MEDIA_URL }}img/reader/howitworks_github.png" />
+                </div>
+                <table class="NB-howitworks-page-description">
+                    <tr>
+                        <td>
+                            Open source, regularly improved, attention to detail.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+
     {% endif %}
     
-    {% if recommended_feeds %}
-      {% render_recommended_feed recommended_feeds %}
-    {% endif %}
-    
-    {% if user.is_staff and unmoderated_feeds %}
-      {% render_recommended_feed unmoderated_feeds 1 %}
-    {% endif %}
           
 
 
@@ -58,7 +171,7 @@
   <div class="NB-account">
     
     {% if not user.is_authenticated %}
-      <div class="NB-module">
+      <div class="NB-module NB-module-login">
         <h5>
           <div class="NB-module-header-login">Login</div>
           <div class="NB-module-header-signup">Signup</div>
@@ -123,110 +236,10 @@
           {% endif %}
       
           <div class="NB-signup-orline {% if signup_form.errors %}NB-signup-orline-reduced{% endif %}">&mdash; <span class="NB-signup-orline-or">or</span> &mdash;</div>
-          <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
+          <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from <img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
         </div>
       </div>
 
-      <div class="NB-module NB-module-howitworks">
-        <h5 class="NB-module-header">
-          <div class="NB-module-header-right">
-            <a href="#" class="NB-module-direction NB-module-next-page"></a>
-            <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
-          </div>
-          <div class="NB-module-header-left">
-            How It Works
-          </div>
-        </h5>
-        
-        <div class="NB-howitworks-page-indicators">
-          <a href="#" class="NB-module-page-indicator NB-active"></a>
-          <a href="#" class="NB-module-page-indicator"></a>
-          <a href="#" class="NB-module-page-indicator"></a>
-          <a href="#" class="NB-module-page-indicator"></a>
-          <a href="#" class="NB-module-page-indicator"></a>
-          <a href="#" class="NB-module-page-indicator"></a>
-        </div>
-      
-        <div class="NB-howitworks-page NB-active">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_original.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Read the<br />original site.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-        <div class="NB-howitworks-page">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_like.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Easily train NewsBlur to highlight stories you like.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-        <div class="NB-howitworks-page">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_dislike.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}NewsBlur will filter out stories which you don't like.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-        <div class="NB-howitworks-page">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_import.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Quickly import<br>your feeds from<br>Google Reader.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-        <div class="NB-howitworks-page">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_iphone.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Use the free iPhone app.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-      
-        <div class="NB-howitworks-page">
-          <div class="NB-howitworks-page-image">
-            <img src="{{ MEDIA_URL }}img/reader/howitworks_github.png" />
-          </div>
-          <table class="NB-howitworks-page-description">
-            <tr>
-              <td>
-                {% filter typogrify %}Open source,<br>regularly improved,<br>attention to detail.{% endfilter %}
-              </td>
-            </tr>
-          </table>
-        </div>
-        
-      </div>
-      
     {% else %}
       
       <div class="NB-module NB-module-account">
