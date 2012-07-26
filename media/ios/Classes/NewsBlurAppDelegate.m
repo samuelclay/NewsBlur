@@ -258,13 +258,12 @@
     if (resetComment) {
         self.shareViewController.commentField.text = @"";
     }
-    
-    [self.shareViewController.commentField resignFirstResponder];
-    
+        
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
         [self.masterContainerViewController transitionFromShareView];
     } else {
         [self.navigationController dismissModalViewControllerAnimated:YES];
+        [self.shareViewController.commentField resignFirstResponder];
     }
 }
 
