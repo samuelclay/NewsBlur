@@ -421,6 +421,11 @@
 }
 
 - (void)showStory {
+    appDelegate.shareViewController.commentField.text = nil;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController transitionFromShareView];
+    }
+    
     self.webView.hidden = NO;
     self.bottomPlaceholderToolbar.hidden = YES;
     self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:self.originalStoryButton, self.fontSettingsButton, nil];
