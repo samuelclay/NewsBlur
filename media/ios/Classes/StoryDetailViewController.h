@@ -51,6 +51,7 @@
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;
+- (void)toggleLikeComment:(BOOL)likeComment;
 - (void)showStory;
 - (void)scrolltoBottom;
 - (void)showOriginalSubview:(id)sender;
@@ -64,6 +65,7 @@
 
 - (void)refreshComments;
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
+- (void)finishLikeComment:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)setActiveStory;
 - (IBAction)toggleFontSize:(id)sender;

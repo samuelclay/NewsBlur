@@ -568,7 +568,8 @@
                                                                               self.storyNavigationController.view.frame.size.width,
                                                                               NB_DEFAULT_SHARE_HEIGHT);
                          } else {
-                             self.shareViewController.view.frame = shareViewFrame;  
+                             self.shareViewController.view.frame = shareViewFrame;
+                             self.storyNavigationController.view.frame = storyNavigationFrame;
                          }
                          
                      } completion:^(BOOL finished) {

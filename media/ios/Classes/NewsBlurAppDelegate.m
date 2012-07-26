@@ -246,8 +246,8 @@
       setCommentIndex:(NSString *)commentIndex {
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
         [self.masterContainerViewController transitionToShareView];
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
     } else {
         [self.navigationController presentModalViewController:self.shareViewController animated:YES];
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 

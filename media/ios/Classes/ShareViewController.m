@@ -137,6 +137,12 @@
         }
         [submitButton setAction:(@selector(doShareThisStory:))];
     } else if ([type isEqualToString: @"share"]) {
+        
+        // test to see if the user has already commented.
+        
+        
+        
+        
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -161,19 +167,16 @@
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
     NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
-    NSString *sourceUserIdStr = [appDelegate.activeStory objectForKey:@"source_user_id"];
+    NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
 
-    
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:feedIdStr forKey:@"feed_id"]; 
     [request setPostValue:storyIdStr forKey:@"story_id"];
     
-    if ([sourceUserIdStr class] != [NSNull class]) {
+    if (sourceUserIdStr.length) {
         [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
     }
-    
-    [request setPostValue:@"8" forKey:@"source_user_id"]; 
     
     NSString *comments = commentField.text;
     if ([comments length]) {
@@ -219,58 +222,12 @@
 }
 
 - (void)finishAddReply:(ASIHTTPRequest *)request {
-    NSLog(@"\n\n\n%@\n\n\n", [request responseString]);;
     NSLog(@"Successfully added.");
     NSString *responseString = [request responseString];
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     // add the comment into the activeStory dictionary
-    NSDictionary *comment = [results objectForKey:@"comment"];
-    NSArray *userProfiles = [results objectForKey:@"user_profiles"];
-    
-    appDelegate.activeFeedUserProfiles = [DataUtilities 
-                                          updateUserProfiles:appDelegate.activeFeedUserProfiles 
-                                          withNewUserProfiles:userProfiles];
-    
-    NSString *commentUserId = [NSString stringWithFormat:@"%@", [comment objectForKey:@"user_id"]];
-    BOOL foundComment = NO;
-    
-    NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
-    NSMutableArray *newFriendsComments = [[NSMutableArray alloc] init];
-    for (int i = 0; i < friendComments.count; i++) {
-        NSString *userId = [NSString stringWithFormat:@"%@", 
-                            [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
-        if([userId isEqualToString:commentUserId]){
-            [newFriendsComments addObject:comment];
-            foundComment = YES;
-        } else {
-            [newFriendsComments addObject:[friendComments objectAtIndex:i]];
-        }
-    }
-    
-    // make mutable copy
-    NSMutableDictionary *newActiveStory = [appDelegate.activeStory mutableCopy];
-    [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
-    
-    if (!foundComment) {
-        NSArray *publicComments = [appDelegate.activeStory objectForKey:@"public_comments"];
-        NSMutableArray *newPublicComments = [[NSMutableArray alloc] init];
-        for (int i = 0; i < publicComments.count; i++) {
-            NSString *userId = [NSString stringWithFormat:@"%@", 
-                                [[publicComments objectAtIndex:i] objectForKey:@"user_id"]];
-            if([userId isEqualToString:commentUserId]){
-                [newPublicComments addObject:comment];
-            } else {
-                [newPublicComments addObject:[publicComments objectAtIndex:i]];
-            }
-        }
-
-        [newActiveStory setValue:[NSArray arrayWithArray:publicComments] forKey:@"public_comments"];
-    } else {
-        [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
-    }
-    
-    NSDictionary *newStory = [NSDictionary dictionaryWithDictionary:newActiveStory];
+    NSDictionary *newStory = [DataUtilities updateComment:results for:appDelegate];
     [self replaceStory:newStory];
 }
 

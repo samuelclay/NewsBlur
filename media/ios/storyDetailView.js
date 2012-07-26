@@ -6,7 +6,7 @@ $('.NB-story img').bind('load', function() {
     setImage(this);
 });
 
-$('a.NB-show-profile').click(function(){
+$('a.NB-show-profile').live('click', function(){
   var offset = $('img', this).offset();
   console.log(offset);
   var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;

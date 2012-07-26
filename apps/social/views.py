@@ -715,7 +715,7 @@ def like_comment(request):
     story_id = request.POST['story_id']
     comment_user_id = request.POST['comment_user_id']
     format = request.REQUEST.get('format', 'json')
-    
+        
     if comment_user_id == request.user.pk:
         return json.json_response(request, {'code': -1, 'message': 'You cannot favorite your own shared story comment.'})
         
@@ -758,6 +758,9 @@ def like_comment(request):
         
 @ajax_login_required
 def remove_like_comment(request):
+    print "\n\n\n\n\n\n\n\n\n\n"
+    print request
+    print "\n\n\n\n\n\n\n\n\n\n"
     code     = 1
     feed_id  = int(request.POST['story_feed_id'])
     story_id = request.POST['story_id']

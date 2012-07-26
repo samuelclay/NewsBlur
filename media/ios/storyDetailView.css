@@ -337,8 +337,15 @@ a.NB-show-profile {
 
 /* Edit, Like, and Reply buttons */
 
+.NB-button {
+    padding: 0px 0px 4px 10px;
+    float: right;
+    cursor: pointer;
+    margin-top: -2px;
+}
+
 .NB-button div {
-    padding: 1px 6px;
+    padding: 2px 6px;
     background: -webkit-gradient(
         linear, left top, left bottom, 
         from(#ffffff),
@@ -357,7 +364,7 @@ a.NB-show-profile {
     height: 20px;
 }
 
-.NB-button.selected { 
+.NB-button.selected div { 
     background: #217412;
     box-shadow: none;
 }
@@ -371,9 +378,8 @@ a.NB-show-profile {
     padding-top: 1px;
     line-height: 16px;
     font-family: Helvetica, sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     color: #606060;
-
     text-shadow:
         0px 0px 0px rgba(000,000,000,0),
         0px 1px 0px rgba(255,255,255,1);
@@ -382,15 +388,6 @@ a.NB-show-profile {
 .NB-share-button.selected,
 .NB-button.selected a {
     color: rgba(255,255,255,1);    
-    inset 0px 0px 2px #606060;
-    text-shadow: 
-        0px 0px 0px rgba(000,000,000,1),
-        0px 1px 0px rgba(255,255,255,0);
+    text-shadow: none;
 }
 
-.NB-button {
-    padding: 0px 0px 4px 10px;
-    float: right;
-    cursor: pointer;
-    margin-top: -2px;
-}

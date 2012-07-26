@@ -20,6 +20,7 @@
 #import "JSON.h"
 #import "NSString+HTML.h"
 #import "NBContainerViewController.h"
+#import "DataUtilities.h"
 
 @implementation StoryDetailViewController
 
@@ -292,6 +293,9 @@
     NSString *userLikeButton = @"";
     NSString *commentUserId = [NSString stringWithFormat:@"%@", [commentDict objectForKey:@"user_id"]];
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    NSArray *likingUsers = [commentDict objectForKey:@"liking_users"];
+    
+
     
     if ([commentUserId isEqualToString:currentUserId]) {
         userEditButton = [NSString stringWithFormat:@
@@ -302,13 +306,32 @@
                           "</div>",
                           commentUserId];
     } else {
-        userLikeButton = [NSString stringWithFormat:@
-                          "<div class=\"NB-story-comment-like-button NB-button\">"
-                          "<div class=\"NB-story-comment-like-button-wrapper\">"
-                          "<a href=\"http://ios.newsblur.com/edit-share/%@\">Like</a>"
-                          "</div>"
-                          "</div>",
-                          commentUserId]; 
+        BOOL isInLikingUsers = NO;
+        for (int i = 0; i < likingUsers.count; i++) {
+            if ([[[likingUsers objectAtIndex:i] stringValue] isEqualToString:currentUserId]) {
+                isInLikingUsers = YES;
+                break;
+            }
+        }
+        
+        if (isInLikingUsers) {
+            userLikeButton = [NSString stringWithFormat:@
+                              "<div class=\"NB-story-comment-like-button NB-button selected\">"
+                              "<div class=\"NB-story-comment-like-button-wrapper\">"
+                              "<a href=\"http://ios.newsblur.com/unlike-comment/%@\">Favorited</a>"
+                              "</div>"
+                              "</div>",
+                              commentUserId]; 
+        } else {
+            userLikeButton = [NSString stringWithFormat:@
+                              "<div class=\"NB-story-comment-like-button NB-button\">"
+                              "<div class=\"NB-story-comment-like-button-wrapper\">"
+                              "<a href=\"http://ios.newsblur.com/like-comment/%@\">Favorite</a>"
+                              "</div>"
+                              "</div>",
+                              commentUserId]; 
+        }
+
     }
 
     if ([commentDict objectForKey:@"source_user_id"] != [NSNull null]) {
@@ -638,7 +661,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if ([[url host] isEqualToString: @"ios.newsblur.com"]){
         if ([action isEqualToString:@"reply"] || 
             [action isEqualToString:@"edit-reply"] ||
-            [action isEqualToString:@"edit-share"]) {
+            [action isEqualToString:@"edit-share"] ||
+            [action isEqualToString:@"like-comment"] ||
+            [action isEqualToString:@"unlike-comment"]) {
             appDelegate.activeComment = nil;
             // search for the comment from friends comments
             NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
@@ -678,13 +703,37 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                                  setUserId:nil
                                setUsername:nil
                            setCommentIndex:nil];
+            } else if ([action isEqualToString:@"like-comment"]) {
+                [self toggleLikeComment:YES];
+            } else if ([action isEqualToString:@"unlike-comment"]) {
+                [self toggleLikeComment:NO];
             }
             return NO; 
         } else if ([action isEqualToString:@"share"]) {
-            [appDelegate showShareView:@"share"
-                             setUserId:nil
-                           setUsername:nil
-                       setCommentIndex:nil];
+            // test to see if the user has commented
+            
+            // search for the comment from friends comments
+            NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
+            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+            for (int i = 0; i < friendComments.count; i++) {
+                NSString *userId = [NSString stringWithFormat:@"%@", 
+                                    [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
+                if([userId isEqualToString:currentUserId]){
+                    appDelegate.activeComment = [friendComments objectAtIndex:i];
+                }
+            }
+            
+            if (appDelegate.activeComment == nil) {
+                [appDelegate showShareView:@"share"
+                                 setUserId:nil
+                               setUsername:nil
+                           setCommentIndex:nil];
+            } else {
+                [appDelegate showShareView:@"edit-share"
+                                 setUserId:nil
+                               setUsername:nil
+                           setCommentIndex:nil];
+            }
             return NO; 
         } else if ([action isEqualToString:@"show-profile"]) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
@@ -854,6 +903,65 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [request startAsynchronous];
     }
 }
+
+- (void)toggleLikeComment:(BOOL)likeComment {
+    NSString *urlString;
+    if (likeComment) {
+        urlString = [NSString stringWithFormat:@"http://%@/social/like_comment",
+                               NEWSBLUR_URL];
+    } else {
+        urlString = [NSString stringWithFormat:@"http://%@/social/remove_like_comment",
+                               NEWSBLUR_URL];
+    }
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    
+    [request setPostValue:[appDelegate.activeStory 
+                   objectForKey:@"id"] 
+           forKey:@"story_id"];
+    [request setPostValue:[appDelegate.activeStory 
+                           objectForKey:@"story_feed_id"] 
+                   forKey:@"story_feed_id"];
+    
+
+    [request setPostValue:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
+    
+    [request setDidFinishSelector:@selector(finishLikeComment:)];
+    [request setDidFailSelector:@selector(finishedWithError:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)finishLikeComment:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    // add the comment into the activeStory dictionary
+    NSDictionary *newStory = [DataUtilities updateComment:results for:appDelegate];
+
+    // update the current story and the activeFeedStories
+    appDelegate.activeStory = newStory;
+    
+    NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
+    
+    for (int i = 0; i < appDelegate.activeFeedStories.count; i++)  {
+        NSDictionary *feedStory = [appDelegate.activeFeedStories objectAtIndex:i];
+        NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
+        NSString *currentStoryId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
+        if ([storyId isEqualToString: currentStoryId]){
+            [newActiveFeedStories addObject:newStory];
+        } else {
+            [newActiveFeedStories addObject:[appDelegate.activeFeedStories objectAtIndex:i]];
+        }
+    }
+    
+    appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
+    
+    [appDelegate refreshComments];
+} 
+
 
 - (void)requestFailed:(ASIHTTPRequest *)request {    
     NSLog(@"Error in mark as read is %@", [request error]);

@@ -8,8 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+@class NewsBlurAppDelegate;
+
 @interface DataUtilities : NSObject
 
 + (NSArray *)updateUserProfiles:(NSArray *)userProfiles withNewUserProfiles:(NSArray *)newUserProfiles;
++ (NSDictionary *)updateComment:(NSDictionary *)newCommen for:(NewsBlurAppDelegate *)appDelegate;
 
 @end
