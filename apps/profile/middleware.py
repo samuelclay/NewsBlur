@@ -34,7 +34,9 @@ class SQLLogToConsoleMiddleware:
             queries = connection.queries
             for query in queries:
                 if query.get('mongo'):
-                    query['sql'] = "%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
+                    query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
+                elif query.get('redis'):
+                    query['sql'] = "~FC%s" % (query['redis']['query'])
                 else:
                     query['sql'] = re.sub(r'SELECT (.*?) FROM', 'SELECT * FROM', query['sql'])
                     query['sql'] = re.sub(r'SELECT', '~FYSELECT', query['sql'])

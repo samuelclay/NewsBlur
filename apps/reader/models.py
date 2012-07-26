@@ -607,6 +607,9 @@ class MUserStory(mongo.Document):
             r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
 
         if self.story_db_id:
+            all_read_stories_key = 'RS:%s' % (self.user_id, self.feed_id)
+            r.sadd(all_read_stories_key, self.story_db_id)
+
             read_story_key = 'RS:%s:%s' % (self.user_id, self.feed_id)
             r.sadd(read_story_key, self.story_db_id)
             r.expire(read_story_key, settings.DAYS_OF_UNREAD*24*60*60)
@@ -614,6 +617,7 @@ class MUserStory(mongo.Document):
     def remove_from_redis(self):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         if self.story_db_id:
+            r.srem('RS:%s' % self.user_id, self.story_db_id)
             r.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.story_db_id)
         
     @classmethod

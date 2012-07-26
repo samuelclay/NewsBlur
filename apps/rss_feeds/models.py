@@ -1320,8 +1320,6 @@ class MStory(mongo.Document):
         return hashlib.sha1(self.story_guid).hexdigest()
     
     def save(self, *args, **kwargs):
-        self.sync_redis()
-        
         story_title_max = MStory._fields['story_title'].max_length
         story_content_type_max = MStory._fields['story_content_type'].max_length
         if self.story_content:
@@ -1338,6 +1336,8 @@ class MStory(mongo.Document):
         if self.story_content_type and len(self.story_content_type) > story_content_type_max:
             self.story_content_type = self.story_content_type[:story_content_type_max]
         super(MStory, self).save(*args, **kwargs)
+        
+        self.sync_redis()
     
     def delete(self, *args, **kwargs):
         self.remove_from_redis()
@@ -1348,8 +1348,7 @@ class MStory(mongo.Document):
         if not r:
             r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        if settings.DEBUG:
-            print " ---> Syncing redis on story: %s (%s - %s)" % (self.id, self.story_date, self.story_date > DAYS_OF_UNREAD)
+
         if self.id and self.story_date > DAYS_OF_UNREAD:
             r.sadd('F:%s' % self.story_feed_id, self.id)
             r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
