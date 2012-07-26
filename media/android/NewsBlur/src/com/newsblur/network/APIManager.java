@@ -19,6 +19,7 @@ import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FolderStructure;
 import com.newsblur.domain.Story;
+import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.FeedRefreshResponse;
 import com.newsblur.network.domain.LoginResponse;
@@ -58,7 +59,21 @@ public class APIManager {
 			return new LoginResponse();
 		}		
 	}
-	
+
+	public boolean markFeedAsRead(final String[] feedIds) {
+		final APIClient client = new APIClient(context);
+		final ValueMultimap values = new ValueMultimap();
+		for (String feedId : feedIds) {
+			values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		}
+		final APIResponse response = client.post(APIConstants.URL_MARK_FEED_AS_READ, values);
+		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public LoginResponse signup(final String username, final String password) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
@@ -73,7 +88,7 @@ public class APIManager {
 			return new LoginResponse();
 		}		
 	}
-	
+
 	public ProfileResponse updateUserProfile() {
 		final APIClient client = new APIClient(context);
 		final APIResponse response = client.get(APIConstants.URL_MY_PROFILE);
@@ -85,7 +100,7 @@ public class APIManager {
 			return null;
 		}
 	}
-	
+
 	public StoriesResponse getStoriesForFeed(String feedId) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
@@ -97,7 +112,7 @@ public class APIManager {
 			Uri storyUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
 			for (Story story : storiesResponse.stories) {
 				contentResolver.insert(storyUri, story.getValues());
-				
+
 				for (Comment comment : story.comments) {
 					StringBuilder builder = new StringBuilder();
 					builder.append(story.id);
@@ -113,7 +128,7 @@ public class APIManager {
 			return null;
 		}
 	}
-	
+
 	public boolean followUser(final String userId) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
@@ -125,7 +140,7 @@ public class APIManager {
 			return false;
 		}
 	}
-	
+
 	public boolean unfollowUser(final String userId) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
@@ -142,7 +157,7 @@ public class APIManager {
 		final APIClient client = new APIClient(context);
 		final APIResponse response = client.get(APIConstants.URL_FEEDS);
 		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
-		
+
 		for (final Entry<String, Feed> entry : feedUpdate.feeds.entrySet()) {
 			final Feed feed = entry.getValue();
 			contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
@@ -152,7 +167,7 @@ public class APIManager {
 			final ContentValues folderValues = new ContentValues();
 			folderValues.put(DatabaseConstants.FOLDER_NAME, entry.getKey());
 			contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
-			
+
 			for (Long feedId : entry.getValue()) {
 				ContentValues values = new ContentValues(); 
 				values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);

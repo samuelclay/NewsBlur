@@ -170,7 +170,6 @@ public class FeedProvider extends ContentProvider {
 
 			// Querying for feeds for a given folder	
 		case SPECIFIC_FEED_FOLDER_MAP:
-			selection = DatabaseConstants.FOLDER_ID + " = ?";
 			String[] folderArguments = new String[] { uri.getLastPathSegment() };
 
 			String query = "SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 

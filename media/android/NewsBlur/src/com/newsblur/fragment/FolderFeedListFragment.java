@@ -10,6 +10,8 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
@@ -22,6 +24,9 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FolderTreeAdapter;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.MarkFeedAsReadTask;
+import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.FolderTreeViewBinder;
@@ -33,11 +38,14 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 	private FolderTreeAdapter folderAdapter;
 	private FolderTreeViewBinder viewBinder;
 	private int leftBound, rightBound;
+	private APIManager apiManager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		resolver = getActivity().getContentResolver();
+		apiManager = new APIManager(getActivity());
+
 		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, null, null);
 		viewBinder = new FolderTreeViewBinder();
 
@@ -78,18 +86,41 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		Log.d("Context", "ContextMenu created");
+		MenuInflater inflater = getActivity().getMenuInflater();
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
 		//Only create a context menu for child items
 		switch(type) {
+		// Group (folder) item
 		case 0:
-			menu.setHeaderTitle("Folder");
-			menu.add(0, 1, 0, "Mark folder read");
-		// Child (feed) item
+			inflater.inflate(R.menu.context_folder, menu);
+			break;
+			// Child (feed) item
 		case 1:
-			menu.setHeaderTitle("Feed");
-			menu.add(0, 1, 0, "Mar");
+			inflater.inflate(R.menu.context_feed, menu);
+			break;
 		}
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		final ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
+		switch (item.getItemId()) {
+		
+		case R.id.menu_mark_feed_as_read:
+			new MarkFeedAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(Long.toString(info.id));
+			return true;
+			
+		case R.id.menu_mark_folder_as_read:
+			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+			final Cursor folderCursor = ((FolderTreeAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
+			folderCursor.moveToPosition(groupPosition);
+			String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
+			
+			new MarkFolderAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(folderId);
+			return true;	
+		}
+		return super.onContextItemSelected(item);
 	}
 
 	public void changeState(int state) {
@@ -133,6 +164,5 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		getActivity().startActivity(intent);
 		return true;
 	}
-
 
 }

@@ -14,6 +14,7 @@ public class APIConstants {
 	public static final String URL_FEED_STORIES = "http://dev.newsblur.com/reader/feed";
 	public static final String URL_SIGNUP = "http://dev.newsblur.com/api/signup";
 	public static final String URL_FEED_COUNTS = "http://dev.newsblur.com/reader/refresh_feeds/";
+	public static final String URL_MARK_FEED_AS_READ = "http://dev.newsblur.com/reader/mark_feed_as_read/";
 	
 	public static final String PARAMETER_FEEDS = "feeds";
 	public static final String PARAMETER_PASSWORD = "password";
@@ -24,6 +25,7 @@ public class APIConstants {
 	public static final String PARAMETER_FEEDID = "feed_id";
 		
 	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
+
 	
 	
 }

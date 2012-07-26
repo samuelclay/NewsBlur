@@ -57,5 +57,11 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_original">View original</string>
     <string name="menu_share">Share</string>
+    <string name="menu_mark_feed_as_read">Mark feed as read</string>
+    <string name="menu_mark_folder_as_read">Mark folder as read</string>
+    
+    <string name="toast_marked_folder_as_read">Folder marked as read</string>
+    <string name="toast_marked_feed_as_read">Feed marked as read</string>
+    <string name="toast_error_marking_feed_as_read">Error marking feed as read. Check your internet connection.</string>
     
 </resources>

@@ -18,7 +18,6 @@ public class FolderTreeViewBinder implements ViewBinder {
 
 	private int currentState = AppConstants.STATE_ALL;
 	
-	// TODO: Make this more efficient
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON)) {
