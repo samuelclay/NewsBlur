@@ -6499,6 +6499,9 @@ form.opml_import_form input {
         #FFED68 16%,
         #FFF8B1 84%
     );
+     -moz-box-shadow:0 2px 2px #CE972F;
+    box-shadow:0 2px 2px #CE972F;
+
 }
 
 .NB-modal-feedchooser .NB-feedchooser-paypal {
@@ -6545,7 +6548,7 @@ form.opml_import_form input {
     clear: both;
     cursor: pointer;
     position: relative;
-    opacity: .7;
+    color: #9BA6CC;    
     
     -webkit-transition: all .24s ease-out;
     -moz-transition: all .24s ease-out;
@@ -6555,7 +6558,7 @@ form.opml_import_form input {
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value:hover,
 .NB-modal-feedchooser .NB-feedchooser-dollar-value.NB-selected {
-    opacity: 1;
+    color: #727BA0;
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-value .NB-feedchooser-dollar-image {
@@ -6565,7 +6568,7 @@ form.opml_import_form input {
     top: -10px;
     left: -40px;
     display: block;
-    opacity: 0;
+    opacity: 0.1;
     
     -webkit-transition: all .24s ease-out;
     -moz-transition: all .24s ease-out;
@@ -6589,7 +6592,6 @@ form.opml_import_form input {
 }
 
 .NB-modal-feedchooser .NB-feedchooser-dollar-month {
-    color: #9BA6CC;
     display: inline;
     padding: 0 4px 0 0;
     font-size: 15px;

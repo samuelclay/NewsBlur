@@ -51,7 +51,7 @@ def load_social_stories(request, user_id, username=None):
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
-    social_profile = MSocialProfile.objects.get(user_id=social_user.pk)
+    social_profile = MSocialProfile.get_user(social_user.pk)
     mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
     stories = Feed.format_stories(mstories)
     
@@ -188,8 +188,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
 
     user_social_profile = None
     if user.is_authenticated():
-        user_social_profile = MSocialProfile.objects.get(user_id=user.pk)
-    social_profile = MSocialProfile.objects.get(user_id=social_user_id)
+        user_social_profile = MSocialProfile.get_user(user.pk)
+    social_profile = MSocialProfile.get_user(social_user_id)
     params = dict(user_id=social_user.pk)
     if feed_id:
         params['story_feed_id'] = feed_id
@@ -299,6 +299,8 @@ def mark_story_as_shared(request):
     post_to_services = request.POST.getlist('post_to_services')
     format = request.REQUEST.get('format', 'json')
     original_story_found = True
+    
+    MSocialProfile.get_user(request.user.pk)
     
     story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
     if not story:
@@ -526,7 +528,7 @@ def profile(request):
     user_id = request.GET.get('user_id', user.pk)
     include_activities_html = request.REQUEST.get('include_activities_html', None)
 
-    user_profile = MSocialProfile.objects.get(user_id=user_id)
+    user_profile = MSocialProfile.get_user(user_id)
     user_profile.count_follows()
     user_profile = user_profile.to_json(include_follows=True, common_follows_with_user=user.pk)
     profile_ids = set(user_profile['followers_youknow'] + user_profile['followers_everybody'] + 
@@ -558,7 +560,7 @@ def profile(request):
 @ajax_login_required
 @json.json_view
 def load_user_profile(request):
-    social_profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
+    social_profile = MSocialProfile.get_user(request.user.pk)
     social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
     
     logging.user(request, "~BB~FRLoading social profile and blurblog settings")
@@ -573,7 +575,7 @@ def load_user_profile(request):
 def save_user_profile(request):
     data = request.POST
 
-    profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
+    profile = MSocialProfile.get_user(request.user.pk)
     profile.location = data['location']
     profile.bio = data['bio']
     profile.website = data['website']
@@ -592,7 +594,7 @@ def save_user_profile(request):
 def save_blurblog_settings(request):
     data = request.POST
 
-    profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
+    profile = MSocialProfile.get_user(request.user.pk)
     profile.custom_css = data.get('custom_css', None)
     profile.custom_bgcolor = data.get('custom_bgcolor', None)
     profile.blurblog_title = data.get('blurblog_title', None)
@@ -631,14 +633,14 @@ def load_user_friends(request):
 @ajax_login_required
 @json.json_view
 def follow(request):
-    profile, _ = MSocialProfile.objects.get_or_create(user_id=request.user.pk)
+    profile = MSocialProfile.get_user(request.user.pk)
     user_id = request.POST['user_id']
     try:
         follow_user_id = int(user_id)
     except ValueError:
         try:
             follow_user_id = int(user_id.replace('social:', ''))
-            follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
+            follow_profile = MSocialProfile.get_user(follow_user_id)
         except (ValueError, MSocialProfile.DoesNotExist):
             follow_username = user_id.replace('social:', '')
             try:
@@ -648,7 +650,7 @@ def follow(request):
             follow_user_id = follow_profile.user_id
 
     profile.follow_user(follow_user_id)
-    follow_profile = MSocialProfile.objects.get(user_id=follow_user_id)
+    follow_profile = MSocialProfile.get_user(follow_user_id)
     
     social_params = {
         'user_id': request.user.pk,
@@ -669,14 +671,14 @@ def follow(request):
 @ajax_login_required
 @json.json_view
 def unfollow(request):
-    profile = MSocialProfile.objects.get(user_id=request.user.pk)
+    profile = MSocialProfile.get_user(request.user.pk)
     user_id = request.POST['user_id']
     try:
         unfollow_user_id = int(user_id)
     except ValueError:
         try:
             unfollow_user_id = int(user_id.replace('social:', ''))
-            unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)
+            unfollow_profile = MSocialProfile.get_user(unfollow_user_id)
         except (ValueError, MSocialProfile.DoesNotExist):
             unfollow_username = user_id.replace('social:', '')
             try:
@@ -686,7 +688,7 @@ def unfollow(request):
             unfollow_user_id = unfollow_profile.user_id
         
     profile.unfollow_user(unfollow_user_id)
-    unfollow_profile = MSocialProfile.objects.get(user_id=unfollow_user_id)
+    unfollow_profile = MSocialProfile.get_user(unfollow_user_id)
     
     logging.user(request, "~BB~FRUnfollowing: %s" % unfollow_profile.username)
     
@@ -793,11 +795,11 @@ def shared_stories_rss_feed(request, user_id, username):
         raise Http404
     
     if user.username != username:
-        profile = MSocialProfile.objects.get(user_id=user.pk)
+        profile = MSocialProfile.get_user(user.pk)
         params = {'username': profile.username_slug, 'user_id': user.pk}
         return HttpResponseRedirect(reverse('shared-stories-rss-feed', kwargs=params))
 
-    social_profile = MSocialProfile.objects.get(user_id=user_id)
+    social_profile = MSocialProfile.get_user(user_id)
 
     data = {}
     data['title'] = social_profile.title
@@ -827,7 +829,7 @@ def shared_stories_rss_feed(request, user_id, username):
 @json.json_view
 def social_feed_trainer(request):
     social_user_id = request.REQUEST.get('user_id')
-    social_profile = MSocialProfile.objects.get(user_id=social_user_id)
+    social_profile = MSocialProfile.get_user(social_user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
     user = get_user(request)
     
@@ -847,7 +849,7 @@ def social_feed_trainer(request):
 @json.json_view
 def load_social_statistics(request, social_user_id, username=None):
     stats = dict()
-    social_profile = MSocialProfile.objects.get(user_id=social_user_id)
+    social_profile = MSocialProfile.get_user(social_user_id)
     social_profile.save_feed_story_history_statistics()
     social_profile.save_classifier_counts()
     
@@ -869,7 +871,7 @@ def load_social_statistics(request, social_user_id, username=None):
 
 @json.json_view
 def load_social_settings(request, social_user_id, username=None):
-    social_profile = MSocialProfile.objects.get(user_id=social_user_id)
+    social_profile = MSocialProfile.get_user(social_user_id)
     
     return social_profile.to_json()
 

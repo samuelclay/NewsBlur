@@ -98,9 +98,9 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     
     follow_user: function() {
         this.$('.NB-loading').addClass('NB-active');
-        NEWSBLUR.assets.follow_user(this.model.get('user_id'), _.bind(function(data, follow_user) {
+        NEWSBLUR.assets.follow_user(this.model.get('user_id'), _.bind(function(data) {
             this.$('.NB-loading').removeClass('NB-active');
-            this.model.set(follow_user);
+            this.model.set(data.follow_profile);
             
             var $button = this.$('.NB-profile-badge-action-follow');
             $button.text('Following');
@@ -117,8 +117,9 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     unfollow_user: function() {
         this.$('.NB-loading').addClass('NB-active');
         NEWSBLUR.reader.model.unfollow_user(this.model.get('user_id'), _.bind(function(data, unfollow_user) {
+            console.log(["Unfollow user", data, unfollow_user, this.model]);
             this.$('.NB-loading').removeClass('NB-active');
-            this.model.set(unfollow_user);
+            this.model.set(data.unfollow_profile);
             
             var $button = this.$('.NB-profile-badge-action-follow');
             $button.text('Unfollowed');
