@@ -70,21 +70,15 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillShowNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
-    } else {
-        [self.commentField becomeFirstResponder];
-    }
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillShowNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
+//    } else {
+//        [self.commentField becomeFirstResponder];
+//    }
 }
 
 - (IBAction)doCancelButton:(id)sender {
-    NSLog(@"do cancel buttom?");
-    [commentField resignFirstResponder];
     [appDelegate hideShareView:NO];
 }
 
@@ -110,8 +104,6 @@
 }
 
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setCommentIndex:(NSString *)commentIndex {
-    
-    
     if ([type isEqualToString: @"edit-reply"]) {
         [submitButton setTitle:@"Save"];
         facebookButton.hidden = YES;
@@ -177,6 +169,8 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:feedIdStr forKey:@"feed_id"]; 
     [request setPostValue:storyIdStr forKey:@"story_id"];
+    
+    
 
     NSString *comments = commentField.text;
     if ([comments length]) {
@@ -318,51 +312,12 @@
     [appDelegate refreshComments];
 }
 
--(void)keyboardWillShowOrHide:(NSNotification*)notification {
-    NSDictionary *userInfo = notification.userInfo;
-    NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
-    
-//    CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    
-    CGRect shareViewFrame = self.view.frame;
-    CGRect storyDetailViewFrame = appDelegate.storyDetailViewController.webView.frame;
-    
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    
-    if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
-        if (UIInterfaceOrientationIsPortrait(orientation)) {
-            shareViewFrame.origin.y = 576;
-            storyDetailViewFrame.size.height = 576;
-        } else {
-            shareViewFrame.origin.y = 232;
-            storyDetailViewFrame.size.height = 232;
-        }
-    } else {
-        if (UIInterfaceOrientationIsPortrait(orientation)) {
-            shareViewFrame.origin.y = 840;
-            storyDetailViewFrame.size.height = 840;
-        } else {
-            shareViewFrame.origin.y = 584;
-            storyDetailViewFrame.size.height = 584;
-        }
-    }
-
-    [UIView animateWithDuration:duration 
-                          delay:0 
-                        options:UIViewAnimationOptionBeginFromCurrentState | curve 
-                     animations:^{
-                         self.view.frame = shareViewFrame;
-                         appDelegate.storyDetailViewController.webView.frame = storyDetailViewFrame;
-                     } completion:^(BOOL finished) {
-                        [appDelegate.storyDetailViewController scrolltoBottom];
-                         
-                     }];
+- (BOOL)canBecomeFirstResponder {
+    return YES;
 }
 
--(NSString *)stringByStrippingHTML:(NSString *)s {
+- (NSString *)stringByStrippingHTML:(NSString *)s {
     NSRange r;
-
     while ((r = [s rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch]).location != NSNotFound)
         s = [s stringByReplacingCharactersInRange:r withString:@""];
     return s; 

@@ -62,7 +62,6 @@
 @synthesize activeUserProfileId;
 @synthesize isRiverView;
 @synthesize isSocialView;
-@synthesize isShowingShare;
 @synthesize inFindingStoryMode;
 @synthesize tryFeedStoryId;
 @synthesize popoverHasFeedView;
@@ -245,52 +244,13 @@
             setUserId:(NSString *)userId 
           setUsername:(NSString *)username 
       setCommentIndex:(NSString *)commentIndex {
-    self.isShowingShare = YES;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        // add shareViewController to storyDetail
-//        [self.storyDetailContainerViewController.view addSubview:self.shareViewController.view];    
-//        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
-//
-//        
-//        self.shareViewController.view.frame = CGRectMake(0, 
-//                                                    self.storyDetailContainerViewController.view.frame.size.height, 
-//                                                    self.storyDetailContainerViewController.view.frame.size.width, 
-//                                                    0);
-//        
-//        int newShareYCoordinate = self.storyDetailContainerViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
-//        int newStoryHeight = self.storyDetailContainerViewController.view.frame.size.height - SHARE_MODAL_HEIGHT + 44;
-//
-//        [UIView animateWithDuration:0.35 animations:^{            
-//            self.shareViewController.view.frame = CGRectMake(0, 
-//                                                        newShareYCoordinate, 
-//                                                        self.storyDetailContainerViewController.view.frame.size.width, 
-//                                                        SHARE_MODAL_HEIGHT);
-//            self.storyDetailViewController.view.frame = CGRectMake(0,
-//                                                                   0,
-//                                                                   self.storyDetailContainerViewController.view.frame.size.width,
-//                                                                   newStoryHeight);
-//        } completion:^(BOOL finished) {
-//            [self.shareViewController.commentField becomeFirstResponder];
-//        }];
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
+        [self.masterContainerViewController transitionToShareView];
     } else {
         [self.navigationController presentModalViewController:self.shareViewController animated:YES];
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
-    }
-}
-
-- (void)adjustShareModal {    
-    if (self.isShowingShare) {
-        int newShareYCoordinate = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
-        int newStoryHeight = storyDetailViewController.view.frame.size.height - SHARE_MODAL_HEIGHT;
-        shareViewController.view.frame = CGRectMake(0, 
-                                                    newShareYCoordinate, 
-                                                    storyDetailViewController.view.frame.size.width, 
-                                                    SHARE_MODAL_HEIGHT);
-        storyDetailViewController.webView.frame = CGRectMake(0,
-                                                             0,
-                                                             storyDetailViewController.view.frame.size.width,
-                                                             newStoryHeight);
     }
 }
 
@@ -301,21 +261,8 @@
     
     [self.shareViewController.commentField resignFirstResponder];
     
-    self.isShowingShare = NO;
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        
-//        [UIView animateWithDuration:0.35 animations:^{
-//            shareViewController.view.frame = CGRectMake(0, 
-//                                                        storyDetailContainerViewController.view.frame.size.height,
-//                                                        storyDetailContainerViewController.view.frame.size.width,
-//                                                        0);
-//            storyDetailViewController.view.frame = CGRectMake(0,
-//                                                              0,
-//                                                              storyDetailContainerViewController.view.frame.size.width,
-//                                                              storyDetailContainerViewController.view.frame.size.height);
-//        } completion:^(BOOL finished) {
-//            [shareViewController.view removeFromSuperview];
-//        }]; 
+        [self.masterContainerViewController transitionFromShareView];
     } else {
         [self.navigationController dismissModalViewControllerAnimated:YES];
     }
@@ -537,8 +484,6 @@
 }
 
 - (void)adjustStoryDetailWebView {
-    [self adjustShareModal];
-
 //        UIView *titleLabel = [self makeFeedTitle:self.activeFeed];
 //        if (storyDetailViewController.navigationItem){
 //            storyDetailViewController.navigationItem.titleView = titleLabel;

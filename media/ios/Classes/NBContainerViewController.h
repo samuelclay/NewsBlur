@@ -23,8 +23,11 @@
 
 - (void)transitionToFeedDetail;
 - (void)transitionFromFeedDetail;
+- (void)transitionToShareView;
+- (void)transitionFromShareView;
 
 - (void)dragStoryToolbar:(int)yCoordinate;
 - (void)showUserProfilePopover:(id)sender;
+- (void)slideUpKeyboard;
 
 @end

@@ -17,6 +17,7 @@
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1024 - 591
 #define NB_DEFAULT_SLIDER_INTERVAL 0.4
+#define NB_DEFAULT_SHARE_HEIGHT 120
 
 @interface NBContainerViewController ()
 
@@ -30,6 +31,7 @@
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) int storyTitlesYCoordinate;
 @property (readwrite) BOOL storyTitlesOnLeft;
+@property (readwrite) BOOL isSharingStory;
 @property (nonatomic, strong) UIPopoverController *popoverController;
 
 @property (readwrite) BOOL feedDetailIsVisible;
@@ -51,6 +53,7 @@
 @synthesize storyTitlesOnLeft;
 @synthesize popoverController;
 @synthesize storyTitlesStub;
+@synthesize isSharingStory;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -69,7 +72,8 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
     
     self.view.backgroundColor = [UIColor blackColor]; 
     
@@ -78,6 +82,7 @@
     self.dashboardViewController = appDelegate.dashboardViewController;
     self.feedDetailViewController = appDelegate.feedDetailViewController;
     self.storyDetailViewController = appDelegate.storyDetailViewController;
+    self.shareViewController = appDelegate.shareViewController;
     
     // adding dashboardViewController 
     [self addChildViewController:self.dashboardViewController];
@@ -126,6 +131,10 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -374,6 +383,40 @@
     }
 }
 
+- (void)transitionToShareView {
+    if (isSharingStory) {
+        return;
+    } else {
+        CGRect vb = [self.view bounds];
+        self.isSharingStory = YES;
+        
+        // adding feedDetailViewController 
+        [self addChildViewController:self.shareViewController];
+        [self.view addSubview:self.shareViewController.view];
+        [self.shareViewController didMoveToParentViewController:self];
+
+        self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, vb.size.height, self.storyDetailViewController.view.frame.size.width, NB_DEFAULT_SHARE_HEIGHT);
+        [self performSelector:@selector(slideUpKeyboard) withObject:self afterDelay:.350];
+    }
+}
+
+- (void)transitionFromShareView {
+    if (!isSharingStory) {
+        return;
+    } else {
+        CGRect vb = [self.view bounds];
+        self.isSharingStory = NO;
+        [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+            self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, vb.size.height, self.storyDetailViewController.view.frame.size.width, NB_DEFAULT_SHARE_HEIGHT);
+        } completion:^(BOOL finished) {
+        }]; 
+    }
+}
+
+- (void)slideUpKeyboard {
+    [self.shareViewController.commentField becomeFirstResponder];
+}
+
 - (void)dragStoryToolbar:(int)yCoordinate {
 
     CGRect vb = [self.view bounds];
@@ -414,6 +457,54 @@
             self.storyTitlesStub.frame = CGRectMake(self.feedDetailViewController.view.frame.origin.x, 0, self.feedDetailViewController.view.frame.size.width, 0);
         }
     }
+}
+
+-(void)keyboardWillShowOrHide:(NSNotification*)notification {
+    NSDictionary *userInfo = notification.userInfo;
+    NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
+
+    CGRect vb = [self.view bounds];
+    CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect shareViewFrame = self.shareViewController.view.frame;
+    CGRect storyDetailViewFrame = self.storyNavigationController.view.frame;
+
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    
+    if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
+        if (UIInterfaceOrientationIsPortrait(orientation)) {
+            shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height;
+            storyDetailViewFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
+        } else {
+            shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.width;
+            storyDetailViewFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.width + 44;
+        }
+    } else {
+        if (UIInterfaceOrientationIsPortrait(orientation)) {
+            shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height;
+            storyDetailViewFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
+        } else {
+            shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT;
+            storyDetailViewFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT + 44;
+        }
+    }
+    
+    if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"]) {
+        self.storyNavigationController.view.frame = storyDetailViewFrame;
+    }
+
+    [UIView animateWithDuration:duration 
+                          delay:0 
+                        options:UIViewAnimationOptionBeginFromCurrentState | curve 
+                     animations:^{
+                         self.shareViewController.view.frame = shareViewFrame;
+                         
+                     } completion:^(BOOL finished) {
+                         if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
+                             self.storyNavigationController.view.frame = storyDetailViewFrame;
+                             [self.storyDetailViewController scrolltoBottom];
+                         }
+                     }];
 }
     
 @end

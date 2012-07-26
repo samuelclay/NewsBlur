@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 
-@interface ShareViewController : UIViewController <ASIHTTPRequestDelegate> {
+@interface ShareViewController : UIViewController <ASIHTTPRequestDelegate, UITextViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     int activeCommentIndex;
 }
@@ -31,6 +31,6 @@
 - (void)finishAddComment:(ASIHTTPRequest *)request;
 - (void)finishAddReply:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;- (void)replaceStory:(NSDictionary *)newStory;
-- (NSString *) stringByStrippingHTML:(NSString *)s;
+- (NSString *)stringByStrippingHTML:(NSString *)s;
 
 @end

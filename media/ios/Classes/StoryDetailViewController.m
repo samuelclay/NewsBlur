@@ -180,7 +180,7 @@
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [appDelegate.shareViewController.commentField resignFirstResponder];
+//    [appDelegate.shareViewController.commentField resignFirstResponder];
 }
 
 
@@ -660,7 +660,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                 [appDelegate showShareView:@"reply"
                                  setUserId:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]
                                setUsername:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:3]]
-                           setCommentIndex:nil]; 
+                           setCommentIndex:nil];
             } else if ([action isEqualToString:@"edit-reply"]) {
                 [appDelegate showShareView:@"edit-reply"
                                  setUserId:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]

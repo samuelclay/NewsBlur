@@ -72,7 +72,6 @@
     NSString * activeUserProfileId;
     BOOL isRiverView;
     BOOL isSocialView;
-    BOOL isShowingShare;
     BOOL popoverHasFeedView;
     BOOL inFeedDetail;
     BOOL inFindingStoryMode;
@@ -139,7 +138,6 @@
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic) NSString *tryFeedStoryId;
-@property (nonatomic, readwrite) BOOL isShowingShare;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (readwrite) NSDictionary * activeFeed;
@@ -195,7 +193,6 @@
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;
-- (void)adjustShareModal;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)hideNavigationBar:(BOOL)animated;
 - (void)showNavigationBar:(BOOL)animated;
