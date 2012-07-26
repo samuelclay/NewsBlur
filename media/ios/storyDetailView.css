@@ -277,9 +277,9 @@ del {
 
 /* Disable certain interactions on touch devices */
 #story_pane .NB-story-comment { 
-    -webkit-touch-callout: none; 
+/*    -webkit-touch-callout: none; 
     -webkit-user-select: none; 
-    -webkit-highlight: none; 
+    -webkit-highlight: none; */
     -webkit-tap-highlight-color: rgba(0,0,0,0); 
 }
 
@@ -294,10 +294,11 @@ a.NB-show-profile {
     display: inline-block;
 }
 .NB-share-wrapper { 
-    -webkit-touch-callout: none; 
+
     -webkit-text-size-adjust: none; 
     -webkit-user-select: none; 
     -webkit-highlight: none; 
+    -webkit-touch-callout: none;
     -webkit-tap-highlight-color: rgba(0,0,0,0); 
 }
 
@@ -328,8 +329,6 @@ a.NB-show-profile {
     0px 1px 0px rgba(255,255,255,1);
 }
 
-.NB-share-button:hover,
-.NB-save-button:hover,
 .NB-share-button.active,
 .NB-save-button.active {
     background: #217412;
@@ -339,7 +338,7 @@ a.NB-show-profile {
 /* Edit, Like, and Reply buttons */
 
 .NB-button div {
-    padding: 0px 6px;
+    padding: 1px 6px;
     background: -webkit-gradient(
         linear, left top, left bottom, 
         from(#ffffff),
@@ -358,18 +357,16 @@ a.NB-show-profile {
     height: 20px;
 }
 
-.NB-button:hover div,
 .NB-button.selected { 
     background: #217412;
     box-shadow: none;
 }
 
-.NB-button.selected .nb-story-comment-like-button-wrapper a,
-.NB-button:hover .nb-story-comment-like-button-wrapper a,
-.NB-button:active .nb-story-comment-like-button-wrapper a {
+.NB-button.selected .nb-story-comment-like-button-wrapper a {
     background: transparent url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAFkSURBVCiRbZC/6xNBFMTn7e1mDVyhWIlgZSFYqSBEEsEQCUTBxsLKv0TBWrQWrGwtjFU603oEFP0T0ljYyt1lf+TNWgXCl5ty5g0f5gEDaprmQdM0T4cyuWhst1up6/o7gMs553vT6bQ/z83Fgvf+mXPuvnPuFskXg4TNZnNpPB5fE5GrdV1/9N7fIYkQwr5t25cA/qSU/q5Wq052u90ba+0jAHdFpLbWIsYIVcVoNELOGap6IPk75/zTkNyTfOi9r6uqwuFwQEoJKSV0XQeScM6NSU5KKXszmUw+hRAe933/DwBUFaUUAMDxeISIIITQppSez+fz9wYAZrPZtxjjK1UtzjmoKkiiqiqUUpBS+rBYLL4AgD2tL6W0JCEi8N7jnEYyDL31tjFGAIBkUtXWGAMRgareOB2dE673fY+c87sY41eSyVr7REReq+qVocLnruveLpfLX2fUH+v1eu2cu3ky/gOHFMgsTjV4FQAAAABJRU5ErkJggg==") no-repeat left 1px;
 }
 
+.NB-share-button a,
 .NB-button a {
     padding-top: 1px;
     line-height: 16px;
@@ -382,9 +379,7 @@ a.NB-show-profile {
         0px 1px 0px rgba(255,255,255,1);
 }
 
-.NB-share-button:hover,
 .NB-share-button.selected,
-.NB-button:hover a,
 .NB-button.selected a {
     color: rgba(255,255,255,1);    
     inset 0px 0px 2px #606060;

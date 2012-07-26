@@ -28,6 +28,5 @@
 
 - (void)dragStoryToolbar:(int)yCoordinate;
 - (void)showUserProfilePopover:(id)sender;
-- (void)slideUpKeyboard;
 
 @end

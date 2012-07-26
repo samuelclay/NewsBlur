@@ -297,7 +297,7 @@
         userEditButton = [NSString stringWithFormat:@
                           "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button NB-button\">"
                             "<div class=\"NB-story-comment-edit-button-wrapper\">"
-                                "<a href=\"http://ios.newsblur.com/edit-share/%@\">edit</a>"
+                                "<a href=\"http://ios.newsblur.com/edit-share/%@\">Edit</a>"
                             "</div>"
                           "</div>",
                           commentUserId];
@@ -305,7 +305,7 @@
         userLikeButton = [NSString stringWithFormat:@
                           "<div class=\"NB-story-comment-like-button NB-button\">"
                           "<div class=\"NB-story-comment-like-button-wrapper\">"
-                          "<a href=\"http://ios.newsblur.com/edit-share/%@\">like</a>"
+                          "<a href=\"http://ios.newsblur.com/edit-share/%@\">Like</a>"
                           "</div>"
                           "</div>",
                           commentUserId]; 
@@ -335,7 +335,7 @@
                         "    <div class=\"NB-story-comment-date\">%@ ago</div>"
                         "    <div class=\"NB-story-comment-reply-button NB-button\">"
                         "        <div class=\"NB-story-comment-reply-button-wrapper\">"
-                        "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">reply</a>"
+                        "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">Reply</a>"
                         "        </div>"
                         "    </div>"
                         "    %@" //User Edit Button>"
@@ -482,7 +482,9 @@
     sharingHtmlString = [NSString stringWithFormat:@
                          "<div class='NB-share-header'></div>"
                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                         "<div class='NB-share-button'><span class='NB-share-icon'></span>Post to Blurblog</div>"
+                         "<div class='NB-share-button'>"
+                         "<a href=\"http://ios.newsblur.com/share\">Post to Blurblog</a>"
+                         "</div>"
                          //"<div class='NB-save-button'><span class='NB-save-icon'></span>Save this story</div>"
                          "</div></div>"];
     NSString *story_author = @"";

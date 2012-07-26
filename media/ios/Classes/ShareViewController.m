@@ -69,13 +69,10 @@
 	return YES;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillShowNotification object:nil];
-//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
-//    } else {
-//        [self.commentField becomeFirstResponder];
-//    }
+- (void)viewWillAppear:(BOOL)animated {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.commentField becomeFirstResponder];
+    }
 }
 
 - (IBAction)doCancelButton:(id)sender {
@@ -164,14 +161,20 @@
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
     NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
+    NSString *sourceUserIdStr = [appDelegate.activeStory objectForKey:@"source_user_id"];
+
     
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:feedIdStr forKey:@"feed_id"]; 
     [request setPostValue:storyIdStr forKey:@"story_id"];
     
+    if ([sourceUserIdStr class] != [NSNull class]) {
+        [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
+    }
     
-
+    [request setPostValue:@"8" forKey:@"source_user_id"]; 
+    
     NSString *comments = commentField.text;
     if ([comments length]) {
         [request setPostValue:comments forKey:@"comments"]; 
@@ -312,9 +315,6 @@
     [appDelegate refreshComments];
 }
 
-- (BOOL)canBecomeFirstResponder {
-    return YES;
-}
 
 - (NSString *)stringByStrippingHTML:(NSString *)s {
     NSRange r;

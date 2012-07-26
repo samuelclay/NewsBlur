@@ -396,7 +396,7 @@
         [self.shareViewController didMoveToParentViewController:self];
 
         self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, vb.size.height, self.storyDetailViewController.view.frame.size.width, NB_DEFAULT_SHARE_HEIGHT);
-        [self performSelector:@selector(slideUpKeyboard) withObject:self afterDelay:.350];
+        [self.shareViewController.commentField becomeFirstResponder];
     }
 }
 
@@ -411,10 +411,6 @@
         } completion:^(BOOL finished) {
         }]; 
     }
-}
-
-- (void)slideUpKeyboard {
-    [self.shareViewController.commentField becomeFirstResponder];
 }
 
 - (void)dragStoryToolbar:(int)yCoordinate {

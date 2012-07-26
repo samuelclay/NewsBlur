@@ -37,23 +37,23 @@ function setImage(img) {
     }
 }
 
-window.onload = load;
-
-function load() {  
-    document.getElementsByClassName('NB-share-button')[0].addEventListener("touchstart", touchStart, false);
-    document.getElementsByClassName('NB-share-button')[0].addEventListener("touchend", touchEnd, false);
-} 
-
-function touchStart(e) {
-    var original_class = e.target.getAttribute("class");
-    e.target.setAttribute("class", original_class + " active");
-    return false;
-}
-
-function touchEnd(e) {
-    var original_class = e.target.getAttribute("class");
-    e.target.setAttribute("class", original_class.replace('active', ''));
-    window.location = "http://ios.newsblur.com/share";  
-    return false;
-}
+//window.onload = load;
+//
+//function load() {  
+//    document.getElementsByClassName('NB-share-button')[0].addEventListener("touchstart", touchStart, false);
+//    document.getElementsByClassName('NB-share-button')[0].addEventListener("touchend", touchEnd, false);
+//} 
+//
+//function touchStart(e) {
+//    var original_class = e.target.getAttribute("class");
+//    e.target.setAttribute("class", original_class + " active");
+//    return false;
+//}
+//
+//function touchEnd(e) {
+//    var original_class = e.target.getAttribute("class");
+//    e.target.setAttribute("class", original_class.replace('active', ''));
+//    window.location = "http://ios.newsblur.com/share";  
+//    return false;
+//}
 
