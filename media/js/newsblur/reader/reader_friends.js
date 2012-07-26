@@ -323,7 +323,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         
         this.model.search_for_friends(query, _.bind(function(data) {
             $loading.removeClass('NB-active');
-            if (!data || !data.profiles.length) {
+            if (!data || !data.profiles || !data.profiles.length) {
                 $badges.html($.make('div', { 
                     className: 'NB-friends-search-badges-empty' 
                 }, [

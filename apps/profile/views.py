@@ -18,6 +18,7 @@ from utils import json_functions as json
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
 from utils.user_functions import get_user
+from utils import log as logging
 from vendor.paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
@@ -49,7 +50,9 @@ def set_preference(request):
             if preference_value in ["true", "false"]:
                 preference_value = True if preference_value == "true" else False
             preferences[preference_name] = preference_value
-        
+        if preference_name == 'intro_page':
+            logging.user(request, "~FBAdvancing intro to page ~FM~SB%s" % preference_value)
+            
     request.user.profile.preferences = json.encode(preferences)
     request.user.profile.save()
     
@@ -84,7 +87,7 @@ def set_account_settings(request):
         except User.DoesNotExist:
             request.user.username = post_settings['username']
             request.user.save()
-            social_profile = MSocialProfile.objects.get(user_id=request.user.pk)
+            social_profile = MSocialProfile.get_user(request.user.pk)
             social_profile.username = post_settings['username']
             social_profile.save()
         else:
@@ -181,6 +184,8 @@ def paypal_form(request):
 
     # Create the instance.
     form = PayPalPaymentsForm(initial=paypal_dict, button_type="subscribe")
+
+    logging.user(request, "~FBLoading paypal/feedchooser")
 
     # Output the button.
     return HttpResponse(form.render(), mimetype='text/html')

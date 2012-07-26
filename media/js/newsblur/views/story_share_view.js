@@ -28,7 +28,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             <div class="NB-sideoption-share-wordcount"></div>\
             <div class="NB-sideoption-share-title">Comments:</div>\
             <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
-            <% if (social_services.twitter.twitter_uid || social_services.facebook.facebook_uid) { %>\
+            <% if ((social_services.twitter && social_services.twitter.twitter_uid) || (social_services.facebook && social_services.facebook.facebook_uid)) { %>\
                 <div class="NB-sideoption-share-crosspost">\
                     <% if (social_services.twitter.twitter_uid) { %>\
                         <div class="NB-sideoption-share-crosspost-twitter"></div>\
