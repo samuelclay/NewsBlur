@@ -607,7 +607,7 @@ class MUserStory(mongo.Document):
             r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
 
         if self.story_db_id:
-            all_read_stories_key = 'RS:%s' % (self.user_id, self.feed_id)
+            all_read_stories_key = 'RS:%s' % (self.user_id)
             r.sadd(all_read_stories_key, self.story_db_id)
 
             read_story_key = 'RS:%s:%s' % (self.user_id, self.feed_id)
