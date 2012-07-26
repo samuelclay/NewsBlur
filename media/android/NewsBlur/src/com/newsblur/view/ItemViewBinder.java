@@ -1,7 +1,5 @@
 package com.newsblur.view;
 
-import java.util.Date;
-
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
@@ -45,10 +43,6 @@ public class ItemViewBinder implements ViewBinder {
 			}
 			
 			((TextView) view).setText("");
-			return true;
-		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_DATE)) {
-			Date date = new Date(cursor.getLong(columnIndex));
-			((TextView) view).setText(date.toLocaleString());
 			return true;
 		}
 		

@@ -43,21 +43,22 @@ public class DatabaseConstants {
 	
 	public static final String STORY_TABLE = "stories";
 	public static final String STORY_ID = BaseColumns._ID;
+	public static final String STORY_AUTHORS = "authors";
 	public static final String STORY_TITLE = "title";
 	public static final String STORY_DATE = "date";
 	public static final String STORY_CONTENT = "content";
 	public static final String STORY_COMMENT_COUNT = "comment_count";
-	public static final String STORY_SHARE_COUNT = "share_count";
-	public static final String STORY_PERMALINK = "permalink";
-	public static final String STORY_AUTHORS = "authors";
+	public static final String STORY_FEED_ID = "feed_id";
 	public static final String STORY_INTELLIGENCE_AUTHORS = "intelligence_authors";
 	public static final String STORY_INTELLIGENCE_TAGS = "intelligence_tags";
 	public static final String STORY_INTELLIGENCE_FEED = "intelligence_feed";
 	public static final String STORY_INTELLIGENCE_TITLE = "intelligence_title";
+	public static final String STORY_PERMALINK = "permalink";
 	public static final String STORY_READ = "read";
-	public static final String STORY_TAGS = "tags";
-	public static final String STORY_FEED_ID = "feed_id";
+	public static final String STORY_SHARE_COUNT = "share_count";
 	public static final String STORY_SHARED_USER_IDS = "shared_user_ids";
+	public static final String STORY_SHORTDATE = "shortDate";
+	public static final String STORY_TAGS = "tags";
 	
 	public static final String COMMENT_ID = BaseColumns._ID;
 	public static final String COMMENT_STORYID = "comment_storyid";
@@ -80,9 +81,10 @@ public class DatabaseConstants {
 	};
 	
 	public static final String[] STORY_COLUMNS = {
-		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_DATE, STORY_FEED_ID, STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TITLE,
+		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_DATE, STORY_SHORTDATE, STORY_FEED_ID, STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TITLE,
 		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE, STORY_SHARED_USER_IDS
 	};
+	
 	
 	
 }

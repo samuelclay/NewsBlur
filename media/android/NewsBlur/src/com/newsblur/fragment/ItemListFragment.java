@@ -59,7 +59,7 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 		Uri uri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
 		Cursor cursor = contentResolver.query(uri, null, null, null, null);
 		
-		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_DATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
+		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);

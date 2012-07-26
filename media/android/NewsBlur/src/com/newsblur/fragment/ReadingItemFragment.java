@@ -150,7 +150,7 @@ public class ReadingItemFragment extends Fragment {
 			}
 		}
 
-		itemDate.setText(story.date.toGMTString());
+		itemDate.setText(story.shortDate);
 		itemTitle.setText(story.title);
 		itemAuthors.setText(story.authors);
 	}
