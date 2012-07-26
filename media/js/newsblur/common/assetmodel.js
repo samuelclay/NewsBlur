@@ -1181,11 +1181,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 follow_user = following_profile.set(data.follow_profile);
             } else {
                 this.following_profiles.add(data.follow_profile);
-                follow_user = new NEWSBLUR.Models.User(data.follow_profile);
             }
             this.social_feeds.remove(data.follow_subscription);
             this.social_feeds.add(data.follow_subscription);
-            callback(data, follow_user);
+            callback(data);
         }, this));
     },
     
@@ -1196,8 +1195,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 return profile.get('user_id') == data.unfollow_profile.user_id;
             });
             this.social_feeds.remove(data.unfollow_profile.id);
-            var unfollow_user = new NEWSBLUR.Models.User(data.unfollow_profile);
-            callback(data, unfollow_user);
+            callback(data);
         }, this));
     },
     
