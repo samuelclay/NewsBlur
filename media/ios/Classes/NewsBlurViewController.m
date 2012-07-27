@@ -75,6 +75,10 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController transitionFromFeedDetail];
+    }
+    
     [super viewWillAppear:animated];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
