@@ -768,7 +768,6 @@ class MSocialSubscription(mongo.Document):
             byscorefunc = r.zrangebyscore
             min_score = mark_read_time
             max_score = current_time
-            print min_score, max_score
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
@@ -1121,8 +1120,7 @@ class MSharedStory(mongo.Document):
     
     def ensure_story_db_id(self, save=True):
         if not self.story_db_id:
-            story = MStory.objects(story_feed_id=self.story_feed_id,
-                                   story_guid=self.story_guid).limit(1).first()
+            story, _ = MStory.find_story(self.story_feed_id, self.story_guid)
             if story:
                 logging.debug(" ***> Shared story didn't have story_db_id. Adding found id: %s" % story.id)
                 self.story_db_id = story.id

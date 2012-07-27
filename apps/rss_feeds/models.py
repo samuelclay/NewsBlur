@@ -1343,6 +1343,23 @@ class MStory(mongo.Document):
         self.remove_from_redis()
         
         super(MStory, self).delete(*args, **kwargs)
+    
+    @classmethod
+    def find_story(cls, story_feed_id, story_id):
+        from apps.social.models import MSharedStory
+        original_found = True
+
+        story = cls.objects(story_feed_id=story_feed_id,
+                            story_guid=story_id).limit(1).first()
+        if not story:
+            original_found = False
+            story = MSharedStory.objects.filter(story_feed_id=story_feed_id, 
+                                                story_guid=story_id).limit(1).first()
+        if not story:
+            story = MStarredStory.objects.filter(story_feed_id=story_feed_id, 
+                                                 story_guid=story_id).limit(1).first()
+        
+        return story, original_found
         
     def sync_redis(self, r=None):
         if not r:

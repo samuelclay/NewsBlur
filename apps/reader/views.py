@@ -792,7 +792,7 @@ def mark_story_as_unread(request):
         
     data = dict(code=0, payload=dict(story_id=story_id))
     
-    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id)[0]
+    story, found_original = MStory.find_story(feed_id, story_id)
     
     if usersub and story.story_date < usersub.mark_read_date:
         # Story is outside the mark as read range, so invert all stories before.

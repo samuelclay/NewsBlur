@@ -22,7 +22,7 @@ NEWSBLUR_URL = 'http://www.newsblur.com'
 # = Directory Declaractions =
 # ===========================
 
-CURRENT_DIR   = os.getcwd()
+CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),)
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')

@@ -313,24 +313,16 @@ def mark_story_as_shared(request):
     source_user_id = request.POST.get('source_user_id')
     post_to_services = request.POST.getlist('post_to_services')
     format = request.REQUEST.get('format', 'json')
-    original_story_found = True
     
     MSocialProfile.get_user(request.user.pk)
     
-    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1).first()
+    story, original_story_found = MStory.find_story(feed_id, story_id)
+
     if not story:
-        original_story_found = False
-        story = MSharedStory.objects.filter(story_feed_id=feed_id, 
-                                            story_guid=story_id).limit(1).first()
-        if not story:
-            story = MStarredStory.objects.filter(story_feed_id=feed_id, 
-                                                 story_guid=story_id).limit(1).first()
-                                                
-        if not story:
-            return json.json_response(request, {
-                'code': -1, 
-                'message': 'Could not find the original story and no copies could be found.'
-            })
+        return json.json_response(request, {
+            'code': -1, 
+            'message': 'Could not find the original story and no copies could be found.'
+        })
     
     shared_story = MSharedStory.objects.filter(user_id=request.user.pk, 
                                                story_feed_id=feed_id, 

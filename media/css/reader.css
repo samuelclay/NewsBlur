@@ -4842,13 +4842,11 @@ form.opml_import_form input {
     text-transform: uppercase;
     margin: 4px 0 0;
     padding: 0;
+    position: relative;
 }
 
 .NB-menu-manage.NB-inverse {
   margin: 0 0 4px;
-}
-
-.NB-menu-manage.NB-menu-manage-notop {
 }
 
 .NB-menu-manage-container .NB-menu-manage-arrow {
@@ -4881,9 +4879,8 @@ form.opml_import_form input {
     background-color: #BAE3A8;
 }
 
-.NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled),
-.NB-menu-manage li.NB-menu-item:hover:not(.NB-active),
-.NB-menu-manage li.NB-menu-item.NB-hover {
+.NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled):not(.NB-active),
+.NB-menu-manage li.NB-menu-item.NB-hover:not(.NB-disabled):not(.NB-active) {
     background-color: #639510;
     color: white;
 }

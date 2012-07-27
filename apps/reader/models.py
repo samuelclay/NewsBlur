@@ -549,6 +549,7 @@ class MUserStory(mongo.Document):
     story_id = mongo.StringField(unique_with=('user_id', 'feed_id'))
     story_date = mongo.DateTimeField()
     story = mongo.ReferenceField(MStory)
+    found_story = mongo.GenericReferenceField()
     
     meta = {
         'collection': 'userstories',
@@ -595,12 +596,18 @@ class MUserStory(mongo.Document):
     def story_db_id(self):
         if self.story:
             return self.story.id
+        elif self.found_story:
+            return self.found_story['_ref'].id
 
-        try:
-            story = MStory.objects.get(story_feed_id=self.feed_id, story_guid=self.story_id)
+        story, found_original = MStory.find_story(self.feed_id, self.story_id)
+        if story:
+            if found_original:
+                self.story = story
+            else:
+                self.found_story = story
+            self.save()
+            
             return story.id
-        except MStory.DoesNotExist:
-            return
             
     def sync_redis(self, r=None):
         if not r:
