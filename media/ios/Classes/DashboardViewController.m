@@ -85,15 +85,7 @@
 }
 
 # pragma mark
-# pragma mark Interactions
-
-- (void)refreshInteractions {
-    [self.interactionsModule fetchInteractionsDetail:1];    
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {    
-    NSLog(@"Error in finishLoadInteractions is %@", [request error]);
-}
+# pragma mark Navigation
 
 - (IBAction)tapSegmentedButton:(id)sender {
     int selectedSegmentIndex = [self.segmentedButton selectedSegmentIndex];
@@ -114,42 +106,17 @@
 }
 
 # pragma mark
+# pragma mark Interactions
+
+- (void)refreshInteractions {
+    [self.interactionsModule fetchInteractionsDetail:1];    
+}
+
+# pragma mark
 # pragma mark Activities
 
 - (void)refreshActivity {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/activities?user_id=%@&limit=10",
-                           NEWSBLUR_URL,
-                           [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    [request setDidFinishSelector:@selector(finishLoadActivities:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
-}
-
-- (void)finishLoadActivities:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
-    
-    appDelegate.dictUserActivities = results;
-    
-    if (self.activitiesModule == nil) {
-        ActivityModule *activity = [[ActivityModule alloc] init];
-        activity.frame = CGRectMake(20, 510, 320, 320);
-        self.activitiesModule = activity;
-        [self.view addSubview:self.activitiesModule];
-    }
-    
-    NSArray *activities = [appDelegate.dictUserActivities objectForKey:@"activities"];
-    NSString *username = [appDelegate.dictUserActivities objectForKey:@"username"];
-    if (!username) {
-        username = [[appDelegate.dictUserActivities objectForKey:@"user_profile"] objectForKey:@"username"];
-    }
-    
-    [self.activitiesModule refreshWithActivities:activities withUsername:username];
-
+    [self.activitiesModule fetchActivitiesDetail:1];    
 }
 
 # pragma mark

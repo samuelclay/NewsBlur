@@ -25,7 +25,7 @@
 @synthesize pageFinished;
 @synthesize activitiesPage;
 
-#define MINIMUM_INTERACTION_HEIGHT 48 + 30
+#define MINIMUM_ACTIVITY_HEIGHT 48 + 30
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -66,18 +66,18 @@
     NSInteger maximumOffset = self.activitiesTable.contentSize.height - self.activitiesTable.frame.size.height;
     
     if (maximumOffset - currentOffset <= 60.0) {
-        [self fetchInteractionsDetail:self.activitiesPage + 1];
+        [self fetchActivitiesDetail:self.activitiesPage + 1];
     }
 }
 
 #pragma mark -
 #pragma mark Get Interactions
 
-- (void)fetchInteractionsDetail:(int)page {
+- (void)fetchActivitiesDetail:(int)page {
     if (page == 1) {
         self.pageFetching = NO;
         self.pageFinished = NO;
-        appDelegate.dictUserActivities = nil;
+        appDelegate.userActivitiesArray = nil;
     }
     if (!self.pageFetching && !self.pageFinished) {
         self.activitiesPage = page;
@@ -91,7 +91,7 @@
         NSURL *url = [NSURL URLWithString:urlString];
         ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
         
-        [request setDidFinishSelector:@selector(finishLoadInteractions:)];
+        [request setDidFinishSelector:@selector(finishLoadActivities:)];
         [request setDidFailSelector:@selector(requestFailed:)];
         [request setDelegate:self];
         [request startAsynchronous];
@@ -104,11 +104,16 @@
     NSDictionary *results = [[NSDictionary alloc] 
                              initWithDictionary:[responseString JSONValue]];
     
-    NSArray *newActivities = [results objectForKey:@"interactions"];
+    self.activitiesUsername = [results objectForKey:@"username"];
+    if (!self.activitiesUsername) {
+        self.activitiesUsername = [[results objectForKey:@"user_profile"] objectForKey:@"username"];
+    }
+    
+    NSArray *newActivities = [results objectForKey:@"activities"];
     NSMutableArray *confirmedActivities = [NSMutableArray array];
-    if ([appDelegate.dictUserActivities count]) {
+    if ([appDelegate.userActivitiesArray count]) {
         NSMutableSet *activitiesDate = [NSMutableSet set];
-        for (id activity in appDelegate.dictUserActivities) {
+        for (id activity in appDelegate.userActivitiesArray) {
             [activitiesDate addObject:[activity objectForKey:@"date"]];
         }
         for (id activity in newActivities) {
@@ -120,16 +125,16 @@
         confirmedActivities = [newActivities copy];
     }
     
-//    if (self.activitiesPage == 1) {
-//        appDelegate.dictUserActivities = confirmedActivities;
-//    } else {
-//        appDelegate.dictUserActivities = [appDelegate.dictUserActivities arrayByAddingObjectsFromArray:newActivities];
-//    }
-//    
-//    if ([confirmedInteractions count] == 0 || self.activitiesTable > 100) {
-//        self.pageFinished = YES;
-//    }
-//    [self refreshWithInteractions:appDelegate.dictUserInteractions withUsername:self.activitiesUsername];
+    if (self.activitiesPage == 1) {
+        appDelegate.userActivitiesArray = confirmedActivities;
+    } else {
+        appDelegate.userActivitiesArray = [appDelegate.userActivitiesArray arrayByAddingObjectsFromArray:newActivities];
+    }
+    
+    if ([confirmedActivities count] == 0 || self.activitiesPage > 100) {
+        self.pageFinished = YES;
+    }
+    [self refreshWithActivities:appDelegate.userActivitiesArray withUsername:self.activitiesUsername];
 } 
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
@@ -148,23 +153,20 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {    
     int activitesCount = [self.activitiesArray count];
-    if (activitesCount) {
-        return activitesCount;
-    } else {
-        return 0;
-    }
+    return activitesCount + 1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
     int activitiesCount = [self.activitiesArray count];
     if (indexPath.row >= activitiesCount) {
-        return MINIMUM_INTERACTION_HEIGHT;
+        return MINIMUM_ACTIVITY_HEIGHT;
     }
     
     ActivityCell *activityCell = [[ActivityCell alloc] init];
     int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername  withWidth:self.frame.size.width] + 30;
     
     return height;
+
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -176,10 +178,16 @@
                  reuseIdentifier:@"ActivityCell"];
     } 
     
-    [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
-                     withUsername:self.activitiesUsername
-                        withWidth:self.frame.size.width];
+    if (indexPath.row >= [appDelegate.userActivitiesArray count]) {
+        // add in loading cell
+        return [self makeLoadingCell];
+    } else {
 
+        // update the cell information
+        [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
+                         withUsername:self.activitiesUsername
+                            withWidth:self.frame.size.width];
+    }
     return cell;
 }
 
@@ -218,6 +226,44 @@
         // have the selected cell deselect
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
+}
+
+- (UITableViewCell *)makeLoadingCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] 
+                             initWithStyle:UITableViewCellStyleSubtitle 
+                             reuseIdentifier:@"NoReuse"];
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    if (self.pageFinished) {
+        UIImage *img = [UIImage imageNamed:@"fleuron.png"];
+        UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];
+        int height = MINIMUM_ACTIVITY_HEIGHT;
+        
+        fleuron.frame = CGRectMake(0, 0, self.frame.size.width, height);
+        fleuron.contentMode = UIViewContentModeCenter;
+        [cell.contentView addSubview:fleuron];
+        fleuron.backgroundColor = [UIColor whiteColor];
+    } else {
+        cell.textLabel.text = @"Loading...";
+        
+        UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc] 
+                                            initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        UIImage *spacer = [UIImage imageNamed:@"spacer"];
+        UIGraphicsBeginImageContext(spinner.frame.size);        
+        [spacer drawInRect:CGRectMake(0, 0, spinner.frame.size.width,spinner.frame.size.height)];
+        UIImage* resizedSpacer = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        cell.imageView.image = resizedSpacer;
+        [cell.imageView addSubview:spinner];
+        [spinner startAnimating];
+    }
+    
+    return cell;
+}
+
+- (void)scrollViewDidScroll: (UIScrollView *)scroll {
+    [self checkScroll];
 }
 
 @end

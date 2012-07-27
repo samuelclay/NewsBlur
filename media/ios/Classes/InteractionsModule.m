@@ -38,7 +38,6 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
     self.interactionsTable = [[UITableView alloc] init];
     self.interactionsTable.dataSource = self;
     self.interactionsTable.delegate = self;
@@ -47,7 +46,6 @@
     
     [self addSubview:self.interactionsTable];  
 }
-
 
 - (void)refreshWithInteractions:(NSArray *)interactions {
     self.interactionsArray = interactions;
@@ -78,7 +76,7 @@
     if (page == 1) {
         self.pageFetching = NO;
         self.pageFinished = NO;
-        appDelegate.dictUserInteractions = nil;
+        appDelegate.userInteractionsArray = nil;
     }
     if (!self.pageFetching && !self.pageFinished) {
         self.interactionsPage = page;
@@ -107,9 +105,9 @@
     
     NSArray *newInteractions = [results objectForKey:@"interactions"];
     NSMutableArray *confirmedInteractions = [NSMutableArray array];
-    if ([appDelegate.dictUserInteractions count]) {
+    if ([appDelegate.userInteractionsArray count]) {
         NSMutableSet *interactionsDates = [NSMutableSet set];
-        for (id interaction in appDelegate.dictUserInteractions) {
+        for (id interaction in appDelegate.userInteractionsArray) {
             [interactionsDates addObject:[interaction objectForKey:@"date"]];
         }
         for (id interaction in newInteractions) {
@@ -122,15 +120,15 @@
     }
     
     if (self.interactionsPage == 1) {
-        appDelegate.dictUserInteractions = confirmedInteractions;
+        appDelegate.userInteractionsArray = confirmedInteractions;
     } else {
-        appDelegate.dictUserInteractions = [appDelegate.dictUserInteractions arrayByAddingObjectsFromArray:newInteractions];
+        appDelegate.userInteractionsArray = [appDelegate.userInteractionsArray arrayByAddingObjectsFromArray:newInteractions];
     }
     
     if ([confirmedInteractions count] == 0 || self.interactionsPage > 100) {
         self.pageFinished = YES;
     }
-    [self refreshWithInteractions:appDelegate.dictUserInteractions];
+    [self refreshWithInteractions:appDelegate.userInteractionsArray];
 } 
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
@@ -151,13 +149,13 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    int userInteractions = [appDelegate.dictUserInteractions count];
+    int userInteractions = [appDelegate.userInteractionsArray count];
     if (indexPath.row >= userInteractions) {
         return MINIMUM_INTERACTION_HEIGHT;
     }
     
     InteractionCell *interactionCell = [[InteractionCell alloc] init];
-    int height = [interactionCell setInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width] + 30;
+    int height = [interactionCell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width] + 30;
     if (height < MINIMUM_INTERACTION_HEIGHT) {
         return MINIMUM_INTERACTION_HEIGHT;
     } else {
@@ -173,7 +171,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {    
-    int userInteractionsCount = [appDelegate.dictUserInteractions count];
+    int userInteractionsCount = [appDelegate.userInteractionsArray count];
     return userInteractionsCount + 1;
 }
 
@@ -185,21 +183,21 @@
     }
     
 
-    if (indexPath.row >= [appDelegate.dictUserInteractions count]) {
+    if (indexPath.row >= [appDelegate.userInteractionsArray count]) {
         // add in loading cell
         return [self makeLoadingCell];
     } else {
         // update the cell information
-        [cell setInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth: self.frame.size.width];
+        [cell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth: self.frame.size.width];
     }
     
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    int userInteractions = [appDelegate.dictUserInteractions count];
+    int userInteractions = [appDelegate.userInteractionsArray count];
     if (indexPath.row < userInteractions) {
-        NSDictionary *interaction = [appDelegate.dictUserInteractions objectAtIndex:indexPath.row];
+        NSDictionary *interaction = [appDelegate.userInteractionsArray objectAtIndex:indexPath.row];
         NSString *category = [interaction objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {
             NSString *userId = [[interaction objectForKey:@"with_user"] objectForKey:@"user_id"];
@@ -217,12 +215,16 @@
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"feed_id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
-        } else if ([category isEqualToString:@"reply_reply"] || 
-                [category isEqualToString:@"story_reshare"]) {
+        } else if ([category isEqualToString:@"story_reshare"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[interaction objectForKey:@"with_user"] objectForKey:@"id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
+        }   else if ([category isEqualToString:@"reply_reply"]) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"feed_id"]];
+            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"content_id"]];
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
         }
+        
         
         // have the selected cell deselect
         [tableView deselectRowAtIndexPath:indexPath animated:YES];

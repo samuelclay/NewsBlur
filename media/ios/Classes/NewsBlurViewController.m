@@ -322,9 +322,9 @@
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     
-    // Set up dictUserProfile and dictUserActivities
+    // Set up dictUserProfile and userActivitiesArray
     appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
-    appDelegate.dictUserActivities = [results objectForKey:@"activities"];
+    appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     [appDelegate.dashboardViewController refreshInteractions];
     [appDelegate.dashboardViewController refreshActivity];
 

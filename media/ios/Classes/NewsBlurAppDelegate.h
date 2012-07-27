@@ -101,8 +101,8 @@
     NSMutableDictionary * dictActiveFeeds;
     NSDictionary * dictSocialFeeds;
     NSDictionary * dictUserProfile;
-    NSArray * dictUserInteractions;
-    NSDictionary * dictUserActivities;
+    NSArray * userInteractionsArray;
+    NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
 }
 
@@ -164,8 +164,8 @@
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
 @property (nonatomic) NSDictionary *dictUserProfile;
-@property (nonatomic) NSArray *dictUserInteractions;
-@property (nonatomic) NSDictionary *dictUserActivities;
+@property (nonatomic) NSArray *userInteractionsArray;
+@property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;

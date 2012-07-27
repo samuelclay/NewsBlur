@@ -89,8 +89,8 @@
 @synthesize dictActiveFeeds;
 @synthesize dictSocialFeeds;
 @synthesize dictUserProfile;
-@synthesize dictUserInteractions;
-@synthesize dictUserActivities;
+@synthesize userInteractionsArray;
+@synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
