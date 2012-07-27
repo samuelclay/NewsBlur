@@ -2347,7 +2347,7 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Insta-fetch stories')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
+                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
                         $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
                             $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first'),
                             $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest')
@@ -2356,7 +2356,7 @@
                             $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
                             $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
                         ])
-                    ]),
+                    ])),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -2436,7 +2436,7 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
                     ])),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
+                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
                         $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
                             $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first'),
                             $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest')
@@ -2445,7 +2445,7 @@
                             $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
                             $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
                         ])
-                    ]),
+                    ])),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -2488,12 +2488,12 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Add a site to this folder')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-folder' }, [
+                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-folder' }, [
                         $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
                             $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest'),
                             $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first')
                         ])
-                    ]),
+                    ])),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-folder-move' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

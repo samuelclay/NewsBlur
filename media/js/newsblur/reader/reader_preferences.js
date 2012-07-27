@@ -288,7 +288,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'SSL'
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-openfeedaction' }, [
+                    (NEWSBLUR.Globals.is_admin && $.make('div', { className: 'NB-preference NB-preference-openfeedaction' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-openfeedaction-1', type: 'radio', name: 'open_feed_action', value: 'newest' }),
@@ -312,7 +312,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                         $.make('div', { className: 'NB-preference-label'}, [
                             'When opening a site'
                         ])
-                    ]),
+                    ])),
                     $.make('div', { className: 'NB-preference NB-preference-readstorydelay' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
