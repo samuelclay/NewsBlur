@@ -69,6 +69,7 @@
 - (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;
 - (void)instafetchFeed;
+- (void)markCurrentStoryAsRead;
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(int)row;
 
 - (void)loadFaviconsFromActiveFeed;

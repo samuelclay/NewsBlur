@@ -610,6 +610,14 @@
     [appDelegate loadStoryDetailView];
 }
 
+- (void)markCurrentStoryAsRead {
+    int rowIndex = [appDelegate locationOfActiveStory];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
+    FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
+    cell.isRead = YES;
+    [cell setNeedsLayout];
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < [appDelegate.activeFeedStoryLocations count]) {
         FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];        

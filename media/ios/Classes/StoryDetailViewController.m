@@ -592,7 +592,7 @@
                             footerString
                             ];
 
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -841,9 +841,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if (unreadCount == 0) {
         hud.labelText = @"No unread stories";
     } else if (unreadCount == 1) {
-        hud.labelText = @"1 unread story";
+        hud.labelText = @"1 story left";
     } else {
-        hud.labelText = [NSString stringWithFormat:@"%i unread stories", unreadCount]; 
+        hud.labelText = [NSString stringWithFormat:@"%i stories left", unreadCount]; 
     }
 	[hud hide:YES afterDelay:0.8];
 }
@@ -885,6 +885,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)markStoryAsRead {
     if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
         [appDelegate markActiveStoryRead];
+        
+        // marks story cell as read
+        [appDelegate.feedDetailViewController markCurrentStoryAsRead];
         
         NSString *urlString;
         
