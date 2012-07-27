@@ -98,7 +98,7 @@
     NSMutableArray * readStories;
     
 	NSDictionary * dictFolders;
-    NSDictionary * dictFeeds;
+    NSMutableDictionary * dictFeeds;
     NSMutableDictionary * dictActiveFeeds;
     NSDictionary * dictSocialFeeds;
     NSDictionary * dictUserProfile;
@@ -162,7 +162,7 @@
 @property (readwrite) NSMutableArray * readStories;
 
 @property (nonatomic) NSDictionary *dictFolders;
-@property (nonatomic) NSDictionary *dictFeeds;
+@property (nonatomic, strong) NSMutableDictionary *dictFeeds;
 @property (nonatomic) NSMutableDictionary *dictActiveFeeds;
 @property (nonatomic) NSDictionary *dictSocialFeeds;
 @property (nonatomic) NSDictionary *dictUserProfile;

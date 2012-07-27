@@ -18,7 +18,6 @@
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
-#import "JSON.h"
 #import "Utilities.h"
 
 
@@ -269,11 +268,14 @@
         return [self informError:@"The server barfed!"];
     }
     
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSString *responseString = [request responseString];   
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
 
-    
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     self.visibleFeeds = [NSMutableDictionary dictionary];
@@ -347,12 +349,12 @@
     [self loadAvatars];
     
     // set up dictFolders
-    NSMutableDictionary * allFolders = [results objectForKey:@"flat_folders"];
+    NSMutableDictionary * allFolders = [[results objectForKey:@"flat_folders"] mutableCopy];
     [allFolders setValue:socialFolder forKey:@""]; 
     appDelegate.dictFolders = allFolders;
     
     // set up dictFeeds
-    appDelegate.dictFeeds = [results objectForKey:@"feeds"];
+    appDelegate.dictFeeds = [[results objectForKey:@"feeds"] mutableCopy];
 
     // sort all the folders
     appDelegate.dictFoldersArray = [NSMutableArray array];
@@ -1093,13 +1095,17 @@
 
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
     
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
     dispatch_async(queue, ^{
         for (id feed_id in results) {
-            NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feed_id];
+            NSMutableDictionary *feed = [[appDelegate.dictFeeds objectForKey:feed_id] mutableCopy]; 
             [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
             [appDelegate.dictFeeds setValue:feed forKey:feed_id];
             

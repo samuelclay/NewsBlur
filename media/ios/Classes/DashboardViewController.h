@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @class NewsBlurAppDelegate;
-@class ASIHTTPRequest;
 @class InteractionsModule;
 @class ActivityModule;
 @class FeedbackModule;
@@ -36,7 +35,5 @@
 - (IBAction)doLogout:(id)sender;
 - (void)refreshInteractions;
 - (void)refreshActivity;
-- (void)finishLoadActivities:(ASIHTTPRequest *)request;
 - (IBAction)tapSegmentedButton:(id)sender;
-- (void)requestFailed:(ASIHTTPRequest *)request;
 @end
