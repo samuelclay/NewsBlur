@@ -11,7 +11,6 @@
 #import "ActivityModule.h"
 #import "InteractionsModule.h"
 #import "UserProfileViewController.h"
-#import "JSON.h"
 
 #define FEEDBACK_URL @"http://dev.newsblur.com/about"
 

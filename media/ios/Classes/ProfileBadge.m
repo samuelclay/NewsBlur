@@ -292,9 +292,12 @@
 
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
-    NSLog(@"responseString is %@", responseString);
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
 
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
@@ -309,8 +312,12 @@
 - (void)finishUnfollowing:(ASIHTTPRequest *)request {
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
         NSLog(@"ERROR");

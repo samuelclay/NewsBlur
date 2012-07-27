@@ -11,7 +11,6 @@
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
-#import "JSON.h"
 
 @implementation AddSiteViewController
 
@@ -186,7 +185,14 @@
 
 - (void)autocompleteSite:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];
-    autocompleteResults = [[NSMutableArray alloc] initWithArray:[responseString JSONValue]];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSArray *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    
+    autocompleteResults = [[NSMutableArray alloc] initWithArray:results];
     
     if ([siteAddressInput.text length] > 0 && [autocompleteResults count] > 0) {
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
@@ -233,8 +239,13 @@
     [self.addingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
@@ -284,8 +295,13 @@
     [self.addingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {

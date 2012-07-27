@@ -962,8 +962,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)finishLikeComment:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    
     // add the comment into the activeStory dictionary
     NSDictionary *newStory = [DataUtilities updateComment:results for:appDelegate];
 

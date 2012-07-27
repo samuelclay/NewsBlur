@@ -277,8 +277,12 @@
     }
         
     NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
         
     if (!(appDelegate.isRiverView || appDelegate.isSocialView) && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
         return;
@@ -1057,8 +1061,12 @@
 
 - (void)finishedRefreshingFeed:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
     
     [self renderStories:[results objectForKey:@"stories"]];    
 }
@@ -1097,13 +1105,17 @@
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request {
 
     NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
     
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
     dispatch_async(queue, ^{
         for (id feed_id in results) {
-            NSDictionary *feed = [appDelegate.dictActiveFeeds objectForKey:feed_id];
+            NSMutableDictionary *feed = [[appDelegate.dictActiveFeeds objectForKey:feed_id] mutableCopy];
             [feed setValue:[results objectForKey:feed_id] forKey:@"favicon"];
             [appDelegate.dictActiveFeeds setValue:feed forKey:feed_id];
             

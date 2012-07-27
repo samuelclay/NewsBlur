@@ -123,8 +123,12 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
 - (void)requestFinished:(ASIHTTPRequest *)request {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {

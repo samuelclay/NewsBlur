@@ -12,7 +12,6 @@
 #import "UserProfileViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
-#import "JSON.h"
 
 @implementation ActivityModule
 
@@ -101,8 +100,12 @@
 - (void)finishLoadActivities:(ASIHTTPRequest *)request {
     self.pageFetching = NO;
     NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
     
     self.activitiesUsername = [results objectForKey:@"username"];
     if (!self.activitiesUsername) {
