@@ -3218,23 +3218,43 @@
             var $slider = this.$s.$intelligence_slider;
             var unread_view = this.get_unread_view_score();
             
-            this.slide_intelligence_slider(unread_view);
+            if (unread_view == 0 && !NEWSBLUR.assets.preference('hide_read_feeds')) {
+                unread_view = -1;
+            }
+            this.slide_intelligence_slider(unread_view, true);
         },
         
-        slide_intelligence_slider: function(value) {
+        slide_intelligence_slider: function(value, initial_load) {
             var $slider = this.$s.$intelligence_slider;
-            if (this.model.preference('unread_view') != value) {
-                this.model.preference('unread_view', value);
+            var real_value = value;
+            
+            if (value < 0) {
+                value = 0;
+                if (!initial_load) {
+                    NEWSBLUR.assets.preference('hide_read_feeds', 0);
+                }
+                NEWSBLUR.assets.preference('unread_view', 0);
+            } else if (value == 0) {
+                if (!initial_load) {
+                    NEWSBLUR.assets.preference('hide_read_feeds', 1);
+                }
+                NEWSBLUR.assets.preference('unread_view', 0);
+            } else if (value > 0) {
+                if (!initial_load) {
+                    NEWSBLUR.assets.preference('hide_read_feeds', 1);
+                }
+                NEWSBLUR.assets.preference('unread_view', 1);
             }
             this.flags['unread_threshold_temporarily'] = null;
             this.switch_feed_view_unread_view(value);
             this.show_feed_hidden_story_title_indicator(true);
             this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
+            NEWSBLUR.app.feed_list_header.toggle_hide_read_preference();
             
             $('.NB-active', $slider).removeClass('NB-active');
-            if (value < 0) {
+            if (real_value < 0) {
                 $('.NB-intelligence-slider-red', $slider).addClass('NB-active');
-            } else if (value > 0) {
+            } else if (real_value > 0) {
                 $('.NB-intelligence-slider-green', $slider).addClass('NB-active');
             } else {
                 $('.NB-intelligence-slider-yellow', $slider).addClass('NB-active');
