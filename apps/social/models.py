@@ -1294,8 +1294,8 @@ class MSharedStory(mongo.Document):
         r.srem(comment_key, self.user_id)
 
         s = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        s.srem('B:%s' % self.user_id, self.story.pk)
-        s.zrem('zB:%s' % self.user_id, self.story.pk)
+        s.srem('B:%s' % self.user_id, self.story_db_id)
+        s.zrem('zB:%s' % self.user_id, self.story_db_id)
 
     def publish_update_to_subscribers(self):
         try:
