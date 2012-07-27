@@ -66,7 +66,8 @@
             this.constants = {
               FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
               FILL_OUT_PAGES: 50,
-              RIVER_STORIES_FOR_STANDARD_ACCOUNT: 5
+              RIVER_STORIES_FOR_STANDARD_ACCOUNT: 5,
+              MIN_FEED_LIST_SIZE: 206
             };
     
             // ==================
@@ -190,7 +191,7 @@
                 center__paneSelector:   ".right-pane",
                 west__paneSelector:     ".left-pane",
                 west__size:             this.model.preference('feed_pane_size'),
-                west__minSize:          240,
+                west__minSize:          this.constants.MIN_FEED_LIST_SIZE,
                 west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
                 spacing_open:           4,
                 resizerDragOpacity:     0.6,
@@ -314,6 +315,7 @@
             var feed_pane_size = state.size;
             
             $('#NB-splash').css('left', feed_pane_size);
+            $pane.toggleClass("NB-narrow", this.layout.outerLayout.state.west.size < 240);
             this.flags.set_feed_pane_size = this.flags.set_feed_pane_size || _.debounce( _.bind(function() {
                 var feed_pane_size = this.layout.outerLayout.state.west.size;
                 this.model.preference('feed_pane_size', feed_pane_size);
