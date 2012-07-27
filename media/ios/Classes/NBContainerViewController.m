@@ -507,9 +507,8 @@
 - (void)dragStoryToolbar:(int)yCoordinate {
 
     CGRect vb = [self.view bounds];
-    // account for top toolbar 
+    // account for top toolbar and status bar
     yCoordinate = yCoordinate + 44 + 20;
-    NSLog(@"yCoordinate is %i", yCoordinate);
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
     
@@ -544,7 +543,6 @@
         [userPreferences setInteger:1004 forKey:@"storyTitlesYCoordinate"];
         [userPreferences synchronize];
         self.storyTitlesYCoordinate = 1004;
-        NSLog(@"Adjust the view");
         self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
                                                                0, 
                                                                self.storyNavigationController.view.frame.size.width, 

@@ -157,7 +157,7 @@
     }
     
     InteractionCell *interactionCell = [[InteractionCell alloc] init];
-    int height = [interactionCell setInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width];
+    int height = [interactionCell setInteraction:[appDelegate.dictUserInteractions objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width] + 30;
     if (height < MINIMUM_INTERACTION_HEIGHT) {
         return MINIMUM_INTERACTION_HEIGHT;
     } else {

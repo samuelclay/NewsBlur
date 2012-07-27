@@ -47,10 +47,7 @@
     
     // determine outer bounds
     CGRect contentRect = self.contentView.bounds;
-    
-    // position avatar to bounds
-    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
-        
+            
     // position label to bounds
     CGRect labelRect = contentRect;
     labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
@@ -65,8 +62,11 @@
     // must set the height again for dynamic height in heightForRowAtIndexPath in 
     CGRect interactionLabelRect = self.interactionLabel.bounds;
     interactionLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
+    interactionLabelRect.size.height = 300;
+    
     self.interactionLabel.frame = interactionLabelRect;
-
+    self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
+    
     UIImage *placeholder = [UIImage imageNamed:@"user"];
     [self.avatarView setImageWithURL:[NSURL URLWithString:[[interaction objectForKey:@"with_user"] objectForKey:@"photo_url"]]
         placeholderImage:placeholder];
@@ -97,7 +97,8 @@
     
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];
     NSMutableAttributedString* attrStr = [NSMutableAttributedString attributedStringWithString:txtWithTime];
-
+    
+    // for those calls we don't specify a range so it affects the whole string
     [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
     [attrStr setTextColor:UIColorFromRGB(0x333333)];
     
@@ -112,11 +113,13 @@
     [attrStr setTextColor:UIColorFromRGB(0x999999) range:[txtWithTime rangeOfString:time]];
     [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:10] range:[txtWithTime rangeOfString:time]];
     [attrStr setTextAlignment:kCTLeftTextAlignment lineBreakMode:kCTLineBreakByWordWrapping lineHeight:4];
+    
     self.interactionLabel.attributedText = attrStr; 
     
     [self.interactionLabel sizeToFit];
     
     int height = self.interactionLabel.frame.size.height;
+    
     return height;
 }
 

@@ -9,14 +9,11 @@
 #import "ActivityCell.h"
 #import "NSAttributedString+Attributes.h"
 #import "UIImageView+AFNetworking.h"
-#import <QuartzCore/QuartzCore.h>
 
 @implementation ActivityCell
 
 @synthesize activityLabel;
 @synthesize faviconView;
-
-
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     
