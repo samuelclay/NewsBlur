@@ -46,7 +46,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		resolver = getActivity().getContentResolver();
 		apiManager = new APIManager(getActivity());
 
-		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, null, null);
+		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { FeedProvider.FOLDER_INTELLIGENCE_ALL }, null);
 		viewBinder = new FolderTreeViewBinder();
 
 		leftBound = UIUtils.convertDPsToPixels(getActivity(), 20);
@@ -129,13 +129,13 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 
 		switch (state) {
 		case (AppConstants.STATE_ALL):
-			selection = FeedProvider.INTELLIGENCE_ALL;
+			selection = FeedProvider.FOLDER_INTELLIGENCE_ALL;
 		break;
 		case (AppConstants.STATE_SOME):
-			selection = FeedProvider.INTELLIGENCE_SOME;
+			selection = FeedProvider.FOLDER_INTELLIGENCE_SOME;
 		break;
 		case (AppConstants.STATE_BEST):
-			selection = FeedProvider.INTELLIGENCE_BEST;
+			selection = FeedProvider.FOLDER_INTELLIGENCE_BEST;
 		break;
 		}
 

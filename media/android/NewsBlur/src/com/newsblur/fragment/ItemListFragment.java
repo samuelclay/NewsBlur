@@ -23,6 +23,7 @@ import com.newsblur.R;
 import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
+import com.newsblur.util.AppConstants;
 import com.newsblur.view.ItemViewBinder;
 
 public class ItemListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
@@ -32,6 +33,7 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 	private String feedId;
 	public static int ITEMLIST_LOADER = 0x01;
 	private SimpleCursorAdapter adapter;
+	private Uri storiesUri;
 
 	public ItemListFragment(final String feedId) {
 		this.feedId = feedId;
@@ -56,8 +58,8 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
 		
 		contentResolver = getActivity().getContentResolver();
-		Uri uri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
-		Cursor cursor = contentResolver.query(uri, null, null, null, null);
+		storiesUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
+		Cursor cursor = contentResolver.query(storiesUri, null, null, null, null);
 		
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
@@ -105,6 +107,23 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 		startActivity(i);
 	}
 
-	
+	public void changeState(int state) {
+		String selection = null;
+		
+		switch (state) {
+		case (AppConstants.STATE_ALL):
+			selection = "";
+		break;
+		case (AppConstants.STATE_SOME):
+			selection = FeedProvider.STORY_INTELLIGENCE_SOME;
+		break;
+		case (AppConstants.STATE_BEST):
+			selection = FeedProvider.STORY_INTELLIGENCE_BEST;
+		break;
+		}
+
+		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, null);
+		adapter.swapCursor(cursor);
+	}
 
 }

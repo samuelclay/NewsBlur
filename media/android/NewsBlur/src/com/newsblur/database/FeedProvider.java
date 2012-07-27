@@ -20,20 +20,24 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri FEED_FOLDER_MAP_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedfoldermap/");
 	public static final Uri FOLDERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/folders/");
 
-	public static final String INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
-	public static final String INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
-	public static final String INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
-
+	public static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
+	public static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
+	public static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
+	
+	public static final String STORY_INTELLIGENCE_BEST = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 ";
+	public static final String STORY_INTELLIGENCE_SOME = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 ";
+	
 	private static final String TAG = "FeedProvider";
 
 	private static final int ALL_FEEDS = 0;
 	private static final int FEED_STORIES = 1;
-	private static final int STORY_COMMENTS = 7;
 	private static final int ALL_FOLDERS = 2;
-	private static final int SPECIFIC_FOLDER = 3;
+	private static final int INDIVIDUAL_FOLDER = 3;
 	private static final int FEED_FOLDER_MAP = 4;
 	private static final int SPECIFIC_FEED_FOLDER_MAP = 5;
 	private static final int INDIVIDUAL_FEED = 6;
+	private static final int STORY_COMMENTS = 7;
+	private static final int INDIVIDUAL_STORY = 8;
 
 	private BlurDatabase databaseHelper;
 
@@ -43,11 +47,12 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/", ALL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/#/", FEED_STORIES);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/story/#/", INDIVIDUAL_STORY);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/comments/", STORY_COMMENTS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/", FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/*/", SPECIFIC_FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
-		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", SPECIFIC_FOLDER);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", INDIVIDUAL_FOLDER);
 	}
 
 	@Override
@@ -143,7 +148,11 @@ public class FeedProvider extends ContentProvider {
 
 			// Querying for a stories from a feed
 		case FEED_STORIES:
-			selection = DatabaseConstants.STORY_FEED_ID + " = ?";
+			if (!TextUtils.isEmpty(selection)) {
+				selection = selection + " AND " + DatabaseConstants.STORY_FEED_ID + " = ?";
+			} else {
+				selection = DatabaseConstants.STORY_FEED_ID + " = ?";
+			}
 			selectionArgs = new String[] { uri.getLastPathSegment() };
 			return db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, DatabaseConstants.STORY_DATE + " DESC");
 
@@ -216,7 +225,8 @@ public class FeedProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 		case INDIVIDUAL_FEED:
 			return db.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });
-			
+		case INDIVIDUAL_STORY:
+			return db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}

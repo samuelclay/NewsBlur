@@ -12,7 +12,7 @@ import com.newsblur.domain.Folder;
 public class FolderTreeAdapter extends SimpleCursorTreeAdapter {
 
 	ContentResolver resolver; 
-	public String currentState = FeedProvider.INTELLIGENCE_ALL;
+	public String currentState = FeedProvider.FOLDER_INTELLIGENCE_ALL;
 	private String TAG = "FolderTreeAdapter";
 	
 	public FolderTreeAdapter(Context context, Cursor cursor, int collapsedGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo) {

@@ -16,8 +16,9 @@ import com.newsblur.domain.Feed;
 import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
+import com.newsblur.view.StateToggleButton.StateChangedListener;
 
-public class ItemsList extends SherlockFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface {
+public class ItemsList extends SherlockFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface, StateChangedListener {
 
 	public static final String EXTRA_FEED = "feedId";
 	private ItemListFragment itemListFragment;
@@ -91,6 +92,12 @@ public class ItemsList extends SherlockFragmentActivity implements SyncUpdateFra
 		if (syncRunning) {
 			setSupportProgressBarIndeterminateVisibility(true);
 		}
+	}
+
+	@Override
+	public void changedState(int state) {
+		Log.d(TAG, "Changed state.");
+		itemListFragment.changeState(state);
 	}
 
 }

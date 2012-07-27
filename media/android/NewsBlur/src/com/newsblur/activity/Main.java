@@ -13,9 +13,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.fragment.FolderFeedListFragment;
-import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
-import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.service.SyncService;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
 

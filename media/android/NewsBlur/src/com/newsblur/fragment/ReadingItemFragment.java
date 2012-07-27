@@ -42,7 +42,6 @@ public class ReadingItemFragment extends Fragment {
 	public static ReadingItemFragment newInstance(Story story) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
-		// Supply num input as an argument.
 		Bundle args = new Bundle();
 		args.putSerializable("story", story);
 		readingFragment.setArguments(args);
@@ -168,7 +167,7 @@ public class ReadingItemFragment extends Fragment {
 		web.setHorizontalScrollBarEnabled(false);
 
 		StringBuilder builder = new StringBuilder();
-		// TODO: Define a better strategy for rescaling the HTML across device screen sizes and storying this HTML as boilderplate somewhere
+		// TODO: Define a better strategy for rescaling the HTML across device screen sizes and storying this HTML as boilerplate somewhere
 		builder.append("<html><head><meta name=\"viewport\" content=\"target-densitydpi=device-dpi\" /><link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body>");
 		builder.append(story.content);
 		builder.append("</body></html>");
