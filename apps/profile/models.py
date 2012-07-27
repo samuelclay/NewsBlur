@@ -260,8 +260,12 @@ def paypal_signup(sender, **kwargs):
 subscription_signup.connect(paypal_signup)
 
 def stripe_signup(sender, full_json, **kwargs):
-    profile = Profile.objects.get(stripe_id=full_json['data']['object']['customer'])
-    profile.activate_premium()
+    stripe_id = full_json['data']['object']['customer']
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_id)
+        profile.activate_premium()
+    except Profile.DoesNotExist:
+        return {"code": -1, "message": "User doesn't exist."}
 zebra_webhook_customer_subscription_created.connect(stripe_signup)
 
 def change_password(user, old_password, new_password):

@@ -28,7 +28,7 @@ class SqldumpMiddleware(object):
         return None
 
     def process_response(self, request, response):
-        if settings.DEBUG:
+        if settings.DEBUG and hasattr(self, 'orig_send_message') and hasattr(self, 'orig_send_message_with_response'):
             # remove instrumentation from pymongo
             Connection._send_message = \
                     self.orig_send_message

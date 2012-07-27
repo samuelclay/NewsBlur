@@ -20,7 +20,7 @@ class SqldumpMiddleware(object):
         return None
 
     def process_response(self, request, response):
-        if settings.DEBUG:
+        if settings.DEBUG and hasattr(self, 'orig_pack_command'):
             # remove instrumentation from redis
             Connection.pack_command = \
                     self.orig_pack_command
