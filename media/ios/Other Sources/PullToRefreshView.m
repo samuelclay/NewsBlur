@@ -123,8 +123,8 @@
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setAMSymbol:@"AM"];
     [formatter setPMSymbol:@"PM"];
-    [formatter setDateFormat:@"MM/dd/yy hh:mm a"];
-    lastUpdatedLabel.text = [NSString stringWithFormat:@"Last Updated: %@", [formatter stringFromDate:date]];
+    [formatter setDateFormat:@"MM/dd/yy h:mm a"];
+    lastUpdatedLabel.text = [NSString stringWithFormat:@"Updated %@", [formatter stringFromDate:date]];
     [formatter release];
 }
 

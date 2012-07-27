@@ -713,6 +713,7 @@
     
     if (section == 0) {
         folderImage = [UIImage imageNamed:@"group.png"];
+        folderImageViewX = 9;
     } else if (section == 1) {
         folderImage = [UIImage imageNamed:@"archive.png"];
         folderImageViewX = 9;
