@@ -29,14 +29,17 @@ import com.newsblur.view.ItemViewBinder;
 public class ItemListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 	
 	private static final String TAG = "itemListFragment";
+	public static final String FRAGMENT_TAG = "itemListFragment";
 	private ContentResolver contentResolver;
 	private String feedId;
 	public static int ITEMLIST_LOADER = 0x01;
 	private SimpleCursorAdapter adapter;
 	private Uri storiesUri;
+	private int currentState;
 
-	public ItemListFragment(final String feedId) {
+	public ItemListFragment(final String feedId, final int currentState) {
 		this.feedId = feedId;
+		this.currentState = currentState;
 	}
 	
 	public ItemListFragment() {
@@ -48,8 +51,8 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 		super.onCreate(savedInstanceState);
 	}
 	
-	public static ItemListFragment newInstance(final String feedId) {
-		return new ItemListFragment(feedId);
+	public static ItemListFragment newInstance(final String feedId, int currentState) {
+		return new ItemListFragment(feedId, currentState);
 	}
 	
 	@Override
@@ -59,7 +62,7 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 		
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
-		Cursor cursor = contentResolver.query(storiesUri, null, null, null, null);
+		Cursor cursor = contentResolver.query(storiesUri, null, getSelectionFromState(currentState), null, null);
 		
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
@@ -78,7 +81,7 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, null, null, null);
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, getSelectionFromState(currentState), null, null);
 	    return cursorLoader;
 	}
 
@@ -108,8 +111,13 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 	}
 
 	public void changeState(int state) {
+		final String selection = getSelectionFromState(state);
+		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, null);
+		adapter.swapCursor(cursor);
+	}
+
+	private String getSelectionFromState(int state) {
 		String selection = null;
-		
 		switch (state) {
 		case (AppConstants.STATE_ALL):
 			selection = "";
@@ -121,9 +129,7 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 			selection = FeedProvider.STORY_INTELLIGENCE_BEST;
 		break;
 		}
-
-		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, null);
-		adapter.swapCursor(cursor);
+		return selection;
 	}
 
 }

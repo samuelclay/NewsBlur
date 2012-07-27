@@ -16,7 +16,7 @@ import com.newsblur.util.AppConstants;
 
 public class FolderTreeViewBinder implements ViewBinder {
 
-	private int currentState = AppConstants.STATE_ALL;
+	private int currentState = AppConstants.STATE_SOME;
 	
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {

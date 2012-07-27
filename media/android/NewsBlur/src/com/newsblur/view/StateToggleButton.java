@@ -13,7 +13,7 @@ import com.newsblur.util.UIUtils;
 
 public class StateToggleButton extends LinearLayout implements OnClickListener {
 
-	private int CURRENT_STATE = AppConstants.STATE_ALL;
+	private int CURRENT_STATE = AppConstants.STATE_SOME;
 
 	private Context context;
 	private StateChangedListener stateChangedListener;
@@ -61,7 +61,7 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 		this.addView(imageStateTwo);
 		this.addView(imageStateThree);
 
-		changeState(CURRENT_STATE);
+		setState(CURRENT_STATE);
 	}
 
 	@Override
@@ -70,6 +70,13 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 	}
 
 	public void changeState(final int state) {
+		setState(state);
+		if (stateChangedListener != null) {
+			stateChangedListener.changedState(CURRENT_STATE);
+		}
+	}
+
+	public void setState(final int state) {
 		switch (state) {
 			case AppConstants.STATE_ALL:
 				imageStateOne.setAlpha(255);
@@ -89,10 +96,6 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 		}
 		
 		CURRENT_STATE = state;
-
-		if (stateChangedListener != null) {
-			stateChangedListener.changedState(CURRENT_STATE);
-		}
 	}
 
 	public interface StateChangedListener {
