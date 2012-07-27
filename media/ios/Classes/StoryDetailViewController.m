@@ -22,6 +22,12 @@
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
 
+@interface StoryDetailViewController ()
+
+@property (readwrite) CGFloat inTouchMove;
+
+@end
+
 @implementation StoryDetailViewController
 
 @synthesize appDelegate;
@@ -41,8 +47,10 @@
 @synthesize fontSettingsButton;
 @synthesize originalStoryButton;
 @synthesize buttonBack;
-
 @synthesize bottomPlaceholderToolbar;
+
+@synthesize inTouchMove;
+
 
 
 #pragma mark -
@@ -132,6 +140,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
         if ([theTouch.view isKindOfClass: UIToolbar.class]) {
+            self.inTouchMove = YES;
             CGPoint touchLocation = [theTouch locationInView:self.view];
             CGFloat y = touchLocation.y;
             [appDelegate.masterContainerViewController dragStoryToolbar:y];  
@@ -144,7 +153,9 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
-        if ([theTouch.view isKindOfClass: UIToolbar.class]) {
+        
+        if ([theTouch.view isKindOfClass: UIToolbar.class] && self.inTouchMove) {
+            self.inTouchMove = NO;
             [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];  
         }
     }

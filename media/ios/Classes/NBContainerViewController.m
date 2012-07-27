@@ -18,6 +18,7 @@
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1024 - 591
 #define NB_DEFAULT_SLIDER_INTERVAL 0.4
 #define NB_DEFAULT_SHARE_HEIGHT 120
+#define NB_DEFAULT_STORY_TITLE_SNAP_THRESHOLD 60
 
 @interface NBContainerViewController ()
 
@@ -29,8 +30,9 @@
 @property (nonatomic, strong) StoryDetailViewController *storyDetailViewController;
 @property (nonatomic, strong) ShareViewController *shareViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
-@property (readwrite) int storyTitlesYCoordinate;
 @property (readwrite) BOOL storyTitlesOnLeft;
+@property (readwrite) int storyTitlesYCoordinate;
+
 @property (readwrite) BOOL isSharingStory;
 @property (readwrite) BOOL isHidingStory;
 @property (nonatomic, strong) UIPopoverController *popoverController;
@@ -218,29 +220,47 @@
 
 - (void)adjustFeedDetailScreenForStoryTitles {
     CGRect vb = [self.view bounds];
-    if (self.storyTitlesYCoordinate == 1004 && !self.storyTitlesOnLeft) {
-        self.storyTitlesOnLeft = YES;
-        
-        // remove the back button
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = nil;
-        
-        // remove center title
-        self.storyDetailViewController.navigationItem.titleView = nil;
-        
-        if (![[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
-            [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];        
+    if (!self.storyTitlesOnLeft) {
+        if (self.storyTitlesYCoordinate > 890) {
+            NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
+            // save coordinate
+            [userPreferences setInteger:1004 forKey:@"storyTitlesYCoordinate"];
+            [userPreferences synchronize];
+            self.storyTitlesYCoordinate = 1004;
+            // slide to the left
+            
+            self.storyTitlesOnLeft = YES;
+            
+            // remove the back button
+            self.storyDetailViewController.navigationItem.leftBarButtonItem = nil;
+            
+            // remove center title
+            self.storyDetailViewController.navigationItem.titleView = nil;
+            
+            if (![[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
+                [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];        
+            }
+            
+            [self.view addSubview:self.masterNavigationController.view];
+            self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+            [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+                self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
+                self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
+            } completion:^(BOOL finished) {
+                [self.feedDetailViewController checkScroll];
+                [appDelegate adjustStoryDetailWebView];
+            }];
+        } 
+    } else if (self.storyTitlesOnLeft) {
+        if (self.storyTitlesYCoordinate == 1004) {
+            return;
+        } else if (self.storyTitlesYCoordinate > 890) {
+            NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
+            // save coordinate
+            [userPreferences setInteger:890 forKey:@"storyTitlesYCoordinate"];
+            [userPreferences synchronize];
+            self.storyTitlesYCoordinate = 890;
         }
-
-        [self.view addSubview:self.masterNavigationController.view];
-        self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-        [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
-            self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-            self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
-        } completion:^(BOOL finished) {
-            [self.feedDetailViewController checkScroll];
-            [appDelegate adjustStoryDetailWebView];
-        }];
-    } else {
         self.storyTitlesOnLeft = NO;
         
         // add the back button
@@ -468,7 +488,7 @@
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
     
-    if (yCoordinate > 344 && yCoordinate <= (vb.size.height - 10)) {
+    if (yCoordinate > 344 && yCoordinate <= (vb.size.height)) {
         
         // save coordinate
         self.storyTitlesYCoordinate = yCoordinate;
@@ -494,7 +514,7 @@
                                                                   vb.size.height - yCoordinate);
             [self.feedDetailViewController checkScroll];
         }
-    } else if (yCoordinate >= (vb.size.height - 10)){
+    } else if (yCoordinate >= (vb.size.height)){
         // save coordinate
         [userPreferences setInteger:1004 forKey:@"storyTitlesYCoordinate"];
         [userPreferences synchronize];

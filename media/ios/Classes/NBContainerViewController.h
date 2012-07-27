@@ -14,6 +14,8 @@
     NewsBlurAppDelegate *appDelegate;
 }
 
+@property (readonly) BOOL storyTitlesOnLeft;
+@property (readonly) int storyTitlesYCoordinate;
 @property (atomic, strong) IBOutlet NewsBlurAppDelegate *appDelegate;
 
 
