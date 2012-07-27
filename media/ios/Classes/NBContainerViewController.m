@@ -482,7 +482,7 @@
             [self.shareViewController.commentField resignFirstResponder];
         } else {
             UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-            if (UIInterfaceOrientationIsPortrait(orientation)) {
+            if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
                 self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                                        0,
                                                                        self.storyNavigationController.view.frame.size.width,
@@ -578,12 +578,12 @@
     
     if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
-            
-            int newStoryNavigationFrameHeight = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
-            if (storyNavigationFrame.size.height < newStoryNavigationFrameHeight) {
-                storyNavigationFrame.size.height = newStoryNavigationFrameHeight;
+            if (!self.storyTitlesOnLeft) {
+                int newStoryNavigationFrameHeight = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
+                if (storyNavigationFrame.size.height < newStoryNavigationFrameHeight) {
+                    storyNavigationFrame.size.height = newStoryNavigationFrameHeight;
+                }
             }
-
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height;
         } else {
             storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.width + 44;
@@ -599,8 +599,10 @@
         }
     }
 
+    // CASE: when dismissing the keyboard but not dismissing the share view
     if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"] && !self.isHidingStory) {
         self.storyNavigationController.view.frame = storyNavigationFrame;
+    // CASE: when dismissing the keyboard AND dismissing the share view
     } else if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"] && self.isHidingStory) {
         self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                                0,

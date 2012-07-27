@@ -39,6 +39,21 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
+    
+    self.view.frame = CGRectMake(0, 0, 320, 416);
+    self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
+    UITableView *profiles = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped];
+    self.profileTable = profiles;
+    self.profileTable.dataSource = self;
+    self.profileTable.delegate = self;
+    self.profileTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    
+    ProfileBadge *badge = [[ProfileBadge alloc] init];
+    badge.frame = CGRectMake(0, 0, self.view.frame.size.width, 140);
+    self.profileBadge = badge;
+
 }
 
 - (void)viewDidUnload
@@ -53,20 +68,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    self.view.frame = CGRectMake(0, 0, 320, 416);
-    self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
-    UITableView *profiles = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped];
-    self.profileTable = profiles;
-    self.profileTable.dataSource = self;
-    self.profileTable.delegate = self;
-    self.profileTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    
-    ProfileBadge *badge = [[ProfileBadge alloc] init];
-    badge.frame = CGRectMake(0, 0, self.view.frame.size.width, 140);
-    self.profileBadge = badge;
-    
+        
     [self getUserProfile];
 }
 
@@ -219,6 +221,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     int activitiesCount = [self.activitiesArray count];
+    
+    // badge is not tappable
+    if (indexPath.section == 0) {
+        return;
+    }
+    
     if (indexPath.row < activitiesCount) {
         NSDictionary *activity = [self.activitiesArray objectAtIndex:indexPath.row];
         NSString *category = [activity objectForKey:@"category"];

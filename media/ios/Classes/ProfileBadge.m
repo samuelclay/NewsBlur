@@ -90,24 +90,14 @@
     follow.frame = CGRectMake(20, 96, 80, 24);
     
     // check follow button status
-    NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictUserProfile objectForKey:@"user_id"]];    
-    BOOL isFollowing = NO;
-    BOOL isSelf = NO;
-    NSArray *followingUserIds = [self.appDelegate.dictUserProfile objectForKey:@"following_user_ids"];
-    for (int i = 0; i < followingUserIds.count ; i++) {
-        NSString *followingUserId = [NSString stringWithFormat:@"%@", [followingUserIds objectAtIndex:i]];
-        if ([currentUserId isEqualToString:[NSString stringWithFormat:@"%@", [profile objectForKey:@"user_id"]]]) {
-            isSelf = YES;
-        }
-        if ([followingUserId isEqualToString:[NSString stringWithFormat:@"%@", [profile objectForKey:@"user_id"]]]) {
-            isFollowing = YES;
-        }
-    }
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictUserProfile objectForKey:@"user_id"]];   
+    NSString *profileUserId = [NSString stringWithFormat:@"%@", [profile objectForKey:@"user_id"]];   
+    NSLog(@"is following you %@", [profile objectForKey:@"following_you"]);
     
-    if (isSelf) {
+    if ([currentUserId isEqualToString:profileUserId]) {
         [follow setTitle:@"You" forState:UIControlStateNormal];
         follow.enabled = NO;
-    } else if (isFollowing) {
+    } else if ([profile objectForKey:@"following_you"]) {
         [follow setTitle:@"Following" forState:UIControlStateNormal];
     } else {
         [follow setTitle:@"Follow" forState:UIControlStateNormal];
