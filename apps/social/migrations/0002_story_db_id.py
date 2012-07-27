@@ -9,10 +9,10 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         stories = MSharedStory.objects.filter(story_db_id__exists=False)
-        print " ---> %s stories with no story_db_id" % stories.count()
-        
+        story_count = stories.count()
+        print " ---> %s stories with no story_db_id" % story_count
         for i, story in enumerate(stories):
-            print " ---> %s/%s" % (i+1, stories.count())
+            print " ---> %s/%s" % (i+1, story_count)
             story.ensure_story_db_id()
 
     def backwards(self, orm):

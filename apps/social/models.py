@@ -1509,7 +1509,7 @@ class MSharedStory(mongo.Document):
                 Site.objects.get_current().domain.replace('www', 'dev'),
                 reverse('social-mute-story', kwargs={
                     'secret_token': user.profile.secret_token,
-                    'shared_story_id': self._id,
+                    'shared_story_id': self.id,
                 })
             )
             data = {
@@ -1564,7 +1564,7 @@ class MSharedStory(mongo.Document):
             Site.objects.get_current().domain.replace('www', 'dev'),
             reverse('social-mute-story', kwargs={
                 'secret_token': original_user.profile.secret_token,
-                'shared_story_id': original_shared_story._id,
+                'shared_story_id': original_shared_story.id,
             })
         )
         data = {
