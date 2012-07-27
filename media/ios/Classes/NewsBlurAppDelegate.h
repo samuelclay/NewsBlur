@@ -79,6 +79,7 @@
     NSDictionary * activeFeed;
     NSString * activeFolder;
     NSDictionary * activeComment;
+    NSString * activeShareType;
     NSArray * activeFolderFeeds;
     NSArray * activeFeedStories;
     NSArray * activeFeedUserProfiles;
@@ -143,6 +144,7 @@
 @property (readwrite) NSDictionary * activeFeed;
 @property (readwrite) NSString * activeFolder;
 @property (readwrite) NSDictionary * activeComment;
+@property (readwrite) NSString * activeShareType;
 @property (readwrite) NSArray * activeFolderFeeds;
 @property (readwrite) NSArray * activeFeedStories;
 @property (readwrite) NSArray * activeFeedUserProfiles;

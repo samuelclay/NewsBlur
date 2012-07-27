@@ -277,9 +277,9 @@ del {
 
 /* Disable certain interactions on touch devices */
 #story_pane .NB-story-comment { 
-/*    -webkit-touch-callout: none; 
+    -webkit-touch-callout: none; 
     -webkit-user-select: none; 
-    -webkit-highlight: none; */
+    -webkit-highlight: none;
     -webkit-tap-highlight-color: rgba(0,0,0,0); 
 }
 
@@ -293,8 +293,9 @@ del {
 a.NB-show-profile {
     display: inline-block;
 }
-.NB-share-wrapper { 
 
+.NB-share-wrapper,
+.NB-share-wrapper a { 
     -webkit-text-size-adjust: none; 
     -webkit-user-select: none; 
     -webkit-highlight: none; 
@@ -302,22 +303,7 @@ a.NB-show-profile {
     -webkit-tap-highlight-color: rgba(0,0,0,0); 
 }
 
-.NB-share-button,
-.NB-save-button {
-    padding: 4px 14px;
-    background: -webkit-gradient(
-    linear, left top, left bottom, 
-    from(#ffffff),
-    color-stop(0.50, #ebebeb),
-    color-stop(0.50, #dbdbdb),
-    to(#b5b5b5));
-    
-    border-radius: 5px;
-    border: 1px solid #949494;
-    box-shadow: inset 0px 0px 2px rgba(255,255,255,1);
-    float: left;
-    margin-bottom: 20px;
-}
+
 
 .NB-share-button {
     line-height: 20px;
@@ -344,6 +330,11 @@ a.NB-show-profile {
     margin-top: -2px;
 }
 
+.NB-button.NB-share-button {
+    float: left;
+    padding: 0px 20px 20px 0px;
+}
+
 .NB-button div {
     padding: 2px 6px;
     background: -webkit-gradient(
@@ -358,23 +349,30 @@ a.NB-show-profile {
     box-shadow: inset 0px 0px 2px rgba(255,255,255,1);
 }
 
+.NB-button.NB-share-button div { 
+    padding: 4px 14px;
+    border-radius: 5px;
+}
+
 .NB-button .nb-story-comment-like-button-wrapper a {
     background: transparent url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAGmSURBVCiRbZG/axRBHMXfzO7tbvYua+IFJQa0sRBs1IiQFIEIgvgDEUSs7CSFCJLaA1MJYjrFI5VgmkBiCDYWNgZJlaB/wgknxOT0Lnt7s7Mz852xOgzxXvne98OXxwMG6PXm3PSbzblbgzJ21Kit3mcT4ye34NyI0AeT87PvxeGcHwVGj0d34lJyJQ6Gz1myDwZ+eLpxOapGp8Y95lVPVM4sDUdjF8kSOmK3sZ81HhpGP4XMfi3e3eqx+tcnzyM/ngVjlzjjlcgvIy1aUEaiHIwg110oynNjzXep0h1OVjeMVTNJWK34Xoh2vous6ECoA7R6TRhSiEvJEFk1Rc40+OOZ+rtU7l9r9ZopA1BoAecsHIBcZ/B4CZ18L8uK9r3a9Y+LHADmry5/TmXrmabCDQUJFEkYKhD6EcgZ9FT77cKNT2sA4PfbO7jMWA3OfBwLxwDmILUAOQ1jSPbv/gHOnvdZiWlXQFulyGrle0GFgUFJOj0ImPgtmhCq+6or/6wbp1TIyzc9imq6oNH/AHJmZS/78fLF7S/fDu20/ah+4UMcJGf7xl8kb9PTscP82wAAAABJRU5ErkJggg==") no-repeat left 1px;
     padding-left: 16px;
     height: 20px;
 }
 
+.NB-button.hover div,
 .NB-button.selected div { 
     background: #217412;
     box-shadow: none;
 }
 
+.NB-button.hover .nb-story-comment-like-button-wrapper a 
 .NB-button.selected .nb-story-comment-like-button-wrapper a {
     background: transparent url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAFkSURBVCiRbZC/6xNBFMTn7e1mDVyhWIlgZSFYqSBEEsEQCUTBxsLKv0TBWrQWrGwtjFU603oEFP0T0ljYyt1lf+TNWgXCl5ty5g0f5gEDaprmQdM0T4cyuWhst1up6/o7gMs553vT6bQ/z83Fgvf+mXPuvnPuFskXg4TNZnNpPB5fE5GrdV1/9N7fIYkQwr5t25cA/qSU/q5Wq052u90ba+0jAHdFpLbWIsYIVcVoNELOGap6IPk75/zTkNyTfOi9r6uqwuFwQEoJKSV0XQeScM6NSU5KKXszmUw+hRAe933/DwBUFaUUAMDxeISIIITQppSez+fz9wYAZrPZtxjjK1UtzjmoKkiiqiqUUpBS+rBYLL4AgD2tL6W0JCEi8N7jnEYyDL31tjFGAIBkUtXWGAMRgareOB2dE673fY+c87sY41eSyVr7REReq+qVocLnruveLpfLX2fUH+v1eu2cu3ky/gOHFMgsTjV4FQAAAABJRU5ErkJggg==") no-repeat left 1px;
 }
 
-.NB-share-button a,
-.NB-button a {
+.NB-button a,
+.NB-button.NB-share-button a {
     padding-top: 1px;
     line-height: 16px;
     font-family: Helvetica, sans-serif;
@@ -385,9 +383,8 @@ a.NB-show-profile {
         0px 1px 0px rgba(255,255,255,1);
 }
 
-.NB-share-button.selected,
+.NB-button.hover a,
 .NB-button.selected a {
     color: rgba(255,255,255,1);    
     text-shadow: none;
 }
-

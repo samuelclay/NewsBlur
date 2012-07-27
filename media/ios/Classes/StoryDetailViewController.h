@@ -64,6 +64,7 @@
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)initStory;
 
+- (void)showShareHUD;
 - (void)refreshComments;
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
 - (void)finishLikeComment:(ASIHTTPRequest *)request;

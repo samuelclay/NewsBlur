@@ -136,13 +136,7 @@
             [submitButton setTitle:@"Save"];
         }
         [submitButton setAction:(@selector(doShareThisStory:))];
-    } else if ([type isEqualToString: @"share"]) {
-        
-        // test to see if the user has already commented.
-        
-        
-        
-        
+    } else if ([type isEqualToString: @"share"]) {        
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -161,7 +155,11 @@
     self.commentField.text = nil;
 }
 
-- (IBAction)doShareThisStory:(id)sender {    
+# pragma mark
+# pragma mark Share Story
+
+- (IBAction)doShareThisStory:(id)sender {
+    [appDelegate.storyDetailViewController showShareHUD];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
                            NEWSBLUR_URL];
     
@@ -173,8 +171,8 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:feedIdStr forKey:@"feed_id"]; 
     [request setPostValue:storyIdStr forKey:@"story_id"];
-    
-    if (sourceUserIdStr.length) {
+
+    if (!([sourceUserIdStr isEqualToString:@"(null)"])) {
         [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
     }
     
@@ -183,18 +181,30 @@
         [request setPostValue:comments forKey:@"comments"]; 
     }
     [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishAddComment:)];
+    [request setDidFinishSelector:@selector(finishShareThisStory:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
+    [commentField resignFirstResponder];
+    [appDelegate hideShareView:YES];
 }
 
+- (void)finishShareThisStory:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    
+    [self replaceStory:[results objectForKey:@"story"]];
+}
+
+# pragma mark
+# pragma mark Reply to Story
+
 - (IBAction)doReplyToComment:(id)sender {
+    [appDelegate.storyDetailViewController showShareHUD];
     NSString *comments = commentField.text;
     if ([comments length] == 0) {
-        NSLog(@"NO COMMENTS");
         return;
     }
-    
     
     NSLog(@"REPLY TO COMMENT, %@", appDelegate.activeComment);
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/save_comment_reply",
@@ -219,6 +229,9 @@
     [request setDidFinishSelector:@selector(finishAddReply:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
+    [commentField resignFirstResponder];
+    [appDelegate hideShareView:YES];
+    [appDelegate.storyDetailViewController showShareHUD];
 }
 
 - (void)finishAddReply:(ASIHTTPRequest *)request {
@@ -231,24 +244,13 @@
     [self replaceStory:newStory];
 }
 
-- (void)finishAddComment:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
-    
-    [self replaceStory:[results objectForKey:@"story"]];
-}
-
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
 }
 
-- (void)replaceStory:(NSDictionary *)newStory {
-    [commentField resignFirstResponder];
-    [appDelegate hideShareView:YES];
-    
+- (void)replaceStory:(NSDictionary *)newStory {    
     // update the current story and the activeFeedStories
     appDelegate.activeStory = newStory;
     
@@ -267,9 +269,8 @@
     
     appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
-    
     self.commentField.text = nil;
-    [appDelegate refreshComments];
+    [appDelegate.storyDetailViewController refreshComments];
 }
 
 

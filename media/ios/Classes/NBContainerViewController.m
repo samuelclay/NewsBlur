@@ -111,7 +111,8 @@
         self.storyTitlesYCoordinate = savedStoryTitlesYCoordinate;
         self.storyTitlesOnLeft = NO;
     } else {
-        self.storyTitlesYCoordinate = 1024 - NB_DEFAULT_STORY_TITLE_HEIGHT;
+        self.storyTitlesYCoordinate = NB_DEFAULT_STORY_TITLE_HEIGHT;
+        self.storyTitlesOnLeft = NO;
     }
     
     // set up story titles stub

@@ -67,6 +67,8 @@
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
 @synthesize activeComment;
+@synthesize activeShareType;
+
 @synthesize activeFeed;
 @synthesize activeFolder;
 @synthesize activeFolderFeeds;

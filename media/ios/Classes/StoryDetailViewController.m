@@ -25,6 +25,7 @@
 @interface StoryDetailViewController ()
 
 @property (readwrite) CGFloat inTouchMove;
+@property (nonatomic) MBProgressHUD *storyHUD;
 
 @end
 
@@ -50,7 +51,9 @@
 @synthesize buttonBack;
 @synthesize bottomPlaceholderToolbar;
 
+// private
 @synthesize inTouchMove;
+@synthesize storyHUD;
 
 
 
@@ -237,8 +240,7 @@
 
 - (NSString *)getComments:(NSString *)type {
     NSString *comments = @"";
-//    NSLog(@"the comment string is %@", [appDelegate.activeStory objectForKey:@"share_count"]);
-//    NSLog(@"appDelegate.activeStory is %@", appDelegate.activeStory);
+
     if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] &&
         [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
         
@@ -524,10 +526,9 @@
     sharingHtmlString = [NSString stringWithFormat:@
                          "<div class='NB-share-header'></div>"
                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                         "<div class='NB-share-button'>"
+                         "<div class='NB-share-button NB-button'><div>"
                          "<a href=\"http://ios.newsblur.com/share\">Post to Blurblog</a>"
-                         "</div>"
-                         //"<div class='NB-save-button'><span class='NB-save-icon'></span>Save this story</div>"
+                         "</div></div>"
                          "</div></div>"];
     NSString *story_author = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
@@ -591,7 +592,7 @@
                             footerString
                             ];
 
-//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -673,12 +674,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // the pathComponents do not work correctly unless it is a correctly formed url
     // Is there a better way?  Someone show me the light
     if ([[url host] isEqualToString: @"ios.newsblur.com"]){
+        // reset the active comment
+        appDelegate.activeComment = nil;
+        appDelegate.activeShareType = action;
+        
         if ([action isEqualToString:@"reply"] || 
             [action isEqualToString:@"edit-reply"] ||
             [action isEqualToString:@"edit-share"] ||
             [action isEqualToString:@"like-comment"] ||
             [action isEqualToString:@"unlike-comment"]) {
-            appDelegate.activeComment = nil;
+
             // search for the comment from friends comments
             NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
             for (int i = 0; i < friendComments.count; i++) {
@@ -700,6 +705,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                         appDelegate.activeComment = [publicComments objectAtIndex:i];
                     }
                 }
+            }
+            
+            if (appDelegate.activeComment == nil) {
+                NSLog(@"PROBLEM! the active comment was not found in friend or public comments");
+                return NO;
             }
             
             if ([action isEqualToString:@"reply"]) {
@@ -725,7 +735,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             return NO; 
         } else if ([action isEqualToString:@"share"]) {
             // test to see if the user has commented
-            
             // search for the comment from friends comments
             NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
             NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
@@ -824,7 +833,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark Actions
 
 - (IBAction)tapProgressBar:(id)sender {
-    
     [MBProgressHUD hideHUDForView:self.view animated:NO];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	hud.mode = MBProgressHUDModeText;
@@ -919,6 +927,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)toggleLikeComment:(BOOL)likeComment {
+    [self showShareHUD];
     NSString *urlString;
     if (likeComment) {
         urlString = [NSString stringWithFormat:@"http://%@/social/like_comment",
@@ -973,7 +982,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
-    [appDelegate refreshComments];
+    [self refreshComments];
 } 
 
 
@@ -988,21 +997,50 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 //    NSLog(@"results in mark as read is %@", results);
 } 
 
+- (void)showShareHUD {
+    [MBProgressHUD hideHUDForView:self.view animated:NO];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.storyHUD.labelText = @"Saving";
+    self.storyHUD.margin = 20.0f;
+}
+
 - (void)refreshComments {
     NSString *commentString = [self getComments:@"friends"];  
     NSString *jsString = [[NSString alloc] initWithFormat:@
                           "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
                           commentString];
-    NSLog(@"JSSTRING IS %@\n\n\n", jsString);
+    NSString *shareType = appDelegate.activeShareType;
+    
+//    NSLog(@"JSSTRING IS %@\n\n\n", jsString);
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+
+//    // adding in a simulated delay
+//    sleep(4);
+    
+    self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
+    self.storyHUD.mode = MBProgressHUDModeCustomView;
+    self.storyHUD.removeFromSuperViewOnHide = YES;  
+    
+    if ([shareType isEqualToString:@"reply"]) {
+        self.storyHUD.labelText = @"Replied";
+    } else if ([shareType isEqualToString:@"edit-reply"]) {
+        self.storyHUD.labelText = @"Edited Reply";
+    } else if ([shareType isEqualToString:@"edit-share"]) {
+        self.storyHUD.labelText = @"Edited Comment";
+    } else if ([shareType isEqualToString:@"share"]) {
+        self.storyHUD.labelText = @"Shared";
+    } else if ([shareType isEqualToString:@"like-comment"]) {
+        self.storyHUD.labelText = @"Favorited";
+    } else if ([shareType isEqualToString:@"unlike-comment"]) {
+        self.storyHUD.labelText = @"Unfavorited";
+    }
+    [self.storyHUD hide:YES afterDelay:1];
 }
 
 - (void)scrolltoBottom {
     CGPoint bottomOffset = CGPointMake(0, self.webView.scrollView.contentSize.height - self.webView.bounds.size.height);
     [self.webView.scrollView setContentOffset:bottomOffset animated:YES];
 }
-
-   
 
 - (IBAction)doNextUnreadStory {
     int nextIndex = [appDelegate indexOfNextUnreadStory];
