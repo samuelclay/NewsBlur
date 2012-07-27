@@ -33,6 +33,7 @@
 @synthesize appDelegate;
 @synthesize activeStoryId;
 @synthesize progressView;
+@synthesize progressViewContainer;
 @synthesize innerView;
 @synthesize webView;
 @synthesize toolbar;
@@ -69,12 +70,12 @@
     
     // adding HUD for progress bar
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
-    [self.progressView addGestureRecognizer:tap];
-    
+
+    [self.progressViewContainer addGestureRecognizer:tap];
+    self.progressViewContainer.hidden = YES;
+
     // adding drag property for toolbars
     
-    
-        
     UIBarButtonItem *originalButton = [[UIBarButtonItem alloc] 
                                        initWithTitle:@"Original" 
                                        style:UIBarButtonItemStyleBordered 
@@ -165,6 +166,7 @@
     [self setButtonNextStory:nil];
     [self setInnerView:nil];
     [self setBottomPlaceholderToolbar:nil];
+    [self setProgressViewContainer:nil];
     [super viewDidUnload];
 }
 
@@ -462,6 +464,7 @@
     
     self.webView.hidden = NO;
     self.bottomPlaceholderToolbar.hidden = YES;
+    self.progressViewContainer.hidden = NO;
     self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:self.originalStoryButton, self.fontSettingsButton, nil];
     
     [appDelegate hideFindingStoryHUD];

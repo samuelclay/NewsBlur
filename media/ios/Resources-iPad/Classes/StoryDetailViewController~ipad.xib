@@ -4578,7 +4578,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="NSFrame">{{0, 936}, {768, 44}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
+						<reference key="NSNextKeyView" ref="125226722"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
@@ -4586,6 +4586,17 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<object class="NSMutableArray" key="IBUIItems">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 						</object>
+					</object>
+					<object class="IBUIView" id="125226722">
+						<reference key="NSNextResponder" ref="191373211"/>
+						<int key="NSvFlags">269</int>
+						<string key="NSFrame">{{335, 920}, {100, 77}}</string>
+						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIOpaque">NO</bool>
+						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 					</object>
 				</object>
 				<string key="NSFrameSize">{768, 980}</string>
@@ -4673,6 +4684,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">progressViewContainer</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="125226722"/>
+					</object>
+					<int key="connectionID">105</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="506862915"/>
 						<reference key="destination" ref="372490531"/>
@@ -4724,6 +4743,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<reference ref="506862915"/>
 							<reference ref="88679899"/>
 							<reference ref="409639211"/>
+							<reference ref="125226722"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -4821,6 +4841,11 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="object" ref="409639211"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">100</int>
+						<reference key="object" ref="125226722"/>
+						<reference key="parent" ref="191373211"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -4833,6 +4858,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<string>-2.IBPluginDependency</string>
 					<string>1.IBLastUsedUIStatusBarStylesToTargetRuntimesMap</string>
 					<string>1.IBPluginDependency</string>
+					<string>100.IBPluginDependency</string>
 					<string>39.IBPluginDependency</string>
 					<string>42.IBPluginDependency</string>
 					<string>43.IBPluginDependency</string>
@@ -4871,6 +4897,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="unlocalizedProperties">
@@ -4885,7 +4912,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">99</int>
+			<int key="maxID">105</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -7091,12 +7118,12 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>buttonNext</string>
 							<string>buttonNextStory</string>
 							<string>buttonPrevious</string>
-							<string>buttonProgressView</string>
 							<string>feedTitleGradient</string>
 							<string>fontSettingsButton</string>
 							<string>innerView</string>
 							<string>originalStoryButton</string>
 							<string>progressView</string>
+							<string>progressViewContainer</string>
 							<string>toolbar</string>
 							<string>webView</string>
 						</object>
@@ -7109,12 +7136,12 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
-							<string>UIBarButtonItem</string>
 							<string>UIView</string>
 							<string>UIBarButtonItem</string>
 							<string>UIView</string>
 							<string>UIBarButtonItem</string>
 							<string>UIProgressView</string>
+							<string>UIView</string>
 							<string>UIToolbar</string>
 							<string>UIWebView</string>
 						</object>
@@ -7130,12 +7157,12 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>buttonNext</string>
 							<string>buttonNextStory</string>
 							<string>buttonPrevious</string>
-							<string>buttonProgressView</string>
 							<string>feedTitleGradient</string>
 							<string>fontSettingsButton</string>
 							<string>innerView</string>
 							<string>originalStoryButton</string>
 							<string>progressView</string>
+							<string>progressViewContainer</string>
 							<string>toolbar</string>
 							<string>webView</string>
 						</object>
@@ -7170,10 +7197,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">buttonProgressView</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
-							<object class="IBToOneOutletInfo">
 								<string key="name">feedTitleGradient</string>
 								<string key="candidateClassName">UIView</string>
 							</object>
@@ -7192,6 +7215,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">progressView</string>
 								<string key="candidateClassName">UIProgressView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">progressViewContainer</string>
+								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">toolbar</string>

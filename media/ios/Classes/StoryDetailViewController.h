@@ -33,6 +33,7 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) NSString *activeStoryId;
 @property (nonatomic) IBOutlet UIProgressView *progressView;
+@property (strong, nonatomic) IBOutlet UIView *progressViewContainer;
 @property (nonatomic) IBOutlet UIView *innerView;
 @property (nonatomic) IBOutlet UIWebView *webView;
 @property (nonatomic) IBOutlet UIToolbar *toolbar;

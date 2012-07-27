@@ -307,6 +307,7 @@
     // reset the storyDetailViewController components
     self.storyDetailViewController.webView.hidden = YES;
     self.storyDetailViewController.bottomPlaceholderToolbar.hidden = NO;
+    self.storyDetailViewController.progressViewContainer.hidden = YES;
     self.storyDetailViewController.navigationItem.rightBarButtonItems = nil;
     int unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
