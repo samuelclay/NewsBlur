@@ -6,6 +6,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     events: {
         "click .NB-feed-story-content a"        : "click_link_in_story",
+        "click .NB-feed-story-share-container a": "click_link_in_story",
+        "click .NB-feed-story-comments a"       : "click_link_in_story",
         "click .NB-feed-story-title"            : "click_link_in_story",
         "mouseenter .NB-feed-story-manage-icon" : "mouseenter_manage_icon",
         "mouseleave .NB-feed-story-manage-icon" : "mouseleave_manage_icon",
