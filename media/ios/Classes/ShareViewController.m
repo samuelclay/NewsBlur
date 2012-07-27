@@ -12,7 +12,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import "Utilities.h"
 #import "DataUtilities.h"
-#import "JSON.h"
 #import "ASIHTTPRequest.h"
 
 @implementation ShareViewController
@@ -163,15 +162,19 @@
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
                            NEWSBLUR_URL];
     
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-    NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
-    NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
-
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+    NSString *storyIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
+
     [request setPostValue:feedIdStr forKey:@"feed_id"]; 
     [request setPostValue:storyIdStr forKey:@"story_id"];
 
+    NSLog(@"class is %@", [[appDelegate.activeStory objectForKey:@"social_user_id"] class]);
+    NSLog(@"class is %@", [NSNull class]);
+    NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
+    
     if (!([sourceUserIdStr isEqualToString:@"(null)"])) {
         [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
     }

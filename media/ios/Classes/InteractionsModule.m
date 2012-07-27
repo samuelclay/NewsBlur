@@ -11,7 +11,6 @@
 #import "InteractionCell.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
-#import "JSON.h"
 #import "UserProfileViewController.h"
 
 #define MINIMUM_INTERACTION_HEIGHT 78

@@ -765,7 +765,7 @@
     NSDictionary *feed;
     id feedId;;
     NSString *feedIdStr;
-    NSMutableArray *otherFriendFeeds = [self.activeStory objectForKey:@"shared_by_friends"];
+    NSMutableArray *otherFriendFeeds = [[self.activeStory objectForKey:@"shared_by_friends"] mutableCopy];
     
     if (self.isSocialView) {
         feedId = [self.activeStory objectForKey:@"social_user_id"];
@@ -836,10 +836,17 @@
 
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
-    [story setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+    
+    NSLog(@"feedIdStr is %@", feedIdStr);
+        NSLog(@"story is %@", story);
+        NSLog(@"story is %@", [story class]);
+    NSMutableDictionary *newStory = [story mutableCopy];
+    [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+
+    
     self.visibleUnreadCount -= 1;
-    if (![self.recentlyReadFeeds containsObject:[story objectForKey:@"story_feed_id"]]) {
-        [self.recentlyReadFeeds addObject:[story objectForKey:@"story_feed_id"]];
+    if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
+        [self.recentlyReadFeeds addObject:[newStory objectForKey:@"story_feed_id"]];
     }
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {

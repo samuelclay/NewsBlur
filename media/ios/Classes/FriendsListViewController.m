@@ -11,7 +11,6 @@
 #import "UserProfileViewController.h"
 #import "ASIHTTPRequest.h"
 #import "ProfileBadge.h"
-#import "JSON.h"
 
 @implementation FriendsListViewController
 

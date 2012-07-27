@@ -10,7 +10,6 @@
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
-#import "JSON.h"
 #import "StringHelper.h"
 
 @implementation MoveSiteViewController
