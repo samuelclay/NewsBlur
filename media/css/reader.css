@@ -3635,11 +3635,10 @@ form.opml_import_form input {
 /* ======================= */
 
 .NB-taskbar-intelligence {
-    width: 100px;
     position: absolute;
-    left: 92px;
+    left: 90px;
     top: 6px;
-    font-size: .5em;
+    font-size: 9px;
     white-space: nowrap;
 }
 
@@ -3670,18 +3669,33 @@ form.opml_import_form input {
     background: transparent url(/media/embed/icons/silk/bullet_green.png) no-repeat 0 0;
 }
 
-.NB-intelligence-slider li {
-    width: 40px;
+.NB-intelligence-slider {
+}
+.NB-intelligence-slider .segmented-control {
+    float: left;
+    width: auto;
+}
+.NB-intelligence-slider .NB-intelligence-slider-control {
+    height: 17px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 #C8C8C8;
     text-align: center;
+    line-height: 16px;
+    position: relative;
+    padding: 0 8px;
+}
+.NB-intelligence-slider .NB-intelligence-slider-control.NB-active {
+    color: white;
+    text-shadow: 0 1px 0 #303030;
 }
 .NB-intelligence-slider img {
     width: 16px;
     height: 16px;
-    margin: 0px -8px 0 0;
+    margin: 1px 0 0 -8px;
+    float: left;
     vertical-align: bottom;
 }
 .NB-intelligence-slider img:last-child {
-    margin-right: 0;
 }
 /* ===================== */
 /* = Add Feeds/Folders = */
