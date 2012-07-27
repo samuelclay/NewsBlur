@@ -3183,6 +3183,7 @@
             this.show_feed_hidden_story_title_indicator(true);
             this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
             NEWSBLUR.app.feed_list_header.toggle_hide_read_preference();
+            NEWSBLUR.app.feed_list.scroll_to_show_selected_feed();
             
             $('.NB-active', $slider).removeClass('NB-active');
             if (real_value < 0) {

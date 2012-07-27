@@ -197,6 +197,15 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     
     scroll_to_show_selected_feed: function(feed_view) {
         var $feed_lists = this.$s.$feed_lists;
+        
+        if (!feed_view) {
+            var model = NEWSBLUR.assets.feeds.selected() || NEWSBLUR.assets.social_feeds.selected();
+            if (!model || !model.get('selected')) return;
+            var feed_view = _.detect(model.views, _.bind(function(view) {
+                return !!view.$el.closest(this.$s.$feed_lists).length;
+            }, this));
+            if (!feed_view) return;
+        }
         var is_feed_visible = $feed_lists.isScrollVisible(feed_view.$el);
         // NEWSBLUR.log(["scroll_to_show_selected_feed", feed_view, feed_view.$el, is_feed_visible]);
 
