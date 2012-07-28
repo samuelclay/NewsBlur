@@ -88,15 +88,14 @@
     UIButton *follow = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     follow.frame = CGRectMake(20, 96, 80, 24);
     
-    // check follow button status
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictUserProfile objectForKey:@"user_id"]];   
     NSString *profileUserId = [NSString stringWithFormat:@"%@", [profile objectForKey:@"user_id"]];   
-    NSLog(@"is following you %@", [profile objectForKey:@"following_you"]);
     
+    // check follow button status    
     if ([currentUserId isEqualToString:profileUserId]) {
         [follow setTitle:@"You" forState:UIControlStateNormal];
         follow.enabled = NO;
-    } else if ([profile objectForKey:@"following_you"]) {
+    } else if ([[profile objectForKey:@"followed_by_you"] intValue]) {
         [follow setTitle:@"Following" forState:UIControlStateNormal];
     } else {
         [follow setTitle:@"Follow" forState:UIControlStateNormal];

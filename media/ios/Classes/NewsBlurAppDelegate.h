@@ -184,7 +184,6 @@
 - (void)hideFeedsMenu;
 
 // social
-- (void)showUserProfile;
 - (void)showUserProfileModal:(id)sender;
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;

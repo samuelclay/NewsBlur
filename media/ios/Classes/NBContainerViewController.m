@@ -14,6 +14,7 @@
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
 #import "InteractionCell.h"
+#import "ActivityCell.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1024 - 640
@@ -173,7 +174,8 @@
     
     [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
 
-    if ([sender class] == [InteractionCell class]) {
+    if ([sender class] == [InteractionCell class] ||
+        [sender class] == [ActivityCell class]) {
         InteractionCell *cell = (InteractionCell *)sender;
         
         [popoverController presentPopoverFromRect:cell.bounds 

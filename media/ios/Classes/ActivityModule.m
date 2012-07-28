@@ -202,21 +202,19 @@
         NSDictionary *activity = [self.activitiesArray objectAtIndex:indexPath.row];
         NSString *category = [activity objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {
-            NSString *userId = [[activity objectForKey:@"with_user"] objectForKey:@"user_id"];
-            appDelegate.activeUserProfileId = userId;
-            
-            NSString *username = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-            appDelegate.activeUserProfileName = username;
+
             
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             
-            UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-            self.popoverController = [[UIPopoverController alloc] initWithContentViewController:appDelegate.userProfileViewController];
-            [self.popoverController setPopoverContentSize:CGSizeMake(320, 416)];
-            [self.popoverController presentPopoverFromRect:cell.bounds 
-                                                    inView:cell 
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                                  animated:YES];
+            NSString *userId = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"user_id"]];
+            appDelegate.activeUserProfileId = userId;
+            
+            NSString *username = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"username"]];
+            appDelegate.activeUserProfileName = username;
+            
+            // pass cell to the show UserProfile
+            ActivityCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+            [appDelegate showUserProfileModal:cell];
         } else if ([category isEqualToString:@"comment_reply"] ||
                    [category isEqualToString:@"comment_like"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
