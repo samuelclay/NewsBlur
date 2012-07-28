@@ -1116,7 +1116,8 @@ class MSharedStory(mongo.Document):
         
         self.sync_redis()
         
-        MActivity.new_shared_story(user_id=self.user_id, story_title=self.story_title, 
+        MActivity.new_shared_story(user_id=self.user_id, source_user_id=self.source_user_id, 
+                                   story_title=self.story_title, 
                                    comments=self.comments, story_feed_id=self.story_feed_id,
                                    story_id=self.story_guid, share_date=self.shared_date)
         
@@ -1871,12 +1872,13 @@ class MInteraction(mongo.Document):
     title        = mongo.StringField()
     content      = mongo.StringField()
     with_user_id = mongo.IntField()
-    feed_id      = mongo.IntField()
+    feed_id      = mongo.DynamicField()
+    story_feed_id= mongo.IntField()
     content_id   = mongo.StringField()
     
     meta = {
         'collection': 'interactions',
-        'indexes': [('user_id', 'date'), 'category'],
+        'indexes': [('user_id', '-date'), 'category'],
         'allow_inheritance': False,
         'index_drop_dups': True,
         'ordering': ['-date'],
@@ -1895,7 +1897,8 @@ class MInteraction(mongo.Document):
             'title': self.title,
             'content': self.content,
             'with_user_id': self.with_user_id,
-            'feed_id': 'social:%s' % self.feed_id,
+            'feed_id': self.feed_id,
+            'story_feed_id': self.story_feed_id,
             'content_id': self.content_id,
         }
         
@@ -1942,13 +1945,14 @@ class MInteraction(mongo.Document):
                 dupe.delete()
     
     @classmethod
-    def new_comment_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, story_title=None, original_message=None):
+    def new_comment_reply(cls, user_id, reply_user_id, reply_content, story_id, story_feed_id, story_title=None, original_message=None):
         params = {
             'user_id': user_id,
             'with_user_id': reply_user_id,
             'category': 'comment_reply',
             'content': reply_content,
-            'feed_id': social_feed_id,
+            'feed_id': "social:%s" % user_id,
+            'story_feed_id': story_feed_id,
             'title': story_title,
             'content_id': story_id,
         }
@@ -1966,11 +1970,11 @@ class MInteraction(mongo.Document):
             cls.objects.create(**params)
     
     @classmethod
-    def new_comment_like(cls, liking_user_id, comment_user_id, social_feed_id, story_id, story_title, comments):
+    def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_title, comments):
         cls.objects.get_or_create(user_id=comment_user_id,
                                   with_user_id=liking_user_id,
                                   category="comment_like",
-                                  feed_id=social_feed_id,
+                                  feed_id="social:%s" % comment_user_id,
                                   content_id=story_id,
                                   defaults={
                                     "title": story_title,
@@ -1978,13 +1982,14 @@ class MInteraction(mongo.Document):
                                   })
 
     @classmethod
-    def new_reply_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, story_title=None, original_message=None):
+    def new_reply_reply(cls, user_id, comment_user_id, reply_user_id, reply_content, story_id, story_feed_id, story_title=None, original_message=None):
         params = {
             'user_id': user_id,
             'with_user_id': reply_user_id,
             'category': 'reply_reply',
             'content': reply_content,
-            'feed_id': social_feed_id,
+            'feed_id': "social:%s" % comment_user_id,
+            'story_feed_id': story_feed_id,
             'title': story_title,
             'content_id': story_id,
         }
@@ -2009,7 +2014,8 @@ class MInteraction(mongo.Document):
             'category': 'story_reshare',
             'content': comments,
             'title': story_title,
-            'feed_id': story_feed_id,
+            'feed_id': "social:%s" % reshare_user_id,
+            'story_feed_id': story_feed_id,
             'content_id': story_id,
         }
         if original_comments:
@@ -2032,12 +2038,13 @@ class MActivity(mongo.Document):
     title        = mongo.StringField()
     content      = mongo.StringField()
     with_user_id = mongo.IntField()
-    feed_id      = mongo.IntField()
+    feed_id      = mongo.DynamicField()
+    story_feed_id= mongo.IntField()
     content_id   = mongo.StringField()
     
     meta = {
         'collection': 'activities',
-        'indexes': [('user_id', 'date'), 'category'],
+        'indexes': [('user_id', '-date'), 'category'],
         'allow_inheritance': False,
         'index_drop_dups': True,
         'ordering': ['-date'],
@@ -2055,6 +2062,7 @@ class MActivity(mongo.Document):
             'content': self.content,
             'with_user_id': self.with_user_id,
             'feed_id': self.feed_id,
+            'story_feed_id': self.story_feed_id,
             'content_id': self.content_id,
         }
         
@@ -2094,7 +2102,7 @@ class MActivity(mongo.Document):
         cls.objects.get_or_create(user_id=user_id,
                                   category='star',
                                   content=story_title,
-                                  feed_id=story_feed_id,
+                                  story_feed_id=story_feed_id,
                                   content_id=story_id)
                            
     @classmethod
@@ -2120,13 +2128,14 @@ class MActivity(mongo.Document):
                 dupe.delete()
     
     @classmethod
-    def new_comment_reply(cls, user_id, comment_user_id, reply_content, story_feed_id, story_id, story_title=None, original_message=None):
+    def new_comment_reply(cls, user_id, comment_user_id, reply_content, story_id, story_feed_id, story_title=None, original_message=None):
         params = {
             'user_id': user_id,
             'with_user_id': comment_user_id,
             'category': 'comment_reply',
             'content': reply_content,
-            'feed_id': story_feed_id,
+            'feed_id': "social:%s" % comment_user_id,
+            'story_feed_id': story_feed_id,
             'title': story_title,
             'content_id': story_id,
         }
@@ -2144,11 +2153,11 @@ class MActivity(mongo.Document):
             cls.objects.create(**params)
             
     @classmethod
-    def new_comment_like(cls, liking_user_id, comment_user_id, social_feed_id, story_id, story_title, comments):
-        cls.objects.get_or_create(user_id=comment_user_id,
-                                  with_user_id=liking_user_id,
+    def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_title, comments):
+        cls.objects.get_or_create(user_id=liking_user_id,
+                                  with_user_id=comment_user_id,
                                   category="comment_like",
-                                  feed_id=social_feed_id,
+                                  feed_id="social:%s" % comment_user_id,
                                   content_id=story_id,
                                   defaults={
                                     "title": story_title,
@@ -2156,13 +2165,14 @@ class MActivity(mongo.Document):
                                   })
     
     @classmethod
-    def new_shared_story(cls, user_id, story_title, comments, story_feed_id, story_id, share_date=None):
+    def new_shared_story(cls, user_id, source_user_id, story_title, comments, story_feed_id, story_id, share_date=None):
         a, _ = cls.objects.get_or_create(user_id=user_id,
-                                         with_user_id=user_id,
                                          category='sharedstory',
-                                         feed_id=story_feed_id,
+                                         feed_id="social:%s" % user_id,
+                                         story_feed_id=story_feed_id,
                                          content_id=story_id,
                                          defaults={
+                                             'with_user_id': source_user_id,
                                              'title': story_title,
                                              'content': comments,
                                          })

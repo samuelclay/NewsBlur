@@ -483,26 +483,27 @@ def save_comment_reply(request):
                                 comment_user_id=comment['user_id'],
                                 reply_content=reply_comments,
                                 original_message=original_message,
-                                story_feed_id=feed_id,
                                 story_id=story_id,
+                                story_feed_id=feed_id,
                                 story_title=shared_story.story_title)
     if comment['user_id'] != request.user.pk:
         MInteraction.new_comment_reply(user_id=comment['user_id'], 
                                        reply_user_id=request.user.pk, 
                                        reply_content=reply_comments,
                                        original_message=original_message,
-                                       social_feed_id=comment_user_id,
                                        story_id=story_id,
+                                       story_feed_id=feed_id,
                                        story_title=shared_story.story_title)
     
     for user_id in set(reply_user_ids).difference([comment['user_id']]):
         if request.user.pk != user_id:
             MInteraction.new_reply_reply(user_id=user_id, 
+                                         comment_user_id=comment['user_id'],
                                          reply_user_id=request.user.pk, 
                                          reply_content=reply_comments,
                                          original_message=original_message,
-                                         social_feed_id=comment_user_id,
                                          story_id=story_id,
+                                         story_feed_id=feed_id,
                                          story_title=shared_story.story_title)
 
     EmailCommentReplies.apply_async(kwargs=dict(shared_story_id=shared_story.id,
@@ -749,13 +750,11 @@ def like_comment(request):
 
     MActivity.new_comment_like(liking_user_id=request.user.pk,
                                comment_user_id=comment['user_id'],
-                               social_feed_id=comment['user_id'],
                                story_id=story_id,
                                story_title=shared_story.story_title,
                                comments=shared_story.comments)
     MInteraction.new_comment_like(liking_user_id=request.user.pk, 
                                   comment_user_id=comment['user_id'],
-                                  social_feed_id=comment['user_id'],
                                   story_id=story_id,
                                   story_title=shared_story.story_title,
                                   comments=shared_story.comments)

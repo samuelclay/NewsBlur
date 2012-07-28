@@ -73,9 +73,9 @@
                     <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                         {{ interaction.with_user.username }}
                     </span> favorited your comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ interaction.title|safe|truncatewords:6 }}</span>:
-                    <div class="NB-interaction-content">
-                        "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ interaction.content|truncatewords:16 }}</span>"
-                    </div>
+                </div>
+                <div class="NB-interaction-content">
+                    "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ interaction.content|truncatewords:16 }}</span>"
                 </div>
             {% endif %}
         </li>

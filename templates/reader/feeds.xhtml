@@ -193,7 +193,7 @@
               <div class="NB-signup-optional">
                 {% if login_form.errors %}
                   {% for field, error in login_form.errors.items %}
-                    <a href="mailto:password@newsblur.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot password?</a>
+                    <a href="mailto:password@newsblur.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot?</a>
                   {% endfor %}
                 {% else %}
                   Optional
@@ -220,7 +220,6 @@
               {{ signup_form.password }}
             </div>
             <div class="NB-signup-hidden">
-              <div class="NB-signup-optional">Optional</div>
               {{ signup_form.email.label_tag }}
               {{ signup_form.email }}
             </div>
@@ -301,9 +300,6 @@
                   <img src="{{ MEDIA_URL }}/img/reader/module_tutorial.jpg" />
               </div>
               <h3 class="NB-module-content-header">
-                  <span class="NB-module-content-subtitle">
-                      It's quick!
-                  </span>
                   Start by setting up NewsBlur
               </h3>
               <div class="NB-module-item-title">
@@ -321,10 +317,7 @@
                   <img src="{{ MEDIA_URL }}/img/reader/account_friends.jpg" />
               </div>
               <h3 class="NB-module-content-header">
-                  <span class="NB-module-content-subtitle">
-                      Share stories
-                  </span>
-                  Get Social
+                  Get Social and share stories
               </h3>
               <div class="NB-module-item-title">
                   <div class="NB-modal-submit">

@@ -306,7 +306,7 @@
                 $('.NB-task-manage').tipsy('disable');
             }
             $('.NB-module-content-account-realtime').tipsy({
-                gravity: 's',
+                gravity: 'se',
                 delayIn: 0
             });
         },
@@ -3490,21 +3490,21 @@
                     this.flags.feed_refreshing_in_realtime = true;
                     this.setup_feed_refresh();
                     
-                    $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating in real-time'));
-                    $('.NB-module-content-account-realtime').attr('title', 'Reticulating splines').removeClass('NB-error');
+                    // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating in real-time'));
+                    $('.NB-module-content-account-realtime').attr('title', 'Updating sites in real-time...').removeClass('NB-error');
                 }, this));
                 this.socket.on('disconnect', _.bind(function() {
                     NEWSBLUR.log(["Lost connection to real-time pubsub. Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
                     this.setup_feed_refresh();
-                    $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
-                    $('.NB-module-content-account-realtime').attr('title', 'Polling for updates...').addClass('NB-error');
+                    // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
+                    $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
                 }, this));
                 this.socket.on('error', _.bind(function() {
                     NEWSBLUR.log(["Can't connect to real-time pubsub."]);
                     this.flags.feed_refreshing_in_realtime = false;
-                    $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
-                    $('.NB-module-content-account-realtime').attr('title', 'Polling for updates...').addClass('NB-error');
+                    // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
+                    $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
                     _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), 60*1000);
                 }, this));
             }
@@ -3561,6 +3561,10 @@
                     self.force_feeds_refresh();
                 }
             }, refresh_interval);
+            this.flags.refresh_interval = refresh_interval / 1000;
+            if (!this.socket || !this.socket.socket.connected) {
+                $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
+            } 
             NEWSBLUR.log(["Setting refresh interval to every " + refresh_interval/1000 + " seconds."]);
         },
         
@@ -4837,21 +4841,21 @@
             
             // = Interactions Module ==========================================
             
-            $.targetIs(e, { tagSelector: '.NB-interaction-username, .NB-interaction-follow .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-interaction-follow, .NB-activity-follow' }, function($t, $p){
                 e.preventDefault();
                 var user_id = $t.data('userId');
                 var username = $t.closest('.NB-interaction').find('.NB-interaction-username').text();
                 self.model.add_user_profiles([{user_id: user_id, username: username}]);
                 self.open_social_profile_modal(user_id);
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-comment_reply .NB-interaction-reply-content, .NB-interaction-reply_reply .NB-interaction-reply-content, .NB-interaction-comment_reply .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-interaction-comment_reply, .NB-interaction-reply_reply, .NB-interaction-story_reshare, .NB-interaction-comment_like, .NB-activity-comment_reply, .NB-activity-comment_like, .NB-activity-sharedstory' }, function($t, $p){
                 e.preventDefault();
                 var $interaction = $t.closest('.NB-interaction');
                 var feed_id = $interaction.data('feedId');
                 var story_id = $interaction.data('contentId');
                 var user_id = $interaction.data('userId');
                 var username = $interaction.data('username');
-                
+
                 self.close_social_profile();
                 if (self.model.get_feed(feed_id)) {
                     self.open_social_stories(feed_id, {'story_id': story_id});
@@ -4867,66 +4871,66 @@
             
             // = Activities Module ==========================================
             
-            $.targetIs(e, { tagSelector: '.NB-interaction-starred-story-title,.NB-activity-star .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-activity-star' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.closest('.NB-interaction').data('contentId');
                 
                 self.close_social_profile();
                 self.open_starred_stories({'story_id': story_id});
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-feed-title,.NB-activity-feedsub .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-activity-feedsub' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.closest('.NB-interaction').data('feedId');
                 
                 self.close_social_profile();
                 self.open_feed(feed_id);
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-sharedstory .NB-interaction-sharedstory-title, .NB-interaction-sharedstory .NB-interaction-sharedstory-content, .NB-interaction-sharedstory .NB-interaction-photo, .NB-activity-sharedstory .NB-interaction-sharedstory-title, .NB-activity-sharedstory .NB-interaction-sharedstory-content, .NB-activity-sharedstory .NB-interaction-photo, .NB-interaction-comment_like .NB-interaction-sharedstory-title, .NB-activity-comment_like .NB-interaction-sharedstory-title' }, function($t, $p){
-                e.preventDefault();
-                var $interaction = $t.closest('.NB-interaction');
-                var feed_id = $interaction.data('feedId');
-                var story_id = $interaction.data('contentId');
-                var user_id = $interaction.data('userId');
-                
-                self.close_social_profile();
-                if ($t.hasClass('NB-interaction-sharedstory-content')) {
-                    self.open_social_stories('social:'+user_id, {'story_id': story_id});
-                } else {
-                    self.open_feed(feed_id, {
-                        'story_id': story_id, 
-                        'scroll_to_comments': true,
-                        'feed': new NEWSBLUR.Models.Feed({
-                            'feed_title': $('.NB-interaction-sharedstory-title', $interaction).text(),
-                            'favicon_url': $('.NB-interaction-photo', $interaction).attr('src')
-                        })
-                    });
-                }
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-activity-comment_reply .NB-interaction-reply-content, .NB-activity-comment_reply .NB-interaction-photo, .NB-interaction-comment_like .NB-interaction-content, .NB-interaction-comment_like .NB-interaction-photo, .NB-activity-comment_like .NB-interaction-content, .NB-activity-comment_like .NB-interaction-photo' }, function($t, $p){
-                e.preventDefault();
-                var $interaction = $t.closest('.NB-interaction');
-                var user_id = $interaction.hasClass('NB-interaction-comment_like') ?
-                                NEWSBLUR.Globals.user_id : 
-                                $interaction.data('userId');
-                var feed_id = 'social:' + user_id;
-                var story_id = $interaction.data('contentId');
-                var username = $interaction.data('username');
-                
-                self.close_social_profile();
-                if (self.model.get_feed(feed_id)) {
-                    self.open_social_stories(feed_id, {
-                        'story_id': story_id,
-                        'scroll_to_comments': true
-                    });
-                } else {
-                    var socialsub = self.model.add_social_feed({
-                        id: feed_id, 
-                        user_id: user_id, 
-                        username: username
-                    });
-                    self.load_social_feed_in_tryfeed_view(socialsub, {'story_id': story_id});
-                }
-            }); 
+            // $.targetIs(e, { tagSelector: '.NB-activity-sharedstory' }, function($t, $p){
+            //     e.preventDefault();
+            //     var $interaction = $t.closest('.NB-interaction');
+            //     var feed_id = $interaction.data('feedId');
+            //     var story_id = $interaction.data('contentId');
+            //     var user_id = $interaction.data('userId');
+            //     
+            //     self.close_social_profile();
+            //     if ($t.hasClass('NB-interaction-sharedstory-content')) {
+            //         self.open_social_stories('social:'+user_id, {'story_id': story_id});
+            //     } else {
+            //         self.open_feed(feed_id, {
+            //             'story_id': story_id, 
+            //             'scroll_to_comments': true,
+            //             'feed': new NEWSBLUR.Models.Feed({
+            //                 'feed_title': $('.NB-interaction-sharedstory-title', $interaction).text(),
+            //                 'favicon_url': $('.NB-interaction-photo', $interaction).attr('src')
+            //             })
+            //         });
+            //     }
+            // }); 
+            // $.targetIs(e, { tagSelector: '.NB-activity, .NB-interaction-comment_like' }, function($t, $p){
+            //     e.preventDefault();
+            //     var $interaction = $t.closest('.NB-interaction');
+            //     var user_id = $interaction.hasClass('NB-interaction-comment_like') ?
+            //                     NEWSBLUR.Globals.user_id : 
+            //                     $interaction.data('userId');
+            //     var feed_id = 'social:' + user_id;
+            //     var story_id = $interaction.data('contentId');
+            //     var username = $interaction.data('username');
+            //     
+            //     self.close_social_profile();
+            //     if (self.model.get_feed(feed_id)) {
+            //         self.open_social_stories(feed_id, {
+            //             'story_id': story_id,
+            //             'scroll_to_comments': true
+            //         });
+            //     } else {
+            //         var socialsub = self.model.add_social_feed({
+            //             id: feed_id, 
+            //             user_id: user_id, 
+            //             username: username
+            //         });
+            //         self.load_social_feed_in_tryfeed_view(socialsub, {'story_id': story_id});
+            //     }
+            // }); 
 
             
             // = One-offs =====================================================

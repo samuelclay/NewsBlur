@@ -75,20 +75,19 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     position: absolute;
     right: 0px;
     top: 0;
-    width: 478px;
     z-index: 1;
     overflow: hidden;
 }
 
 .NB-account .NB-module-header-login {
-    width: 186px;
+    width: 142px;
     margin: 0 50px 0 0;
     padding: 0 4px;
     float: left;
 }
 
 .NB-account .NB-module-header-signup {
-    width: 186px;
+    width: 142px;
     margin: 0;
     padding: 0 4px;
     float: left;
@@ -97,14 +96,14 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-account .NB-login {
     padding: 0 4px 64px;
     margin: 12px 50px 0 12px;
-    width: 186px;
+    width: 146px;
     float: left;
     background: transparent url('/media/embed/reader/separator.png') no-repeat bottom center;
 }
 
 .NB-account .NB-signup {
     float: left;
-    width: 186px;
+    width: 146px;
     padding: 0 4px;
     margin: 12px 0 0;
     height: 206px;
@@ -113,7 +112,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 
 .NB-account .NB-import-signup {
     float: left;
-    width: 186px;
+    width: 142px;
     padding: 0 0 64px 0;
     margin: 0 50px 0 12px;
     height: 206px;
@@ -122,7 +121,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 
 .NB-account .NB-import-signup-text {
     text-align: center;
-    width: 200px;
+    width: 152px;
 }
 .NB-account .NB-import-signup-text h3 {
     margin-top: 48px;
@@ -178,7 +177,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     font-size:13px;
     margin:0 0 12px;
     padding:5px;
-    width:174px;
+    width:134px;
 }
 
 .NB-account input[type=text]:focus,
@@ -188,7 +187,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 
 .NB-account input[type=submit] {
     outline: none;
-    width: 186px; /* 174=input-width + 5*2=padding + 2=border */
+    width: 146px; /* 174=input-width + 5*2=padding + 2=border */
     margin: 4px 5px 0 0;
     padding: 4px 10px 5px;
     text-shadow: 0 -1px 0 #C7C9D2;
@@ -245,7 +244,6 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     font-size: 12px;
     color: #AF4D18;
     font-weight: bold;
-    width: 200px;
     padding: 0;
 }
 
@@ -3419,6 +3417,13 @@ form.opml_import_form input {
   -ms-transition: all .12s ease-out;
   background: transparent url('/media/embed/reader/spacer_16.png') no-repeat 1px 0px;
 }
+
+@media screen and (max-width: 1050px) {
+    .NB-splash-info .NB-splash-links .NB-splash-link a {
+        padding-right: 6px;
+        padding-left: 18px;
+    }
+}
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
     padding-top: 0;
     margin-top: -1px;
@@ -4381,7 +4386,7 @@ form.opml_import_form input {
 .NB-account .NB-module {
     margin: 24px 0 0;
     padding: 0;
-    width: 478px;
+    width: 398px;
     clear: both;
     overflow: hidden;
 }
@@ -4536,6 +4541,14 @@ form.opml_import_form input {
   text-transform: uppercase;
   font-size: 12px;
 }
+.NB-module-stats .NB-module-stats-count-shared-stories {
+    width: 38%;
+}
+.NB-module-stats .NB-module-stats-count-following,
+.NB-module-stats .NB-module-stats-count-followers {
+    width: 31%;
+}
+
 .NB-module-stats .NB-module-stats-count-number {
   clear: both;
   font-size: 18px;
@@ -4552,12 +4565,12 @@ form.opml_import_form input {
 
 .NB-module-stats .NB-module-stats-count-graph {
   clear: both;
-  padding: 0 12px;
+  padding: 0 0 0 16px;
 }
 .NB-graph-value {
   float: left;
   height: 38px;
-  width: 4px;
+  width: 3px;
   padding: 0 1px 0 0;
   margin: 0 0 18px 0;
   position: relative;
@@ -4568,7 +4581,7 @@ form.opml_import_form input {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 4px;
+  width: 3px;
 }
 
 .NB-graph-value .NB-graph-label {
@@ -4594,7 +4607,7 @@ form.opml_import_form input {
 /* ================== */
 
 .NB-modules-center {
-    margin: 24px 478px 0 0px;
+    margin: 24px 398px 0 0px;
     padding: 0 24px;
 }
 
@@ -4602,7 +4615,7 @@ form.opml_import_form input {
     margin: 0 0 24px;
 }
 
-@media screen and (max-width: 1050px) {
+@media screen and (max-width: 950px) {
     .NB-modules-center {
         display: none;
     }
@@ -8313,17 +8326,57 @@ form.opml_import_form input {
     position: relative;
     margin: 0 8px 0 8px;
     padding: 6px 4px 6px 28px;
+    border-top: 1px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
     border-bottom: 1px solid #F2F2EE;
     overflow: hidden;
+    cursor: pointer;
 }
+
 .NB-interaction.NB-highlighted {
     background-color: #FFFFF6;
     border-bottom: 1px solid #F0F0E6;
 }
+.NB-interaction:first-child {
+    -webkit-border-top-left-radius: 6px;
+    -webkit-border-top-right-radius: 6px;
+    -moz-border-radius-topleft: 6px;
+    -moz-border-radius-topright: 6px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
 .NB-interaction:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
+    border-bottom: 1px solid transparent;
     margin-bottom: 0;
+    -webkit-border-bottom-left-radius: 6px;
+    -webkit-border-bottom-right-radius: 6px;
+    -moz-border-radius-bottomleft: 6px;
+    -moz-border-radius-bottomright: 6px;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+.NB-interaction:hover {
+    background-color: #FFFFF6;
+    border-bottom: 1px solid #F0F0E6;
+    background-color: #d2e6fd;
+    background-image: -moz-linear-gradient(top, #d2e6fd, #b0d1f9); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#d2e6fd), to(#b0d1f9)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #d2e6fd, #b0d1f9);
+    border: 1px solid #9EBAE2;
+}
+.NB-interaction:active {
+    background-color: #FBE5C7;
+    background-image: -moz-linear-gradient(top, #FBE5C7, #F7D9AD); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FBE5C7), to(#F7D9AD)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #FBE5C7, #F7D9AD);
+    border: 1px solid #F4C37D;
+}
+.NB-interaction .NB-splash-link:hover {
+    color: #405BA8;
+}
+.NB-interaction:active .NB-interaction-content .NB-splash-link {
+    color: #A85B40;
 }
 .NB-interaction-photo {
     position: absolute;
@@ -8336,20 +8389,21 @@ form.opml_import_form input {
 }
 .NB-interaction-date {
     color: #B0B0B0;
-    font-size: 11px;
+    font-size: 10px;
     float: right;
     text-transform: uppercase;
     padding: 5px 0 3px 4px;
 }
 .NB-interaction-title {
-    font-size: 13px;
+    font-size: 12px;
     line-height: 18px;
     color: #404040;
     padding: 2px 0 0 0;
+    opacity: .9;
 }
 .NB-interaction-content {
-    font-size: 11px;
-    padding-top: 2px;
+    font-size: 13px;
+    padding-top: 6px;
     line-height: 14px;
     color: #808080;
 }
