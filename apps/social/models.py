@@ -1967,16 +1967,15 @@ class MInteraction(mongo.Document):
     
     @classmethod
     def new_comment_like(cls, liking_user_id, comment_user_id, social_feed_id, story_id, story_title, comments):
-        params = {
-            'user_id': comment_user_id,
-            'with_user_id': liking_user_id,
-            'category': 'comment_like',
-            'feed_id': social_feed_id,
-            'content_id': story_id,
-            'title': story_title,
-            'content': comments,
-        }
-        cls.objects.create(**params)
+        cls.objects.get_or_create(user_id=comment_user_id,
+                                  with_user_id=liking_user_id,
+                                  category="comment_like",
+                                  feed_id=social_feed_id,
+                                  content_id=story_id,
+                                  defaults={
+                                    "title": story_title,
+                                    "content": comments,
+                                  })
 
     @classmethod
     def new_reply_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, story_title=None, original_message=None):
@@ -2146,16 +2145,15 @@ class MActivity(mongo.Document):
             
     @classmethod
     def new_comment_like(cls, liking_user_id, comment_user_id, social_feed_id, story_id, story_title, comments):
-        params = {
-            'user_id': comment_user_id,
-            'with_user_id': liking_user_id,
-            'category': 'comment_like',
-            'feed_id': social_feed_id,
-            'content_id': story_id,
-            'title': story_title,
-            'content': comments,
-        }
-        cls.objects.create(**params)
+        cls.objects.get_or_create(user_id=comment_user_id,
+                                  with_user_id=liking_user_id,
+                                  category="comment_like",
+                                  feed_id=social_feed_id,
+                                  content_id=story_id,
+                                  defaults={
+                                    "title": story_title,
+                                    "content": comments,
+                                  })
     
     @classmethod
     def new_shared_story(cls, user_id, story_title, comments, story_feed_id, story_id, share_date=None):
