@@ -33,7 +33,7 @@
     // Do any additional setup after loading the view from its nib.
     
     self.menuOptions = [[NSArray alloc]
-                        initWithObjects:@"Account", @"Preferences", @"Logout", nil];
+                        initWithObjects:@"Find Friends", @"Logout", nil];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.toolbar.hidden = YES;
@@ -96,7 +96,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    if (indexPath.row == 2) {
+    if (indexPath.row == 0) {
+        [appDelegate showFindFriends];
+    } if (indexPath.row == 1) {
         [appDelegate confirmLogout];
     }
     

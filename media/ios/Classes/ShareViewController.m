@@ -170,12 +170,9 @@
 
     [request setPostValue:feedIdStr forKey:@"feed_id"]; 
     [request setPostValue:storyIdStr forKey:@"story_id"];
-
-    NSLog(@"class is %@", [[appDelegate.activeStory objectForKey:@"social_user_id"] class]);
-    NSLog(@"class is %@", [NSNull class]);
-    NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
-    
-    if (!([sourceUserIdStr isEqualToString:@"(null)"])) {
+        
+    if ([appDelegate.activeStory objectForKey:@"social_user_id"] != nil) {
+        NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
         [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
     }
     

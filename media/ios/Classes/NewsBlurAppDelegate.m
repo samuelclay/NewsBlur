@@ -837,30 +837,28 @@
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
     
-    NSLog(@"feedIdStr is %@", feedIdStr);
-        NSLog(@"story is %@", story);
-        NSLog(@"story is %@", [story class]);
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
 
-    
     self.visibleUnreadCount -= 1;
     if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
         [self.recentlyReadFeeds addObject:[newStory objectForKey:@"story_feed_id"]];
     }
+    
+    NSMutableDictionary *newFeed = [feed mutableCopy];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
         int unreads = MAX(0, [[feed objectForKey:@"ps"] intValue] - 1);
-        [feed setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
+        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
     } else if (score == 0) {
         int unreads = MAX(0, [[feed objectForKey:@"nt"] intValue] - 1);
-        [feed setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
+        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
     } else if (score < 0) {
         int unreads = MAX(0, [[feed objectForKey:@"ng"] intValue] - 1);
-        [feed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
+        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
     }
-
-    [self.dictFeeds setValue:feed forKey:feedIdStr];
+    
+    [self.dictFeeds setValue:newFeed forKey:feedIdStr];
 
 }
 

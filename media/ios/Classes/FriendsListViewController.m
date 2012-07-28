@@ -74,7 +74,9 @@
     // e.g. self.myOutlet = nil;
 }
 
-
+- (void)viewDidAppear:(BOOL)animated {
+    [self.searchBar becomeFirstResponder];
+}
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
