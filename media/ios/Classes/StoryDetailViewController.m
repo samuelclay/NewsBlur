@@ -753,6 +753,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             return NO; 
         } else if ([action isEqualToString:@"show-profile"]) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
+                        
+            for (int i = 0; i < appDelegate.activeFeedUserProfiles.count; i++) {
+                NSString *userId = [NSString stringWithFormat:@"%@", [[appDelegate.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"user_id"]];
+                if ([userId isEqualToString:appDelegate.activeUserProfileId]){
+                    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [[appDelegate.activeFeedUserProfiles objectAtIndex:i] objectForKey:@"username"]];
+                    break;
+                }
+            }
+            
+            
             [self showUserProfile:[urlComponents objectAtIndex:2]
                       xCoordinate:[[urlComponents objectAtIndex:3] intValue] 
                       yCoordinate:[[urlComponents objectAtIndex:4] intValue] 
@@ -769,7 +779,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
-    CGRect frame;
+    CGRect frame = CGRectZero;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // only adjust for the bar if user is scrolling
         if (appDelegate.isRiverView || appDelegate.isSocialView) {

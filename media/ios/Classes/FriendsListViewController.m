@@ -214,6 +214,7 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
     
     appDelegate.activeUserProfileId = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
     
+    
     [appDelegate.userProfileViewController getUserProfile];
     [appDelegate.findFriendsNavigationController pushViewController:appDelegate.userProfileViewController animated:YES];
 }

@@ -71,6 +71,7 @@
 
     NSString * activeUsername;
     NSString * activeUserProfileId;
+    NSString * activeUserProfileName;
     BOOL isRiverView;
     BOOL isSocialView;
     BOOL popoverHasFeedView;
@@ -137,6 +138,7 @@
 
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
+@property (readwrite) NSString * activeUserProfileName;
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
@@ -184,6 +186,7 @@
 // social
 - (void)showUserProfile;
 - (void)showUserProfileModal:(id)sender;
+- (void)pushUserProfile;
 - (void)hideUserProfileModal;
 - (void)showFindFriends;
 - (void)showFindingStoryHUD;

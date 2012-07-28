@@ -207,10 +207,14 @@
         NSDictionary *interaction = [appDelegate.userInteractionsArray objectAtIndex:indexPath.row];
         NSString *category = [interaction objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {
-            NSString *userId = [[interaction objectForKey:@"with_user"] objectForKey:@"user_id"];
-            appDelegate.activeUserProfileId = userId;
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             
+            NSString *userId = [[interaction objectForKey:@"with_user"] objectForKey:@"user_id"];
+            appDelegate.activeUserProfileId = userId;
+            
+            NSString *username = [[interaction objectForKey:@"with_user"] objectForKey:@"username"];
+            appDelegate.activeUserProfileName = username;
+
             // pass cell to the show UserProfile
             UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
             [appDelegate showUserProfileModal:cell];

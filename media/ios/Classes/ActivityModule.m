@@ -204,6 +204,10 @@
         if ([category isEqualToString:@"follow"]) {
             NSString *userId = [[activity objectForKey:@"with_user"] objectForKey:@"user_id"];
             appDelegate.activeUserProfileId = userId;
+            
+            NSString *username = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
+            appDelegate.activeUserProfileName = username;
+            
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             
             UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];

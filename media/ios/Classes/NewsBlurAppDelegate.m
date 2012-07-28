@@ -61,6 +61,7 @@
 @synthesize feedDetailPortraitYCoordinate;
 @synthesize activeUsername;
 @synthesize activeUserProfileId;
+@synthesize activeUserProfileName;
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize inFindingStoryMode;
@@ -200,6 +201,7 @@
     self.userProfileViewController = userProfileView;
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
     self.userProfileNavigationController = navController;
+    [userProfileView getUserProfile];
     
     // adding Done button
     UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
@@ -208,15 +210,33 @@
                                    target:self 
                                    action:@selector(hideUserProfileModal)];
     
-    self.userProfileViewController.navigationItem.rightBarButtonItem = donebutton;
-    self.userProfileViewController.navigationItem.title = @"Profile";
+    userProfileView.navigationItem.rightBarButtonItem = donebutton;
+    userProfileView.navigationItem.title = self.activeUserProfileName;
+    userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
 
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showUserProfilePopover:sender];
     } else {
         [self.navigationController presentModalViewController:navController animated:YES];
     }
+}
+
+- (void)pushUserProfile {
+    UserProfileViewController *userProfileView = [[UserProfileViewController alloc] init];
+
+
+    // adding Done button
+    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                   initWithTitle:@"Done" 
+                                   style:UIBarButtonItemStyleDone 
+                                   target:self 
+                                   action:@selector(hideUserProfileModal)];
+    
+    userProfileView.navigationItem.rightBarButtonItem = donebutton;
+    userProfileView.navigationItem.title = self.activeUserProfileName;
+    userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
+    [userProfileView getUserProfile];
+    [self.userProfileNavigationController pushViewController:userProfileView animated:YES];
 }
 
 - (void)hideUserProfileModal {

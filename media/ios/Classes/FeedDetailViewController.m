@@ -1002,6 +1002,7 @@
 
 - (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"user_id"]];
+    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"username"]];
     [appDelegate showUserProfileModal:self.navigationItem.rightBarButtonItem];
 }
 

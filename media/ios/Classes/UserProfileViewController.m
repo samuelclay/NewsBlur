@@ -40,6 +40,7 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
     
     self.view.frame = CGRectMake(0, 0, 320, 416);
+    self.contentSizeForViewInPopover = self.view.frame.size;
     self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
@@ -66,17 +67,7 @@
     // e.g. self.myOutlet = nil;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-        
-    [self getUserProfile];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [self.profileTable removeFromSuperview];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
 
@@ -85,6 +76,7 @@
 }
 
 - (void)getUserProfile {
+//    [self.profileTable removeFromSuperview];
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -234,30 +226,30 @@
         NSDictionary *activity = [self.activitiesArray objectAtIndex:indexPath.row];
         NSString *category = [activity objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {
-//            NSString *userId = [[activity objectForKey:@"with_user"] objectForKey:@"user_id"];
-//            appDelegate.activeUserProfileId = userId;
-//            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-//            
-//            UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-//            self.popoverController = [[UIPopoverController alloc] initWithContentViewController:appDelegate.userProfileViewController];
-//            [self.popoverController setPopoverContentSize:CGSizeMake(320, 416)];
-//            [self.popoverController presentPopoverFromRect:cell.bounds 
-//                                                    inView:cell 
-//                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
-//                                                  animated:YES];
-        } else if ([category isEqualToString:@"comment_reply"] ||
-                   [category isEqualToString:@"comment_like"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
-            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
-        } else if ([category isEqualToString:@"sharedstory"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
-            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
-        } else if ([category isEqualToString:@"feedsub"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"feed_id"]];
-            NSString *contentIdStr = nil;
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+            NSString *userId = [[activity objectForKey:@"with_user"] objectForKey:@"user_id"];
+            appDelegate.activeUserProfileId = userId;
+            NSString *username = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
+            appDelegate.activeUserProfileName = username;
+
+            [appDelegate pushUserProfile];
+        } else {
+            [appDelegate hideUserProfileModal];
+            if ([category isEqualToString:@"comment_reply"] ||
+                       [category isEqualToString:@"comment_like"]) {
+                NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
+                NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
+                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
+            } else if ([category isEqualToString:@"sharedstory"]) {
+                NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
+                NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
+                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
+            } else if ([category isEqualToString:@"feedsub"]) {
+                NSString *feedIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"feed_id"]];
+                NSString *contentIdStr = nil;
+                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO];
+            }
         }
         
         // have the selected cell deselect
