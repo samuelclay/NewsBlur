@@ -412,6 +412,10 @@
         }
     }
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController syncNextPreviousButtons];
+    }
+    
     [self performSelector:@selector(checkScroll)
                withObject:nil
                afterDelay:0.2];

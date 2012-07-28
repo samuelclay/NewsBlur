@@ -218,7 +218,9 @@
                                      inView:cell 
                    permittedArrowDirections:UIPopoverArrowDirectionAny 
                                    animated:YES];
-        } else if ([category isEqualToString:@"comment_reply"]) {
+        } else if ([category isEqualToString:@"comment_reply"] || 
+                   [category isEqualToString:@"reply_reply"] ||
+                   [category isEqualToString:@"comment_like"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"feed_id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
@@ -226,12 +228,7 @@
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[interaction objectForKey:@"with_user"] objectForKey:@"id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
-        }   else if ([category isEqualToString:@"reply_reply"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"feed_id"]];
-            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"content_id"]];
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
-        }
-        
+        } 
         
         // have the selected cell deselect
         [tableView deselectRowAtIndexPath:indexPath animated:YES];

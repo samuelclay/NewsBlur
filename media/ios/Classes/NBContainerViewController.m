@@ -176,6 +176,10 @@
                                               animated:YES];  
 }
 
+- (void)syncNextPreviousButtons {
+    [self.storyDetailViewController setNextPreviousButtons];
+}
+
 # pragma mark Screen Transitions and Layout
 
 - (void)adjustDashboardScreen {

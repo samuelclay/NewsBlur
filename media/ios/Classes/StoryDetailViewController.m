@@ -471,14 +471,7 @@
     
     [appDelegate hideFindingStoryHUD];
     [appDelegate hideShareView:YES];
-    
-    int activeLocation = appDelegate.locationOfActiveStory;    
-    if (activeLocation >= ([appDelegate.activeFeedStoryLocations count] - 1)) {
-        self.buttonNextStory.enabled = NO;
-    } else {
-        self.buttonNextStory.enabled = YES;
-    }
-    
+        
     [appDelegate resetShareComments];
     NSString *commentString = [self getComments:@"friends"];       
     NSString *headerString;
@@ -875,6 +868,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             [buttonPrevious setTitle:@"Previous"];
             [buttonPrevious setEnabled:YES];
         }
+    
+    int activeLocation = appDelegate.locationOfActiveStory;    
+    if (activeLocation >= ([appDelegate.activeFeedStoryLocations count] - 1)) {
+        self.buttonNextStory.enabled = NO;
+    } else {
+        self.buttonNextStory.enabled = YES;
+    }
     
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];

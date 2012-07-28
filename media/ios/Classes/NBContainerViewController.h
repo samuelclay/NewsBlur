@@ -19,6 +19,8 @@
 @property (atomic, strong) IBOutlet NewsBlurAppDelegate *appDelegate;
 
 
+- (void)syncNextPreviousButtons;
+
 - (void)adjustDashboardScreen;
 - (void)adjustFeedDetailScreen;
 - (void)adjustFeedDetailScreenForStoryTitles;

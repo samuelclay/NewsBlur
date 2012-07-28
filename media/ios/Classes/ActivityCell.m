@@ -77,11 +77,18 @@
         [category isEqualToString:@"comment_reply"] ||
         [category isEqualToString:@"comment_like"] ||
         [category isEqualToString:@"sharedstory"]) {
+        // this is for the rare instance when the with_user doesn't return anything
+        if ([[activity objectForKey:@"with_user"] class] == [NSNull class]) {
+            self.faviconView.frame = CGRectZero;
+            self.activityLabel.attributedText = nil;
+            return 1;
+        }
+
         UIImage *placeholder = [UIImage imageNamed:@"user"];
         [self.faviconView setImageWithURL:[NSURL URLWithString:[[activity objectForKey:@"with_user"] objectForKey:@"photo_url"]]
                          placeholderImage:placeholder];
     } else {
-        UIImage *placeholder = [UIImage imageNamed:@"user"];
+        UIImage *placeholder = [UIImage imageNamed:@"world"];
         NSString *faviconUrl = [NSString stringWithFormat:@"http://%@/rss_feeds/icon/%i", 
                                 NEWSBLUR_URL,
                                 [[activity objectForKey:@"feed_id"] intValue]];
