@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseForbidden, Http404
 from django.core.mail import mail_admins
 from django.db.models.query import QuerySet
 from mongoengine.queryset import QuerySet as MongoQuerySet
+from bson.objectid import ObjectId
 import sys
 import datetime
 
@@ -45,7 +46,7 @@ def json_encode(data, *args, **kwargs):
         # Same as for lists above.
         elif isinstance(data, dict):
             ret = _dict(data)
-        elif isinstance(data, Decimal):
+        elif isinstance(data, (Decimal, ObjectId)):
             # json.dumps() cant handle Decimal
             ret = str(data)
         elif isinstance(data, models.query.QuerySet):

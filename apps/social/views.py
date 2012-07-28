@@ -2,6 +2,7 @@ import time
 import datetime
 import zlib
 import random
+from bson.objectid import ObjectId
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -364,8 +365,8 @@ def mark_story_as_shared(request):
             if service not in shared_story.posted_to_services:
                 PostToService.delay(shared_story_id=shared_story.id, service=service)
     
-    if shared_story.source_user_id and not shared_story.emailed_reshare and shared_story.comments:
-        EmailStoryReshares.delay(shared_story_id=shared_story.id)
+    if shared_story.source_user_id and shared_story.comments:
+        EmailStoryReshares.apply_async(kwargs=dict(shared_story_id=shared_story.id), countdown=60)
     
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)
@@ -435,6 +436,7 @@ def save_comment_reply(request):
     comment_user_id = request.POST['comment_user_id']
     reply_comments = request.POST.get('reply_comments')
     original_message = request.POST.get('original_message')
+    reply_id = request.POST.get('reply_id')
     format = request.REQUEST.get('format', 'json')
     
     if not reply_comments:
@@ -448,12 +450,14 @@ def save_comment_reply(request):
     reply.publish_date = datetime.datetime.now()
     reply.comments = reply_comments
     
-    if original_message:
+    if reply_id:
         replies = []
         for story_reply in shared_story.replies:
             if (story_reply.user_id == reply.user_id and 
-                strip_tags(story_reply.comments) == original_message):
+                story_reply.reply_id == ObjectId(reply_id)):
                 reply.publish_date = story_reply.publish_date
+                reply.reply_id = story_reply.reply_id
+                original_message = story_reply.comments
                 replies.append(reply)
             else:
                 replies.append(story_reply)
@@ -461,6 +465,7 @@ def save_comment_reply(request):
         logging.user(request, "~FCUpdating comment reply in ~FM%s: ~SB~FB%s~FM" % (
                  shared_story.story_title[:20], reply_comments[:30]))
     else:
+        reply.reply_id = ObjectId()
         logging.user(request, "~FCReplying to comment in: ~FM%s: ~SB~FB%s~FM" % (
                      shared_story.story_title[:20], reply_comments[:30]))
         shared_story.replies.append(reply)
@@ -468,7 +473,7 @@ def save_comment_reply(request):
     
     comment = shared_story.comments_with_author()
     profile_user_ids = set([comment['user_id']])
-    reply_user_ids = [reply['user_id'] for reply in comment['replies']]
+    reply_user_ids = list(r['user_id'] for r in comment['replies'])
     profile_user_ids = profile_user_ids.union(reply_user_ids)
     profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
     profiles = [profile.to_json(compact=True) for profile in profiles]
@@ -496,8 +501,9 @@ def save_comment_reply(request):
                                          original_message=original_message,
                                          social_feed_id=comment_user_id,
                                          story_id=story_id)
-    if not original_message:
-        EmailCommentReplies.delay(shared_story_id=shared_story.id, reply_user_id=request.user.pk)
+
+    EmailCommentReplies.apply_async(kwargs=dict(shared_story_id=shared_story.id,
+                                                reply_id=reply.reply_id), countdown=60)
     
     if format == 'html':
         comment = MSharedStory.attach_users_to_comment(comment, profiles)

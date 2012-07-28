@@ -42,7 +42,7 @@ NEWSBLUR.Views.StoryCommentReply = Backbone.View.extend({
     },
     
     edit_reply: function() {
-        this.options.comment.open_reply({is_editing: true, $reply: this.$el});
+        this.options.comment.open_reply({is_editing: true, reply: this.model, $reply: this.$el});
     }
 
     

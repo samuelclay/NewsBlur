@@ -1025,13 +1025,16 @@ class MSocialSubscription(mongo.Document):
         return social_subs
 
 class MCommentReply(mongo.EmbeddedDocument):
-    user_id      = mongo.IntField()
-    publish_date = mongo.DateTimeField()
-    comments     = mongo.StringField()
-    liking_users = mongo.ListField(mongo.IntField())
+    reply_id      = mongo.ObjectIdField()
+    user_id       = mongo.IntField()
+    publish_date  = mongo.DateTimeField()
+    comments      = mongo.StringField()
+    email_sent    = mongo.BooleanField(default=False)
+    liking_users  = mongo.ListField(mongo.IntField())
     
     def to_json(self):
         reply = {
+            'reply_id': self.reply_id,
             'user_id': self.user_id,
             'publish_date': relative_timesince(self.publish_date),
             'date': self.publish_date,
@@ -1041,6 +1044,8 @@ class MCommentReply(mongo.EmbeddedDocument):
         
     meta = {
         'ordering': ['publish_date'],
+        'id_field': 'reply_id',
+        'allow_inheritance': False,
     }
 
 
@@ -1069,6 +1074,7 @@ class MSharedStory(mongo.Document):
     mute_email_users         = mongo.ListField(mongo.IntField())
     liking_users             = mongo.ListField(mongo.IntField())
     emailed_reshare          = mongo.BooleanField(default=False)
+    emailed_replies          = mongo.ListField(mongo.ObjectIdField())
     
     meta = {
         'collection': 'shared_stories',
@@ -1079,7 +1085,11 @@ class MSharedStory(mongo.Document):
         'ordering': ['shared_date'],
         'allow_inheritance': False,
     }
-    
+
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "%s: %s (%s)%s%s" % (user.username, self.story_title[:20], self.story_feed_id, ': ' if self.has_comments else '', self.comments[:20])
+
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()
@@ -1475,19 +1485,33 @@ class MSharedStory(mongo.Document):
             user_ids.add(self.user_id)
         
         return list(user_ids)
+    
+    def reply_for_id(self, reply_id):
+        for reply in self.replies:
+            if reply.reply_id == reply_id:
+                return reply
+                
+    def send_emails_for_new_reply(self, reply_id):
+        if reply_id in self.emailed_replies:
+            logging.debug(" ***> Already sent reply email: %s on %s" % (reply_id, self))
+            return
 
-    def send_emails_for_new_reply(self, reply_user_id):
+        reply = self.reply_for_id(reply_id)
+        if not reply:
+            logging.debug(" ***> Reply doesn't exist: %s on %s" % (reply_id, self))
+            return
+            
         notify_user_ids = self.notify_user_ids()
-        if reply_user_id in notify_user_ids:
-            notify_user_ids.remove(reply_user_id)
-        reply_user = User.objects.get(pk=reply_user_id)
-        reply_user_profile = MSocialProfile.get_user(reply_user_id)
+        if reply.user_id in notify_user_ids:
+            notify_user_ids.remove(reply.user_id)
+        reply_user = User.objects.get(pk=reply.user_id)
+        reply_user_profile = MSocialProfile.get_user(reply.user_id)
         sent_emails = 0
 
         story_feed = Feed.objects.get(pk=self.story_feed_id)
         comment = self.comments_with_author()
         profile_user_ids = set([comment['user_id']])
-        reply_user_ids = [reply['user_id'] for reply in comment['replies']]
+        reply_user_ids = list(r['user_id'] for r in comment['replies'])
         profile_user_ids = profile_user_ids.union(reply_user_ids)
         if self.source_user_id:
             profile_user_ids.add(self.source_user_id)
@@ -1534,8 +1558,15 @@ class MSharedStory(mongo.Document):
             sent_emails, len(notify_user_ids), 
             '' if len(notify_user_ids) == 1 else 's', 
             self.story_title[:30]))
+        
+        self.emailed_replies.append(reply.reply_id)
+        self.save()
     
     def send_email_for_reshare(self):
+        if self.emailed_reshare:
+            logging.debug(" ***> Already sent reply email: %s" % self)
+            return
+            
         reshare_user = User.objects.get(pk=self.user_id)
         reshare_user_profile = MSocialProfile.get_user(self.user_id)
         original_user = User.objects.get(pk=self.source_user_id)

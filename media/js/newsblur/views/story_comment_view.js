@@ -132,15 +132,13 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
             $.make('img', { className: 'NB-story-comment-reply-photo', src: current_user.get('photo_url') }),
             $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, current_user.get('username')),
-            $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments' }),
+            $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments', value: options.reply && options.reply.get("comments") }),
             $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, options.is_editing ? 'Save' : 'Post')
         ]);
         this.remove_social_comment_reply_form();
         
         if (options.is_editing && options.$reply) {
-            var original_message = $('.NB-story-comment-reply-content', options.$reply).text();
-            $('input', $form).val(original_message);
-            $form.data('original_message', original_message);
+            $form.data('reply_id', options.reply.get("reply_id"));
             options.$reply.hide().addClass('NB-story-comment-reply-hidden');
             options.$reply.after($form);
         } else {
@@ -172,7 +170,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         var $submit = $(".NB-modal-submit-button", $form);
         var comment_user_id = this.model.get('user_id');
         var comment_reply = $('.NB-story-comment-reply-comments', $form).val();
-        var original_message = $form.data('original_message');
+        var reply_id = $form.data('reply_id');
         
         if (!comment_reply || comment_reply.length <= 1) {
             this.remove_social_comment_reply_form();
@@ -189,7 +187,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         $submit.addClass('NB-disabled').text('Posting...');
         NEWSBLUR.assets.save_comment_reply(this.options.story.id, this.options.story.get('story_feed_id'), 
                                       comment_user_id, comment_reply, 
-                                      original_message,
+                                      reply_id,
                                       _.bind(function(data) {
             if (this.options.on_social_page) {
                 this.options.story_comments_view.replace_comment(this.model.get('user_id'), data);
