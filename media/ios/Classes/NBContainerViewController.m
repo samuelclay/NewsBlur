@@ -285,7 +285,7 @@
             [self.view insertSubview:self.feedDetailViewController.view aboveSubview:self.storyTitlesStub];
             self.feedDetailViewController.view.frame = CGRectMake(0, storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
             self.storyTitlesStub.hidden = YES;
-            
+            [self.feedDetailViewController checkScroll];
             [appDelegate adjustStoryDetailWebView];
         }];    
     }

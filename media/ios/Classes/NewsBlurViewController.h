@@ -82,5 +82,6 @@
 - (void)showUserProfile;
 - (void)showSettingsPopover:(id)sender;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
+- (void)fadeSelectedCell;
 
 @end

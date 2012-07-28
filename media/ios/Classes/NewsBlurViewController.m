@@ -47,7 +47,6 @@
 #pragma mark Globals
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
         [appDelegate hideNavigationBar:NO];
     }
@@ -55,8 +54,7 @@
 }
 
 - (void)viewDidLoad {
-    
-    [appDelegate showNavigationBar:NO];
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
     [self.feedTitlesTable addSubview:pull];
@@ -112,12 +110,6 @@
 //    appDelegate.inFindingStoryMode = NO;
     [MBProgressHUD hideHUDForView:appDelegate.storyDetailViewController.view animated:NO];
     
-    
-    // If there is an active feed or a set of feeds readin the river, 
-    // we need to update its table row to match the updated unread counts.
-    
-    self.currentRowAtIndexPath = [self.feedTitlesTable indexPathForSelectedRow];
-
     if (appDelegate.activeFeed || appDelegate.isRiverView) {        
         [self.feedTitlesTable beginUpdates];
         [self.feedTitlesTable 
@@ -136,37 +128,28 @@
         }
     }
     
+    // reload the data and then set the highlight again
+    [self.feedTitlesTable reloadData];
+
     [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
                            animated:NO 
                      scrollPosition:UITableViewScrollPositionNone];
-
-//    [self.intelligenceControl setImage:[UIImage imageNamed:@"16-List.png"] 
-//                     forSegmentAtIndex:0];
-//    [self.intelligenceControl setImage:[UIImage imageNamed:@"unread_color.png"] 
-//                     forSegmentAtIndex:1];
-//    [self.intelligenceControl setImage:[UIImage imageNamed:@"focused_color.png"] 
-//                     forSegmentAtIndex:2];
-    [self.intelligenceControl addTarget:self
-                                 action:@selector(selectIntelligence)
-                       forControlEvents:UIControlEventValueChanged];
-
-    [appDelegate showNavigationBar:animated];
-    
-//    [self.feedTitlesTable selectRowAtIndexPath:[feedTitlesTable indexPathForSelectedRow] 
-//                                      animated:YES scrollPosition:UITableViewScrollPositionMiddle];sto
-    
-
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
-                                        animated:YES];
+//    [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
+//                                      animated:NO 
+//                                scrollPosition:UITableViewScrollPositionNone];
     
+    [super viewDidAppear:animated];
+    [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.6];
 }
 
+- (void)fadeSelectedCell {
+    [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
+                                        animated:YES];
+}
 - (void)viewWillDisappear:(BOOL)animated {
-    //[appDelegate showNavigationBar:YES];
     [self dismissFeedsMenu];
     [super viewWillDisappear:animated];
 }
@@ -607,6 +590,10 @@
 
 - (void)tableView:(UITableView *)tableView 
         didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    // set the current row pointer
+    self.currentRowAtIndexPath = indexPath;
+    
     NSDictionary *feed;
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
@@ -784,7 +771,9 @@
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {
-    NSLog(@"button tag is %i", button.tag);
+    // reset pointer to the cells
+    self.currentRowAtIndexPath = nil;
+    
     // current position of social header
     if (button.tag == 0) { 
         return;

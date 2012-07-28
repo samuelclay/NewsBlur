@@ -999,10 +999,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request {
-//    NSString *responseString = [request responseString];
-//    NSDictionary *results = [[NSDictionary alloc] 
-//                             initWithDictionary:[responseString JSONValue]];
-//    NSLog(@"results in mark as read is %@", results);
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    NSLog(@"results in mark as read is %@", results);
 } 
 
 - (void)showShareHUD {

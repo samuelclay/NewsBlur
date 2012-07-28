@@ -859,7 +859,6 @@
     }
     
     [self.dictFeeds setValue:newFeed forKey:feedIdStr];
-
 }
 
 - (void)markActiveFeedAllRead {    
