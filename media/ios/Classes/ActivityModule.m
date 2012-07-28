@@ -112,6 +112,11 @@
         self.activitiesUsername = [[results objectForKey:@"user_profile"] objectForKey:@"username"];
     }
     
+    // check for last page
+    if (![[results objectForKey:@"has_next_page"] intValue]) {
+        self.pageFinished = YES;
+    }
+    
     NSArray *newActivities = [results objectForKey:@"activities"];
     NSMutableArray *confirmedActivities = [NSMutableArray array];
     if ([appDelegate.userActivitiesArray count]) {
@@ -134,9 +139,6 @@
         appDelegate.userActivitiesArray = [appDelegate.userActivitiesArray arrayByAddingObjectsFromArray:newActivities];
     }
     
-    if ([confirmedActivities count] == 0 || self.activitiesPage > 100) {
-        self.pageFinished = YES;
-    }
     [self refreshWithActivities:appDelegate.userActivitiesArray withUsername:self.activitiesUsername];
 } 
 

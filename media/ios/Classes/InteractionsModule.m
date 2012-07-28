@@ -107,6 +107,12 @@
                              error:&error];
     
     NSArray *newInteractions = [results objectForKey:@"interactions"];
+    
+    // check for last page
+    if (![[results objectForKey:@"has_next_page"] intValue]) {
+        self.pageFinished = YES;
+    }
+    
     NSMutableArray *confirmedInteractions = [NSMutableArray array];
     if ([appDelegate.userInteractionsArray count]) {
         NSMutableSet *interactionsDates = [NSMutableSet set];
@@ -128,9 +134,7 @@
         appDelegate.userInteractionsArray = [appDelegate.userInteractionsArray arrayByAddingObjectsFromArray:newInteractions];
     }
     
-    if ([confirmedInteractions count] == 0 || self.interactionsPage > 100) {
-        self.pageFinished = YES;
-    }
+
     [self refreshWithInteractions:appDelegate.userInteractionsArray];
 } 
 
