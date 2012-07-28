@@ -205,7 +205,7 @@
     
     // adding Done button
     UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Done" 
+                                   initWithTitle:@"Close" 
                                    style:UIBarButtonItemStyleDone 
                                    target:self 
                                    action:@selector(hideUserProfileModal)];
@@ -227,7 +227,7 @@
 
     // adding Done button
     UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                   initWithTitle:@"Done" 
+                                   initWithTitle:@"Close" 
                                    style:UIBarButtonItemStyleDone 
                                    target:self 
                                    action:@selector(hideUserProfileModal)];
