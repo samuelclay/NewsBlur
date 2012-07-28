@@ -530,12 +530,59 @@
           desc: "The content of the reply."
           required: true
           example: "Brilliant analysis."
-        - key: original_message
+        - key: reply_id
           desc: >
-            If editing an existing reply, provide the original reply so the correct 
+            If editing an existing reply, provide the original reply id so the correct 
             reply can be overwritten.
           optional: true
-          example: "Brilliant analysis, bro."
+          example: "5000...0042"
+        - key: format
+          desc: "Return a JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/like_comment
+      method: POST
+      short_desc: "Favorites a comment."
+      long_desc: 
+        - "Favorites a comment."
+        - "Does not send an email to the recipient user, but they do see an interaction."
+      params:
+        - key: story_feed_id
+          desc: "ID of feed the story belongs to."
+          required: true
+          example: "42"
+        - key: story_id
+          desc: "ID of story being commented on."
+          required: true
+          example: "http://blog.newsblur.com/post/1"
+        - key: comment_user_id
+          desc: "ID of user who left the original comment that is now being replied to."
+          required: true
+          example: "64"
+        - key: format
+          desc: "Return a JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/remove_like_comment
+      method: POST
+      short_desc: "Un-favorites a comment."
+      long_desc: 
+        - "Un-favorites a comment."
+      params:
+        - key: story_feed_id
+          desc: "ID of feed the story belongs to."
+          required: true
+          example: "42"
+        - key: story_id
+          desc: "ID of story being commented on."
+          required: true
+          example: "http://blog.newsblur.com/post/1"
+        - key: comment_user_id
+          desc: "ID of user who left the original comment that is now being replied to."
+          required: true
+          example: "64"
         - key: format
           desc: "Return a JSON or HTML template"
           optional: true
