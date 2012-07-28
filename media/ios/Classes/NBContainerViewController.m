@@ -13,6 +13,7 @@
 #import "StoryDetailViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
+#import "InteractionCell.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1024 - 640
@@ -156,10 +157,10 @@
 
 # pragma mark Modals and Popovers
 
-- (void)showUserProfilePopover:(id)sender {    
+- (void)showUserProfilePopover:(id)sender {
     if (popoverController == nil) {
         popoverController = [[UIPopoverController alloc]
-                             initWithContentViewController:appDelegate.userProfileViewController];
+                             initWithContentViewController:appDelegate.userProfileNavigationController];
         
         popoverController.delegate = self;
     } else {
@@ -167,14 +168,37 @@
             [popoverController dismissPopoverAnimated:YES];
             return;
         }
-        [popoverController setContentViewController:appDelegate.userProfileViewController];
+        [popoverController setContentViewController:appDelegate.userProfileNavigationController];
     }
     
     [popoverController setPopoverContentSize:CGSizeMake(320, 416)];
-    [popoverController presentPopoverFromBarButtonItem:sender 
+
+    if ([sender class] == [InteractionCell class]) {
+        InteractionCell *cell = (InteractionCell *)sender;
+        
+        [popoverController presentPopoverFromRect:cell.bounds 
+                                                inView:cell
                               permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                              animated:YES];  
+                                              animated:YES];
+    } else if ([sender class] == [UIBarButtonItem class]) {
+        [popoverController presentPopoverFromBarButtonItem:sender 
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                                  animated:YES];  
+    } else {
+        CGRect frame = [sender CGRectValue];
+        [popoverController presentPopoverFromRect:frame 
+                                           inView:self.storyDetailViewController.view
+                         permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                         animated:YES];
+    } 
 }
+
+- (void)hideUserProfilePopover {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:YES];
+    }
+}
+
 
 - (void)syncNextPreviousButtons {
     [self.storyDetailViewController setNextPreviousButtons];

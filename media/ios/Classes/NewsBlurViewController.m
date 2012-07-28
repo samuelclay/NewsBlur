@@ -407,11 +407,7 @@
 
 - (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {  
-        [appDelegate.masterContainerViewController showUserProfilePopover:self.navigationItem.leftBarButtonItem];
-    } else {
-        [appDelegate showUserProfileModal];
-    }
+    [appDelegate showUserProfileModal:self.navigationItem.leftBarButtonItem];
 }
 
 - (void)showSettingsPopover:(id)sender {

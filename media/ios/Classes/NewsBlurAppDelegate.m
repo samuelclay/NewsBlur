@@ -35,6 +35,7 @@
 @synthesize ftuxNavigationController;
 @synthesize navigationController;
 @synthesize findFriendsNavigationController;
+@synthesize userProfileNavigationController;
 @synthesize masterContainerViewController;
 @synthesize googleReaderViewController;
 @synthesize dashboardViewController;
@@ -183,40 +184,47 @@
 #pragma mark Social Views
 
 - (void)showUserProfile {
-    self.findFriendsNavigationController.viewControllers = [NSArray arrayWithObject:userProfileViewController];
-    self.findFriendsNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
-    self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [masterContainerViewController presentModalViewController:findFriendsNavigationController animated:NO];
-    } else {
-        [navigationController presentModalViewController:findFriendsNavigationController animated:NO];
-    }
+//    self.findFriendsNavigationController.viewControllers = [NSArray arrayWithObject:userProfileViewController];
+//    self.findFriendsNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+//    
+//    self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//        [masterContainerViewController presentModalViewController:findFriendsNavigationController animated:NO];
+//    } else {
+//        [navigationController presentModalViewController:findFriendsNavigationController animated:NO];
+//    }
 }
 
-- (void)showUserProfileModal {
+- (void)showUserProfileModal:(id)sender {
     UserProfileViewController *userProfileView = [[UserProfileViewController alloc] init];
     self.userProfileViewController = userProfileView;
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
+    self.userProfileNavigationController = navController;
+    
+    // adding Done button
+    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                   initWithTitle:@"Done" 
+                                   style:UIBarButtonItemStyleDone 
+                                   target:self 
+                                   action:@selector(hideUserProfileModal)];
+    
+    self.userProfileViewController.navigationItem.rightBarButtonItem = donebutton;
+    self.userProfileViewController.navigationItem.title = @"Profile";
+
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        
+        [self.masterContainerViewController showUserProfilePopover:sender];
     } else {
-        // adding Done button
-        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                       initWithTitle:@"Done" 
-                                       style:UIBarButtonItemStyleDone 
-                                       target:self 
-                                       action:@selector(hideUserProfileModal)];
-        
-        self.userProfileViewController.navigationItem.rightBarButtonItem = donebutton;
-        self.userProfileViewController.navigationItem.title = @"Profile";
         [self.navigationController presentModalViewController:navController animated:YES];
     }
 }
 
 - (void)hideUserProfileModal {
-    [self.navigationController dismissModalViewControllerAnimated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.masterContainerViewController hideUserProfilePopover];
+    } else {
+        [self.navigationController dismissModalViewControllerAnimated:YES];
+    }
 }
 
 - (void)showFindFriends {

@@ -210,14 +210,10 @@
             NSString *userId = [[interaction objectForKey:@"with_user"] objectForKey:@"user_id"];
             appDelegate.activeUserProfileId = userId;
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
+            
+            // pass cell to the show UserProfile
             UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-            self.popoverController = [[UIPopoverController alloc] initWithContentViewController:appDelegate.userProfileViewController];
-            [self.popoverController setPopoverContentSize:CGSizeMake(320, 416)];
-            [self.popoverController presentPopoverFromRect:cell.bounds 
-                                     inView:cell 
-                   permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                   animated:YES];
+            [appDelegate showUserProfileModal:cell];
         } else if ([category isEqualToString:@"comment_reply"] || 
                    [category isEqualToString:@"reply_reply"] ||
                    [category isEqualToString:@"comment_like"]) {

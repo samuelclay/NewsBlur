@@ -1002,11 +1002,7 @@
 
 - (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"user_id"]];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {  
-        [appDelegate.masterContainerViewController showUserProfilePopover:self.navigationItem.rightBarButtonItem];
-    } else {
-        [appDelegate showUserProfileModal];
-    }
+    [appDelegate showUserProfileModal:self.navigationItem.rightBarButtonItem];
 }
 
 - (void)changeActiveFeedDetailRow {

@@ -44,6 +44,7 @@
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
     UINavigationController *findFriendsNavigationController;
+    UINavigationController *userProfileNavigationController;
     NBContainerViewController *masterContainerViewController;
 
     FirstTimeUserViewController *firstTimeUserViewController;
@@ -109,8 +110,9 @@
 
 @property (nonatomic) IBOutlet UIWindow *window;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
-@property (nonatomic, readonly) IBOutlet UINavigationController *navigationController;
-@property (nonatomic, readonly) IBOutlet UINavigationController *findFriendsNavigationController;
+@property (nonatomic) IBOutlet UINavigationController *navigationController;
+@property (nonatomic) UINavigationController *findFriendsNavigationController;
+@property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic) IBOutlet NewsBlurViewController *feedsViewController;
@@ -181,7 +183,7 @@
 
 // social
 - (void)showUserProfile;
-- (void)showUserProfileModal;
+- (void)showUserProfileModal:(id)sender;
 - (void)hideUserProfileModal;
 - (void)showFindFriends;
 - (void)showFindingStoryHUD;
