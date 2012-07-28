@@ -1942,13 +1942,14 @@ class MInteraction(mongo.Document):
                 dupe.delete()
     
     @classmethod
-    def new_comment_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, original_message=None):
+    def new_comment_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, story_title=None, original_message=None):
         params = {
             'user_id': user_id,
             'with_user_id': reply_user_id,
             'category': 'comment_reply',
             'content': reply_content,
             'feed_id': social_feed_id,
+            'title': story_title,
             'content_id': story_id,
         }
         if original_message:
@@ -1965,26 +1966,27 @@ class MInteraction(mongo.Document):
             cls.objects.create(**params)
     
     @classmethod
-    def new_comment_like(cls, user_id, comment_user_id, story_feed_id, story_id, story_title, comments):
+    def new_comment_like(cls, liking_user_id, comment_user_id, social_feed_id, story_id, story_title, comments):
         params = {
             'user_id': comment_user_id,
-            'with_user_id': user_id,
+            'with_user_id': liking_user_id,
             'category': 'comment_like',
-            'title': story_title,
-            'feed_id': story_feed_id,
+            'feed_id': social_feed_id,
             'content_id': story_id,
+            'title': story_title,
             'content': comments,
         }
         cls.objects.create(**params)
 
     @classmethod
-    def new_reply_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, original_message=None):
+    def new_reply_reply(cls, user_id, reply_user_id, reply_content, social_feed_id, story_id, story_title=None, original_message=None):
         params = {
             'user_id': user_id,
             'with_user_id': reply_user_id,
             'category': 'reply_reply',
             'content': reply_content,
             'feed_id': social_feed_id,
+            'title': story_title,
             'content_id': story_id,
         }
         if original_message:
@@ -2119,13 +2121,14 @@ class MActivity(mongo.Document):
                 dupe.delete()
     
     @classmethod
-    def new_comment_reply(cls, user_id, comment_user_id, reply_content, story_feed_id, story_id, original_message=None):
+    def new_comment_reply(cls, user_id, comment_user_id, reply_content, story_feed_id, story_id, story_title=None, original_message=None):
         params = {
             'user_id': user_id,
             'with_user_id': comment_user_id,
             'category': 'comment_reply',
             'content': reply_content,
             'feed_id': story_feed_id,
+            'title': story_title,
             'content_id': story_id,
         }
         if original_message:
@@ -2142,12 +2145,12 @@ class MActivity(mongo.Document):
             cls.objects.create(**params)
             
     @classmethod
-    def new_comment_like(cls, user_id, comment_user_id, story_feed_id, story_id, story_title, comments):
+    def new_comment_like(cls, liking_user_id, comment_user_id, social_feed_id, story_id, story_title, comments):
         params = {
-            'user_id': user_id,
-            'with_user_id': comment_user_id,
+            'user_id': comment_user_id,
+            'with_user_id': liking_user_id,
             'category': 'comment_like',
-            'feed_id': story_feed_id,
+            'feed_id': social_feed_id,
             'content_id': story_id,
             'title': story_title,
             'content': comments,

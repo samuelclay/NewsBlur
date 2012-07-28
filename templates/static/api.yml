@@ -342,7 +342,7 @@
           optional: true
           example: "['twitter', 'facebook']"
         - key: format
-          desc: "Return a JSON or HTML template"
+          desc: "Return JSON or a HTML template"
           optional: true
           default: "json"
           example: "html"
@@ -363,7 +363,7 @@
           required: true
           example: "http://blog.newsblur.com/post/1"
         - key: format
-          desc: "Return a JSON or HTML template"
+          desc: "Return JSON or a HTML template"
           optional: true
           default: "json"
           example: "html"
@@ -537,7 +537,7 @@
           optional: true
           example: "5000...0042"
         - key: format
-          desc: "Return a JSON or HTML template"
+          desc: "Return JSON or a HTML template"
           optional: true
           default: "json"
           example: "html"
@@ -561,7 +561,7 @@
           required: true
           example: "64"
         - key: format
-          desc: "Return a JSON or HTML template"
+          desc: "Return JSON or a HTML template"
           optional: true
           default: "json"
           example: "html"
@@ -584,7 +584,7 @@
           required: true
           example: "64"
         - key: format
-          desc: "Return a JSON or HTML template"
+          desc: "Return JSON or a HTML template"
           optional: true
           default: "json"
           example: "html"

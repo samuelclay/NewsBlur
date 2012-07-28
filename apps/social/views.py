@@ -435,9 +435,9 @@ def save_comment_reply(request):
     story_id = request.POST['story_id']
     comment_user_id = request.POST['comment_user_id']
     reply_comments = request.POST.get('reply_comments')
-    original_message = request.POST.get('original_message')
     reply_id = request.POST.get('reply_id')
     format = request.REQUEST.get('format', 'json')
+    original_message = None
     
     if not reply_comments:
         return json.json_response(request, {'code': -1, 'message': 'Reply comments cannot be empty.'})
@@ -484,14 +484,16 @@ def save_comment_reply(request):
                                 reply_content=reply_comments,
                                 original_message=original_message,
                                 story_feed_id=feed_id,
-                                story_id=story_id)
+                                story_id=story_id,
+                                story_title=shared_story.story_title)
     if comment['user_id'] != request.user.pk:
         MInteraction.new_comment_reply(user_id=comment['user_id'], 
                                        reply_user_id=request.user.pk, 
                                        reply_content=reply_comments,
                                        original_message=original_message,
                                        social_feed_id=comment_user_id,
-                                       story_id=story_id)
+                                       story_id=story_id,
+                                       story_title=shared_story.story_title)
     
     for user_id in set(reply_user_ids).difference([comment['user_id']]):
         if request.user.pk != user_id:
@@ -500,7 +502,8 @@ def save_comment_reply(request):
                                          reply_content=reply_comments,
                                          original_message=original_message,
                                          social_feed_id=comment_user_id,
-                                         story_id=story_id)
+                                         story_id=story_id,
+                                         story_title=shared_story.story_title)
 
     EmailCommentReplies.apply_async(kwargs=dict(shared_story_id=shared_story.id,
                                                 reply_id=reply.reply_id), countdown=60)
@@ -744,15 +747,15 @@ def like_comment(request):
         shared_story.comments[:30],
     ))
 
-    MActivity.new_comment_like(user_id=request.user.pk,
+    MActivity.new_comment_like(liking_user_id=request.user.pk,
                                comment_user_id=comment['user_id'],
-                               story_feed_id=feed_id,
+                               social_feed_id=comment['user_id'],
                                story_id=story_id,
                                story_title=shared_story.story_title,
                                comments=shared_story.comments)
-    MInteraction.new_comment_like(user_id=request.user.pk, 
-                                  comment_user_id=comment_user_id,
-                                  story_feed_id=feed_id,
+    MInteraction.new_comment_like(liking_user_id=request.user.pk, 
+                                  comment_user_id=comment['user_id'],
+                                  social_feed_id=comment['user_id'],
                                   story_id=story_id,
                                   story_title=shared_story.story_title,
                                   comments=shared_story.comments)
