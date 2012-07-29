@@ -58,7 +58,8 @@
     self.activityLabel.frame = labelRect;
 }
 
-- (int)setActivity:(NSDictionary *)activity withUsername:(NSString *)username withWidth:(int)width {
+- (int)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile withWidth:(int)width {
+    
     // must set the height again for dynamic height in heightForRowAtIndexPath in 
     CGRect activityLabelRect = self.activityLabel.bounds;
     activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
@@ -71,12 +72,13 @@
     NSString *title = [self stripFormatting:[NSString stringWithFormat:@"%@", [activity objectForKey:@"title"]]];
     NSString *time = [[NSString stringWithFormat:@"%@ ago", [activity objectForKey:@"time_since"]] uppercaseString];
     NSString *withUserUsername = @"";
+    NSString *username = [NSString stringWithFormat:@"%@", [userProfile objectForKey:@"username"]];
+        
     NSString* txt;
     
     if ([category isEqualToString:@"follow"] ||
         [category isEqualToString:@"comment_reply"] ||
-        [category isEqualToString:@"comment_like"] ||
-        [category isEqualToString:@"sharedstory"]) {
+        [category isEqualToString:@"comment_like"]) {
         // this is for the rare instance when the with_user doesn't return anything
         if ([[activity objectForKey:@"with_user"] class] == [NSNull class]) {
             self.faviconView.frame = CGRectZero;
@@ -86,6 +88,10 @@
 
         UIImage *placeholder = [UIImage imageNamed:@"user"];
         [self.faviconView setImageWithURL:[NSURL URLWithString:[[activity objectForKey:@"with_user"] objectForKey:@"photo_url"]]
+                         placeholderImage:placeholder];
+    } else if ([category isEqualToString:@"sharedstory"]) {
+        UIImage *placeholder = [UIImage imageNamed:@"user"];
+        [self.faviconView setImageWithURL:[NSURL URLWithString:[userProfile objectForKey:@"photo_url"]]
                          placeholderImage:placeholder];
     } else {
         UIImage *placeholder = [UIImage imageNamed:@"world"];
@@ -98,6 +104,7 @@
         self.faviconView.frame = CGRectMake(leftMargin+16, topMargin, 16, 16);
     }
     
+    NSLog(@"category is %@", category);
     if ([category isEqualToString:@"follow"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
         txt = [NSString stringWithFormat:@"%@ followed %@", username, withUserUsername];        
@@ -107,7 +114,7 @@
     } else if ([category isEqualToString:@"comment_like"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
         txt = [NSString stringWithFormat:@"%@ favorited %@'s comment on %@:\n%@", username, withUserUsername, title, comment];
-    } else if ([category isEqualToString:@"sharedstory"]) {
+    } else if ([category isEqualToString:@"sharedstory"]) {        
         if ([content isEqualToString:@""] || content == nil) {
             txt = [NSString stringWithFormat:@"%@ shared %@.", username, title]; 
         } else {

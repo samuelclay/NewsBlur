@@ -191,10 +191,11 @@
 - (void)showFindingStoryHUD;
 - (void)hideFindingStoryHUD;
 
+
 - (void)showAddSite;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
-- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social;
+- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user;
 - (void)loadRiverFeedDetailView;
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;

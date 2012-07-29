@@ -55,7 +55,7 @@
 - (void)toggleLikeComment:(BOOL)likeComment;
 - (void)showStory;
 - (void)scrolltoBottom;
-- (void)showOriginalSubview:(id)sender;
+- (IBAction)showOriginalSubview:(id)sender;
 - (IBAction)doNextUnreadStory;
 - (IBAction)doNextStory;
 - (IBAction)doPreviousStory;

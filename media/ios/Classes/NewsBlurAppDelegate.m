@@ -23,6 +23,7 @@
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
 #import "NBContainerViewController.h"
+#import "AFJSONRequestOperation.h"
 
 #import "MBProgressHUD.h"
 #import "Utilities.h"
@@ -386,16 +387,30 @@
     }
 }
 
-- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social {
-    
-    NSDictionary *feed;
+- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user {
+    NSDictionary *feed = nil;
     
     if (social) {
         feed = [self.dictSocialFeeds objectForKey:feedId];
         [self setIsSocialView:YES];
         [self setInFindingStoryMode:YES];
+        
+        if (feed == nil) {
+//            NSLog(@"user is %@", user);
+//            NSString *newFeedId = [feedId stringByReplacingOccurrencesOfString:@"social:" withString:@""];
+//            feed = [NSDictionary dictionaryWithObjectsAndKeys:
+//                    @"TESTER", @"feed_title",
+//                    feedId, @"id",
+//                    newFeedId, @"user_id", 
+//                    nil];
+            feed = user;
+            
+        }
     } else {
         feed = [self.dictFeeds objectForKey:feedId];
+        if (feed == nil) {
+            NSLog(@"NO FEED FOUND!");
+        }
         [self setIsSocialView:NO];
         [self setInFindingStoryMode:NO];
     }

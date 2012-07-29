@@ -12,13 +12,13 @@
 #import "UserProfileViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "ASIHTTPRequest.h"
+#import "ActivityCell.h"
 
 @implementation ActivityModule
 
 @synthesize appDelegate;
 @synthesize activitiesTable;
 @synthesize activitiesArray;
-@synthesize activitiesUsername;
 @synthesize popoverController;
 @synthesize pageFetching;
 @synthesize pageFinished;
@@ -46,10 +46,9 @@
     [self addSubview:self.activitiesTable];   
 }
     
-- (void)refreshWithActivities:(NSArray *)activities withUsername:(NSString *)username {
+- (void)refreshWithActivities:(NSArray *)activities {
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];   
     self.activitiesArray = activities;
-    self.activitiesUsername = username;
 
     [self.activitiesTable reloadData];
     
@@ -107,11 +106,6 @@
                              options:kNilOptions 
                              error:&error];
     
-    self.activitiesUsername = [results objectForKey:@"username"];
-    if (!self.activitiesUsername) {
-        self.activitiesUsername = [[results objectForKey:@"user_profile"] objectForKey:@"username"];
-    }
-    
     // check for last page
     if (![[results objectForKey:@"has_next_page"] intValue]) {
         self.pageFinished = YES;
@@ -139,7 +133,7 @@
         appDelegate.userActivitiesArray = [appDelegate.userActivitiesArray arrayByAddingObjectsFromArray:newActivities];
     }
     
-    [self refreshWithActivities:appDelegate.userActivitiesArray withUsername:self.activitiesUsername];
+    [self refreshWithActivities:appDelegate.userActivitiesArray];
 } 
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
@@ -168,7 +162,14 @@
     }
     
     ActivityCell *activityCell = [[ActivityCell alloc] init];
-    int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] withUsername:self.activitiesUsername  withWidth:self.frame.size.width] + 30;
+    
+    NSMutableDictionary *userProfile = [appDelegate.dictUserProfile  mutableCopy];
+    [userProfile setValue:@"You" forKey:@"username"];
+    
+    int height = [activityCell setActivity:[self.activitiesArray 
+                                            objectAtIndex:(indexPath.row)] 
+                           withUserProfile:userProfile
+                                 withWidth:self.frame.size.width] + 30;
     
     return height;
 
@@ -188,10 +189,14 @@
         return [self makeLoadingCell];
     } else {
 
+        NSMutableDictionary *userProfile = [appDelegate.dictUserProfile  mutableCopy];
+        [userProfile setValue:@"You" forKey:@"username"];
+        
         // update the cell information
-        [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
-                         withUsername:self.activitiesUsername
-                            withWidth:self.frame.size.width];
+        [cell setActivity:[self.activitiesArray 
+                           objectAtIndex:(indexPath.row)] 
+          withUserProfile:userProfile
+                withWidth:self.frame.size.width];
     }
     return cell;
 }
@@ -213,21 +218,21 @@
             appDelegate.activeUserProfileName = username;
             
             // pass cell to the show UserProfile
-            ActivityCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+            ActivityCell *cell = (ActivityCell *)[tableView cellForRowAtIndexPath:indexPath];
             [appDelegate showUserProfileModal:cell];
         } else if ([category isEqualToString:@"comment_reply"] ||
                    [category isEqualToString:@"comment_like"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"]];
         } else if ([category isEqualToString:@"sharedstory"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"]];
         } else if ([category isEqualToString:@"feedsub"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"feed_id"]];
             NSString *contentIdStr = nil;
-            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO];
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO withUser:[activity objectForKey:@"with_user"]];
         }
         
         // have the selected cell deselect

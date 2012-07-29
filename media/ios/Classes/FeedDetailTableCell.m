@@ -55,7 +55,7 @@ static UIFont *indicatorFont = nil;
     // set the background color
     UIColor *backgroundColor;
     if (self.selected || self.highlighted) {
-        backgroundColor = [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0];
+        backgroundColor = UIColorFromRGB(0xd2e6fd);
         
         // gradient start
 //        CGRect fullRect = self.bounds;
@@ -85,7 +85,7 @@ static UIFont *indicatorFont = nil;
         
     }
     if (self.selected || self.highlighted) {
-        textColor = UIColorFromRGB(0xffffff); //0x686868 
+        textColor = UIColorFromRGB(0x686868); //0x686868 
     }
     [textColor set];
     
@@ -105,7 +105,7 @@ static UIFont *indicatorFont = nil;
             font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
         }
         if (self.selected || self.highlighted) {
-            textColor = UIColorFromRGB(0xffffff);
+            textColor = UIColorFromRGB(0x686868);
         }
         [textColor set];
     }
@@ -125,7 +125,7 @@ static UIFont *indicatorFont = nil;
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
     if (self.selected || self.highlighted) {
-        textColor = UIColorFromRGB(0xffffff);
+        textColor = UIColorFromRGB(0x686868);
     }
     [textColor set];
 
@@ -146,7 +146,7 @@ static UIFont *indicatorFont = nil;
     }
     
     if (self.selected || self.highlighted) {
-        textColor = UIColorFromRGB(0xffffff);
+        textColor = UIColorFromRGB(0x686868);
     }
     [textColor set];
     
@@ -163,13 +163,13 @@ static UIFont *indicatorFont = nil;
         CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
         
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, 0);
+        CGContextMoveToPoint(context, 0, 0.5f);
         CGContextAddLineToPoint(context, self.bounds.size.width, 0);
         CGContextStrokePath(context);
         
         // bottom border    
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, self.bounds.size.height);
+        CGContextMoveToPoint(context, 0, self.bounds.size.height - 0.5f);
         CGContextAddLineToPoint(context, self.bounds.size.width, self.bounds.size.height);
         CGContextStrokePath(context);
     } else {

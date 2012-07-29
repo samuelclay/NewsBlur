@@ -13,7 +13,7 @@
 @class ProfileBadge;
 
 @interface UserProfileViewController : UIViewController 
- <UITableViewDataSource, UITableViewDelegate, ASIHTTPRequestDelegate> {
+<UITableViewDataSource, UITableViewDelegate, ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     UILabel *followingCount;
@@ -22,6 +22,7 @@
     UITableView *profileTable;
     NSArray *activitiesArray;
     NSString *activitiesUsername;
+    NSDictionary *userProfile;
 }
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
@@ -29,6 +30,7 @@
 @property (nonatomic) UITableView *profileTable;
 @property (nonatomic) NSArray *activitiesArray;
 @property (nonatomic) NSString *activitiesUsername;
+@property (nonatomic) NSDictionary *userProfile;
 
 - (void)getUserProfile;
 - (void)requestFinished:(ASIHTTPRequest *)request;

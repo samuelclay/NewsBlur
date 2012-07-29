@@ -79,12 +79,7 @@
 
     // adding drag property for toolbars
     
-    UIBarButtonItem *originalButton = [[UIBarButtonItem alloc] 
-                                       initWithTitle:@"Original" 
-                                       style:UIBarButtonItemStyleBordered 
-                                       target:self 
-                                       action:@selector(showOriginalSubview:)
-                                       ];
+
     
     UIBarButtonItem *fontSettings = [[UIBarButtonItem alloc] 
                                            initWithTitle:@"Aa" 
@@ -98,7 +93,7 @@
     
     self.buttonBack = backButton;
     
-    self.originalStoryButton = originalButton;
+
     self.fontSettingsButton = fontSettings;
 
     self.loadingIndicator = [[UIActivityIndicatorView alloc] 
@@ -117,7 +112,7 @@
         UIBarButtonItem *back = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
         self.navigationItem.backBarButtonItem = back; 
         
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:originalButton, fontSettingsButton, nil];
+        self.navigationItem.rightBarButtonItem = fontSettingsButton;
     } else {
         self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
         self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
@@ -1239,7 +1234,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
 
-- (void)showOriginalSubview:(id)sender {
+- (IBAction)showOriginalSubview:(id)sender {
     NSURL *url = [NSURL URLWithString:[appDelegate.activeStory 
                                        objectForKey:@"story_permalink"]];
     [appDelegate showOriginalStory:url];

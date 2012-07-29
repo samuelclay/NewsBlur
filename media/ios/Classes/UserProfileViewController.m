@@ -22,6 +22,8 @@
 @synthesize profileTable;
 @synthesize activitiesArray;
 @synthesize activitiesUsername;
+@synthesize userProfile;
+
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -128,14 +130,10 @@
 
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
-    [self.profileBadge refreshWithProfile:[results objectForKey:@"user_profile"]];
-    
+    self.userProfile = [results objectForKey:@"user_profile"];  
     self.activitiesArray = [results objectForKey:@"activities"];
-    self.activitiesUsername = [results objectForKey:@"username"];
-    
-    if (!self.activitiesUsername) {
-        self.activitiesUsername = [[results objectForKey:@"user_profile"] objectForKey:@"username"];
-    }
+
+    [self.profileBadge refreshWithProfile:self.userProfile];  
     
     [self.profileTable reloadData];
     [self.view addSubview:self.profileTable];
@@ -177,8 +175,8 @@
     } else {
         SmallActivityCell *activityCell = [[SmallActivityCell alloc] init];
         int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
-                                      withUsername:self.activitiesUsername
-                                         withWidth:self.view.frame.size.width - 20] + 20;
+                               withUserProfile:self.userProfile
+                                     withWidth:self.view.frame.size.width - 20] + 20;
         return height;
     }
 }
@@ -191,19 +189,12 @@
         UITableViewCell *cell = [tableView 
                                  dequeueReusableCellWithIdentifier:CellIdentifier];
         
-        
         if (cell == nil) {
             cell = [[UITableViewCell alloc] 
                     initWithStyle:UITableViewCellStyleDefault 
                     reuseIdentifier:CellIdentifier];
         } else {
             [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
-        }
-        
-        // check follow button status
-        NSString *currentUserName = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"username"]];    
-        if ([currentUserName isEqualToString:self.activitiesUsername]) {
-            self.activitiesUsername = @"You";
         }
         
         [cell addSubview:self.profileBadge];
@@ -221,7 +212,7 @@
         } 
         
         [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
-             withUsername:self.activitiesUsername
+          withUserProfile:self.userProfile
                 withWidth:self.view.frame.size.width];
         
             return cell;
@@ -254,15 +245,15 @@
                        [category isEqualToString:@"comment_like"]) {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
                 NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
+                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"]];
             } else if ([category isEqualToString:@"sharedstory"]) {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
                 NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES];
+                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"]];
             } else if ([category isEqualToString:@"feedsub"]) {
                 NSString *feedIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"feed_id"]];
                 NSString *contentIdStr = nil;
-                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO];
+                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO withUser:[activity objectForKey:@"with_user"]];
             }
         }
         

@@ -17,7 +17,7 @@
 @property (nonatomic, strong) OHAttributedLabel *activityLabel;
 @property (nonatomic, strong) UIImageView *faviconView;
 
-- (int)setActivity:(NSDictionary *)activity withUsername:(NSString *)username withWidth:(int)width;
+- (int)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile withWidth:(int)width;
 - (NSString *)stripFormatting:(NSString *)str;
 
 @end

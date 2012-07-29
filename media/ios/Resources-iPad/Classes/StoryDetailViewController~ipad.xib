@@ -49,7 +49,7 @@
 						<string key="NSFrame">{{315, 455}, {139, 21}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="155973878"/>
+						<reference key="NSNextKeyView" ref="88679899"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -4487,6 +4487,32 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<int key="IBUIDataDetectorTypes">1</int>
 						<bool key="IBUIDetectsPhoneNumbers">YES</bool>
 					</object>
+					<object class="IBUIToolbar" id="88679899">
+						<reference key="NSNextResponder" ref="191373211"/>
+						<int key="NSvFlags">266</int>
+						<string key="NSFrame">{{0, 936}, {768, 44}}</string>
+						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="155973878"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIOpaque">NO</bool>
+						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
+						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+						<object class="NSMutableArray" key="IBUIItems">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+						</object>
+					</object>
+					<object class="IBUIView" id="125226722">
+						<reference key="NSNextResponder" ref="191373211"/>
+						<int key="NSvFlags">269</int>
+						<string key="NSFrame">{{335, 920}, {100, 77}}</string>
+						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIOpaque">NO</bool>
+						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+					</object>
 					<object class="IBUIToolbar" id="155973878">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">266</int>
@@ -4498,7 +4524,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="NSFrame">{{334, 17}, {100, 11}}</string>
 								<reference key="NSSuperview" ref="155973878"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="88679899"/>
+								<reference key="NSNextKeyView" ref="125226722"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<float key="IBUIProgress">0.5</float>
@@ -4517,7 +4543,15 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBUIBarButtonItem" id="542821156">
 								<string key="IBUITitle">Previous</string>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<float key="IBUIWidth">86</float>
+								<int key="IBUIStyle">1</int>
+								<reference key="IBUIToolbar" ref="155973878"/>
+							</object>
+							<object class="IBUIBarButtonItem" id="1067612777">
+								<object class="NSCustomResource" key="IBUIImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">06-arrow-south.png</string>
+								</object>
+								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="155973878"/>
 							</object>
@@ -4527,6 +4561,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<int key="IBUISystemItemIdentifier">5</int>
 							</object>
 							<object class="IBUIBarButtonItem" id="812131495">
+								<string key="IBUITitle">Progress View</string>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 								<float key="IBUIWidth">100</float>
 								<reference key="IBUICustomView" ref="484194819"/>
@@ -4552,17 +4587,14 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBUIBarButtonItem" id="672699755">
 								<object class="NSCustomResource" key="IBUIImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">06-arrow-south.png</string>
+									<string key="NSResourceName">safari.png</string>
 								</object>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<float key="IBUIWidth">38</float>
-								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="155973878"/>
 							</object>
 							<object class="IBUIBarButtonItem" id="1065495688">
-								<string key="IBUITitle">Next unread</string>
+								<string key="IBUITitle">Next Unread</string>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<float key="IBUIWidth">86</float>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="155973878"/>
 							</object>
@@ -4571,32 +4603,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<int key="NSColorSpace">2</int>
 							<bytes key="NSRGB">MC4yNDcwNTg4Mzg2IDAuNDM5MjE1NzE5NyAwLjUzNzI1NDkyOTUAA</bytes>
 						</object>
-					</object>
-					<object class="IBUIToolbar" id="88679899">
-						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">266</int>
-						<string key="NSFrame">{{0, 936}, {768, 44}}</string>
-						<reference key="NSSuperview" ref="191373211"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="125226722"/>
-						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<bool key="IBUIOpaque">NO</bool>
-						<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
-						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-						<object class="NSMutableArray" key="IBUIItems">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-						</object>
-					</object>
-					<object class="IBUIView" id="125226722">
-						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">269</int>
-						<string key="NSFrame">{{335, 920}, {100, 77}}</string>
-						<reference key="NSSuperview" ref="191373211"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
-						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<bool key="IBUIOpaque">NO</bool>
-						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 					</object>
 				</object>
 				<string key="NSFrameSize">{768, 980}</string>
@@ -4633,14 +4639,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="destination" ref="260979722"/>
 					</object>
 					<int key="connectionID">81</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">buttonNextStory</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="672699755"/>
-					</object>
-					<int key="connectionID">79</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -4692,6 +4690,22 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">buttonNextStory</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="1067612777"/>
+					</object>
+					<int key="connectionID">107</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">originalStoryButton</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="672699755"/>
+					</object>
+					<int key="connectionID">109</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="506862915"/>
 						<reference key="destination" ref="372490531"/>
@@ -4716,11 +4730,19 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doNextStory</string>
+						<string key="label">showOriginalSubview:</string>
 						<reference key="source" ref="672699755"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
-					<int key="connectionID">77</int>
+					<int key="connectionID">110</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">doNextStory</string>
+						<reference key="source" ref="1067612777"/>
+						<reference key="destination" ref="372490531"/>
+					</object>
+					<int key="connectionID">111</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -4741,8 +4763,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="155973878"/>
 							<reference ref="506862915"/>
-							<reference ref="88679899"/>
 							<reference ref="409639211"/>
+							<reference ref="88679899"/>
 							<reference ref="125226722"/>
 						</object>
 						<reference key="parent" ref="0"/>
@@ -4771,6 +4793,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<reference ref="1036122720"/>
 							<reference ref="284060761"/>
 							<reference ref="812131495"/>
+							<reference ref="1067612777"/>
 						</object>
 						<reference key="parent" ref="191373211"/>
 					</object>
@@ -4846,6 +4869,11 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="object" ref="125226722"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">106</int>
+						<reference key="object" ref="1067612777"/>
+						<reference key="parent" ref="155973878"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -4859,6 +4887,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<string>1.IBLastUsedUIStatusBarStylesToTargetRuntimesMap</string>
 					<string>1.IBPluginDependency</string>
 					<string>100.IBPluginDependency</string>
+					<string>106.IBPluginDependency</string>
 					<string>39.IBPluginDependency</string>
 					<string>42.IBPluginDependency</string>
 					<string>43.IBPluginDependency</string>
@@ -4898,6 +4927,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="unlocalizedProperties">
@@ -4912,7 +4942,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">105</int>
+			<int key="maxID">111</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -6493,7 +6523,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>feedDetailViewController</string>
 							<string>feedsMenuViewController</string>
 							<string>feedsViewController</string>
-							<string>findFriendsNavigationController</string>
 							<string>firstTimeUserAddFriendsViewController</string>
 							<string>firstTimeUserAddNewsBlurViewController</string>
 							<string>firstTimeUserAddSitesViewController</string>
@@ -6520,7 +6549,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>FeedDetailViewController</string>
 							<string>FeedsMenuViewController</string>
 							<string>NewsBlurViewController</string>
-							<string>UINavigationController</string>
 							<string>FirstTimeUserAddFriendsViewController</string>
 							<string>FirstTimeUserAddNewsBlurViewController</string>
 							<string>FirstTimeUserAddSitesViewController</string>
@@ -6550,7 +6578,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>feedDetailViewController</string>
 							<string>feedsMenuViewController</string>
 							<string>feedsViewController</string>
-							<string>findFriendsNavigationController</string>
 							<string>firstTimeUserAddFriendsViewController</string>
 							<string>firstTimeUserAddNewsBlurViewController</string>
 							<string>firstTimeUserAddSitesViewController</string>
@@ -6594,10 +6621,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">feedsViewController</string>
 								<string key="candidateClassName">NewsBlurViewController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">findFriendsNavigationController</string>
-								<string key="candidateClassName">UINavigationController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">firstTimeUserAddFriendsViewController</string>
@@ -7061,11 +7084,13 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>doNextStory</string>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>showOriginalSubview:</string>
 							<string>tapProgressBar:</string>
 							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -7080,6 +7105,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>doNextStory</string>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>showOriginalSubview:</string>
 							<string>tapProgressBar:</string>
 							<string>toggleFontSize:</string>
 						</object>
@@ -7095,6 +7121,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">doPreviousStory</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">showOriginalSubview:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
@@ -7258,8 +7288,17 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="NS.key.0">06-arrow-south.png</string>
-			<string key="NS.object.0">{10, 12}</string>
+			<bool key="EncodedWithXMLCoder">YES</bool>
+			<object class="NSArray" key="dict.sortedKeys">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+				<string>06-arrow-south.png</string>
+				<string>safari.png</string>
+			</object>
+			<object class="NSArray" key="dict.values">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+				<string>{10, 12}</string>
+				<string>{24, 24}</string>
+			</object>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>
