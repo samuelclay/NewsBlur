@@ -20,7 +20,12 @@ NEWSBLUR.Models.User = Backbone.Model.extend({
     },
     
     blurblog_url: function() {
-        return 'http://' + Inflector.sluggify(this.get('username')) + window.location.host.replace('www.', '');
+        return [
+            'http://',
+            Inflector.sluggify(this.get('username')),
+            '.',
+            window.location.host.replace('www.', '')
+        ].join('');
     }
     
 });
