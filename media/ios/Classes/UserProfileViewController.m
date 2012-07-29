@@ -74,12 +74,13 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         frame = self.parentViewController.view.frame;
+        // account for UIPopover Navigation height and readjust
+        frame.size.height = frame.size.height - 37;
+        self.view.frame = frame;
+        self.profileTable.frame = frame;
     }
     
-    // account for UIPopover Navigation height and readjust
-    frame.size.height = frame.size.height - 37;
-    self.view.frame = frame;
-    self.profileTable.frame = frame;
+
 
 }
 

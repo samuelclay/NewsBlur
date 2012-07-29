@@ -628,6 +628,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row < [appDelegate.activeFeedStoryLocations count]) {
+        // mark the cell as read
         FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];        
         int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
         [self loadStory:cell atRow:location]; 

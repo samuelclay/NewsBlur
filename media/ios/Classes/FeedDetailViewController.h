@@ -70,8 +70,6 @@
 - (void)changeActiveFeedDetailRow;
 - (void)instafetchFeed;
 - (void)markCurrentStoryAsRead;
-- (void)loadStory:(FeedDetailTableCell *)cell atRow:(int)row;
-
 - (void)loadFaviconsFromActiveFeed;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;

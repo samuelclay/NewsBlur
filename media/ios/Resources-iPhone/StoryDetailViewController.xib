@@ -4458,9 +4458,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBUIProgressView" id="484194819">
 								<reference key="NSNextResponder" ref="155973878"/>
 								<int key="NSvFlags">290</int>
-								<string key="NSFrame">{{112, 17}, {56, 11}}</string>
+								<string key="NSFrame">{{152, 17}, {56, 11}}</string>
 								<reference key="NSSuperview" ref="155973878"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<float key="IBUIProgress">0.5</float>
@@ -4483,6 +4484,15 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="IBUITitle">←</string>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<float key="IBUIWidth">86</float>
+								<int key="IBUIStyle">1</int>
+								<reference key="IBUIToolbar" ref="155973878"/>
+							</object>
+							<object class="IBUIBarButtonItem" id="157083779">
+								<object class="NSCustomResource" key="IBUIImage">
+									<string key="NSClassName">NSImage</string>
+									<string key="NSResourceName">06-arrow-south.png</string>
+								</object>
+								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="155973878"/>
 							</object>
@@ -4512,15 +4522,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<bool key="IBUIEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<float key="IBUIWidth">20</float>
-								<reference key="IBUIToolbar" ref="155973878"/>
-							</object>
-							<object class="IBUIBarButtonItem" id="157083779">
-								<object class="NSCustomResource" key="IBUIImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">06-arrow-south.png</string>
-								</object>
-								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="155973878"/>
 							</object>
 							<object class="IBUIBarButtonItem" id="1065495688">
@@ -6382,7 +6383,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>feedDetailViewController</string>
 							<string>feedsMenuViewController</string>
 							<string>feedsViewController</string>
-							<string>findFriendsNavigationController</string>
 							<string>firstTimeUserAddFriendsViewController</string>
 							<string>firstTimeUserAddNewsBlurViewController</string>
 							<string>firstTimeUserAddSitesViewController</string>
@@ -6409,7 +6409,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>FeedDetailViewController</string>
 							<string>FeedsMenuViewController</string>
 							<string>NewsBlurViewController</string>
-							<string>UINavigationController</string>
 							<string>FirstTimeUserAddFriendsViewController</string>
 							<string>FirstTimeUserAddNewsBlurViewController</string>
 							<string>FirstTimeUserAddSitesViewController</string>
@@ -6439,7 +6438,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>feedDetailViewController</string>
 							<string>feedsMenuViewController</string>
 							<string>feedsViewController</string>
-							<string>findFriendsNavigationController</string>
 							<string>firstTimeUserAddFriendsViewController</string>
 							<string>firstTimeUserAddNewsBlurViewController</string>
 							<string>firstTimeUserAddSitesViewController</string>
@@ -6483,10 +6481,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">feedsViewController</string>
 								<string key="candidateClassName">NewsBlurViewController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">findFriendsNavigationController</string>
-								<string key="candidateClassName">UINavigationController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">firstTimeUserAddFriendsViewController</string>
@@ -6950,11 +6944,13 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>doNextStory</string>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>showOriginalSubview:</string>
 							<string>tapProgressBar:</string>
 							<string>toggleFontSize:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -6969,6 +6965,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>doNextStory</string>
 							<string>doNextUnreadStory</string>
 							<string>doPreviousStory</string>
+							<string>showOriginalSubview:</string>
 							<string>tapProgressBar:</string>
 							<string>toggleFontSize:</string>
 						</object>
@@ -6984,6 +6981,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">doPreviousStory</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">showOriginalSubview:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
@@ -7012,6 +7013,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>innerView</string>
 							<string>originalStoryButton</string>
 							<string>progressView</string>
+							<string>progressViewContainer</string>
 							<string>toolbar</string>
 							<string>webView</string>
 						</object>
@@ -7029,6 +7031,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>UIView</string>
 							<string>UIBarButtonItem</string>
 							<string>UIProgressView</string>
+							<string>UIView</string>
 							<string>UIToolbar</string>
 							<string>UIWebView</string>
 						</object>
@@ -7049,6 +7052,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<string>innerView</string>
 							<string>originalStoryButton</string>
 							<string>progressView</string>
+							<string>progressViewContainer</string>
 							<string>toolbar</string>
 							<string>webView</string>
 						</object>
@@ -7101,6 +7105,10 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">progressView</string>
 								<string key="candidateClassName">UIProgressView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">progressViewContainer</string>
+								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">toolbar</string>

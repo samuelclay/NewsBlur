@@ -794,7 +794,7 @@
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     
     NSDictionary *feed;
-    id feedId;;
+    id feedId;
     NSString *feedIdStr;
     NSMutableArray *otherFriendFeeds = [[self.activeStory objectForKey:@"shared_by_friends"] mutableCopy];
     
@@ -814,9 +814,10 @@
     }
     
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
-//    if (self.activeFeed != feed) {
-//        self.activeFeed = feed;
-//    }
+    if (self.activeFeed != feed) {
+        NSLog(@"activeFeed; %@, feed: %@", activeFeed, feed);
+        self.activeFeed = feed;
+    }
     
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryRead:story feed:feed];
@@ -848,7 +849,6 @@
         [stories addObject:[story objectForKey:@"id"]];
         [self markStoryRead:story feed:feed];
     }   
-    NSLog(@"feedsStories: %@", feedsStories);
     return feedsStories;
 }
 

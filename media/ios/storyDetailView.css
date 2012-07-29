@@ -330,6 +330,12 @@ a.NB-show-profile {
     margin-top: -2px;
 }
 
+.NB-iphone .NB-button {
+    clear: both;
+    float: left;
+    padding: 0px 10px 4px 0px;
+}
+
 .NB-button.NB-share-button {
     float: left;
     padding: 0px 20px 20px 0px;

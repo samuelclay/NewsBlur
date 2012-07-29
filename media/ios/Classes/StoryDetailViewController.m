@@ -171,8 +171,7 @@
 - (void)initStory {
     id storyId = [appDelegate.activeStory objectForKey:@"id"];
     [appDelegate pushReadStory:storyId];
-    [self showStory];
-    [self markStoryAsRead];   
+    [self showStory];  
     [self setNextPreviousButtons]; 
     self.webView.scalesPageToFit = YES;
     [self.loadingIndicator stopAnimating];    
@@ -358,39 +357,80 @@
     } 
     
     NSString *commentContent = [self textToHtml:[commentDict objectForKey:@"comments"]];
-        
-    NSString *comment = [NSString stringWithFormat:@
-                        "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
-                        "<div class=\"%@\"><a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a></div>"
-                        "<div class=\"NB-story-comment-author-container\">"
-                        "   %@"
-                        "    <div class=\"NB-story-comment-username\">%@</div>"
-                        "    <div class=\"NB-story-comment-date\">%@ ago</div>"
-                        "    <div class=\"NB-story-comment-reply-button NB-button\">"
-                        "        <div class=\"NB-story-comment-reply-button-wrapper\">"
-                        "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">Reply</a>"
-                        "        </div>"
-                        "    </div>"
-                        "    %@" //User Edit Button>"
-                        "    %@" //User Like Button>"
-                        "</div>"
-                        "<div class=\"NB-story-comment-content\">%@</div>"
-                        "%@"
-                        "</div>",
-                        [commentDict objectForKey:@"user_id"],
-                        userAvatarClass,
-                        [commentDict objectForKey:@"user_id"],
-                        [user objectForKey:@"photo_url"],
-                        userReshareString,
-                        [user objectForKey:@"username"],
-                        [commentDict objectForKey:@"shared_date"],
-                        [commentDict objectForKey:@"user_id"],
-                        [user objectForKey:@"username"],
-                        userEditButton,
-                        userLikeButton,
-                        commentContent,
-                        [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
+    
+    NSString *comment;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        comment = [NSString stringWithFormat:@
+                    "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
+                    "<div class=\"%@\"><a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a></div>"
+                    "<div class=\"NB-story-comment-author-container\">"
+                    "   %@"
+                    "    <div class=\"NB-story-comment-username\">%@</div>"
+                    "    <div class=\"NB-story-comment-date\">%@ ago</div>"
+                    "    <div class=\"NB-story-comment-reply-button NB-button\">"
+                    "        <div class=\"NB-story-comment-reply-button-wrapper\">"
+                    "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">Reply</a>"
+                    "        </div>"
+                    "    </div>"
+                    "    %@" //User Edit Button>"
+                    "    %@" //User Like Button>"
+                    "</div>"
+                    "<div class=\"NB-story-comment-content\">%@</div>"
+                    "%@"
+                    "</div>",
+                    [commentDict objectForKey:@"user_id"],
+                    userAvatarClass,
+                    [commentDict objectForKey:@"user_id"],
+                    [user objectForKey:@"photo_url"],
+                    userReshareString,
+                    [user objectForKey:@"username"],
+                    [commentDict objectForKey:@"shared_date"],
+                    [commentDict objectForKey:@"user_id"],
+                    [user objectForKey:@"username"],
+                    userEditButton,
+                    userLikeButton,
+                    commentContent,
+                    [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
+    } else {
+        comment = [NSString stringWithFormat:@
+                   "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
+                   "<div class=\"%@\"><a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a></div>"
+                   "<div class=\"NB-story-comment-author-container\">"
+                   "   %@"
+                   "    <div class=\"NB-story-comment-username\">%@</div>"
+                   "    <div class=\"NB-story-comment-date\">%@ ago</div>"
+                   "</div>"
+                   "<div class=\"NB-story-comment-content\">%@"
 
+                   "<div style='clear:both'>"
+                   "    <div class=\"NB-story-comment-reply-button NB-button\">"
+                   "        <div class=\"NB-story-comment-reply-button-wrapper\">"
+                   "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">Reply</a>"
+                   "        </div>"
+                   "    </div>"
+                   "    %@" //User Edit Button>"
+                   "    %@" //User Like Button>"
+                   "</div>"
+                   "</div>"
+                   "%@"
+                   "</div>",
+                   [commentDict objectForKey:@"user_id"],
+                   userAvatarClass,
+                   [commentDict objectForKey:@"user_id"],
+                   [user objectForKey:@"photo_url"],
+                   userReshareString,
+                   [user objectForKey:@"username"],
+                   [commentDict objectForKey:@"shared_date"],
+                   [commentDict objectForKey:@"user_id"],
+                   [user objectForKey:@"username"],
+                   commentContent,
+                   userEditButton,
+                   userLikeButton,
+                   [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
+
+    }
+    
     return comment;
 }
 
@@ -454,6 +494,28 @@
 }
 
 - (void)showStory {
+    
+    // when we show story, we mark it as read
+    [self markStoryAsRead]; 
+    
+    // set the current row as read
+//    NSMutableArray *newActiveFeedStories = [appDelegate.activeFeedStories mutableCopy];
+//    NSMutableDictionary *newActiveStory = [[newActiveFeedStories objectAtIndex:row] mutableCopy];
+//    
+//    [newActiveStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+//    [newActiveFeedStories replaceObjectAtIndex:row withObject:newActiveStory];
+//    
+//    appDelegate.activeFeedStories = newActiveFeedStories;
+//    appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:row];
+    
+    
+    
+    
+    
+    
+    
+    
+    
     appDelegate.shareViewController.commentField.text = nil;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController transitionFromShareView];
