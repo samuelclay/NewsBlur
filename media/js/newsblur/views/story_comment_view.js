@@ -64,6 +64,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         
         var user_id = NEWSBLUR.Globals.user_id;
         var $replies = this.model.replies.map(_.bind(function(reply) {
+            if (!NEWSBLUR.assets.get_user(reply.user_id)) return;
             return new NEWSBLUR.Views.StoryCommentReply({model: reply, comment: this}).render().el;
         }, this));
         $replies = $.make('div', { className: 'NB-story-comment-replies' }, $replies);
@@ -75,6 +76,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
         var $users = $.make('div', { className: 'NB-story-comment-likes-users' });
 
         _.each(this.model.get('liking_users'), function(user_id) { 
+            if (!NEWSBLUR.assets.get_user(user_id)) return;
             var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id).render().el;
             $users.append($thumb);
         });

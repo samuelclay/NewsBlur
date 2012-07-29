@@ -7,7 +7,9 @@ NEWSBLUR.Views.ProfileThumb = Backbone.View.extend({
     },
     
     initialize: function() {
-        this.model.profile_thumb_view = this;
+        if (this.model) {
+            this.model.profile_thumb_view = this;
+        }
     },
     
     render: function() {
