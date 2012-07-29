@@ -236,6 +236,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     open_feed_link: function() {
+        if ($('.NB-modal-feedchooser').is(':visible')) return;
+        
         NEWSBLUR.reader.mark_feed_as_read(this.model.id);
         window.open(this.model.get('feed_link'), '_blank');
         window.focus();

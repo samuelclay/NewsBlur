@@ -806,20 +806,16 @@
                 'fetched_feeds': 0
             });
             
-            this.flags['has_unfetched_feeds'] = NEWSBLUR.assets.feeds.has_unfetched_feeds();
-            
-            if (this.flags['has_unfetched_feeds']) {
-                var counts = this.model.count_unfetched_feeds();
-                this.counts['unfetched_feeds'] = counts['unfetched_feeds'];
-                this.counts['fetched_feeds'] = counts['fetched_feeds'];
+            var counts = this.model.count_unfetched_feeds();
+            this.counts['unfetched_feeds'] = counts['unfetched_feeds'];
+            this.counts['fetched_feeds'] = counts['fetched_feeds'];
 
-                if (this.counts['unfetched_feeds'] == 0) {
-                    this.flags['has_unfetched_feeds'] = false;
-                    this.hide_unfetched_feed_progress();
-                } else {
-                    this.flags['has_unfetched_feeds'] = true;
-                    this.show_unfetched_feed_progress();
-                }
+            if (this.counts['unfetched_feeds'] == 0) {
+                this.flags['has_unfetched_feeds'] = false;
+                this.hide_unfetched_feed_progress();
+            } else {
+                this.flags['has_unfetched_feeds'] = true;
+                this.show_unfetched_feed_progress();
             }
         },
         
@@ -3579,6 +3575,8 @@
                 if (self.active_feed == feed_id || self.active_feed == new_feed_id) {
                     self.open_feed(new_feed_id, {force: true});
                 }
+                
+                self.check_feed_fetch_progress();
             }, true, new_feed_id, this.show_stories_error);
         },
         
@@ -4267,11 +4265,9 @@
             this.locks.unfetched_feed_check = setInterval(_.bind(function() {
                 var unfetched_feeds = NEWSBLUR.assets.unfetched_feeds();
                 if (unfetched_feeds.length) {
-                    _.each(unfetched_feeds, _.bind(function(feed) {
-                        this.force_instafetch_stories(feed.id);
-                    }, this));
+                    this.force_instafetch_stories(unfetched_feeds[0].id);
                 }
-            }, this), 60*10*1000);
+            }, this), 60*1*1000);
         },
         
         // ==========

@@ -185,7 +185,8 @@ class UserSubscription(models.Model):
         feed = None
         us = None
     
-        logging.user(user, "~FRAdding URL: ~SB%s (in %s)" % (feed_address, folder))
+        logging.user(user, "~FRAdding URL: ~SB%s (in %s) %s" % (feed_address, folder, 
+                                                                "~FCAUTO-ADD" if not auto_active else ""))
     
         feed = Feed.get_feed_from_url(feed_address)
 
@@ -220,13 +221,9 @@ class UserSubscription(models.Model):
             user_sub_folders_object.folders = json.encode(user_sub_folders)
             user_sub_folders_object.save()
             
-            if auto_active:
+            if auto_active or user.profile.is_premium:
                 us.active = True
-            else:
-                feed_count = cls.objects.filter(user=user).count()
-                if feed_count < 64 or user.profile.is_premium:
-                    us.active = True
-            us.save()
+                us.save()
         
             if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
                 feed = feed.update()

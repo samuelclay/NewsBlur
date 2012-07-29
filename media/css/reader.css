@@ -8211,6 +8211,9 @@ form.opml_import_form input {
     padding-right: 3px;
     font-weight: bold;
 }
+.NB-profile-badge .NB-profile-badge-blurblog-link {
+    text-transform: none;
+}
 .NB-profile-badge-actions {
     float: right;
 }
@@ -8369,10 +8372,10 @@ form.opml_import_form input {
     margin-bottom: 0;
 }
 .NB-interaction:hover {
-    background-color: #EFF4FE;
-    background-image: -moz-linear-gradient(top, #EFF4FE, #D3E2FE); /* FF3.6 */
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#EFF4FE), to(#D3E2FE)); /* Saf4+, Chrome */
-    background-image: linear-gradient(top, #EFF4FE, #D3E2FE);
+    background-color: #F3F6FD;
+    background-image: -moz-linear-gradient(top, #F5F7FB, #EBF1FE); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F7FB), to(#EBF1FE)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #F5F7FB, #EBF1FE);
     border: 1px solid #C3CFE2;
     border-bottom: 1px solid #B9C5DC;
 }
@@ -8416,9 +8419,9 @@ form.opml_import_form input {
     opacity: .9;
 }
 .NB-interaction-content {
-    font-size: 13px;
-    padding-top: 6px;
-    line-height: 14px;
+    font-size: 12px;
+    padding-top: 8px;
+    line-height: 16px;
     color: #808080;
 }
 .NB-interaction-username {
