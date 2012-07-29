@@ -941,6 +941,7 @@ def load_social_settings(request, social_user_id, username=None):
     
     return social_profile.to_json()
 
+@ajax_login_required
 def load_interactions(request):
     user_id = request.REQUEST.get('user_id', None)
     if not user_id:
@@ -961,7 +962,8 @@ def load_interactions(request):
                                   context_instance=RequestContext(request))
     else:
         return json.json_response(request, data)
-        
+
+@ajax_login_required
 def load_activities(request):
     user_id = request.REQUEST.get('user_id', None)
     if user_id:
