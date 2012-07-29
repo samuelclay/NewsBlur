@@ -14,6 +14,11 @@
 
 @synthesize activityLabel;
 @synthesize faviconView;
+@synthesize topMargin;
+@synthesize bottomMargin;
+@synthesize leftMargin;
+@synthesize rightMargin;
+@synthesize avatarSize;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     
@@ -31,19 +36,19 @@
         activity.automaticallyAddLinksForType = NO;
         self.activityLabel = activity;
         [self.contentView addSubview:activity];
+        
+        topMargin = 15;
+        bottomMargin = 15;
+        leftMargin = 20;
+        rightMargin = 20;
+        avatarSize = 48;
     }
     
     return self;
 }
 
-- (void)layoutSubviews {
 
-    #define topMargin 15
-    #define bottomMargin 15
-    #define leftMargin 20
-    #define rightMargin 20
-    #define avatarSize 48
-    
+- (void)layoutSubviews {    
     [super layoutSubviews];
     
     // determine outer bounds

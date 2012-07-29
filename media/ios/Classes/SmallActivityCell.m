@@ -11,20 +11,32 @@
 #import "UIImageView+AFNetworking.h"
 #import <QuartzCore/QuartzCore.h>
 
-#define topMargin 10
-#define bottomMargin 10
-#define leftMargin 10
-#define rightMargin 10
-#define avatarSize 32
-
 @implementation SmallActivityCell
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        activityLabel = nil;
+        faviconView = nil;
+        
+        // create favicon and label in view
+        UIImageView *favicon = [[UIImageView alloc] initWithFrame:CGRectZero];
+        self.faviconView = favicon;
+        [self.contentView addSubview:favicon];
+        
+        OHAttributedLabel *activity = [[OHAttributedLabel alloc] initWithFrame:CGRectZero];
+        activity.backgroundColor = [UIColor whiteColor];
+        activity.automaticallyAddLinksForType = NO;
+        self.activityLabel = activity;
+        [self.contentView addSubview:activity];
+        
+        topMargin = 10;
+        bottomMargin = 10;
+        leftMargin = 10;
+        rightMargin = 10;
+        avatarSize = 32;
     }
+    
     return self;
 }
 

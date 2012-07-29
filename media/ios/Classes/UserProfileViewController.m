@@ -131,6 +131,17 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
     self.userProfile = [results objectForKey:@"user_profile"];  
+    
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [self.appDelegate.dictUserProfile objectForKey:@"user_id"]];   
+    NSString *profileUserId = [NSString stringWithFormat:@"%@", [self.userProfile objectForKey:@"user_id"]];   
+    
+    // check follow button status    
+    if ([currentUserId isEqualToString:profileUserId]) {
+        NSMutableDictionary *newUserProfile = [self.userProfile mutableCopy];
+        [newUserProfile setValue:@"You" forKey:@"username"];
+        self.userProfile = newUserProfile;
+    }
+        
     self.activitiesArray = [results objectForKey:@"activities"];
 
     [self.profileBadge refreshWithProfile:self.userProfile];  

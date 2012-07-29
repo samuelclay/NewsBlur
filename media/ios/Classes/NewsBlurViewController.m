@@ -407,7 +407,7 @@
 
 - (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"username"]];
+    appDelegate.activeUserProfileName = @"You";
     [appDelegate showUserProfileModal:self.navigationItem.leftBarButtonItem];
 }
 
