@@ -2237,7 +2237,10 @@ background: transparent;
     font-size: 10px;
     padding: 2px 8px;
     line-height: 16px;
-    margin: 0;
+    margin: 0 12px 0 0;
+}
+#story_pane .NB-story-comment-reply-form .NB-modal-submit-delete {
+    font-size: 9px;
 }
 #story_pane .NB-story-comment-reply-form .NB-error {
     font-size: 10px;
@@ -4443,6 +4446,7 @@ form.opml_import_form input {
     box-shadow: none;
     cursor: pointer;
     margin-top: 6px;
+    border-radius: 4px;
 }
 
 /* ======================= */

@@ -401,6 +401,14 @@
     font-weight: bold;
     color: #FCFCFC;
 }
+.NB-modal-submit-red:hover,
+.NB-modal-submit-delete:hover {
+    background-color: #4D000A;
+}
+.NB-modal-submit-red:active,
+.NB-modal-submit-delete:active {
+    background-color: #1E0007;
+}
 .NB-modal-submit .NB-disabled {
     background-color: #d5d4dB;
     color: #909090;

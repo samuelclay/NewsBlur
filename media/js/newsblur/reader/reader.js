@@ -4941,7 +4941,7 @@
                 e.preventDefault();
                 self.lock_mouse_indicator();
             }); 
-            $.targetIs(e, { tagSelector: '.NB-load-user-profile' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-load-user-profile img' }, function($t, $p){
                 e.preventDefault();
                 self.open_social_profile_modal();
             });

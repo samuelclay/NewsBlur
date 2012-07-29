@@ -1898,6 +1898,20 @@ class MInteraction(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
+            
+    @classmethod
+    def remove_comment_reply(cls, user_id, reply_user_id, reply_content, story_id, story_feed_id):
+        params = {
+            'user_id': user_id,
+            'with_user_id': reply_user_id,
+            'category': 'comment_reply',
+            'content': reply_content,
+            'feed_id': "social:%s" % user_id,
+            'story_feed_id': story_feed_id,
+            'content_id': story_id,
+        }
+        original = cls.objects.filter(**params)
+        original.delete()
     
     @classmethod
     def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_title, comments):
@@ -1935,7 +1949,21 @@ class MInteraction(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
-    
+            
+    @classmethod
+    def remove_reply_reply(cls, user_id, comment_user_id, reply_user_id, reply_content, story_id, story_feed_id):
+        params = {
+            'user_id': user_id,
+            'with_user_id': reply_user_id,
+            'category': 'reply_reply',
+            'content': reply_content,
+            'feed_id': "social:%s" % comment_user_id,
+            'story_feed_id': story_feed_id,
+            'content_id': story_id,
+        }
+        original = cls.objects.filter(**params)
+        original.delete()
+        
     @classmethod
     def new_reshared_story(cls, user_id, reshare_user_id, comments, story_title, story_feed_id, story_id, original_comments=None):
         params = {
@@ -2081,6 +2109,20 @@ class MActivity(mongo.Document):
 
         if not original_message:
             cls.objects.create(**params)
+            
+    @classmethod
+    def remove_comment_reply(cls, user_id, comment_user_id, reply_content, story_id, story_feed_id):
+        params = {
+            'user_id': user_id,
+            'with_user_id': comment_user_id,
+            'category': 'comment_reply',
+            'content': reply_content,
+            'feed_id': "social:%s" % comment_user_id,
+            'story_feed_id': story_feed_id,
+            'content_id': story_id,
+        }
+        original = cls.objects.filter(**params)
+        original.delete()
             
     @classmethod
     def new_comment_like(cls, liking_user_id, comment_user_id, story_id, story_title, comments):

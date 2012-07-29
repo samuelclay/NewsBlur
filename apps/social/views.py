@@ -482,7 +482,7 @@ def save_comment_reply(request):
                                        story_feed_id=feed_id,
                                        story_title=shared_story.story_title)
 
-    reply_user_ids = [reply['user_id'] for reply in comment['replies']]
+    reply_user_ids = list(r['user_id'] for r in comment['replies'])
     for user_id in set(reply_user_ids).difference([comment['user_id']]):
         if request.user.pk != user_id:
             MInteraction.new_reply_reply(user_id=user_id, 
@@ -534,38 +534,31 @@ def remove_comment_reply(request):
     shared_story.save()
 
     logging.user(request, "~FCRemoving comment reply in ~FM%s: ~SB~FB%s~FM" % (
-             shared_story.story_title[:20], original_message[:30]))
+             shared_story.story_title[:20], original_message and original_message[:30]))
     
     comment, profiles = shared_story.comment_with_author_and_profiles()
 
-    # # Interaction for every other replier and original commenter
-    # MActivity.new_comment_reply(user_id=request.user.pk,
-    #                             comment_user_id=comment['user_id'],
-    #                             reply_content=reply_comments,
-    #                             original_message=original_message,
-    #                             story_id=story_id,
-    #                             story_feed_id=feed_id,
-    #                             story_title=shared_story.story_title)
-    # if comment['user_id'] != request.user.pk:
-    #     MInteraction.new_comment_reply(user_id=comment['user_id'], 
-    #                                    reply_user_id=request.user.pk, 
-    #                                    reply_content=reply_comments,
-    #                                    original_message=original_message,
-    #                                    story_id=story_id,
-    #                                    story_feed_id=feed_id,
-    #                                    story_title=shared_story.story_title)
-    # 
-    # reply_user_ids = [reply['user_id'] for reply in comment['replies']]
-    # for user_id in set(reply_user_ids).difference([comment['user_id']]):
-    #     if request.user.pk != user_id:
-    #         MInteraction.new_reply_reply(user_id=user_id, 
-    #                                      comment_user_id=comment['user_id'],
-    #                                      reply_user_id=request.user.pk, 
-    #                                      reply_content=reply_comments,
-    #                                      original_message=original_message,
-    #                                      story_id=story_id,
-    #                                      story_feed_id=feed_id,
-    #                                      story_title=shared_story.story_title)
+    # Interaction for every other replier and original commenter
+    MActivity.remove_comment_reply(user_id=request.user.pk,
+                                   comment_user_id=comment['user_id'],
+                                   reply_content=original_message,
+                                   story_id=story_id,
+                                   story_feed_id=feed_id)
+    MInteraction.remove_comment_reply(user_id=comment['user_id'], 
+                                      reply_user_id=request.user.pk, 
+                                      reply_content=original_message,
+                                      story_id=story_id,
+                                      story_feed_id=feed_id)
+    
+    reply_user_ids = [reply['user_id'] for reply in comment['replies']]
+    for user_id in set(reply_user_ids).difference([comment['user_id']]):
+        if request.user.pk != user_id:
+            MInteraction.remove_reply_reply(user_id=user_id, 
+                                            comment_user_id=comment['user_id'],
+                                            reply_user_id=request.user.pk, 
+                                            reply_content=original_message,
+                                            story_id=story_id,
+                                            story_feed_id=feed_id)
     
     if format == 'html':
         comment = MSharedStory.attach_users_to_comment(comment, profiles)

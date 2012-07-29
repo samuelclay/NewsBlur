@@ -541,6 +541,34 @@
           optional: true
           default: "json"
           example: "html"
+    - url: /social/remove_comment_reply
+      method: POST
+      short_desc: "Deletes a reply."
+      long_desc: 
+        - "Deletes a reply from a comment."
+        - "Also deletes the interactions and activities associated with the reply."
+      params:
+        - key: story_feed_id
+          desc: "ID of feed the story belongs to."
+          required: true
+          example: "42"
+        - key: story_id
+          desc: "ID of story being commented on."
+          required: true
+          example: "http://blog.newsblur.com/post/1"
+        - key: comment_user_id
+          desc: "ID of user who left the original comment that is now being replied to."
+          required: true
+          example: "64"
+        - key: reply_id
+          desc: The reply's id
+          optional: true
+          example: "5000...0042"
+        - key: format
+          desc: "Return JSON or a HTML template"
+          optional: true
+          default: "json"
+          example: "html"
     - url: /social/like_comment
       method: POST
       short_desc: "Favorites a comment."
