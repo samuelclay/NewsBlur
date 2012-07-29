@@ -4423,6 +4423,28 @@ form.opml_import_form input {
     padding-right: 12px;
 }
 
+.NB-module-account .NB-module-item-image {
+    position: relative;
+    float: left;
+}
+.NB-module-account .NB-module-content-header,
+.NB-module-account .NB-module-item .NB-module-item-title {
+    clear: none;
+    overflow: hidden;
+    margin-left: 0;
+}
+.NB-module-account .NB-module-item .NB-module-item-image img {
+    width: 100px;
+    margin-right: 14px;
+    height: auto;
+    border: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+    margin-top: 6px;
+}
+
 /* ======================= */
 /* = How it Works Module = */
 /* ======================= */

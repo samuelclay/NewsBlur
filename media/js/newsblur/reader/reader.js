@@ -2231,6 +2231,7 @@
         },
         
         open_social_profile_modal: function(user_id) {
+            if (!user_id) user_id = NEWSBLUR.Globals.user_id;
             if (_.string.contains(user_id, 'social:')) {
                 user_id = parseInt(user_id.replace('social:', ''), 10);
             }
@@ -4940,6 +4941,10 @@
                 e.preventDefault();
                 self.lock_mouse_indicator();
             }); 
+            $.targetIs(e, { tagSelector: '.NB-load-user-profile' }, function($t, $p){
+                e.preventDefault();
+                self.open_social_profile_modal();
+            });
             $.targetIs(e, { tagSelector: '.NB-progress-close' }, function($t, $p){
                 e.preventDefault();
                 self.hide_unfetched_feed_progress(true);

@@ -161,21 +161,7 @@ class MSocialProfile(mongo.Document):
             self.save_popular_publishers(feed_publishers=feed_publishers[:-1])
         
     @classmethod
-    def user_statistics(cls, user):
-        try:
-            profile = cls.objects.get(user_id=user.pk)
-        except cls.DoesNotExist:
-            return None
-        
-        values = {
-            'followers': profile.follower_count,
-            'following': profile.following_count,
-            'shared_stories': profile.shared_stories_count,
-        }
-        return values
-        
-    @classmethod
-    def profile(cls, user_id):
+    def profile(cls, user_id, include_follows=True):
         try:
             profile = cls.objects.get(user_id=user_id)
         except cls.DoesNotExist:

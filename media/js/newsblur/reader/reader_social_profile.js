@@ -33,7 +33,8 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
         this.$profile = new NEWSBLUR.Views.SocialProfileBadge({
             model: this.profile,
             embiggen: true,
-            photo_size: 'large'
+            photo_size: 'large',
+            show_edit_button: true
         });
 
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-profile' }, [

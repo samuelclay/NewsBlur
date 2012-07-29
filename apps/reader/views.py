@@ -95,7 +95,7 @@ def index(request, **kwargs):
     unmoderated_feeds = RecommendedFeed.objects.filter(is_public=False,
                                                        declined_date__isnull=True).select_related('feed')[:2]
     statistics        = MStatistics.all()
-    user_statistics   = MSocialProfile.user_statistics(user)
+    social_profile    = MSocialProfile.get_user(user.pk)
 
     start_import_from_google_reader = request.session.get('import_from_google_reader', False)
     if start_import_from_google_reader:
@@ -112,7 +112,7 @@ def index(request, **kwargs):
         'recommended_feeds' : recommended_feeds,
         'unmoderated_feeds' : unmoderated_feeds,
         'statistics'        : statistics,
-        'user_statistics'   : user_statistics,
+        'social_profile'    : social_profile,
         'start_import_from_google_reader': start_import_from_google_reader,
     }
 

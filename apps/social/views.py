@@ -463,12 +463,7 @@ def save_comment_reply(request):
         shared_story.replies.append(reply)
     shared_story.save()
     
-    comment = shared_story.comments_with_author()
-    profile_user_ids = set([comment['user_id']])
-    reply_user_ids = list(r['user_id'] for r in comment['replies'])
-    profile_user_ids = profile_user_ids.union(reply_user_ids)
-    profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
-    profiles = [profile.to_json(compact=True) for profile in profiles]
+    comment, profiles = shared_story.comment_with_author_and_profiles()
     
     # Interaction for every other replier and original commenter
     MActivity.new_comment_reply(user_id=request.user.pk,
@@ -486,7 +481,8 @@ def save_comment_reply(request):
                                        story_id=story_id,
                                        story_feed_id=feed_id,
                                        story_title=shared_story.story_title)
-    
+
+    reply_user_ids = [reply['user_id'] for reply in comment['replies']]
     for user_id in set(reply_user_ids).difference([comment['user_id']]):
         if request.user.pk != user_id:
             MInteraction.new_reply_reply(user_id=user_id, 
@@ -513,6 +509,76 @@ def save_comment_reply(request):
             'user_profiles': profiles
         })
 
+@ajax_login_required
+def remove_comment_reply(request):
+    code     = 1
+    feed_id  = int(request.POST['story_feed_id'])
+    story_id = request.POST['story_id']
+    comment_user_id = request.POST['comment_user_id']
+    reply_id = request.POST.get('reply_id')
+    format = request.REQUEST.get('format', 'json')
+    original_message = None
+    
+    shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
+                                            story_feed_id=feed_id, 
+                                            story_guid=story_id)
+    replies = []
+    for story_reply in shared_story.replies:
+        if ((story_reply.user_id == request.user.pk or request.user.is_staff) and 
+            story_reply.reply_id == ObjectId(reply_id)):
+            original_message = story_reply.comments
+            # Skip reply
+        else:
+            replies.append(story_reply)
+    shared_story.replies = replies
+    shared_story.save()
+
+    logging.user(request, "~FCRemoving comment reply in ~FM%s: ~SB~FB%s~FM" % (
+             shared_story.story_title[:20], original_message[:30]))
+    
+    comment, profiles = shared_story.comment_with_author_and_profiles()
+
+    # # Interaction for every other replier and original commenter
+    # MActivity.new_comment_reply(user_id=request.user.pk,
+    #                             comment_user_id=comment['user_id'],
+    #                             reply_content=reply_comments,
+    #                             original_message=original_message,
+    #                             story_id=story_id,
+    #                             story_feed_id=feed_id,
+    #                             story_title=shared_story.story_title)
+    # if comment['user_id'] != request.user.pk:
+    #     MInteraction.new_comment_reply(user_id=comment['user_id'], 
+    #                                    reply_user_id=request.user.pk, 
+    #                                    reply_content=reply_comments,
+    #                                    original_message=original_message,
+    #                                    story_id=story_id,
+    #                                    story_feed_id=feed_id,
+    #                                    story_title=shared_story.story_title)
+    # 
+    # reply_user_ids = [reply['user_id'] for reply in comment['replies']]
+    # for user_id in set(reply_user_ids).difference([comment['user_id']]):
+    #     if request.user.pk != user_id:
+    #         MInteraction.new_reply_reply(user_id=user_id, 
+    #                                      comment_user_id=comment['user_id'],
+    #                                      reply_user_id=request.user.pk, 
+    #                                      reply_content=reply_comments,
+    #                                      original_message=original_message,
+    #                                      story_id=story_id,
+    #                                      story_feed_id=feed_id,
+    #                                      story_title=shared_story.story_title)
+    
+    if format == 'html':
+        comment = MSharedStory.attach_users_to_comment(comment, profiles)
+        return render_to_response('social/story_comment.xhtml', {
+            'comment': comment,
+        }, context_instance=RequestContext(request))
+    else:
+        return json.json_response(request, {
+            'code': code, 
+            'comment': comment, 
+            'user_profiles': profiles
+        })
+        
 @render_to('social/mute_story.xhtml')
 def mute_story(request, secret_token, shared_story_id):
     user_profile = Profile.objects.get(secret_token=secret_token)
