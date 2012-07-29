@@ -303,7 +303,6 @@
     
     self.navigationItem.rightBarButtonItem = settingsButton;
     
-    
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
     

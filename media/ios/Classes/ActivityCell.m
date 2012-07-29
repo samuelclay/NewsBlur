@@ -109,7 +109,6 @@
         self.faviconView.frame = CGRectMake(leftMargin+16, topMargin, 16, 16);
     }
     
-    NSLog(@"category is %@", category);
     if ([category isEqualToString:@"follow"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
         txt = [NSString stringWithFormat:@"%@ followed %@", username, withUserUsername];        

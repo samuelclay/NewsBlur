@@ -77,25 +77,25 @@
     [self.progressViewContainer addGestureRecognizer:tap];
     self.progressViewContainer.hidden = YES;
 
-    // adding drag property for toolbars
-    
 
+    // settings button to right
+    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
+    UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
+    settings.bounds = CGRectMake(0, 0, 32, 32);
+    [settings addTarget:self action:@selector(toggleFontSize:) forControlEvents:UIControlEventTouchUpInside];
+    [settings setImage:settingsImage forState:UIControlStateNormal];
     
-    UIBarButtonItem *fontSettings = [[UIBarButtonItem alloc] 
-                                           initWithTitle:@"Aa" 
-                                           style:UIBarButtonItemStyleBordered 
-                                           target:self 
-                                           action:@selector(toggleFontSize:)
-                                           ];
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+                                       initWithCustomView:settings];
     
+    self.fontSettingsButton = settingsButton;
+    
+    // back button
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
                                    initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
-    
     self.buttonBack = backButton;
     
-
-    self.fontSettingsButton = fontSettings;
-
+    // loading indicator
     self.loadingIndicator = [[UIActivityIndicatorView alloc] 
                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     
@@ -462,7 +462,7 @@
     self.webView.hidden = NO;
     self.bottomPlaceholderToolbar.hidden = YES;
     self.progressViewContainer.hidden = NO;
-    self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:self.originalStoryButton, self.fontSettingsButton, nil];
+    self.navigationItem.rightBarButtonItem = self.fontSettingsButton;
     
     [appDelegate hideFindingStoryHUD];
     [appDelegate hideShareView:YES];
@@ -1179,8 +1179,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         }
         
         [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
+        UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+                                           initWithCustomView:sender];
         
-        [popoverController presentPopoverFromBarButtonItem:sender
+        [popoverController presentPopoverFromBarButtonItem:settingsButton
                                   permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     } else {
         FontSettingsViewController *fontSettings = [[FontSettingsViewController alloc] init];
