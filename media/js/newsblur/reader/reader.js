@@ -5145,6 +5145,10 @@
                 e.preventDefault();
                 self.show_splash_page();
             });
+            $document.bind('keydown', 'esc', function(e) {
+                e.preventDefault();
+                self.show_splash_page();
+            });
             $document.bind('keypress', 't', function(e) {
                 e.preventDefault();
                 self.open_story_trainer();

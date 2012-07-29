@@ -8346,8 +8346,8 @@ form.opml_import_form input {
 .NB-interaction {
     list-style: none;
     position: relative;
-    margin: 0 8px 0 8px;
-    padding: 6px 4px 6px 28px;
+    margin: 0 0 0 0;
+    padding: 6px 12px 6px 40px;
     border-top: 1px solid transparent;
     border-left: 1px solid transparent;
     border-right: 1px solid transparent;
@@ -8360,32 +8360,17 @@ form.opml_import_form input {
     background-color: #FFFFF6;
     border-bottom: 1px solid #F0F0E6;
 }
-.NB-interaction:first-child {
-    -webkit-border-top-left-radius: 6px;
-    -webkit-border-top-right-radius: 6px;
-    -moz-border-radius-topleft: 6px;
-    -moz-border-radius-topright: 6px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-}
 .NB-interaction:last-child {
     border-bottom: 1px solid transparent;
     margin-bottom: 0;
-    -webkit-border-bottom-left-radius: 6px;
-    -webkit-border-bottom-right-radius: 6px;
-    -moz-border-radius-bottomleft: 6px;
-    -moz-border-radius-bottomright: 6px;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
 }
 .NB-interaction:hover {
-    background-color: #FFFFF6;
-    border-bottom: 1px solid #F0F0E6;
-    background-color: #d2e6fd;
-    background-image: -moz-linear-gradient(top, #d2e6fd, #b0d1f9); /* FF3.6 */
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#d2e6fd), to(#b0d1f9)); /* Saf4+, Chrome */
-    background-image: linear-gradient(top, #d2e6fd, #b0d1f9);
-    border: 1px solid #9EBAE2;
+    background-color: #EFF4FE;
+    background-image: -moz-linear-gradient(top, #EFF4FE, #D3E2FE); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#EFF4FE), to(#D3E2FE)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #EFF4FE, #D3E2FE);
+    border: 1px solid #C3CFE2;
+    border-bottom: 1px solid #B9C5DC;
 }
 .NB-interaction:active {
     background-color: #FBE5C7;
@@ -8405,7 +8390,7 @@ form.opml_import_form input {
     width: 16px;
     height: 16px;
     border-radius: 3px;
-    left: 4px;
+    left: 12px;
     top: 10px;
     cursor: pointer;
 }
@@ -8415,6 +8400,9 @@ form.opml_import_form input {
     float: right;
     text-transform: uppercase;
     padding: 5px 0 3px 4px;
+}
+.NB-interaction:hover .NB-interaction-date { 
+    color: #808080;
 }
 .NB-interaction-title {
     font-size: 12px;
