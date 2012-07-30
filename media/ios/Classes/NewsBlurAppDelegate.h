@@ -231,6 +231,7 @@
 - (void)addStories:(NSArray *)stories;
 - (void)addFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue;
 - (int)unreadCount;
+- (int)allUnreadCount;
 - (int)unreadCountForFeed:(NSString *)feedId;
 - (int)unreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;

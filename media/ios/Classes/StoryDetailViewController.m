@@ -138,7 +138,7 @@
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
-        if ([theTouch.view isKindOfClass: UIToolbar.class]) {
+        if ([theTouch.view isKindOfClass: UIToolbar.class] || [theTouch.view isKindOfClass: UIView.class]) {
             self.inTouchMove = YES;
             CGPoint touchLocation = [theTouch locationInView:self.view];
             CGFloat y = touchLocation.y;
@@ -153,7 +153,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
         UITouch *theTouch = [touches anyObject];
         
-        if ([theTouch.view isKindOfClass: UIToolbar.class] && self.inTouchMove) {
+        if (([theTouch.view isKindOfClass: UIToolbar.class] || [theTouch.view isKindOfClass: UIView.class]) && self.inTouchMove) {
             self.inTouchMove = NO;
             [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];  
         }
@@ -1139,6 +1139,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         return;
     }
     
+    NSLog(@"[appDelegate activeFeedStories] count is %i", [[appDelegate activeFeedStories] count]);
+    NSLog(@"[appDelegate indexOfNextStory] is %i", [appDelegate indexOfNextStory]);
+    
+
     [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                  objectAtIndex:nextIndex]];
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];

@@ -166,12 +166,19 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    /* When MGSplitViewController rotates, it causes a resize of our view; we need to resize our UIBarButtonControls or they will be 0-width */    
-    [self.navigationItem.titleView sizeToFit];
-    UIButton *avatar = (UIButton *)self.navigationItem.leftBarButtonItem.customView; 
-    CGRect buttonFrame = avatar.frame;
-    buttonFrame.size = CGSizeMake(32, 32);
-    avatar.frame = buttonFrame;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
+            UIButton *avatar = (UIButton *)self.navigationItem.leftBarButtonItem.customView; 
+            CGRect buttonFrame = avatar.frame;
+            buttonFrame.size = CGSizeMake(32, 32);
+            avatar.frame = buttonFrame;
+        } else {
+            UIButton *avatar = (UIButton *)self.navigationItem.leftBarButtonItem.customView; 
+            CGRect buttonFrame = avatar.frame;
+            buttonFrame.size = CGSizeMake(28, 28);
+            avatar.frame = buttonFrame;
+        }
+    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -829,6 +836,7 @@
         self.viewShowingAllFeeds = YES;
         [self switchSitesUnread];
     } else if(selectedSegmentIndex == 1) {
+//        NSString *unreadStr = [NSString stringWithFormat:@"%i Unread Stories", appDelegate.allUnreadCount];
         hud.labelText = @"Unread Stories";
         [userPreferences setInteger:0 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
@@ -855,7 +863,7 @@
         [self redrawUnreadCounts];
     }
     
-	[hud hide:YES afterDelay:0.4];
+	[hud hide:YES afterDelay:0.75];
 }
 
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {

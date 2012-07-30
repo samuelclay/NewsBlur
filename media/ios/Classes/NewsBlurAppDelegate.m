@@ -711,6 +711,27 @@
     }
 }
 
+- (int)allUnreadCount {
+    int total = 0;
+    for (id key in self.dictSocialFeeds) {
+        NSDictionary *feed = [self.dictSocialFeeds objectForKey:key];
+        total += [[feed objectForKey:@"ps"] intValue];
+        total += [[feed objectForKey:@"nt"] intValue];
+        NSLog(@"feed title and number is %@ %i", [feed objectForKey:@"feed_title"], ([[feed objectForKey:@"ps"] intValue] + [[feed objectForKey:@"nt"] intValue]));
+        NSLog(@"total is %i", total);
+    }
+    
+    for (id key in self.dictFeeds) {
+        NSDictionary *feed = [self.dictFeeds objectForKey:key];
+        total += [[feed objectForKey:@"ps"] intValue];
+        total += [[feed objectForKey:@"nt"] intValue];
+        NSLog(@"feed title and number is %@ %i", [feed objectForKey:@"feed_title"], ([[feed objectForKey:@"ps"] intValue] + [[feed objectForKey:@"nt"] intValue]));
+        NSLog(@"total is %i", total);
+    }
+
+    return total;
+}
+
 - (int)unreadCountForFeed:(NSString *)feedId {
     int total = 0;
     NSDictionary *feed;
