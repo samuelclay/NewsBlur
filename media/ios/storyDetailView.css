@@ -275,6 +275,18 @@ del {
     max-width: none !important;
 }
 
+#story_pane .NB-story-comment.NB-highlighted {
+    background-color: #FBE5C7;
+    background-image: -moz-linear-gradient(top, #FBE5C7, #F7D9AD); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FBE5C7), to(#F7D9AD)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #FBE5C7, #F7D9AD);
+}
+
+#story_pane .NB-story-comment {
+    -webkit-transition: background-color .5s linear;
+    background: none;
+}
+
 /* Disable certain interactions on touch devices */
 #story_pane .NB-story-comment { 
     -webkit-touch-callout: none; 

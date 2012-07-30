@@ -54,7 +54,7 @@
 - (void)markStoryAsRead;
 - (void)toggleLikeComment:(BOOL)likeComment;
 - (void)showStory;
-- (void)scrolltoBottom;
+- (void)scrolltoComment;
 - (IBAction)showOriginalSubview:(id)sender;
 - (IBAction)doNextUnreadStory;
 - (IBAction)doNextStory;
@@ -65,7 +65,7 @@
 - (void)initStory;
 
 - (void)showShareHUD;
-- (void)refreshComments;
+- (void)refreshComments:(NSString *)replyId;
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
 - (void)finishLikeComment:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;

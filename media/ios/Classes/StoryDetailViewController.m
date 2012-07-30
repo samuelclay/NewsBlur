@@ -443,18 +443,19 @@
 
             NSString *userEditButton = @"";
             NSString *replyUserId = [NSString stringWithFormat:@"%@", [replyDict objectForKey:@"user_id"]];
+            NSString *replyId = [replyDict objectForKey:@"reply_id"];
             NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
             
             if ([replyUserId isEqualToString:currentUserId]) {
                 userEditButton = [NSString stringWithFormat:@
                                   "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button NB-button\">"
                                   "<div class=\"NB-story-comment-edit-button-wrapper\">"
-                                  "<a href=\"http://ios.newsblur.com/edit-reply/%@/%@/%i\">edit</a>"
+                                  "<a href=\"http://ios.newsblur.com/edit-reply/%@/%@/%@\">edit</a>"
                                   "</div>"
                                   "</div>",
                                   commentUserId,
                                   replyUserId,
-                                  i // comment number in array
+                                  replyId
                                   ];
             }
             
@@ -557,7 +558,7 @@
     sharingHtmlString = [NSString stringWithFormat:@
                          "<div class='NB-share-header'></div>"
                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                         "<div class='NB-share-button NB-button'><div>"
+                         "<div id=\"NB-share-button-id\" class='NB-share-button NB-button'><div>"
                          "<a href=\"http://ios.newsblur.com/share\">Post to Blurblog</a>"
                          "</div></div>"
                          "</div></div>"];
@@ -623,7 +624,7 @@
                             footerString
                             ];
 
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -749,17 +750,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                 [appDelegate showShareView:@"reply"
                                  setUserId:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]
                                setUsername:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:3]]
-                           setCommentIndex:nil];
+                                setReplyId:nil];
             } else if ([action isEqualToString:@"edit-reply"]) {
                 [appDelegate showShareView:@"edit-reply"
                                  setUserId:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]]
                                setUsername:nil
-                           setCommentIndex:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:4]]];
+                                setReplyId:[NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:4]]];
             } else if ([action isEqualToString:@"edit-share"]) {
                 [appDelegate showShareView:@"edit-share"
                                  setUserId:nil
                                setUsername:nil
-                           setCommentIndex:nil];
+                                setReplyId:nil];
             } else if ([action isEqualToString:@"like-comment"]) {
                 [self toggleLikeComment:YES];
             } else if ([action isEqualToString:@"unlike-comment"]) {
@@ -783,12 +784,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                 [appDelegate showShareView:@"share"
                                  setUserId:nil
                                setUsername:nil
-                           setCommentIndex:nil];
+                           setReplyId:nil];
             } else {
                 [appDelegate showShareView:@"edit-share"
                                  setUserId:nil
                                setUsername:nil
-                           setCommentIndex:nil];
+                           setReplyId:nil];
             }
             return NO; 
         } else if ([action isEqualToString:@"show-profile"]) {
@@ -1023,7 +1024,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
-    [self refreshComments];
+    [self refreshComments:@"like"];
 } 
 
 
@@ -1045,15 +1046,23 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.storyHUD.margin = 20.0f;
 }
 
-- (void)refreshComments {
+- (void)refreshComments:(NSString *)replyId {
     NSString *commentString = [self getComments:@"friends"];  
     NSString *jsString = [[NSString alloc] initWithFormat:@
                           "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
                           commentString];
     NSString *shareType = appDelegate.activeShareType;
     
-//    NSLog(@"JSSTRING IS %@\n\n\n", jsString);
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    if (!replyId) {
+        NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+        NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
+        [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
+    } else if ([replyId isEqualToString:@"like"]) {
+        
+    }
+    
 
 //    // adding in a simulated delay
 //    sleep(4);
@@ -1078,9 +1087,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.storyHUD hide:YES afterDelay:1];
 }
 
-- (void)scrolltoBottom {
-    CGPoint bottomOffset = CGPointMake(0, self.webView.scrollView.contentSize.height - self.webView.bounds.size.height);
-    [self.webView.scrollView setContentOffset:bottomOffset animated:YES];
+- (void)scrolltoComment {
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@');", currentUserId];
+    [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
 }
 
 - (IBAction)doNextUnreadStory {

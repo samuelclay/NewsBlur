@@ -253,14 +253,14 @@
 - (void)showShareView:(NSString *)type 
             setUserId:(NSString *)userId 
           setUsername:(NSString *)username 
-      setCommentIndex:(NSString *)commentIndex {
+      setReplyId:(NSString *)replyId {
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToShareView];
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId]; 
     } else {
         [self.navigationController presentModalViewController:self.shareViewController animated:YES];
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setCommentIndex:commentIndex]; 
+        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId]; 
     }
 }
 
@@ -275,10 +275,6 @@
         [self.navigationController dismissModalViewControllerAnimated:YES];
         [self.shareViewController.commentField resignFirstResponder];
     }
-}
-
-- (void)refreshComments {
-    [storyDetailViewController refreshComments];
 }
 
 - (void)resetShareComments {

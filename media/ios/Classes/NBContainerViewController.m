@@ -664,7 +664,7 @@
                      } completion:^(BOOL finished) {
                          if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
                              self.storyNavigationController.view.frame = storyNavigationFrame;
-                             // [self.storyDetailViewController scrolltoBottom];
+                             [self.storyDetailViewController scrolltoComment];
                          } else {
                              // remove the shareViewController after keyboard slides down
                              if (self.isHidingStory) {

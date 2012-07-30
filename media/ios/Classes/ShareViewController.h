@@ -11,18 +11,18 @@
 
 @interface ShareViewController : UIViewController <ASIHTTPRequestDelegate, UITextViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
-    int activeCommentIndex;
+    NSString *activeReplyId;
 }
 
-@property ( nonatomic) IBOutlet UITextView *commentField;
+@property (nonatomic) IBOutlet UITextView *commentField;
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property ( nonatomic) IBOutlet UIButton *facebookButton;
-@property ( nonatomic) IBOutlet UIButton *twitterButton;
-@property ( nonatomic) IBOutlet UIBarButtonItem *submitButton;
-@property ( nonatomic) IBOutlet UIBarButtonItem *toolbarTitle;
-@property (nonatomic) int activeCommentIndex;
+@property (nonatomic) IBOutlet UIButton *facebookButton;
+@property (nonatomic) IBOutlet UIButton *twitterButton;
+@property (nonatomic) IBOutlet UIBarButtonItem *submitButton;
+@property (nonatomic) IBOutlet UIBarButtonItem *toolbarTitle;
+@property (nonatomic) NSString * activeReplyId;
 
-- (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setCommentIndex:(NSString *)commentIndex;
+- (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;
 - (void)clearComments;
 - (IBAction)doCancelButton:(id)sender;
 - (IBAction)doToggleButton:(id)sender;
@@ -31,6 +31,7 @@
 - (void)finishShareThisStory:(ASIHTTPRequest *)request;
 - (void)finishAddReply:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;- (void)replaceStory:(NSDictionary *)newStory;
+- (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId;
 - (NSString *)stringByStrippingHTML:(NSString *)s;
 
 @end

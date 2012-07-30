@@ -45,19 +45,32 @@ function setImage(img) {
     }
 }
 
-//window.onload = load;
-//
-//function load() {  
-//    document.getElementsByClassName('NB-button').addEventListener("touchstart", touchStart, false);
-//    document.getElementsByClassName('NB-button').addEventListener("touchend", touchEnd, false);
-//} 
-//
-//function touchStart(e) {
-//    var original_class = e.target.getAttribute("class");
-//    e.target.setAttribute("class", original_class + " hover");
-//}
-//
-//function touchEnd(e) {
-//    var original_class = e.target.getAttribute("class");
-//    e.target.setAttribute("class", original_class.replace('hover', ''));
-//}
+function slideToComment(commentId, highlight) {
+    var commentString = 'NB-user-comment-' + commentId;
+
+    //Get comment
+    var $comment = $('#' + commentString);
+    if ($comment.length) {
+        $.scroll($comment.offset().top, 500);
+    } else {
+        var shareButton = document.getElementById("NB-share-button-id");
+        $.scroll($('#NB-share-button-id').offset().top, 500);
+    }
+
+    if (highlight) {
+        $('#' + commentString).addClass('NB-highlighted');
+        setTimeout(function(){
+            $('#' + commentString).removeClass('NB-highlighted');
+        }, 2000);
+    }
+}
+          
+function findPos(obj) {
+    var curtop = 0; 
+    if (obj.offsetParent) {
+        do {
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+        return [curtop];
+    }
+}

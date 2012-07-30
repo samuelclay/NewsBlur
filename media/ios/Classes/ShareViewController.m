@@ -22,7 +22,7 @@
 @synthesize toolbarTitle;
 @synthesize commentField;
 @synthesize appDelegate;
-@synthesize activeCommentIndex;
+@synthesize activeReplyId;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -99,21 +99,32 @@
     [userPreferences synchronize];
 }
 
-- (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setCommentIndex:(NSString *)commentIndex {
+- (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)replyId {
     if ([type isEqualToString: @"edit-reply"]) {
         [submitButton setTitle:@"Save"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
         [toolbarTitle setTitle:[NSString stringWithFormat:@"Edit Your Reply"]];
         [submitButton setAction:(@selector(doReplyToComment:))];
-        self.activeCommentIndex = [commentIndex intValue];
+        self.activeReplyId = replyId;
         
-        // get old comment
+        // get existing reply
         NSArray *replies = [appDelegate.activeComment objectForKey:@"replies"];
-        int commentIdx = [commentIndex intValue];
-        self.commentField.text = [self stringByStrippingHTML:[[replies objectAtIndex:commentIdx] objectForKey:@"comments"]];
+        NSDictionary *reply = nil;
+        for (int i = 0; i < replies.count; i++) {
+            NSString *replyId = [NSString stringWithFormat:@"%@", [[replies objectAtIndex:i] valueForKey:@"reply_id"]];
+            NSLog(@"[replies objectAtIndex:i] valueForKey:@reply_id] %@", [[replies objectAtIndex:i] valueForKey:@"reply_id"]);
+            NSLog(@":self.activeReplyId %@", self.activeReplyId);
+            
+            if ([replyId isEqualToString:self.activeReplyId]) {
+                reply = [replies objectAtIndex:i];
+            }
+        }
+        if (reply) {
+            self.commentField.text = [self stringByStrippingHTML:[reply objectForKey:@"comments"]]; 
+        }
     } else if ([type isEqualToString: @"reply"]) {
-        self.activeCommentIndex = -1;
+        self.activeReplyId = nil;
         [submitButton setTitle:@"Reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
@@ -197,7 +208,7 @@
                              options:kNilOptions 
                              error:&error];
     
-    [self replaceStory:[results objectForKey:@"story"]];
+    [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
 }
 
 # pragma mark
@@ -210,7 +221,7 @@
         return;
     }
     
-    NSLog(@"REPLY TO COMMENT, %@", appDelegate.activeComment);
+//    NSLog(@"REPLY TO COMMENT, %@", appDelegate.activeComment);
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/save_comment_reply",
                            NEWSBLUR_URL];
     
@@ -224,9 +235,8 @@
     [request setPostValue:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
     [request setPostValue:commentField.text forKey:@"reply_comments"]; 
     
-    if (self.activeCommentIndex != -1) {
-        NSDictionary *activeComment = [[appDelegate.activeComment objectForKey:@"replies"] objectAtIndex:self.activeCommentIndex];
-        [request setPostValue:[self stringByStrippingHTML:[activeComment objectForKey:@"comments"]] forKey:@"original_message"]; 
+    if (self.activeReplyId) {
+        [request setPostValue:activeReplyId forKey:@"reply_id"]; 
     }
     
     [request setDelegate:self];
@@ -249,7 +259,7 @@
                              error:&error];
     // add the comment into the activeStory dictionary
     NSDictionary *newStory = [DataUtilities updateComment:results for:appDelegate];
-    [self replaceStory:newStory];
+    [self replaceStory:newStory withReplyId:[results objectForKey:@"reply_id"]];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
@@ -258,7 +268,7 @@
     NSLog(@"Error: %@", error);
 }
 
-- (void)replaceStory:(NSDictionary *)newStory {    
+- (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
     // update the current story and the activeFeedStories
     appDelegate.activeStory = newStory;
     
@@ -278,7 +288,7 @@
     appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     self.commentField.text = nil;
-    [appDelegate.storyDetailViewController refreshComments];
+    [appDelegate.storyDetailViewController refreshComments:replyId];
 }
 
 
