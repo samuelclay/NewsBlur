@@ -91,20 +91,30 @@ static CGFloat *psColors = nil;
     
     UIColor *backgroundColor;
     
-    if (self.isSocial) {
-        backgroundColor = self.selected || self.highlighted ? 
-                          [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : 
-                          //UIColorFromRGB(0xe9e9ee);
-                          [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
+    backgroundColor = self.selected || self.highlighted ? 
+                      UIColorFromRGB(0xd2e6fd) : 
+                      [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
 
-    } else {
-        backgroundColor = self.selected || self.highlighted ? 
-                          [UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0] : 
-                          [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
-    }
-    
     [backgroundColor set];
     CGContextFillRect(context, r);
+    
+    if (self.highlighted || self.selected) {
+        // top border
+        UIColor *blue = UIColorFromRGB(0x6eadf5);
+        NSLog(@"self.bounds.size.height is %f", self.bounds.size.height);
+        CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
+        
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, 0, 0.5f);
+        CGContextAddLineToPoint(context, self.bounds.size.width, 0.5f);
+        CGContextStrokePath(context);
+        
+        // bottom border    
+        CGContextBeginPath(context);
+        CGContextMoveToPoint(context, 0, self.bounds.size.height - 1.5f);
+        CGContextAddLineToPoint(context, self.bounds.size.width, self.bounds.size.height - 1.5f);
+        CGContextStrokePath(context);
+    }
     
     CGRect rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
@@ -168,8 +178,11 @@ static CGFloat *psColors = nil;
     }
     
     UIColor *textColor = self.selected || self.highlighted ? 
-                         [UIColor whiteColor] : 
+                         [UIColor blackColor]:
                          [UIColor blackColor];
+    
+    
+    
     [textColor set];
     UIFont *font;
     if (self.negativeCount || self.neutralCount || self.positiveCount) {
