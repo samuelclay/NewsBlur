@@ -75,20 +75,19 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     position: absolute;
     right: 0px;
     top: 0;
-    width: 478px;
     z-index: 1;
     overflow: hidden;
 }
 
 .NB-account .NB-module-header-login {
-    width: 186px;
+    width: 142px;
     margin: 0 50px 0 0;
     padding: 0 4px;
     float: left;
 }
 
 .NB-account .NB-module-header-signup {
-    width: 186px;
+    width: 142px;
     margin: 0;
     padding: 0 4px;
     float: left;
@@ -97,14 +96,14 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 .NB-account .NB-login {
     padding: 0 4px 64px;
     margin: 12px 50px 0 12px;
-    width: 186px;
+    width: 146px;
     float: left;
     background: transparent url('/media/embed/reader/separator.png') no-repeat bottom center;
 }
 
 .NB-account .NB-signup {
     float: left;
-    width: 186px;
+    width: 146px;
     padding: 0 4px;
     margin: 12px 0 0;
     height: 206px;
@@ -113,7 +112,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 
 .NB-account .NB-import-signup {
     float: left;
-    width: 186px;
+    width: 142px;
     padding: 0 0 64px 0;
     margin: 0 50px 0 12px;
     height: 206px;
@@ -122,7 +121,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 
 .NB-account .NB-import-signup-text {
     text-align: center;
-    width: 200px;
+    width: 152px;
 }
 .NB-account .NB-import-signup-text h3 {
     margin-top: 48px;
@@ -178,7 +177,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     font-size:13px;
     margin:0 0 12px;
     padding:5px;
-    width:174px;
+    width:134px;
 }
 
 .NB-account input[type=text]:focus,
@@ -188,7 +187,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 
 .NB-account input[type=submit] {
     outline: none;
-    width: 186px; /* 174=input-width + 5*2=padding + 2=border */
+    width: 146px; /* 174=input-width + 5*2=padding + 2=border */
     margin: 4px 5px 0 0;
     padding: 4px 10px 5px;
     text-shadow: 0 -1px 0 #C7C9D2;
@@ -245,7 +244,6 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     font-size: 12px;
     color: #AF4D18;
     font-weight: bold;
-    width: 200px;
     padding: 0;
 }
 
@@ -995,11 +993,17 @@ background: transparent;
   margin-left: 24px;
 }
 
+#story_titles .NB-feedbar .NB-feedbar-settings {
+    background: transparent url("/media/embed/icons/silk/cog.png") no-repeat center center;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    padding: 0 24px 0 12px;
+}
 #story_titles .NB-feedbar .NB-feedbar-train-feed {
     background: transparent url("/media/embed/icons/silk/bricks.png") no-repeat center center;
     width: 16px;
     height: 16px;
-/*    display: none;*/
     cursor: pointer;
     padding: 0 0 0 38px;
 }
@@ -1007,7 +1011,6 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/chart_curve.png') no-repeat center center;    
     width: 16px;
     height: 16px;
-/*    display: none;*/
     cursor: pointer;
     margin:3px 0 0 -6px;
     padding:0 24px 0 6px;
@@ -2234,7 +2237,10 @@ background: transparent;
     font-size: 10px;
     padding: 2px 8px;
     line-height: 16px;
-    margin: 0;
+    margin: 0 12px 0 0;
+}
+#story_pane .NB-story-comment-reply-form .NB-modal-submit-delete {
+    font-size: 9px;
 }
 #story_pane .NB-story-comment-reply-form .NB-error {
     font-size: 10px;
@@ -3414,6 +3420,13 @@ form.opml_import_form input {
   -ms-transition: all .12s ease-out;
   background: transparent url('/media/embed/reader/spacer_16.png') no-repeat 1px 0px;
 }
+
+@media screen and (max-width: 1050px) {
+    .NB-splash-info .NB-splash-links .NB-splash-link a {
+        padding-right: 6px;
+        padding-left: 18px;
+    }
+}
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
     padding-top: 0;
     margin-top: -1px;
@@ -3635,11 +3648,10 @@ form.opml_import_form input {
 /* ======================= */
 
 .NB-taskbar-intelligence {
-    width: 100px;
     position: absolute;
-    left: 92px;
+    left: 90px;
     top: 6px;
-    font-size: .5em;
+    font-size: 9px;
     white-space: nowrap;
 }
 
@@ -3670,18 +3682,38 @@ form.opml_import_form input {
     background: transparent url(/media/embed/icons/silk/bullet_green.png) no-repeat 0 0;
 }
 
-.NB-intelligence-slider li {
-    width: 40px;
+.NB-intelligence-slider {
+}
+.NB-intelligence-slider .segmented-control {
+    float: left;
+    width: auto;
+}
+.NB-intelligence-slider .NB-intelligence-slider-control {
+    height: 17px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 #C8C8C8;
     text-align: center;
+    line-height: 17px;
+    position: relative;
+    padding: 0 8px;
+}
+.NB-intelligence-slider .NB-intelligence-slider-control.NB-active {
+    color: white;
+    text-shadow: 0 1px 0 #303030;
+}
+
+.NB-narrow .NB-intelligence-slider .NB-intelligence-label {
+    display: none;
 }
 .NB-intelligence-slider img {
     width: 16px;
     height: 16px;
-    margin: 0px -8px 0 0;
+    margin: 1px 0 0 -8px;
+    float: left;
     vertical-align: bottom;
 }
-.NB-intelligence-slider img:last-child {
-    margin-right: 0;
+.NB-narrow .NB-intelligence-slider img {
+    margin: 1px 3px 0;
 }
 /* ===================== */
 /* = Add Feeds/Folders = */
@@ -4357,7 +4389,7 @@ form.opml_import_form input {
 .NB-account .NB-module {
     margin: 24px 0 0;
     padding: 0;
-    width: 478px;
+    width: 398px;
     clear: both;
     overflow: hidden;
 }
@@ -4392,6 +4424,29 @@ form.opml_import_form input {
 .NB-module.NB-module-features .NB-module-content-header {
     margin-left: 12px;
     padding-right: 12px;
+}
+
+.NB-module-account .NB-module-item-image {
+    position: relative;
+    float: left;
+}
+.NB-module-account .NB-module-content-header,
+.NB-module-account .NB-module-item .NB-module-item-title {
+    clear: none;
+    overflow: hidden;
+    margin-left: 0;
+}
+.NB-module-account .NB-module-item .NB-module-item-image img {
+    width: 100px;
+    margin-right: 14px;
+    height: auto;
+    border: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+    margin-top: 6px;
+    border-radius: 4px;
 }
 
 /* ======================= */
@@ -4512,6 +4567,14 @@ form.opml_import_form input {
   text-transform: uppercase;
   font-size: 12px;
 }
+.NB-module-stats .NB-module-stats-count-shared-stories {
+    width: 38%;
+}
+.NB-module-stats .NB-module-stats-count-following,
+.NB-module-stats .NB-module-stats-count-followers {
+    width: 31%;
+}
+
 .NB-module-stats .NB-module-stats-count-number {
   clear: both;
   font-size: 18px;
@@ -4528,12 +4591,12 @@ form.opml_import_form input {
 
 .NB-module-stats .NB-module-stats-count-graph {
   clear: both;
-  padding: 0 12px;
+  padding: 0 0 0 16px;
 }
 .NB-graph-value {
   float: left;
   height: 38px;
-  width: 4px;
+  width: 3px;
   padding: 0 1px 0 0;
   margin: 0 0 18px 0;
   position: relative;
@@ -4544,7 +4607,7 @@ form.opml_import_form input {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 4px;
+  width: 3px;
 }
 
 .NB-graph-value .NB-graph-label {
@@ -4570,7 +4633,7 @@ form.opml_import_form input {
 /* ================== */
 
 .NB-modules-center {
-    margin: 24px 478px 0 0px;
+    margin: 24px 398px 0 0px;
     padding: 0 24px;
 }
 
@@ -4578,7 +4641,7 @@ form.opml_import_form input {
     margin: 0 0 24px;
 }
 
-@media screen and (max-width: 1050px) {
+@media screen and (max-width: 950px) {
     .NB-modules-center {
         display: none;
     }
@@ -4823,13 +4886,11 @@ form.opml_import_form input {
     text-transform: uppercase;
     margin: 4px 0 0;
     padding: 0;
+    position: relative;
 }
 
 .NB-menu-manage.NB-inverse {
   margin: 0 0 4px;
-}
-
-.NB-menu-manage.NB-menu-manage-notop {
 }
 
 .NB-menu-manage-container .NB-menu-manage-arrow {
@@ -4853,7 +4914,7 @@ form.opml_import_form input {
     top: auto;
 }
 
-.NB-menu-manage li {
+.NB-menu-manage li.NB-menu-item {
     margin: 0 0 0 0;
     padding: 0;
     cursor: pointer;
@@ -4862,8 +4923,8 @@ form.opml_import_form input {
     background-color: #BAE3A8;
 }
 
-.NB-menu-manage li:hover:not(.NB-disabled),
-.NB-menu-manage li.NB-hover {
+.NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled):not(.NB-active),
+.NB-menu-manage li.NB-menu-item.NB-hover:not(.NB-disabled):not(.NB-active) {
     background-color: #639510;
     color: white;
 }
@@ -4914,7 +4975,7 @@ form.opml_import_form input {
   text-shadow: 0 1px 0 #F0F0F0;
 }
 
-.NB-menu-manage li:hover:not(.NB-disabled) .NB-menu-manage-title {
+.NB-menu-manage li.NB-menu-item:hover:not(.NB-disabled) .NB-menu-manage-title {
     text-shadow: 0 1px 0 #000;
 }
 
@@ -4934,7 +4995,7 @@ form.opml_import_form input {
   color: #718C7B;
 }
 
-.NB-menu-manage li:hover .NB-menu-manage-subtitle {
+.NB-menu-manage li.NB-menu-item:hover .NB-menu-manage-subtitle {
     color: #D2E2F8;
 }
 .NB-menu-manage .NB-menu-manage-title {
@@ -4952,11 +5013,6 @@ form.opml_import_form input {
   height: 18px;
   top: 5px;
   left: 10px;
-}
-
-.NB-menu-manage .NB-menu-manage-feed,
-.NB-menu-manage .NB-menu-manage-story {
-    position: relative;
 }
 
 .NB-menu-manage .NB-menu-manage-feed-info,
@@ -5104,7 +5160,7 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-confirm select {
     height: auto;
 }
-.NB-menu-manage li.NB-menu-manage-confirm:hover {
+.NB-menu-manage li.NB-menu-item.NB-menu-manage-confirm:hover {
     background-color: #BAE3A8;
     cursor: default;
 }
@@ -5336,6 +5392,40 @@ form.opml_import_form input {
     display: none;
 }
 
+.NB-menu-manage .NB-menu-manage-controls {
+    overflow: hidden;
+    background: none;
+    padding: 2px 0 3px;
+}
+.NB-menu-manage li.NB-menu-manage-controls:hover {
+    overflow: hidden;
+    background: none;
+    cursor: default;
+}
+.NB-menu-manage .NB-menu-manage-controls .segmented-control {
+    display: inline-block;
+    margin: 4px 0 0 36px;
+    height: 14px;
+    width: auto;
+    color: white;
+    overflow: hidden;
+    text-align: center;
+}
+.NB-menu-manage .NB-menu-manage-controls .segmented-control:last-child {
+}
+.NB-menu-manage .NB-menu-manage-controls .segmented-control li {
+    clear: none;
+    padding: 1px 12px 0;
+    font-size: 10px;
+    color: #E0E0E0;
+}
+.NB-menu-manage .NB-menu-manage-controls .segmented-control li:hover {
+    background-color: #639510;
+}
+.NB-menu-manage .NB-menu-manage-controls .segmented-control li.NB-active {
+    color: white;
+    background-color: transparent;
+}
 /* ==================== */
 /* = Statistics Modal = */
 /* ==================== */
@@ -7126,6 +7216,33 @@ form.opml_import_form input {
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
     background: transparent url('/media/embed/reader/instapaper.png') no-repeat 0 0;
 }
+.NB-modal-preferences .segmented-control {
+    display: block;
+    margin: 4px 0 12px 24px;
+    float: left;
+/*    height: 14px;*/
+    width: auto;
+    color: white;
+    overflow: hidden;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 18px;
+}
+.NB-modal-preferences .segmented-control:last-child {
+}
+.NB-modal-preferences .segmented-control li {
+    clear: none;
+    padding: 1px 12px 0;
+    font-size: 12px;
+    color: #E0E0E0;
+}
+.NB-modal-preferences .segmented-control li:hover {
+    background-color: #639510;
+}
+.NB-modal-preferences .segmented-control li.NB-active {
+    color: white;
+    background-color: transparent;
+}
 
 /* ================== */
 /* = Account Dialog = */
@@ -7291,43 +7408,64 @@ form.opml_import_form input {
 /* = About page = */
 /* ============== */
 
-.NB-static-about ul,
-.NB-static-faq ul {
+.NB-static-about .NB-module ul,
+.NB-static-faq .NB-module ul {
   margin: 2px 12px 4px 0;
   font-size: 13px;
 }
 
-.NB-static-about ul li
-.NB-static-faq ul li {
-  margin: 0 0 12px;
-  padding-left: 20px;
+.NB-static-about .NB-module ul li,
+.NB-static-faq .NB-module ul li {
+  line-height: 20px;
+  margin-bottom: 12px;
   list-style: none;
 }
 
-.NB-static-about ul li.last,
-.NB-static-static ul li.last {
+.NB-static-about .NB-module ul li.last,
+.NB-static-static .NB-module ul li.last {
   margin-bottom: 0;
 }
 
 .NB-static-about ul.NB-about-what li {
-  background: transparent url('/media/embed/icons/silk/bullet_blue.png') no-repeat 0 0;
+  background: transparent url('/media/embed/icons/silk/bullet_blue.png') no-repeat 0 3px;
+  padding-left: 24px;
 }
 .NB-static-about ul.NB-about-server li {
-  background: transparent url('/media/embed/icons/silk/bullet_yellow.png') no-repeat 0 0;
+  background: transparent url('/media/embed/icons/silk/bullet_yellow.png') no-repeat 0 3px;
+  padding-left: 24px;
 }
 .NB-static-about ul.NB-about-client li {
-  background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 0 0;
+  background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 0 3px;
+  padding-left: 24px;
 }
-.NB-static-about ul.NB-about-who li {
-  background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 0 0;
+.NB-static-about .NB-about-why li {
+  background: transparent url('/media/embed/icons/silk/bullet_orange.png') no-repeat 0 3px;
+  padding-left: 24px;
 }
-.NB-static-about ul.NB-about-why li {
-  background: transparent url('/media/embed/icons/silk/bullet_orange.png') no-repeat 0 0;
+
+.NB-static-about .NB-about-who {
+    overflow: hidden;
+}
+.NB-static-about .NB-about-who li {
+    float: left;
+    margin: 0 24px 0 0;
+    text-align: center;
+    list-style: none;
+}
+.NB-static-about .NB-about-who img {
+    border: 1px solid #505050;
+    margin: 12px 0;
+    width: 170px;
 }
 
 .NB-static-faq .NB-link-about-faq {
   float: right;
   line-height: 30px;
+}
+
+.NB-static-faq .NB-module ul li {
+  background: transparent url('/media/embed/icons/silk/bullet_orange.png') no-repeat 0 3px;
+  padding-left: 24px;
 }
 
 .NB-static-faq ul li .NB-faq-question {
@@ -8121,6 +8259,9 @@ form.opml_import_form input {
     padding-right: 3px;
     font-weight: bold;
 }
+.NB-profile-badge .NB-profile-badge-blurblog-link {
+    text-transform: none;
+}
 .NB-profile-badge-actions {
     float: right;
 }
@@ -8260,46 +8401,75 @@ form.opml_import_form input {
 .NB-interaction {
     list-style: none;
     position: relative;
-    margin: 0 8px 0 8px;
-    padding: 6px 4px 6px 28px;
+    margin: 0 0 0 0;
+    padding: 6px 12px 6px 40px;
+    border-top: 1px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
     border-bottom: 1px solid #F2F2EE;
     overflow: hidden;
+    cursor: pointer;
 }
+
 .NB-interaction.NB-highlighted {
     background-color: #FFFFF6;
     border-bottom: 1px solid #F0F0E6;
 }
 .NB-interaction:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
+    border-bottom: 1px solid transparent;
     margin-bottom: 0;
+}
+.NB-interaction:hover {
+    background-color: #F3F6FD;
+    background-image: -moz-linear-gradient(top, #F5F7FB, #EBF1FE); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F7FB), to(#EBF1FE)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #F5F7FB, #EBF1FE);
+    border: 1px solid #C3CFE2;
+    border-bottom: 1px solid #B9C5DC;
+}
+.NB-interaction:active {
+    background-color: #FBE5C7;
+    background-image: -moz-linear-gradient(top, #FBE5C7, #F7D9AD); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FBE5C7), to(#F7D9AD)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #FBE5C7, #F7D9AD);
+    border: 1px solid #F4C37D;
+}
+.NB-interaction .NB-splash-link:hover {
+    color: #405BA8;
+}
+.NB-interaction:active .NB-interaction-content .NB-splash-link {
+    color: #A85B40;
 }
 .NB-interaction-photo {
     position: absolute;
     width: 16px;
     height: 16px;
     border-radius: 3px;
-    left: 4px;
+    left: 12px;
     top: 10px;
     cursor: pointer;
 }
 .NB-interaction-date {
     color: #B0B0B0;
-    font-size: 11px;
+    font-size: 10px;
     float: right;
     text-transform: uppercase;
     padding: 5px 0 3px 4px;
 }
+.NB-interaction:hover .NB-interaction-date { 
+    color: #808080;
+}
 .NB-interaction-title {
-    font-size: 13px;
+    font-size: 12px;
     line-height: 18px;
     color: #404040;
     padding: 2px 0 0 0;
+    opacity: .9;
 }
 .NB-interaction-content {
-    font-size: 11px;
-    padding-top: 2px;
-    line-height: 14px;
+    font-size: 12px;
+    padding-top: 8px;
+    line-height: 16px;
     color: #808080;
 }
 .NB-interaction-username {

@@ -49,7 +49,6 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
         });
             
         $(this.el).html($header);
-        $("body").toggleClass("NB-feedlist-hide-read-feeds", !!hide_read_feeds);
         
         if (NEWSBLUR.assets.preference('show_tooltips')) {
             this.$('.NB-feeds-header-sites').tipsy({
@@ -58,7 +57,15 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
             });
         }
         
+        this.toggle_hide_read_preference();
+        
         return this;
+    },
+    
+    toggle_hide_read_preference: function() {
+        var hide_read_feeds = NEWSBLUR.assets.preference('hide_read_feeds');
+        this.$('.NB-feeds-header-sites').toggleClass('NB-feedlist-hide-read-feeds', !!hide_read_feeds);
+        $("body").toggleClass("NB-feedlist-hide-read-feeds", !!hide_read_feeds);
     },
     
     count: function() {

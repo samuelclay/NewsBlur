@@ -193,7 +193,7 @@
               <div class="NB-signup-optional">
                 {% if login_form.errors %}
                   {% for field, error in login_form.errors.items %}
-                    <a href="mailto:password@newsblur.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot password?</a>
+                    <a href="mailto:password@newsblur.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot?</a>
                   {% endfor %}
                 {% else %}
                   Optional
@@ -220,7 +220,6 @@
               {{ signup_form.password }}
             </div>
             <div class="NB-signup-hidden">
-              <div class="NB-signup-optional">Optional</div>
               {{ signup_form.email.label_tag }}
               {{ signup_form.email }}
             </div>
@@ -250,11 +249,15 @@
           Welcome, <span class="NB-module-account-username">{{ user.username }}</span>
         </h5>
         <div class="NB-module-item {% if train_count == active_count %}NB-last{% endif %}">
-          <div class="NB-module-item-image">
-            {% if user.profile.is_premium %}
-              <img src="{{ MEDIA_URL }}/img/reader/account_premium_{{ account_images|random }}.jpg" />
+          <div class="NB-module-item-image NB-load-user-profile">
+            {% if social_profile.large_photo_url %}
+              <img src="{{ social_profile.large_photo_url }}">
             {% else %}
-              <img src="{{ MEDIA_URL }}/img/reader/account_standard_{{ account_images|random }}.jpg" />
+                {% if user.profile.is_premium %}
+                  <img src="{{ MEDIA_URL }}/img/reader/account_premium_{{ account_images|random }}.jpg" />
+                {% else %}
+                  <img src="{{ MEDIA_URL }}/img/reader/account_standard_{{ account_images|random }}.jpg" />
+                {% endif %}
             {% endif %}
           </div>
           <h3 class="NB-module-content-header">
@@ -267,18 +270,18 @@
             {% endif %}
           </h3>
           <div class="NB-module-item-title">
-            <div class="NB-module-item NB-module-stats NB-module-account-stats {% if not user_statistics.shared_stories %}NB-hidden{% endif %}">
+            <div class="NB-module-item NB-module-stats NB-module-account-stats {% if not social_profile.shared_stories_count %}NB-hidden{% endif %}">
                 <div class="NB-module-stats-count NB-module-stats-count-shared-stories">
-                    <div class="NB-module-stats-count-number">{{ user_statistics.shared_stories|commify }}</div>
-                    <div class="NB-module-stats-count-description">Shared stor{{ user_statistics.shared_stories|pluralize:"y,ies" }}</div>
+                    <div class="NB-module-stats-count-number">{{ social_profile.shared_stories_count|commify }}</div>
+                    <div class="NB-module-stats-count-description">Shared stor{{ social_profile.shared_stories_count|pluralize:"y,ies" }}</div>
                 </div>
                 <div class="NB-module-stats-count NB-module-stats-count-following">
-                    <div class="NB-module-stats-count-number">{{ user_statistics.following|commify }}</div>
+                    <div class="NB-module-stats-count-number">{{ social_profile.following_count|commify }}</div>
                     <div class="NB-module-stats-count-description">Following</div>
                 </div>
                 <div class="NB-module-stats-count NB-module-stats-count-followers">
-                    <div class="NB-module-stats-count-number">{{ user_statistics.followers|commify }}</div>
-                    <div class="NB-module-stats-count-description">Follower{{ user_statistics.followers|pluralize }}</div>
+                    <div class="NB-module-stats-count-number">{{ social_profile.follower_count|commify }}</div>
+                    <div class="NB-module-stats-count-description">Follower{{ social_profile.follower_count|pluralize }}</div>
                 </div>
             </div>
           </div>
@@ -301,9 +304,6 @@
                   <img src="{{ MEDIA_URL }}/img/reader/module_tutorial.jpg" />
               </div>
               <h3 class="NB-module-content-header">
-                  <span class="NB-module-content-subtitle">
-                      It's quick!
-                  </span>
                   Start by setting up NewsBlur
               </h3>
               <div class="NB-module-item-title">
@@ -321,10 +321,7 @@
                   <img src="{{ MEDIA_URL }}/img/reader/account_friends.jpg" />
               </div>
               <h3 class="NB-module-content-header">
-                  <span class="NB-module-content-subtitle">
-                      Share stories
-                  </span>
-                  Get Social
+                  Get Social and share stories
               </h3>
               <div class="NB-module-item-title">
                   <div class="NB-modal-submit">
@@ -520,21 +517,20 @@
           <div class="NB-intelligence-slider">
               <ul class="segmented-control">
                   <li class="NB-intelligence-slider-control NB-intelligence-slider-red">
-                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_red.png">
-                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_yellow.png">
-                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                      All
                   </li>
                   <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow">
                       <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_yellow.png">
-                      <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                      <span class="NB-intelligence-label">Unread</span>
                   </li>
                   <li class="NB-intelligence-slider-control NB-intelligence-slider-green">
                       <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                      <span class="NB-intelligence-label">Focus</span>
                   </li>
               </ul>
           </div>
         </div>
-        <div class="NB-taskbar-sidebar-toggle-close" title="Hide sidebar (shift + u)"></div>
+        {# <div class="NB-taskbar-sidebar-toggle-close" title="Hide sidebar (shift + u)"></div> #}
       </div>
     </div>
 

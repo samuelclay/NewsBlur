@@ -38,6 +38,8 @@
       'story_pane_anchor'       : 'south',
       'new_window'              : 1,
       'default_view'            : 'page',
+      'default_order'           : 'newest',
+      'default_read_filter'     : 'all',
       'hide_read_feeds'         : 0,
       'show_tooltips'           : 1,
       'feed_order'              : 'ALPHABETICAL',
@@ -78,6 +80,7 @@
   <script type="text/javascript">
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-8371683-2']);
+    _gaq.push(['_setDomainName', "{% current_domain %}"]);
     _gaq.push(['_trackPageview']);
   </script>
   

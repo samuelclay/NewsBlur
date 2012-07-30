@@ -163,6 +163,22 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site basis.')
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-view-setting' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('ul', { className: 'segmented-control NB-preference-view-setting-order' }, [
+                                $.make('li', { className: 'NB-preference-view-setting-order-newest NB-active' }, 'Newest first'),
+                                $.make('li', { className: 'NB-preference-view-setting-order-oldest' }, 'Oldest')
+                            ]),
+                            $.make('ul', { className: 'segmented-control NB-preference-view-setting-read-filter' }, [
+                                $.make('li', { className: 'NB-preference-view-setting-read-filter-all  NB-active' }, 'All stories'),
+                                $.make('li', { className: 'NB-preference-view-setting-read-filter-unread' }, 'Unread only')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Default story order',
+                            $.make('div', { className: 'NB-preference-sublabel' }, 'You can override this on a per-site and per-folder basis.')
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-story-pane-position' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -663,6 +679,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 return false;
             }
         });
+        var order = NEWSBLUR.Preferences['default_order'];
+        var read_filter = NEWSBLUR.Preferences['default_read_filter'];
+        $('.NB-preference-view-setting-order-oldest', $modal).toggleClass('NB-active', order == 'oldest');
+        $('.NB-preference-view-setting-order-newest', $modal).toggleClass('NB-active', order != 'oldest');
+        $('.NB-preference-view-setting-read-filter-unread', $modal).toggleClass('NB-active', read_filter == 'unread');
+        $('.NB-preference-view-setting-read-filter-all', $modal).toggleClass('NB-active', read_filter != 'unread');
         
         var share_preferences = _.select(_.keys(NEWSBLUR.Preferences), function(p) { 
             return p.indexOf('story_share') != -1; 
@@ -707,6 +729,8 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $('input[type=checkbox]', this.$modal).each(function() {
             preferences[$(this).attr('name')] = $(this).is(':checked');
         });
+        preferences['default_order'] = $('.NB-preference-view-setting-order li.NB-active', this.$modal).hasClass('NB-preference-view-setting-order-oldest') ? 'oldest' : 'newest';
+        preferences['default_read_filter'] = $('.NB-preference-view-setting-read-filter li.NB-active', this.$modal).hasClass('NB-preference-view-setting-read-filter-unread') ? 'unread' : 'all';
 
         return preferences;
     },
@@ -760,6 +784,20 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
       });
     },
     
+    change_view_setting: function(view, setting) {
+        if (view == 'order') {
+            $('.NB-preference-view-setting-order-oldest').toggleClass('NB-active', setting == 'oldest');
+            $('.NB-preference-view-setting-order-newest').toggleClass('NB-active', setting != 'oldest');
+        } else if (view == 'read_filter') {
+            $('.NB-preference-view-setting-read-filter-unread').toggleClass('NB-active', setting == 'unread');
+            $('.NB-preference-view-setting-read-filter-all').toggleClass('NB-active', setting != 'unread');
+        }
+        
+        this.enable_save();
+    },
+    
+    
+    
     // ===========
     // = Actions =
     // ===========
@@ -781,6 +819,16 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             e.preventDefault();
             
             self.close();
+        });
+        $.targetIs(e, { tagSelector: '.segmented-control.NB-preference-view-setting-order li' }, function($t, $p) {
+            e.preventDefault();
+            var order = $t.hasClass('NB-preference-view-setting-order-oldest') ? 'oldest' : 'newest';
+            self.change_view_setting('order', order);
+        });
+        $.targetIs(e, { tagSelector: '.segmented-control.NB-preference-view-setting-read-filter li' }, function($t, $p) {
+            e.preventDefault();
+            var read_filter = $t.hasClass('NB-preference-view-setting-read-filter-unread') ? 'unread' : 'all';
+            self.change_view_setting('read_filter', read_filter);
         });
     },
     

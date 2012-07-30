@@ -56,14 +56,20 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         NEWSBLUR.assets.rename_feed(this.id, new_title);
     },
     
-    get_view: function($feed) {
-        return _.detect(this.views, function(view) {
+    get_view: function($feed, fallback) {
+        var found_view = _.detect(this.views, function(view) {
             if ($feed) {
                 return view.el == $feed.get(0);
             } else {
                 return true;
             }
         });
+        
+        if (!found_view && fallback && this.views.length) {
+            found_view = this.views[0];
+        }
+        
+        return found_view;
     },
     
     is_social: function() {

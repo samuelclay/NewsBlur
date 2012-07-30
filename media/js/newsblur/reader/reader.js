@@ -66,7 +66,8 @@
             this.constants = {
               FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
               FILL_OUT_PAGES: 50,
-              RIVER_STORIES_FOR_STANDARD_ACCOUNT: 5
+              RIVER_STORIES_FOR_STANDARD_ACCOUNT: 5,
+              MIN_FEED_LIST_SIZE: 206
             };
     
             // ==================
@@ -190,7 +191,7 @@
                 center__paneSelector:   ".right-pane",
                 west__paneSelector:     ".left-pane",
                 west__size:             this.model.preference('feed_pane_size'),
-                west__minSize:          240,
+                west__minSize:          this.constants.MIN_FEED_LIST_SIZE,
                 west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
                 spacing_open:           4,
                 resizerDragOpacity:     0.6,
@@ -305,7 +306,7 @@
                 $('.NB-task-manage').tipsy('disable');
             }
             $('.NB-module-content-account-realtime').tipsy({
-                gravity: 's',
+                gravity: 'se',
                 delayIn: 0
             });
         },
@@ -314,6 +315,7 @@
             var feed_pane_size = state.size;
             
             $('#NB-splash').css('left', feed_pane_size);
+            $pane.toggleClass("NB-narrow", this.layout.outerLayout.state.west.size < 240);
             this.flags.set_feed_pane_size = this.flags.set_feed_pane_size || _.debounce( _.bind(function() {
                 var feed_pane_size = this.layout.outerLayout.state.west.size;
                 this.model.preference('feed_pane_size', feed_pane_size);
@@ -804,20 +806,16 @@
                 'fetched_feeds': 0
             });
             
-            this.flags['has_unfetched_feeds'] = NEWSBLUR.assets.feeds.has_unfetched_feeds();
-            
-            if (this.flags['has_unfetched_feeds']) {
-                var counts = this.model.count_unfetched_feeds();
-                this.counts['unfetched_feeds'] = counts['unfetched_feeds'];
-                this.counts['fetched_feeds'] = counts['fetched_feeds'];
+            var counts = this.model.count_unfetched_feeds();
+            this.counts['unfetched_feeds'] = counts['unfetched_feeds'];
+            this.counts['fetched_feeds'] = counts['fetched_feeds'];
 
-                if (this.counts['unfetched_feeds'] == 0) {
-                    this.flags['has_unfetched_feeds'] = false;
-                    this.hide_unfetched_feed_progress();
-                } else {
-                    this.flags['has_unfetched_feeds'] = true;
-                    this.show_unfetched_feed_progress();
-                }
+            if (this.counts['unfetched_feeds'] == 0) {
+                this.flags['has_unfetched_feeds'] = false;
+                this.hide_unfetched_feed_progress();
+            } else {
+                this.flags['has_unfetched_feeds'] = true;
+                this.show_unfetched_feed_progress();
             }
         },
         
@@ -1055,13 +1053,10 @@
         },
         
         set_correct_story_view_for_feed: function(feed_id, view) {
-            var feed = NEWSBLUR.assets.get_feed(feed_id);
+            var feed = NEWSBLUR.assets.get_feed(feed_id || this.active_feed);
             var $original_tabs = $('.task_view_page, .task_view_story');
             var $page_tab = $('.task_view_page');
-            if (!view) {
-                view = NEWSBLUR.assets.view_setting(feed_id);
-                if (_.isObject(view)) view = view['v'];
-            }
+            view = view || NEWSBLUR.assets.view_setting(feed_id);
 
             if (feed && feed.get('disabled_page')) {
                 view = 'feed';
@@ -1095,6 +1090,23 @@
             }
 
             this.story_view = view;
+        },
+        
+        change_view_setting: function(feed_id, setting, $feed) {
+            var changed = NEWSBLUR.assets.view_setting(feed_id, setting);
+            
+            if (!changed) return;
+            
+            if (feed_id == this.active_feed && this.flags.social_view) {
+                this.open_social_stories(feed_id, {$feed: $feed});
+            } else if (feed_id == this.active_feed && this.flags.river_view) {
+                var folder = NEWSBLUR.assets.folders.get_view($feed).model;
+                this.open_river_stories($feed, folder);
+            } else if (feed_id == this.active_feed) {
+                this.open_feed(feed_id, {$feed: $feed});
+            }
+            
+            this.show_correct_feed_view_options_in_menu();
         },
         
         // ===============
@@ -1133,7 +1145,7 @@
             this.$s.$body.addClass('NB-view-river');
             this.flags.river_view = true;
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            var explicit_view_setting = this.model.view_setting(this.active_feed);
+            var explicit_view_setting = this.model.view_setting(this.active_feed, 'view');
             if (!explicit_view_setting || explicit_view_setting == 'page') {
               explicit_view_setting = 'feed';
             }
@@ -1185,7 +1197,7 @@
             this.flags.river_view = true;
             
             $('.task_view_page', this.$s.$taskbar).addClass('NB-disabled');
-            var explicit_view_setting = this.model.view_setting(this.active_feed);
+            var explicit_view_setting = this.model.view_setting(this.active_feed, 'view');
             if (!explicit_view_setting || explicit_view_setting == 'page') {
               explicit_view_setting = 'feed';
             }
@@ -2061,7 +2073,7 @@
             var $feed_to_story_arrow = $('.NB-taskbar .NB-task-view-feed-to-story-arrow');
             
             if (!options.skip_save_type && this.story_view != view) {
-                this.model.view_setting(this.active_feed, view);
+                this.model.view_setting(this.active_feed, {'view': view});
             }
             
             $page_to_feed_arrow.hide();
@@ -2215,6 +2227,7 @@
         },
         
         open_social_profile_modal: function(user_id) {
+            if (!user_id) user_id = NEWSBLUR.Globals.user_id;
             if (_.string.contains(user_id, 'social:')) {
                 user_id = parseInt(user_id.replace('social:', ''), 10);
             }
@@ -2265,48 +2278,48 @@
                         $.make('span', { className: 'NB-menu-manage-title' }, "Manage NewsBlur")
                     ]).corner('tl tr 8px'),
                     $.make('li', { className: 'NB-menu-separator' }), 
-                    $.make('li', { className: 'NB-menu-manage-mark-read NB-menu-manage-site-mark-read' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-site-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark everything as read'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Choose how many days back.')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-trainer' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-trainer' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence Trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Accurate filters are happy filters.')
                     ]),
-                    (show_chooser && $.make('li', { className: 'NB-menu-manage-feedchooser' }, [
+                    (show_chooser && $.make('li', { className: 'NB-menu-item NB-menu-manage-feedchooser' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Choose Your 64 sites'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'Enable the sites you want.')
                     ])),
                     $.make('li', { className: 'NB-menu-separator' }), 
-                    $.make('li', { className: 'NB-menu-manage-keyboard' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-keyboard' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Keyboard shortcuts')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-tutorial' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-tutorial' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Tips &amp; Tricks')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-goodies' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-goodies' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }), 
-                    $.make('li', { className: 'NB-menu-manage-account' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-account' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Account')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-profile-editor' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-profile-editor' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Profile')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-friends' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-friends' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Friends')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-preferences' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-preferences' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Preferences')
                     ])
@@ -2317,68 +2330,79 @@
                 if (!feed) return;
                 var unread_count = this.get_unread_count(true, feed_id);
                 var tab_unread_count = Math.min(25, unread_count);
-                $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
+                $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-feed' }, [
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
-                    (feed.get('has_exception') && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-exception' }, [
+                    (feed.get('has_exception') && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-exception' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Fix this misbehaving site')
                     ])),
                     (feed.get('has_exception') && $.make('li', { className: 'NB-menu-separator-inverse' })),
-                    (feed.get('exception_type') != 'feed' && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-mark-read NB-menu-manage-feed-mark-read' }, [
+                    (feed.get('exception_type') != 'feed' && $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-feed-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
                     ])),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-reload' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-reload' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Insta-fetch stories')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, [
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
+                            $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first'),
+                            $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest')
+                        ]),
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
+                            $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
+                            $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
+                        ])
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-settings' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
-                    ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-recommend' }, [
+                    // $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-recommend' }, [
+                    //     $.make('div', { className: 'NB-menu-manage-image' }),
+                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
+                    // ]),
+                    // $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-settings' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
                     ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-move NB-menu-manage-feed-move' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-feed-move' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Move to folder')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-confirm NB-menu-manage-feed-move-confirm NB-modal-submit' }, [
+                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-feed-move-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
                             $.make('div', { className: 'NB-menu-manage-move-save NB-menu-manage-feed-move-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
                             $.make('div', { className: 'NB-menu-manage-image' }),
                             $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model))
                         ])
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-rename NB-menu-manage-feed-rename' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this site')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-confirm NB-menu-manage-feed-rename-confirm NB-modal-submit' }, [
+                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-feed-rename-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
                             $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-feed-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
                             $.make('div', { className: 'NB-menu-manage-image' }),
                             $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed.get('feed_title') })
                         ])
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-feed-delete' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-delete NB-menu-manage-feed-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this site')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete-confirm NB-menu-manage-feed-delete-confirm' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-delete-confirm NB-menu-manage-feed-delete-confirm' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
                     ])
@@ -2394,42 +2418,53 @@
                 if (!feed) return;
                 var unread_count = this.get_unread_count(true, feed_id);
                 var tab_unread_count = Math.min(25, unread_count);
-                $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
+                $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-feed' }, [
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
-                    (feed.get('has_exception') && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-exception' }, [
+                    (feed.get('has_exception') && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-exception' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Fix this misbehaving site')
                     ])),
                     (feed.get('has_exception') && $.make('li', { className: 'NB-menu-separator-inverse' })),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-social-profile' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-social-profile' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'View profile')
                     ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
-                    (feed.get('exception_type') != 'feed' && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-mark-read NB-menu-manage-feed-mark-read' }, [
+                    (feed.get('exception_type') != 'feed' && $.make('li', { className: 'NB-menu-separator' })),
+                    (feed.get('exception_type') != 'feed' && $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-feed-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
                     ])),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-stats' }, [
+                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-separator' })),
+                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
+                            $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first'),
+                            $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest')
+                        ]),
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
+                            $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
+                            $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
+                        ])
+                    ])),
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-settings' }, [
-                        $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
-                    ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-feed-train' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
                     ]),
-                    (feed.get('user_id') != NEWSBLUR.Globals.user_id && $.make('li', { className: 'NB-menu-separator' })),
-                    (feed.get('user_id') != NEWSBLUR.Globals.user_id && $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-socialfeed-delete' }, [
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-settings' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
+                    ]),
+                    (feed.get('user_id') != NEWSBLUR.Globals.user_id && $.make('li', { className: 'NB-menu-item NB-menu-manage-delete NB-menu-manage-socialfeed-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Unfollow')
                     ])),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete-confirm NB-menu-manage-socialfeed-delete-confirm' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-delete-confirm NB-menu-manage-socialfeed-delete-confirm' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Really unfollow?')
                     ])
@@ -2441,44 +2476,51 @@
                     $('.NB-menu-manage-feed-unreadtabs', $manage_menu).addClass('NB-disabled');
                 }
             } else if (type == 'folder') {
-                $manage_menu = $.make('ul', { className: 'NB-menu-manage' }, [
+                $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-folder' }, [
                     $.make('li', { className: 'NB-menu-separator-inverse' }),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-mark-read NB-menu-manage-folder-mark-read' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-mark-read NB-menu-manage-folder-mark-read' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark folder as read')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-folder-subscribe' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-subscribe' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Add a site to this folder')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-move NB-menu-manage-folder-move' }, [
+                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-folder' }, [
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
+                            $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first'),
+                            $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest')
+                        ])
+                    ]),
+                    $.make('li', { className: 'NB-menu-separator' }),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-folder-move' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Move to folder')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-confirm NB-menu-manage-folder-move-confirm NB-modal-submit' }, [
+                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-folder-move-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
                             $.make('div', { className: 'NB-menu-manage-move-save NB-menu-manage-folder-move-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
                             $.make('div', { className: 'NB-menu-manage-image' }),
                             $.make('div', { className: 'NB-add-folders' }, NEWSBLUR.utils.make_folders(this.model))
                         ])
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-rename NB-menu-manage-folder-rename' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-rename NB-menu-manage-folder-rename' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Rename this folder')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-confirm NB-menu-manage-folder-rename-confirm NB-modal-submit' }, [
+                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-confirm NB-menu-manage-folder-rename-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position'}, [
                             $.make('div', { className: 'NB-menu-manage-rename-save NB-menu-manage-folder-rename-save NB-modal-submit-green NB-modal-submit-button' }, 'Save'),
                             $.make('div', { className: 'NB-menu-manage-image' }),
                             $.make('input', { name: 'new_title', className: 'NB-menu-manage-title', value: feed_id })
                         ])
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-delete NB-menu-manage-folder-delete' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Delete this folder')
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-feed NB-menu-manage-delete-confirm NB-menu-manage-folder-delete-confirm' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-delete-confirm NB-menu-manage-folder-delete-confirm' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Really delete?')
                     ])
@@ -2498,21 +2540,21 @@
                 
                 $manage_menu = $.make('ul', { className: 'NB-menu-manage NB-menu-manage-story ' + starred_class + shared_class }, [
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-story-open' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-story-open' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('input', { name: 'story_permalink', className: 'NB-menu-manage-open-input', value: story.get('story_permalink') }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Open')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-story-star' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-story-star' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, starred_title)
                     ]),
-                    (story.get('read_status') && $.make('li', { className: 'NB-menu-manage-story-unread' }, [
+                    (story.get('read_status') && $.make('li', { className: 'NB-menu-item NB-menu-manage-story-unread' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as unread')
                     ])),
-                    $.make('li', { className: 'NB-menu-manage-story-thirdparty' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-story-thirdparty' }, [
                         (NEWSBLUR.Preferences['story_share_facebook'] && $.make('div', { className: 'NB-menu-manage-thirdparty-icon NB-menu-manage-thirdparty-facebook'}).bind('mouseenter', _.bind(function(e) {
                             $(e.target).siblings('.NB-menu-manage-title').text('Facebook').parent().addClass('NB-menu-manage-highlight-facebook');
                         }, this)).bind('mouseleave', _.bind(function(e) {
@@ -2607,17 +2649,17 @@
                           this.send_story_to_email(story.id);
                       }
                     }, this)),
-                    $.make('li', { className: 'NB-menu-manage-story NB-menu-manage-story-share' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-story NB-menu-manage-story-share' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, shared_title)
                     ]),
-                    $.make('li', { className: 'NB-menu-manage-story NB-menu-manage-confirm NB-menu-manage-story-share-confirm NB-modal-submit' }, [
+                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-story NB-menu-manage-confirm NB-menu-manage-story-share-confirm NB-modal-submit' }, [
                         $.make('div', { className: 'NB-menu-manage-confirm-position' }, [
                             story.story_share_menu_view.render().el
                         ])
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-manage-story-train' }, [
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-story-train' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Intelligence trainer'),
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
@@ -2680,6 +2722,7 @@
             var toplevel = options.toplevel || $item.hasClass("NB-toplevel") ||
                            $item.children('.folder_title').hasClass("NB-toplevel");
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
+            this.show_correct_feed_view_options_in_menu($manage_menu);
             $manage_menu_container.empty().append($manage_menu);
             $manage_menu_container.data('item', $item && $item[0]);
             $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
@@ -2720,7 +2763,7 @@
                     });
 
                     $manage_menu_container.corner('br 8px');
-                    $('li', $manage_menu_container).each(function() {
+                    $manage_menu_container.find('.NB-menu-manage > li').each(function() {
                         $(this).prependTo($(this).parent());
                     });
                 } else {
@@ -2853,6 +2896,29 @@
             this.blur_to_page({manage_menu: true});
         },
         
+        show_correct_feed_view_options_in_menu: function($manage_menu) {
+            $manage_menu = $manage_menu || $('.NB-menu-manage');
+            
+            if ($manage_menu.hasClass("NB-menu-manage-feed")) {
+                var feed_id = $manage_menu.data('feed_id');
+            } else {
+                var feed_id = 'river:' + $manage_menu.data('folder_name');
+            }
+
+            var order = NEWSBLUR.assets.view_setting(feed_id, 'order');
+            var read_filter = NEWSBLUR.assets.view_setting(feed_id, 'read_filter');
+            var $oldest = $('.NB-view-setting-order-oldest', $manage_menu);
+            var $newest = $('.NB-view-setting-order-newest', $manage_menu);
+            var $unread = $('.NB-view-setting-readfilter-unread', $manage_menu);
+            var $all = $('.NB-view-setting-readfilter-all', $manage_menu);
+            $oldest.toggleClass('NB-active', order == 'oldest');
+            $newest.toggleClass('NB-active', order != 'oldest');
+            $oldest.text('Oldest' + (order == 'oldest' ? ' first' : ''));
+            $newest.text('Newest' + (order != 'oldest' ? ' first' : ''));
+            $unread.toggleClass('NB-active', read_filter == 'unread');
+            $all.toggleClass('NB-active', read_filter != 'unread');
+        },
+        
         // ========================
         // = Manage menu - Delete =
         // ========================
@@ -2935,7 +3001,7 @@
             var $select = $('select', $confirm);
             if (_.isNumber(feed_id)) {
                 var feed      = this.model.get_feed(feed_id);
-                var feed_view = feed.get_view($feed);
+                var feed_view = feed.get_view($feed, true);
                 var in_folder = feed_view.options.folder_title;
             } else {
                 folder_view = NEWSBLUR.assets.folders.get_view($feed);
@@ -3151,23 +3217,44 @@
             var $slider = this.$s.$intelligence_slider;
             var unread_view = this.get_unread_view_score();
             
-            this.slide_intelligence_slider(unread_view);
+            if (unread_view == 0 && !NEWSBLUR.assets.preference('hide_read_feeds')) {
+                unread_view = -1;
+            }
+            this.slide_intelligence_slider(unread_view, true);
         },
         
-        slide_intelligence_slider: function(value) {
+        slide_intelligence_slider: function(value, initial_load) {
             var $slider = this.$s.$intelligence_slider;
-            if (this.model.preference('unread_view') != value) {
-                this.model.preference('unread_view', value);
+            var real_value = value;
+            
+            if (value < 0) {
+                value = 0;
+                if (!initial_load) {
+                    NEWSBLUR.assets.preference('hide_read_feeds', 0);
+                }
+                NEWSBLUR.assets.preference('unread_view', 0);
+            } else if (value == 0) {
+                if (!initial_load) {
+                    NEWSBLUR.assets.preference('hide_read_feeds', 1);
+                }
+                NEWSBLUR.assets.preference('unread_view', 0);
+            } else if (value > 0) {
+                if (!initial_load) {
+                    NEWSBLUR.assets.preference('hide_read_feeds', 1);
+                }
+                NEWSBLUR.assets.preference('unread_view', 1);
             }
             this.flags['unread_threshold_temporarily'] = null;
             this.switch_feed_view_unread_view(value);
             this.show_feed_hidden_story_title_indicator(true);
             this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
+            NEWSBLUR.app.feed_list_header.toggle_hide_read_preference();
+            NEWSBLUR.app.feed_list.scroll_to_show_selected_feed();
             
             $('.NB-active', $slider).removeClass('NB-active');
-            if (value < 0) {
+            if (real_value < 0) {
                 $('.NB-intelligence-slider-red', $slider).addClass('NB-active');
-            } else if (value > 0) {
+            } else if (real_value > 0) {
                 $('.NB-intelligence-slider-green', $slider).addClass('NB-active');
             } else {
                 $('.NB-intelligence-slider-yellow', $slider).addClass('NB-active');
@@ -3400,21 +3487,21 @@
                     this.flags.feed_refreshing_in_realtime = true;
                     this.setup_feed_refresh();
                     
-                    $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating in real-time'));
-                    $('.NB-module-content-account-realtime').attr('title', 'Reticulating splines').removeClass('NB-error');
+                    // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating in real-time'));
+                    $('.NB-module-content-account-realtime').attr('title', 'Updating sites in real-time...').removeClass('NB-error');
                 }, this));
                 this.socket.on('disconnect', _.bind(function() {
                     NEWSBLUR.log(["Lost connection to real-time pubsub. Falling back to polling."]);
                     this.flags.feed_refreshing_in_realtime = false;
                     this.setup_feed_refresh();
-                    $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
-                    $('.NB-module-content-account-realtime').attr('title', 'Polling for updates...').addClass('NB-error');
+                    // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
+                    $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
                 }, this));
                 this.socket.on('error', _.bind(function() {
                     NEWSBLUR.log(["Can't connect to real-time pubsub."]);
                     this.flags.feed_refreshing_in_realtime = false;
-                    $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
-                    $('.NB-module-content-account-realtime').attr('title', 'Polling for updates...').addClass('NB-error');
+                    // $('.NB-module-content-account-realtime-subtitle').html($.make('b', 'Updating every 60 sec'));
+                    $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
                     _.delay(_.bind(this.setup_socket_realtime_unread_counts, this), 60*1000);
                 }, this));
             }
@@ -3471,6 +3558,10 @@
                     self.force_feeds_refresh();
                 }
             }, refresh_interval);
+            this.flags.refresh_interval = refresh_interval / 1000;
+            if (!this.socket || !this.socket.socket.connected) {
+                $('.NB-module-content-account-realtime').attr('title', 'Updating sites every ' + this.flags.refresh_interval + ' seconds...').addClass('NB-error');
+            } 
             NEWSBLUR.log(["Setting refresh interval to every " + refresh_interval/1000 + " seconds."]);
         },
         
@@ -3484,6 +3575,8 @@
                 if (self.active_feed == feed_id || self.active_feed == new_feed_id) {
                     self.open_feed(new_feed_id, {force: true});
                 }
+                
+                self.check_feed_fetch_progress();
             }, true, new_feed_id, this.show_stories_error);
         },
         
@@ -4172,11 +4265,9 @@
             this.locks.unfetched_feed_check = setInterval(_.bind(function() {
                 var unfetched_feeds = NEWSBLUR.assets.unfetched_feeds();
                 if (unfetched_feeds.length) {
-                    _.each(unfetched_feeds, _.bind(function(feed) {
-                        this.force_instafetch_stories(feed.id);
-                    }, this));
+                    this.force_instafetch_stories(unfetched_feeds[0].id);
                 }
-            }, this), 60*10*1000);
+            }, this), 60*1*1000);
         },
         
         // ==========
@@ -4201,15 +4292,6 @@
                 self.mark_feed_as_read(feed_id, $t);
                 $t.fadeOut(400);
             });
-            $.targetIs(e, { tagSelector: '.NB-feedbar-statistics' }, function($t, $p){
-                self.open_feed_statistics_modal();
-            });
-            $.targetIs(e, { tagSelector: '.NB-feedbar-train-feed' }, function($t, $p){
-                e.preventDefault();
-                if (!$('.NB-task-manage').hasClass('NB-disabled')) {
-                    self.open_feed_intelligence_modal(1, self.active_feed, !self.flags.social_view);
-                }
-            }); 
             $.targetIs(e, { tagSelector: '.NB-story-title-indicator' }, function($t, $p){
                 e.preventDefault();
                 self.show_hidden_story_titles();
@@ -4391,6 +4473,10 @@
                 e.preventDefault();
                 e.stopPropagation();
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-controls' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+            });
             $.targetIs(e, { tagSelector: '.NB-menu-manage-rename' }, function($t, $p){
                 e.preventDefault();
                 e.stopPropagation();
@@ -4478,6 +4564,47 @@
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                 self.open_social_profile_modal(feed_id);
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-controls-feed .NB-menu-manage-view-setting-order li' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                var $feed = $t.parents('.NB-menu-manage').data('$feed');
+                if ($t.hasClass('NB-view-setting-order-oldest')) {
+                    self.change_view_setting(feed_id, {order: 'oldest'}, $feed);
+                } else {
+                    self.change_view_setting(feed_id, {order: 'newest'}, $feed);
+                }
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-controls-folder .NB-menu-manage-view-setting-order li' }, function($t, $p){
+                e.preventDefault();
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                if ($t.hasClass('NB-view-setting-order-oldest')) {
+                    self.change_view_setting('river:'+folder_name, {order: 'oldest'}, $folder);
+                } else {
+                    self.change_view_setting('river:'+folder_name, {order: 'newest'}, $folder);
+                }
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-controls-feed .NB-menu-manage-view-setting-readfilter li' }, function($t, $p){
+                e.preventDefault();
+                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
+                var $feed = $t.parents('.NB-menu-manage').data('$feed');
+                if ($t.hasClass('NB-view-setting-readfilter-unread')) {
+                    self.change_view_setting(feed_id, {read_filter: 'unread'}, $feed);
+                } else {
+                    self.change_view_setting(feed_id, {read_filter: 'all'}, $feed);
+                }
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-controls-folder .NB-menu-manage-view-setting-readfilter li' }, function($t, $p){
+                e.preventDefault();
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                if ($t.hasClass('NB-view-setting-readfilter-unread')) {
+                    self.change_view_setting('river:'+folder_name, {read_filter: 'unread'}, $folder);
+                } else {
+                    self.change_view_setting('river:'+folder_name, {read_filter: 'all'}, $folder);
+                }
+            }); 
+
             $.targetIs(e, { tagSelector: '.NB-menu-manage-keyboard' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
@@ -4711,21 +4838,21 @@
             
             // = Interactions Module ==========================================
             
-            $.targetIs(e, { tagSelector: '.NB-interaction-username, .NB-interaction-follow .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-interaction-follow, .NB-activity-follow' }, function($t, $p){
                 e.preventDefault();
                 var user_id = $t.data('userId');
                 var username = $t.closest('.NB-interaction').find('.NB-interaction-username').text();
                 self.model.add_user_profiles([{user_id: user_id, username: username}]);
                 self.open_social_profile_modal(user_id);
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-comment_reply .NB-interaction-reply-content, .NB-interaction-reply_reply .NB-interaction-reply-content, .NB-interaction-comment_reply .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-interaction-comment_reply, .NB-interaction-reply_reply, .NB-interaction-story_reshare, .NB-interaction-comment_like, .NB-activity-comment_reply, .NB-activity-comment_like, .NB-activity-sharedstory' }, function($t, $p){
                 e.preventDefault();
                 var $interaction = $t.closest('.NB-interaction');
                 var feed_id = $interaction.data('feedId');
                 var story_id = $interaction.data('contentId');
                 var user_id = $interaction.data('userId');
                 var username = $interaction.data('username');
-                
+
                 self.close_social_profile();
                 if (self.model.get_feed(feed_id)) {
                     self.open_social_stories(feed_id, {'story_id': story_id});
@@ -4741,66 +4868,66 @@
             
             // = Activities Module ==========================================
             
-            $.targetIs(e, { tagSelector: '.NB-interaction-starred-story-title,.NB-activity-star .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-activity-star' }, function($t, $p){
                 e.preventDefault();
                 var story_id = $t.closest('.NB-interaction').data('contentId');
                 
                 self.close_social_profile();
                 self.open_starred_stories({'story_id': story_id});
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-feed-title,.NB-activity-feedsub .NB-interaction-photo' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-activity-feedsub' }, function($t, $p){
                 e.preventDefault();
                 var feed_id = $t.closest('.NB-interaction').data('feedId');
                 
                 self.close_social_profile();
                 self.open_feed(feed_id);
             }); 
-            $.targetIs(e, { tagSelector: '.NB-interaction-sharedstory .NB-interaction-sharedstory-title, .NB-interaction-sharedstory .NB-interaction-sharedstory-content, .NB-interaction-sharedstory .NB-interaction-photo, .NB-activity-sharedstory .NB-interaction-sharedstory-title, .NB-activity-sharedstory .NB-interaction-sharedstory-content, .NB-activity-sharedstory .NB-interaction-photo, .NB-interaction-comment_like .NB-interaction-sharedstory-title, .NB-activity-comment_like .NB-interaction-sharedstory-title' }, function($t, $p){
-                e.preventDefault();
-                var $interaction = $t.closest('.NB-interaction');
-                var feed_id = $interaction.data('feedId');
-                var story_id = $interaction.data('contentId');
-                var user_id = $interaction.data('userId');
-                
-                self.close_social_profile();
-                if ($t.hasClass('NB-interaction-sharedstory-content')) {
-                    self.open_social_stories('social:'+user_id, {'story_id': story_id});
-                } else {
-                    self.open_feed(feed_id, {
-                        'story_id': story_id, 
-                        'scroll_to_comments': true,
-                        'feed': new NEWSBLUR.Models.Feed({
-                            'feed_title': $('.NB-interaction-sharedstory-title', $interaction).text(),
-                            'favicon_url': $('.NB-interaction-photo', $interaction).attr('src')
-                        })
-                    });
-                }
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-activity-comment_reply .NB-interaction-reply-content, .NB-activity-comment_reply .NB-interaction-photo, .NB-interaction-comment_like .NB-interaction-content, .NB-interaction-comment_like .NB-interaction-photo, .NB-activity-comment_like .NB-interaction-content, .NB-activity-comment_like .NB-interaction-photo' }, function($t, $p){
-                e.preventDefault();
-                var $interaction = $t.closest('.NB-interaction');
-                var user_id = $interaction.hasClass('NB-interaction-comment_like') ?
-                                NEWSBLUR.Globals.user_id : 
-                                $interaction.data('userId');
-                var feed_id = 'social:' + user_id;
-                var story_id = $interaction.data('contentId');
-                var username = $interaction.data('username');
-                
-                self.close_social_profile();
-                if (self.model.get_feed(feed_id)) {
-                    self.open_social_stories(feed_id, {
-                        'story_id': story_id,
-                        'scroll_to_comments': true
-                    });
-                } else {
-                    var socialsub = self.model.add_social_feed({
-                        id: feed_id, 
-                        user_id: user_id, 
-                        username: username
-                    });
-                    self.load_social_feed_in_tryfeed_view(socialsub, {'story_id': story_id});
-                }
-            }); 
+            // $.targetIs(e, { tagSelector: '.NB-activity-sharedstory' }, function($t, $p){
+            //     e.preventDefault();
+            //     var $interaction = $t.closest('.NB-interaction');
+            //     var feed_id = $interaction.data('feedId');
+            //     var story_id = $interaction.data('contentId');
+            //     var user_id = $interaction.data('userId');
+            //     
+            //     self.close_social_profile();
+            //     if ($t.hasClass('NB-interaction-sharedstory-content')) {
+            //         self.open_social_stories('social:'+user_id, {'story_id': story_id});
+            //     } else {
+            //         self.open_feed(feed_id, {
+            //             'story_id': story_id, 
+            //             'scroll_to_comments': true,
+            //             'feed': new NEWSBLUR.Models.Feed({
+            //                 'feed_title': $('.NB-interaction-sharedstory-title', $interaction).text(),
+            //                 'favicon_url': $('.NB-interaction-photo', $interaction).attr('src')
+            //             })
+            //         });
+            //     }
+            // }); 
+            // $.targetIs(e, { tagSelector: '.NB-activity, .NB-interaction-comment_like' }, function($t, $p){
+            //     e.preventDefault();
+            //     var $interaction = $t.closest('.NB-interaction');
+            //     var user_id = $interaction.hasClass('NB-interaction-comment_like') ?
+            //                     NEWSBLUR.Globals.user_id : 
+            //                     $interaction.data('userId');
+            //     var feed_id = 'social:' + user_id;
+            //     var story_id = $interaction.data('contentId');
+            //     var username = $interaction.data('username');
+            //     
+            //     self.close_social_profile();
+            //     if (self.model.get_feed(feed_id)) {
+            //         self.open_social_stories(feed_id, {
+            //             'story_id': story_id,
+            //             'scroll_to_comments': true
+            //         });
+            //     } else {
+            //         var socialsub = self.model.add_social_feed({
+            //             id: feed_id, 
+            //             user_id: user_id, 
+            //             username: username
+            //         });
+            //         self.load_social_feed_in_tryfeed_view(socialsub, {'story_id': story_id});
+            //     }
+            // }); 
 
             
             // = One-offs =====================================================
@@ -4810,6 +4937,10 @@
                 e.preventDefault();
                 self.lock_mouse_indicator();
             }); 
+            $.targetIs(e, { tagSelector: '.NB-load-user-profile img' }, function($t, $p){
+                e.preventDefault();
+                self.open_social_profile_modal();
+            });
             $.targetIs(e, { tagSelector: '.NB-progress-close' }, function($t, $p){
                 e.preventDefault();
                 self.hide_unfetched_feed_progress(true);
@@ -5009,6 +5140,12 @@
             $document.bind('keypress', 'd', function(e) {
                 e.preventDefault();
                 self.show_splash_page();
+            });
+            $document.bind('keydown', 'esc', function(e) {
+                e.preventDefault();
+                if (!_.keys($.modal.impl.d).length) {
+                    self.show_splash_page();
+                }
             });
             $document.bind('keypress', 't', function(e) {
                 e.preventDefault();

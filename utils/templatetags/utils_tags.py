@@ -12,7 +12,7 @@ register = template.Library()
 @register.simple_tag
 def current_domain():
     current_site = Site.objects.get_current()
-    return current_site and current_site.domain.replace('www', 'dev')
+    return current_site and current_site.domain
 
 @register.simple_tag(takes_context=True)
 def localdatetime(context, date, date_format):

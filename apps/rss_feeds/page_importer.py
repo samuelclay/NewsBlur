@@ -42,6 +42,7 @@ class PageImporter(object):
     
     @timelimit(15)
     def fetch_page(self, urllib_fallback=False, requests_exception=None):
+        html = None
         feed_link = self.feed.feed_link
         if not feed_link:
             self.save_no_page()
@@ -107,7 +108,9 @@ class PageImporter(object):
                 self.fetch_page(urllib_fallback=True)
         else:
             self.feed.save_page_history(200, "OK")
-
+        
+        return html
+        
     def save_no_page(self):
         self.feed.has_page = False
         self.feed.save()

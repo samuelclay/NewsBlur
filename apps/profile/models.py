@@ -67,6 +67,55 @@ class Profile(models.Model):
         except DatabaseError:
             print " ---> Profile not saved. Table isn't there yet."
     
+    def delete_user(self, confirm=False):
+        if not confirm:
+            print " ---> You must pass confirm=True to delete this user."
+            return
+        
+        from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
+        from apps.social.models import MActivity, MInteraction
+        try:
+            social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
+            print " ---> Unfollowing %s followings and %s followers" % (social_profile.following_count,
+                                                                        social_profile.follower_count)
+            for follow in social_profile.following_user_ids:
+                social_profile.unfollow_user(follow)
+            for follower in social_profile.follower_user_ids:
+                follower_profile = MSocialProfile.objects.get(user_id=follower)
+                follower_profile.unfollow_user(self.user.pk)
+            social_profile.delete()
+        except MSocialProfile.DoesNotExist:
+            print " ***> No social profile found. S'ok, moving on."
+            pass
+        
+        shared_stories = MSharedStory.objects.filter(user_id=self.user.pk)
+        print " ---> Deleting %s shared stories" % shared_stories.count()
+        for story in shared_stories:
+            story.delete()
+            
+        subscriptions = MSocialSubscription.objects.filter(subscription_user_id=self.user.pk)
+        print " ---> Deleting %s social subscriptions" % subscriptions.count()
+        subscriptions.delete()
+        
+        interactions = MInteraction.objects.filter(user_id=self.user.pk)
+        print " ---> Deleting %s interactions for user." % interactions.count()
+        interactions.delete()
+        
+        interactions = MInteraction.objects.filter(with_user_id=self.user.pk)
+        print " ---> Deleting %s interactions with user." % interactions.count()
+        interactions.delete()
+        
+        activities = MActivity.objects.filter(user_id=self.user.pk)
+        print " ---> Deleting %s activities for user." % activities.count()
+        activities.delete()
+        
+        activities = MActivity.objects.filter(with_user_id=self.user.pk)
+        print " ---> Deleting %s activities with user." % activities.count()
+        activities.delete()
+        
+        print " ---> Deleting user: %s" % self.user
+        self.user.delete()
+        
     def activate_premium(self):
         from apps.profile.tasks import EmailNewPremium
         EmailNewPremium.delay(user_id=self.user.pk)
@@ -184,36 +233,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         user.save()
         
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
-    
-    def send_social_beta_email(self):
-        from apps.social.models import MRequestInvite
-        if not self.user.email:
-            print "Please provide an email address."
-            return
         
-        user    = self.user
-        text    = render_to_string('mail/email_social_beta.txt', locals())
-        html    = render_to_string('mail/email_social_beta.xhtml', locals())
-        subject = "Psst, you're in..."
-        msg     = EmailMultiAlternatives(subject, text, 
-                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
-                                         to=['%s <%s>' % (user, user.email)])
-        msg.attach_alternative(html, "text/html")
-        msg.send()
-        
-        invites = MRequestInvite.objects.filter(username__iexact=self.user.username)
-        if not invites:
-            invites = MRequestInvite.objects.filter(username__iexact=self.user.email)
-        if not invites:
-            print "User not on invite list"
-        else:
-            for invite in invites:
-                print "Invite listed as: %s" % invite.username
-                invite.email_sent = True
-                invite.save()
-                
-        logging.user(self.user, "~BB~FM~SBSending email for social beta: %s" % self.user.email)
-    
     def send_upload_opml_finished_email(self, feed_count):
         if not self.user.email:
             print "Please provide an email address."
@@ -260,8 +280,12 @@ def paypal_signup(sender, **kwargs):
 subscription_signup.connect(paypal_signup)
 
 def stripe_signup(sender, full_json, **kwargs):
-    profile = Profile.objects.get(stripe_id=full_json['data']['object']['customer'])
-    profile.activate_premium()
+    stripe_id = full_json['data']['object']['customer']
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_id)
+        profile.activate_premium()
+    except Profile.DoesNotExist:
+        return {"code": -1, "message": "User doesn't exist."}
 zebra_webhook_customer_subscription_created.connect(stripe_signup)
 
 def change_password(user, old_password, new_password):

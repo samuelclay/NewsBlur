@@ -74,9 +74,8 @@ def facebook_connect(request):
     
     args = {
         "client_id": facebook_app_id,
-        # "redirect_uri": "http://" + Site.objects.get_current().domain + reverse('facebook-connect'),
-        "redirect_uri": "http://" + Site.objects.get_current().domain.replace('www', 'dev') + reverse('facebook-connect'),
-        "scope": "offline_access,user_website",
+        "redirect_uri": "http://" + Site.objects.get_current().domain + reverse('facebook-connect'),
+        "scope": "offline_access,user_website,publish_actions",
         "display": "popup",
     }
 

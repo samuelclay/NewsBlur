@@ -6,6 +6,9 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     events: {
+        "click .NB-feedbar-train-feed"      : "open_trainer",
+        "click .NB-feedbar-statistics"      : "open_statistics",
+        "click .NB-feedbar-settings"        : "open_settings",
         "contextmenu"                       : "show_manage_menu",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
         "dblclick"                          : "open_feed_link",
@@ -71,8 +74,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             <% } %>\
             <%= feed.get("feed_title") %>\
             <% if (type == "story") { %>\
-              <span class="NB-feedbar-train-feed" title="Train Intelligence"></span>\
-              <span class="NB-feedbar-statistics" title="Statistics"></span>\
+                <span class="NB-feedbar-settings" title="Site settings"></span>\
             <% } %>\
           </span>\
           <% if (type == "story") { %>\
@@ -234,6 +236,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     open_feed_link: function() {
+        if ($('.NB-modal-feedchooser').is(':visible')) return;
+        
         NEWSBLUR.reader.mark_feed_as_read(this.model.id);
         window.open(this.model.get('feed_link'), '_blank');
         window.focus();
@@ -272,6 +276,20 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     remove_hover_inverse: function() {
         this.$el.removeClass('NB-hover-inverse');
+    },
+    
+    open_trainer: function() {
+        if (!$('.NB-task-manage').hasClass('NB-disabled')) {
+            NEWSBLUR.reader.open_feed_intelligence_modal(1, null, !NEWSBLUR.reader.flags.social_view);
+        }
+    },
+    
+    open_statistics: function() {
+        NEWSBLUR.reader.open_feed_statistics_modal();
+    },
+    
+    open_settings: function(e) {
+        this.show_manage_menu(e);
     }
 
 });

@@ -31,7 +31,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     },
 
     initialize_feed: function(feed_id) {
-        var view_setting = this.model.view_setting(feed_id);
+        var view_setting = this.model.view_setting(feed_id, 'view');
         NEWSBLUR.Modal.prototype.initialize_feed.call(this, feed_id);
         $('input[name=feed_link]', this.$modal).val(this.feed.get('feed_link'));
         $('input[name=feed_address]', this.$modal).val(this.feed.get('feed_address'));
@@ -349,7 +349,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         });
         
         $.targetIs(e, { tagSelector: 'input[name=view_settings]' }, function($t, $p){
-            self.model.view_setting(self.feed_id, $t.val());
+            self.model.view_setting(self.feed_id, {'view': $t.val()});
 
             var $status = $('.NB-exception-option-view .NB-exception-option-status', self.$modal);
             $status.text('Saved').animate({

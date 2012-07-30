@@ -19,9 +19,9 @@ class EmailNewFollower(Task):
         
 class EmailCommentReplies(Task):
     
-    def run(self, shared_story_id, reply_user_id):
+    def run(self, shared_story_id, reply_id):
         shared_story = MSharedStory.objects.get(id=shared_story_id)
-        shared_story.send_emails_for_new_reply(reply_user_id)
+        shared_story.send_emails_for_new_reply(reply_id)
         
 class EmailStoryReshares(Task):
     

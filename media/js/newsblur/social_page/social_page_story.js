@@ -51,6 +51,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         
         this.$mark = this.$el.closest('.NB-mark');
         this.attach_tooltips();
+        this.truncate_story_height();
     },
     
     attach_tooltips: function() {
@@ -60,6 +61,10 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             fade: true,
             offset: 3
         });
+    },
+    
+    truncate_story_height: function() {
+        
     },
     
     story_url: function() {

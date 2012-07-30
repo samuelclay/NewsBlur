@@ -22,7 +22,7 @@ NEWSBLUR_URL = 'http://www.newsblur.com'
 # = Directory Declaractions =
 # ===========================
 
-CURRENT_DIR   = os.getcwd()
+CURRENT_DIR   = os.path.dirname(__file__)
 NEWSBLUR_DIR  = CURRENT_DIR
 TEMPLATE_DIRS = (os.path.join(CURRENT_DIR, 'templates'),)
 MEDIA_ROOT    = os.path.join(CURRENT_DIR, 'media')
@@ -435,4 +435,6 @@ JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
 if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.SqldumpMiddleware',)
+    MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.SqldumpMiddleware',)
+    MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
 

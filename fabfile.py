@@ -130,7 +130,8 @@ def deploy_code(copy_assets=False, full=False):
             with settings(warn_only=True):
                 run('pkill -c gunicorn')            
         else:
-            run('kill -HUP `cat logs/gunicorn.pid`')
+            run('pkill -c gunicorn')            
+            # run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://%s > /dev/null' % env.host)
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
         sudo('supervisorctl restart celery')
@@ -543,8 +544,6 @@ def configure_node():
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
-    sudo('supervisorctl start node_unread')
-    sudo('supervisorctl start node_favicons')
 
 def copy_app_settings():
     put('config/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
@@ -695,6 +694,11 @@ def restore_postgres():
     sudo('su postgres -c "createdb newsblur -O newsblur"')
     sudo('su postgres -c "pg_restore --role=newsblur --dbname=newsblur backup_postgresql_%s.sql.gz"' % backup_date)
     
+def restore_mongo():
+    backup_date = '2012-07-24-09-00'
+    run('PYTHONPATH=/home/sclay/newsblur python s3.py get backup_mongo_%s.tgz' % backup_date)
+    run('tar -xf backup_mongo_%s.tgz' % backup_date)
+    run('mongorestore backup_mongo_%s' % backup_date)
     
 # ======
 # = S3 =

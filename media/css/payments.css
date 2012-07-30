@@ -115,7 +115,7 @@
 }
 
 .NB-stripe-form label.error {
-    width: 200px;
+    width: 100%;
     margin-left: 150px;
     text-transform: none;
 }

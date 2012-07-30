@@ -302,7 +302,6 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
       }
       var page_count = $('.NB-page', this.$modal).length;
       this.page_number = page_number;
-      NEWSBLUR.assets.preference('intro_page', page_number);
       
       if (page_number == page_count) {
         $('.NB-tutorial-next-page-text', this.$modal).text('All Done ');
@@ -341,6 +340,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
           this.show_twitter_follow_buttons();
       }
       
+      NEWSBLUR.assets.preference('intro_page', page_number);
       _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
     },
     
@@ -362,7 +362,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
         }
         
-        $carousel.carousel(page);
+        $carousel.carousel(page || 0);
         $carousel.carousel('pause');
         this.count_feeds();
     },

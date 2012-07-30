@@ -2,7 +2,6 @@ from django.conf.urls.defaults import url, patterns
 from apps.social import views
 
 urlpatterns = patterns('',
-    url(r'^request_invite/?$', views.request_invite, name='request-invite'),
     url(r'^share_story/?$', views.mark_story_as_shared, name='mark-story-as-shared'),
     url(r'^unshare_story/?$', views.mark_story_as_unshared, name='mark-story-as-unshared'),
     url(r'^load_user_friends/?$', views.load_user_friends, name='load-user-friends'),
@@ -17,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^feed_trainer', views.social_feed_trainer, name='social-feed-trainer'),
     url(r'^public_comments/?$', views.story_public_comments, name='story-public-comments'),
     url(r'^save_comment_reply/?$', views.save_comment_reply, name='social-save-comment-reply'),
+    url(r'^remove_comment_reply/?$', views.remove_comment_reply, name='social-remove-comment-reply'),
     url(r'^find_friends/?$', views.find_friends, name='social-find-friends'),
     url(r'^like_comment/?$', views.like_comment, name='social-like-comment'),
     url(r'^remove_like_comment/?$', views.remove_like_comment, name='social-remove-like-comment'),

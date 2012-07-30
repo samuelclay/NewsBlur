@@ -18,9 +18,10 @@ HEADERS = {
 
 class IconImporter(object):
     
-    def __init__(self, feed, force=False):
+    def __init__(self, feed, page_data=None, force=False):
         self.feed = feed
         self.force = force
+        self.page_data = page_data
         self.feed_icon, _ = MFeedIcon.objects.get_or_create(feed_id=self.feed.pk)
     
     def save(self):
@@ -143,7 +144,10 @@ class IconImporter(object):
     def fetch_image_from_page_data(self):
         image = None
         image_file = None
-        content = MFeedPage.get_data(feed_id=self.feed.pk)
+        if self.page_data:
+            content = self.page_data
+        else:
+            content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)
         if url:
             image, image_file = self.get_image_from_url(url)

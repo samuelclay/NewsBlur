@@ -1,11 +1,13 @@
 import difflib
 import datetime
+import time
 import random
 import re
 import math
 import mongoengine as mongo
 import zlib
 import hashlib
+import redis
 from collections import defaultdict
 from operator import itemgetter
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
@@ -96,7 +98,7 @@ class Feed(models.Model):
     @property
     def favicon_url_fqdn(self):
         return "http://%s%s" % (
-            Site.objects.get_current().domain.replace('www', 'dev'),
+            Site.objects.get_current().domain,
             self.favicon_url
         )
     def canonical(self, full=False, include_favicon=True):
@@ -183,6 +185,9 @@ class Feed(models.Model):
             # Feed has been deleted. Just ignore it.
             return
     
+    def sync_redis(self):
+        return MStory.sync_all_redis(self.pk)
+        
     @classmethod
     def find_or_create(cls, feed_address, feed_link, *args, **kwargs):
         feeds = cls.objects.filter(feed_address=feed_address, feed_link=feed_link)
@@ -699,21 +704,25 @@ class Feed(models.Model):
         feed.last_update = datetime.datetime.utcnow()
         feed.set_next_scheduled_update()
         
+        if options['force']:
+            feed.sync_redis()
+            
         return feed
 
     @classmethod
-    def get_by_id(cls, feed_id):
-        feed = None
-        
+    def get_by_id(cls, feed_id, feed_address=None):
         try:
             feed = Feed.objects.get(pk=feed_id)
+            return feed
         except Feed.DoesNotExist:
             # Feed has been merged after updating. Find the right feed.
             duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
             if duplicate_feeds:
-                feed = duplicate_feeds[0].feed
-                
-        return feed
+                return duplicate_feeds[0].feed
+            if feed_address:
+                duplicate_feeds = DuplicateFeed.objects.filter(duplicate_address=feed_address)
+                if duplicate_feeds:
+                    return duplicate_feeds[0].feed
                 
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = {
@@ -872,18 +881,20 @@ class Feed(models.Model):
             
     def trim_feed(self, verbose=False):
         from apps.reader.models import MUserStory
-        SUBSCRIBER_EXPIRE = datetime.datetime.now() - datetime.timedelta(days=settings.SUBSCRIBER_EXPIRE)
+        DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         trim_cutoff = 500
         if self.active_subscribers <= 1 and self.premium_subscribers < 1:
             trim_cutoff = 100
         elif self.active_subscribers <= 3  and self.premium_subscribers < 2:
-            trim_cutoff = 150
-        elif self.active_subscribers <= 5  and self.premium_subscribers < 3:
             trim_cutoff = 200
-        elif self.active_subscribers <= 10 and self.premium_subscribers < 4:
+        elif self.active_subscribers <= 5  and self.premium_subscribers < 3:
             trim_cutoff = 300
-        elif self.active_subscribers <= 25 and self.premium_subscribers < 5:
+        elif self.active_subscribers <= 10 and self.premium_subscribers < 4:
+            trim_cutoff = 350
+        elif self.active_subscribers <= 20 and self.premium_subscribers < 5:
             trim_cutoff = 400
+        elif self.active_subscribers <= 25 and self.premium_subscribers < 5:
+            trim_cutoff = 450
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
@@ -896,17 +907,18 @@ class Feed(models.Model):
                 return
             extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
-            extra_stories.delete()
+            for story in extra_stories:
+                story.delete()
             if verbose:
                 print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
                 
             # Can't use the story_trim_date because some users may have shared stories from
             # this feed, but the trim date isn't past the two weeks of unreads.
-            userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=SUBSCRIBER_EXPIRE)
+            userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=DAYS_OF_UNREAD)
             if userstories.count():
-                if verbose:
-                    print "Found %s user stories. Deleting..." % userstories.count()
-                userstories.delete()
+                logging.debug("   ---> [%-30s] ~FBFound %s user stories. Deleting..." % (unicode(self)[:30], userstories.count()))
+                for userstory in userstories:
+                    userstory.delete()
         
     def get_stories(self, offset=0, limit=25, force=False):
         stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
@@ -963,11 +975,12 @@ class Feed(models.Model):
         fcat = []
         if entry.has_key('tags'):
             for tcat in entry.tags:
+                term = None
                 if hasattr(tcat, 'label') and tcat.label:
                     term = tcat.label
-                elif tcat.term:
+                elif hasattr(tcat, 'term') and tcat.term:
                     term = tcat.term
-                else:
+                if not term:
                     continue
                 qcat = term.strip()
                 if ',' in qcat or '/' in qcat:
@@ -1324,7 +1337,60 @@ class MStory(mongo.Document):
         if self.story_content_type and len(self.story_content_type) > story_content_type_max:
             self.story_content_type = self.story_content_type[:story_content_type_max]
         super(MStory, self).save(*args, **kwargs)
+        
+        self.sync_redis()
     
+    def delete(self, *args, **kwargs):
+        self.remove_from_redis()
+        
+        super(MStory, self).delete(*args, **kwargs)
+    
+    @classmethod
+    def find_story(cls, story_feed_id, story_id):
+        from apps.social.models import MSharedStory
+        original_found = True
+
+        story = cls.objects(story_feed_id=story_feed_id,
+                            story_guid=story_id).limit(1).first()
+        if not story:
+            original_found = False
+            story = MSharedStory.objects.filter(story_feed_id=story_feed_id, 
+                                                story_guid=story_id).limit(1).first()
+        if not story:
+            story = MStarredStory.objects.filter(story_feed_id=story_feed_id, 
+                                                 story_guid=story_id).limit(1).first()
+        
+        return story, original_found
+        
+    def sync_redis(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+
+        if self.id and self.story_date > DAYS_OF_UNREAD:
+            r.sadd('F:%s' % self.story_feed_id, self.id)
+            r.zadd('zF:%s' % self.story_feed_id, self.id, time.mktime(self.story_date.timetuple()))
+    
+    def remove_from_redis(self, r=None):
+        if not r:
+            r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        if self.id:
+            r.srem('F:%s' % self.story_feed_id, self.id)
+            r.zrem('zF:%s' % self.story_feed_id, self.id)
+
+    @classmethod
+    def sync_all_redis(cls, story_feed_id=None):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        stories = cls.objects.filter(story_date__gte=DAYS_OF_UNREAD)
+        if story_feed_id:
+            stories = stories.filter(story_feed_id=story_feed_id)
+            r.delete('F:%s' % story_feed_id)
+            r.delete('zF:%s' % story_feed_id)
+            
+        for story in stories:
+            story.sync_redis(r)
+        
     def count_comments(self):
         from apps.social.models import MSharedStory
         params = {

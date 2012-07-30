@@ -38,7 +38,7 @@ NEWSBLUR.ReaderGoodies.prototype = {
                   href: '#'
               }, 'Add to Chrome'),
               $.make('div', { className: 'NB-goodies-chrome' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Google Chome: NewsBlur Chrome Web App')
+              $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: NewsBlur Chrome Web App')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {

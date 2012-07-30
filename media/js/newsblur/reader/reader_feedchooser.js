@@ -249,6 +249,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         this.approve_list = _.without(this.approve_list, feed_id);
         var $feed = this.$feeds[feed_id];
         
+        if (!$feed) return;
+        
         $feed.removeClass('NB-feedchooser-approve');
         $feed.addClass('NB-feedchooser-decline');
         if (update) {
@@ -261,6 +263,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             this.approve_list.push(feed_id);
         }
         var $feed = this.$feeds[feed_id];
+        
+        if (!$feed) return;
+        
         $feed.removeClass('NB-feedchooser-decline');
         $feed.addClass('NB-feedchooser-approve');
         if (update) {

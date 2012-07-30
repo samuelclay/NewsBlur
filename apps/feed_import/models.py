@@ -241,6 +241,8 @@ class GoogleReaderImporter(Importer):
 
         folders = self.rearrange_folders(folders)
         logging.user(self.user, "~BB~FW~SBGoogle Reader import: ~BT~FW%s" % (self.subscription_folders))
+        
+        self.clear_folders()
         UserSubscriptionFolders.objects.get_or_create(user=self.user, defaults=dict(
                                                       folders=json.encode(self.subscription_folders)))
 

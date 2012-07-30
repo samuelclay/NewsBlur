@@ -34,4 +34,6 @@ def render_to(template):
     return renderer
     
 def is_true(value):
-    return bool(value) and value.lower() not in ('false', '0')
+    if value == 1:
+        return True
+    return bool(value) and isinstance(value, basestring) and value.lower() not in ('false', '0')
