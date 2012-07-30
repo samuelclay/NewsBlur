@@ -7216,6 +7216,33 @@ form.opml_import_form input {
 .NB-modal-preferences .NB-preference-story-share label[for=NB-preference-story-share-instapaper] {
     background: transparent url('/media/embed/reader/instapaper.png') no-repeat 0 0;
 }
+.NB-modal-preferences .segmented-control {
+    display: block;
+    margin: 4px 0 12px 24px;
+    float: left;
+/*    height: 14px;*/
+    width: auto;
+    color: white;
+    overflow: hidden;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 18px;
+}
+.NB-modal-preferences .segmented-control:last-child {
+}
+.NB-modal-preferences .segmented-control li {
+    clear: none;
+    padding: 1px 12px 0;
+    font-size: 12px;
+    color: #E0E0E0;
+}
+.NB-modal-preferences .segmented-control li:hover {
+    background-color: #639510;
+}
+.NB-modal-preferences .segmented-control li.NB-active {
+    color: white;
+    background-color: transparent;
+}
 
 /* ================== */
 /* = Account Dialog = */

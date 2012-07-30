@@ -116,11 +116,9 @@ def colorize(msg):
     for k, v in params.items():
         msg = re.sub(k, v, msg)
     msg = msg + '~ST~FW~BT'
-    msg = re.sub(r'(~[A-Z]{2})', r'%(\1)s', msg)
-    try:
-        msg = msg % colors
-    except (TypeError, ValueError, KeyError):
-        pass
+    # msg = re.sub(r'(~[A-Z]{2})', r'%(\1)s', msg)
+    for k, v in colors.items():
+        msg = msg.replace(k, v)
     return msg
     
 '''

@@ -594,8 +594,11 @@ class MUserStory(mongo.Document):
         if self.story:
             return self.story.id
         elif self.found_story:
-            return self.found_story['_ref'].id
-
+            if '_ref' in self.found_story:
+                return self.found_story['_ref'].id
+            elif hasattr(self.found_story, 'id'):
+                return self.found_story.id
+        
         story, found_original = MStory.find_story(self.feed_id, self.story_id)
         if story:
             if found_original:
