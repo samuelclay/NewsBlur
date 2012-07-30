@@ -194,7 +194,7 @@ class Feed(models.Model):
         if feeds:
             return feeds[0], False
 
-        if feed_link.endswith('/'):
+        if feed_link and feed_link.endswith('/'):
             feeds = cls.objects.filter(feed_address=feed_address, feed_link=feed_link[:-1])
             if feeds:
                 return feeds[0], False
@@ -1387,7 +1387,8 @@ class MStory(mongo.Document):
             stories = stories.filter(story_feed_id=story_feed_id)
             r.delete('F:%s' % story_feed_id)
             r.delete('zF:%s' % story_feed_id)
-            
+        
+        print " ---> Syncing %s stories in %s" % (stories.count(), story_feed_id)
         for story in stories:
             story.sync_redis(r)
         

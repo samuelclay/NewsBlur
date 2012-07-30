@@ -91,7 +91,7 @@ class UserSubscription(models.Model):
         us = cls.objects.filter(user=user_id)
 
         for sub in us:
-            print sub
+            print " ---> Syncing usersub: %s" % sub
             sub.sync_redis(skip_feed=skip_feed)
         
     def sync_redis(self, skip_feed=False):
