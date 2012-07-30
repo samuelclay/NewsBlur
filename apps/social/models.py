@@ -90,7 +90,7 @@ class MSocialProfile(mongo.Document):
     def blurblog_url(self):
         return "http://%s.%s" % (
             self.username_slug,
-            Site.objects.get_current().domain.replace('www', 'dev'))
+            Site.objects.get_current().domain.replace('www.', ''))
     
     def recommended_users(self):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -235,13 +235,12 @@ class MSocialProfile(mongo.Document):
             if self.photo_url.startswith('//'):
                 self.photo_url = 'http:' + self.photo_url
             return self.photo_url
-        domain = Site.objects.get_current().domain.replace('www', 'dev')
+        domain = Site.objects.get_current().domain
         return 'http://' + domain + settings.MEDIA_URL + 'img/reader/default_profile_photo.png'
         
     def to_json(self, compact=False, include_follows=False, common_follows_with_user=None,
                 include_settings=False, include_following_user=None):
-        # domain = Site.objects.get_current().domain
-        domain = Site.objects.get_current().domain.replace('www', 'dev')
+        domain = Site.objects.get_current().domain
         params = {
             'id': 'social:%s' % self.user_id,
             'user_id': self.user_id,
@@ -1461,7 +1460,7 @@ class MSharedStory(mongo.Document):
                 continue
             
             mute_url = "http://%s%s" % (
-                Site.objects.get_current().domain.replace('www', 'dev'),
+                Site.objects.get_current().domain,
                 reverse('social-mute-story', kwargs={
                     'secret_token': user.profile.secret_token,
                     'shared_story_id': self.id,
@@ -1523,7 +1522,7 @@ class MSharedStory(mongo.Document):
         comment = MSharedStory.attach_users_to_comment(comment, profiles)
         
         mute_url = "http://%s%s" % (
-            Site.objects.get_current().domain.replace('www', 'dev'),
+            Site.objects.get_current().domain,
             reverse('social-mute-story', kwargs={
                 'secret_token': original_user.profile.secret_token,
                 'shared_story_id': original_shared_story.id,

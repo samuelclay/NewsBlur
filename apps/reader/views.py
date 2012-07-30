@@ -64,7 +64,7 @@ def index(request, **kwargs):
             user = User.objects.get(username__iexact=username)
         except User.DoesNotExist:
             return HttpResponseRedirect('http://%s%s' % (
-                Site.objects.get_current().domain.replace('www', 'dev'),
+                Site.objects.get_current().domain,
                 reverse('index')))
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
 

@@ -82,8 +82,7 @@ def reader_authorize(request):
     oauth_key = settings.OAUTH_KEY
     oauth_secret = settings.OAUTH_SECRET
     scope = "http://www.google.com/reader/api"
-    # domain = Site.objects.get_current().domain
-    domain = Site.objects.get_current().domain.replace('www', 'dev')
+    domain = Site.objects.get_current().domain
     request_token_url = ("https://www.google.com/accounts/OAuthGetRequestToken?"
                          "scope=%s&secure=1&session=1&oauth_callback=http://%s%s%s") % (
                             urllib.quote_plus(scope),

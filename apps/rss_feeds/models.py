@@ -98,7 +98,7 @@ class Feed(models.Model):
     @property
     def favicon_url_fqdn(self):
         return "http://%s%s" % (
-            Site.objects.get_current().domain.replace('www', 'dev'),
+            Site.objects.get_current().domain,
             self.favicon_url
         )
     def canonical(self, full=False, include_favicon=True):
