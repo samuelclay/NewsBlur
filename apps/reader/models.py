@@ -145,6 +145,9 @@ class UserSubscription(models.Model):
         if not ignore_user_stories:
             r.delete(unread_stories_key)
         
+        # XXX TODO: Remove below line after combing redis for these None's.
+        story_ids = [s for s in story_ids if s and s != 'None'] # ugh, hack
+        
         return story_ids
         
     @classmethod

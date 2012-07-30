@@ -1400,7 +1400,7 @@ def send_story_email(request):
         code = -1
         message = 'You need to provide your name.'
     else:
-        story   = MStory.find_story(feed_id, story_id)
+        story, _ = MStory.find_story(feed_id, story_id)
         story   = Feed.format_story(story, feed_id, text=True)
         feed    = Feed.objects.get(pk=story['story_feed_id'])
         text    = render_to_string('mail/email_story_text.xhtml', locals())

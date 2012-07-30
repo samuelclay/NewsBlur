@@ -194,8 +194,12 @@ def exception_retry(request):
     try:
         usersub = UserSubscription.objects.get(user=user, feed=feed)
     except UserSubscription.DoesNotExist:
-        usersub = UserSubscription.objects.get(user=user, feed=original_feed)
-        usersub.switch_feed(feed, original_feed)
+        usersubs = UserSubscription.objects.filter(user=user, feed=original_feed)
+        if usersubs:
+            usersub = usersubs[0]
+            usersub.switch_feed(feed, original_feed)
+        else:
+            return {'code': -1}
     usersub.calculate_feed_scores(silent=False)
     
     feeds = {feed.pk: usersub.canonical(full=True), feed_id: usersub.canonical(full=True)}

@@ -7,6 +7,8 @@ graph_config = {
     'graph_vlabel' : 'Feeds & Subscribers',
     'feeds.label': 'feeds',
     'subscriptions.label': 'subscriptions',
+    'profiles.label': 'profiles',
+    'social_subscriptions.label': 'social_subscriptions',
 }
 
 def calculate_metrics():
