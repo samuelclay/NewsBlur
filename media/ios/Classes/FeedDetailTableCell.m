@@ -164,13 +164,13 @@ static UIFont *indicatorFont = nil;
         
         CGContextBeginPath(context);
         CGContextMoveToPoint(context, 0, 0.5f);
-        CGContextAddLineToPoint(context, self.bounds.size.width, 0);
+        CGContextAddLineToPoint(context, self.bounds.size.width, 0.5f);
         CGContextStrokePath(context);
         
         // bottom border    
         CGContextBeginPath(context);
         CGContextMoveToPoint(context, 0, self.bounds.size.height - 0.5f);
-        CGContextAddLineToPoint(context, self.bounds.size.width, self.bounds.size.height);
+        CGContextAddLineToPoint(context, self.bounds.size.width, self.bounds.size.height - 0.5f);
         CGContextStrokePath(context);
     } else {
         // top border

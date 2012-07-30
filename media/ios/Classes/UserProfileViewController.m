@@ -78,10 +78,22 @@
         frame.size.height = frame.size.height - 37;
         self.view.frame = frame;
         self.profileTable.frame = frame;
+    } else {
+//        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+//        if (UIInterfaceOrientationIsPortrait(orientation)) {
+//            frame = self.navigationController.view.frame;
+//            // account for UIPopover Navigation height and readjust
+//            frame.size.height = frame.size.height - 44 - 20;
+//            self.view.frame = frame;
+//            self.profileTable.frame = frame;
+//        } else {
+//            frame = self.navigationController.view.frame;
+//            // account for UIPopover Navigation height and readjust
+//            frame.size.width = frame.size.width - 31 - 20;
+//            self.view.frame = frame;
+//            self.profileTable.frame = frame;
+//        }
     }
-    
-
-
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

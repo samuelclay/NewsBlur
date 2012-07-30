@@ -331,9 +331,8 @@ a.NB-show-profile {
 }
 
 .NB-iphone .NB-button {
-    clear: both;
     float: left;
-    padding: 0px 10px 4px 0px;
+    padding: 9px 10px 6px 0px;
 }
 
 .NB-button.NB-share-button {
@@ -353,6 +352,10 @@ a.NB-show-profile {
     border-radius: 3px;
     border: 1px solid #949494;
     box-shadow: inset 0px 0px 2px rgba(255,255,255,1);
+}
+
+.NB-iphone .NB-button div {
+    padding: 1px 5px 0px;
 }
 
 .NB-button.NB-share-button div { 
