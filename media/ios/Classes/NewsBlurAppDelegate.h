@@ -201,8 +201,6 @@
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;
 - (void)reloadFeedsView:(BOOL)showLoader;
-- (void)hideNavigationBar:(BOOL)animated;
-- (void)showNavigationBar:(BOOL)animated;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;
 - (void)closeOriginalStory;

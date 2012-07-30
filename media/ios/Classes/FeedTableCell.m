@@ -181,7 +181,7 @@ static CGFloat *psColors = nil;
     if (isSocial) {
         [self.feedFavicon drawInRect:CGRectMake(12.0, 5.0, 36.0, 36.0)];
         [feedTitle 
-         drawInRect:CGRectMake(56, 13, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 8, 20.0) 
+         drawInRect:CGRectMake(56, 13, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 20, 20.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentLeft];

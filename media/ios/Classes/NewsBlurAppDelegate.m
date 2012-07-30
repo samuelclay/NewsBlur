@@ -135,15 +135,6 @@
 }
 
 
-- (void)hideNavigationBar:(BOOL)animated {
-    [[self navigationController] setNavigationBarHidden:YES animated:animated];
-}
-
-- (void)showNavigationBar:(BOOL)animated {
-    [[self navigationController] setNavigationBarHidden:NO animated:animated];
-    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-}
-
 #pragma mark -
 #pragma mark FeedsView
 
@@ -382,7 +373,6 @@
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
         UINavigationController *navController = self.navigationController;        
         [navController pushViewController:feedDetailViewController animated:YES];
-        [self showNavigationBar:YES];
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
 }
@@ -502,7 +492,6 @@
         [feedsViewController.navigationItem setBackBarButtonItem: newBackButton];
         UINavigationController *navController = self.navigationController;
         [navController pushViewController:feedDetailViewController animated:YES];
-        [self showNavigationBar:YES];
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 
     }

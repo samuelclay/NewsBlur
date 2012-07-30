@@ -322,6 +322,7 @@
 }
 
 - (void)transitionToFeedDetail {
+    [self hideUserProfilePopover];
     self.feedDetailIsVisible = YES;
     CGRect vb = [self.view bounds];
         
@@ -421,7 +422,10 @@
     if (!self.feedDetailIsVisible) {
         return;
     }
-    if (self.isSharingStory) {
+    
+    [self hideUserProfilePopover];
+    
+     if (self.isSharingStory) {
         [self transitionFromShareView];
     }
     
@@ -483,56 +487,58 @@
 - (void)transitionToShareView {
     if (isSharingStory) {
         return;
-    } else {
-        CGRect vb = [self.view bounds];
-        self.isSharingStory = YES;
-        
-        // adding shareViewController 
-        [self addChildViewController:self.shareViewController];
-        [self.view insertSubview:self.shareViewController.view aboveSubview:self.storyNavigationController.view];
-        [self.shareViewController didMoveToParentViewController:self];
+    } 
+    
+    [self hideUserProfilePopover];
+    CGRect vb = [self.view bounds];
+    self.isSharingStory = YES;
+    
+    // adding shareViewController 
+    [self addChildViewController:self.shareViewController];
+    [self.view insertSubview:self.shareViewController.view aboveSubview:self.storyNavigationController.view];
+    [self.shareViewController didMoveToParentViewController:self];
 
-        self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
-                                                         vb.size.height, 
-                                                         self.storyDetailViewController.view.frame.size.width, 
-                                                         NB_DEFAULT_SHARE_HEIGHT);
-        [self.shareViewController.commentField becomeFirstResponder];
-    }
+    self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
+                                                     vb.size.height, 
+                                                     self.storyDetailViewController.view.frame.size.width, 
+                                                     NB_DEFAULT_SHARE_HEIGHT);
+    [self.shareViewController.commentField becomeFirstResponder];
 }
 
 - (void)transitionFromShareView {
     if (!isSharingStory) {
         return;
+    } 
+    
+    [self hideUserProfilePopover];
+    CGRect vb = [self.view bounds];
+    self.isSharingStory = NO;
+    
+    if ([self.shareViewController.commentField isFirstResponder]) {
+        self.isHidingStory = YES; // the flag allows the keyboard animation to also slide down the share view
+        [self.shareViewController.commentField resignFirstResponder];
     } else {
-        CGRect vb = [self.view bounds];
-        self.isSharingStory = NO;
-        
-        if ([self.shareViewController.commentField isFirstResponder]) {
-            self.isHidingStory = YES; // the flag allows the keyboard animation to also slide down the share view
-            [self.shareViewController.commentField resignFirstResponder];
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
+            self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                                   0,
+                                                                   self.storyNavigationController.view.frame.size.width,
+                                                                   storyTitlesYCoordinate);
         } else {
-            UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-            if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
-                self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
-                                                                       0,
-                                                                       self.storyNavigationController.view.frame.size.width,
-                                                                       storyTitlesYCoordinate);
-            } else {
-                self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
-                                                                       0,
-                                                                       self.storyNavigationController.view.frame.size.width,
-                                                                       vb.size.height);
-            }
-            
-            [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL animations:^{
-                self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
-                                                                 vb.size.height,
-                                                                 self.storyNavigationController.view.frame.size.width,
-                                                                 NB_DEFAULT_SHARE_HEIGHT);
-            } completion:^(BOOL finished) {
-                [self.shareViewController.view removeFromSuperview];
-            }];
+            self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                                   0,
+                                                                   self.storyNavigationController.view.frame.size.width,
+                                                                   vb.size.height);
         }
+        
+        [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL animations:^{
+            self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                             vb.size.height,
+                                                             self.storyNavigationController.view.frame.size.width,
+                                                             NB_DEFAULT_SHARE_HEIGHT);
+        } completion:^(BOOL finished) {
+            [self.shareViewController.view removeFromSuperview];
+        }];
     }
 }
 
@@ -608,12 +614,7 @@
     
     if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
-            if (!self.storyTitlesOnLeft) {
-                int newStoryNavigationFrameHeight = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
-                if (storyNavigationFrame.size.height < newStoryNavigationFrameHeight) {
-                    storyNavigationFrame.size.height = newStoryNavigationFrameHeight;
-                }
-            }
+            storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height;
         } else {
             storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.width + 44;
@@ -639,6 +640,9 @@
                                                                self.storyNavigationController.view.frame.size.width,
                                                                storyTitlesYCoordinate);
     }
+    
+    int newStoryNavigationFrameHeight = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
+
 
     [UIView animateWithDuration:duration 
                           delay:0 
@@ -651,7 +655,10 @@
                                                                               NB_DEFAULT_SHARE_HEIGHT);
                          } else {
                              self.shareViewController.view.frame = shareViewFrame;
-                             self.storyNavigationController.view.frame = storyNavigationFrame;
+                             // if the toolbar is higher, animate
+                             if (self.storyNavigationController.view.frame.size.height < newStoryNavigationFrameHeight) {
+                                 self.storyNavigationController.view.frame = storyNavigationFrame;
+                             }
                          }
                          
                      } completion:^(BOOL finished) {

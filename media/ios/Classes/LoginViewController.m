@@ -38,7 +38,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-		[appDelegate hideNavigationBar:NO];
+
     }
     return self;
     
@@ -46,9 +46,7 @@
 
 - (void)viewDidLoad {
     [usernameInput becomeFirstResponder];
-    
-	[appDelegate hideNavigationBar:NO];
-    
+        
     self.usernameInput.borderStyle = UITextBorderStyleRoundedRect;
     self.passwordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;

@@ -35,7 +35,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 //    NSLog(@"Original Story View: %@", [appDelegate activeOriginalStoryURL]);
-    [appDelegate showNavigationBar:NO];
+
     toolbar.tintColor = UIColorFromRGB(0x183353);
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:appDelegate.activeOriginalStoryURL] ;
     [self updateAddress:request];
