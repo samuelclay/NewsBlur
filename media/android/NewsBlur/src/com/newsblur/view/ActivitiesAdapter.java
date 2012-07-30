@@ -113,7 +113,11 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		ImageView imageView = (ImageView) view.findViewById(R.id.row_activity_icon);
 		
 		activityTime.setText(activity.timeSince + " " + ago);
-		imageLoader.displayImage(activity.user.photoUrl, activity.id, imageView);
+		if (activity.user != null) {
+			imageLoader.displayImage(activity.user.photoUrl, activity.id, imageView);
+		} else {
+			imageView.setImageResource(R.drawable.logo);
+		}
 		
 		activityText.setText(stringBuilder);
 		activityText.setMovementMethod(LinkMovementMethod.getInstance());
