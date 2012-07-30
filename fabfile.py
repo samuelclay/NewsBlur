@@ -1,4 +1,4 @@
-from fabric.api import cd, env, local, parallel
+from fabric.api import cd, env, local, parallel, serial
 from fabric.api import put, run, settings, sudo
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
 try:
@@ -105,6 +105,7 @@ def pull():
 def pre_deploy():
     compress_assets(bundle=True)
 
+@serial
 def post_deploy():
     cleanup_assets()
     
@@ -126,10 +127,7 @@ def deploy_code(copy_assets=False, full=False):
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
-        if full:
-            with settings(warn_only=True):
-                run('pkill -c gunicorn')            
-        else:
+        with settings(warn_only=True):
             run('pkill -c gunicorn')            
             # run('kill -HUP `cat logs/gunicorn.pid`')
         run('curl -s http://%s > /dev/null' % env.host)

@@ -194,7 +194,7 @@ class Feed(models.Model):
         if feeds:
             return feeds[0], False
 
-        if feed_link.endswith('/'):
+        if feed_link and feed_link.endswith('/'):
             feeds = cls.objects.filter(feed_address=feed_address, feed_link=feed_link[:-1])
             if feeds:
                 return feeds[0], False

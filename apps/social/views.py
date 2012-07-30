@@ -877,7 +877,7 @@ def shared_stories_rss_feed(request, user_id, username):
     data['generator'] = 'NewsBlur'
     data['docs'] = None
 
-    shared_stories = MSharedStory.objects.filter(user_id=user.pk)[:30]
+    shared_stories = MSharedStory.objects.filter(user_id=user.pk).order_by('-shared_date')[:25]
     for shared_story in shared_stories:
         story_data = {
             'title': shared_story.story_title,
