@@ -626,6 +626,7 @@
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT;
         } else {
             storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT + 44;
+            NSLog(@"storyNavigationFrame.size.height %f", storyNavigationFrame.size.height);
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT;
         }
     }
@@ -635,10 +636,17 @@
         self.storyNavigationController.view.frame = storyNavigationFrame;
     // CASE: when dismissing the keyboard AND dismissing the share view
     } else if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"] && self.isHidingStory) {
-        self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
-                                                               0,
-                                                               self.storyNavigationController.view.frame.size.width,
-                                                               storyTitlesYCoordinate);
+        if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
+            self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                                   0,
+                                                                   self.storyNavigationController.view.frame.size.width,
+                                                                   storyTitlesYCoordinate);
+        } else {
+            self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                                   0,
+                                                                   self.storyNavigationController.view.frame.size.width,
+                                                                   vb.size.height);
+        }
     }
     
     int newStoryNavigationFrameHeight = vb.size.height - NB_DEFAULT_SHARE_HEIGHT - keyboardFrame.size.height + 44;
@@ -656,8 +664,10 @@
                          } else {
                              self.shareViewController.view.frame = shareViewFrame;
                              // if the toolbar is higher, animate
-                             if (self.storyNavigationController.view.frame.size.height < newStoryNavigationFrameHeight) {
-                                 self.storyNavigationController.view.frame = storyNavigationFrame;
+                             if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
+                                 if (self.storyNavigationController.view.frame.size.height < newStoryNavigationFrameHeight) {
+                                     self.storyNavigationController.view.frame = storyNavigationFrame;
+                                 }
                              }
                          }
                          
