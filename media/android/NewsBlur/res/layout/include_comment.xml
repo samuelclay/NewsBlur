@@ -8,8 +8,9 @@
 
     <ImageView
         android:id="@+id/comment_user_image"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:scaleType="fitCenter"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
         android:contentDescription="@string/description_comment_user"

@@ -35,6 +35,14 @@
 	<string name="reading_sharedby">SHARED BY: </string>
 	
 	<string name="share" formatted="false">\"%s\" - %s (via NewsBlur)</string>
+	<string name="shared_title">Share</string>
+	<string name="share_comment_hint">Comment (Optional)</string>
+	<string name="shared">Story shared</string>
+	<string name="error_sharing">There was an problem sharing this story.</string>
+	<string name="share_newsblur" formatted="false">Share \"%s\" to your Blurblog?</string>
+	
+	<string name="alert_dialog_ok">Okay</string>
+	<string name="alert_dialog_cancel">Cancel</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
@@ -59,6 +67,7 @@
     <string name="menu_share">Share</string>
     <string name="menu_mark_feed_as_read">Mark feed as read</string>
     <string name="menu_mark_folder_as_read">Mark folder as read</string>
+    <string name="menu_sharenewsblur">Share on NewsBlur</string>
     
     <string name="toast_marked_folder_as_read">Folder marked as read</string>
     <string name="toast_marked_feed_as_read">Feed marked as read</string>

@@ -10,6 +10,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -146,6 +147,26 @@ public class APIManager {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERID, userId);
 		final APIResponse response = client.post(APIConstants.URL_UNFOLLOW, values);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public Boolean shareStory(final String storyId, final String feedId, final String comment, final String sourceUserId) {
+		final APIClient client = new APIClient(context);
+		final ContentValues values = new ContentValues();
+		if (!TextUtils.isEmpty(comment)) {
+			values.put(APIConstants.PARAMETER_SHARE_COMMENT, comment);
+		}
+		if (!TextUtils.isEmpty(sourceUserId)) {
+			values.put(APIConstants.PARAMETER_SHARE_SOURCEID, sourceUserId);
+		}
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		
+		final APIResponse response = client.post(APIConstants.URL_SHARE_STORY, values);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			return true;
 		} else {

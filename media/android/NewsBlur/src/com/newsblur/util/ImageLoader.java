@@ -39,6 +39,7 @@ public class ImageLoader {
 		imageViews.put(imageView, uid);
 		Bitmap bitmap = memoryCache.get(uid);
 		if (bitmap != null) {
+			bitmap = UIUtils.roundCorners(bitmap, 10f);
 			imageView.setImageBitmap(bitmap);
 		} else {
 			queuePhoto(url, uid, imageView);
@@ -50,12 +51,18 @@ public class ImageLoader {
 	public void displayImage(String uid, ImageView imageView) {
 		Bitmap bitmap = memoryCache.get(uid);
 		if (bitmap != null) {
+			bitmap = UIUtils.roundCorners(bitmap, 10f);
 			imageView.setImageBitmap(bitmap);
 		} else {
-			File f= fileCache.getFile(uid);
+			File f = fileCache.getFile(uid);
 			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-			memoryCache.put(uid, bitmap);
-			imageView.setImageBitmap(bitmap);
+			if (bitmap != null) {
+				memoryCache.put(uid, bitmap);
+				bitmap = UIUtils.roundCorners(bitmap, 10f);
+				imageView.setImageBitmap(bitmap);
+			} else {
+				imageView.setImageResource(R.drawable.logo);
+			}
 		}
 	}
 
@@ -92,7 +99,9 @@ public class ImageLoader {
 				outputStream.write(b, 0, read);  
 			}  
 			outputStream.close();
-			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+			bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
+			FileOutputStream out = new FileOutputStream(f);
+		    bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
 			bitmap = UIUtils.roundCorners(bitmap, 10f);
 			return bitmap;
 		} catch (IOException ex) {

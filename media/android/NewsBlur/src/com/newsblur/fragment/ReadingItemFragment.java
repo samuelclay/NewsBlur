@@ -109,8 +109,8 @@ public class ReadingItemFragment extends Fragment {
 			protected void onPostExecute(Void result) {
 				for (final String userId : story.sharedUserIds) {
 					ImageView image = new ImageView(getActivity());
-					image.setMaxHeight(UIUtils.convertDPsToPixels(getActivity(), 20));
-					image.setMaxWidth(UIUtils.convertDPsToPixels(getActivity(), 20));
+					image.setMaxHeight(UIUtils.convertDPsToPixels(getActivity(), 10));
+					image.setMaxWidth(UIUtils.convertDPsToPixels(getActivity(), 10));
 					
 					GridLayout grid = (GridLayout) view.findViewById(R.id.reading_social_shareimages);
 					grid.addView(image);

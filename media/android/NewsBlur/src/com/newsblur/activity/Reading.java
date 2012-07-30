@@ -9,6 +9,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -23,6 +24,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.database.ReadingAdapter;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
+import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.util.UIUtils;
 
 public class Reading extends SherlockFragmentActivity {
@@ -109,6 +111,12 @@ public class Reading extends SherlockFragmentActivity {
 				Intent i = new Intent(Intent.ACTION_VIEW);
 				i.setData(Uri.parse(story.permalink));
 				startActivity(i);
+			}
+			return true;
+		case R.id.menu_reading_sharenewsblur:
+			if (story != null) {
+				DialogFragment newFragment = ShareDialogFragment.newInstance(story.id, story.title, feedId, null);
+			    newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 			return true;
 		case R.id.menu_shared:

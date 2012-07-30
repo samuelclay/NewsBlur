@@ -11,6 +11,19 @@
         <item name="android:textColorHint">@color/hintgray</item>
     </style>
 
+    <style name="greenButton" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/selector_greenbutton_background</item>
+        <item name="android:textColor">@color/button_text_selector</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">5</item>
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:padding">10dp</item>
+    </style>
+    
+    
     <style name="button" parent="@android:style/Widget.Button">
         <item name="android:background">@drawable/selector_button_background</item>
         <item name="android:textColor">@color/button_text_selector</item>

@@ -18,7 +18,7 @@ public class UIUtils {
 	 * https://github.com/github/android
 	 */
 	
-	public static Bitmap roundCorners(final Bitmap source, final float radius) {
+	public static Bitmap roundCorners(Bitmap source, final float radius) {
         int width = source.getWidth();
         int height = source.getHeight();
 
@@ -36,7 +36,6 @@ public class UIUtils {
         canvas.drawBitmap(source, 0, 0, null);
         canvas.drawBitmap(clipped, 0, 0, paint);
 
-        source.recycle();
         clipped.recycle();
 
         return rounded;

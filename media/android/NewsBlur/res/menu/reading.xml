@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     
+        
+    <item android:id="@+id/menu_reading_sharenewsblur"
+          android:icon="@drawable/save"
+          android:title="@string/menu_sharenewsblur"
+          android:showAsAction="ifRoom" />
+    
     <item android:id="@+id/menu_reading_original"
           android:icon="@drawable/website"
           android:title="@string/menu_original"
-          android:showAsAction="always" />
-    
+          android:showAsAction="ifRoom" />
+        
     <item android:id="@+id/menu_shared"
           android:icon="@drawable/share"
           android:title="@string/menu_share"
-          android:showAsAction="always" />
+          android:showAsAction="never" />
 
 </menu>
