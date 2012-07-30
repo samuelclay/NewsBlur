@@ -167,7 +167,10 @@ class UserSubscription(models.Model):
             r.delete(unread_ranked_stories_keys)
 
         for feed_id in feed_ids:
-            us = cls.objects.get(user=user_id, feed=feed_id)
+            try:
+                us = cls.objects.get(user=user_id, feed=feed_id)
+            except cls.DoesNotExist:
+                continue
             story_guids = us.get_stories(offset=0, limit=200, 
                                          order=order, read_filter=read_filter, 
                                          withscores=True)

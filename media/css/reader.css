@@ -7414,11 +7414,10 @@ form.opml_import_form input {
   font-size: 13px;
 }
 
-.NB-static-about ul li
+.NB-static-about ul li,
 .NB-static-faq ul li {
-  margin: 0 0 12px;
-  padding-left: 20px;
-  list-style: none;
+  line-height: 20px;
+  margin-bottom: 12px;
 }
 
 .NB-static-about ul li.last,
@@ -7427,19 +7426,30 @@ form.opml_import_form input {
 }
 
 .NB-static-about ul.NB-about-what li {
-  background: transparent url('/media/embed/icons/silk/bullet_blue.png') no-repeat 0 0;
+  list-style-image: url('/media/embed/icons/silk/bullet_blue.png');
 }
 .NB-static-about ul.NB-about-server li {
-  background: transparent url('/media/embed/icons/silk/bullet_yellow.png') no-repeat 0 0;
+  list-style-image: url('/media/embed/icons/silk/bullet_yellow.png');
 }
 .NB-static-about ul.NB-about-client li {
-  background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 0 0;
+  list-style-image: url('/media/embed/icons/silk/bullet_red.png');
 }
-.NB-static-about ul.NB-about-who li {
-  background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 0 0;
+.NB-static-about .NB-about-who {
+    overflow: hidden;
 }
-.NB-static-about ul.NB-about-why li {
-  background: transparent url('/media/embed/icons/silk/bullet_orange.png') no-repeat 0 0;
+.NB-static-about .NB-about-who li {
+    float: left;
+    margin: 0 24px 0 0;
+    text-align: center;
+    list-style: none;
+}
+.NB-static-about .NB-about-who img {
+    border: 1px solid #505050;
+    margin: 12px 0;
+    width: 170px;
+}
+.NB-static-about .NB-about-why li {
+  list-style-image: url('/media/embed/icons/silk/bullet_orange.png');
 }
 
 .NB-static-faq .NB-link-about-faq {

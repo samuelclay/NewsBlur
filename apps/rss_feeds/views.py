@@ -173,6 +173,7 @@ def exception_retry(request):
     feed_id = get_argument_or_404(request, 'feed_id')
     reset_fetch = json.decode(request.POST['reset_fetch'])
     feed = Feed.get_by_id(feed_id)
+    original_feed = feed
     
     if not feed:
         raise Http404
@@ -190,7 +191,11 @@ def exception_retry(request):
     feed.save()
     
     feed = feed.update(force=True, compute_scores=False, verbose=True)
-    usersub = UserSubscription.objects.get(user=user, feed=feed)
+    try:
+        usersub = UserSubscription.objects.get(user=user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        usersub = UserSubscription.objects.get(user=user, feed=original_feed)
+        usersub.switch_feed(feed, original_feed)
     usersub.calculate_feed_scores(silent=False)
     
     feeds = {feed.pk: usersub.canonical(full=True), feed_id: usersub.canonical(full=True)}
