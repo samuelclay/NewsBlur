@@ -180,6 +180,16 @@ body {
 .NB-story code {
     overflow: auto;
     clear: both;
+
+}
+
+.NB-story h1, 
+.NB-story h2,
+.NB-story h3,
+.NB-story h4,
+.NB-story h5,
+.NB-story h6 {
+    line-height: 140%;
 }
 
 a {
@@ -277,14 +287,12 @@ del {
 
 #story_pane .NB-story-comment.NB-highlighted {
     background-color: #FBE5C7;
-    background-image: -moz-linear-gradient(top, #FBE5C7, #F7D9AD); /* FF3.6 */
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#FBE5C7), to(#F7D9AD)); /* Saf4+, Chrome */
-    background-image: linear-gradient(top, #FBE5C7, #F7D9AD);
 }
 
 #story_pane .NB-story-comment {
-    -webkit-transition: background-color .5s linear;
-    background: none;
+    -webkit-transition: background-color .6s linear;
+    background-color: #f6f6f6;
+    background-image: none;
 }
 
 /* Disable certain interactions on touch devices */

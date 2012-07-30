@@ -1089,7 +1089,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)scrolltoComment {
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@');", currentUserId];
+    NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
     [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
 }
 
