@@ -1393,8 +1393,7 @@ class MSharedStory(mongo.Document):
         social_service = MSocialServices.objects.get(user_id=self.user_id)
         user = User.objects.get(pk=self.user_id)
         
-        logging.user(user, "~BM~FBPosting to %s (FAKED): ~SB%s" % (service, message))
-        return
+        logging.user(user, "~BM~FBPosting to %s: ~SB%s" % (service, message))
         
         if service == 'twitter':
             posted = social_service.post_to_twitter(message)

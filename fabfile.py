@@ -543,8 +543,6 @@ def configure_node():
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
-    sudo('supervisorctl start node_unread')
-    sudo('supervisorctl start node_favicons')
 
 def copy_app_settings():
     put('config/settings/app_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
