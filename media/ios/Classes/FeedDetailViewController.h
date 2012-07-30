@@ -69,7 +69,7 @@
 - (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;
 - (void)instafetchFeed;
-- (void)markCurrentStoryAsRead;
+- (void)changeActiveStoryTitleCellLayout;
 - (void)loadFaviconsFromActiveFeed;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;

@@ -244,35 +244,32 @@
         NSString *category = [activity objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
-            NSString *userId = [[activity objectForKey:@"with_user"] objectForKey:@"user_id"];
+            
+            NSString *userId = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"user_id"]];
             appDelegate.activeUserProfileId = userId;
-            NSString *username = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
+            
+            NSString *username = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"username"]];
             appDelegate.activeUserProfileName = username;
 
             [appDelegate pushUserProfile];
-        } else {
-            [appDelegate hideUserProfileModal];
-            if ([category isEqualToString:@"comment_reply"] ||
-                       [category isEqualToString:@"comment_like"]) {
-                NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
-                NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"]];
-            } else if ([category isEqualToString:@"sharedstory"]) {
-                NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
-                NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
-                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"]];
-            } else if ([category isEqualToString:@"feedsub"]) {
-                NSString *feedIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"feed_id"]];
-                NSString *contentIdStr = nil;
-                [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO withUser:[activity objectForKey:@"with_user"]];
-            }
+        } else if ([category isEqualToString:@"comment_reply"] ||
+                   [category isEqualToString:@"comment_like"]) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
+            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:self.userProfile];
+        } else if ([category isEqualToString:@"sharedstory"]) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]];
+            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:self.userProfile];
+        } else if ([category isEqualToString:@"feedsub"]) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"feed_id"]];
+            NSString *contentIdStr = nil;
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO withUser:self.userProfile];
         }
         
         // have the selected cell deselect
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
-
 
 @end

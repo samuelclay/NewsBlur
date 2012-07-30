@@ -209,10 +209,10 @@
         if ([category isEqualToString:@"follow"]) {
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             
-            NSString *userId = [[interaction objectForKey:@"with_user"] objectForKey:@"user_id"];
+            NSString *userId = [NSString stringWithFormat:@"%@", [[interaction objectForKey:@"with_user"] objectForKey:@"user_id"]];
             appDelegate.activeUserProfileId = userId;
             
-            NSString *username = [[interaction objectForKey:@"with_user"] objectForKey:@"username"];
+            NSString *username = [NSString stringWithFormat:@"%@", [[interaction objectForKey:@"with_user"] objectForKey:@"username"]];
             appDelegate.activeUserProfileName = username;
 
             // pass cell to the show UserProfile

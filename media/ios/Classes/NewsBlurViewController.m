@@ -107,7 +107,7 @@
     appDelegate.activeFeed = nil; 
     appDelegate.isSocialView = NO;
     appDelegate.isRiverView = NO;
-//    appDelegate.inFindingStoryMode = NO;
+    appDelegate.inFindingStoryMode = NO;
     [MBProgressHUD hideHUDForView:appDelegate.storyDetailViewController.view animated:NO];
     
     if (appDelegate.activeFeed || appDelegate.isRiverView) {        
@@ -305,9 +305,6 @@
     
     NSMutableDictionary *sortedFolders = [[NSMutableDictionary alloc] init];
     NSArray *sortedArray;
-    
-    NSLog(@"[results objectForKey:@social_profile] userid %@", [[results objectForKey:@"social_profile"] objectForKey:@"user_id"]);
-    NSLog(@"class of %@", [[[results objectForKey:@"social_profile"] objectForKey:@"user_id"] class]);
     
     // Set up dictUserProfile and userActivitiesArray
     appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];

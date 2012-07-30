@@ -172,7 +172,6 @@
     id storyId = [appDelegate.activeStory objectForKey:@"id"];
     [appDelegate pushReadStory:storyId];
     [self showStory];  
-    [self setNextPreviousButtons]; 
     self.webView.scalesPageToFit = YES;
     [self.loadingIndicator stopAnimating];    
 }
@@ -498,24 +497,6 @@
     // when we show story, we mark it as read
     [self markStoryAsRead]; 
     
-    // set the current row as read
-//    NSMutableArray *newActiveFeedStories = [appDelegate.activeFeedStories mutableCopy];
-//    NSMutableDictionary *newActiveStory = [[newActiveFeedStories objectAtIndex:row] mutableCopy];
-//    
-//    [newActiveStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
-//    [newActiveFeedStories replaceObjectAtIndex:row withObject:newActiveStory];
-//    
-//    appDelegate.activeFeedStories = newActiveFeedStories;
-//    appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:row];
-    
-    
-    
-    
-    
-    
-    
-    
-    
     appDelegate.shareViewController.commentField.text = nil;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController transitionFromShareView];
@@ -692,6 +673,8 @@
             break;
         }
     }
+    
+    [self setNextPreviousButtons];
 }
 
 - (void)setActiveStory {
@@ -889,6 +872,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)setNextPreviousButtons {
+    NSLog(@"the unread count is %i", appDelegate.unreadCount);
     int nextIndex = [appDelegate indexOfNextUnreadStory];
     int unreadCount = [appDelegate unreadCount];
     if (nextIndex == -1 && unreadCount > 0) {
@@ -906,6 +890,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if (readStoryCount == 0 || 
         (readStoryCount == 1 && 
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
+            
             
             [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
             [buttonPrevious setTitle:@"Previous"];
@@ -930,11 +915,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)markStoryAsRead {
+    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
     if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
+        
         [appDelegate markActiveStoryRead];
         
-        // marks story cell as read
-        [appDelegate.feedDetailViewController markCurrentStoryAsRead];
+
         
         NSString *urlString;
         
@@ -1123,13 +1109,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
+        [self showStory];
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                      objectAtIndex:nextIndex]];
         [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
         [self setActiveStory];
-        [self showStory];
-        [self markStoryAsRead];
-        [self setNextPreviousButtons];
+
         [appDelegate changeActiveFeedDetailRow];
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:.5];
@@ -1159,8 +1144,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     [self setActiveStory];
     [self showStory];
-    [self markStoryAsRead];
-    [self setNextPreviousButtons];
     [appDelegate changeActiveFeedDetailRow];
 
     [UIView beginAnimations:nil context:nil];
@@ -1188,11 +1171,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         }
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                      objectAtIndex:previousIndex]];
-        [appDelegate changeActiveFeedDetailRow];
         [self setActiveStory];
         [self showStory];
-        [self markStoryAsRead];
-        [self setNextPreviousButtons];
+        [appDelegate changeActiveFeedDetailRow];
         
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:.5];

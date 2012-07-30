@@ -226,7 +226,7 @@
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"]];
         } else if ([category isEqualToString:@"sharedstory"]) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"]];
         } else if ([category isEqualToString:@"feedsub"]) {

@@ -46,7 +46,7 @@
 }
  
 - (void)viewDidLoad {
-    [super viewDidLoad];
+    [super viewDidLoad];    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -167,7 +167,7 @@
     [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
 }
 
-- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {      
+- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {  
     NSString *theFeedDetailURL;
     
     if (!self.pageFetching && !self.pageFinished) {
@@ -618,7 +618,7 @@
     [appDelegate loadStoryDetailView];
 }
 
-- (void)markCurrentStoryAsRead {
+- (void)changeActiveStoryTitleCellLayout {
     int rowIndex = [appDelegate locationOfActiveStory];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];

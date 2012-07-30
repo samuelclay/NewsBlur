@@ -388,38 +388,31 @@
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user {
-    NSDictionary *feed = nil;
-    
-    if (social) {
-        feed = [self.dictSocialFeeds objectForKey:feedId];
-        [self setIsSocialView:YES];
-        [self setInFindingStoryMode:YES];
-        
-        if (feed == nil) {
-//            NSLog(@"user is %@", user);
-//            NSString *newFeedId = [feedId stringByReplacingOccurrencesOfString:@"social:" withString:@""];
-//            feed = [NSDictionary dictionaryWithObjectsAndKeys:
-//                    @"TESTER", @"feed_title",
-//                    feedId, @"id",
-//                    newFeedId, @"user_id", 
-//                    nil];
-            feed = user;
-            
-        }
-    } else {
-        feed = [self.dictFeeds objectForKey:feedId];
-        if (feed == nil) {
-            NSLog(@"NO FEED FOUND!");
-        }
-        [self setIsSocialView:NO];
-        [self setInFindingStoryMode:NO];
-    }
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissModalViewControllerAnimated:YES];
     }
-        
+    
+    NSDictionary *feed = nil;
+    
+    if (social) {
+        feed = [self.dictSocialFeeds objectForKey:feedId];
+        self.isSocialView = YES;
+        self.InFindingStoryMode = YES;
+  
+        if (feed == nil) {
+            feed = user;
+        }
+    } else {
+        feed = [self.dictFeeds objectForKey:feedId];
+        if (feed == nil) {
+            feed = user;
+
+        }
+        [self setIsSocialView:NO];
+        [self setInFindingStoryMode:NO];
+    }
+            
     [self setTryFeedStoryId:contentId];
     [self setActiveFeed:feed];
     [self setActiveFolder:nil];
@@ -790,7 +783,18 @@
     if (activeLocation == -1) {
         return;
     }
-
+    
+    // changes the story layout in story feed detail
+    [self.feedDetailViewController changeActiveStoryTitleCellLayout];
+    
+    // set the current row as read
+    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
+    NSMutableDictionary *newActiveStory = [[newActiveFeedStories objectAtIndex:activeLocation] mutableCopy];
+    [newActiveStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+    [newActiveFeedStories replaceObjectAtIndex:activeLocation withObject:newActiveStory];
+    self.activeFeedStories = newActiveFeedStories;
+    self.activeStory = [self.activeFeedStories objectAtIndex:activeLocation];
+    
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     
     NSDictionary *feed;
@@ -815,7 +819,7 @@
     
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
     if (self.activeFeed != feed) {
-        NSLog(@"activeFeed; %@, feed: %@", activeFeed, feed);
+//        NSLog(@"activeFeed; %@, feed: %@", activeFeed, feed);
         self.activeFeed = feed;
     }
     
