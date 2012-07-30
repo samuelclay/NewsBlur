@@ -506,6 +506,7 @@ def save_comment_reply(request):
         return json.json_response(request, {
             'code': code, 
             'comment': comment, 
+            'reply_id': reply.reply_id,
             'user_profiles': profiles
         })
 
@@ -860,8 +861,9 @@ def shared_stories_rss_feed(request, user_id, username):
     except User.DoesNotExist:
         raise Http404
     
-    if user.username != username:
-        profile = MSocialProfile.get_user(user.pk)
+    username = username and username.lower()
+    profile = MSocialProfile.get_user(user.pk)
+    if not username or profile.username_slug.lower() != username:
         params = {'username': profile.username_slug, 'user_id': user.pk}
         return HttpResponseRedirect(reverse('shared-stories-rss-feed', kwargs=params))
 
