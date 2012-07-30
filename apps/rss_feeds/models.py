@@ -1387,7 +1387,8 @@ class MStory(mongo.Document):
             stories = stories.filter(story_feed_id=story_feed_id)
             r.delete('F:%s' % story_feed_id)
             r.delete('zF:%s' % story_feed_id)
-            
+        
+        print " ---> Syncing %s stories in %s" % (stories.count(), story_feed_id)
         for story in stories:
             story.sync_redis(r)
         

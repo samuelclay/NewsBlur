@@ -472,7 +472,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     load_canonical_feed: function(feed_id, callback) {
         var pre_callback = _.bind(function(data) {
-            this.feeds.get(data.id).set(data);
+            var feed = this.feeds.get(data.id);
+            if (feed) {
+                feed.set(data);
+            } else {
+                this.feeds.add(data);
+            }
             this.feed_tags = data.feed_tags || {};
             this.feed_authors = data.feed_authors || {};
             this.feed_id = feed_id;
