@@ -1,0 +1,7 @@
+{% extends "mail/email_base.txt" %}
+
+{% load utils_tags %}
+
+{% block body %}Good news! NewsBlur has finished importing your OPML file. You are now subscribed to <b>{{ feed_count }}</b> site{{ feed_count|pluralize }}.
+
+Head over to NewsBlur and get reading: http://{% current_domain %}{% endblock body %}

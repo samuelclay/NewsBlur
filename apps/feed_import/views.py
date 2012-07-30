@@ -14,9 +14,12 @@ from django.contrib.auth import login as login_user
 from django.shortcuts import render_to_response
 from apps.reader.forms import SignupForm
 from apps.reader.models import UserSubscription
-from apps.feed_import.models import OAuthToken, OPMLImporter, OPMLExporter, GoogleReaderImporter
+from apps.feed_import.models import OAuthToken, GoogleReaderImporter
+from apps.feed_import.models import OPMLImporter, OPMLExporter, UploadedOPML
+from apps.feed_import.tasks import ProcessOPML
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required, get_user
+from utils.feed_functions import TimeoutError
 
 
 @ajax_login_required
@@ -25,26 +28,38 @@ def opml_upload(request):
     message = "OK"
     code = 1
     payload = {}
-    
+
     if request.method == 'POST':
         if 'file' in request.FILES:
             logging.user(request, "~FR~SBOPML upload starting...")
             file = request.FILES['file']
             xml_opml = file.read()
+            UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
+            
             opml_importer = OPMLImporter(xml_opml, request.user)
-            folders = opml_importer.process()
+            try:
+                folders = opml_importer.try_processing()
+            except TimeoutError:
+                folders = None
+                ProcessOPML.delay(request.user.pk)
+                feed_count = opml_importer.count_feeds_in_opml()
+                logging.user(request, "~FR~SBOPML pload took too long, found %s feeds. Tasking..." % feed_count)
+                payload = dict(folders=folders, delayed=True, feed_count=feed_count)
+                code = 2
+                message = ""
 
-            feeds = UserSubscription.objects.filter(user=request.user).values()
-            payload = dict(folders=folders, feeds=feeds)
-            logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
+            if folders:
+                feeds = UserSubscription.objects.filter(user=request.user).values()
+                payload = dict(folders=folders, feeds=feeds)
+                logging.user(request, "~FR~SBOPML Upload: ~SK%s~SN~SB~FR feeds" % (len(feeds)))
             
             request.session['import_from_google_reader'] = False
         else:
             message = "Attach an .opml file."
             code = -1
             
-    data = json.encode(dict(message=message, code=code, payload=payload))
-    return HttpResponse(data, mimetype='text/plain')
+    return HttpResponse(json.encode(dict(message=message, code=code, payload=payload)),
+                        mimetype='text/html')
 
 def opml_export(request):
     user     = get_user(request)
@@ -60,17 +75,20 @@ def opml_export(request):
     return response
         
 def reader_authorize(request): 
+    is_modal = request.GET.get('modal', False)
     logging.user(request, "~BB~FW~SBAuthorize Google Reader import - %s" % (
         request.META['REMOTE_ADDR'],
     ))
     oauth_key = settings.OAUTH_KEY
     oauth_secret = settings.OAUTH_SECRET
     scope = "http://www.google.com/reader/api"
+    domain = Site.objects.get_current().domain
     request_token_url = ("https://www.google.com/accounts/OAuthGetRequestToken?"
-                         "scope=%s&secure=1&session=1&oauth_callback=http://%s%s") % (
+                         "scope=%s&secure=1&session=1&oauth_callback=http://%s%s%s") % (
                             urllib.quote_plus(scope),
-                            Site.objects.get_current().domain,
+                            domain,
                             reverse('google-reader-callback'),
+                            '?modal=true' if is_modal else ''
                          )
     authorize_url = 'https://www.google.com/accounts/OAuthAuthorizeToken'
     
@@ -95,11 +113,19 @@ def reader_authorize(request):
     OAuthToken.objects.create(**auth_token_dict)
                  
     redirect = "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
-    response = HttpResponseRedirect(redirect)
+    
+    if is_modal:
+        response = render_to_response('social/social_connect.xhtml', {
+            'next': redirect,
+        }, context_instance=RequestContext(request))
+    else:
+        response = HttpResponseRedirect(redirect)
+
     response.set_cookie('newsblur_reader_uuid', auth_token_dict['uuid'])
     return response
 
 def reader_callback(request):
+    is_modal = request.GET.get('modal', False)
     access_token_url = 'https://www.google.com/accounts/OAuthGetAccessToken'
     consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
     user_token = None
@@ -133,8 +159,14 @@ def reader_callback(request):
         user_token.access_token = access_token.get('oauth_token')
         user_token.access_token_secret = access_token.get('oauth_token_secret')
         try:
+            if not user_token.access_token:
+                raise IntegrityError
             user_token.save()
         except IntegrityError:
+            if is_modal:
+                return render_to_response('social/social_connect.xhtml', {
+                    'error': 'There was an error trying to import from Google Reader. Trying again will probably fix the issue.'
+                }, context_instance=RequestContext(request))
             logging.info(" ***> [%s] Bad token from Google Reader. Re-authenticating." % (request.user,))
             return HttpResponseRedirect(reverse('google-reader-authorize'))
     
@@ -144,7 +176,10 @@ def reader_callback(request):
         logging.user(request, "~BB~FW~SBFinishing Google Reader import - %s" % (request.META['REMOTE_ADDR'],))
     
         if request.user.is_authenticated():
-            return HttpResponseRedirect(reverse('index'))
+            if is_modal:
+                return render_to_response('social/social_connect.xhtml', {}, context_instance=RequestContext(request))
+            else:
+                return HttpResponseRedirect(reverse('index'))
     else:
         logging.info(" ***> [%s] Bad token from Google Reader. Re-authenticating." % (request.user,))
         return HttpResponseRedirect(reverse('google-reader-authorize'))    

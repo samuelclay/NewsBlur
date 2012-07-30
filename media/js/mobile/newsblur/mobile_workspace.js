@@ -6,7 +6,7 @@
         // = Globals =
         // ===========
         
-        this.model      = NEWSBLUR.AssetModel.reader();
+        this.model      = NEWSBLUR.assets;
         this.story_view = 'page';
         this.pages      = {
             'feeds' : $('#NB-page-feeds'),
@@ -98,7 +98,7 @@
             if (feed.has_exception && feed.exception_type == 'feed') {
                 exception_class += ' NB-feed-exception';
             }
-            if (feed.not_yet_fetched && !feed.has_exception) {
+            if (!feed.fetched_once && !feed.has_exception) {
                 exception_class += ' NB-feed-unfetched';
             }
             
@@ -114,7 +114,7 @@
                     <% if (feed.ng) { %>\
                         <span class="ui-li-count ui-li-count-negative"><%= feed.ng %></span>\
                     <% } %>\
-                    <img src="<%= $.favicon(feed.favicon) %>" class="ui-li-icon">\
+                    <img src="<%= $.favicon(feed) %>" class="ui-li-icon">\
                     <%= feed.feed_title %>\
                 </a>\
             </li>', {
@@ -191,7 +191,7 @@
                     <% } %>\
                     <div class="NB-story-title"><%= story.story_title %></div>\
                     <div class="NB-story-feed">\
-                        <div class="NB-story-feed-icon"><img src="<%= $.favicon(feed.favicon) %>"></div>\
+                        <div class="NB-story-feed-icon"><img src="<%= $.favicon(feed) %>"></div>\
                         <div class="NB-story-feed-title"><%= feed.feed_title %></div>\
                     </div>\
                 </a>\
@@ -276,7 +276,7 @@
                 .toggleClass('NB-inverse', NEWSBLUR.utils.is_feed_floater_gradient_light(feed));
                 
             var $feed = _.template('<div class="NB-story-feed-header">\
-                <img class="NB-favicon" src="<%= $.favicon(feed.favicon) %>" />\
+                <img class="NB-favicon" src="<%= $.favicon(feed) %>" />\
                 <span class="feed_title">\
                     <%= feed.feed_title %>\
                 </span>\

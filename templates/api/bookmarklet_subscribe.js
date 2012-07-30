@@ -134,7 +134,6 @@
                     for (var o in item) {
                         if (!item.hasOwnProperty(o)) continue;
                         var folder = item[o];
-                        console.log(["make_folder_options", folder, o, depth]);
                         var $option = $.make('option', { value: o }, depth + ' ' + o);
                         $options.append($option);
                         $options = this.make_folder_options($options, folder, depth+'-');

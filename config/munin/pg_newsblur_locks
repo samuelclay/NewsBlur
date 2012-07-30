@@ -1,0 +1,216 @@
+#!/usr/bin/perl -w
+# Plugin to monitor postgres locks.
+#
+# Copyright Dalibo <cedric.villemain@dalibo.com> 2007
+# Based on a plugin (postgres_block_read_) from Björn Ruberg <bjorn@linpro.no>
+#
+# Licenced under GPL v2.
+#
+# Usage:
+#
+#       Symlink into /etc/munin/plugins/ and add the monitored
+#       database to the filename. e.g.:
+#
+#       ln -s /usr/share/munin/plugins/pg__locks \
+#         /etc/munin/plugins/pg_<databasename>_locks
+#       This should, however, be given through autoconf and suggest.
+#
+#       If required, give username, password and/or Postgresql server
+#       host through environment variables.
+#
+#       You must also activate Postgresql statistics. See
+#	http://www.postgresql.org/docs/8.1/interactive/monitoring-locks.html
+#       for how to enable this. Specifically, the following lines must
+#       exist in your postgresql.conf:
+#
+#           stats_start_collector = true
+#           stats_block_level = true
+#
+#
+# Parameters:
+#
+#       config   (required)
+#
+# Config variables:
+#
+#       dbhost     - Which database server to use. Defaults to
+#                    'localhost'.
+#       dbname     - Which database to use. Defaults to template1
+#       dbuser     - A Postgresql user account with read permission to
+#                    the given database. Defaults to
+#                    'postgres'. Anyway, Munin must be told which user
+#                    this plugin should be run as.
+#       dbpass     - The corresponding password, if
+#                    applicable. Default to undef. Remember that
+#                    pg_hba.conf must be configured accordingly.
+#
+# The config variables need to be write like this :
+# [pg_foobase*]
+# user foouser
+# env.dbname foobase
+#
+# Magic markers
+#%# family=auto
+#%# capabilities=autoconf
+
+use strict;
+use DBI;
+use vars qw ( $debug $configure  );
+use constant _PGMINI => 70400;
+
+my $dbhost = $ENV{'dbhost'} || '';
+my $dbname = $ENV{'dbname'} || 'template1';
+my $dbuser = $ENV{'dbuser'} || 'postgres';
+my $dbport = $ENV{'dbport'} || '5432';
+my $dbpass = $ENV{'dbpass'} || '';
+my $statscope = $ENV{'statscope'} || 'user';
+
+my $dsn = "DBI:Pg:dbname=$dbname";
+$dsn   .=";host=$dbhost;port=$dbport" if $dbhost;
+my $pg_server_version;
+
+if (exists $ARGV[0]) {
+  if ($ARGV[0] eq 'autoconf') {
+    # Check for DBD::Pg
+    if (! eval "require DBD::Pg;") {
+      print "no (DBD::Pg not found)";
+      exit 1;
+    }
+    my $dbh = DBI->connect ($dsn,
+                            $dbuser,
+                            $dbpass,
+                            {RaiseError =>1});
+    if ($dbh) {
+      $pg_server_version = $dbh->{'pg_server_version'};
+      if ($pg_server_version < (_PGMINI)) {
+        $pg_server_version =~ /(\d)(\d){2,2}(\d){2,2}/;
+        print "PostgreSQL Server version " . (_PGMINI) . " or above is needed. Current is $1.$2.$3 \n";
+				exit 1;
+      }
+      print "yes\n";
+      exit 0;
+    } else {
+      print "no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr;
+      exit 1;
+    }
+  } elsif ($ARGV[0] eq 'debug') {
+    # Set debug flag
+    $debug = 1;
+  } elsif ($ARGV[0] eq 'config') {
+    # Set config flag
+    $configure = 1;
+  }
+}
+
+if ($configure) {
+	print "graph_title PostgresSQL locks for database $dbname\n";
+	print "graph_info Show $dbname Postgresql locks\n";
+	print "graph_vlabel Locks\n";
+	print "graph_category Postgresql\n";
+	print "graph_args --base 1000\n";
+
+  print "accessshare.label Access Share Lock\n";
+  print "accessshare.draw LINE\n";
+	print "accessshare.type GAUGE\n";
+  print "accessshare.min 0\n";
+	print "accessshare.info Read only queries\n";
+
+	print "rowshare.label Row Share Lock\n";
+  print "rowshare.draw LINE\n";
+	print "rowshare.type GAUGE\n";
+  print "rowshare.min 0\n";
+	print "rowshare.info SELECT FOR SHARE and SELECT FOR UPDATE locks\n";
+
+	print "rowexclusive.label Row Exclusive Lock\n";
+  print "rowexclusive.draw LINE\n";
+	print "rowexclusive.type GAUGE\n";
+  print "rowexclusive.min 0\n";
+	print "rowexclusive.info Write queries locks\n";
+
+	print "shareupdateexclusive.label Share Update Exclusive Lock\n";
+  print "shareupdateexclusive.draw LINE\n";
+	print "shareupdateexclusive.type GAUGE\n";
+  print "shareupdateexclusive.min 0\n";
+	print "shareupdateexclusive.info VACUUM, ANALYZE, CREATE INDEX CONCURRENTLY.\n";
+
+	print "share.label Share Lock\n";
+  print "share.draw LINE\n";
+	print "share.type GAUGE\n";
+  print "share.min 0\n";
+	print "share.info CREATE INDEX.\n";
+
+	print "sharerowexclusive.label Share Row Exclusive Lock\n";
+  print "sharerowexclusive.draw LINE\n";
+	print "sharerowexclusive.type GAUGE\n";
+  print "sharerowexclusive.min 0\n";
+	print "sharerowexclusive.info Locks from application.\n";
+
+	print "exclusive.label Exclusive Lock\n";
+  print "exclusive.draw LINE\n";
+	print "exclusive.type GAUGE\n";
+  print "exclusive.min 0\n";
+  print "exclusive.info Locks from application or some operation on system catalogs.\n";
+
+	print "accessexclusive.label Access Exclusive Lock\n";
+  print "accessexclusive.draw LINE\n";
+	print "accessexclusive.type GAUGE\n";
+  print "accessexclusive.min 0\n";
+	print "accessexclusive.info ALTER TABLE, DROP TABLE, TRUNCATE, REINDEX, CLUSTER, VACUUM FULL, LOCK TABLE.\n";
+} else {
+  print "# $dsn\n" if $debug;
+  my $dbh = DBI->connect ($dsn,
+                          $dbuser,
+                          $dbpass,
+                          {RaiseError =>1});
+  unless($dbh) {
+    die ("no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr."\n");
+  }
+  my $sql="SELECT mode, count(mode) FROM pg_locks ";
+  $sql  .="where database = (select oid from pg_database where datname = ?) ";
+  $sql  .="group by mode";
+  print "# $sql\n" if $debug;
+  my $accessshare          = 0;
+  my $rowshare             = 0;
+  my $rowexclusive         = 0;
+  my $shareupdateexclusive = 0;
+  my $share                = 0;
+  my $sharerowexclusive    = 0;
+  my $exclusive            = 0;
+  my $accessexclusive      = 0;
+  my $sth = $dbh->prepare ($sql);
+  $sth->execute ($dbname);
+  printf ("# Rows: %d\n",  $sth->rows) if $debug;
+  if ($sth->rows > 0) {
+    while (my ($mode, $count) = $sth->fetchrow_array()) {
+      if ($mode =~ /accesssharelock/i) {
+        $accessshare += $count;
+      } elsif ($mode =~ /rowsharelock/i){
+        $rowshare += $count;
+      } elsif ($mode =~ /rowexclusivelock/i){
+        $rowexclusive += $count;
+      } elsif ($mode =~ /shareupdateexclusivelock/i){
+        $shareupdateexclusive += $count;
+      } elsif ($mode =~ /sharelock/i){
+        $share += $count;
+      } elsif ($mode =~ /sharerowexclusivelock/i){
+        $sharerowexclusive += $count;
+      } elsif ($mode =~ /exclusivelock/i){
+        $exclusive += $count;
+      } elsif ($mode =~ /accessexclusivelock/i){
+        $accessexclusive += $count;
+      }
+    }
+	}
+  print "accessshare.value $accessshare\n";
+  print "rowshare.value $rowshare\n";
+  print "rowexclusive.value $rowexclusive\n";
+  print "shareupdateexclusive.value $shareupdateexclusive\n";
+  print "share.value $share\n";
+  print "sharerowexclusive.value $sharerowexclusive\n";
+  print "exclusive.value $exclusive\n";
+  print "accessexclusive.value $accessexclusive\n";
+}
+exit 0;
+
+
+

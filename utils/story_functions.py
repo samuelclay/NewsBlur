@@ -2,7 +2,10 @@ import datetime
 from HTMLParser import HTMLParser
 from itertools import chain
 from django.utils.dateformat import DateFormat
+from django.utils.html import strip_tags as strip_tags_django
 from django.conf import settings
+from utils.tornado_escape import linkify as linkify_tornado
+from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 
 def story_score(story, bottom_delta=None):
     # A) Date - Assumes story is unread and within unread range
@@ -110,6 +113,9 @@ def pre_process_story(entry):
             story_title = story_title[:80] + '...'
         entry['title'] = story_title
     
+    entry['title'] = strip_tags(entry.get('title'))
+    entry['author'] = strip_tags(entry.get('author'))
+    
     return entry
     
 class bunch(dict):
@@ -146,7 +152,6 @@ class bunch(dict):
         else:
             self.__setitem__(item, value)
             
-
 class MLStripper(HTMLParser):
     def __init__(self):
         self.reset()
@@ -157,6 +162,25 @@ class MLStripper(HTMLParser):
         return ' '.join(self.fed)
 
 def strip_tags(html):
+    if not html:
+        return ''
+    return strip_tags_django(html)
+    
     s = MLStripper()
     s.feed(html)
     return s.get_data()
+
+def linkify(*args, **kwargs):
+    return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
+    
+def truncate_chars(value, max_length):
+    if len(value) <= max_length:
+        return value
+ 
+    truncd_val = value[:max_length]
+    if value[max_length] != " ":
+        rightmost_space = truncd_val.rfind(" ")
+        if rightmost_space != -1:
+            truncd_val = truncd_val[:rightmost_space]
+ 
+    return truncd_val + "..."

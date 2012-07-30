@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html>
+<title>NewsBlur - Connecting...</title>
+
+<head>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #A0A0A0;
+            font-style: italic;
+        }
+        .NB-loader {
+            margin: 72px auto;
+            width: 256px;
+            height: 256px;
+            display: block;
+            -webkit-animation: -webkit-slow-spin 3.4s infinite linear;    
+            -moz-animation-duration: 6.8s;  
+            -moz-animation-name: -moz-slow-spin;  
+            -moz-animation-iteration-count: infinite;  
+            -moz-animation-timing-function: linear;  
+        }
+        @-webkit-keyframes -webkit-slow-spin {
+            from {-webkit-transform: rotate(0deg)}
+            to  {-webkit-transform: rotate(360deg)}
+        }
+        @-moz-keyframes -moz-slow-spin {  
+            from {-moz-transform: rotate(0deg)}
+            to  {-moz-transform: rotate(360deg)}
+        } 
+    </style>
+    <script type="text/javascript" charset="utf-8">
+        if (!window.console) {
+            window.console = {};
+            window.console.log = function() {};
+        }
+        var next = "{{ next|safe }}";
+        if (next) {
+            console.log(["Forwarding to next", next]);
+            setTimeout(function() {
+                window.location.href = next;
+            }, 1000);
+        } else if (window.opener && window.opener.NEWSBLUR) {
+            console.log(["Found opener", window.opener.NEWSBLUR]);
+            if (window.opener.NEWSBLUR.reader.flags.importing_from_google_reader) {
+                console.log(['Importing from Reader']);
+                if (window.opener.NEWSBLUR.intro) {
+                    console.log(['Using Intro dialog']);
+                    window.opener.NEWSBLUR.intro.start_import_from_google_reader({
+                        {% if error %}
+                            'error': "{{ error }}",
+                        {% endif %}
+                    });
+                } else {
+                    console.log(['Using some other dialog']);
+                    window.opener.NEWSBLUR.reader.post_google_reader_connect({
+                        {% if error %}
+                            'error': "{{ error }}",
+                        {% endif %}
+                    });
+                }
+            } else if (window.opener.NEWSBLUR.intro) {
+                console.log(['Connecting through intro']);
+                window.opener.NEWSBLUR.intro.post_connect({
+                    {% if error %}
+                        'error': "{{ error }}",
+                    {% endif %}
+                });
+            } else if (window.opener.NEWSBLUR.reader_friends) {
+                console.log(["Connecting through friends dialog"]);
+                window.opener.NEWSBLUR.reader_friends.post_connect({
+                    {% if error %}
+                        'error': "{{ error }}",
+                    {% endif %}
+                });
+            }
+            window.close();
+        } else {
+            console.log(["No opener, directing to /", window.opener]);
+            window.location.href = "/";
+        }
+    </script>
+</head>
+
+<body>
+
+    <div style="text-align: center;">
+
+        <img class="NB-loader" src="{{ MEDIA_URL }}img/logo_512.png">
+
+        <div>Hold on just a smidgen...</div>
+        <div>If I was a bird I'd be a pigeon.</div>
+
+    </div>
+
+</body>
+</html>

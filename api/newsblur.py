@@ -6,7 +6,7 @@ import urllib, urllib2
 import cookielib
 import json
 
-__author__ = "Dananjaya Ramanayake <dananjaya86@gmail.com>, Samuel Clay <samuel@ofbrooklyn.com>"
+__author__ = "Dananjaya Ramanayake <dananjaya86@gmail.com>, Samuel Clay <samuel@newsblur.com>"
 __version__ = "1.0"
 
 API_URL = "http://www.newsblur.com/"
