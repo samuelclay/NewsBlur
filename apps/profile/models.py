@@ -74,15 +74,19 @@ class Profile(models.Model):
         
         from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
         from apps.social.models import MActivity, MInteraction
-        social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
-        print " ---> Unfollowing %s followings and %s followers" % (social_profile.following_count,
-                                                                    social_profile.follower_count)
-        for follow in social_profile.following_user_ids:
-            social_profile.unfollow_user(follow)
-        for follower in social_profile.follower_user_ids:
-            follower_profile = MSocialProfile.objects.get(user_id=follower)
-            follower_profile.unfollow_user(self.user.pk)
-        social_profile.delete()
+        try:
+            social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
+            print " ---> Unfollowing %s followings and %s followers" % (social_profile.following_count,
+                                                                        social_profile.follower_count)
+            for follow in social_profile.following_user_ids:
+                social_profile.unfollow_user(follow)
+            for follower in social_profile.follower_user_ids:
+                follower_profile = MSocialProfile.objects.get(user_id=follower)
+                follower_profile.unfollow_user(self.user.pk)
+            social_profile.delete()
+        except MSocialProfile.DoesNotExist:
+            print " ***> No social profile found. S'ok, moving on."
+            pass
         
         shared_stories = MSharedStory.objects.filter(user_id=self.user.pk)
         print " ---> Deleting %s shared stories" % shared_stories.count()
