@@ -98,19 +98,19 @@ class Profile(models.Model):
         subscriptions.delete()
         
         interactions = MInteraction.objects.filter(user_id=self.user.pk)
-        print " ---> Deleting %s interactions for user."
+        print " ---> Deleting %s interactions for user." % interactions.count()
         interactions.delete()
         
         interactions = MInteraction.objects.filter(with_user_id=self.user.pk)
-        print " ---> Deleting %s interactions with user."
+        print " ---> Deleting %s interactions with user." % interactions.count()
         interactions.delete()
         
         activities = MActivity.objects.filter(user_id=self.user.pk)
-        print " ---> Deleting %s activities for user."
+        print " ---> Deleting %s activities for user." % activities.count()
         activities.delete()
         
         activities = MActivity.objects.filter(with_user_id=self.user.pk)
-        print " ---> Deleting %s activities with user."
+        print " ---> Deleting %s activities with user." % activities.count()
         activities.delete()
         
         print " ---> Deleting user: %s" % self.user

@@ -5143,7 +5143,9 @@
             });
             $document.bind('keydown', 'esc', function(e) {
                 e.preventDefault();
-                self.show_splash_page();
+                if (!_.keys($.modal.impl.d).length) {
+                    self.show_splash_page();
+                }
             });
             $document.bind('keypress', 't', function(e) {
                 e.preventDefault();

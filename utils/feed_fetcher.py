@@ -406,7 +406,7 @@ class Dispatcher:
                 logging.debug(u'   ---> [%-30s] ~FYFetching page: %s' % (feed.title[:30], feed.feed_link))
                 page_importer = PageImporter(feed)
                 try:
-                    page_importer.fetch_page()
+                    page_data = page_importer.fetch_page()
                 except TimeoutError, e:
                     logging.debug('   ---> [%-30s] ~FRPage fetch timed out...' % (feed.title[:30]))
                     feed.save_page_history(555, 'Timeout', '')
@@ -417,11 +417,12 @@ class Dispatcher:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     feed.save_page_history(550, "Page Error", tb)
                     fetched_feed = None
+                    page_data = None
                     mail_feed_error_to_admin(feed, e, local_vars=locals())
 
                 feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
-                icon_importer = IconImporter(feed, force=self.options['force'])
+                icon_importer = IconImporter(feed, page_data=page_data, force=self.options['force'])
                 try:
                     icon_importer.save()
                 except TimeoutError, e:
