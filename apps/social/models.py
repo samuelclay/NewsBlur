@@ -286,8 +286,8 @@ class MSocialProfile(mongo.Document):
         if include_following_user or common_follows_with_user:
             if not include_following_user:
                 include_following_user = common_follows_with_user
-            params['followed_by_you'] = self.is_followed_by_user(include_following_user)
-            params['following_you'] = self.is_following_user(include_following_user)
+            params['followed_by_you'] = bool(self.is_followed_by_user(include_following_user))
+            params['following_you'] = bool(self.is_following_user(include_following_user))
 
         return params
     
@@ -1121,10 +1121,10 @@ class MSharedStory(mongo.Document):
             story.save()
         
     @classmethod
-    def collect_popular_stories(cls):
+    def collect_popular_stories(cls, cutoff=None):
         from apps.statistics.models import MStatistics
         shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
-        cutoff = max(math.floor(.05 * shared_stories_count), 3)
+        cutoff = cutoff or max(math.floor(.05 * shared_stories_count), 3)
         today = datetime.datetime.now() - datetime.timedelta(days=1)
         
         map_f = """
@@ -1160,14 +1160,13 @@ class MSharedStory(mongo.Document):
         return stories, cutoff
         
     @classmethod
-    def share_popular_stories(cls, verbose=True):
+    def share_popular_stories(cls, cutoff=None, verbose=True):
         publish_new_stories = False
         popular_profile = MSocialProfile.objects.get(username='popular')
         popular_user = User.objects.get(pk=popular_profile.user_id)
-        shared_stories_today, cutoff = cls.collect_popular_stories()
+        shared_stories_today, cutoff = cls.collect_popular_stories(cutoff=cutoff)
         for guid, story_info in shared_stories_today.items():
-            story = MStory.objects(story_feed_id=story_info['feed_id'], 
-                                   story_guid=story_info['guid']).limit(1).first()
+            story, _ = MStory.find_story(story_info['feed_id'], story_info['guid'])
             if not story:
                 logging.user(popular_user, "~FRPopular stories, story not found: %s" % story_info)
                 continue

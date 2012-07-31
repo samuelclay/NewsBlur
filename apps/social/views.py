@@ -776,7 +776,7 @@ def find_friends(request):
     if not profiles:
         profiles = MSocialProfile.objects.filter(blurblog_title__icontains=query)[:limit]
     
-    profiles = [p.to_json(include_following_user=True) for p in profiles]
+    profiles = [p.to_json(include_following_user=request.user.pk) for p in profiles]
     return dict(profiles=profiles)
 
 @ajax_login_required

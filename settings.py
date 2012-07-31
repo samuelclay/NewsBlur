@@ -342,6 +342,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(minutes=1),
         'options': {'queue': 'beat_tasks'},
     },
+    'share-popular-stories': {
+        'task': 'share-popular-stories',
+        'schedule': datetime.timedelta(hours=1),
+        'options': {'queue': 'beat_tasks'},
+    },
 }
 
 # ====================

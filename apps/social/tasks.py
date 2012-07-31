@@ -1,5 +1,6 @@
 from celery.task import Task
 from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
+from utils import log as logging
 
 
 class PostToService(Task):
@@ -9,7 +10,7 @@ class PostToService(Task):
             shared_story = MSharedStory.objects.get(id=shared_story_id)
             shared_story.post_to_service(service)
         except MSharedStory.DoesNotExist:
-            print "Story not found (%s). Can't post to: %s" % (shared_story_id, service)
+            logging.debug(" ---> Shared story not found (%s). Can't post to: %s" % (shared_story_id, service))
             
 class EmailNewFollower(Task):
     
@@ -40,4 +41,11 @@ class SyncFacebookFriends(Task):
     def run(self, user_id):
         social_services = MSocialServices.objects.get(user_id=user_id)
         social_services.sync_facebook_friends()
+        
+class SharePopularStories(Task):
+    name = 'share-popular-stories'
+
+    def run(self, **kwargs):
+        logging.debug(" ---> Sharing popular stories...")
+        MSharedStory.share_popular_stories()
         
