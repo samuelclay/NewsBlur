@@ -14,6 +14,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Comment;
@@ -68,6 +69,19 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		}
 		final APIResponse response = client.post(APIConstants.URL_MARK_FEED_AS_READ, values);
+		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean markStoryAsRead(final String feedId, final String storyId) {
+		final APIClient client = new APIClient(context);
+		final ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		final APIResponse response = client.post(APIConstants.URL_MARK_STORY_AS_READ, values);
 		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			return true;
 		} else {
@@ -183,16 +197,19 @@ public class APIManager {
 			final Feed feed = entry.getValue();
 			contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
 		}
-
-		for (final Entry<String, List<Long>> entry : feedUpdate.folderStructure.folders.entrySet()) {	
+		
+		String unsortedFolderName = context.getResources().getString(R.string.unsorted_folder_name);
+		
+		for (final Entry<String, List<Long>> entry : feedUpdate.folderStructure.folders.entrySet()) {
+			String folderName = TextUtils.isEmpty(entry.getKey()) ? unsortedFolderName : entry.getKey();
 			final ContentValues folderValues = new ContentValues();
-			folderValues.put(DatabaseConstants.FOLDER_NAME, entry.getKey());
+			folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
 			contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
 
 			for (Long feedId : entry.getValue()) {
 				ContentValues values = new ContentValues(); 
 				values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
-				values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, entry.getKey());
+				values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
 				contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
 			}
 		}

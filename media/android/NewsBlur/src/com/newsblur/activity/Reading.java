@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -19,15 +20,19 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.ReadingAdapter;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ShareDialogFragment;
+import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.MarkStoryAsReadTask;
 import com.newsblur.util.UIUtils;
 
-public class Reading extends SherlockFragmentActivity {
+public class Reading extends SherlockFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
 
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String TAG = "ReadingActivity";
@@ -35,28 +40,33 @@ public class Reading extends SherlockFragmentActivity {
 	private ViewPager pager;
 	private FragmentManager fragmentManager;
 	private ReadingAdapter readingAdapter;
+	private APIManager apiManager;
 	private String feedId;
 	private final int READING_LOADER = 0x01;
 	private ContentResolver contentResolver;
 	private Feed feed;
 	private int passedPosition;
+	private SyncUpdateFragment syncFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
+		requestWindowFeature(Window.FEATURE_PROGRESS);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceBundle);
 		setContentView(R.layout.activity_reading);
 
 		fragmentManager = getSupportFragmentManager();
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
+		// TODO: implement intelligence passing here
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
+
 		contentResolver = getContentResolver();
 		Uri storiesURI = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
 		Cursor stories = contentResolver.query(storiesURI, null, null, null, null);
 		readingAdapter = new ReadingAdapter(fragmentManager, this, feedId, stories);
-		
+
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
 		setTitle(feed.title);
@@ -83,12 +93,20 @@ public class Reading extends SherlockFragmentActivity {
 		pager = (ViewPager) findViewById(R.id.reading_pager);
 		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
 		pager.setPageMarginDrawable(R.drawable.divider_light);
-		
+		pager.setOnPageChangeListener(this);
+
 		pager.setAdapter(readingAdapter);
 		pager.setCurrentItem(passedPosition);
+
+		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
+		if (syncFragment == null) {
+			syncFragment = new SyncUpdateFragment();
+			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
+		}
 		
+		new MarkStoryAsReadTask(this, contentResolver, syncFragment).execute(readingAdapter.getStory(passedPosition));
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -116,7 +134,7 @@ public class Reading extends SherlockFragmentActivity {
 		case R.id.menu_reading_sharenewsblur:
 			if (story != null) {
 				DialogFragment newFragment = ShareDialogFragment.newInstance(story.id, story.title, feedId, null);
-			    newFragment.show(getSupportFragmentManager(), "dialog");
+				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 			return true;
 		case R.id.menu_shared:
@@ -130,6 +148,33 @@ public class Reading extends SherlockFragmentActivity {
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);	
+		}
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int arg0) {
+	}
+
+	@Override
+	public void onPageScrolled(int arg0, float arg1, int arg2) {
+	}
+
+	@Override
+	public void onPageSelected(final int position) {
+		new MarkStoryAsReadTask(this, contentResolver, syncFragment).execute(readingAdapter.getStory(position));
+	}
+
+	@Override
+	public void updateAfterSync() {
+
+	}
+
+	@Override
+	public void updateSyncStatus(boolean syncRunning) {
+		if (syncRunning) {
+			setSupportProgressBarIndeterminateVisibility(true);
+		} else { 
+			setSupportProgressBarIndeterminateVisibility(false);
 		}
 	}
 

@@ -60,9 +60,7 @@ public class FolderTreeViewBinder implements ViewBinder {
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FOLDER_NAME)) {
 			String folderName = cursor.getString(columnIndex);
-			if (TextUtils.isEmpty(folderName)) {
-				folderName = "Everything";
-			} else {
+			if (!TextUtils.equals(folderName, "Unsorted")) {
 				folderName = folderName.toUpperCase();
 			}
 			((TextView) view).setText("" + folderName);

@@ -77,8 +77,8 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		")";
 
 	private final String FEED_FOLDER_SQL = "CREATE TABLE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + " (" +
-		DatabaseConstants.FEED_FOLDER_FOLDER_NAME + TEXT + ", " +
-		DatabaseConstants.FEED_FOLDER_FEED_ID + INTEGER + ", " +
+		DatabaseConstants.FEED_FOLDER_FOLDER_NAME + TEXT + " NOT NULL, " +
+		DatabaseConstants.FEED_FOLDER_FEED_ID + INTEGER + " NOT NULL, " +
 		"PRIMARY KEY (" + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + ", " + DatabaseConstants.FEED_FOLDER_FEED_ID + ") " + 
 		")";
 

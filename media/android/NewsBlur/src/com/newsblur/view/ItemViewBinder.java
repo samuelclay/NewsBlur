@@ -17,7 +17,7 @@ public class ItemViewBinder implements ViewBinder {
 		final String columnName = cursor.getColumnName(columnIndex);
 		if (TextUtils.equals(columnName, DatabaseConstants.STORY_READ)) {
 			String read = cursor.getString(columnIndex);
-			if (Boolean.parseBoolean(read) == false) {
+			if (TextUtils.equals(read, "0")) {
 				((TextView) view).setTypeface(null, Typeface.BOLD);
 			} else {
 				((TextView) view).setTypeface(null, Typeface.NORMAL);

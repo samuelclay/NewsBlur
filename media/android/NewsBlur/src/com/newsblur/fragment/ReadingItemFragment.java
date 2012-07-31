@@ -34,7 +34,7 @@ import com.newsblur.util.UIUtils;
 public class ReadingItemFragment extends Fragment {
 
 	private static final String TAG = "ReadingItemFragment";
-	private Story story;
+	public Story story;
 	private LayoutInflater inflater;
 	private APIManager apiManager;
 	private ImageLoader imageLoader = new ImageLoader(getActivity());
@@ -81,7 +81,7 @@ public class ReadingItemFragment extends Fragment {
 			protected Void doInBackground(Void... arg0) {
 				inflater = getActivity().getLayoutInflater();
 				for (String userId : story.sharedUserIds) {
-					if (!imageLoader.checkForImage(userId)) {
+					if (!imageLoader.hasImage(userId)) {
 						ProfileResponse user = apiManager.getUser(userId);
 						imageLoader.cacheImage(user.user.photoUrl, user.user.userId);
 					}

@@ -3,6 +3,7 @@ package com.newsblur.database;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +12,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
@@ -23,7 +25,6 @@ public class ReadingAdapter extends FragmentStatePagerAdapter implements LoaderM
 	private Uri feedUri;
 	private String TAG = "ReadingAdapter";
 	private LoadingFragment loadingFragment; 
-	
 
 	public ReadingAdapter(final FragmentManager fragmentManager, final Context context, final String feedId, final Cursor cursor) {
 		super(fragmentManager);
@@ -42,6 +43,11 @@ public class ReadingAdapter extends FragmentStatePagerAdapter implements LoaderM
 			cursor.moveToPosition(position);
 			return ReadingItemFragment.newInstance(Story.fromCursor(cursor));
 		}
+	}
+	
+	@Override
+	public void setPrimaryItem(ViewGroup container, int position, Object object) {
+		super.setPrimaryItem(container, position, object);
 	}
 
 	@Override

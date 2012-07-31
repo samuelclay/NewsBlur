@@ -23,6 +23,7 @@ public class SyncService extends IntentService {
 	private static final String TAG = "SyncService";
 	public static final String EXTRA_STATUS_RECEIVER = "resultReceiverExtra";
 	public static final String EXTRA_TASK_FEED_ID = "taskFeedId";
+	public static final String EXTRA_TASK_STORY_ID = "taskStoryId";
 	
 	public final static int STATUS_RUNNING = 0x02;
 	public final static int STATUS_FINISHED = 0x03;
@@ -32,11 +33,12 @@ public class SyncService extends IntentService {
 	public static final int EXTRA_TASK_FOLDER_UPDATE = 30;
 	public static final int EXTRA_TASK_FEED_UPDATE = 31;
 	public static final int EXTRA_TASK_REFRESH_COUNTS = 32;
+	public static final int EXTRA_TASK_MARK_STORY_READ = 33;
 	
 	public APIClient apiClient;
 	private APIManager apiManager;
 	public static final String SYNCSERVICE_TASK = "syncservice_task";
-
+	
 	public SyncService() {
 		super(TAG);
 	}
@@ -61,7 +63,15 @@ public class SyncService extends IntentService {
 				apiManager.getFolderFeedMapping();
 				break;
 			case EXTRA_TASK_REFRESH_COUNTS:
-				apiManager.refreshFeedCounts();
+				apiManager.getFolderFeedMapping();
+				break;	
+			case EXTRA_TASK_MARK_STORY_READ:
+				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_STORY_ID))) {
+					apiManager.markStoryAsRead(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_STORY_ID));
+				} else {
+					Log.e(TAG, "No feed/story to mark as read included in SyncRequest");
+					receiver.send(STATUS_ERROR, Bundle.EMPTY);
+				}
 				break;	
 			case EXTRA_TASK_FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {

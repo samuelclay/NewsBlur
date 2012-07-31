@@ -1,6 +1,7 @@
 package com.newsblur.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,16 +72,20 @@ public class ImageLoader {
 		executorService.submit(new PhotosLoader(p));
 	}
 	
-	public boolean checkForImage(String uid) {
-		return (fileCache.getFile(uid) != null || memoryCache.get(uid) != null);
+	public boolean hasImage(String uid) {
+		if (memoryCache.get(uid) == null) {
+			return (fileCache.getFile(uid) != null);
+		}
+		return true;
 	}
 
 	private Bitmap getBitmap(String url, String uid) {
-		
 		File f = fileCache.getFile(uid);
 		Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 		
 		if (bitmap != null) {
+			Log.d(TAG, "Retrieving bitmap From file cache");
+			memoryCache.put(uid, bitmap);			
 			bitmap = UIUtils.roundCorners(bitmap, 10f);
 			return bitmap;
 		}
@@ -99,9 +104,8 @@ public class ImageLoader {
 				outputStream.write(b, 0, read);  
 			}  
 			outputStream.close();
-			bitmap = BitmapFactory.decodeByteArray(b, 0, b.length);
-			FileOutputStream out = new FileOutputStream(f);
-		    bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+			bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
+			memoryCache.put(uid, bitmap);
 			bitmap = UIUtils.roundCorners(bitmap, 10f);
 			return bitmap;
 		} catch (IOException ex) {
@@ -170,7 +174,7 @@ public class ImageLoader {
 			}
 		}
 	}
-
+	
 	public void clearCache() {
 		memoryCache.clear();
 		fileCache.clear();
