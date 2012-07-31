@@ -63,7 +63,7 @@ function slideToComment(commentId, highlight) {
             setTimeout(function(){
                 $('#' + commentString).removeClass('NB-highlighted');
             }, 2000);
-        }, 500);
+        }, 1000);
     }
 }
           

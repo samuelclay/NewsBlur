@@ -111,7 +111,7 @@
     
     if ([category isEqualToString:@"follow"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:@"%@ followed %@", username, withUserUsername];        
+        txt = [NSString stringWithFormat:@"%@ followed %@.", username, withUserUsername];        
     } else if ([category isEqualToString:@"comment_reply"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
         txt = [NSString stringWithFormat:@"%@ replied to %@: \n%@", username, withUserUsername, comment];  
@@ -126,9 +126,9 @@
         }
         
     } else if ([category isEqualToString:@"star"]) {
-        txt = [NSString stringWithFormat:@"You saved \"%@\"", content];
+        txt = [NSString stringWithFormat:@"You saved \"%@\".", content];
     } else if ([category isEqualToString:@"feedsub"]) {
-        txt = [NSString stringWithFormat:@"You subscribed to %@", content];
+        txt = [NSString stringWithFormat:@"You subscribed to %@.", content];
     }
 
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];
