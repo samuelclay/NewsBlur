@@ -207,7 +207,7 @@
     userProfileView.navigationItem.rightBarButtonItem = donebutton;
     userProfileView.navigationItem.title = self.activeUserProfileName;
     userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
-    [userProfileView getUserProfile];
+    [userProfileView getUserProfile];   
     [self.userProfileNavigationController pushViewController:userProfileView animated:YES];
 }
 

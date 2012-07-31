@@ -175,6 +175,74 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
 
 #pragma mark - Table view data source
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
+        return 28;
+    }else{
+        return 21;
+    }
+}
+
+- (UIView *)tableView:(UITableView *)tableView 
+viewForHeaderInSection:(NSInteger)section {
+    
+    int headerLabelHeight, folderImageViewY;
+    
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        headerLabelHeight = 28;
+        folderImageViewY = 3;
+    } else {
+        headerLabelHeight = 20;
+        folderImageViewY = 0;
+    }
+    
+    // create the parent view that will hold header Label
+    UIControl* customView = [[UIControl alloc] 
+                             initWithFrame:CGRectMake(0.0, 0.0, 
+                                                      tableView.bounds.size.width, headerLabelHeight + 1)];
+    UIView *borderTop = [[UIView alloc] 
+                         initWithFrame:CGRectMake(0.0, 0, 
+                                                  tableView.bounds.size.width, 1.0)];
+    borderTop.backgroundColor = UIColorFromRGB(0xe0e0e0);
+    borderTop.opaque = NO;
+    [customView addSubview:borderTop];
+    
+    
+    UIView *borderBottom = [[UIView alloc] 
+                            initWithFrame:CGRectMake(0.0, headerLabelHeight, 
+                                                     tableView.bounds.size.width, 1.0)];
+    borderBottom.backgroundColor = [UIColorFromRGB(0xB7BDC6) colorWithAlphaComponent:0.5];
+    borderBottom.opaque = NO;
+    [customView addSubview:borderBottom];
+    
+    UILabel * headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    customView.opaque = NO;
+    headerLabel.backgroundColor = [UIColor clearColor];
+    headerLabel.opaque = NO;
+    headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    headerLabel.highlightedTextColor = [UIColor whiteColor];
+    headerLabel.font = [UIFont boldSystemFontOfSize:11];
+    headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, headerLabelHeight);
+    headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
+    headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+    headerLabel.text = @"RECOMMENDED PEOPLE TO FOLLOW";
+    
+    customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
+                                  colorWithAlphaComponent:0.8];
+    [customView addSubview:headerLabel];
+    
+    UIImage *folderImage;
+    int folderImageViewX = 10;
+    
+    folderImage = [UIImage imageNamed:@"group.png"];
+    folderImageViewX = 9;
+    UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
+    folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
+    [customView addSubview:folderImageView];    
+    [customView setAutoresizingMask:UIViewAutoresizingNone];
+    return customView;
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
