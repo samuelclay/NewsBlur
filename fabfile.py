@@ -36,7 +36,8 @@ env.roledefs ={
             'app03.newsblur.com', 
             'app04.newsblur.com'],
     'dev': ['dev.newsblur.com'],
-    'web': ['app02.newsblur.com', 
+    'web': ['app01.newsblur.com', 
+            'app02.newsblur.com', 
             'app04.newsblur.com'],
     'db': ['db01.newsblur.com', 
            'db02.newsblur.com', 
@@ -112,11 +113,9 @@ def post_deploy():
 @parallel
 def deploy():
     deploy_code(copy_assets=True)
-    post_deploy()
 
 def deploy_full():
     deploy_code(full=True)
-    post_deploy()
 
 @parallel
 def deploy_code(copy_assets=False, full=False):
