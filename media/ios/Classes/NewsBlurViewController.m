@@ -153,6 +153,7 @@
     [self.feedTitlesTable deselectRowAtIndexPath:[self.feedTitlesTable indexPathForSelectedRow]
                                         animated:YES];
 }
+
 - (void)viewWillDisappear:(BOOL)animated {
     [self.popoverController dismissPopoverAnimated:YES];
     self.popoverController = nil;
@@ -415,6 +416,10 @@
     [appDelegate showUserProfileModal:self.navigationItem.leftBarButtonItem];
 }
 
+- (IBAction)tapAddSite:(id)sender {
+    [appDelegate showAddSiteModal];
+}
+
 - (void)showSettingsPopover:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showFeedMenuPopover:sender];
@@ -438,10 +443,6 @@
                                                        animated:YES];  
 
     }
-}
-
-- (IBAction)showAddSite:(id)sender {
-    [appDelegate showAddSite];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

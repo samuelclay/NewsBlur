@@ -138,7 +138,7 @@
 #pragma mark -
 #pragma mark FeedsView
 
-- (void)showAddSite {
+- (void)showAddSiteModal {
     UINavigationController *navController = self.navigationController;
     [navController dismissModalViewControllerAnimated:NO];
     

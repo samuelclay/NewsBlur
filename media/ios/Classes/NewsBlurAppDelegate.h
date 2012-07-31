@@ -190,7 +190,7 @@
 - (void)hideFindingStoryHUD;
 
 
-- (void)showAddSite;
+- (void)showAddSiteModal;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user;

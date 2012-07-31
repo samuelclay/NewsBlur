@@ -84,5 +84,7 @@
 - (void)showSettingsPopover:(id)sender;
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view;
 - (void)fadeSelectedCell;
+- (IBAction)tapAddSite:(id)sender;
+
 
 @end

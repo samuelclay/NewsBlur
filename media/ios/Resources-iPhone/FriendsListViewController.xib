@@ -36,7 +36,7 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">274</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUITableView" id="514445297">
+					<object class="IBUITableView" id="416916434">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">274</int>
 						<string key="NSFrame">{{0, 44}, {320, 416}}</string>
@@ -58,16 +58,18 @@
 						<float key="IBUISectionHeaderHeight">22</float>
 						<float key="IBUISectionFooterHeight">22</float>
 					</object>
-					<object class="IBUISearchBar" id="752588573">
+					<object class="IBUISearchBar" id="938796111">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">290</int>
 						<string key="NSFrameSize">{320, 44}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="514445297"/>
+						<reference key="NSNextKeyView" ref="416916434"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<int key="IBUIContentMode">3</int>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+						<string key="IBText"/>
+						<string key="IBPlaceholder">Search by email or username</string>
 						<object class="IBUITextInputTraits" key="IBTextInputTraits">
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						</object>
@@ -76,7 +78,7 @@
 				<string key="NSFrame">{{0, 20}, {320, 460}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="752588573"/>
+				<reference key="NSNextKeyView" ref="938796111"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
 					<bytes key="NSWhite">MQA</bytes>
@@ -102,7 +104,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">friendsTable</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="514445297"/>
+						<reference key="destination" ref="416916434"/>
 					</object>
 					<int key="connectionID">6</int>
 				</object>
@@ -110,14 +112,14 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">friendSearchBar</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="752588573"/>
+						<reference key="destination" ref="938796111"/>
 					</object>
 					<int key="connectionID">7</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
-						<reference key="source" ref="752588573"/>
+						<reference key="source" ref="938796111"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">10</int>
@@ -125,7 +127,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">dataSource</string>
-						<reference key="source" ref="514445297"/>
+						<reference key="source" ref="416916434"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">8</int>
@@ -133,7 +135,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
-						<reference key="source" ref="514445297"/>
+						<reference key="source" ref="416916434"/>
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">9</int>
@@ -151,8 +153,8 @@
 						<int key="objectID">1</int>
 						<reference key="object" ref="191373211"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="752588573"/>
-							<reference ref="514445297"/>
+							<reference ref="938796111"/>
+							<reference ref="416916434"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -169,12 +171,12 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">3</int>
-						<reference key="object" ref="752588573"/>
+						<reference key="object" ref="938796111"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">4</int>
-						<reference key="object" ref="514445297"/>
+						<reference key="object" ref="416916434"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 				</array>
@@ -1283,6 +1285,7 @@
 						<string key="sectionUntapped:">UIButton</string>
 						<string key="sectionUntappedOutside:">UIButton</string>
 						<string key="selectIntelligence">id</string>
+						<string key="tapAddSite:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="sectionTapped:">
@@ -1299,6 +1302,10 @@
 						</object>
 						<object class="IBActionInfo" key="selectIntelligence">
 							<string key="name">selectIntelligence</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="tapAddSite:">
+							<string key="name">tapAddSite:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>
