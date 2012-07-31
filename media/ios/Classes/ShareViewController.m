@@ -195,7 +195,6 @@
     [request setDidFinishSelector:@selector(finishShareThisStory:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
-    [commentField resignFirstResponder];
     [appDelegate hideShareView:YES];
 }
 
@@ -243,7 +242,6 @@
     [request setDidFinishSelector:@selector(finishAddReply:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
-    [commentField resignFirstResponder];
     [appDelegate hideShareView:YES];
     [appDelegate.storyDetailViewController showShareHUD];
 }

@@ -462,7 +462,7 @@
             NSString *replyContent = [self textToHtml:[replyDict objectForKey:@"comments"]];
                         
             NSString *reply = [NSString stringWithFormat:@
-                                "<div class=\"NB-story-comment-reply\">"
+                                "<div class=\"NB-story-comment-reply\" id=\"NB-user-comment-%@\">"
                                 "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
                                 "       <img class=\"NB-user-avatar NB-story-comment-reply-photo\" src=\"%@\" />"
                                 "   </a>"
@@ -471,6 +471,7 @@
                                 "    %@" //User Edit Button>"
                                 "   <div class=\"NB-story-comment-reply-content\">%@</div>"
                                 "</div>",
+                               [replyDict objectForKey:@"reply_id"],
                                [user objectForKey:@"user_id"],  
                                [user objectForKey:@"photo_url"],
                                [user objectForKey:@"username"],  
@@ -624,7 +625,7 @@
                             footerString
                             ];
 
-//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -1061,6 +1062,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
     } else if ([replyId isEqualToString:@"like"]) {
         
+    } else {
+        NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", replyId];
+        [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
     }
     
 

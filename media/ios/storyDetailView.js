@@ -51,17 +51,19 @@ function slideToComment(commentId, highlight) {
     //Get comment
     var $comment = $('#' + commentString);
     if ($comment.length) {
-        $.scroll($comment.offset().top - 32, 500);
+        $.scroll($comment.offset().top - 32, 1000);
     } else {
         var shareButton = document.getElementById("NB-share-button-id");
-        $.scroll($('#NB-share-button-id').offset().top - 32, 500);
+        $.scroll($('#NB-share-button-id').offset().top - 32, 1000);
     }
 
     if (highlight) {
-        $('#' + commentString).addClass('NB-highlighted');
         setTimeout(function(){
-            $('#' + commentString).removeClass('NB-highlighted');
-        }, 3000);
+            $('#' + commentString).addClass('NB-highlighted');
+            setTimeout(function(){
+                $('#' + commentString).removeClass('NB-highlighted');
+            }, 2000);
+        }, 500);
     }
 }
           

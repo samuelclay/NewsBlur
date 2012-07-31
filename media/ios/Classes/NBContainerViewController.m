@@ -637,10 +637,10 @@
     // CASE: when dismissing the keyboard AND dismissing the share view
     } else if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"] && self.isHidingStory) {
         if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
-            self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
-                                                                   0,
-                                                                   self.storyNavigationController.view.frame.size.width,
-                                                                   storyTitlesYCoordinate);
+//            self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+//                                                                   0,
+//                                                                   self.storyNavigationController.view.frame.size.width,
+//                                                                   vb.size.height);
         } else {
             self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                                    0,
@@ -661,6 +661,17 @@
                                                                               vb.size.height,
                                                                               self.storyNavigationController.view.frame.size.width,
                                                                               NB_DEFAULT_SHARE_HEIGHT);
+                             if (UIInterfaceOrientationIsPortrait(orientation)) {
+                                 self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                                                        0,
+                                                                                        self.storyNavigationController.view.frame.size.width,
+                                                                                        storyTitlesYCoordinate);
+                             } else {
+                                 self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                                                        0,
+                                                                                        self.storyNavigationController.view.frame.size.width,
+                                                                                        vb.size.height);
+                             }
                          } else {
                              self.shareViewController.view.frame = shareViewFrame;
                              // if the toolbar is higher, animate
