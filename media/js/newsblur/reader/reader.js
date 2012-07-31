@@ -658,8 +658,6 @@
             
             if (open_feed_action == 'newest') {
                 this.show_next_unread_story();
-            } else if (open_feed_action == 'oldest') {
-                this.show_last_unread_story();
             }
         },
         
@@ -2097,7 +2095,7 @@
                 self.flags.scrolling_by_selecting_story_title = false;
             }, 550);
             if (view == 'page') {
-                NEWSBLUR.log(["iframe_prevented_from_loading", this.flags['iframe_prevented_from_loading']]);
+                // NEWSBLUR.log(["iframe_prevented_from_loading", this.flags['iframe_prevented_from_loading']]);
                 if (this.flags['iframe_prevented_from_loading']) {
                     NEWSBLUR.app.original_tab_view.load_feed_iframe();
                 }

@@ -84,7 +84,7 @@ javascripts:
         - media/js/newsblur/payments/paypal_return.js
         - media/js/newsblur/payments/stripe_form.js
     bookmarklet:
-        - media/js/vendor/jquery-1.5.1.min.js
+        - media/js/vendor/jquery-1.7.2.min.js
         - media/js/vendor/jquery.noConflict.js
         - media/js/vendor/jquery.newsblur.js
         - media/js/vendor/jquery.tinysort.js
