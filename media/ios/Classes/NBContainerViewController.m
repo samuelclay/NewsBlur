@@ -15,6 +15,7 @@
 #import "UserProfileViewController.h"
 #import "InteractionCell.h"
 #import "ActivityCell.h"
+#import "FeedsMenuViewController.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1024 - 640
@@ -164,13 +165,7 @@
                              initWithContentViewController:appDelegate.userProfileNavigationController];
         
         popoverController.delegate = self;
-    } else {
-        if (popoverController.isPopoverVisible) {
-            [popoverController dismissPopoverAnimated:YES];
-            return;
-        }
-        [popoverController setContentViewController:appDelegate.userProfileNavigationController];
-    }
+    } 
     
     [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
 
@@ -195,9 +190,25 @@
     } 
 }
 
-- (void)hideUserProfilePopover {
+- (void)showFeedMenuPopover:(id)sender {
+    if (popoverController == nil) {
+        popoverController = [[UIPopoverController alloc]
+                             initWithContentViewController:appDelegate.feedsMenuViewController];
+        
+        popoverController.delegate = self;
+    } 
+    
+    [popoverController setPopoverContentSize:CGSizeMake(200, 90)];
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+                                       initWithCustomView:sender];
+    [popoverController presentPopoverFromBarButtonItem:settingsButton 
+                              permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                              animated:YES]; }
+
+- (void)hidePopover {
     if (popoverController.isPopoverVisible) {
         [popoverController dismissPopoverAnimated:YES];
+        popoverController = nil;
     }
     [appDelegate.findFriendsNavigationController dismissModalViewControllerAnimated:YES];
 }
@@ -323,7 +334,7 @@
 }
 
 - (void)transitionToFeedDetail {
-    [self hideUserProfilePopover];
+    [self hidePopover];
     self.feedDetailIsVisible = YES;
     CGRect vb = [self.view bounds];
         
@@ -424,7 +435,7 @@
         return;
     }
     
-    [self hideUserProfilePopover];
+    [self hidePopover];
     
      if (self.isSharingStory) {
         [self transitionFromShareView];
@@ -490,7 +501,7 @@
         return;
     } 
     
-    [self hideUserProfilePopover];
+    [self hidePopover];
     CGRect vb = [self.view bounds];
     self.isSharingStory = YES;
     
@@ -511,7 +522,7 @@
         return;
     } 
     
-    [self hideUserProfilePopover];
+    [self hidePopover];
     CGRect vb = [self.view bounds];
     self.isSharingStory = NO;
     

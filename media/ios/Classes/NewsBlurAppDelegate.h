@@ -180,8 +180,6 @@
 - (void)showGoogleReaderAuthentication;
 - (void)addedGoogleReader;
 - (void)showLogin;
-- (void)showFeedsMenu;
-- (void)hideFeedsMenu;
 
 // social
 - (void)showUserProfileModal:(id)sender;

@@ -8,14 +8,14 @@
 
 #import "FeedsMenuViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
+#import "NBContainerViewController.h"
+#import "NewsBlurViewController.h"
 
 @implementation FeedsMenuViewController
 
 @synthesize appDelegate;
 @synthesize menuOptions;
-@synthesize toolbar;
 @synthesize menuTableView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -34,39 +34,19 @@
     
     self.menuOptions = [[NSArray alloc]
                         initWithObjects:@"Find Friends", @"Logout", nil];
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.toolbar.hidden = YES;
-        self.menuTableView.frame = CGRectMake(0, 0, menuTableView.frame.size.width, menuTableView.frame.size.height + 44);
-    }
-    
-    self.toolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 
 - (void)viewDidUnload
 {
-    toolbar = nil;
-    menuTableView = nil;
-
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
     self.menuOptions = nil;
+    self.menuTableView = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
-}
-
-
-- (IBAction)tapCancelButton:(UIBarButtonItem *)sender {
-    [appDelegate hideFeedsMenu];
-}
-
-- (void)finishedWithError:(ASIHTTPRequest *)request {    
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    NSLog(@"Error %@", [request error]);
 }
 
 #pragma mark -
@@ -102,8 +82,14 @@
         [appDelegate confirmLogout];
     }
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController hidePopover];
+    } else {
+        [appDelegate.feedsViewController.popoverController dismissPopoverAnimated:YES];
+         appDelegate.feedsViewController.popoverController = nil;
+    }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [appDelegate hideFeedsMenu];
+
 }
 
 @end

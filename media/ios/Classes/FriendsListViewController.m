@@ -12,6 +12,12 @@
 #import "ASIHTTPRequest.h"
 #import "ProfileBadge.h"
 
+@implementation UINavigationController (DelegateAutomaticDismissKeyboard)
+- (BOOL)disablesAutomaticKeyboardDismissal {
+    return [self.topViewController disablesAutomaticKeyboardDismissal];
+}
+@end
+
 @implementation FriendsListViewController
 
 @synthesize appDelegate;
@@ -73,7 +79,6 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-//    [self.searchBar becomeFirstResponder];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -90,7 +95,7 @@
 -(BOOL)searchDisplayController:(UISearchDisplayController *)controller 
 shouldReloadTableForSearchString:(NSString *)searchString
 {
-    NSLog(@"search string is: %@", searchString);
+
     if (searchString.length == 0) {
         self.userProfiles = nil; 
     }
@@ -173,13 +178,22 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
     NSLog(@"Error: %@", error);
 }
 
+- (BOOL)disablesAutomaticKeyboardDismissal {
+    return NO;
+}
+
 #pragma mark - Table view data source
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
-        return 28;
-    }else{
-        return 21;
+    if ([tableView 
+         isEqual:self.searchDisplayController.searchResultsTableView]){
+        return 0;
+    } else {
+        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
+            return 28;
+        }else{
+            return 21;
+        }
     }
 }
 
@@ -305,9 +319,18 @@ viewForHeaderInSection:(NSInteger)section {
     } else {
         int userCount = [self.suggestedUserProfiles count];
         if (!userCount) {
-            if (indexPath.row == 0) {
-                cell.textLabel.text = @"Nobody left to recommend. Good job!";
-                cell.textLabel.font = [UIFont systemFontOfSize:14.0];
+            if (indexPath.row == 1) {
+                
+                UILabel *myLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
+                [cell.contentView addSubview:myLabel];
+                myLabel.text = @"Nobody left to recommend.  Good job!";
+                myLabel.textColor = UIColorFromRGB(0x7a7a7a);
+                if (vb.size.width > 320) {
+                    myLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
+                } else {
+                    myLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+                }
+                myLabel.textAlignment = UITextAlignmentCenter;
             }
         } else {
             cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;

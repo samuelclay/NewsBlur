@@ -19,6 +19,8 @@
 #import "MBProgressHUD.h"
 #import "Base64.h"
 #import "Utilities.h"
+#import "UIBarButtonItem+WEPopover.h"
+
 
 
 #define kTableViewRowHeight 36;
@@ -53,6 +55,9 @@
 }
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
+    popoverClass = [WEPopoverController class];
+    
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     pull = [[PullToRefreshView alloc] initWithScrollView:self.feedTitlesTable];
     [pull setDelegate:self];
@@ -67,7 +72,7 @@
     imageCache = [[NSCache alloc] init];
     [imageCache setDelegate:self];
 
-    [super viewDidLoad];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -149,14 +154,9 @@
                                         animated:YES];
 }
 - (void)viewWillDisappear:(BOOL)animated {
-    [self dismissFeedsMenu];
+    [self.popoverController dismissPopoverAnimated:YES];
+    self.popoverController = nil;
     [super viewWillDisappear:animated];
-}
-
-- (void)dismissFeedsMenu {
-    if (popoverController.isPopoverVisible) {
-        [popoverController dismissPopoverAnimated:YES];
-    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -300,7 +300,6 @@
     UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
     UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
     settings.bounds = CGRectMake(0, 0, 32, 32);
-    [settings setTitle:@"Logout" forState:UIControlStateNormal];
     [settings addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
     [settings setImage:settingsImage forState:UIControlStateNormal];
     
@@ -418,29 +417,29 @@
 
 - (void)showSettingsPopover:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (popoverController == nil) {
-            popoverController = [[UIPopoverController alloc]
-                                 initWithContentViewController:appDelegate.feedsMenuViewController];
+        [appDelegate.masterContainerViewController showFeedMenuPopover:sender];
+    } else {
+        if (self.popoverController == nil) {
+            self.popoverController = [[WEPopoverController alloc]
+                                      initWithContentViewController:appDelegate.feedsMenuViewController];
             
-            popoverController.delegate = self;
+            self.popoverController.delegate = self;
         } else {
-            if (popoverController.isPopoverVisible) {
-                [popoverController dismissPopoverAnimated:YES];
-                return;
-            }
-            [popoverController setContentViewController:appDelegate.feedsMenuViewController];
+            [self.popoverController dismissPopoverAnimated:YES];
+            self.popoverController = nil;
         }
         
-        [popoverController setPopoverContentSize:CGSizeMake(200, 132)];
-        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                                  animated:YES];  
-    } else {
-        [appDelegate showFeedsMenu]; 
+        if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
+            [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
+        }
+        [self.popoverController setPopoverContentSize:CGSizeMake(200, 90)];
+        [self.popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
+                                       permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                                       animated:YES];  
     }
 }
 
-- (IBAction)showMenuButton:(id)sender {
+- (IBAction)showAddSite:(id)sender {
     [appDelegate showAddSite];
 }
 
@@ -1157,5 +1156,58 @@
 - (NSDate *)pullToRefreshViewLastUpdated:(PullToRefreshView *)view {
     return self.lastUpdate;
 }
+
+#pragma mark -
+#pragma mark WEPopoverControllerDelegate implementation
+
+- (void)popoverControllerDidDismissPopover:(WEPopoverController *)thePopoverController {
+	//Safe to release the popover here
+	self.popoverController = nil;
+}
+
+- (BOOL)popoverControllerShouldDismissPopover:(WEPopoverController *)thePopoverController {
+	//The popover is automatically dismissed if you click outside it, unless you return NO here
+	return YES;
+}
+
+
+/**
+ Thanks to Paul Solt for supplying these background images and container view properties
+ */
+- (WEPopoverContainerViewProperties *)improvedContainerViewProperties {
+	
+	WEPopoverContainerViewProperties *props = [WEPopoverContainerViewProperties alloc];
+	NSString *bgImageName = nil;
+	CGFloat bgMargin = 0.0;
+	CGFloat bgCapSize = 0.0;
+	CGFloat contentMargin = 4.0;
+	
+	bgImageName = @"popoverBg.png";
+	
+	// These constants are determined by the popoverBg.png image file and are image dependent
+	bgMargin = 13; // margin width of 13 pixels on all sides popoverBg.png (62 pixels wide - 36 pixel background) / 2 == 26 / 2 == 13 
+	bgCapSize = 31; // ImageSize/2  == 62 / 2 == 31 pixels
+	
+	props.leftBgMargin = bgMargin;
+	props.rightBgMargin = bgMargin;
+	props.topBgMargin = bgMargin;
+	props.bottomBgMargin = bgMargin;
+	props.leftBgCapSize = bgCapSize;
+	props.topBgCapSize = bgCapSize;
+	props.bgImageName = bgImageName;
+	props.leftContentMargin = contentMargin;
+	props.rightContentMargin = contentMargin - 1; // Need to shift one pixel for border to look correct
+	props.topContentMargin = contentMargin; 
+	props.bottomContentMargin = contentMargin;
+	
+	props.arrowMargin = 4.0;
+	
+	props.upArrowImageName = @"popoverArrowUp.png";
+	props.downArrowImageName = @"popoverArrowDown.png";
+	props.leftArrowImageName = @"popoverArrowLeft.png";
+	props.rightArrowImageName = @"popoverArrowRight.png";
+	return props;	
+}
+
 
 @end

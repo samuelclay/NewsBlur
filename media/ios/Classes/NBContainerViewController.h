@@ -32,5 +32,6 @@
 
 - (void)dragStoryToolbar:(int)yCoordinate;
 - (void)showUserProfilePopover:(id)sender;
-- (void)hideUserProfilePopover;
+- (void)showFeedMenuPopover:(id)sender;
+- (void)hidePopover;
 @end

@@ -138,20 +138,6 @@
 #pragma mark -
 #pragma mark FeedsView
 
-- (void)showFeedsMenu {
-    UINavigationController *navController = self.navigationController;
-    [navController presentModalViewController:feedsMenuViewController animated:YES];
-}
-
-- (void)hideFeedsMenu {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [feedsViewController dismissFeedsMenu];
-    } else {
-        UINavigationController *navController = self.navigationController;
-        [navController dismissModalViewControllerAnimated:YES];
-    }
-}
-
 - (void)showAddSite {
     UINavigationController *navController = self.navigationController;
     [navController dismissModalViewControllerAnimated:NO];
@@ -213,20 +199,25 @@
 
 - (void)hideUserProfileModal {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.masterContainerViewController hideUserProfilePopover];
+        [self.masterContainerViewController hidePopover];
     } else {
         [self.navigationController dismissModalViewControllerAnimated:YES];
     }
 }
 
 - (void)showFindFriends {
-    self.findFriendsNavigationController.viewControllers = [NSArray arrayWithObject:friendsListViewController];
+    FriendsListViewController *friendsBVC = [[FriendsListViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    self.friendsListViewController = friendsBVC;
+    
+    UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsListViewController];
+    
+    self.findFriendsNavigationController = friendsNav;
     self.findFriendsNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
-    self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [masterContainerViewController presentModalViewController:findFriendsNavigationController animated:YES];
     } else {
         [navigationController presentModalViewController:findFriendsNavigationController animated:YES];

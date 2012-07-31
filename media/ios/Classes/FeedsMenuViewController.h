@@ -8,24 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ASIHTTPRequest.h"
-
 @class NewsBlurAppDelegate;
 
 @interface FeedsMenuViewController : UIViewController 
-                                    <ASIHTTPRequestDelegate, 
-                                    UITableViewDelegate, 
-                                    UITableViewDataSource,
-                                    UIAlertViewDelegate> {
+                                    <UITableViewDelegate, 
+                                    UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
 }
 
-@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) NSArray *menuOptions;
-@property (nonatomic) IBOutlet UIToolbar *toolbar;
+@property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property ( nonatomic) IBOutlet UITableView *menuTableView;
-
-- (IBAction)tapCancelButton:(UIBarButtonItem *)sender;
-- (void)finishedWithError:(ASIHTTPRequest *)request;
 
 @end

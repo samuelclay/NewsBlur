@@ -11,6 +11,7 @@
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
 #import "BaseViewController.h"
+#import "WEPopoverController.h"
 
 @class NewsBlurAppDelegate;
 
@@ -18,6 +19,7 @@
 		   <UITableViewDelegate, UITableViewDataSource, 
             UIAlertViewDelegate, PullToRefreshViewDelegate,
             ASIHTTPRequestDelegate, NSCacheDelegate,
+            WEPopoverControllerDelegate,
             UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
@@ -35,7 +37,8 @@
     UISlider * feedScoreSlider;
     UIBarButtonItem * homeButton;
     UISegmentedControl * intelligenceControl;
-    UIPopoverController *popoverController;
+    WEPopoverController *popoverController;
+	Class popoverClass;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -52,7 +55,7 @@
 @property (nonatomic) NSDate *lastUpdate;
 @property (nonatomic) NSCache *imageCache;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
-@property (nonatomic) UIPopoverController *popoverController;
+@property (nonatomic, retain) WEPopoverController *popoverController;
 @property (nonatomic) NSIndexPath *currentRowAtIndexPath;
 
 - (void)returnToApp;
@@ -61,8 +64,6 @@
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;
 
-- (void)dismissFeedsMenu;
-- (IBAction)showMenuButton:(id)sender;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
