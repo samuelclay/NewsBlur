@@ -158,18 +158,9 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         addSiteViewController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [navController presentModalViewController:addSiteViewController animated:YES];
-        //it's important to do this after presentModalViewController
-        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 460); 
-        if ([self isPortrait]) {
-            addSiteViewController.view.superview.center = self.view.center;
-        } else {
-            addSiteViewController.view.superview.center = CGPointMake(self.view.center.y, self.view.center.x);
-        }
-    } else {
-        [navController presentModalViewController:addSiteViewController animated:YES];
     }
     
+    [navController presentModalViewController:addSiteViewController animated:YES];
     [addSiteViewController reload];
 }
 
@@ -181,7 +172,7 @@
     self.userProfileViewController = userProfileView;
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
     self.userProfileNavigationController = navController;
-    [userProfileView getUserProfile];
+
     
     // adding Done button
     UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
@@ -199,6 +190,7 @@
     } else {
         [self.navigationController presentModalViewController:navController animated:YES];
     }
+    [userProfileView getUserProfile];
 }
 
 - (void)pushUserProfile {
@@ -232,11 +224,14 @@
     self.findFriendsNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+    
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [masterContainerViewController presentModalViewController:findFriendsNavigationController animated:YES];
     } else {
         [navigationController presentModalViewController:findFriendsNavigationController animated:YES];
     }
+    [self.friendsListViewController loadSuggestedFriendsList];
 }
 
 - (void)showFindingStoryHUD {
@@ -331,9 +326,6 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         moveSiteViewController.modalPresentationStyle=UIModalPresentationFormSheet;
         [navController presentModalViewController:moveSiteViewController animated:YES];
-        //it's important to do this after presentModalViewController
-        moveSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 440); 
-        moveSiteViewController.view.superview.center = self.view.center;
     } else {
         [navController presentModalViewController:moveSiteViewController animated:YES];
     }

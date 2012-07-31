@@ -199,6 +199,7 @@
     if (popoverController.isPopoverVisible) {
         [popoverController dismissPopoverAnimated:YES];
     }
+    [appDelegate.findFriendsNavigationController dismissModalViewControllerAnimated:YES];
 }
 
 

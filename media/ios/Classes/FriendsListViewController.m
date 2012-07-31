@@ -14,17 +14,15 @@
 
 @implementation FriendsListViewController
 
-@synthesize friendsTable;
 @synthesize appDelegate;
 @synthesize searchBar;
 @synthesize searchDisplayController;
-@synthesize allItems;
-@synthesize allItemIds;
+@synthesize suggestedUserProfiles;
 @synthesize userProfiles;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (id)initWithStyle:(UITableViewStyle)style
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
     }
@@ -36,46 +34,46 @@
     [super viewDidLoad];
     
     self.navigationItem.title = @"Find Friends";
-    self.friendsTable.rowHeight = 140;
-    
-    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Cancel" 
+    UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle: @"Close" 
                                                                      style: UIBarButtonSystemItemCancel 
                                                                     target: self 
                                                                     action: @selector(doCancelButton)];
-    [self.navigationItem setLeftBarButtonItem:cancelButton];
+    [self.navigationItem setRightBarButtonItem:cancelButton];
+    
+    // Do any additional setup after loading the view from its nib.
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
+    
+    self.view.frame = CGRectMake(0, 0, 320, 416);
+    self.contentSizeForViewInPopover = self.view.frame.size;
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    
+    
+    
+    UISearchBar *newSearchBar = [[UISearchBar alloc] init];
+    UISearchDisplayController *newSearchBarController = [[UISearchDisplayController alloc] initWithSearchBar:newSearchBar contentsController:self];
+    self.searchDisplayController = newSearchBarController;
+    self.searchDisplayController.searchResultsDelegate = self;
+    self.searchDisplayController.searchResultsDataSource = self;
+    self.searchDisplayController.delegate = self;
+    newSearchBar.frame = CGRectMake(0,0,0,38);
+    newSearchBar.placeholder = @"Search by username or email";
+    self.searchBar = newSearchBar;
+    self.tableView.tableHeaderView = newSearchBar;
 
-    self.friendsTable.scrollEnabled = YES;
-    
-    NSArray *items = [[NSArray alloc] initWithObjects:
-                      @"roy",
-                      @"samuel",
-                      @"popular",
-                      nil];
-    
-    NSArray *item_ids = [[NSArray alloc] initWithObjects:
-                      @"27551",
-                      @"13",
-                      @"32048",
-                      nil];
-    
-    self.allItemIds = item_ids;
-    self.allItems = items;
-    
-    [self.friendsTable reloadData];
 }
 
 - (void)viewDidUnload
 {
     [self setSearchBar:nil];
     [self setSearchDisplayController:nil];
-    [self setFriendsTable:nil];
+    [self setSuggestedUserProfiles:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [self.searchBar becomeFirstResponder];
+//    [self.searchBar becomeFirstResponder];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -84,7 +82,6 @@
 }
 
 - (void)doCancelButton {
-    NSLog(@"do cancel button");
     [appDelegate.findFriendsNavigationController dismissModalViewControllerAnimated:YES];
 }
 
@@ -108,7 +105,7 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
 }
 
 - (void)loadFriendsList:(NSString *)query {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/find_friends?query=%@",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/find_friends?query=%@&limit=10",
                            NEWSBLUR_URL,
                            query];
     NSURL *url = [NSURL URLWithString:urlString];
@@ -120,11 +117,39 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
     [request startAsynchronous];
 }
 
+- (void)loadSuggestedFriendsList {
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/load_user_friends",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(loadSuggestedFriendsListFinished:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request startAsynchronous];
+}
+
+- (void)loadSuggestedFriendsListFinished:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSData *responseData= [responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    // int statusCode = [request responseStatusCode];
+    int code = [[results valueForKey:@"code"] intValue];
+    if (code == -1) {
+        return;
+    }
+    self.suggestedUserProfiles = [results objectForKey:@"recommended_users"];
+    [self.tableView reloadData];
+}
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSData *responseData= [responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
     NSDictionary *results = [NSJSONSerialization 
                              JSONObjectWithData:responseData
@@ -150,73 +175,92 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{    
-    int userCount = [self.userProfiles count];
-    if (userCount) {
-        return userCount;
-    } else {
-        return 0;
-    }
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView 
-                             dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] 
-                 initWithStyle:UITableViewCellStyleDefault 
-                 reuseIdentifier:CellIdentifier];
-        
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }
-
-    
-    int userCount = [self.userProfiles count];
-    
-    if (userCount) {
-        [[cell.contentView viewWithTag:123123213] removeFromSuperview];
-        
-        ProfileBadge *profile = [[ProfileBadge alloc] init];
-        [profile refreshWithProfile:[self.userProfiles objectAtIndex:indexPath.row]];
-        profile.tag = 123123213;
-        profile.frame = CGRectMake(0, 0, 320, 140);
-        profile.activeProfile = [self.userProfiles objectAtIndex:indexPath.row];
-        [cell.contentView addSubview:profile];
-        
-        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        
-    } 
-
-    [cell setNeedsLayout];
-    return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 140;
 }
 
-#pragma mark - Table view delegate
+- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView {
+    tableView.rowHeight = 140.0f;
+}
 
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
-{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {    
+    if ([tableView 
+         isEqual:self.searchDisplayController.searchResultsTableView]){
+        int userCount = [self.userProfiles count];
+        return userCount;
+    } else {
+        int userCount = [self.suggestedUserProfiles count];
+        if (!userCount) {
+            return 3;
+        }
+        return userCount;
+    }
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if ([tableView 
+         isEqual:self.searchDisplayController.searchResultsTableView]){
+        return nil;
+    } else {
+        return @"People To Follow";
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    CGRect vb = self.view.bounds;
+    
+    static NSString *CellIdentifier = @"ProfileBadgeCellIdentifier";
+    UITableViewCell *cell = [tableView 
+                             dequeueReusableCellWithIdentifier:CellIdentifier];
+    
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] 
+                initWithStyle:UITableViewCellStyleDefault 
+                reuseIdentifier:CellIdentifier];
+    } else {
+        [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
+    }
+    
+    ProfileBadge *badge = [[ProfileBadge alloc] init];
+    badge.frame = CGRectMake(5, 5, vb.size.width - 35, self.view.frame.size.height);
+
+
+    
+    if ([tableView isEqual:self.searchDisplayController.searchResultsTableView]){
+        [badge refreshWithProfile:[self.userProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
+        [cell.contentView addSubview:badge];
+        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+    } else {
+        int userCount = [self.suggestedUserProfiles count];
+        if (!userCount) {
+            if (indexPath.row == 0) {
+                cell.textLabel.text = @"Nobody left to recommend. Good job!";
+                cell.textLabel.font = [UIFont systemFontOfSize:14.0];
+            }
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+            [badge refreshWithProfile:[self.suggestedUserProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
+            [cell.contentView addSubview:badge];
+        }
+        
+    }
+
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
     NSInteger currentRow = indexPath.row;
-    
     int row = currentRow;
-    
     appDelegate.activeUserProfileId = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
-    
-    
-    [appDelegate.userProfileViewController getUserProfile];
+    [self.searchBar resignFirstResponder];
     [appDelegate.findFriendsNavigationController pushViewController:appDelegate.userProfileViewController animated:YES];
+    [appDelegate.userProfileViewController getUserProfile];
 }
 
 @end

@@ -11,7 +11,7 @@
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
-@interface ProfileBadge : UIView {
+@interface ProfileBadge : UITableViewCell {
     NewsBlurAppDelegate *appDelegate;
     
     UIImageView *UserAvatar;
@@ -37,7 +37,7 @@
 @property ( nonatomic) NSDictionary *activeProfile;
 
 
-- (void)refreshWithProfile:(NSDictionary *)profile;
+- (void)refreshWithProfile:(NSDictionary *)profile showStats:(BOOL)showStats withWidth:(int)width;
 
 - (IBAction)doFollowButton:(id)sender;
 - (void)finishFollowing:(ASIHTTPRequest *)request;

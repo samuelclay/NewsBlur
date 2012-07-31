@@ -236,12 +236,12 @@ div + p {
 }
 
 .NB-story div {
-    max-width: 100%;
+    max-width: 100% !important;
 }
 .NB-story img {
     margin: 20px auto;
-    height: auto;
-    width: auto;
+    height: auto !important;
+    width: auto !important;
     max-width: 100%;
 }
 
@@ -249,8 +249,8 @@ div + p {
 .NB-story img.NB-medium-image {
     margin: 20px auto !important;
     display: block !important;
-    width: auto;
-    height: auto;
+    width: auto !important;
+    height: auto !important;
     display: block;
     float: none;
     clear: both;

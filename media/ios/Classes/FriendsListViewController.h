@@ -11,31 +11,29 @@
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
-@interface FriendsListViewController : UIViewController <UISearchDisplayDelegate> {
+@interface FriendsListViewController : UITableViewController <UISearchBarDelegate, UISearchDisplayDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     UISearchBar *searchBar;
     UISearchDisplayController *searchDisplayController;
     UITableView *friendsTable;
-    NSArray *allItems;
-    NSArray *allItemIds;
+    NSArray *suggestedUserProfiles;
     NSArray *userProfiles;
     NSArray *userProfileIds;
 
 }
 
-@property ( nonatomic) IBOutlet UITableView *friendsTable;
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property ( nonatomic) IBOutlet UISearchBar *searchBar;
-@property ( nonatomic) IBOutlet UISearchDisplayController *searchDisplayController;
+@property (nonatomic) IBOutlet UISearchBar *searchBar;
+@property (nonatomic) IBOutlet UISearchDisplayController *searchDisplayController;
 
-@property (nonatomic, copy) NSArray *userProfiles;
-@property (nonatomic, copy) NSArray *allItems;
-@property (nonatomic, copy) NSArray *allItemIds;
+@property (nonatomic) NSArray *userProfiles;
+@property (nonatomic) NSArray *suggestedUserProfiles;
 
 - (void)doCancelButton;
 - (void)loadFriendsList:(NSString *)query;
 - (void)requestFinished:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-
+- (void)loadSuggestedFriendsList;
+- (void)loadSuggestedFriendsListFinished:(ASIHTTPRequest *)request;
 @end

@@ -41,8 +41,9 @@
     // Do any additional setup after loading the view from its nib.
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
     
-    self.view.frame = CGRectMake(0, 0, 320, 416);
+    self.view.frame = self.view.bounds;
     self.contentSizeForViewInPopover = self.view.frame.size;
+
     self.view.backgroundColor = UIColorFromRGB(0xd7dadf);
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
@@ -52,8 +53,8 @@
     self.profileTable.delegate = self;
     self.profileTable.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     ProfileBadge *badge = [[ProfileBadge alloc] init];
-    badge.frame = CGRectMake(0, 0, self.view.frame.size.width, 140);
     self.profileBadge = badge;
 
 }
@@ -70,30 +71,12 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    CGRect frame = CGRectZero;
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        frame = self.parentViewController.view.frame;
-        // account for UIPopover Navigation height and readjust
-        frame.size.height = frame.size.height - 37;
-        self.view.frame = frame;
-        self.profileTable.frame = frame;
-    } else {
-//        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-//        if (UIInterfaceOrientationIsPortrait(orientation)) {
-//            frame = self.navigationController.view.frame;
-//            // account for UIPopover Navigation height and readjust
-//            frame.size.height = frame.size.height - 44 - 20;
-//            self.view.frame = frame;
-//            self.profileTable.frame = frame;
-//        } else {
-//            frame = self.navigationController.view.frame;
-//            // account for UIPopover Navigation height and readjust
-//            frame.size.width = frame.size.width - 31 - 20;
-//            self.view.frame = frame;
-//            self.profileTable.frame = frame;
-//        }
-    }
+    [super viewWillAppear:animated];
+    CGRect vb = self.view.bounds;
+    self.contentSizeForViewInPopover = self.view.frame.size;
+    self.view.frame = vb;
+    self.profileTable.frame = vb;
+    self.profileBadge.frame = CGRectMake(0, 0, vb.size.width, 140);
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -105,6 +88,9 @@
 }
 
 - (void)getUserProfile {
+    self.view.frame = self.view.bounds;
+    self.contentSizeForViewInPopover = self.view.frame.size;
+    
 //    [self.profileTable removeFromSuperview];
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -157,8 +143,6 @@
         
     self.activitiesArray = [results objectForKey:@"activities"];
 
-    [self.profileBadge refreshWithProfile:self.userProfile];  
-    
     [self.profileTable reloadData];
     [self.view addSubview:self.profileTable];
 }
@@ -178,7 +162,7 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if (section == 1) {
+    if (section == 1 && self.activitiesArray.count) {
         return @"Latest Activity";
     } else {
         return nil;
@@ -194,50 +178,53 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    CGRect vb = self.view.bounds;
     if (indexPath.section == 0) {
         return 180;
     } else {
         SmallActivityCell *activityCell = [[SmallActivityCell alloc] init];
         int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
                                withUserProfile:self.userProfile
-                                     withWidth:self.view.frame.size.width - 20] + 20;
+                                     withWidth:vb.size.width] + 20;
         return height;
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier;
-        
+    CGRect vb = self.view.bounds;
+    int width = 300;
+    
+    if (vb.size.width == 540) {
+        width = 478;
+    }
+
     if (indexPath.section == 0) {
-        CellIdentifier = @"ProfileBadgeCellIdentifier";
-        UITableViewCell *cell = [tableView 
-                                 dequeueReusableCellWithIdentifier:CellIdentifier];
+        ProfileBadge *cell = [tableView 
+                                 dequeueReusableCellWithIdentifier:@"ProfileBadgeCellIdentifier"];
         
         if (cell == nil) {
-            cell = [[UITableViewCell alloc] 
+            cell = [[ProfileBadge alloc] 
                     initWithStyle:UITableViewCellStyleDefault 
-                    reuseIdentifier:CellIdentifier];
-        } else {
-            [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
-        }
+                    reuseIdentifier:nil];
+        } 
         
-        [cell addSubview:self.profileBadge];
+        [cell refreshWithProfile:self.userProfile showStats:YES withWidth:width];             
+        
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     } else {
-        CellIdentifier = @"ActivityCellIdentifier";
-        
         SmallActivityCell *cell = [tableView 
-                              dequeueReusableCellWithIdentifier:@"ActivityCell"];
+                              dequeueReusableCellWithIdentifier:@"ActivityCellIdentifier"];
         if (cell == nil) {
             cell = [[SmallActivityCell alloc] 
                     initWithStyle:UITableViewCellStyleDefault 
-                    reuseIdentifier:@"ActivityCell"];
-        } 
-        
+                    reuseIdentifier:@"ActivityCellIdentifier"];
+        }
+
+   
         [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
           withUserProfile:self.userProfile
-                withWidth:self.view.frame.size.width];
+                withWidth:width];
         
             return cell;
     }
