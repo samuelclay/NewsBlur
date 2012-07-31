@@ -409,6 +409,7 @@ class Dispatcher:
                     page_data = page_importer.fetch_page()
                 except TimeoutError, e:
                     logging.debug('   ---> [%-30s] ~FRPage fetch timed out...' % (feed.title[:30]))
+                    page_data = None
                     feed.save_page_history(555, 'Timeout', '')
                 except Exception, e:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))

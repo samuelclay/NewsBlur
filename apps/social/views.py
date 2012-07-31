@@ -215,7 +215,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
             "stories": [],
             "feeds": {},
             "social_user": social_user,
-            "social_profile": social_profile.page(),
+            "social_profile": social_profile,
             'user_social_profile' : json.encode(user_social_profile and user_social_profile.page()),
         }
         template = 'social/social_page.xhtml'
@@ -769,12 +769,14 @@ def unfollow(request):
 @json.json_view
 def find_friends(request):
     query = request.GET.get('query')
-    profiles = MSocialProfile.objects.filter(username__icontains=query)[:3]
+    limit = int(request.GET.get('limit', 3))
+    profiles = MSocialProfile.objects.filter(username__icontains=query)[:limit]
     if not profiles:
-        profiles = MSocialProfile.objects.filter(email__icontains=query)[:3]
+        profiles = MSocialProfile.objects.filter(email__icontains=query)[:limit]
     if not profiles:
-        profiles = MSocialProfile.objects.filter(blurblog_title__icontains=query)[:3]
+        profiles = MSocialProfile.objects.filter(blurblog_title__icontains=query)[:limit]
     
+    profiles = [p.to_json(include_following_user=True) for p in profiles]
     return dict(profiles=profiles)
 
 @ajax_login_required
@@ -871,8 +873,7 @@ def shared_stories_rss_feed(request, user_id, username):
 
     data = {}
     data['title'] = social_profile.title
-    link = reverse('shared-stories-public', kwargs={'username': user.username})
-    data['link'] = "http://www.newsblur.com/%s" % link
+    data['link'] = social_profile.blurblog_url
     data['description'] = "Stories shared by %s on NewsBlur." % user.username
     data['lastBuildDate'] = datetime.datetime.utcnow()
     data['items'] = []
@@ -885,8 +886,10 @@ def shared_stories_rss_feed(request, user_id, username):
             'title': shared_story.story_title,
             'link': shared_story.story_permalink,
             'description': shared_story.story_content_z and zlib.decompress(shared_story.story_content_z),
+            'author': shared_story.story_author_name,
+            'categories': shared_story.story_tags,
             'guid': shared_story.story_guid,
-            'pubDate': shared_story.story_date,
+            'pubDate': shared_story.shared_date,
         }
         data['items'].append(RSS.RSSItem(**story_data))
         

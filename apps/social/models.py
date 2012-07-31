@@ -358,7 +358,8 @@ class MSocialProfile(mongo.Document):
         
         if not force:
             from apps.social.tasks import EmailNewFollower
-            EmailNewFollower.delay(follower_user_id=self.user_id, followee_user_id=user_id)
+            EmailNewFollower.delay(follower_user_id=self.user_id, followee_user_id=user_id,
+                                   countdown=60)
         
         return socialsub
     
@@ -420,11 +421,17 @@ class MSocialProfile(mongo.Document):
     
     def send_email_for_new_follower(self, follower_user_id):
         user = User.objects.get(pk=self.user_id)
-        if not user.email or not user.profile.send_emails or self.user_id == follower_user_id:
-            if not user.email:
-                logging.user(user, "~BB~FMNo email to send to, skipping.")
-            elif not user.profile.send_emails:
-                logging.user(user, "~BB~FMDisabled emails, skipping.")
+        if follower_user_id not in self.follower_user_ids:
+            logging.user(user, "~BB~FMNo longer being followed by %s" % follower_user_id)
+            return
+        if not user.email:
+            logging.user(user, "~BB~FMNo email to send to, skipping.")
+            return
+        elif not user.profile.send_emails:
+            logging.user(user, "~BB~FMDisabled emails, skipping.")
+            return
+        if self.user_id == follower_user_id:
+            logging.user(user, "~BB~FMDisabled emails, skipping.")
             return
         
         emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,
