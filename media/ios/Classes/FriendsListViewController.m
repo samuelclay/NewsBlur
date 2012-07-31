@@ -28,15 +28,14 @@
 
 @synthesize appDelegate;
 @synthesize friendSearchBar;
+@synthesize friendsTable;
 @synthesize suggestedUserProfiles;
 @synthesize userProfiles;
 @synthesize inSearch_;
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+	
+    if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
     }
     return self;
 }
@@ -61,12 +60,12 @@
     
     
     
-    UISearchBar *newSearchBar = [[UISearchBar alloc] init];
-    newSearchBar.frame = CGRectMake(0,0,0,38);
-    newSearchBar.placeholder = @"Search by username or email";
-    newSearchBar.delegate = self;
-    self.friendSearchBar = newSearchBar;
-    self.tableView.tableHeaderView = newSearchBar;
+//    UISearchBar *newSearchBar = [[UISearchBar alloc] init];
+//    newSearchBar.frame = CGRectMake(0,0,0,38);
+//    newSearchBar.placeholder = @"Search by username or email";
+//    newSearchBar.delegate = self;
+//    self.friendSearchBar = newSearchBar;
+//    self.friendsTable.tableHeaderView = newSearchBar;
 
 }
 
@@ -97,7 +96,7 @@
     if (searchText.length == 0) {
         self.userProfiles = nil; 
         self.inSearch_ = NO;
-        [self.tableView reloadData];
+        [self.friendsTable reloadData];
     } else {
         self.inSearch_ = YES;
         [self loadFriendsList:searchText];
@@ -110,6 +109,10 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     [searchBar resignFirstResponder];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    searchBar.text = nil;
 }
 
 - (void)loadFriendsList:(NSString *)query {
@@ -151,7 +154,7 @@
         return;
     }
     self.suggestedUserProfiles = [results objectForKey:@"recommended_users"];
-    [self.tableView reloadData];
+    [self.friendsTable reloadData];
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
@@ -173,7 +176,7 @@
         self.userProfiles = [results objectForKey:@"profiles"];
         
         
-        [self.tableView reloadData];
+        [self.friendsTable reloadData];
     }
     
 }
@@ -274,8 +277,7 @@ viewForHeaderInSection:(NSInteger)section {
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {    
-    if ([tableView 
-         isEqual:self.searchDisplayController.searchResultsTableView]){
+    if (self.inSearch_){
         int userCount = [self.userProfiles count];
         return userCount;
     } else {
@@ -305,10 +307,39 @@ viewForHeaderInSection:(NSInteger)section {
     ProfileBadge *badge = [[ProfileBadge alloc] init];
     badge.frame = CGRectMake(5, 5, vb.size.width - 35, self.view.frame.size.height);
     
+    
     if (self.inSearch_){
-        [badge refreshWithProfile:[self.userProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
-        [cell.contentView addSubview:badge];
-        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+        int userProfileCount = [self.userProfiles count];
+        
+        if (userProfileCount) {
+            if (userProfileCount > indexPath.row) {
+                [badge refreshWithProfile:[self.userProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
+                [cell.contentView addSubview:badge];
+                cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+            }
+        } else {
+            
+            // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
+            int row = 0;
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                row = 1;
+            }
+            
+            if (indexPath.row == row) {
+                UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
+                [cell.contentView addSubview:msg];
+                msg.text = @"No results.";
+                msg.textColor = UIColorFromRGB(0x7a7a7a);
+                if (vb.size.width > 320) {
+                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
+                } else {
+                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+                }
+                msg.textAlignment = UITextAlignmentCenter;
+            }
+
+        }
+        
     } else {
         
         int userCount = [self.suggestedUserProfiles count];
@@ -340,6 +371,10 @@ viewForHeaderInSection:(NSInteger)section {
 
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    [self.friendSearchBar resignFirstResponder];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
