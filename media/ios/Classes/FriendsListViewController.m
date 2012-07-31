@@ -18,13 +18,19 @@
 }
 @end
 
+@interface FriendsListViewController()
+
+@property (readwrite) BOOL inSearch_;
+
+@end
+
 @implementation FriendsListViewController
 
 @synthesize appDelegate;
-@synthesize searchBar;
-@synthesize searchDisplayController;
+@synthesize friendSearchBar;
 @synthesize suggestedUserProfiles;
 @synthesize userProfiles;
+@synthesize inSearch_;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -56,22 +62,17 @@
     
     
     UISearchBar *newSearchBar = [[UISearchBar alloc] init];
-    UISearchDisplayController *newSearchBarController = [[UISearchDisplayController alloc] initWithSearchBar:newSearchBar contentsController:self];
-    self.searchDisplayController = newSearchBarController;
-    self.searchDisplayController.searchResultsDelegate = self;
-    self.searchDisplayController.searchResultsDataSource = self;
-    self.searchDisplayController.delegate = self;
     newSearchBar.frame = CGRectMake(0,0,0,38);
     newSearchBar.placeholder = @"Search by username or email";
-    self.searchBar = newSearchBar;
+    newSearchBar.delegate = self;
+    self.friendSearchBar = newSearchBar;
     self.tableView.tableHeaderView = newSearchBar;
 
 }
 
 - (void)viewDidUnload
 {
-    [self setSearchBar:nil];
-    [self setSearchDisplayController:nil];
+    [self setFriendSearchBar:nil];
     [self setSuggestedUserProfiles:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
@@ -90,23 +91,25 @@
     [appDelegate.findFriendsNavigationController dismissModalViewControllerAnimated:YES];
 }
 
-#pragma mark - UISearchDisplayController delegate methods
+#pragma mark - UISearchBar delegate methods
 
--(BOOL)searchDisplayController:(UISearchDisplayController *)controller 
-shouldReloadTableForSearchString:(NSString *)searchString
-{
-
-    if (searchString.length == 0) {
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    if (searchText.length == 0) {
         self.userProfiles = nil; 
+        self.inSearch_ = NO;
+        [self.tableView reloadData];
+    } else {
+        self.inSearch_ = YES;
+        [self loadFriendsList:searchText];
     }
-    [self loadFriendsList:searchString];
-    return NO;
 }
 
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller 
-shouldReloadTableForSearchScope:(NSInteger)searchOption
-{
-    return NO;
+- (void)searchBarTextDidEndEditing:(UISearchBar *)theSearchBar {
+    [theSearchBar resignFirstResponder];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [searchBar resignFirstResponder];
 }
 
 - (void)loadFriendsList:(NSString *)query {
@@ -152,24 +155,27 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    NSString *responseString = [request responseString];
-    NSData *responseData= [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    // int statusCode = [request responseStatusCode];
-    int code = [[results valueForKey:@"code"] intValue];
-    if (code == -1) {
-        return;
+    if (self.inSearch_) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        NSString *responseString = [request responseString];
+        NSData *responseData= [responseString dataUsingEncoding:NSUTF8StringEncoding];    
+        NSError *error;
+        NSDictionary *results = [NSJSONSerialization 
+                                 JSONObjectWithData:responseData
+                                 options:kNilOptions 
+                                 error:&error];
+        // int statusCode = [request responseStatusCode];
+        int code = [[results valueForKey:@"code"] intValue];
+        if (code == -1) {
+            return;
+        }
+        
+        self.userProfiles = [results objectForKey:@"profiles"];
+        
+        
+        [self.tableView reloadData];
     }
     
-    self.userProfiles = [results objectForKey:@"profiles"];
-
-    
-    [self.searchDisplayController.searchResultsTableView reloadData];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
@@ -185,8 +191,7 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
 #pragma mark - Table view data source
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if ([tableView 
-         isEqual:self.searchDisplayController.searchResultsTableView]){
+    if (self.inSearch_){
         return 0;
     } else {
         if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
@@ -199,7 +204,6 @@ shouldReloadTableForSearchScope:(NSInteger)searchOption
 
 - (UIView *)tableView:(UITableView *)tableView 
 viewForHeaderInSection:(NSInteger)section {
-    
     int headerLabelHeight, folderImageViewY;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -283,15 +287,6 @@ viewForHeaderInSection:(NSInteger)section {
     }
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if ([tableView 
-         isEqual:self.searchDisplayController.searchResultsTableView]){
-        return nil;
-    } else {
-        return @"People To Follow";
-    }
-}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGRect vb = self.view.bounds;
     
@@ -302,46 +297,48 @@ viewForHeaderInSection:(NSInteger)section {
     if (cell == nil) {
         cell = [[UITableViewCell alloc] 
                 initWithStyle:UITableViewCellStyleDefault 
-                reuseIdentifier:CellIdentifier];
+                reuseIdentifier:nil];
     } else {
         [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
     }
     
     ProfileBadge *badge = [[ProfileBadge alloc] init];
     badge.frame = CGRectMake(5, 5, vb.size.width - 35, self.view.frame.size.height);
-
-
     
-    if ([tableView isEqual:self.searchDisplayController.searchResultsTableView]){
+    if (self.inSearch_){
         [badge refreshWithProfile:[self.userProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
         [cell.contentView addSubview:badge];
         cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
     } else {
+        
         int userCount = [self.suggestedUserProfiles count];
         if (!userCount) {
-            if (indexPath.row == 1) {
-                
-                UILabel *myLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
-                [cell.contentView addSubview:myLabel];
-                myLabel.text = @"Nobody left to recommend.  Good job!";
-                myLabel.textColor = UIColorFromRGB(0x7a7a7a);
+            // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
+            int row = 0;
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                row = 1;
+            }
+            
+            if (indexPath.row == row) {
+                UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
+                [cell.contentView addSubview:msg];
+                msg.text = @"Nobody left to recommend.  Good job!";
+                msg.textColor = UIColorFromRGB(0x7a7a7a);
                 if (vb.size.width > 320) {
-                    myLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
+                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
                 } else {
-                    myLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
                 }
-                myLabel.textAlignment = UITextAlignmentCenter;
+                msg.textAlignment = UITextAlignmentCenter;
             }
         } else {
             cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
             [badge refreshWithProfile:[self.suggestedUserProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
             [cell.contentView addSubview:badge];
         }
-        
     }
 
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
     return cell;
 }
 
@@ -349,7 +346,8 @@ viewForHeaderInSection:(NSInteger)section {
     NSInteger currentRow = indexPath.row;
     int row = currentRow;
     appDelegate.activeUserProfileId = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
-    [self.searchBar resignFirstResponder];
+    [self.friendSearchBar resignFirstResponder];
+    NSLog(@"appDelegate.findFriendsNavigationController is %@", appDelegate.findFriendsNavigationController);
     [appDelegate.findFriendsNavigationController pushViewController:appDelegate.userProfileViewController animated:YES];
     [appDelegate.userProfileViewController getUserProfile];
 }

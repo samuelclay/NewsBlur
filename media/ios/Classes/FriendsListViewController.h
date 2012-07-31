@@ -11,21 +11,18 @@
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
-@interface FriendsListViewController : UITableViewController <UISearchBarDelegate, UISearchDisplayDelegate> {
+@interface FriendsListViewController : UITableViewController <UISearchBarDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
-    UISearchBar *searchBar;
-    UISearchDisplayController *searchDisplayController;
+    UISearchBar *friendSearchBar;
     UITableView *friendsTable;
     NSArray *suggestedUserProfiles;
     NSArray *userProfiles;
     NSArray *userProfileIds;
-
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) IBOutlet UISearchBar *searchBar;
-@property (nonatomic) IBOutlet UISearchDisplayController *searchDisplayController;
+@property (nonatomic, retain) UISearchBar *friendSearchBar;
 
 @property (nonatomic) NSArray *userProfiles;
 @property (nonatomic) NSArray *suggestedUserProfiles;
