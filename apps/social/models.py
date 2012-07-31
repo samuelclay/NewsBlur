@@ -358,8 +358,9 @@ class MSocialProfile(mongo.Document):
         
         if not force:
             from apps.social.tasks import EmailNewFollower
-            EmailNewFollower.delay(follower_user_id=self.user_id, followee_user_id=user_id,
-                                   countdown=60)
+            EmailNewFollower.apply_async(kwargs=dict(follower_user_id=self.user_id,
+                                                     followee_user_id=user_id),
+                                         countdown=60)
         
         return socialsub
     
