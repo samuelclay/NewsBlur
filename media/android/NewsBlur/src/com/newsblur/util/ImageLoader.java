@@ -102,10 +102,10 @@ public class ImageLoader {
 			int read;  
 			while ((read = inputStream.read(b)) != -1) {  
 				outputStream.write(b, 0, read);  
-			}  
-			outputStream.close();
+			}
 			bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
 			memoryCache.put(uid, bitmap);
+			outputStream.close();
 			bitmap = UIUtils.roundCorners(bitmap, 10f);
 			return bitmap;
 		} catch (IOException ex) {

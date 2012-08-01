@@ -1,5 +1,7 @@
 package com.newsblur.database;
 
+import com.newsblur.util.AppConstants;
+
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -233,6 +235,22 @@ public class FeedProvider extends ContentProvider {
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}
+	}
+	
+	public static String getSelectionFromState(int state) {
+		String selection = null;
+		switch (state) {
+		case (AppConstants.STATE_ALL):
+			selection = "";
+		break;
+		case (AppConstants.STATE_SOME):
+			selection = FeedProvider.STORY_INTELLIGENCE_SOME;
+		break;
+		case (AppConstants.STATE_BEST):
+			selection = FeedProvider.STORY_INTELLIGENCE_BEST;
+		break;
+		}
+		return selection;
 	}
 
 

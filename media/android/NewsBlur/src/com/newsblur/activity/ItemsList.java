@@ -40,17 +40,17 @@ public class ItemsList extends SherlockFragmentActivity implements SyncUpdateFra
 		fragmentManager = getSupportFragmentManager();
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
 		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
-		
+
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-		Feed feed = Feed.fromCursor(getContentResolver().query(feedUri, null, null, null, null));
+		Feed feed = Feed.fromCursor(getContentResolver().query(feedUri, null, FeedProvider.getSelectionFromState(currentState), null, null));
 		setTitle(feed.title);
 
 		itemListFragment = (ItemListFragment) fragmentManager.findFragmentByTag(ItemListFragment.FRAGMENT_TAG);
 		intelligenceSelectorFragment = (FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag(FeedIntelligenceSelectorFragment.FRAGMENT_TAG);
 		intelligenceSelectorFragment.setState(currentState);
-		
+
 		if (itemListFragment == null && feedId != null) {
 			itemListFragment = ItemListFragment.newInstance(feedId, currentState);
 			itemListFragment.setRetainInstance(true);
@@ -66,6 +66,15 @@ public class ItemsList extends SherlockFragmentActivity implements SyncUpdateFra
 			triggerRefresh();
 		}
 	}
+
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d(TAG, "Returned okay.");
+		if (resultCode == RESULT_OK) {
+			itemListFragment.updated();
+		}
+	}
+
 
 	public void triggerRefresh() {
 		setSupportProgressBarIndeterminateVisibility(true);

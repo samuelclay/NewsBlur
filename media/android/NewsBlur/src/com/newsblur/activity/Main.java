@@ -42,11 +42,24 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
+			triggerFullRefresh();
 		}
 	}
 
-	private void triggerRefresh() {
+	
+	private void triggerFullRefresh() {
+		setSupportProgressBarIndeterminateVisibility(true);
+		if (menu != null) {
+			menu.findItem(R.id.menu_refresh).setEnabled(false);
+		}
+		
+		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
+		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
+		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_REFRESH_COUNTS);
+		startService(intent);
+	}
+	
+	private void triggerRecount() {
 		setSupportProgressBarIndeterminateVisibility(true);
 		if (menu != null) {
 			menu.findItem(R.id.menu_refresh).setEnabled(false);
@@ -62,7 +75,7 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 		actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -80,7 +93,7 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 			startActivity(profileIntent);
 			return true;
 		case R.id.menu_refresh:
-			triggerRefresh();
+			triggerRecount();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

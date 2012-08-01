@@ -14,7 +14,7 @@ import com.newsblur.network.APIManager;
  * The SyncService is based on an app architecture that tries to place network calls
  * (especially larger calls or those called regularly) on independent services, making the 
  * activity / fragment a passive receiver of its updates. This, along with data fragments for  
- * handling UI updates, prevent network bottlenecks and ensure the UI is passively updated
+ * handling UI updates, throttles network access and ensures the UI is passively updated
  * and decoupled from network calls. Examples of other apps using this architecture include 
  * the NBCSportsTalk and Google I/O 2011 apps.
  */
@@ -63,7 +63,7 @@ public class SyncService extends IntentService {
 				apiManager.getFolderFeedMapping();
 				break;
 			case EXTRA_TASK_REFRESH_COUNTS:
-				apiManager.getFolderFeedMapping();
+				apiManager.refreshFeedCounts();
 				break;	
 			case EXTRA_TASK_MARK_STORY_READ:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_STORY_ID))) {

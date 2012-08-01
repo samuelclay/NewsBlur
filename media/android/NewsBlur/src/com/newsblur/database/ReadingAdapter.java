@@ -3,14 +3,9 @@ package com.newsblur.database;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.ViewGroup;
 
@@ -18,19 +13,15 @@ import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
 import com.newsblur.fragment.ReadingItemFragment;
 
-public class ReadingAdapter extends FragmentStatePagerAdapter implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ReadingAdapter extends FragmentStatePagerAdapter {
 
-	private Context context;
 	private Cursor cursor;
-	private Uri feedUri;
 	private String TAG = "ReadingAdapter";
 	private LoadingFragment loadingFragment; 
 
 	public ReadingAdapter(final FragmentManager fragmentManager, final Context context, final String feedId, final Cursor cursor) {
 		super(fragmentManager);
-		this.context = context;
 		this.cursor = cursor;
-		feedUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
 	}
 	
 	
@@ -77,24 +68,6 @@ public class ReadingAdapter extends FragmentStatePagerAdapter implements LoaderM
 			return POSITION_UNCHANGED;
 		}
 	}
-
-	@Override
-	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-		CursorLoader cursorLoader = new CursorLoader(context, feedUri, null, null, null, null);
-		return cursorLoader;
-	}
-
-	@Override
-	public void onLoadFinished(Loader<Cursor> arg0, Cursor cursor) {
-		this.cursor = cursor;
-		notifyDataSetChanged();
-	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		notifyDataSetChanged();
-	}
-
 
 
 }

@@ -28,7 +28,6 @@ import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
-import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkStoryAsReadTask;
 import com.newsblur.util.UIUtils;
 
@@ -37,17 +36,19 @@ public class Reading extends SherlockFragmentActivity implements OnPageChangeLis
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String TAG = "ReadingActivity";
 	public static final String EXTRA_POSITION = "feed_position";
+	
+	private int passedPosition;
+	private int currentState;
+	private String feedId;
+
+	private Feed feed;
+
 	private ViewPager pager;
 	private FragmentManager fragmentManager;
 	private ReadingAdapter readingAdapter;
-	private APIManager apiManager;
-	private String feedId;
-	private final int READING_LOADER = 0x01;
 	private ContentResolver contentResolver;
-	private Feed feed;
-	private int passedPosition;
 	private SyncUpdateFragment syncFragment;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -58,19 +59,40 @@ public class Reading extends SherlockFragmentActivity implements OnPageChangeLis
 		fragmentManager = getSupportFragmentManager();
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
-		// TODO: implement intelligence passing here
+		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		contentResolver = getContentResolver();
 		Uri storiesURI = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
-		Cursor stories = contentResolver.query(storiesURI, null, null, null, null);
+		Cursor stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		readingAdapter = new ReadingAdapter(fragmentManager, this, feedId, stories);
 
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
 		setTitle(feed.title);
 
+		createFloatingHeader();
+		
+		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
+		if (syncFragment == null) {
+			syncFragment = new SyncUpdateFragment();
+			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
+		}
+		
+		pager = (ViewPager) findViewById(R.id.reading_pager);
+		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
+		pager.setPageMarginDrawable(R.drawable.divider_light);
+		pager.setOnPageChangeListener(this);
+
+		pager.setAdapter(readingAdapter);
+		pager.setCurrentItem(passedPosition);
+
+		new MarkStoryAsReadTask(this, contentResolver, syncFragment).execute(readingAdapter.getStory(passedPosition));
+		setResult(RESULT_OK);
+	}
+
+	private void createFloatingHeader() {
 		View view = findViewById(R.id.reading_floatbar);
 		GradientDrawable gradient;
 		int borderColor = Color.BLACK;
@@ -87,24 +109,6 @@ public class Reading extends SherlockFragmentActivity implements OnPageChangeLis
 
 		findViewById(R.id.reading_divider).setBackgroundColor(borderColor);
 		findViewById(R.id.reading_divider_bottom).setBackgroundColor(borderColor);
-
-		getSupportLoaderManager().initLoader(READING_LOADER , null, readingAdapter);
-
-		pager = (ViewPager) findViewById(R.id.reading_pager);
-		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
-		pager.setPageMarginDrawable(R.drawable.divider_light);
-		pager.setOnPageChangeListener(this);
-
-		pager.setAdapter(readingAdapter);
-		pager.setCurrentItem(passedPosition);
-
-		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
-		if (syncFragment == null) {
-			syncFragment = new SyncUpdateFragment();
-			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-		}
-		
-		new MarkStoryAsReadTask(this, contentResolver, syncFragment).execute(readingAdapter.getStory(passedPosition));
 	}
 
 	@Override
@@ -171,11 +175,7 @@ public class Reading extends SherlockFragmentActivity implements OnPageChangeLis
 
 	@Override
 	public void updateSyncStatus(boolean syncRunning) {
-		if (syncRunning) {
-			setSupportProgressBarIndeterminateVisibility(true);
-		} else { 
-			setSupportProgressBarIndeterminateVisibility(false);
-		}
+		setSupportProgressBarIndeterminateVisibility(syncRunning);
 	}
 
 }
