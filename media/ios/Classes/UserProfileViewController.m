@@ -90,8 +90,7 @@
 - (void)getUserProfile {
     self.view.frame = self.view.bounds;
     self.contentSizeForViewInPopover = self.view.frame.size;
-    
-//    [self.profileTable removeFromSuperview];
+
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];

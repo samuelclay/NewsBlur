@@ -146,6 +146,7 @@
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic) NSString *tryFeedStoryId;
+@property (nonatomic) NSString *tryFeedCategory;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (readwrite) NSDictionary * activeFeed;
@@ -189,9 +190,6 @@
 - (void)pushUserProfile;
 - (void)hideUserProfileModal;
 - (void)showFindFriends;
-- (void)showFindingStoryHUD;
-- (void)hideFindingStoryHUD;
-
 
 - (void)showAddSiteModal;
 - (void)showMoveSite;

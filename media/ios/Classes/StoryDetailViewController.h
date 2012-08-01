@@ -48,6 +48,7 @@
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
+@property (nonatomic) IBOutlet UILabel *noStorySelectedLabel;
 
 
 - (void)setNextPreviousButtons;
@@ -65,6 +66,7 @@
 - (void)initStory;
 
 - (void)showShareHUD;
+- (void)showFindingStoryHUD;
 - (void)refreshComments:(NSString *)replyId;
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
 - (void)finishLikeComment:(ASIHTTPRequest *)request;

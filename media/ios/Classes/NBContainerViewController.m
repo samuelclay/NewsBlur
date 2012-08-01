@@ -160,12 +160,10 @@
 # pragma mark Modals and Popovers
 
 - (void)showUserProfilePopover:(id)sender {
-    if (popoverController == nil) {
-        popoverController = [[UIPopoverController alloc]
-                             initWithContentViewController:appDelegate.userProfileNavigationController];
-        
-        popoverController.delegate = self;
-    } 
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:appDelegate.userProfileNavigationController];
+    
+    popoverController.delegate = self;
     
     [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
 

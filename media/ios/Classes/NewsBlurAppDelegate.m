@@ -70,6 +70,7 @@
 @synthesize isSocialView;
 @synthesize inFindingStoryMode;
 @synthesize tryFeedStoryId;
+@synthesize tryFeedCategory;
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
 @synthesize activeComment;
@@ -177,13 +178,13 @@
     userProfileView.navigationItem.rightBarButtonItem = donebutton;
     userProfileView.navigationItem.title = self.activeUserProfileName;
     userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
-
+    [userProfileView getUserProfile];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showUserProfilePopover:sender];
     } else {
         [self.navigationController presentModalViewController:navController animated:YES];
     }
-    [userProfileView getUserProfile];
+
 }
 
 - (void)pushUserProfile {
@@ -228,17 +229,6 @@
     }
     [self.friendsListViewController loadSuggestedFriendsList];
 }
-
-- (void)showFindingStoryHUD {
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.storyDetailViewController.view animated:YES];
-    HUD.labelText = @"Finding Story...";
-}
-
-- (void)hideFindingStoryHUD {
-    [MBProgressHUD hideHUDForView:self.storyDetailViewController.view animated:YES];
-    self.inFindingStoryMode = NO;
-}
-
 
 - (void)showShareView:(NSString *)type 
             setUserId:(NSString *)userId 
@@ -360,6 +350,8 @@
 }
 
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user {
+    [self.storyDetailViewController showFindingStoryHUD];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissModalViewControllerAnimated:YES];

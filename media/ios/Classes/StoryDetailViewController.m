@@ -48,6 +48,7 @@
 @synthesize popoverController;
 @synthesize fontSettingsButton;
 @synthesize originalStoryButton;
+@synthesize noStorySelectedLabel;
 @synthesize buttonBack;
 @synthesize bottomPlaceholderToolbar;
 
@@ -165,6 +166,7 @@
     [self setInnerView:nil];
     [self setBottomPlaceholderToolbar:nil];
     [self setProgressViewContainer:nil];
+    [self setNoStorySelectedLabel:nil];
     [super viewDidUnload];
 }
 
@@ -495,9 +497,11 @@
 }
 
 - (void)showStory {
-    
+    NSLog(@"in showStory");
     // when we show story, we mark it as read
     [self markStoryAsRead]; 
+    self.noStorySelectedLabel.hidden = YES;
+
     
     appDelegate.shareViewController.commentField.text = nil;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -509,7 +513,7 @@
     self.progressViewContainer.hidden = NO;
     self.navigationItem.rightBarButtonItem = self.fontSettingsButton;
     
-    [appDelegate hideFindingStoryHUD];
+
     [appDelegate hideShareView:YES];
         
     [appDelegate resetShareComments];
@@ -848,9 +852,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
     if ([userPreferences integerForKey:@"fontSizing"]){
         [self changeFontSize:[userPreferences stringForKey:@"fontSizing"]];
+    }
+    
+    // see if it's a tryfeed for animation
+    if (appDelegate.tryFeedCategory) {
+        if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
+            [appDelegate.tryFeedCategory isEqualToString:@"comment_reply"]) {
+            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+            NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
+            [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
+        }
+        appDelegate.tryFeedCategory = nil;
     }
 }
 
@@ -1045,6 +1061,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.storyHUD.labelText = @"Saving";
     self.storyHUD.margin = 20.0f;
+}
+
+- (void)showFindingStoryHUD {
+    [MBProgressHUD hideHUDForView:self.view animated:NO];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.storyHUD.labelText = @"Loading Story";
+    self.storyHUD.margin = 20.0f;
+    self.noStorySelectedLabel.hidden = YES;
 }
 
 - (void)refreshComments:(NSString *)replyId {

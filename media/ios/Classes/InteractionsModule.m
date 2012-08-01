@@ -227,10 +227,12 @@
                                      withStory:contentIdStr 
                                       isSocial:YES
                                       withUser:[interaction objectForKey:@"with_user"]];
+            appDelegate.tryFeedCategory = category;
         } else if ([category isEqualToString:@"story_reshare"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[interaction objectForKey:@"with_user"] objectForKey:@"id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [interaction objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[interaction objectForKey:@"with_user"]];
+            appDelegate.tryFeedCategory = category;
         } 
         
         // have the selected cell deselect
