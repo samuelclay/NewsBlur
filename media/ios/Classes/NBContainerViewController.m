@@ -284,7 +284,7 @@
             
             [self.view addSubview:self.masterNavigationController.view];
             self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
-            [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+            [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
                 self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
                 self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
             } completion:^(BOOL finished) {
@@ -311,7 +311,7 @@
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
         self.storyDetailViewController.navigationItem.titleView = titleLabel;
         
-        [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+        [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 //            self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
             
             [self.masterNavigationController.view removeFromSuperview];
@@ -371,7 +371,7 @@
         float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
         float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
         
-        [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+        [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width, self.storyTitlesYCoordinate);
             self.feedDetailViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 
                                                                   self.storyTitlesYCoordinate, 
@@ -379,7 +379,7 @@
                                                                   vb.size.height - storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
             
-            [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+            [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, self.storyTitlesYCoordinate);
                 self.feedDetailViewController.view.frame = CGRectMake(0, self.storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
                 self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
@@ -452,10 +452,10 @@
         self.dashboardViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
         self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
         
-        float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
         float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
-        
-        [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+        float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
+
+        [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
             self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH, 
                                                                    0, 
@@ -466,7 +466,7 @@
                                                                   vb.size.width, 
                                                                   vb.size.height - storyTitlesYCoordinate);
         } completion:^(BOOL finished) {
-            [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+            [UIView animateWithDuration:largeTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
                 self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, self.storyTitlesYCoordinate);
                 self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
                                                                       self.storyTitlesYCoordinate, 
@@ -479,7 +479,7 @@
         }]; 
     } else {
         // CASE: story titles on left
-        [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
+        [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 
                                                                    0, 
                                                                    self.storyNavigationController.view.frame.size.width, 
