@@ -37,13 +37,14 @@
 @class OriginalStoryViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
+@class FindSitesViewController;
 
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate>  {
     UIWindow *window;
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
-    UINavigationController *findFriendsNavigationController;
+    UINavigationController *modalNavigationController;
     UINavigationController *userProfileNavigationController;
     NBContainerViewController *masterContainerViewController;
 
@@ -65,6 +66,7 @@
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
+    FindSitesViewController *findSitesViewController;
     MoveSiteViewController *moveSiteViewController;
     OriginalStoryViewController *originalStoryViewController;
     UserProfileViewController *userProfileViewController;
@@ -112,7 +114,7 @@
 @property (nonatomic) IBOutlet UIWindow *window;
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
 @property (nonatomic) IBOutlet UINavigationController *navigationController;
-@property (nonatomic) UINavigationController *findFriendsNavigationController;
+@property (nonatomic) UINavigationController *modalNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
@@ -125,6 +127,7 @@
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
+@property (nonatomic) IBOutlet FindSitesViewController *findSitesViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;

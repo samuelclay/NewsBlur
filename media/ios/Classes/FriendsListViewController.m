@@ -11,6 +11,7 @@
 #import "UserProfileViewController.h"
 #import "ASIHTTPRequest.h"
 #import "ProfileBadge.h"
+#import "MBProgressHUD.h"
 
 @implementation UINavigationController (DelegateAutomaticDismissKeyboard)
 - (BOOL)disablesAutomaticKeyboardDismissal {
@@ -87,7 +88,7 @@
 }
 
 - (void)doCancelButton {
-    [appDelegate.findFriendsNavigationController dismissModalViewControllerAnimated:YES];
+    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
 }
 
 #pragma mark - UISearchBar delegate methods
@@ -115,7 +116,7 @@
     searchBar.text = nil;
 }
 
-- (void)loadFriendsList:(NSString *)query {
+- (void)loadFriendsList:(NSString *)query {    
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/find_friends?query=%@&limit=10",
                            NEWSBLUR_URL,
                            query];
@@ -382,8 +383,8 @@ viewForHeaderInSection:(NSInteger)section {
     int row = currentRow;
     appDelegate.activeUserProfileId = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
     [self.friendSearchBar resignFirstResponder];
-    NSLog(@"appDelegate.findFriendsNavigationController is %@", appDelegate.findFriendsNavigationController);
-    [appDelegate.findFriendsNavigationController pushViewController:appDelegate.userProfileViewController animated:YES];
+    NSLog(@"appDelegate.modalNavigationController is %@", appDelegate.modalNavigationController);
+    [appDelegate.modalNavigationController pushViewController:appDelegate.userProfileViewController animated:YES];
     [appDelegate.userProfileViewController getUserProfile];
 }
 

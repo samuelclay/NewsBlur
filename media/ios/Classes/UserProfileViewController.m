@@ -84,7 +84,7 @@
 }
 
 - (void)doCancelButton {
-    [appDelegate.findFriendsNavigationController dismissModalViewControllerAnimated:NO];
+    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:NO];
 }
 
 - (void)getUserProfile {

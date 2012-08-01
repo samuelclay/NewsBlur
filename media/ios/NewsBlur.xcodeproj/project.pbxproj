@@ -84,6 +84,8 @@
 		43A4BAE815C866FA00F3B8D4 /* popoverBg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4BAD915C866FA00F3B8D4 /* popoverBg@2x.png */; };
 		43A4BAE915C866FA00F3B8D4 /* popoverBgSimple.png in Resources */ = {isa = PBXBuildFile; fileRef = 43A4BADA15C866FA00F3B8D4 /* popoverBgSimple.png */; };
 		43A4BAEB15C893E300F3B8D4 /* FriendsListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43A4BAEA15C893E300F3B8D4 /* FriendsListViewController.xib */; };
+		43A4BAF315C89BF600F3B8D4 /* FindSitesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4BAF115C89BF600F3B8D4 /* FindSitesViewController.m */; };
+		43A4BAF415C89BF600F3B8D4 /* FindSitesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43A4BAF215C89BF600F3B8D4 /* FindSitesViewController.xib */; };
 		43A4C3D715B00966008787B5 /* ABTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3BA15B00966008787B5 /* ABTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		43A4C3D815B00966008787B5 /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3BC15B00966008787B5 /* Base64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		43A4C3DA15B00966008787B5 /* GTMNString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 43A4C3C015B00966008787B5 /* GTMNString+HTML.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -426,6 +428,9 @@
 		43A4BAD915C866FA00F3B8D4 /* popoverBg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "popoverBg@2x.png"; sourceTree = "<group>"; };
 		43A4BADA15C866FA00F3B8D4 /* popoverBgSimple.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = popoverBgSimple.png; sourceTree = "<group>"; };
 		43A4BAEA15C893E300F3B8D4 /* FriendsListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FriendsListViewController.xib; sourceTree = "<group>"; };
+		43A4BAF015C89BF600F3B8D4 /* FindSitesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindSitesViewController.h; sourceTree = "<group>"; };
+		43A4BAF115C89BF600F3B8D4 /* FindSitesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindSitesViewController.m; sourceTree = "<group>"; };
+		43A4BAF215C89BF600F3B8D4 /* FindSitesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FindSitesViewController.xib; sourceTree = "<group>"; };
 		43A4C3B915B00966008787B5 /* ABTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABTableViewCell.h; path = "Other Sources/ABTableViewCell.h"; sourceTree = "<group>"; };
 		43A4C3BA15B00966008787B5 /* ABTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABTableViewCell.m; path = "Other Sources/ABTableViewCell.m"; sourceTree = "<group>"; };
 		43A4C3BB15B00966008787B5 /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Base64.h; path = "Other Sources/Base64.h"; sourceTree = "<group>"; };
@@ -953,6 +958,9 @@
 				43F6A79C15B0CDC60092EE91 /* ActivityCell.m */,
 				4383DCD415BB8B87007E6611 /* SmallActivityCell.h */,
 				4383DCD515BB8B88007E6611 /* SmallActivityCell.m */,
+				43A4BAF015C89BF600F3B8D4 /* FindSitesViewController.h */,
+				43A4BAF115C89BF600F3B8D4 /* FindSitesViewController.m */,
+				43A4BAF215C89BF600F3B8D4 /* FindSitesViewController.xib */,
 			);
 			name = Social;
 			sourceTree = "<group>";
@@ -1920,6 +1928,7 @@
 				43A4BAE815C866FA00F3B8D4 /* popoverBg@2x.png in Resources */,
 				43A4BAE915C866FA00F3B8D4 /* popoverBgSimple.png in Resources */,
 				43A4BAEB15C893E300F3B8D4 /* FriendsListViewController.xib in Resources */,
+				43A4BAF415C89BF600F3B8D4 /* FindSitesViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2061,6 +2070,7 @@
 				43A4BAC915C8663600F3B8D4 /* WEPopoverContainerView.m in Sources */,
 				43A4BACA15C8663600F3B8D4 /* WEPopoverController.m in Sources */,
 				43A4BACB15C8663600F3B8D4 /* WETouchableView.m in Sources */,
+				43A4BAF315C89BF600F3B8D4 /* FindSitesViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

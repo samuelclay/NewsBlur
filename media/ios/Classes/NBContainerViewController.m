@@ -210,7 +210,7 @@
         [popoverController dismissPopoverAnimated:YES];
         popoverController = nil;
     }
-    [appDelegate.findFriendsNavigationController dismissModalViewControllerAnimated:YES];
+    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
 }
 
 

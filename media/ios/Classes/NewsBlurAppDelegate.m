@@ -18,12 +18,14 @@
 #import "GoogleReaderViewController.h"
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
+#import "FindSitesViewController.h"
 #import "MoveSiteViewController.h"
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
 #import "NBContainerViewController.h"
 #import "AFJSONRequestOperation.h"
+#import "findSitesViewController.h"
 
 #import "MBProgressHUD.h"
 #import "Utilities.h"
@@ -35,7 +37,7 @@
 
 @synthesize ftuxNavigationController;
 @synthesize navigationController;
-@synthesize findFriendsNavigationController;
+@synthesize modalNavigationController;
 @synthesize userProfileNavigationController;
 @synthesize masterContainerViewController;
 @synthesize googleReaderViewController;
@@ -50,6 +52,7 @@
 @synthesize shareViewController;
 @synthesize loginViewController;
 @synthesize addSiteViewController;
+@synthesize findSitesViewController;
 @synthesize moveSiteViewController;
 @synthesize originalStoryViewController;
 @synthesize userProfileViewController;
@@ -139,15 +142,19 @@
 #pragma mark FeedsView
 
 - (void)showAddSiteModal {
-    UINavigationController *navController = self.navigationController;
-    [navController dismissModalViewControllerAnimated:NO];
+    FindSitesViewController *sitesVC = [[FindSitesViewController alloc] init];    
+    self.findSitesViewController = sitesVC;
+    
+    UINavigationController *sitesNav = [[UINavigationController alloc] initWithRootViewController:sitesVC];
+    self.modalNavigationController = sitesNav;
+    self.modalNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        addSiteViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [masterContainerViewController presentModalViewController:modalNavigationController animated:YES];
+    } else {
+        [navigationController presentModalViewController:modalNavigationController animated:YES];
     }
-    
-    [navController presentModalViewController:addSiteViewController animated:YES];
-    [addSiteViewController reload];
 }
 
 #pragma mark -
@@ -210,14 +217,14 @@
     UINavigationController *friendsNav = [[UINavigationController alloc] initWithRootViewController:friendsListViewController];
     
     self.friendsListViewController = friendsBVC;    
-    self.findFriendsNavigationController = friendsNav;
-    self.findFriendsNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    self.modalNavigationController = friendsNav;
+    self.modalNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.findFriendsNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [masterContainerViewController presentModalViewController:findFriendsNavigationController animated:YES];
+        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [masterContainerViewController presentModalViewController:modalNavigationController animated:YES];
     } else {
-        [navigationController presentModalViewController:findFriendsNavigationController animated:YES];
+        [navigationController presentModalViewController:modalNavigationController animated:YES];
     }
     [self.friendsListViewController loadSuggestedFriendsList];
 }
