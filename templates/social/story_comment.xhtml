@@ -19,7 +19,7 @@
         </div>
     </div>
     <div class="NB-story-comment-content">
-        {{ comment.comments|linebreaksbr|safe }}
+        {{ comment.comments|safe|linebreaksbr }}
     </div>
     {% if comment.replies %}
     <div class="NB-story-comment-replies">

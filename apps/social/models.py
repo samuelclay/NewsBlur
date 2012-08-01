@@ -81,6 +81,15 @@ class MSocialProfile(mongo.Document):
             self.count_follows(skip_save=True)
         if self.bio and len(self.bio) > MSocialProfile.bio.max_length:
             self.bio = self.bio[:80]
+        if self.bio:
+            self.bio = strip_tags(self.bio)
+        if self.website:
+            self.website = strip_tags(self.website)
+        if self.location:
+            self.location = strip_tags(self.location)
+        if self.custom_css:
+            self.custom_css = strip_tags(self.custom_css)
+            
         super(MSocialProfile, self).save(*args, **kwargs)
         if self.user_id not in self.following_user_ids:
             self.follow_user(self.user_id)

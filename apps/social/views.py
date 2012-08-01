@@ -643,11 +643,15 @@ def load_user_profile(request):
 @json.json_view
 def save_user_profile(request):
     data = request.POST
-
+    website = data['website']
+    
+    if website and not website.startswith('http'):
+        website = 'http://' + website
+    
     profile = MSocialProfile.get_user(request.user.pk)
     profile.location = data['location']
     profile.bio = data['bio']
-    profile.website = data['website']
+    profile.website = website
     profile.save()
 
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
@@ -777,6 +781,8 @@ def find_friends(request):
         profiles = MSocialProfile.objects.filter(blurblog_title__icontains=query)[:limit]
     
     profiles = [p.to_json(include_following_user=request.user.pk) for p in profiles]
+    profiles = sorted(profiles, key=lambda p: -1 * p['shared_stories_count'])
+
     return dict(profiles=profiles)
 
 @ajax_login_required
