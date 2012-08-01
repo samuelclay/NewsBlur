@@ -2,11 +2,15 @@ package com.newsblur.service;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.newsblur.database.DatabaseConstants;
+import com.newsblur.database.FeedProvider;
+import com.newsblur.domain.OfflineUpdate;
 import com.newsblur.network.APIClient;
 import com.newsblur.network.APIManager;
 
@@ -62,12 +66,29 @@ public class SyncService extends IntentService {
 			case EXTRA_TASK_FOLDER_UPDATE:
 				apiManager.getFolderFeedMapping();
 				break;
+				
+				// For the moment, we only retry offline updates when we refresh counts 
 			case EXTRA_TASK_REFRESH_COUNTS:
+				Cursor cursor = getContentResolver().query(FeedProvider.OFFLINE_URI, null, null, null, null);
+				while (cursor.moveToNext()) {
+					OfflineUpdate update = OfflineUpdate.fromCursor(cursor);
+					if (apiManager.markStoryAsRead(update.arguments[0], update.arguments[1])) {
+						getContentResolver().delete(FeedProvider.OFFLINE_URI, DatabaseConstants.UPDATE_ID + " = ?", new String[] { Integer.toString(update.id) });
+					}
+				}
 				apiManager.refreshFeedCounts();
 				break;	
 			case EXTRA_TASK_MARK_STORY_READ:
-				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_STORY_ID))) {
-					apiManager.markStoryAsRead(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_STORY_ID));
+				final String feedId = intent.getStringExtra(EXTRA_TASK_FEED_ID);
+				final String storyId = intent.getStringExtra(EXTRA_TASK_STORY_ID);
+				if (!TextUtils.isEmpty(feedId) && !TextUtils.isEmpty(storyId)) {
+					if (!apiManager.markStoryAsRead(feedId, storyId)) {
+						Log.d(TAG, "Unable to mark-as-read online. Saving for later.");
+						OfflineUpdate update = new OfflineUpdate();
+						update.arguments = new String[] { feedId, storyId };
+						update.type = OfflineUpdate.UpdateType.MARK_FEED_AS_READ;
+						getContentResolver().insert(FeedProvider.OFFLINE_URI, update.getContentValues());
+					}
 				} else {
 					Log.e(TAG, "No feed/story to mark as read included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);

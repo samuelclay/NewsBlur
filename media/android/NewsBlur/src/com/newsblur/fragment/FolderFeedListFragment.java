@@ -83,6 +83,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		list.setAdapter(folderAdapter);
 		list.setOnGroupClickListener(this);
 		list.setOnChildClickListener(this);
+		
 		return v;
 	}
 

@@ -41,6 +41,15 @@ public class DatabaseConstants {
 	public static final String CLASSIFIER_KEY = "key";
 	public static final String CLASSIFIER_VALUE = "value";
 	
+	public static final String UPDATE_TABLE = "offline_updates";
+	public static final String UPDATE_ID = BaseColumns._ID;
+	public static final String UPDATE_TYPE = "update_type";
+	public static final String UPDATE_ARGUMENTS = "update_argument";
+	
+	public static final String[] UPDATE_COLUMNS = {
+		UPDATE_ID, UPDATE_TYPE, UPDATE_ARGUMENTS
+	};
+	
 	public static final String STORY_TABLE = "stories";
 	public static final String STORY_ID = BaseColumns._ID;
 	public static final String STORY_AUTHORS = "authors";
@@ -85,7 +94,6 @@ public class DatabaseConstants {
 		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE, STORY_SHARED_USER_IDS
 	};
 	
-
 	public static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
 	public static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
 	public static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
@@ -94,6 +102,7 @@ public class DatabaseConstants {
 		"AND " + DatabaseConstants.STORY_READ + " = '0'";
 	public static final String STORY_INTELLIGENCE_SOME = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 " + 
 		"AND " + DatabaseConstants.STORY_READ + " = '0'";
+	
 
 	
 	

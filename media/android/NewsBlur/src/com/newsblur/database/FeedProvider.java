@@ -17,7 +17,9 @@ public class FeedProvider extends ContentProvider {
 
 	public static final String AUTHORITY = "com.newsblur";
 	public static final String VERSION = "v1";
+	
 	public static final Uri NEWSBLUR_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION);
+	public static final Uri OFFLINE_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/offline_updates/");
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
 	public static final Uri MODIFY_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
 	public static final Uri STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
@@ -36,6 +38,7 @@ public class FeedProvider extends ContentProvider {
 	private static final int STORY_COMMENTS = 7;
 	private static final int INDIVIDUAL_STORY = 8;
 	private static final int DECREMENT_COUNT = 9;
+	private static final int OFFLINE_UPDATES = 9;
 
 	private BlurDatabase databaseHelper;
 
@@ -53,11 +56,18 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/*/", SPECIFIC_FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", INDIVIDUAL_FOLDER);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/offline_updates/", OFFLINE_UPDATES);
 	}
 
 	@Override
-	public int delete(Uri arg0, String arg1, String[] arg2) {
-		return 0;
+	public int delete(Uri uri, String selection, String[] selectionArgs) {
+		final SQLiteDatabase db = databaseHelper.getWritableDatabase();
+		switch (uriMatcher.match(uri)) {
+			case OFFLINE_UPDATES:
+				return db.delete(DatabaseConstants.UPDATE_TABLE, selection, selectionArgs);
+			default:
+				return 0;
+		}
 	}
 
 	@Override
@@ -113,6 +123,14 @@ public class FeedProvider extends ContentProvider {
 			db.setTransactionSuccessful();
 			db.endTransaction();
 			break;	
+			
+			// Inserting a story	
+		case OFFLINE_UPDATES:
+			db.beginTransaction();
+			db.insertWithOnConflict(DatabaseConstants.UPDATE_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			break;		
 
 		case UriMatcher.NO_MATCH:
 			Log.d(TAG, "No match found for URI: " + uri.toString());
@@ -212,7 +230,8 @@ public class FeedProvider extends ContentProvider {
 			folderBuilder.append(" ORDER BY ");
 			folderBuilder.append(DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME + " COLLATE NOCASE");
 			return db.rawQuery(folderBuilder.toString(), null);
-
+		case OFFLINE_UPDATES:
+			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}
@@ -228,7 +247,7 @@ public class FeedProvider extends ContentProvider {
 		case INDIVIDUAL_STORY:
 			return db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
 			
-			// In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider call easily handle. Hence this circuitous workaround. 
+			// In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider can't easily handle. Hence this circuitous hack. 
 		case DECREMENT_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.FEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.FEED_ID + " = " + selectionArgs[1]);
 			return 0;

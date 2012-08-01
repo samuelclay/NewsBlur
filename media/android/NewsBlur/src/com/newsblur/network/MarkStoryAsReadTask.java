@@ -40,7 +40,7 @@ public class MarkStoryAsReadTask extends AsyncTask<Story, Void, Void> {
 				} else {
 					selectionArgs = new String[] { DatabaseConstants.FEED_NEGATIVE_COUNT, story.feedId } ;
 				}
-				Log.d("TAG", "Returned: " + contentResolver.update(FeedProvider.MODIFY_COUNT_URI, null, null, selectionArgs));
+				contentResolver.update(FeedProvider.MODIFY_COUNT_URI, null, null, selectionArgs);
 				
 				Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
 				ContentValues values = new ContentValues();
