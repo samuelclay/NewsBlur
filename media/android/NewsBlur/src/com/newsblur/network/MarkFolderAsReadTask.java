@@ -9,21 +9,21 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.widget.SimpleCursorTreeAdapter;
 import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
+import com.newsblur.database.MixedExpandableListAdapter;
 
 public class MarkFolderAsReadTask extends AsyncTask<String, Void, Boolean> {
 	List<String> feedIds = new ArrayList<String>();
 	private Context context;
 	private APIManager apiManager;
 	private ContentResolver resolver;
-	private SimpleCursorTreeAdapter adapter;
+	private MixedExpandableListAdapter adapter;
 	
-	public MarkFolderAsReadTask(final Context context, final APIManager apiManager, final ContentResolver resolver, final SimpleCursorTreeAdapter adapter) {
+	public MarkFolderAsReadTask(final Context context, final APIManager apiManager, final ContentResolver resolver, final MixedExpandableListAdapter adapter) {
 		this.context = context;
 		this.apiManager = apiManager;
 		this.resolver = resolver;
@@ -50,7 +50,7 @@ public class MarkFolderAsReadTask extends AsyncTask<String, Void, Boolean> {
 			for (String feedId : feedIds) {
 				resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build(), values, null, null);
 			}
-			adapter.getCursor().requery();
+			adapter.requery();
 			Toast.makeText(context, R.string.toast_marked_folder_as_read, Toast.LENGTH_SHORT).show();
 		} else {
 			Toast.makeText(context, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();

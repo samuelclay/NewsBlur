@@ -3,11 +3,11 @@ package com.newsblur.view;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.SimpleCursorTreeAdapter.ViewBinder;
 import android.widget.TextView;
 
 import com.newsblur.R;

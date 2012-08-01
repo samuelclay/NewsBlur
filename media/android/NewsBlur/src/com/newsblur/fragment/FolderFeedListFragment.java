@@ -23,7 +23,7 @@ import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
-import com.newsblur.database.FolderTreeAdapter;
+import com.newsblur.database.MixedExpandableListAdapter;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFeedAsReadTask;
 import com.newsblur.network.MarkFolderAsReadTask;
@@ -35,7 +35,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 
 	private ExpandableListView list;
 	private ContentResolver resolver;
-	private FolderTreeAdapter folderAdapter;
+	private MixedExpandableListAdapter folderAdapter;
 	private FolderTreeViewBinder viewBinder;
 	private int leftBound, rightBound;
 	private APIManager apiManager;
@@ -60,13 +60,13 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON, DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.FEED_NEGATIVE_COUNT, DatabaseConstants.FEED_POSITIVE_COUNT };
 		final int[] childTo = new int[] { R.id.row_feedname, R.id.row_feedfavicon, R.id.row_feedneutral, R.id.row_feednegative, R.id.row_feedpositive };
 
-		folderAdapter = new FolderTreeAdapter(getActivity(), cursor, R.layout.row_folder_collapsed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
+		//folderAdapter = new FolderTreeAdapter(getActivity(), cursor, R.layout.row_folder_collapsed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
+		folderAdapter = new MixedExpandableListAdapter(getActivity(), cursor, null, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
 		folderAdapter.setViewBinder(viewBinder);
 	}
 
 	public void hasUpdated() {
-		folderAdapter.getCursor().requery();
-		folderAdapter.notifyDataSetChanged();
+		folderAdapter.notifyDataSetChanged(true);
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 			
 		case R.id.menu_mark_folder_as_read:
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-			final Cursor folderCursor = ((FolderTreeAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
+			final Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
 			folderCursor.moveToPosition(groupPosition);
 			String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
 			

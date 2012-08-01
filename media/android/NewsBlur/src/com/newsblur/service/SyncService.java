@@ -67,7 +67,7 @@ public class SyncService extends IntentService {
 				apiManager.getFolderFeedMapping();
 				break;
 				
-				// For the moment, we only retry offline updates when we refresh counts 
+				// For the moment, we only retry offline updates when we refresh counts. We also assume here that every update is to mark a story as read.
 			case EXTRA_TASK_REFRESH_COUNTS:
 				Cursor cursor = getContentResolver().query(FeedProvider.OFFLINE_URI, null, null, null, null);
 				while (cursor.moveToNext()) {
