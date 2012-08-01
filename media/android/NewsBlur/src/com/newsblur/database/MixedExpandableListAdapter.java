@@ -125,7 +125,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 		Cursor cursor = cursorHelper.moveTo(childPosition);
 		if (cursor == null) {
-			throw new IllegalStateException("this should only be called when the cursor is valid");
+			throw new IllegalStateException("This should only be called when the cursor is valid");
 		}
 
 		View v;
@@ -195,10 +195,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
-		return false;
+		return true;
 	}
-
-
 
 
 	//-----------------------
