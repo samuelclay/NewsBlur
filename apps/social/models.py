@@ -726,7 +726,7 @@ class MSocialSubscription(mongo.Document):
         if not ignore_user_stories:
             r.delete(unread_stories_key)
         
-        return [story_id for story_id in story_ids if story_id]
+        return [story_id for story_id in story_ids if story_id and story_id != 'None']
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):

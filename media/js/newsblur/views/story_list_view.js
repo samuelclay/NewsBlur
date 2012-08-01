@@ -101,8 +101,8 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.$('.NB-feed-story-endbar').remove();
         var $end_stories_line = $.make('div', { 
             className: 'NB-feed-story-endbar'
-        });
-
+        }).css('paddingBottom', NEWSBLUR.assets.preference('lock_mouse_indicator'));
+        
         this.$el.append($end_stories_line);
     },
     
