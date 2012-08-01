@@ -11,7 +11,7 @@
 #import "FindSitesViewController.h"
 #import "MBProgressHUD.h"
 
-#define FIND_SITES_ROW_HEIGHT 80;
+#define FIND_SITES_ROW_HEIGHT 74;
 
 @implementation UINavigationController (DelegateAutomaticDismissKeyboard)
 - (BOOL)disablesAutomaticKeyboardDismissal {
