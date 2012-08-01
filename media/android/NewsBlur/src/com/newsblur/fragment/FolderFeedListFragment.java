@@ -40,6 +40,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 	private int leftBound, rightBound;
 	private APIManager apiManager;
 	private int currentState = AppConstants.STATE_SOME;
+	private int FEEDCHECK = 0x01;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		apiManager = new APIManager(getActivity());
 
 		
-		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { FeedProvider.FOLDER_INTELLIGENCE_SOME }, null);
+		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
 		viewBinder = new FolderTreeViewBinder();
 
 		leftBound = UIUtils.convertDPsToPixels(getActivity(), 20);
@@ -132,13 +133,13 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		
 		switch (state) {
 		case (AppConstants.STATE_ALL):
-			selection = FeedProvider.FOLDER_INTELLIGENCE_ALL;
+			selection = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
 		break;
 		case (AppConstants.STATE_SOME):
-			selection = FeedProvider.FOLDER_INTELLIGENCE_SOME;
+			selection = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
 		break;
 		case (AppConstants.STATE_BEST):
-			selection = FeedProvider.FOLDER_INTELLIGENCE_BEST;
+			selection = DatabaseConstants.FOLDER_INTELLIGENCE_BEST;
 		break;
 		}
 		
@@ -165,7 +166,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		String feedId = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ID));
 		intent.putExtra(ItemsList.EXTRA_FEED, feedId);
 		intent.putExtra(ItemsList.EXTRA_STATE, currentState);
-		getActivity().startActivity(intent);
+		getActivity().startActivityForResult(intent, FEEDCHECK );
 		return true;
 	}
 

@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.widget.SimpleCursorTreeAdapter;
 
 import com.newsblur.domain.Folder;
@@ -12,7 +11,7 @@ import com.newsblur.domain.Folder;
 public class FolderTreeAdapter extends SimpleCursorTreeAdapter {
 
 	ContentResolver resolver; 
-	public String currentState = FeedProvider.FOLDER_INTELLIGENCE_ALL;
+	public String currentState = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
 	private String TAG = "FolderTreeAdapter";
 	
 	public FolderTreeAdapter(Context context, Cursor cursor, int collapsedGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo) {

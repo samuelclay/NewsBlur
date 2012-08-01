@@ -36,6 +36,8 @@ public class ItemsList extends SherlockFragmentActivity implements SyncUpdateFra
 		requestWindowFeature(Window.FEATURE_PROGRESS);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(bundle);
+		setResult(RESULT_OK);
+		
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getSupportFragmentManager();
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
@@ -71,7 +73,7 @@ public class ItemsList extends SherlockFragmentActivity implements SyncUpdateFra
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "Returned okay.");
 		if (resultCode == RESULT_OK) {
-			itemListFragment.updated();
+			itemListFragment.hasUpdated();
 		}
 	}
 
@@ -98,7 +100,7 @@ public class ItemsList extends SherlockFragmentActivity implements SyncUpdateFra
 	@Override
 	public void updateAfterSync() {
 		Log.d(TAG , "Redrawing UI");
-		itemListFragment.updated();
+		itemListFragment.hasUpdated();
 		setSupportProgressBarIndeterminateVisibility(false);
 	}
 

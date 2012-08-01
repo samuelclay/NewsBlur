@@ -121,5 +121,7 @@ public class Story implements Serializable {
 		public int intelligenceTitle = 0;
 	}
 	
-
+	public int getIntelligenceTotal() {
+		return (intelligence.intelligenceAuthors + intelligence.intelligenceFeed + intelligence.intelligenceTags + intelligence.intelligenceTitle);
+	}
 }

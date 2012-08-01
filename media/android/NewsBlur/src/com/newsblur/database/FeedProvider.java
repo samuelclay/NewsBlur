@@ -19,20 +19,12 @@ public class FeedProvider extends ContentProvider {
 	public static final String VERSION = "v1";
 	public static final Uri NEWSBLUR_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION);
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
+	public static final Uri MODIFY_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
 	public static final Uri STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
 	public static final Uri STORY_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/story/");
 	public static final Uri COMMENTS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/comments/");
 	public static final Uri FEED_FOLDER_MAP_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedfoldermap/");
 	public static final Uri FOLDERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/folders/");
-
-	public static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
-	public static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
-	public static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
-	
-	public static final String STORY_INTELLIGENCE_BEST = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 " +
-		"AND " + DatabaseConstants.STORY_READ + " = '0'";
-	public static final String STORY_INTELLIGENCE_SOME = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 " + 
-		"AND " + DatabaseConstants.STORY_READ + " = '0'";
 	
 	private static final int ALL_FEEDS = 0;
 	private static final int FEED_STORIES = 1;
@@ -43,6 +35,7 @@ public class FeedProvider extends ContentProvider {
 	private static final int INDIVIDUAL_FEED = 6;
 	private static final int STORY_COMMENTS = 7;
 	private static final int INDIVIDUAL_STORY = 8;
+	private static final int DECREMENT_COUNT = 9;
 
 	private BlurDatabase databaseHelper;
 
@@ -51,6 +44,8 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/", ALL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", INDIVIDUAL_FEED);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/feedcount/", DECREMENT_COUNT);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/#/", FEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/story/*/", INDIVIDUAL_STORY);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/comments/", STORY_COMMENTS);
@@ -232,6 +227,11 @@ public class FeedProvider extends ContentProvider {
 			return db.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });
 		case INDIVIDUAL_STORY:
 			return db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
+			
+			// In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider call easily handle. Hence this circuitous workaround. 
+		case DECREMENT_COUNT: 
+			db.execSQL("UPDATE " + DatabaseConstants.FEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.FEED_ID + " = " + selectionArgs[1]);
+			return 0;
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}
@@ -244,10 +244,10 @@ public class FeedProvider extends ContentProvider {
 			selection = "";
 		break;
 		case (AppConstants.STATE_SOME):
-			selection = FeedProvider.STORY_INTELLIGENCE_SOME;
+			selection = DatabaseConstants.STORY_INTELLIGENCE_SOME;
 		break;
 		case (AppConstants.STATE_BEST):
-			selection = FeedProvider.STORY_INTELLIGENCE_BEST;
+			selection = DatabaseConstants.STORY_INTELLIGENCE_BEST;
 		break;
 		}
 		return selection;

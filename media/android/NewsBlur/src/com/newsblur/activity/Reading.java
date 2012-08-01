@@ -22,6 +22,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
+import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.ReadingAdapter;
 import com.newsblur.domain.Feed;
@@ -36,7 +37,7 @@ public class Reading extends SherlockFragmentActivity implements OnPageChangeLis
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String TAG = "ReadingActivity";
 	public static final String EXTRA_POSITION = "feed_position";
-	
+
 	private int passedPosition;
 	private int currentState;
 	private String feedId;
@@ -48,7 +49,7 @@ public class Reading extends SherlockFragmentActivity implements OnPageChangeLis
 	private ReadingAdapter readingAdapter;
 	private ContentResolver contentResolver;
 	private SyncUpdateFragment syncFragment;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -73,13 +74,13 @@ public class Reading extends SherlockFragmentActivity implements OnPageChangeLis
 		setTitle(feed.title);
 
 		createFloatingHeader();
-		
+
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
 		}
-		
+
 		pager = (ViewPager) findViewById(R.id.reading_pager);
 		pager.setPageMargin(UIUtils.convertDPsToPixels(getApplicationContext(), 1));
 		pager.setPageMarginDrawable(R.drawable.divider_light);
@@ -89,8 +90,10 @@ public class Reading extends SherlockFragmentActivity implements OnPageChangeLis
 		pager.setCurrentItem(passedPosition);
 
 		new MarkStoryAsReadTask(this, contentResolver, syncFragment).execute(readingAdapter.getStory(passedPosition));
+
 		setResult(RESULT_OK);
 	}
+
 
 	private void createFloatingHeader() {
 		View view = findViewById(R.id.reading_floatbar);

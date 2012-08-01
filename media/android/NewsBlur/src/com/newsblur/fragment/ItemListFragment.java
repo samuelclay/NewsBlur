@@ -94,7 +94,7 @@ public class ItemListFragment extends Fragment implements LoaderManager.LoaderCa
 		}
 	}
 	
-	public void updated() {
+	public void hasUpdated() {
 		getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
 	}
 
