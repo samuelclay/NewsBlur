@@ -362,7 +362,7 @@
     if (social) {
         feed = [self.dictSocialFeeds objectForKey:feedId];
         self.isSocialView = YES;
-        self.InFindingStoryMode = YES;
+        self.inFindingStoryMode = YES;
   
         if (feed == nil) {
             feed = user;
@@ -575,6 +575,7 @@
 }
 
 - (void)hideStoryDetailView {
+    [self.storyDetailViewController clearStory];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromFeedDetail];
     } else {
@@ -701,7 +702,12 @@
 
     if (feedId) {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-        feed = [self.dictFeeds objectForKey:feedIdStr];
+        if (self.isSocialView) {
+            feed = [self.dictSocialFeeds objectForKey:feedIdStr];
+        } else {
+            feed = [self.dictFeeds objectForKey:feedIdStr];
+        }
+
     } else {
         feed = self.activeFeed;
     }
@@ -793,8 +799,6 @@
         
         [otherFriendFeeds removeObject:feedId];
 //         NSLog(@"otherFriendFeeds is %@", otherFriendFeeds);
-        
-        
     } else {
         feedId = [self.activeStory objectForKey:@"story_feed_id"];
         feedIdStr = [NSString stringWithFormat:@"%@",feedId];
@@ -857,7 +861,7 @@
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
     
     NSMutableDictionary *newStory = [story mutableCopy];
-    [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+    [story setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
 
     self.visibleUnreadCount -= 1;
     if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
@@ -867,17 +871,23 @@
     NSMutableDictionary *newFeed = [feed mutableCopy];
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     if (score > 0) {
-        int unreads = MAX(0, [[feed objectForKey:@"ps"] intValue] - 1);
+        int unreads = MAX(0, [[newFeed objectForKey:@"ps"] intValue] - 1);
         [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
     } else if (score == 0) {
-        int unreads = MAX(0, [[feed objectForKey:@"nt"] intValue] - 1);
+        int unreads = MAX(0, [[newFeed objectForKey:@"nt"] intValue] - 1);
         [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
     } else if (score < 0) {
-        int unreads = MAX(0, [[feed objectForKey:@"ng"] intValue] - 1);
+        int unreads = MAX(0, [[newFeed objectForKey:@"ng"] intValue] - 1);
         [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
     }
     
-    [self.dictFeeds setValue:newFeed forKey:feedIdStr];
+    if (self.isSocialView) {
+        [self.dictSocialFeeds setValue:newFeed forKey:feedIdStr];
+    } else {
+        [self.dictFeeds setValue:newFeed forKey:feedIdStr];
+    }
+    
+    self.activeFeed = newFeed;
 }
 
 - (void)markActiveFeedAllRead {    

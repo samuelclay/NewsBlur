@@ -285,6 +285,15 @@ del {
     max-width: none !important;
 }
 
+#story_pane .NB-story-comments-shares-teaser.NB-highlighted {
+    -webkit-transition: background-color .6s linear;
+    background-color: #FBE5C7;
+}
+
+#story_pane .NB-story-comments-shares-teaser {
+    -webkit-transition: background-color .6s linear;
+}
+
 #story_pane .NB-story-comment-reply.NB-highlighted {
     background-color: #FBE5C7;
     padding-left: 50px;

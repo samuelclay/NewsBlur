@@ -134,7 +134,7 @@
     
     // reload the data and then set the highlight again
     [self.feedTitlesTable reloadData];
-
+    [self redrawUnreadCounts];
     [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
                            animated:NO 
                      scrollPosition:UITableViewScrollPositionNone];

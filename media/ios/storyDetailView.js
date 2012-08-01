@@ -46,25 +46,43 @@ function setImage(img) {
 }
 
 function slideToComment(commentId, highlight) {
-    var commentString = 'NB-user-comment-' + commentId;
+    setTimeout(function(){
+        var commentString = 'NB-user-comment-' + commentId;
+        var shareString = 'NB-user-share-bar-' + commentId;
+        //Get comment
+        var $comment = $('#' + commentString);
+        if ($comment.length) {
+            $.scroll($comment.offset().top - 32, 1000);
+        } else {
+            var $shareBar = $('#' + shareString);
+            if ($shareBar.length) {
+                $.scroll($shareBar.offset().top - 32, 1000);
+            } else {
+                var $shareButton =$("#NB-share-button-id");
+                $.scroll($shareButton.offset().top - 32, 1000);
+            }
+        }
 
-    //Get comment
-    var $comment = $('#' + commentString);
-    if ($comment.length) {
-        $.scroll($comment.offset().top - 32, 1000);
-    } else {
-        var shareButton = document.getElementById("NB-share-button-id");
-        $.scroll($('#NB-share-button-id').offset().top - 32, 1000);
-    }
+        if (highlight) {
+            if ($comment.length) {
+                setTimeout(function(){
+                           $comment.addClass('NB-highlighted');
+                           setTimeout(function(){
+                                      $comment.removeClass('NB-highlighted');
+                                      }, 2000);
+                           }, 1000);
+            } else if ($shareBar.length) {
 
-    if (highlight) {
-        setTimeout(function(){
-            $('#' + commentString).addClass('NB-highlighted');
-            setTimeout(function(){
-                $('#' + commentString).removeClass('NB-highlighted');
-            }, 2000);
-        }, 1000);
-    }
+                setTimeout(function(){
+                    $(".NB-story-comments-shares-teaser").addClass('NB-highlighted');
+                    setTimeout(function(){
+                        $(".NB-story-comments-shares-teaser").removeClass('NB-highlighted');
+                    }, 2000);
+                }, 1000);
+            }
+        }
+    }, 500);
+    
 }
           
 function findPos(obj) {

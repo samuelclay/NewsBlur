@@ -167,7 +167,7 @@
     [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
 }
 
-- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {  
+- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback { 
     NSString *theFeedDetailURL;
     
     if (!self.pageFetching && !self.pageFinished) {
@@ -409,7 +409,10 @@
                 
                 FeedDetailTableCell *cell = (FeedDetailTableCell *)[self.storyTitlesTable cellForRowAtIndexPath:indexPath];
                 [self loadStory:cell atRow:indexPath.row];
+                
+                // found the story, reset the two flags.
                 appDelegate.tryFeedStoryId = nil;
+                appDelegate.inFindingStoryMode = NO;
             }
         }
     }

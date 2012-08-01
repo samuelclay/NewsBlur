@@ -19,7 +19,8 @@
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1024 - 640
-#define NB_DEFAULT_SLIDER_INTERVAL 0.4
+#define NB_DEFAULT_SLIDER_INTERVAL 0.35
+#define NB_DEFAULT_SLIDER_INTERVAL_OUT 0.35
 #define NB_DEFAULT_SHARE_HEIGHT 120
 #define NB_DEFAULT_STORY_TITLE_SNAP_THRESHOLD 60
 
@@ -439,6 +440,7 @@
         [self transitionFromShareView];
     }
     
+    [self.storyDetailViewController clearStory];
     self.feedDetailIsVisible = NO;
     CGRect vb = [self.view bounds];
     
@@ -452,8 +454,8 @@
         self.dashboardViewController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
         self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
         
-        float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
-        float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
+        float smallTimeInterval = NB_DEFAULT_SLIDER_INTERVAL_OUT * NB_DEFAULT_MASTER_WIDTH / vb.size.width;
+        float largeTimeInterval = NB_DEFAULT_SLIDER_INTERVAL_OUT * ( vb.size.width - NB_DEFAULT_MASTER_WIDTH) / vb.size.width;
 
         [UIView animateWithDuration:smallTimeInterval delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);

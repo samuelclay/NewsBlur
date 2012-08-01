@@ -121,6 +121,7 @@
 }
 
 - (void)transitionFromFeedDetail {
+    [self performSelector:@selector(clearStory) withObject:self afterDelay:0.35];
     [appDelegate.masterContainerViewController transitionFromFeedDetail];
 }
 
@@ -178,6 +179,10 @@
     [self.loadingIndicator stopAnimating];    
 }
 
+- (void)clearStory {
+    [self.webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
 //    Class viewClass = [appDelegate.navigationController.visibleViewController class];
 //    if (viewClass == [appDelegate.feedDetailViewController class] ||
@@ -219,8 +224,9 @@
         NSDictionary *user = [self getUser:[[share_user_ids objectAtIndex:i] intValue]];
         NSString *avatar = [NSString stringWithFormat:@
                             "<div class=\"NB-story-share-profile\"><div class=\"NB-user-avatar\">"
-                            "<a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a>"
+                            "<a id=\"NB-user-share-bar-%@\" class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a>"
                             "</div></div>",
+                            [user objectForKey:@"user_id"],
                             [user objectForKey:@"user_id"],
                             [user objectForKey:@"photo_url"]];
         avatarString = [avatarString stringByAppendingString:avatar];
@@ -629,7 +635,7 @@
                             footerString
                             ];
 
-//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -863,8 +869,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
             [appDelegate.tryFeedCategory isEqualToString:@"comment_reply"]) {
             NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-            NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
+            NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true, true);", currentUserId];
             [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
+        } else if ([appDelegate.tryFeedCategory isEqualToString:@"story_reshare"]) {
+            NSString *blurblogUserId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
+            NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", blurblogUserId];
+            [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
+
         }
         appDelegate.tryFeedCategory = nil;
     }
@@ -890,7 +901,34 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)setNextPreviousButtons {
-    NSLog(@"the unread count is %i", appDelegate.unreadCount);
+    NSLog(@"\n\n\n\n\nin setNextPreviousButtons\n");
+    
+    // setting up the PREV BUTTON
+    int readStoryCount = [appDelegate.readStories count];
+    NSLog(@"readStoryCount is %i", readStoryCount);
+    if (readStoryCount == 0 || 
+        (readStoryCount == 1 && 
+         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
+            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
+            [buttonPrevious setTitle:@"Previous"];
+            [buttonPrevious setEnabled:NO];
+        } else {
+            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
+            [buttonPrevious setTitle:@"Previous"];
+            [buttonPrevious setEnabled:YES];
+        }
+
+    // setting up the NEXT STORY BUTTON
+    int activeLocation = appDelegate.locationOfActiveStory;    
+    NSLog(@"[appDelegate.activeFeedStoryLocations count] is %i", [appDelegate.activeFeedStoryLocations count]);
+    if (activeLocation >= ([appDelegate.activeFeedStoryLocations count] - 1)) {
+        self.buttonNextStory.enabled = NO;
+    } else {
+        self.buttonNextStory.enabled = YES;
+    }
+
+    // setting up the NEXT UNREAD STORY BUTTON
+    NSLog(@"unreadStoryCount is %i", [appDelegate unreadCount]);
     int nextIndex = [appDelegate indexOfNextUnreadStory];
     int unreadCount = [appDelegate unreadCount];
     if (nextIndex == -1 && unreadCount > 0) {
@@ -902,28 +940,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     } else {
         [buttonNext setStyle:UIBarButtonItemStyleBordered];
         [buttonNext setTitle:@"Next Unread"];
-    }
-    
-    int readStoryCount = [appDelegate.readStories count];
-    if (readStoryCount == 0 || 
-        (readStoryCount == 1 && 
-         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
-            
-            
-            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-            [buttonPrevious setTitle:@"Previous"];
-            [buttonPrevious setEnabled:NO];
-        } else {
-            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-            [buttonPrevious setTitle:@"Previous"];
-            [buttonPrevious setEnabled:YES];
-        }
-    
-    int activeLocation = appDelegate.locationOfActiveStory;    
-    if (activeLocation >= ([appDelegate.activeFeedStoryLocations count] - 1)) {
-        self.buttonNextStory.enabled = NO;
-    } else {
-        self.buttonNextStory.enabled = YES;
     }
     
     float unreads = (float)[appDelegate unreadCount];
@@ -1147,11 +1163,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
-        [self showStory];
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                      objectAtIndex:nextIndex]];
         [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
         [self setActiveStory];
+        [self showStory];;
 
         [appDelegate changeActiveFeedDetailRow];
         [UIView beginAnimations:nil context:nil];

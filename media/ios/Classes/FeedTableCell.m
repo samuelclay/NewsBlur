@@ -101,7 +101,6 @@ static CGFloat *psColors = nil;
     if (self.highlighted || self.selected) {
         // top border
         UIColor *blue = UIColorFromRGB(0x6eadf5);
-        NSLog(@"self.bounds.size.height is %f", self.bounds.size.height);
         CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
         
         CGContextBeginPath(context);
