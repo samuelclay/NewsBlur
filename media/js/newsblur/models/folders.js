@@ -104,6 +104,21 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         });
     },
     
+    find_folder: function(folder_name) {
+        var found_folder;
+        this.any(function(folder) {
+            if (folder.is_folder()) {
+                if (folder.get('folder_title').toLowerCase() == folder_name) {
+                    found_folder = folder;
+                    return found_folder;
+                }
+                found_folder = folder.folders.find_folder(folder_name);
+                return found_folder;
+            }
+        });
+        return found_folder;
+    },
+    
     get_view: function($folder) {
         var view;
         this.any(function(item) {
@@ -134,6 +149,21 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         return _.compact(_.flatten(this.map(function(item) {
             return item.feed_ids_in_folder();
         })));
+    },
+    
+    selected: function() {
+        var selected_folder;
+        this.any(function(folder) {
+            if (folder.is_folder()) {
+                if (folder.get('selected')) {
+                    selected_folder = folder;
+                    return selected_folder;
+                }
+                selected_folder = folder.folders.selected();
+                return selected_folder;
+            }
+        });
+        return selected_folder;
     },
     
     deselect: function() {

@@ -7,6 +7,8 @@ NEWSBLUR.Router = Backbone.Router.extend({
         "site/:site_id/:slug": "site",
         "site/:site_id/": "site",
         "site/:site_id": "site",
+        "folder/:folder_name": "folder",
+        "folder/:folder_name/": "folder",
         "social/:user_id/:slug": "social",
         "social/:user_id/": "social",
         "social/:user_id": "social",
@@ -30,7 +32,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
     site: function(site_id, slug) {
         // NEWSBLUR.log(["site", site_id, slug]);
         site_id = parseInt(site_id, 10);
-        var feed = NEWSBLUR.reader.model.get_feed(site_id);
+        var feed = NEWSBLUR.assets.get_feed(site_id);
         if (feed) {
             NEWSBLUR.reader.open_feed(site_id, {force: true});
         } else {
@@ -40,10 +42,23 @@ NEWSBLUR.Router = Backbone.Router.extend({
         }
     },
     
+    folder: function(folder_name) {
+        folder_name = folder_name.replace(/-/g, ' ');
+        // NEWSBLUR.log(["folder", folder_name]);
+        if (folder_name == "everything") {
+            NEWSBLUR.reader.open_river_stories();
+        } else {
+            var folder = NEWSBLUR.assets.get_folder(folder_name);
+            if (folder) {
+                NEWSBLUR.reader.open_river_stories(folder.folder_view.$el, folder);
+            }
+        }
+    },
+    
     social: function(user_id, slug) {
         // NEWSBLUR.log(["router:social", user_id, slug]);
         var feed_id = "social:" + user_id;
-        if (NEWSBLUR.reader.model.get_feed(feed_id)) {
+        if (NEWSBLUR.assets.get_feed(feed_id)) {
             NEWSBLUR.reader.open_social_stories(feed_id, {force: true});
         } else {
             NEWSBLUR.reader.load_social_feed_in_tryfeed_view(feed_id, {force: true, feed: {

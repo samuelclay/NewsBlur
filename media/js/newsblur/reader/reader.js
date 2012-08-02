@@ -1179,16 +1179,17 @@
         // = River of News =
         // =================
         
-        open_river_stories: function($folder, folder) {
+        open_river_stories: function($folder, folder, options) {
+            options = options || {};
             var $story_titles = this.$s.$story_titles;
             $folder = $folder || this.$s.$feed_list;
             var folder_view = NEWSBLUR.assets.folders.get_view($folder);
-            var folder_title = folder && folder.get('folder_title');
+            var folder_title = folder && folder.get('folder_title') || "Everything";
             
             this.reset_feed();
             this.hide_splash_page();
             this.active_folder = folder;
-            if (!folder_title) {
+            if (!folder) {
                 this.active_feed = 'river:';
                 this.$s.$river_header.addClass('NB-selected');
             } else {
@@ -1210,8 +1211,17 @@
             this.switch_taskbar_view(this.story_view);
             this.setup_mousemove_on_views();
             this.make_feed_title_in_stories();
-            
-            NEWSBLUR.router.navigate('');
+            NEWSBLUR.app.feed_list.scroll_to_show_selected_folder();
+
+            if (!options.silent) {
+                var slug = folder_title.replace(/ /g, '-').toLowerCase();
+                var url = "folder/" + slug;
+                if (!_.string.include(window.location.pathname, url)) {
+                    NEWSBLUR.log(["Navigating to url", url]);
+                    NEWSBLUR.router.navigate(url);
+                }
+            }
+
             var feeds = this.list_feeds_with_unreads_in_folder($folder, false, true);
             this.cache['river_feeds_with_unreads'] = feeds;
             this.hide_stories_error();
@@ -3254,6 +3264,7 @@
             this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
             NEWSBLUR.app.feed_list_header.toggle_hide_read_preference();
             NEWSBLUR.app.feed_list.scroll_to_show_selected_feed();
+            NEWSBLUR.app.feed_list.scroll_to_show_selected_folder();
             
             $('.NB-active', $slider).removeClass('NB-active');
             if (real_value < 0) {

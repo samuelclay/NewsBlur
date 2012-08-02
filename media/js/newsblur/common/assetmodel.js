@@ -753,6 +753,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return this.folders;
     },
     
+    get_folder: function(folder_name) {
+        return this.folders.find_folder(folder_name.toLowerCase());
+    },
+    
     get_feed_tags: function() {
         return this.feed_tags;
     },
