@@ -125,15 +125,15 @@ class UserSubscription(models.Model):
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)
-        mark_read_time  = int(time.mktime(self.mark_read_date.timetuple()))
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
-            min_score = mark_read_time
+            two_weeks_ago = datetime.datetime.now()-datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+            min_score = int(time.mktime(two_weeks_ago.timetuple()))-1000
             max_score = current_time
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
-            max_score = mark_read_time
+            max_score = int(time.mktime(self.mark_read_date.timetuple()))
 
         if settings.DEBUG:
             print " ---> Unread all stories: %s" % r.zrevrange(unread_ranked_stories_key, 0, -1)
