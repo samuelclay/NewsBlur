@@ -636,7 +636,7 @@
                             footerString
                             ];
 
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -907,7 +907,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     // setting up the PREV BUTTON
     int readStoryCount = [appDelegate.readStories count];
-    NSLog(@"readStoryCount is %i", readStoryCount);
     if (readStoryCount == 0 || 
         (readStoryCount == 1 && 
          [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
@@ -921,12 +920,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         }
 
     // setting up the NEXT STORY BUTTON
-    int activeLocation = appDelegate.locationOfActiveStory;    
-    if (activeLocation >= ([appDelegate.activeFeedStoryLocations count] - 1)) {
-        self.buttonNextStory.enabled = NO;
-    } else {
-        self.buttonNextStory.enabled = YES;
-    }
+//    int nextStoryIndex = [appDelegate indexOfNextStory];  
+//    NSLog(@"nextStoryIndex is %i", nextStoryIndex);
+//    if (nextStoryIndex == -1) {
+//        self.buttonNextStory.enabled = NO;
+//    } else {
+//        self.buttonNextStory.enabled = YES;
+//    }
 
     // setting up the NEXT UNREAD STORY BUTTON
     int nextIndex = [appDelegate indexOfNextUnreadStory];
@@ -949,7 +949,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)markStoryAsRead {
-    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
+//    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
     if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
         
         [appDelegate markActiveStoryRead];
@@ -1202,6 +1202,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [self.appDelegate.feedDetailViewController fetchNextPage:^() {
             [self doNextStory];
         }];
+    } else if (nextIndex == -1) {
+        [MBProgressHUD hideHUDForView:self.view animated:NO];
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.mode = MBProgressHUDModeText;
+        hud.removeFromSuperViewOnHide = YES;  
+        hud.labelText = @"No stories left";
+        [hud hide:YES afterDelay:0.8];
     } else {
         [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
                                      objectAtIndex:nextIndex]];

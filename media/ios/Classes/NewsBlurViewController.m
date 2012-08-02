@@ -22,9 +22,10 @@
 #import "UIBarButtonItem+WEPopover.h"
 
 
-
+#define kPhoneTableViewRowHeight 36;
 #define kTableViewRowHeight 36;
 #define kBlurblogTableViewRowHeight 47;
+#define kPhoneBlurblogTableViewRowHeight 39;
 
 @implementation NewsBlurViewController
 
@@ -634,9 +635,17 @@
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     
     if ([folderName isEqualToString:@""]) { // blurblogs
-        return kBlurblogTableViewRowHeight;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            return kBlurblogTableViewRowHeight;            
+        } else {
+            return kPhoneBlurblogTableViewRowHeight;
+        }
     } else {
-        return kTableViewRowHeight;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            return kTableViewRowHeight;            
+        } else {
+            return kPhoneTableViewRowHeight;
+        }
     }
 }
 

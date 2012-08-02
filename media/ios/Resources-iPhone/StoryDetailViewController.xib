@@ -48,7 +48,7 @@
 						<string key="NSFrameSize">{320, 416}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="824754638"/>
+						<reference key="NSNextKeyView" ref="155973878"/>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">10</int>
 							<object class="NSImage" key="NSImage">
@@ -4461,6 +4461,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<string key="NSFrame">{{132, 17}, {56, 11}}</string>
 								<reference key="NSSuperview" ref="155973878"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="262635613"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<float key="IBUIProgress">0.5</float>
@@ -4530,13 +4531,13 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<bytes key="NSRGB">MC4yMjcwMjkxMjggMC4zNjIxMzU3NzY0IDAuNDU2NTIxNzM5MQA</bytes>
 						</object>
 					</object>
-					<object class="IBUIView" id="824754638">
+					<object class="IBUIView" id="262635613">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">269</int>
 						<string key="NSFrame">{{131, 416}, {70, 43}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="155973878"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -4560,14 +4561,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
 			<object class="NSMutableArray" key="connectionRecords">
 				<bool key="EncodedWithXMLCoder">YES</bool>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">buttonNext</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="1065495688"/>
-					</object>
-					<int key="connectionID">50</int>
-				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">toolbar</string>
@@ -4620,9 +4613,25 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">progressViewContainer</string>
 						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="824754638"/>
+						<reference key="destination" ref="262635613"/>
 					</object>
 					<int key="connectionID">80</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">buttonNextStory</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="157083779"/>
+					</object>
+					<int key="connectionID">86</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">buttonNext</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="1065495688"/>
+					</object>
+					<int key="connectionID">88</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -4675,7 +4684,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="506862915"/>
 							<reference ref="155973878"/>
-							<reference ref="824754638"/>
+							<reference ref="262635613"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -4756,7 +4765,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">78</int>
-						<reference key="object" ref="824754638"/>
+						<reference key="object" ref="262635613"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 				</object>
@@ -4814,7 +4823,7 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">80</int>
+			<int key="maxID">88</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

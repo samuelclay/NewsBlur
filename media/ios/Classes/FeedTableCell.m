@@ -134,7 +134,19 @@ static CGFloat *psColors = nil;
     
     if(_positiveCount > 0){     
         [positiveBackgroundColor set];
-        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, self.isSocial ? 14: 9, psWidth, 17);
+        CGRect rr;
+        
+        if (self.isSocial) {
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 14, psWidth, 17);
+            } else {
+                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 10, psWidth, 17);
+            }
+        } else {
+            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 9, psWidth, 17);
+        }
+        
+        ;
         [UIView drawLinearGradientInRect:rr colors:psColors];
         [UIView drawRoundRectangleInRect:rr withRadius:4];
         
@@ -149,7 +161,18 @@ static CGFloat *psColors = nil;
     }
     if(_neutralCount > 0 && appDelegate.selectedIntelligence <= 0){     
         [neutralBackgroundColor set];
-        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, self.isSocial ? 14: 9, ntWidth, 17);
+        
+        CGRect rr;
+        if (self.isSocial) {
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 14, ntWidth, 17);
+            } else {
+                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 10, ntWidth, 17);
+            }
+        } else {
+            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 9, ntWidth, 17);
+        }
+
         [UIView drawRoundRectangleInRect:rr withRadius:4];
 //        [UIView drawLinearGradientInRect:rr colors:ntColors];
         
@@ -179,9 +202,7 @@ static CGFloat *psColors = nil;
     UIColor *textColor = self.selected || self.highlighted ? 
                          [UIColor blackColor]:
                          [UIColor blackColor];
-    
-    
-    
+
     [textColor set];
     UIFont *font;
     if (self.negativeCount || self.neutralCount || self.positiveCount) {
@@ -191,12 +212,22 @@ static CGFloat *psColors = nil;
     }
 
     if (isSocial) {
-        [self.feedFavicon drawInRect:CGRectMake(12.0, 5.0, 36.0, 36.0)];
-        [feedTitle 
-         drawInRect:CGRectMake(56, 13, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 20, 20.0) 
-         withFont:font
-         lineBreakMode:UILineBreakModeTailTruncation 
-         alignment:UITextAlignmentLeft];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.feedFavicon drawInRect:CGRectMake(11.0, 5.0, 36.0, 36.0)];
+            [feedTitle 
+             drawInRect:CGRectMake(56, 13, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 20, 20.0) 
+             withFont:font
+             lineBreakMode:UILineBreakModeTailTruncation 
+             alignment:UITextAlignmentLeft]; 
+        } else {
+            [self.feedFavicon drawInRect:CGRectMake(11.0, 3.0, 32.0, 32.0)];
+            [feedTitle 
+             drawInRect:CGRectMake(52, 11, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 20, 20.0) 
+             withFont:font
+             lineBreakMode:UILineBreakModeTailTruncation 
+             alignment:UITextAlignmentLeft];
+        }
+
     } else {
         [self.feedFavicon drawInRect:CGRectMake(12.0, 9.0, 16.0, 16.0)];
         [feedTitle 
