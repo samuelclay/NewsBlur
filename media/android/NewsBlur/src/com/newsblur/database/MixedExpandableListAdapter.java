@@ -22,12 +22,15 @@ import com.newsblur.domain.Folder;
 
 @SuppressWarnings("deprecation")
 public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
-
+	
 	private Handler mHandler;
 	private boolean mAutoRequery;
 
+	private final int GROUP = 0;
+    private final int BLOG = 1;
+	
 	private SparseArray<MyCursorHelper> mChildrenCursorHelpers;
-	private MyCursorHelper folderCursorHelper;
+	private MyCursorHelper folderCursorHelper, blogCursorHelper;
 	private ContentResolver contentResolver;
 	private Context context;
 
@@ -35,43 +38,46 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private int[] groupTo;
 	private int[] childFrom;
 	private int[] childTo;
-	private final int childLayout;
-	private final int expandedGroupLayout;
-	private final int collapsedGroupLayout;
+	private int[] blogFrom;
+	private int[] blogTo;
+	
+	private final int childLayout, expandedGroupLayout, collapsedGroupLayout, blogGroupLayout;
 	private final LayoutInflater inflater;
-	private ViewBinder viewBinder;
+	private ViewBinder groupViewBinder;
+	private ViewBinder blogViewBinder;
 
 	public String currentState = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
 
-	private final Cursor folderCursor;
-	private final Cursor blogCursor;
 	int itemCount = 1;
+	
 
 	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final int collapsedGroupLayout,
-			int expandedGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo) {
+			int expandedGroupLayout, int blogGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, String[] blogFrom, int[] blogTo) {
 		this.context = context;
-		this.folderCursor = folderCursor;
-		this.blogCursor = blogCursor;
 		this.expandedGroupLayout = expandedGroupLayout;
 		this.collapsedGroupLayout = collapsedGroupLayout;
 		this.childLayout = childLayout;
+		this.blogGroupLayout = blogGroupLayout;
 
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		contentResolver = context.getContentResolver();
 
 		folderCursorHelper = new MyCursorHelper(folderCursor);
+		blogCursorHelper = new MyCursorHelper(blogCursor);
+		
 		mChildrenCursorHelpers = new SparseArray<MyCursorHelper>();
 
-		//itemCount += folderCursor.getCount() + blogCursor.getCount();
-		init(groupFrom, groupTo, childFrom, childTo);
+		init(groupFrom, groupTo, childFrom, childTo, blogFrom, blogTo);
 	}
-
-	private void init(final String[] groupFromNames, final int[] groupTo, final String[] childFromNames, final int[] childTo) {
+	
+	private void init(final String[] groupFromNames, final int[] groupTo, final String[] childFromNames, final int[] childTo, final String[] blogFromNames, final int[] blogTo) {
 		this.groupTo = groupTo;
 		this.childTo = childTo;
-
+		this.blogTo = blogTo;
+		
 		initGroupFromColumns(groupFromNames);
-
+		initBlogFromColumns(blogFromNames);
+		
 		if (getGroupCount() > 0) {
 			MyCursorHelper tmpCursorHelper = getChildrenCursorHelper(0, true);
 			if (tmpCursorHelper != null) {
@@ -81,8 +87,9 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		}
 	}
 
-	public void setViewBinder(final ViewBinder viewBinder) {
-		this.viewBinder = viewBinder;
+	public void setViewBinders(final ViewBinder groupViewBinder, final ViewBinder blogViewBinder) {
+		this.groupViewBinder = groupViewBinder;
+		this.blogViewBinder = blogViewBinder;
 	}
 
 	private void initFromColumns(Cursor cursor, String[] fromColumnNames, int[] fromColumns) {
@@ -94,6 +101,11 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private void initGroupFromColumns(String[] groupFromNames) {
 		groupFrom = new int[groupFromNames.length];
 		initFromColumns(folderCursorHelper.getCursor(), groupFromNames, groupFrom);
+	}
+	
+	private void initBlogFromColumns(String[] blogFromNames) {
+		blogFrom = new int[blogFromNames.length];
+		initFromColumns(blogCursorHelper.getCursor(), blogFromNames, blogFrom);
 	}
 
 	private void initChildrenFromColumns(String[] childFromNames, Cursor childCursor) {
@@ -107,10 +119,25 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
 		return contentResolver.query(uri, null, null, new String[] { currentState }, null);
 	}
+	
+	@Override
+	public int getGroupType(int groupPosition) {
+		if (groupPosition < blogCursorHelper.getCount()) {
+			return BLOG;
+		} else {
+			return GROUP;
+		}
+	}
+	
+	@Override
+	public int getGroupTypeCount() {
+		return 2;
+	}
 
 
 	@Override
 	public Cursor getChild(int groupPosition, int childPosition) {
+		groupPosition = groupPosition - blogCursorHelper.getCount() + 1;
 		return getChildrenCursorHelper(groupPosition, true).moveTo(childPosition);
 	}
 
@@ -121,6 +148,9 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+		
+		groupPosition = groupPosition - blogCursorHelper.getCount() + 1;
+		
 		MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition, true);
 
 		Cursor cursor = cursorHelper.moveTo(childPosition);
@@ -140,6 +170,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
+		groupPosition = groupPosition - blogCursorHelper.getCount() + 1;
+		
 		MyCursorHelper helper = getChildrenCursorHelper(groupPosition, true);
 		return (folderCursorHelper.isValid() && helper != null) ? helper.getCount() : 0;
 	}
@@ -155,7 +187,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public int getGroupCount() {
-		return folderCursorHelper.getCount();
+		return (folderCursorHelper.getCount() + blogCursorHelper.getCount() - 1);
 	}
 
 	@Override
@@ -169,23 +201,39 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-		Cursor cursor = folderCursorHelper.moveTo(groupPosition);
+		Cursor cursor;
+		View v;
+		if (groupPosition < blogCursorHelper.getCount()) {
+			cursor = blogCursorHelper.moveTo(groupPosition);
+			if (convertView == null) {
+				v = newBlogView(context, cursor, parent);
+			} else {
+				v = convertView;
+			}
+			bindBlogView(v, context, cursor);
+		} else {
+			cursor = folderCursorHelper.moveTo(groupPosition - blogCursorHelper.getCount() + 1);
+			if (convertView == null) {
+				v = newGroupView(context, cursor, isExpanded, parent);
+			} else {
+				v = convertView;
+			}
+			bindGroupView(v, context, cursor, isExpanded);
+		}
+		
 		if (cursor == null) {
 			throw new IllegalStateException("this should only be called when the cursor is valid");
 		}
 
-		View v;
-		if (convertView == null) {
-			v = newGroupView(context, cursor, isExpanded, parent);
-		} else {
-			v = convertView;
-		}
-		bindGroupView(v, context, cursor, isExpanded);
 		return v;
 	}
 
 	private View newGroupView(Context context, Cursor cursor, boolean isExpanded, ViewGroup parent) {
 		return inflater.inflate((isExpanded) ? expandedGroupLayout : collapsedGroupLayout, parent, false);
+	}
+	
+	private View newBlogView(Context context, Cursor cursor, ViewGroup parent) {
+		return inflater.inflate(blogGroupLayout, parent, false);
 	}
 
 	@Override
@@ -202,15 +250,19 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	//-----------------------
 
 	protected void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
-		bindView(view, context, cursor, childFrom, childTo);
+		bindView(view, context, cursor, childFrom, childTo, groupViewBinder);
 	}
 
 	protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
-		bindView(view, context, cursor, groupFrom, groupTo);
+		bindView(view, context, cursor, groupFrom, groupTo, groupViewBinder);
+	}
+	
+	protected void bindBlogView(View view, Context context, Cursor cursor) {
+		bindView(view, context, cursor, blogFrom, blogTo, blogViewBinder);
 	}
 
-	private void bindView(View view, Context context, Cursor cursor, int[] from, int[] to) {
-		final ViewBinder binder = viewBinder;
+	private void bindView(View view, Context context, Cursor cursor, int[] from, int[] to, ViewBinder viewbinder) {
+		final ViewBinder binder = viewbinder;
 
 		for (int i = 0; i < to.length; i++) {
 			View v = view.findViewById(to[i]);

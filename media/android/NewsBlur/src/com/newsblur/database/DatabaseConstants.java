@@ -3,11 +3,11 @@ package com.newsblur.database;
 import android.provider.BaseColumns;
 
 public class DatabaseConstants {
-	
+
 	public static final String FOLDER_TABLE = "folders";
 	public static final String FOLDER_ID = BaseColumns._ID;
 	public static final String FOLDER_NAME = "folder_name";
-	
+
 	public static final String FEED_TABLE = "feeds";
 	public static final String FEED_ID = BaseColumns._ID;
 	public static final String FEED_TITLE = "feed_name";
@@ -23,33 +23,33 @@ public class DatabaseConstants {
 	public static final String FEED_POSITIVE_COUNT = "ps";
 	public static final String FEED_NEUTRAL_COUNT = "nt";
 	public static final String FEED_NEGATIVE_COUNT = "ng";
-	
-	public static final String[] FEED_COLUMNS = {
-		FEED_ACTIVE, FEED_ID, FEED_TITLE, FEED_LINK, FEED_ADDRESS, FEED_SUBSCRIBERS, FEED_UPDATED_SECONDS, FEED_FAVICON_FADE, FEED_FAVICON_COLOUR, FEED_FAVICON_BORDER,
-		FEED_FAVICON, FEED_POSITIVE_COUNT, FEED_NEUTRAL_COUNT, FEED_NEGATIVE_COUNT
-	};
-	
+
+	public static final String SOCIAL_FEED_TABLE = "social_feeds";
+	public static final String SOCIAL_FEED_ID = BaseColumns._ID;
+	public static final String SOCIAL_FEED_USERNAME = "social_feed_name";
+	public static final String SOCIAL_FEED_ICON= "social_feed_icon";
+	public static final String SOCIAL_FEED_POSITIVE_COUNT = "ps";
+	public static final String SOCIAL_FEED_NEUTRAL_COUNT = "nt";
+	public static final String SOCIAL_FEED_NEGATIVE_COUNT = "ng";
+
+
 	public static final String FEED_FOLDER_MAP_TABLE = "feed_folder_map";
 	public static final String FEED_FOLDER_FEED_ID = "feed_feed_id";
 	public static final String FEED_FOLDER_FOLDER_NAME = "feed_folder_name";
-	
+
 	public static final String COMMENT_TABLE = "comments";
-	
+
 	public static final String CLASSIFIER_TABLE = "classifiers";
 	public static final String CLASSIFIER_ID = BaseColumns._ID;
 	public static final String CLASSIFIER_TYPE = "type";
 	public static final String CLASSIFIER_KEY = "key";
 	public static final String CLASSIFIER_VALUE = "value";
-	
+
 	public static final String UPDATE_TABLE = "offline_updates";
 	public static final String UPDATE_ID = BaseColumns._ID;
 	public static final String UPDATE_TYPE = "update_type";
 	public static final String UPDATE_ARGUMENTS = "update_argument";
-	
-	public static final String[] UPDATE_COLUMNS = {
-		UPDATE_ID, UPDATE_TYPE, UPDATE_ARGUMENTS
-	};
-	
+
 	public static final String STORY_TABLE = "stories";
 	public static final String STORY_ID = BaseColumns._ID;
 	public static final String STORY_AUTHORS = "authors";
@@ -68,42 +68,55 @@ public class DatabaseConstants {
 	public static final String STORY_SHARED_USER_IDS = "shared_user_ids";
 	public static final String STORY_SHORTDATE = "shortDate";
 	public static final String STORY_TAGS = "tags";
-	
+
 	public static final String COMMENT_ID = BaseColumns._ID;
 	public static final String COMMENT_STORYID = "comment_storyid";
 	public static final String COMMENT_TEXT = "comment_text";
 	public static final String COMMENT_DATE = "comment_date";
 	public static final String COMMENT_SHAREDDATE = "comment_shareddate";
 	public static final String COMMENT_USERID = "comment_userid";
-	
+
 	// Aggregated columns
 	public static final String SUM_POS = "sum_postive";
 	public static final String SUM_NEUT = "sum_neutral";
 	public static final String SUM_NEG = "sum_negative";
+
+	public static final String[] UPDATE_COLUMNS = {
+		UPDATE_ID, UPDATE_TYPE, UPDATE_ARGUMENTS
+	};
 	
+	public static final String[] FEED_COLUMNS = {
+		FEED_ACTIVE, FEED_ID, FEED_TITLE, FEED_LINK, FEED_ADDRESS, FEED_SUBSCRIBERS, FEED_UPDATED_SECONDS, FEED_FAVICON_FADE, FEED_FAVICON_COLOUR, FEED_FAVICON_BORDER,
+		FEED_FAVICON, FEED_POSITIVE_COUNT, FEED_NEUTRAL_COUNT, FEED_NEGATIVE_COUNT
+	};
+
+	public static final String[] SOCIAL_FEED_COLUMNS = {
+		SOCIAL_FEED_ID, SOCIAL_FEED_USERNAME, SOCIAL_FEED_ICON, SOCIAL_FEED_POSITIVE_COUNT, SOCIAL_FEED_NEUTRAL_COUNT, SOCIAL_FEED_NEGATIVE_COUNT
+	};
+
 	public static final String[] COMMENT_COLUMNS = {
 		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_USERID, COMMENT_DATE, COMMENT_SHAREDDATE
 	};
-	
+
 	public static final String[] FOLDER_COLUMNS = {
 		FOLDER_TABLE + "." + FOLDER_ID, FOLDER_TABLE + "." + FOLDER_NAME, " SUM(" + FEED_POSITIVE_COUNT + ") AS " + SUM_POS, " SUM(" + FEED_NEUTRAL_COUNT + ") AS " + SUM_NEUT, " SUM(" + FEED_NEGATIVE_COUNT + ") AS " + SUM_NEG
 	};
-	
+
 	public static final String[] STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_DATE, STORY_SHORTDATE, STORY_FEED_ID, STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TITLE,
 		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE, STORY_SHARED_USER_IDS
 	};
-	
+
 	public static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
 	public static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
 	public static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
-	
-	public static final String STORY_INTELLIGENCE_BEST = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 " +
-		"AND " + DatabaseConstants.STORY_READ + " = '0'";
-	public static final String STORY_INTELLIGENCE_SOME = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 " + 
-		"AND " + DatabaseConstants.STORY_READ + " = '0'";
-	
 
-	
-	
+	public static final String STORY_INTELLIGENCE_BEST = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 " +
+	"AND " + DatabaseConstants.STORY_READ + " = '0'";
+	public static final String STORY_INTELLIGENCE_SOME = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 " + 
+	"AND " + DatabaseConstants.STORY_READ + " = '0'";
+
+
+
+
 }

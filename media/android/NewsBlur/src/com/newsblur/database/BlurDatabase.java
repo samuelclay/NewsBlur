@@ -39,6 +39,15 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.FEED_TITLE + TEXT + ", " + 
 		DatabaseConstants.FEED_UPDATED_SECONDS +
 		")";
+	
+	private final String SOCIAL_FEED_SQL = "CREATE TABLE " + DatabaseConstants.SOCIAL_FEED_TABLE + " (" +
+		DatabaseConstants.SOCIAL_FEED_ID + INTEGER + " PRIMARY KEY, " +
+		DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + INTEGER + ", " +
+		DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT + INTEGER + ", " +
+		DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + INTEGER + ", " +
+		DatabaseConstants.SOCIAL_FEED_ICON + TEXT + ", " + 
+		DatabaseConstants.SOCIAL_FEED_USERNAME + TEXT +
+		")";
 
 	private final String COMMENT_SQL = "CREATE TABLE " + DatabaseConstants.COMMENT_TABLE + " (" +
 		DatabaseConstants.COMMENT_DATE + TEXT + ", " +
@@ -92,6 +101,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(FEED_SQL);
+		db.execSQL(SOCIAL_FEED_SQL);
 		db.execSQL(FOLDER_SQL);
 		db.execSQL(STORY_SQL);
 		db.execSQL(COMMENT_SQL);

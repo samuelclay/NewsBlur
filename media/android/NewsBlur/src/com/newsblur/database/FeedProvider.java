@@ -20,6 +20,7 @@ public class FeedProvider extends ContentProvider {
 	
 	public static final Uri NEWSBLUR_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION);
 	public static final Uri OFFLINE_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/offline_updates/");
+	public static final Uri SOCIAL_FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/social_feeds/");
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
 	public static final Uri MODIFY_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
 	public static final Uri STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
@@ -29,16 +30,18 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri FOLDERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/folders/");
 	
 	private static final int ALL_FEEDS = 0;
-	private static final int FEED_STORIES = 1;
+	private static final int ALL_SOCIAL_FEEDS = 1;
 	private static final int ALL_FOLDERS = 2;
-	private static final int INDIVIDUAL_FOLDER = 3;
-	private static final int FEED_FOLDER_MAP = 4;
-	private static final int SPECIFIC_FEED_FOLDER_MAP = 5;
-	private static final int INDIVIDUAL_FEED = 6;
-	private static final int STORY_COMMENTS = 7;
-	private static final int INDIVIDUAL_STORY = 8;
-	private static final int DECREMENT_COUNT = 9;
-	private static final int OFFLINE_UPDATES = 9;
+	private static final int FEED_STORIES = 3;
+	private static final int INDIVIDUAL_FOLDER = 4;
+	private static final int FEED_FOLDER_MAP = 5;
+	private static final int SPECIFIC_FEED_FOLDER_MAP = 6;
+	private static final int INDIVIDUAL_FEED = 7;
+	private static final int STORY_COMMENTS = 8;
+	private static final int INDIVIDUAL_STORY = 9;
+	private static final int DECREMENT_COUNT = 10;
+	private static final int OFFLINE_UPDATES = 11;
+	
 
 	private BlurDatabase databaseHelper;
 
@@ -46,6 +49,7 @@ public class FeedProvider extends ContentProvider {
 	static {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/", ALL_FEEDS);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/", ALL_SOCIAL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedcount/", DECREMENT_COUNT);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
@@ -107,6 +111,15 @@ public class FeedProvider extends ContentProvider {
 			db.endTransaction();
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_ID)).build();
 			break;
+		
+			// Inserting a social feed
+		case ALL_SOCIAL_FEEDS:
+			db.beginTransaction();
+			db.insertWithOnConflict(DatabaseConstants.SOCIAL_FEED_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.SOCIAL_FEED_ID)).build();
+			break;
 
 			// Inserting a comment
 		case STORY_COMMENTS:
@@ -163,7 +176,7 @@ public class FeedProvider extends ContentProvider {
 		case INDIVIDUAL_FEED:
 			return db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE +
 					" WHERE " +  DatabaseConstants.FEED_ID + "= '" + uri.getLastPathSegment() + "'", selectionArgs);	
-
+			
 			// Querying for a stories from a feed
 		case FEED_STORIES:
 			if (!TextUtils.isEmpty(selection)) {
@@ -232,6 +245,8 @@ public class FeedProvider extends ContentProvider {
 			return db.rawQuery(folderBuilder.toString(), null);
 		case OFFLINE_UPDATES:
 			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
+		case ALL_SOCIAL_FEEDS:
+			return db.query(DatabaseConstants.SOCIAL_FEED_TABLE, null, null, null, null, null, null);	
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}

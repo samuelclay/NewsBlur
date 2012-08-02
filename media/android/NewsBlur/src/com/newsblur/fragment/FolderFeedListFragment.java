@@ -30,17 +30,19 @@ import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.FolderTreeViewBinder;
+import com.newsblur.view.SocialFeedViewBinder;
 
 public class FolderFeedListFragment extends Fragment implements OnGroupClickListener, OnChildClickListener, OnCreateContextMenuListener {
 
 	private ExpandableListView list;
 	private ContentResolver resolver;
 	private MixedExpandableListAdapter folderAdapter;
-	private FolderTreeViewBinder viewBinder;
+	private FolderTreeViewBinder groupViewBinder;
 	private int leftBound, rightBound;
 	private APIManager apiManager;
 	private int currentState = AppConstants.STATE_SOME;
 	private int FEEDCHECK = 0x01;
+	private SocialFeedViewBinder blogViewBinder;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,8 +51,10 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		apiManager = new APIManager(getActivity());
 
 		
-		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
-		viewBinder = new FolderTreeViewBinder();
+		Cursor folderCursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
+		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
+		groupViewBinder = new FolderTreeViewBinder();
+		blogViewBinder = new SocialFeedViewBinder(getActivity());
 
 		leftBound = UIUtils.convertDPsToPixels(getActivity(), 20);
 		rightBound = UIUtils.convertDPsToPixels(getActivity(), 10);
@@ -59,10 +63,12 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		final int[] groupTo = new int[] { R.id.row_foldername, R.id.row_foldersumpos, R.id.row_foldersumneg, R.id.row_foldersumneu };
 		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON, DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.FEED_NEGATIVE_COUNT, DatabaseConstants.FEED_POSITIVE_COUNT };
 		final int[] childTo = new int[] { R.id.row_feedname, R.id.row_feedfavicon, R.id.row_feedneutral, R.id.row_feednegative, R.id.row_feedpositive };
+		final String[] blogFrom = new String[] { DatabaseConstants.SOCIAL_FEED_USERNAME, DatabaseConstants.SOCIAL_FEED_ICON, DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT };
+		final int[] blogTo = new int[] { R.id.row_socialfeed_name, R.id.row_socialfeed_icon, R.id.row_socialsumneu, R.id.row_socialsumneg, R.id.row_socialsumpos };
 
 		//folderAdapter = new FolderTreeAdapter(getActivity(), cursor, R.layout.row_folder_collapsed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
-		folderAdapter = new MixedExpandableListAdapter(getActivity(), cursor, null, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
-		folderAdapter.setViewBinder(viewBinder);
+		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
+		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
 	}
 
 	public void hasUpdated() {
@@ -129,7 +135,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 
 	public void changeState(int state) {
 		String selection = null;
-		viewBinder.setState(state);
+		groupViewBinder.setState(state);
 		currentState = state;
 		
 		switch (state) {

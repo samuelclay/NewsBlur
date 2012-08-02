@@ -5,6 +5,7 @@ import java.util.Map;
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FolderStructure;
+import com.newsblur.domain.SocialFeed;
 
 public class FeedFolderResponse {
 	
@@ -16,6 +17,9 @@ public class FeedFolderResponse {
 	
 	@SerializedName("folders")
 	public FolderStructure folderStructure;
+	
+	@SerializedName("social_feeds")
+	public SocialFeed[] socialFeeds;
 	
 
 }

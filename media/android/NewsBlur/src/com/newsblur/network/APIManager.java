@@ -20,6 +20,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FolderStructure;
+import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.domain.FeedFolderResponse;
@@ -196,6 +197,10 @@ public class APIManager {
 		for (final Entry<String, Feed> entry : feedUpdate.feeds.entrySet()) {
 			final Feed feed = entry.getValue();
 			contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
+		}
+		
+		for (final SocialFeed feed : feedUpdate.socialFeeds) {
+			contentResolver.insert(FeedProvider.SOCIAL_FEEDS_URI, feed.getValues());
 		}
 		
 		String unsortedFolderName = context.getResources().getString(R.string.unsorted_folder_name);
