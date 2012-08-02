@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
+import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.ImageLoader;
@@ -37,7 +38,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		super.onCreate(savedInstanceState);
 		noBio = getString(R.string.profile_no_bio);
 		noLocation = getActivity().getResources().getString(R.string.profile_no_location);
-		imageLoader = new ImageLoader(getActivity());
+		imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
 		apiManager = new APIManager(getActivity());
 	}
 	

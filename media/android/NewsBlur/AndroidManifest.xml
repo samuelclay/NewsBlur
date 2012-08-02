@@ -15,7 +15,8 @@
     <application
         android:icon="@drawable/logo"
         android:label="@string/newsblur"
-        android:theme="@style/NewsBlurTheme" >
+        android:theme="@style/NewsBlurTheme"
+        android:name=".activity.NewsBlurApplication" >
         
         <activity
             android:name=".activity.Login"

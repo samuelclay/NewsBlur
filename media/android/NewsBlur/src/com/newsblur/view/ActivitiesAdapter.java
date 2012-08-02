@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
+import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Profile;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.util.ImageLoader;
@@ -33,7 +34,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 	public ActivitiesAdapter(final Context context, final ActivitiesResponse[] activities) {
 		super(context, R.id.row_activity_text);
 		inflater = LayoutInflater.from(context);
-		imageLoader = new ImageLoader(context);
+		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.context = context;
 		
 		for (ActivitiesResponse response : activities) {

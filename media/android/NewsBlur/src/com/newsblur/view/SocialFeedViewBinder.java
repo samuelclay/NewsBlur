@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
@@ -18,7 +19,7 @@ public class SocialFeedViewBinder implements ViewBinder {
 	private ImageLoader imageLoader;
 	
 	public SocialFeedViewBinder(final Context context) {
-		imageLoader = new ImageLoader(context);
+		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 	}
 	
 	@Override
@@ -43,7 +44,7 @@ public class SocialFeedViewBinder implements ViewBinder {
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SOCIAL_FEED_ICON)) {
 			String url = cursor.getString(columnIndex);
-			imageLoader.displayImage(url, (ImageView) view);
+			imageLoader.displayImage(url, url, (ImageView) view);
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT)) {
 			int feedNegative = cursor.getInt(columnIndex);

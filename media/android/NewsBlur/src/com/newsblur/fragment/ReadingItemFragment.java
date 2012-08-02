@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.newsblur.R;
+import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Profile;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Comment;
@@ -37,7 +38,7 @@ public class ReadingItemFragment extends Fragment {
 	public Story story;
 	private LayoutInflater inflater;
 	private APIManager apiManager;
-	private ImageLoader imageLoader = new ImageLoader(getActivity());
+	private ImageLoader imageLoader;
 	
 	public static ReadingItemFragment newInstance(Story story) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -53,6 +54,7 @@ public class ReadingItemFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
 		apiManager = new APIManager(getActivity());
 		story = getArguments() != null ? (Story) getArguments().getSerializable("story") : null;
 	}
@@ -97,7 +99,7 @@ public class ReadingItemFragment extends Fragment {
 					TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
 					commentText.setText(comment.commentText);
 					ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
-					imageLoader.displayImage(Integer.toString(comment.userId), commentImage);
+					imageLoader.displayImageByUid(Integer.toString(comment.userId), commentImage);
 					TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
 					commentSharedDate.setText(comment.sharedDate);
 					
@@ -119,7 +121,7 @@ public class ReadingItemFragment extends Fragment {
 					
 					GridLayout grid = (GridLayout) view.findViewById(R.id.reading_social_shareimages);
 					grid.addView(image);
-					imageLoader.displayImage(userId, image);
+					imageLoader.displayImageByUid(userId, image);
 					image.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View view) {

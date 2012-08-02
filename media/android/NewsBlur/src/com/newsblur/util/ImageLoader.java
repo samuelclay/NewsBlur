@@ -39,6 +39,9 @@ public class ImageLoader {
 	public void displayImage(String url, String uid, ImageView imageView) {
 		imageViews.put(imageView, uid);
 		Bitmap bitmap = memoryCache.get(uid);
+		if (bitmap == null) {
+			bitmap = memoryCache.get(url);
+		}
 		if (bitmap != null) {
 			bitmap = UIUtils.roundCorners(bitmap, 10f);
 			imageView.setImageBitmap(bitmap);
@@ -49,7 +52,7 @@ public class ImageLoader {
 	}
 	
 	// Display an image assuming it's in cache
-	public void displayImage(String uid, ImageView imageView) {
+	public void displayImageByUid(String uid, ImageView imageView) {
 		Bitmap bitmap = memoryCache.get(uid);
 		if (bitmap != null) {
 			bitmap = UIUtils.roundCorners(bitmap, 10f);
