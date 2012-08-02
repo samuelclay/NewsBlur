@@ -861,7 +861,7 @@
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
     
     NSMutableDictionary *newStory = [story mutableCopy];
-    [story setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+    [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
 
     self.visibleUnreadCount -= 1;
     if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {

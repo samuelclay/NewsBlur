@@ -59,9 +59,7 @@
     [super layoutSubviews];
 }
 
-- (void)refreshWithProfile:(NSDictionary *)profile showStats:(BOOL)showStats withWidth:(int)width {
-    NSLog(@"width is %i", width);
-    
+- (void)refreshWithProfile:(NSDictionary *)profile showStats:(BOOL)showStats withWidth:(int)width {    
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];    
     self.activeProfile = profile;
     int yCoordinatePointer = 0;

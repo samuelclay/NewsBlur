@@ -225,7 +225,7 @@
 //    }
 
     NSURL *urlFeedList = [NSURL URLWithString:
-                          [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true",
+                          [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true&update_counts=false",
                            NEWSBLUR_URL]];
 
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
@@ -298,14 +298,17 @@
     
     // adding settings button to right
 
-    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
-    UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
-    settings.bounds = CGRectMake(0, 0, 32, 32);
-    [settings addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
-    [settings setImage:settingsImage forState:UIControlStateNormal];
+//    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
+//    UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
+//    settings.bounds = CGRectMake(0, 0, 32, 32);
+//    [settings addTarget:self action:@selector(showSettingsPopover:) forControlEvents:UIControlEventTouchUpInside];
+//    [settings setImage:settingsImage forState:UIControlStateNormal];
+//    
+//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+//                                   initWithCustomView:settings];
     
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-                                   initWithCustomView:settings];
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showSettingsPopover:)];
+
     
     self.navigationItem.rightBarButtonItem = settingsButton;
     

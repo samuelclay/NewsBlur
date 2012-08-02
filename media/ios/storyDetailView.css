@@ -243,6 +243,7 @@ div + p {
     height: auto !important;
     width: auto !important;
     max-width: 100%;
+    display: none;
 }
 
 .NB-story img.NB-large-image,
@@ -258,6 +259,7 @@ div + p {
 
 .NB-story img.NB-small-image {
     display: inline-block;
+    margin: 2px;
 }
 
 .NB-feed-story-comments {
@@ -358,7 +360,8 @@ a.NB-show-profile {
     padding: 0px 0px 4px 10px;
     float: right;
     cursor: pointer;
-    margin-top: -2px;
+    margin-top: -5px;
+    margin-bottom: -4px;
 }
 
 .NB-iphone .NB-button {
@@ -369,6 +372,7 @@ a.NB-show-profile {
 .NB-button.NB-share-button {
     float: left;
     padding: 0px 20px 20px 0px;
+    margin: 0;
 }
 
 .NB-button div {

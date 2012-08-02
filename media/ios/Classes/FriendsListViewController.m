@@ -58,9 +58,7 @@
     self.view.frame = CGRectMake(0, 0, 320, 416);
     self.contentSizeForViewInPopover = self.view.frame.size;
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
-    
-    
+
 //    UISearchBar *newSearchBar = [[UISearchBar alloc] init];
 //    newSearchBar.frame = CGRectMake(0,0,0,38);
 //    newSearchBar.placeholder = @"Search by username or email";
@@ -79,7 +77,8 @@
     // e.g. self.myOutlet = nil;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated {
+    [self.friendSearchBar becomeFirstResponder];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -195,15 +194,16 @@
 #pragma mark - Table view data source
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if (self.inSearch_){
-        return 0;
-    } else {
-        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
-            return 28;
-        }else{
-            return 21;
-        }
-    }
+    return 0;
+//    if (self.inSearch_){
+//        return 0;
+//    } else {
+//        if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
+//            return 28;
+//        }else{
+//            return 21;
+//        }
+//    }
 }
 
 - (UIView *)tableView:(UITableView *)tableView 
@@ -341,34 +341,35 @@ viewForHeaderInSection:(NSInteger)section {
 
         }
         
-    } else {
-        
-        int userCount = [self.suggestedUserProfiles count];
-        if (!userCount) {
-            // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
-            int row = 0;
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                row = 1;
-            }
-            
-            if (indexPath.row == row) {
-                UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
-                [cell.contentView addSubview:msg];
-                msg.text = @"Nobody left to recommend.  Good job!";
-                msg.textColor = UIColorFromRGB(0x7a7a7a);
-                if (vb.size.width > 320) {
-                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
-                } else {
-                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
-                }
-                msg.textAlignment = UITextAlignmentCenter;
-            }
-        } else {
-            cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-            [badge refreshWithProfile:[self.suggestedUserProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
-            [cell.contentView addSubview:badge];
-        }
-    }
+    } 
+//    else {
+//        
+//        int userCount = [self.suggestedUserProfiles count];
+//        if (!userCount) {
+//            // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
+//            int row = 0;
+//            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//                row = 1;
+//            }
+//            
+//            if (indexPath.row == row) {
+//                UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
+//                [cell.contentView addSubview:msg];
+//                msg.text = @"Nobody left to recommend.  Good job!";
+//                msg.textColor = UIColorFromRGB(0x7a7a7a);
+//                if (vb.size.width > 320) {
+//                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
+//                } else {
+//                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+//                }
+//                msg.textAlignment = UITextAlignmentCenter;
+//            }
+//        } else {
+//            cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+//            [badge refreshWithProfile:[self.suggestedUserProfiles objectAtIndex:indexPath.row] showStats:NO withWidth:vb.size.width - 35 - 10];
+//            [cell.contentView addSubview:badge];
+//        }
+//    }
 
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
@@ -383,7 +384,6 @@ viewForHeaderInSection:(NSInteger)section {
     int row = currentRow;
     appDelegate.activeUserProfileId = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
     [self.friendSearchBar resignFirstResponder];
-    NSLog(@"appDelegate.modalNavigationController is %@", appDelegate.modalNavigationController);
     [appDelegate.modalNavigationController pushViewController:appDelegate.userProfileViewController animated:YES];
     [appDelegate.userProfileViewController getUserProfile];
 }

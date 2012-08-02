@@ -161,10 +161,17 @@
 # pragma mark Modals and Popovers
 
 - (void)showUserProfilePopover:(id)sender {
-    popoverController = [[UIPopoverController alloc]
-                         initWithContentViewController:appDelegate.userProfileNavigationController];
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+        popoverController = nil;
+    }
     
-    popoverController.delegate = self;
+    if (popoverController == nil) {
+        popoverController = [[UIPopoverController alloc]
+                             initWithContentViewController:appDelegate.userProfileNavigationController];
+        
+        popoverController.delegate = self;
+    }
     
     [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
 
@@ -190,17 +197,23 @@
 }
 
 - (void)showFeedMenuPopover:(id)sender {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+        popoverController = nil;
+    }
+
     if (popoverController == nil) {
         popoverController = [[UIPopoverController alloc]
                              initWithContentViewController:appDelegate.feedsMenuViewController];
         
         popoverController.delegate = self;
-    } 
+    }
+    
     
     [popoverController setPopoverContentSize:CGSizeMake(200, 86)];
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-                                       initWithCustomView:sender];
-    [popoverController presentPopoverFromBarButtonItem:settingsButton 
+//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+//                                       initWithCustomView:sender];
+    [popoverController presentPopoverFromBarButtonItem:sender 
                               permittedArrowDirections:UIPopoverArrowDirectionAny 
                                               animated:YES]; }
 

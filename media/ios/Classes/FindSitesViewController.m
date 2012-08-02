@@ -252,9 +252,9 @@
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-    NSInteger currentRow = indexPath.row;
-    int row = currentRow;
-    [self.sitesSearchBar resignFirstResponder];
+//    NSInteger currentRow = indexPath.row;
+//    int row = currentRow;
+//    [self.sitesSearchBar resignFirstResponder];
 
 //    [appDelegate.modalNavigationController pushViewController:appDelegate.userProfileViewController animated:YES];
 //    [appDelegate.userProfileViewController getUserProfile];

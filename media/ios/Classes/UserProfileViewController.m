@@ -178,21 +178,28 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGRect vb = self.view.bounds;
+    // you can only hardcode this due to limitation in apple API that doesn't give you width of grouped cell
+    int width = 300;
+    if (vb.size.width == 540) {
+        width = 478;
+    }
+
     if (indexPath.section == 0) {
         return 180;
     } else {
         SmallActivityCell *activityCell = [[SmallActivityCell alloc] init];
         int height = [activityCell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
                                withUserProfile:self.userProfile
-                                     withWidth:vb.size.width] + 20;
+                                     withWidth:width] + 20;
         return height;
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGRect vb = self.view.bounds;
-    int width = 300;
     
+    // you can only hardcode this due to limitation in apple API that doesn't give you width of grouped cell
+    int width = 300;
     if (vb.size.width == 540) {
         width = 478;
     }
