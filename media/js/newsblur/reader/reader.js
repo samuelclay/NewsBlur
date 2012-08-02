@@ -1756,9 +1756,8 @@
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
         },
         
-        send_story_to_email: function(story_id) {
-            NEWSBLUR.reader_send_email = new NEWSBLUR.ReaderSendEmail(story_id);
-            var story = this.model.get_story(story_id);
+        send_story_to_email: function(story) {
+            NEWSBLUR.reader_send_email = new NEWSBLUR.ReaderSendEmail(story);
             NEWSBLUR.assets.stories.mark_read(story, {skip_delay: true});
         },
         
@@ -2651,7 +2650,7 @@
                       } else if ($target.hasClass('NB-menu-manage-thirdparty-instapaper')) {
                           this.send_story_to_instapaper(story.id);
                       } else {
-                          this.send_story_to_email(story.id);
+                          this.send_story_to_email(story);
                       }
                     }, this)),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-story NB-menu-manage-story-share' }, [
@@ -5173,9 +5172,9 @@
             });
             $document.bind('keypress', 'e', function(e) {
                 e.preventDefault();
-                var story_id = self.active_story;
-                if (!story_id) return;
-                self.send_story_to_email(story_id);
+                var story = self.active_story;
+                if (!story) return;
+                self.send_story_to_email(story);
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();

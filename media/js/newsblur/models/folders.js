@@ -173,7 +173,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
     
     comparator: function(modelA, modelB) {
         var sort_order = NEWSBLUR.assets.preference('feed_order');
-        
+
         if (modelA.is_feed() != modelB.is_feed()) {
             // Feeds above folders
             return modelA.is_feed() ? -1 : 1;

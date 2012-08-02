@@ -259,8 +259,8 @@ def load_feed_favicons(request):
 
 def load_feeds_flat(request):
     user = request.user
-    include_favicons = request.REQUEST.get('include_favicons', False)
-    update_counts    = request.REQUEST.get('update_counts', False)
+    include_favicons = is_true(request.REQUEST.get('include_favicons', False))
+    update_counts    = is_true(request.REQUEST.get('update_counts', True))
     
     feeds = {}
     iphone_version = "1.2"
@@ -280,7 +280,7 @@ def load_feeds_flat(request):
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
 
     for sub in user_subs:
-        if sub.needs_unread_recalc:
+        if update_counts and sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
         feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
     
