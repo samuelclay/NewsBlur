@@ -626,19 +626,19 @@ class MSocialSubscription(mongo.Document):
         if social_subs:
             if calculate_all_scores:
                 for s in social_subs: s.calculate_feed_scores()
-            social_subs = dict((s.subscription_user_id, s.to_json()) for s in social_subs)
-            social_user_ids = social_subs.keys()
-            
+
             # Fetch user profiles of subscriptions
+            social_user_ids = [sub.subscription_user_id for sub in social_subs]
             social_profiles = MSocialProfile.profile_feeds(social_user_ids)
-            for user_id, social_sub in social_subs.items():
+            for social_sub in social_subs:
+                user_id = social_sub.subscription_user_id
                 if social_profiles[user_id]['shared_stories_count'] <= 0:
                     continue
                 if update_counts and social_sub.needs_unread_recalc:
                     social_sub.calculate_feed_scores()
                     
                 # Combine subscription read counts with feed/user info
-                feed = dict(social_sub.items() + social_profiles[user_id].items())
+                feed = dict(social_sub.to_json().items() + social_profiles[user_id].items())
                 social_feeds.append(feed)
 
         return social_feeds

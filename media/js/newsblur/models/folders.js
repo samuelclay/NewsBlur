@@ -20,11 +20,13 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
     },
     
     is_feed: function() {
-        return this.get('is_feed', false);
+        if (this.feed) {
+            return !!this.get('is_feed') && this.feed.id;
+        }
     },
     
     is_folder: function() {
-        return this.get('is_folder', false);
+        return !!this.get('is_folder');
     },
     
     get_view: function($folder) {
