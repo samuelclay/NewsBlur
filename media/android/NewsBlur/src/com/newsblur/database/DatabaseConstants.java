@@ -115,6 +115,7 @@ public class DatabaseConstants {
 	"AND " + DatabaseConstants.STORY_READ + " = '0'";
 	public static final String STORY_INTELLIGENCE_SOME = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 " + 
 	"AND " + DatabaseConstants.STORY_READ + " = '0'";
+	public static final String STORY_INTELLIGENCE_ALL = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 ";
 
 
 

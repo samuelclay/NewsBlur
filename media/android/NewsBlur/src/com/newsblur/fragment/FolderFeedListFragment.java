@@ -136,6 +136,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 	public void changeState(int state) {
 		String selection = null;
 		groupViewBinder.setState(state);
+		blogViewBinder.setState(state);
 		currentState = state;
 		
 		switch (state) {

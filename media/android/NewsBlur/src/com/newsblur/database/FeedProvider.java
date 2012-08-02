@@ -275,7 +275,7 @@ public class FeedProvider extends ContentProvider {
 		String selection = null;
 		switch (state) {
 		case (AppConstants.STATE_ALL):
-			selection = "";
+			selection = DatabaseConstants.STORY_INTELLIGENCE_ALL;
 		break;
 		case (AppConstants.STATE_SOME):
 			selection = DatabaseConstants.STORY_INTELLIGENCE_SOME;

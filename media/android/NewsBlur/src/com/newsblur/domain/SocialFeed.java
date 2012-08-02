@@ -31,6 +31,7 @@ public class SocialFeed {
 		values.put(DatabaseConstants.SOCIAL_FEED_USERNAME, username);
 		values.put(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, neutralCount);
 		values.put(DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, negativeCount);
+		values.put(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, positiveCount);
 		values.put(DatabaseConstants.SOCIAL_FEED_ICON, photoUrl);
 		return values;
 	}
