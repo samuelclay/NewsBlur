@@ -1547,7 +1547,6 @@
         
         mark_folder_as_read: function(folder) {
             var folder = folder || this.active_folder;
-            var folder_view = folder.folder_view;
             var feeds = folder.feed_ids_in_folder();
 
             _.each(feeds, _.bind(function(feed_id) {
@@ -2204,8 +2203,8 @@
             NEWSBLUR.manage_feed = new NEWSBLUR.ReaderManageFeed(feed_id);
         },
 
-        open_mark_read_modal: function() {
-            NEWSBLUR.mark_read = new NEWSBLUR.ReaderMarkRead();
+        open_mark_read_modal: function(options) {
+            NEWSBLUR.mark_read = new NEWSBLUR.ReaderMarkRead(options);
         },
 
         open_keyboard_shortcuts_modal: function() {
@@ -5192,7 +5191,11 @@
                 if (self.flags.social_view) {
                     self.mark_feed_as_read();
                 } else if (self.flags.river_view) {
-                    self.mark_folder_as_read();
+                    if (self.active_feed == 'river:') {
+                        self.open_mark_read_modal({days: 0});
+                    } else {
+                        self.mark_folder_as_read();
+                    }
                 } else {
                     self.mark_feed_as_read();
                 }

@@ -11,6 +11,7 @@ NEWSBLUR.Views.StoryTabView = Backbone.View.extend({
     
     open_story: function(story, is_temporary) {
         if (!story) story = NEWSBLUR.reader.active_story;
+        if (!story) return;
         var feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
 
         if ((feed && feed.get('disabled_page')) || 
