@@ -759,25 +759,18 @@
         [request startAsynchronous];
         
         [appDelegate markActiveFolderAllRead];
-        [appDelegate.navigationController 
-         popToViewController:[appDelegate.navigationController.viewControllers 
-                              objectAtIndex:0]  
-         animated:YES];
     } else if (!appDelegate.isRiverView && includeHidden) {
         // Mark feed as read
         NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"]; 
-        [request setDelegate:nil];
+        [request setPostValue:[appDelegate.activeFeed objectForKey:@"id"] forKey:@"feed_id"];
+        [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+        [request setDidFailSelector:@selector(requestFailed:)];
+        [request setDelegate:self];
         [request startAsynchronous];
-        
-        [appDelegate markActiveFeedAllRead];
-        [appDelegate.navigationController 
-         popToViewController:[appDelegate.navigationController.viewControllers 
-                              objectAtIndex:0]  
-         animated:YES];
+        [appDelegate markFeedAllRead:[appDelegate.activeFeed objectForKey:@"id"]];
     } else {
         // Mark visible stories as read
         NSDictionary *feedsStories = [appDelegate markVisibleStoriesRead];
@@ -786,14 +779,31 @@
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         [request setPostValue:[feedsStories JSONRepresentation] forKey:@"feeds_stories"]; 
-        [request setDelegate:nil];
+        [request setDelegate:self];
+        [request setDidFinishSelector:@selector(finishMarkAllAsRead:)];
+        [request setDidFailSelector:@selector(requestFailed:)];
         [request startAsynchronous];
-        
+    }
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController transitionFromFeedDetail];
+    } else {
         [appDelegate.navigationController 
          popToViewController:[appDelegate.navigationController.viewControllers 
                               objectAtIndex:0]  
          animated:YES];
     }
+}
+
+- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    
+
 }
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {

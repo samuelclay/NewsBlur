@@ -443,8 +443,7 @@
         [self.popoverController setPopoverContentSize:CGSizeMake(200, 86)];
         [self.popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
                                        permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                                       animated:YES];  
-
+                                                       animated:YES];
     }
 }
 

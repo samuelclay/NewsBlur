@@ -17,7 +17,7 @@
 @interface FeedDetailViewController : BaseViewController 
 <UITableViewDelegate, UITableViewDataSource, 
  UIActionSheetDelegate, UIAlertViewDelegate,
- UIPopoverControllerDelegate> {
+ UIPopoverControllerDelegate, ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSArray * stories;
@@ -73,5 +73,5 @@
 - (void)loadFaviconsFromActiveFeed;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
-
+- (void)finishMarkAllAsRead:(ASIHTTPRequest *)request;
 @end

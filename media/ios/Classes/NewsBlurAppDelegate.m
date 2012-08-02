@@ -911,7 +911,7 @@
 
 - (void)markFeedAllRead:(id)feedId {
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    NSDictionary *feed = self.isSocialView ? [self.dictSocialFeeds objectForKey:feedIdStr] : [self.dictFeeds objectForKey:feedIdStr];
+    NSMutableDictionary *feed = self.isSocialView ? [[self.dictSocialFeeds objectForKey:feedIdStr] mutableCopy] : [[self.dictFeeds objectForKey:feedIdStr] mutableCopy];
     
     [feed setValue:[NSNumber numberWithInt:0] forKey:@"ps"];
     [feed setValue:[NSNumber numberWithInt:0] forKey:@"nt"];
