@@ -127,8 +127,12 @@ class UserSubscription(models.Model):
         current_time    = int(time.time() + 60*60*24)
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
-            two_weeks_ago = datetime.datetime.now()-datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-            min_score = int(time.mktime(two_weeks_ago.timetuple()))-1000
+            if read_filter == 'unread':
+                min_score = int(time.mktime(self.mark_read_date.timetuple()))
+            else:
+                now = datetime.datetime.now()
+                two_weeks_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+                min_score = int(time.mktime(two_weeks_ago.timetuple()))-1000
             max_score = current_time
         else:
             byscorefunc = r.zrevrangebyscore
