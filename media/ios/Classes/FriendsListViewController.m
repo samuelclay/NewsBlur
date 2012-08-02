@@ -379,6 +379,10 @@ viewForHeaderInSection:(NSInteger)section {
     [self.friendSearchBar resignFirstResponder];
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.friendSearchBar resignFirstResponder];
+}
+
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
     NSInteger currentRow = indexPath.row;
     int row = currentRow;

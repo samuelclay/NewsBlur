@@ -392,7 +392,6 @@
     // test for tryfeed
     if (appDelegate.inFindingStoryMode && appDelegate.tryFeedStoryId) {
         for (int i = 0; i < appDelegate.activeFeedStories.count; i++) {
-            NSLog(@"i is %i", i);
             NSString *storyIdStr = [[appDelegate.activeFeedStories objectAtIndex:i] objectForKey:@"id"];
             if ([storyIdStr isEqualToString:appDelegate.tryFeedStoryId]) {
                 NSDictionary *feed = [appDelegate.activeFeedStories objectAtIndex:i];

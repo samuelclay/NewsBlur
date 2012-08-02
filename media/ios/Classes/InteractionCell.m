@@ -88,9 +88,9 @@
     if ([category isEqualToString:@"follow"]) {        
         txt = [NSString stringWithFormat:@"%@ is now following you.", username];                
     } else if ([category isEqualToString:@"comment_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your comment:\n%@", username, comment];          
+        txt = [NSString stringWithFormat:@"%@ replied to your comment on %@:\n%@", username, title, comment];          
     } else if ([category isEqualToString:@"reply_reply"]) {
-        txt = [NSString stringWithFormat:@"%@ replied to your reply:\n%@", username, comment];  
+        txt = [NSString stringWithFormat:@"%@ replied to your reply on %@:\n%@", username, title, comment];  
     } else if ([category isEqualToString:@"story_reshare"]) {
         if ([content isEqualToString:@""] || content == nil) {
             txt = [NSString stringWithFormat:@"%@ re-shared %@.", username, title];

@@ -181,6 +181,7 @@
 
 - (void)clearStory {
     [self.webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
+    self.noStorySelectedLabel.hidden = NO;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -429,9 +430,9 @@
                    userReshareString,
                    [user objectForKey:@"username"],
                    [commentDict objectForKey:@"shared_date"],
+                   commentContent,
                    [commentDict objectForKey:@"user_id"],
                    [user objectForKey:@"username"],
-                   commentContent,
                    userEditButton,
                    userLikeButton,
                    [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
@@ -692,16 +693,17 @@
 - (void)setActiveStory {
     self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];  
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-        UIImage *titleImage = appDelegate.isRiverView ?
-            [UIImage imageNamed:@"folder.png"] :
+        if (!appDelegate.isSocialView) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+            UIImage *titleImage = appDelegate.isRiverView ?
+            [UIImage imageNamed:@"folder_white.png"] :
             [Utilities getImage:feedIdStr];
-        UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-        titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
-        titleImageView.hidden = YES;
-        self.navigationItem.titleView = titleImageView; 
-        titleImageView.hidden = NO;
-
+            UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+            titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+            titleImageView.hidden = YES;
+            self.navigationItem.titleView = titleImageView; 
+            titleImageView.hidden = NO;
+        }
     }
 }
 
@@ -920,7 +922,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
     // setting up the NEXT STORY BUTTON
     int activeLocation = appDelegate.locationOfActiveStory;    
-    NSLog(@"[appDelegate.activeFeedStoryLocations count] is %i", [appDelegate.activeFeedStoryLocations count]);
     if (activeLocation >= ([appDelegate.activeFeedStoryLocations count] - 1)) {
         self.buttonNextStory.enabled = NO;
     } else {
@@ -928,7 +929,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 
     // setting up the NEXT UNREAD STORY BUTTON
-    NSLog(@"unreadStoryCount is %i", [appDelegate unreadCount]);
     int nextIndex = [appDelegate indexOfNextUnreadStory];
     int unreadCount = [appDelegate unreadCount];
     if (nextIndex == -1 && unreadCount > 0) {
@@ -953,9 +953,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
         
         [appDelegate markActiveStoryRead];
-        
 
-        
         NSString *urlString;
         
         if (appDelegate.isSocialView) {
@@ -1150,6 +1148,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         self.appDelegate.feedDetailViewController.feedPage < 50 &&
         !self.appDelegate.feedDetailViewController.pageFinished &&
         !self.appDelegate.feedDetailViewController.pageFetching) {
+
         // Fetch next page and see if it has the unreads.
         [self.loadingIndicator startAnimating];
         self.activity.customView = self.loadingIndicator;
@@ -1174,18 +1173,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [UIView setAnimationDuration:.5];
         [UIView setAnimationBeginsFromCurrentState:NO];
         [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp 
-                               forView:self.view 
+                               forView:self.webView 
                                  cache:NO];
         [UIView commitAnimations];
     }
 }
 
 - (IBAction)doNextStory {
+    
     int nextIndex = [appDelegate indexOfNextStory];
     
-    if (nextIndex == -1) {
-        return;
-    }
+    NSLog(@"nextIndex is %i", nextIndex);
     
     [self.loadingIndicator stopAnimating];
     
@@ -1193,24 +1191,35 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         return;
     }
     
-    NSLog(@"[appDelegate activeFeedStories] count is %i", [[appDelegate activeFeedStories] count]);
-    NSLog(@"[appDelegate indexOfNextStory] is %i", [appDelegate indexOfNextStory]);
-    
-
-    [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
-                                 objectAtIndex:nextIndex]];
-    [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
-    [self setActiveStory];
-    [self showStory];
-    [appDelegate changeActiveFeedDetailRow];
-
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:.5];
-    [UIView setAnimationBeginsFromCurrentState:NO];
-    [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp 
-                           forView:self.view 
-                             cache:NO];
-    [UIView commitAnimations];
+    if (nextIndex == -1 && 
+        self.appDelegate.feedDetailViewController.feedPage < 50 &&
+        !self.appDelegate.feedDetailViewController.pageFinished &&
+        !self.appDelegate.feedDetailViewController.pageFetching) {
+                
+        // Fetch next page and see if it has the unreads.
+        [self.loadingIndicator startAnimating];
+        self.activity.customView = self.loadingIndicator;
+        [self.appDelegate.feedDetailViewController fetchNextPage:^() {
+            [self doNextStory];
+        }];
+    } else {
+        [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
+                                     objectAtIndex:nextIndex]];
+        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
+        [self setActiveStory];
+        [self showStory];
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [appDelegate changeActiveFeedDetailRow];        
+        }
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:.5];
+        [UIView setAnimationBeginsFromCurrentState:NO];
+        [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp 
+                               forView:self.webView 
+                                 cache:NO];
+        [UIView commitAnimations];
+    }
 }
 
 - (IBAction)doPreviousStory {

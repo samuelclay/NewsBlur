@@ -31,11 +31,9 @@
 		433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 433323CC158968ED0025064D /* FirstTimeUserViewController.xib */; };
 		433D247E1582EEB400AE9E72 /* AddSiteAutocompleteCell~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */; };
 		433D247F1582EEB900AE9E72 /* AddSiteViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */; };
-		433D24811582EEBE00AE9E72 /* FeedDetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */; };
 		433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045241565BC150085F811 /* LoginViewController~ipad.xib */; };
 		433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D0451F1565BC150085F811 /* MainWindow~ipad.xib */; };
 		433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */; };
-		433D24851582EEC800AE9E72 /* NewsBlurViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */; };
 		433D24861582EECA00AE9E72 /* OriginalStoryViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */; };
 		433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */; };
 		436ACA8D15BF1088004E01CC /* NBContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 436ACA8C15BF1088004E01CC /* NBContainerViewController.m */; };
@@ -218,7 +216,6 @@
 		43C95C49158BEC450086C69B /* GoogleReaderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */; };
 		43C95C4B158BF8810086C69B /* google_reader_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C4A158BF8810086C69B /* google_reader_selected_background.png */; };
 		43D818A315B940C200733444 /* DataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 43D818A215B940C200733444 /* DataUtilities.m */; };
-		43DACC4015BDE47F004A938B /* StoryDetailContainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43DACC3E15BDE47F004A938B /* StoryDetailContainerViewController.xib */; };
 		43E8381E15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43E8381615BC73EA000553BE /* FirstTimeUserAddFriendsViewController.m */; };
 		43E8381F15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43E8381715BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib */; };
 		43E8382015BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43E8381915BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m */; };
@@ -362,7 +359,7 @@
 		436ACA8C15BF1088004E01CC /* NBContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBContainerViewController.m; sourceTree = "<group>"; };
 		43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontSettingsViewController.h; sourceTree = "<group>"; };
 		43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontSettingsViewController.m; sourceTree = "<group>"; };
-		43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontSettingsViewController.xib; path = Classes/FontSettingsViewController.xib; sourceTree = "<group>"; };
+		43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontSettingsViewController.xib; path = ../Classes/FontSettingsViewController.xib; sourceTree = "<group>"; };
 		437AA8B815929D51005463F5 /* zepto.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = zepto.js; path = ../zepto.js; sourceTree = "<group>"; };
 		437AA8BD15929DA7005463F5 /* storyDetailView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = storyDetailView.js; path = ../storyDetailView.js; sourceTree = "<group>"; };
 		437AA8BF15929DFA005463F5 /* storyDetailView.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailView.css; path = ../storyDetailView.css; sourceTree = "<group>"; };
@@ -577,8 +574,6 @@
 		43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = GoogleReaderViewController.xib; path = Classes/GoogleReaderViewController.xib; sourceTree = "<group>"; };
 		43C95C4A158BF8810086C69B /* google_reader_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = google_reader_selected_background.png; sourceTree = "<group>"; };
 		43D0451F1565BC150085F811 /* MainWindow~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow~ipad.xib"; path = "Resources-iPad/MainWindow~ipad.xib"; sourceTree = "<group>"; };
-		43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "NewsBlurViewController~ipad.xib"; path = "Resources-iPad/NewsBlurViewController~ipad.xib"; sourceTree = "<group>"; };
-		43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "FeedDetailViewController~ipad.xib"; path = "Resources-iPad/Classes/FeedDetailViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "StoryDetailViewController~ipad.xib"; path = "Resources-iPad/Classes/StoryDetailViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045241565BC150085F811 /* LoginViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "LoginViewController~ipad.xib"; path = "Resources-iPad/Classes/LoginViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "OriginalStoryViewController~ipad.xib"; path = "Resources-iPad/Classes/OriginalStoryViewController~ipad.xib"; sourceTree = "<group>"; };
@@ -587,7 +582,6 @@
 		43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MoveSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/MoveSiteViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D818A115B940C200733444 /* DataUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataUtilities.h; sourceTree = "<group>"; };
 		43D818A215B940C200733444 /* DataUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataUtilities.m; sourceTree = "<group>"; };
-		43DACC3E15BDE47F004A938B /* StoryDetailContainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StoryDetailContainerViewController.xib; path = Classes/StoryDetailContainerViewController.xib; sourceTree = "<group>"; };
 		43E8381515BC73EA000553BE /* FirstTimeUserAddFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstTimeUserAddFriendsViewController.h; sourceTree = "<group>"; };
 		43E8381615BC73EA000553BE /* FirstTimeUserAddFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstTimeUserAddFriendsViewController.m; sourceTree = "<group>"; };
 		43E8381715BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FirstTimeUserAddFriendsViewController.xib; sourceTree = "<group>"; };
@@ -1263,6 +1257,7 @@
 				43B8F019156603170008733D /* AddSiteViewController.xib */,
 				43B8F01B156603170008733D /* FeedDetailViewController.xib */,
 				439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */,
+				43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */,
 				43B8F01C156603170008733D /* LoginViewController.xib */,
 				43B8F01D156603170008733D /* MainWindow.xib */,
 				43B8F01E156603170008733D /* MoveSiteViewController.xib */,
@@ -1281,9 +1276,6 @@
 				433323B5158901A40025064D /* Images */,
 				43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */,
 				437F974B15ACA0ED0007136B /* DashboardViewController.xib */,
-				43D045211565BC150085F811 /* FeedDetailViewController~ipad.xib */,
-				43D045201565BC150085F811 /* NewsBlurViewController~ipad.xib */,
-				43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */,
 				43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */,
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
@@ -1291,7 +1283,6 @@
 				43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */,
 				43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
-				43DACC3E15BDE47F004A938B /* StoryDetailContainerViewController.xib */,
 				437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */,
 			);
 			name = "Resources-iPad";
@@ -1771,11 +1762,9 @@
 				43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */,
 				433D247E1582EEB400AE9E72 /* AddSiteAutocompleteCell~ipad.xib in Resources */,
 				433D247F1582EEB900AE9E72 /* AddSiteViewController~ipad.xib in Resources */,
-				433D24811582EEBE00AE9E72 /* FeedDetailViewController~ipad.xib in Resources */,
 				433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */,
 				433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */,
 				433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */,
-				433D24851582EEC800AE9E72 /* NewsBlurViewController~ipad.xib in Resources */,
 				433D24861582EECA00AE9E72 /* OriginalStoryViewController~ipad.xib in Resources */,
 				433D24871582EECD00AE9E72 /* StoryDetailViewController~ipad.xib in Resources */,
 				433323B8158901A40025064D /* fountain_pen.png in Resources */,
@@ -1903,7 +1892,6 @@
 				43E8381F15BC73EB000553BE /* FirstTimeUserAddFriendsViewController.xib in Resources */,
 				43E8382115BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib in Resources */,
 				43E8382315BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib in Resources */,
-				43DACC4015BDE47F004A938B /* StoryDetailContainerViewController.xib in Resources */,
 				432E29FB15BFBCA10006EA51 /* back.png in Resources */,
 				432E29FC15BFBCA10006EA51 /* back@2x.png in Resources */,
 				432E2A0315C079770006EA51 /* folder_white.png in Resources */,

@@ -28,6 +28,7 @@
 
 @property (nonatomic, strong) UINavigationController *masterNavigationController;
 @property (nonatomic, strong) UINavigationController *storyNavigationController;
+@property (nonatomic, strong) UINavigationController *shareNavigationController;
 @property (nonatomic, strong) NewsBlurViewController *feedsViewController;
 @property (nonatomic, strong) FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) DashboardViewController *dashboardViewController;
@@ -49,6 +50,7 @@
 
 @synthesize appDelegate;
 @synthesize masterNavigationController;
+@synthesize shareNavigationController;
 @synthesize feedsViewController;
 @synthesize feedDetailViewController;
 @synthesize dashboardViewController;
@@ -104,6 +106,9 @@
     
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.storyDetailViewController];
     self.storyNavigationController = nav;
+    
+    UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
+    self.shareNavigationController = shareNav;
     
     // set default y coordinate for feedDetailY from saved preferences
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
@@ -519,14 +524,15 @@
     self.isSharingStory = YES;
     
     // adding shareViewController 
-    [self addChildViewController:self.shareViewController];
-    [self.view insertSubview:self.shareViewController.view aboveSubview:self.storyNavigationController.view];
-    [self.shareViewController didMoveToParentViewController:self];
-
-    self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
-                                                     vb.size.height, 
-                                                     self.storyDetailViewController.view.frame.size.width, 
-                                                     NB_DEFAULT_SHARE_HEIGHT);
+    [self addChildViewController:self.shareNavigationController];
+    [self.view insertSubview:self.shareNavigationController.view aboveSubview:self.storyNavigationController.view];
+    [self.shareNavigationController didMoveToParentViewController:self];
+    
+    self.shareViewController.view.frame = CGRectZero;
+    self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
+                                                           vb.size.height, 
+                                                           self.storyDetailViewController.view.frame.size.width, 
+                                                           NB_DEFAULT_SHARE_HEIGHT);
     [self.shareViewController.commentField becomeFirstResponder];
 }
 
@@ -557,12 +563,12 @@
         }
         
         [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL animations:^{
-            self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+            self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                              vb.size.height,
                                                              self.storyNavigationController.view.frame.size.width,
                                                              NB_DEFAULT_SHARE_HEIGHT);
         } completion:^(BOOL finished) {
-            [self.shareViewController.view removeFromSuperview];
+            [self.shareNavigationController.view removeFromSuperview];
         }];
     }
 }
@@ -627,13 +633,13 @@
 
     CGRect vb = [self.view bounds];
     CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-     self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+     self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                        vb.size.height,
                                        self.storyNavigationController.view.frame.size.width,
                                        NB_DEFAULT_SHARE_HEIGHT);
                                        
     CGRect storyNavigationFrame = self.storyNavigationController.view.frame;
-    CGRect shareViewFrame = self.shareViewController.view.frame;
+    CGRect shareViewFrame = self.shareNavigationController.view.frame;
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
@@ -682,7 +688,7 @@
                         options:UIViewAnimationOptionBeginFromCurrentState | curve 
                      animations:^{
                          if (self.isHidingStory) {
-                             self.shareViewController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                             self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                                               vb.size.height,
                                                                               self.storyNavigationController.view.frame.size.width,
                                                                               NB_DEFAULT_SHARE_HEIGHT);
@@ -698,7 +704,7 @@
                                                                                         vb.size.height);
                              }
                          } else {
-                             self.shareViewController.view.frame = shareViewFrame;
+                             self.shareNavigationController.view.frame = shareViewFrame;
                              // if the toolbar is higher, animate
                              if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
                                  if (self.storyNavigationController.view.frame.size.height < newStoryNavigationFrameHeight) {
@@ -712,10 +718,10 @@
                              self.storyNavigationController.view.frame = storyNavigationFrame;
                              [self.storyDetailViewController scrolltoComment];
                          } else {
-                             // remove the shareViewController after keyboard slides down
+                             // remove the shareNavigationController after keyboard slides down
                              if (self.isHidingStory) {
                                  self.isHidingStory = NO;
-                                 [self.shareViewController.view removeFromSuperview];
+                                 [self.shareNavigationController.view removeFromSuperview];
                              }
                          }
                      }];

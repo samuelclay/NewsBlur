@@ -365,14 +365,15 @@ a.NB-show-profile {
 }
 
 .NB-iphone .NB-button {
-    float: left;
-    padding: 9px 10px 6px 0px;
+    float: right;
+    padding: 4px 0px 10px 4px;
+    margin: 0;
 }
 
 .NB-button.NB-share-button {
     float: left;
     padding: 0px 20px 20px 0px;
-    margin: 0;
+    margin-bottom: 0;
 }
 
 .NB-button div {

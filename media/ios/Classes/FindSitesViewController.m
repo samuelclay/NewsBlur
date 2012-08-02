@@ -251,6 +251,10 @@
     [self.sitesSearchBar resignFirstResponder];
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.sitesSearchBar resignFirstResponder];
+}
+
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
 //    NSInteger currentRow = indexPath.row;
 //    int row = currentRow;

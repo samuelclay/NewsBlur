@@ -83,6 +83,10 @@
 	return YES;
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [self.profileTable reloadData];
+}
+
 - (void)doCancelButton {
     [appDelegate.modalNavigationController dismissModalViewControllerAnimated:NO];
 }
@@ -200,7 +204,9 @@
     
     // you can only hardcode this due to limitation in apple API that doesn't give you width of grouped cell
     int width = 300;
-    if (vb.size.width == 540) {
+    if (vb.size.width == 480) {
+        width = 460;
+    } else if (vb.size.width == 540) {
         width = 478;
     }
 

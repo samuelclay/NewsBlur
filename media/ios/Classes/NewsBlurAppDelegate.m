@@ -239,7 +239,8 @@
         [self.masterContainerViewController transitionToShareView];
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId]; 
     } else {
-        [self.navigationController presentModalViewController:self.shareViewController animated:YES];
+        UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
+        [self.navigationController presentModalViewController:shareNav animated:YES];
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId]; 
     }
 }
