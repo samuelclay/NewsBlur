@@ -37,10 +37,12 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.toolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    self.interactionsModule.hidden = NO;
-    self.activitiesModule.hidden = YES;
+    self.interactionsModule.hidden = YES;
+    self.activitiesModule.hidden = NO;
     self.feedbackWebView.hidden = YES;
     self.feedbackWebView.delegate = self;
+    
+    self.segmentedButton.selectedSegmentIndex = 1;
     
     self.topToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     

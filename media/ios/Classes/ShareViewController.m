@@ -36,6 +36,15 @@
 
 - (void)viewDidLoad
 {
+    
+    UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemCancel target:self action:@selector(doCancelButton:)];
+    self.navigationItem.leftBarButtonItem = cancel;
+    
+    UIBarButtonItem *submit = [[UIBarButtonItem alloc] initWithTitle:@"Post" style:UIBarButtonSystemItemDone target:self action:@selector(doShareThisStory:)];
+    self.submitButton = submit;
+    self.navigationItem.rightBarButtonItem = submit;
+    
+    
     // Do any additional setup after loading the view from its nib.
     commentField.layer.borderWidth = 1.0f;
     commentField.layer.cornerRadius = 8;

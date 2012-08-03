@@ -313,6 +313,7 @@
     } 
     
     [self.followButton setTitle:@"Following" forState:UIControlStateNormal];
+    [appDelegate reloadFeedsView:NO];
 }
 
 
@@ -333,6 +334,7 @@
     
     NSLog(@"results %@", results);
     [self.followButton setTitle:@"Follow" forState:UIControlStateNormal];
+    [appDelegate reloadFeedsView:NO];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request

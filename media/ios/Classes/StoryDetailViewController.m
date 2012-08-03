@@ -445,7 +445,7 @@
                    "</div>"
                    "<div class=\"NB-story-comment-content\">%@"
 
-                   "<div style='clear:both'>"
+                   "<div style=\"clear:both\">"
                    "    <div class=\"NB-story-comment-reply-button NB-button\">"
                    "        <div class=\"NB-story-comment-reply-button-wrapper\">"
                    "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">Reply</a>"

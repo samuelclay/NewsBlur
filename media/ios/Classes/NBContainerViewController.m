@@ -545,12 +545,16 @@
     [self addChildViewController:self.shareNavigationController];
     [self.view insertSubview:self.shareNavigationController.view aboveSubview:self.storyNavigationController.view];
     [self.shareNavigationController didMoveToParentViewController:self];
-    
-    self.shareViewController.view.frame = CGRectZero;
+
     self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
                                                            vb.size.height, 
                                                            self.storyDetailViewController.view.frame.size.width, 
                                                            NB_DEFAULT_SHARE_HEIGHT);
+    
+    self.shareViewController.view.frame = CGRectMake(0, 
+                                           0, 
+                                           self.shareNavigationController.view.frame.size.width, 
+                                           self.shareNavigationController.view.frame.size.height - 44);
     [self.shareViewController.commentField becomeFirstResponder];
 }
 
