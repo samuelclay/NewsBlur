@@ -69,6 +69,7 @@
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<string key="IBPlaceholder">Find sites by URL or name</string>
 						<object class="IBUITextInputTraits" key="IBTextInputTraits">
+							<int key="IBUIAutocorrectionType">1</int>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						</object>
 					</object>
@@ -1578,6 +1579,7 @@
 						<string key="feedTitleGradient">UIView</string>
 						<string key="fontSettingsButton">UIBarButtonItem</string>
 						<string key="innerView">UIView</string>
+						<string key="noStorySelectedLabel">UILabel</string>
 						<string key="originalStoryButton">UIBarButtonItem</string>
 						<string key="progressView">UIProgressView</string>
 						<string key="progressViewContainer">UIView</string>
@@ -1624,6 +1626,10 @@
 						<object class="IBToOneOutletInfo" key="innerView">
 							<string key="name">innerView</string>
 							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="noStorySelectedLabel">
+							<string key="name">noStorySelectedLabel</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="originalStoryButton">
 							<string key="name">originalStoryButton</string>

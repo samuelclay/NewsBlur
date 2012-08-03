@@ -156,6 +156,7 @@ body {
 
 .NB-story-tags {
     line-height: 12px;
+    height: 12px;
 }
 
 .NB-story-tag {
@@ -320,6 +321,17 @@ del {
 
 #story_pane .NB-story-comment .NB-story-comment-content {
     float: none;
+}
+
+.NB-iphone#story_pane .nb-story-share-label {
+    float: left;
+    display: block;
+    margin: 2px 4px 0 0;
+}
+
+.NB-iphone .NB-story-share-profile {
+    margin-top: -2px;
+    margin-bottom: 10px;
 }
 
 /* Sharing */

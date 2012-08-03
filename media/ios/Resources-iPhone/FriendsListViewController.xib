@@ -71,6 +71,7 @@
 						<string key="IBText"/>
 						<string key="IBPlaceholder">Search by email or username</string>
 						<object class="IBUITextInputTraits" key="IBTextInputTraits">
+							<int key="IBUIAutocorrectionType">1</int>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						</object>
 					</object>
@@ -482,6 +483,33 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/FeedsMenuViewController.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">FindSitesViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="appDelegate">NewsBlurAppDelegate</string>
+						<string key="sitesSearchBar">UISearchBar</string>
+						<string key="sitesTable">UITableView</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="appDelegate">
+							<string key="name">appDelegate</string>
+							<string key="candidateClassName">NewsBlurAppDelegate</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="sitesSearchBar">
+							<string key="name">sitesSearchBar</string>
+							<string key="candidateClassName">UISearchBar</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="sitesTable">
+							<string key="name">sitesTable</string>
+							<string key="candidateClassName">UITableView</string>
+						</object>
+					</dictionary>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/FindSitesViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1160,6 +1188,7 @@
 						<string key="feedDetailViewController">FeedDetailViewController</string>
 						<string key="feedsMenuViewController">FeedsMenuViewController</string>
 						<string key="feedsViewController">NewsBlurViewController</string>
+						<string key="findSitesViewController">FindSitesViewController</string>
 						<string key="firstTimeUserAddFriendsViewController">FirstTimeUserAddFriendsViewController</string>
 						<string key="firstTimeUserAddNewsBlurViewController">FirstTimeUserAddNewsBlurViewController</string>
 						<string key="firstTimeUserAddSitesViewController">FirstTimeUserAddSitesViewController</string>
@@ -1202,6 +1231,10 @@
 						<object class="IBToOneOutletInfo" key="feedsViewController">
 							<string key="name">feedsViewController</string>
 							<string key="candidateClassName">NewsBlurViewController</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="findSitesViewController">
+							<string key="name">findSitesViewController</string>
+							<string key="candidateClassName">FindSitesViewController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="firstTimeUserAddFriendsViewController">
 							<string key="name">firstTimeUserAddFriendsViewController</string>
@@ -1548,6 +1581,7 @@
 						<string key="feedTitleGradient">UIView</string>
 						<string key="fontSettingsButton">UIBarButtonItem</string>
 						<string key="innerView">UIView</string>
+						<string key="noStorySelectedLabel">UILabel</string>
 						<string key="originalStoryButton">UIBarButtonItem</string>
 						<string key="progressView">UIProgressView</string>
 						<string key="progressViewContainer">UIView</string>
@@ -1594,6 +1628,10 @@
 						<object class="IBToOneOutletInfo" key="innerView">
 							<string key="name">innerView</string>
 							<string key="candidateClassName">UIView</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="noStorySelectedLabel">
+							<string key="name">noStorySelectedLabel</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="originalStoryButton">
 							<string key="name">originalStoryButton</string>

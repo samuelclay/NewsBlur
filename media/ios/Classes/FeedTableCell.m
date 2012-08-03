@@ -213,29 +213,39 @@ static CGFloat *psColors = nil;
 
     if (isSocial) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.feedFavicon drawInRect:CGRectMake(11.0, 5.0, 36.0, 36.0)];
+            [self.feedFavicon drawInRect:CGRectMake(12.0, 5.0, 36.0, 36.0)];
             [feedTitle 
              drawInRect:CGRectMake(56, 13, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 20, 20.0) 
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft]; 
         } else {
-            [self.feedFavicon drawInRect:CGRectMake(11.0, 3.0, 32.0, 32.0)];
+            [self.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 32.0, 32.0)];
             [feedTitle 
-             drawInRect:CGRectMake(52, 11, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 20, 20.0) 
+             drawInRect:CGRectMake(50, 11, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10 - 20, 20.0) 
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];
         }
 
     } else {
-        [self.feedFavicon drawInRect:CGRectMake(12.0, 9.0, 16.0, 16.0)];
-        [feedTitle 
-         drawInRect:CGRectMake(36.0, 9.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
-         withFont:font
-         lineBreakMode:UILineBreakModeTailTruncation 
-         alignment:UITextAlignmentLeft];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [self.feedFavicon drawInRect:CGRectMake(12.0, 9.0, 16.0, 16.0)];
+            [feedTitle 
+             drawInRect:CGRectMake(36.0, 9.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
+             withFont:font
+             lineBreakMode:UILineBreakModeTailTruncation 
+             alignment:UITextAlignmentLeft];
+        } else {
+            [self.feedFavicon drawInRect:CGRectMake(9.0, 9.0, 16.0, 16.0)];
+            [feedTitle 
+             drawInRect:CGRectMake(34.0, 9.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
+             withFont:font
+             lineBreakMode:UILineBreakModeTailTruncation 
+             alignment:UITextAlignmentLeft];
+        }
     }
+    
 }
 
 

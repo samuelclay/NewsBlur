@@ -223,11 +223,13 @@
     if (areFriends) {        
         share_user_ids = [appDelegate.activeStory objectForKey:@"shared_by_friends"];
 
-        // only if your friends are sharing to do you see the shared label
-        if ([share_user_ids count]) {
-            avatarString = [avatarString stringByAppendingString:@
-                            "<div class=\"NB-story-share-label\">Shared by: </div>"
-                            "<div class=\"NB-story-share-profiles NB-story-share-profiles-friends\">"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            // only if your friends are sharing to do you see the shared label
+            if ([share_user_ids count]) {
+                avatarString = [avatarString stringByAppendingString:@
+                                "<div class=\"NB-story-share-label\">Shared by: </div>"
+                                "<div class=\"NB-story-share-profiles NB-story-share-profiles-friends\">"];
+            } 
         }
     } else {
         share_user_ids = [appDelegate.activeStory objectForKey:@"shared_by_public"];
@@ -245,9 +247,11 @@
         avatarString = [avatarString stringByAppendingString:avatar];
     }
     
-    if (areFriends && [share_user_ids count]) {
-        avatarString = [avatarString stringByAppendingString:@"</div>"];
-        
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (areFriends && [share_user_ids count]) {
+            avatarString = [avatarString stringByAppendingString:@"</div>"];
+            
+        }
     }
     return avatarString;
 }
@@ -261,27 +265,45 @@
         NSDictionary *story = appDelegate.activeStory;
         NSArray *friendsCommentsArray =  [story objectForKey:@"friend_comments"];   
         NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];   
+        
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            comments = [comments stringByAppendingString:[NSString stringWithFormat:@
+                                                          "<div class=\"NB-feed-story-comments\">"
+                                                          "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
+                                                          "<div class=\"NB-story-comments-shares-teaser\">"
+                                                          
+                                                          "<div class=\"NB-right\">Shared by %@</div>"
+                                                          
+                                                          "<div class=\"NB-story-share-profiles NB-story-share-profiles-public\">"
+                                                          "%@"
+                                                          "</div>"
+                                                          
+                                                          "%@"
+                                                          
+                                                          "</div></div>",
+                                                          [[appDelegate.activeStory objectForKey:@"share_count"] intValue] == 1
+                                                          ? [NSString stringWithFormat:@"1 person"] : 
+                                                          [NSString stringWithFormat:@"%@ people", [appDelegate.activeStory objectForKey:@"share_count"]],
+                                                          [self getAvatars:NO],
+                                                          [self getAvatars:YES]
+                                                          ]];
+        } else {
+            comments = [comments stringByAppendingString:[NSString stringWithFormat:@
+                                                          "<div class=\"NB-feed-story-comments\">"
+                                                          "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
+                                                          "<div class=\"NB-story-comments-shares-teaser\">"
+                                                          
+                                                          "<div class=\"NB-story-share-label\">Shared by: </div>"
+                                                          "%@%@"
+                                                          
+                                                          
+                                                          "</div></div>",
+                                                          [self getAvatars:NO],
+                                                          [self getAvatars:YES]
+                                                          ]];
+        }
                 
-        comments = [comments stringByAppendingString:[NSString stringWithFormat:@
-                                                      "<div class=\"NB-feed-story-comments\">"
-                                                      "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
-                                                      "<div class=\"NB-story-comments-shares-teaser\">"
-                                                      
-                                                      "<div class=\"NB-right\">Shared by %@</div>"
-                                                      
-                                                      "<div class=\"NB-story-share-profiles NB-story-share-profiles-public\">"
-                                                      "%@"
-                                                      "</div>"
-                                            
-                                                      "%@"
-                                                    
-                                                      "</div></div>",
-                                                      [[appDelegate.activeStory objectForKey:@"share_count"] intValue] == 1
-                                                        ? [NSString stringWithFormat:@"1 person"] : 
-                                                        [NSString stringWithFormat:@"%@ people", [appDelegate.activeStory objectForKey:@"share_count"]],
-                                                      [self getAvatars:NO],
-                                                      [self getAvatars:YES]
-                                                      ]];
+
 
         // add friends comments
         for (int i = 0; i < friendsCommentsArray.count; i++) {

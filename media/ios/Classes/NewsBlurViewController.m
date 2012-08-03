@@ -732,12 +732,24 @@
     
     if (section == 0) {
         folderImage = [UIImage imageNamed:@"group.png"];
-        folderImageViewX = 9;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 8;
+        }
     } else if (section == 1) {
         folderImage = [UIImage imageNamed:@"archive.png"];
-        folderImageViewX = 9;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
     } else {
         folderImage = [UIImage imageNamed:@"folder_2.png"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        } else {
+            folderImageViewX = 7;
+        }
     }
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
     folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
