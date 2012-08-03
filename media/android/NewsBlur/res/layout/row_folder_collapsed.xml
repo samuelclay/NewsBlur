@@ -25,14 +25,23 @@
         android:textColor="@color/darkgray"
         android:textSize="16dp"
         android:textStyle="bold" />
+    
+    <ImageView 
+        android:id="@+id/indicator_icon"
+        android:layout_height="20dp"
+        android:layout_width="20dp"
+        android:layout_marginRight="10dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/indicator_collapsed" />
 
     <LinearLayout
         android:id="@+id/row_foldersums"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="25dp" >
+        android:layout_toLeftOf="@+id/indicator_icon"
+        android:layout_marginRight="5dp">
 
         <TextView
             android:id="@+id/row_foldersumneg"
@@ -70,5 +79,6 @@
             android:textSize="12dp"
             android:textStyle="bold" />
     </LinearLayout>
+    
 
 </RelativeLayout>

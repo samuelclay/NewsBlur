@@ -2,42 +2,49 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/darkgray"
+    android:background="@color/lightgray"
     android:paddingBottom="10dp"
     android:paddingTop="10dp" >
 
     <ImageView
-        android:id="@+id/row_socialfeed_icon"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:id="@+id/row_folder_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
-        android:contentDescription="@string/description_row_folder_icon" />
+        android:layout_margin="10dp"
+        android:contentDescription="@string/description_row_folder_icon"
+        android:src="@drawable/folder" />
 
     <TextView
-        android:id="@+id/row_socialfeed_name"
+        android:id="@+id/row_foldername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/row_socialfeed_icon"
-        android:textColor="@color/white"
+        android:layout_toRightOf="@id/row_folder_icon"
+        android:textColor="@color/darkgray"
         android:textSize="16dp"
         android:textStyle="bold" />
+    
+    <ImageView 
+        android:id="@+id/indicator_icon"
+        android:layout_height="20dp"
+        android:layout_width="20dp"
+        android:layout_marginRight="10dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/indicator_expanded" />
 
     <LinearLayout
         android:id="@+id/row_foldersums"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="5dp" >
+        android:layout_toLeftOf="@+id/indicator_icon"
+        android:layout_marginRight="5dp">
 
         <TextView
-            android:id="@+id/row_socialsumneg"
+            android:id="@+id/row_foldersumneg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
@@ -49,7 +56,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/row_socialsumneu"
+            android:id="@+id/row_foldersumneu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
@@ -61,7 +68,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/row_socialsumpos"
+            android:id="@+id/row_foldersumpos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
@@ -72,5 +79,6 @@
             android:textSize="12dp"
             android:textStyle="bold" />
     </LinearLayout>
+    
 
 </RelativeLayout>

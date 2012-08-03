@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.ImageView;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
@@ -43,6 +44,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 	private int currentState = AppConstants.STATE_SOME;
 	private int FEEDCHECK = 0x01;
 	private SocialFeedViewBinder blogViewBinder;
+	private String TAG = "FolderListFragment";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,12 +69,12 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		final int[] blogTo = new int[] { R.id.row_socialfeed_name, R.id.row_socialfeed_icon, R.id.row_socialsumneu, R.id.row_socialsumneg, R.id.row_socialsumpos };
 
 		//folderAdapter = new FolderTreeAdapter(getActivity(), cursor, R.layout.row_folder_collapsed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
-		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
+		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, R.layout.row_folder_collapsed, R.layout.row_folder_expanded, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
 	}
 
 	public void hasUpdated() {
-		folderAdapter.notifyDataSetChanged(true);
+		folderAdapter.notifyDataSetInvalidated();
 	}
 
 	@Override
@@ -125,7 +127,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		case R.id.menu_mark_folder_as_read:
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
 			final Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
-			folderCursor.moveToPosition(groupPosition);
+			
 			String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
 			
 			new MarkFolderAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(folderId);
@@ -161,17 +163,24 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 		
 		folderAdapter.setBlogCursor(blogCursor);
 		folderAdapter.setGroupCursor(cursor);
-		folderAdapter.notifyDataSetInvalidated();	
+		folderAdapter.notifyDataSetChanged();	
 	}
 
 	@Override
 	public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
-		if (list.isGroupExpanded(groupPosition)) {
-			group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
+		if (folderAdapter.isGroup(groupPosition)) {
+			if (list.isGroupExpanded(groupPosition)) {
+				group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
+				((ImageView) group.findViewById(R.id.indicator_icon)).setImageResource(R.drawable.indicator_collapsed);
+			} else {
+				group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
+				((ImageView) group.findViewById(R.id.indicator_icon)).setImageResource(R.drawable.indicator_expanded);
+			}
+			return false;
 		} else {
-			group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
+			Log.d(TAG, "Clicked blog.");
+			return true;
 		}
-		return false;
 	}
 
 	@Override
