@@ -45,6 +45,7 @@
 @synthesize imageCache;
 @synthesize popoverController;
 @synthesize currentRowAtIndexPath;
+@synthesize hasNoSites;
 
 #pragma mark -
 #pragma mark Globals
@@ -272,6 +273,7 @@
         return [self informError:@"The server barfed!"];
     }
     
+    self.hasNoSites = NO;
     NSString *responseString = [request responseString];   
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
@@ -357,7 +359,12 @@
     [self loadAvatars];
     
     // set up dictFolders
-    NSMutableDictionary * allFolders = [[results objectForKey:@"flat_folders"] mutableCopy];
+    NSMutableDictionary * allFolders = [[NSMutableDictionary alloc] init];
+    
+    if (![[results objectForKey:@"flat_folders"] isKindOfClass:[NSArray class]]) {
+        allFolders = [[results objectForKey:@"flat_folders"] mutableCopy];
+    }
+
     [allFolders setValue:socialFolder forKey:@""]; 
     appDelegate.dictFolders = allFolders;
     
@@ -400,6 +407,14 @@
     } else {
         [self calculateFeedLocations:YES];
     }
+    
+    // test for empty
+    
+    if ([[appDelegate.dictFeeds allKeys] count] == 0 &&
+        [[appDelegate.dictSocialFeeds allKeys] count] == 0) {
+        self.hasNoSites = YES;
+    }
+    
     [self.feedTitlesTable reloadData];
 
     
@@ -555,6 +570,9 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    if (self.hasNoSites) {
+        return 2;
+    }
     return [appDelegate.dictFoldersArray count];
 }
 
@@ -563,12 +581,34 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (self.hasNoSites) {
+        return 1;
+    }
+
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     return [[self.activeFeedLocations objectForKey:folderName] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
                      cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    // messaging when there are no sites
+    if (self.hasNoSites) {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EmptyCell"];    
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:nil];
+        }
+        cell.textLabel.font=[UIFont systemFontOfSize:14.0];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        if (indexPath.section == 0) {
+            cell.textLabel.text = @"Tap the settings to find friends.";
+        } else {
+            cell.textLabel.text = @"Tap + to add sites.";
+        }
+        
+        return cell;
+    }
+    
     NSDictionary *feed;
 
     NSString *CellIdentifier;
@@ -585,6 +625,8 @@
         cell.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     
+
+    
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
     NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
@@ -593,6 +635,8 @@
     
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
+    
+
     
     if (isSocial) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
@@ -612,6 +656,10 @@
 
 - (void)tableView:(UITableView *)tableView 
         didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (self.hasNoSites) {
+        return;
+    }
     
     // set the current row pointer
     self.currentRowAtIndexPath = indexPath;
@@ -647,6 +695,14 @@
 
 - (CGFloat)tableView:(UITableView *)tableView 
            heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (self.hasNoSites) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            return kBlurblogTableViewRowHeight;            
+        } else {
+            return kPhoneBlurblogTableViewRowHeight;
+        }
+    }
     
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     
@@ -755,7 +811,7 @@
     folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
     [customView addSubview:folderImageView];
 
-    if (section != 0) {    
+    if (section != 0 && !self.hasNoSites) {    
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         UIImageView *disclosureImageView = [[UIImageView alloc] initWithImage:disclosureImage];
         disclosureImageView.frame = CGRectMake(customView.frame.size.width - 20, disclosureImageViewY, 9.0, 14.0);
