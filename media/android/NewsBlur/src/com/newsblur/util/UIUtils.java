@@ -30,7 +30,7 @@ public class UIUtils {
         Canvas canvas = new Canvas(clipped);
         canvas.drawRoundRect(new RectF(0, 0, width, height), radius, radius, paint);
         paint.setXfermode(new PorterDuffXfermode(DST_IN));
-
+        
         Bitmap rounded = Bitmap.createBitmap(width, height, ARGB_8888);
         canvas = new Canvas(rounded);
         canvas.drawBitmap(source, 0, 0, null);

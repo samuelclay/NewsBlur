@@ -79,6 +79,7 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
 		list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
+		list.setGroupIndicator(getResources().getDrawable(R.drawable.selector_group_indicator));
 		list.setOnCreateContextMenuListener(this);
 
 		Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -134,27 +135,33 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 	}
 
 	public void changeState(int state) {
-		String selection = null;
+		String groupSelection = null, blogSelection = null;
 		groupViewBinder.setState(state);
 		blogViewBinder.setState(state);
 		currentState = state;
 		
 		switch (state) {
 		case (AppConstants.STATE_ALL):
-			selection = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
+			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
+			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_ALL;
 		break;
 		case (AppConstants.STATE_SOME):
-			selection = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
+			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
+			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_SOME;
 		break;
 		case (AppConstants.STATE_BEST):
-			selection = DatabaseConstants.FOLDER_INTELLIGENCE_BEST;
+			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_BEST;
+			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_BEST;
 		break;
 		}
 		
-		folderAdapter.currentState = selection;
-		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { selection }, null);
+		folderAdapter.currentState = groupSelection;
+		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { groupSelection }, null);
+		Cursor blogCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, blogSelection, null, null);
+		
+		folderAdapter.setBlogCursor(blogCursor);
 		folderAdapter.setGroupCursor(cursor);
-		folderAdapter.notifyDataSetChanged();	
+		folderAdapter.notifyDataSetInvalidated();	
 	}
 
 	@Override

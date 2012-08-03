@@ -110,6 +110,10 @@ public class DatabaseConstants {
 	public static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
 	public static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
 	public static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
+	
+	public static final String SOCIAL_INTELLIGENCE_ALL = " (" + DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
+	public static final String SOCIAL_INTELLIGENCE_SOME = " (" + DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
+	public static final String SOCIAL_INTELLIGENCE_BEST = " (" + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
 
 	public static final String STORY_INTELLIGENCE_BEST = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 " +
 	"AND " + DatabaseConstants.STORY_READ + " = '0'";

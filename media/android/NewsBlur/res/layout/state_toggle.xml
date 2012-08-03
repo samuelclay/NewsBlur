@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <Button
+        android:id="@+id/toggle_all"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_intelligence_left"
+        android:minHeight="15dp"
+        android:minWidth="80dp"
+        android:text="All"
+        android:layout_weight="1" />
+    
+    <Button
+        android:id="@+id/toggle_some"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_intelligence_middle"
+        android:minHeight="15dp"
+        android:minWidth="80dp"
+        android:text="Some"
+        android:layout_weight="1" />
+    
+    <Button
+        android:id="@+id/toggle_focus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_intelligence_right"
+        android:minHeight="15dp"
+        android:minWidth="80dp"
+        android:text="Focus"
+        android:layout_weight="1"
+         />
+
+</LinearLayout>

@@ -246,7 +246,7 @@ public class FeedProvider extends ContentProvider {
 		case OFFLINE_UPDATES:
 			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
 		case ALL_SOCIAL_FEEDS:
-			return db.query(DatabaseConstants.SOCIAL_FEED_TABLE, null, null, null, null, null, null);	
+			return db.query(DatabaseConstants.SOCIAL_FEED_TABLE, null, selection, null, null, null, null);	
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}

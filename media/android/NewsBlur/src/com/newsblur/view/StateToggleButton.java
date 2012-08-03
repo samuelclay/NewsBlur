@@ -2,14 +2,14 @@ package com.newsblur.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.newsblur.R;
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.UIUtils;
 
 public class StateToggleButton extends LinearLayout implements OnClickListener {
 
@@ -17,9 +17,16 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 
 	private Context context;
 	private StateChangedListener stateChangedListener;
-	private ImageView imageStateOne;
-	private ImageView imageStateTwo;
-	private ImageView imageStateThree;
+
+	private LayoutInflater inflater;
+
+	private View view;
+
+	private Button allButton;
+
+	private Button someButton;
+
+	private Button focusButton;
 
 	public StateToggleButton(Context context, AttributeSet art) {
 		super(context, art);
@@ -32,35 +39,15 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 	}
 
 	public void setupContents() {
-		final int length = UIUtils.convertDPsToPixels(context, 25);
-		final int marginSide = UIUtils.convertDPsToPixels(context, 35);
-		final int marginTop = UIUtils.convertDPsToPixels(context, 5);
-
-		imageStateOne = new ImageView(context);
-		imageStateOne.setId(AppConstants.STATE_ALL);
-		imageStateOne.setImageResource(R.drawable.negative_count_rect);
-		imageStateOne.setLayoutParams(new LayoutParams(length, length));
-
-		LayoutParams centerParams = new LayoutParams(length, length);
-		centerParams.setMargins(marginSide, marginTop, marginSide, marginTop);
-		imageStateTwo = new ImageView(context);
-		imageStateTwo.setId(AppConstants.STATE_SOME);
-		imageStateTwo.setImageResource(R.drawable.neutral_count_rect);
-		imageStateTwo.setLayoutParams(centerParams);
-
-		imageStateThree = new ImageView(context);
-		imageStateThree.setId(AppConstants.STATE_BEST);
-		imageStateThree.setImageResource(R.drawable.positive_count_rect);
-		imageStateThree.setLayoutParams(new LayoutParams(length, length));
-
-		imageStateOne.setOnClickListener(this);
-		imageStateTwo.setOnClickListener(this);
-		imageStateThree.setOnClickListener(this);
-
-		this.addView(imageStateOne);
-		this.addView(imageStateTwo);
-		this.addView(imageStateThree);
-
+		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		view = inflater.inflate(R.layout.state_toggle, this);
+		allButton = (Button) view.findViewById(R.id.toggle_all);
+		someButton = (Button) view.findViewById(R.id.toggle_some);
+		focusButton = (Button) view.findViewById(R.id.toggle_focus);
+		allButton.setOnClickListener(this);
+		someButton.setOnClickListener(this);
+		focusButton.setOnClickListener(this);
+		
 		setState(CURRENT_STATE);
 	}
 
@@ -78,24 +65,25 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 
 	public void setState(final int state) {
 		switch (state) {
-			case AppConstants.STATE_ALL:
-				imageStateOne.setAlpha(255);
-				imageStateTwo.setAlpha(125);
-				imageStateThree.setAlpha(125);
+			case R.id.toggle_all:
+				allButton.setEnabled(false);
+				someButton.setEnabled(true);
+				focusButton.setEnabled(true);
+				CURRENT_STATE = AppConstants.STATE_ALL;
 				break;
-			case AppConstants.STATE_SOME:
-				imageStateOne.setAlpha(125);
-				imageStateTwo.setAlpha(255);
-				imageStateThree.setAlpha(125);
+			case R.id.toggle_some:
+				allButton.setEnabled(true);
+				someButton.setEnabled(false);
+				focusButton.setEnabled(true);
+				CURRENT_STATE = AppConstants.STATE_SOME;
 				break;
-			case AppConstants.STATE_BEST:
-				imageStateOne.setAlpha(125);
-				imageStateTwo.setAlpha(125);
-				imageStateThree.setAlpha(255);
+			case R.id.toggle_focus:
+				allButton.setEnabled(true);
+				someButton.setEnabled(true);
+				focusButton.setEnabled(false);
+				CURRENT_STATE = AppConstants.STATE_BEST;
 				break;	
 		}
-		
-		CURRENT_STATE = state;
 	}
 
 	public interface StateChangedListener {

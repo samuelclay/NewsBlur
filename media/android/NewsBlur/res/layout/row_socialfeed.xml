@@ -8,11 +8,14 @@
 
     <ImageView
         android:id="@+id/row_socialfeed_icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_margin="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
         android:contentDescription="@string/description_row_folder_icon" />
 
     <TextView

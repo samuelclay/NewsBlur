@@ -48,9 +48,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	public String currentState = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
 
-	int itemCount = 1;
-	
-
 	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final int collapsedGroupLayout,
 			int expandedGroupLayout, int blogGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, String[] blogFrom, int[] blogTo) {
 		this.context = context;
@@ -170,8 +167,11 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		groupPosition = groupPosition - blogCursorHelper.getCount() + 1;
+		if (groupPosition < blogCursorHelper.getCount() - 1) {
+			return 0;
+		}
 		
+		groupPosition = groupPosition - blogCursorHelper.getCount() + 1;
 		MyCursorHelper helper = getChildrenCursorHelper(groupPosition, true);
 		return (folderCursorHelper.isValid() && helper != null) ? helper.getCount() : 0;
 	}
@@ -197,6 +197,10 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	public void setGroupCursor(Cursor cursor) {
 		folderCursorHelper.changeCursor(cursor, false);
+	}
+
+	public void setBlogCursor(Cursor blogCursor) {
+		blogCursorHelper.changeCursor(blogCursor, false);
 	}
 
 	@Override
@@ -331,6 +335,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	
 	public void requery() {
 		folderCursorHelper.getCursor().requery();
+		blogCursorHelper.getCursor().requery();
 	}
 	
 	@Override
