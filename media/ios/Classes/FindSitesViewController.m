@@ -80,6 +80,10 @@
 	return YES;
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [self.sitesTable reloadData];
+}
+
 - (void)doCancelButton {
     [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
 }

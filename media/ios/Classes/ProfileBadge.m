@@ -127,8 +127,6 @@
     activityView.frame = CGRectMake(40, 98, 20, 20.0);
     self.activityIndicator = activityView;
     
-    [self.activityIndicator startAnimating];
-
     [self.contentView addSubview:self.activityIndicator];
     
     yCoordinatePointer = self.username.frame.origin.y + self.username.frame.size.height;

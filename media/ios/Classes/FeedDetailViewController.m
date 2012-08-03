@@ -13,6 +13,7 @@
 #import "FeedDetailTableCell.h"
 #import "ASIFormDataRequest.h"
 #import "UserProfileViewController.h"
+#import "StoryDetailViewController.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
@@ -56,9 +57,7 @@
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation 
                                          duration:(NSTimeInterval)duration {
-    /* When MGSplitViewController rotates, it causes a 
-     resize of our view; we need to resize our UIBarButtonControls or they will be 0-width */    
-    [self.navigationItem.titleView sizeToFit];
+    [self setUserAvatarLayout:toInterfaceOrientation];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -66,6 +65,10 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    // 
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self setUserAvatarLayout:orientation];
+    
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
@@ -117,13 +120,13 @@
         //[self.storyTitlesTable reloadData];
     }
     [appDelegate setRecentlyReadStories:[NSMutableArray array]];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_all.png"] forSegmentAtIndex:0];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_yellow_green.png"] forSegmentAtIndex:1];
-    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] forSegmentAtIndex:2];
-    [self.intelligenceControl addTarget:self
-                         action:@selector(selectIntelligence)
-               forControlEvents:UIControlEventValueChanged];
-    [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence] + 1];
+//    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_all.png"] forSegmentAtIndex:0];
+//    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_yellow_green.png"] forSegmentAtIndex:1];
+//    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] forSegmentAtIndex:2];
+//    [self.intelligenceControl addTarget:self
+//                         action:@selector(selectIntelligence)
+//               forControlEvents:UIControlEventValueChanged];
+//    [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence] + 1];
     
 	[super viewWillAppear:animated];
         
@@ -132,6 +135,11 @@
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
+    }
+    
+    if (appDelegate.inStoryDetail = YES) {
+        appDelegate.inStoryDetail = NO;
+        [appDelegate.storyDetailViewController clearStory];
     }
 }
 
@@ -147,6 +155,22 @@
         // have the selected cell deselect
         [self.storyTitlesTable deselectRowAtIndexPath:[self.storyTitlesTable indexPathForSelectedRow]
                                              animated:YES];
+    }
+}
+
+- (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (UIInterfaceOrientationIsPortrait(orientation)) {
+            UIButton *avatar = (UIButton *)self.navigationItem.rightBarButtonItem.customView; 
+            CGRect buttonFrame = avatar.frame;
+            buttonFrame.size = CGSizeMake(32, 32);
+            avatar.frame = buttonFrame;
+        } else {
+            UIButton *avatar = (UIButton *)self.navigationItem.rightBarButtonItem.customView; 
+            CGRect buttonFrame = avatar.frame;
+            buttonFrame.size = CGSizeMake(28, 28);
+            avatar.frame = buttonFrame;
+        }
     }
 }
 
@@ -794,13 +818,13 @@
 }
 
 - (void)finishMarkAllAsRead:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
+//    NSString *responseString = [request responseString];
+//    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
+//    NSError *error;
+//    NSDictionary *results = [NSJSONSerialization 
+//                             JSONObjectWithData:responseData
+//                             options:kNilOptions 
+//                             error:&error];
     
 
 }

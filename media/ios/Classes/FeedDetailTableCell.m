@@ -179,8 +179,8 @@ static UIFont *indicatorFont = nil;
         CGContextSetStrokeColor(context, CGColorGetComponents([gray CGColor]));
         
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 10.0f, 0.0f);
-        CGContextAddLineToPoint(context, self.bounds.size.width, 0.0f);
+        CGContextMoveToPoint(context, 10.0f, 0.5f);
+        CGContextAddLineToPoint(context, self.bounds.size.width, 0.5f);
         CGContextStrokePath(context);
         
         // feed bar border    
@@ -190,7 +190,7 @@ static UIFont *indicatorFont = nil;
         }
         CGContextBeginPath(context);
         CGContextMoveToPoint(context, 0.0f, 0.5f);
-        CGContextAddLineToPoint(context, 10.0, 0.0f);
+        CGContextAddLineToPoint(context, 10.0, 0.5f);
         CGContextStrokePath(context);
     }
 
@@ -202,7 +202,7 @@ static UIFont *indicatorFont = nil;
     }
     CGContextSetLineWidth(context, 10.0f);
     CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 5.0f, 0.5f);
+    CGContextMoveToPoint(context, 5.0f, 1.0f);
     CGContextAddLineToPoint(context, 5.0f, 81.0f);
     CGContextStrokePath(context);
     

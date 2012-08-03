@@ -59,6 +59,7 @@
 - (void)changeIntelligence:(NSInteger)newLevel;
 - (NSDictionary *)getStoryAtRow:(NSInteger)indexPathRow;
 - (void)checkScroll;
+- (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender;
 - (IBAction)doOpenSettingsActionSheet;

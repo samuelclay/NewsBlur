@@ -81,9 +81,12 @@
     [self.friendSearchBar becomeFirstResponder];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [self.friendsTable reloadData];
 }
 
 - (void)doCancelButton {
@@ -388,7 +391,11 @@ viewForHeaderInSection:(NSInteger)section {
     int row = currentRow;
     appDelegate.activeUserProfileId = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
     [self.friendSearchBar resignFirstResponder];
-    [appDelegate.modalNavigationController pushViewController:appDelegate.userProfileViewController animated:YES];
+    
+    // instantiate a new userProfileController
+    UserProfileViewController *newUserProfile = [[UserProfileViewController alloc] init];
+    appDelegate.userProfileViewController = newUserProfile; 
+    [appDelegate.modalNavigationController pushViewController:newUserProfile animated:YES];
     [appDelegate.userProfileViewController getUserProfile];
 }
 

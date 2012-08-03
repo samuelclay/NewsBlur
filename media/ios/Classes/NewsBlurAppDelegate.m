@@ -68,11 +68,13 @@
 @synthesize activeUserProfileName;
 @synthesize isRiverView;
 @synthesize isSocialView;
+
 @synthesize inFindingStoryMode;
 @synthesize tryFeedStoryId;
 @synthesize tryFeedCategory;
 @synthesize popoverHasFeedView;
 @synthesize inFeedDetail;
+@synthesize inStoryDetail;
 @synthesize activeComment;
 @synthesize activeShareType;
 
@@ -162,8 +164,8 @@
 #pragma mark Social Views
 
 - (void)showUserProfileModal:(id)sender {
-    UserProfileViewController *userProfileView = [[UserProfileViewController alloc] init];
-    self.userProfileViewController = userProfileView;
+    UserProfileViewController *newUserProfile = [[UserProfileViewController alloc] init];
+    self.userProfileViewController = newUserProfile; 
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.userProfileViewController];
     self.userProfileNavigationController = navController;
 
@@ -175,10 +177,10 @@
                                    target:self 
                                    action:@selector(hideUserProfileModal)];
     
-    userProfileView.navigationItem.rightBarButtonItem = donebutton;
-    userProfileView.navigationItem.title = self.activeUserProfileName;
-    userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
-    [userProfileView getUserProfile];
+    newUserProfile.navigationItem.rightBarButtonItem = donebutton;
+    newUserProfile.navigationItem.title = self.activeUserProfileName;
+    newUserProfile.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
+    [newUserProfile getUserProfile];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController showUserProfilePopover:sender];
     } else {

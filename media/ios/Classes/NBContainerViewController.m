@@ -16,6 +16,7 @@
 #import "InteractionCell.h"
 #import "ActivityCell.h"
 #import "FeedsMenuViewController.h"
+#import "FontSettingsViewController.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1024 - 640
@@ -171,12 +172,10 @@
         popoverController = nil;
     }
     
-    if (popoverController == nil) {
-        popoverController = [[UIPopoverController alloc]
-                             initWithContentViewController:appDelegate.userProfileNavigationController];
-        
-        popoverController.delegate = self;
-    }
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:appDelegate.userProfileNavigationController];
+    
+    popoverController.delegate = self;
     
     [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
 
@@ -207,12 +206,10 @@
         popoverController = nil;
     }
 
-    if (popoverController == nil) {
-        popoverController = [[UIPopoverController alloc]
-                             initWithContentViewController:appDelegate.feedsMenuViewController];
-        
-        popoverController.delegate = self;
-    }
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:appDelegate.feedsMenuViewController];
+    
+    popoverController.delegate = self;
     
     
     [popoverController setPopoverContentSize:CGSizeMake(200, 86)];
@@ -220,7 +217,28 @@
 //                                       initWithCustomView:sender];
     [popoverController presentPopoverFromBarButtonItem:sender 
                               permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                              animated:YES]; }
+                                              animated:YES]; 
+}
+
+- (void)showFontSettingsPopover:(id)sender {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+        popoverController = nil;
+    }
+    
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:appDelegate.fontSettingsViewController];
+    
+    popoverController.delegate = self;
+    
+    
+    [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
+    //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+    //                                       initWithCustomView:sender];
+    [popoverController presentPopoverFromBarButtonItem:sender 
+                              permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                              animated:YES]; 
+}
 
 - (void)hidePopover {
     if (popoverController.isPopoverVisible) {

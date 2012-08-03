@@ -63,7 +63,7 @@
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;
-
+- (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;

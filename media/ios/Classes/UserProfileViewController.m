@@ -25,8 +25,7 @@
 @synthesize userProfile;
 
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
@@ -35,8 +34,7 @@
 }
 
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
@@ -56,18 +54,17 @@
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     ProfileBadge *badge = [[ProfileBadge alloc] init];
     self.profileBadge = badge;
-
 }
 
-- (void)viewDidUnload
-{
-    [self setProfileBadge:nil];
-    [self setProfileTable:nil];
-    [self setActivitiesArray:nil];
-    [self setActivitiesUsername:nil];
+- (void)viewDidUnload {
     [super viewDidUnload];
     // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
+    self.appDelegate = nil;
+    self.profileBadge = nil;
+    self.profileTable = nil;
+    self.activitiesArray = nil;
+    self.activitiesUsername = nil;
+    self.userProfile = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -112,7 +109,6 @@
     [request startAsynchronous];
 }
 
-
 - (void)requestFinished:(ASIHTTPRequest *)request {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     NSString *responseString = [request responseString];
@@ -151,8 +147,7 @@
 }
 
 
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
+- (void)requestFailed:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
 }

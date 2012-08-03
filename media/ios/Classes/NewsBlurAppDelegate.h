@@ -78,6 +78,7 @@
     BOOL isSocialView;
     BOOL popoverHasFeedView;
     BOOL inFeedDetail;
+    BOOL inStoryDetail;
     BOOL inFindingStoryMode;
     NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
@@ -149,6 +150,7 @@
 @property (nonatomic) NSString *tryFeedCategory;
 @property (nonatomic, readwrite) BOOL popoverHasFeedView;
 @property (nonatomic, readwrite) BOOL inFeedDetail;
+@property (nonatomic, readwrite) BOOL inStoryDetail;
 @property (readwrite) NSDictionary * activeFeed;
 @property (readwrite) NSString * activeFolder;
 @property (readwrite) NSDictionary * activeComment;

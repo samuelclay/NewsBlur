@@ -71,6 +71,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    popoverClass = [WEPopoverController class];
     
     // adding HUD for progress bar
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
@@ -80,16 +81,27 @@
 
 
     // settings button to right
-    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
-    UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
-    settings.bounds = CGRectMake(0, 0, 32, 32);
-    [settings addTarget:self action:@selector(toggleFontSize:) forControlEvents:UIControlEventTouchUpInside];
-    [settings setImage:settingsImage forState:UIControlStateNormal];
-    
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-                                       initWithCustomView:settings];
+//    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
+//    UIButton *settings = [UIButton buttonWithType:UIButtonTypeCustom];    
+//    settings.bounds = CGRectMake(0, 0, 32, 32);
+//    [settings addTarget:self action:@selector(toggleFontSize:) forControlEvents:UIControlEventTouchUpInside];
+//    [settings setImage:settingsImage forState:UIControlStateNormal];
+//    
+//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+//                                       initWithCustomView:settings];
+
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleFontSize:)];
     
     self.fontSettingsButton = settingsButton;
+    
+    // original button for iPhone
+    
+    UIBarButtonItem *originalButton = [[UIBarButtonItem alloc] 
+                                       initWithTitle:@"Original" 
+                                       style:UIBarButtonItemStyleBordered 
+                                       target:self 
+                                       action:@selector(showOriginalSubview:)
+                                       ];
     
     // back button
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
@@ -113,7 +125,7 @@
         UIBarButtonItem *back = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
         self.navigationItem.backBarButtonItem = back; 
         
-        self.navigationItem.rightBarButtonItem = fontSettingsButton;
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalButton, settingsButton, nil];
     } else {
         self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
         self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
@@ -504,6 +516,7 @@
 }
 
 - (void)showStory {
+    appDelegate.inStoryDetail = YES;
     NSLog(@"in showStory");
     // when we show story, we mark it as read
     [self markStoryAsRead]; 
@@ -518,8 +531,10 @@
     self.webView.hidden = NO;
     self.bottomPlaceholderToolbar.hidden = YES;
     self.progressViewContainer.hidden = NO;
-    self.navigationItem.rightBarButtonItem = self.fontSettingsButton;
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.navigationItem.rightBarButtonItem = self.fontSettingsButton;
+    }
 
     [appDelegate hideShareView:YES];
         
@@ -636,7 +651,7 @@
                             footerString
                             ];
 
-//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -1253,7 +1268,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [UIView setAnimationDuration:.5];
         [UIView setAnimationBeginsFromCurrentState:NO];
         [UIView setAnimationTransition:UIViewAnimationTransitionCurlDown 
-                               forView:self.view 
+                               forView:self.webView 
                                  cache:NO];
         [UIView commitAnimations];
     }
@@ -1280,50 +1295,70 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (IBAction)toggleFontSize:(id)sender {
+//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//        if (popoverController == nil) {
+//            popoverController = [[UIPopoverController alloc]
+//                                 initWithContentViewController:appDelegate.fontSettingsViewController];
+//            
+//            popoverController.delegate = self;
+//        } else {
+//            if (popoverController.isPopoverVisible) {
+//                [popoverController dismissPopoverAnimated:YES];
+//                return;
+//            }
+//            
+//            [popoverController setContentViewController:appDelegate.fontSettingsViewController];
+//        }
+//        
+//        [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
+//        UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+//                                           initWithCustomView:sender];
+//        
+//        [popoverController presentPopoverFromBarButtonItem:settingsButton
+//                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+//    } else {
+//        FontSettingsViewController *fontSettings = [[FontSettingsViewController alloc] init];
+//        appDelegate.fontSettingsViewController = fontSettings;
+//        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:appDelegate.fontSettingsViewController];
+//        
+//        // adding Done button
+//        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+//                                       initWithTitle:@"Done" 
+//                                       style:UIBarButtonItemStyleDone 
+//                                       target:self 
+//                                       action:@selector(hideToggleFontSize)];
+//        
+//        appDelegate.fontSettingsViewController.navigationItem.rightBarButtonItem = donebutton;
+//        appDelegate.fontSettingsViewController.navigationItem.title = @"Style";
+//        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+//        [self presentModalViewController:navController animated:YES];
+//        
+//    }
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        if (popoverController == nil) {
-            popoverController = [[UIPopoverController alloc]
-                                 initWithContentViewController:appDelegate.fontSettingsViewController];
+        [appDelegate.masterContainerViewController showFontSettingsPopover:sender];
+    } else {
+        if (self.popoverController == nil) {
+            self.popoverController = [[WEPopoverController alloc]
+                                      initWithContentViewController:appDelegate.fontSettingsViewController];
             
-            popoverController.delegate = self;
+            self.popoverController.delegate = self;
         } else {
-            if (popoverController.isPopoverVisible) {
-                [popoverController dismissPopoverAnimated:YES];
-                return;
-            }
-            
-            [popoverController setContentViewController:appDelegate.fontSettingsViewController];
+            [self.popoverController dismissPopoverAnimated:YES];
+            self.popoverController = nil;
         }
         
-        [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
-        UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-                                           initWithCustomView:sender];
-        
-        [popoverController presentPopoverFromBarButtonItem:settingsButton
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    } else {
-        FontSettingsViewController *fontSettings = [[FontSettingsViewController alloc] init];
-        appDelegate.fontSettingsViewController = fontSettings;
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:appDelegate.fontSettingsViewController];
-        
-        // adding Done button
-        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-                                       initWithTitle:@"Done" 
-                                       style:UIBarButtonItemStyleDone 
-                                       target:self 
-                                       action:@selector(hideToggleFontSize)];
-        
-        appDelegate.fontSettingsViewController.navigationItem.rightBarButtonItem = donebutton;
-        appDelegate.fontSettingsViewController.navigationItem.title = @"Style";
-        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        [self presentModalViewController:navController animated:YES];
-        
+        if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
+            [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
+        }
+        [self.popoverController setPopoverContentSize:CGSizeMake(274, 130)];
+        [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
+                                       permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                                       animated:YES];
     }
 }
 
-- (void)hideToggleFontSize {
-    [self dismissModalViewControllerAnimated:YES];
-}
+
 
 - (void)changeFontSize:(NSString *)fontSize {
     NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-size').setAttribute('class', '%@')", 
@@ -1363,5 +1398,60 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     htmlString = [htmlString stringByReplacingOccurrencesOfString:@"'"  withString:@"&#039;"];
     return htmlString;
 }
+
+#pragma mark -
+#pragma mark WEPopoverControllerDelegate implementation
+
+- (void)popoverControllerDidDismissPopover:(WEPopoverController *)thePopoverController {
+	//Safe to release the popover here
+	self.popoverController = nil;
+}
+
+- (BOOL)popoverControllerShouldDismissPopover:(WEPopoverController *)thePopoverController {
+	//The popover is automatically dismissed if you click outside it, unless you return NO here
+	return YES;
+}
+
+
+/**
+ Thanks to Paul Solt for supplying these background images and container view properties
+ */
+- (WEPopoverContainerViewProperties *)improvedContainerViewProperties {
+	
+	WEPopoverContainerViewProperties *props = [WEPopoverContainerViewProperties alloc];
+	NSString *bgImageName = nil;
+	CGFloat bgMargin = 0.0;
+	CGFloat bgCapSize = 0.0;
+	CGFloat contentMargin = 5.0;
+	
+	bgImageName = @"popoverBg.png";
+	
+	// These constants are determined by the popoverBg.png image file and are image dependent
+	bgMargin = 13; // margin width of 13 pixels on all sides popoverBg.png (62 pixels wide - 36 pixel background) / 2 == 26 / 2 == 13 
+	bgCapSize = 31; // ImageSize/2  == 62 / 2 == 31 pixels
+	
+	props.leftBgMargin = bgMargin;
+	props.rightBgMargin = bgMargin;
+	props.topBgMargin = bgMargin;
+	props.bottomBgMargin = bgMargin;
+	props.leftBgCapSize = bgCapSize;
+	props.topBgCapSize = bgCapSize;
+	props.bgImageName = bgImageName;
+	props.leftContentMargin = contentMargin;
+	props.rightContentMargin = contentMargin - 1; // Need to shift one pixel for border to look correct
+	props.topContentMargin = contentMargin; 
+	props.bottomContentMargin = contentMargin;
+	
+	props.arrowMargin = 4.0;
+	
+	props.upArrowImageName = @"popoverArrowUp.png";
+	props.downArrowImageName = @"popoverArrowDown.png";
+	props.leftArrowImageName = @"popoverArrowLeft.png";
+	props.rightArrowImageName = @"popoverArrowRight.png";
+	return props;	
+}
+
+
+
 
 @end

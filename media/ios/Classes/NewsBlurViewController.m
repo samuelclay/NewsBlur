@@ -79,7 +79,10 @@
 - (void)viewWillAppear:(BOOL)animated {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
-    }
+    } 
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    [self setUserAvatarLayout:orientation];
     
     [super viewWillAppear:animated];
     
@@ -133,12 +136,18 @@
         }
     }
     
-    // reload the data and then set the highlight again
-    [self.feedTitlesTable reloadData];
-    [self redrawUnreadCounts];
-    [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
-                           animated:NO 
-                     scrollPosition:UITableViewScrollPositionNone];
+    
+    // perform these only if coming from the feed detail view
+    if (appDelegate.inFeedDetail) {
+        appDelegate.inFeedDetail = NO;
+        // reload the data and then set the highlight again
+        [self.feedTitlesTable reloadData];
+        [self redrawUnreadCounts];
+        [self.feedTitlesTable selectRowAtIndexPath:self.currentRowAtIndexPath 
+                                          animated:NO 
+                                    scrollPosition:UITableViewScrollPositionNone]; 
+    }
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -167,8 +176,12 @@
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    [self setUserAvatarLayout:toInterfaceOrientation];
+}
+
+- (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
+        if (UIInterfaceOrientationIsPortrait(orientation)) {
             UIButton *avatar = (UIButton *)self.navigationItem.leftBarButtonItem.customView; 
             CGRect buttonFrame = avatar.frame;
             buttonFrame.size = CGSizeMake(32, 32);
@@ -276,9 +289,9 @@
     appDelegate.activeUsername = [results objectForKey:@"user"];
 
     // set title only if on currestont controller
-//    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
+    if (appDelegate.feedsViewController.view.window && [results objectForKey:@"user"]) {
         [appDelegate setTitle:[results objectForKey:@"user"]];
-//    }
+    }
 
     // adding user avatar to left
     NSString *url = [NSString stringWithFormat:@"%@", [[results objectForKey:@"social_profile"] objectForKey:@"photo_url"]];
@@ -288,15 +301,18 @@
     userAvatarImage = [Utilities roundCorneredImage:userAvatarImage radius:6];
     
     UIButton *userAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     userAvatarButton.bounds = CGRectMake(0, 0, 32, 32);
     [userAvatarButton addTarget:self action:@selector(showUserProfile) forControlEvents:UIControlEventTouchUpInside];
     [userAvatarButton setImage:userAvatarImage forState:UIControlStateNormal];
+
 
     UIBarButtonItem *userAvatar = [[UIBarButtonItem alloc] 
                                    initWithCustomView:userAvatarButton];
     
     self.navigationItem.leftBarButtonItem = userAvatar;
-    
+    [self setUserAvatarLayout:orientation];
     // adding settings button to right
 
 //    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];

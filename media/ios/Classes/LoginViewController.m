@@ -44,9 +44,7 @@
     
     }
 
-- (void)viewDidLoad {
-    [usernameInput becomeFirstResponder];
-        
+- (void)viewDidLoad {        
     self.usernameInput.borderStyle = UITextBorderStyleRoundedRect;
     self.passwordInput.borderStyle = UITextBorderStyleRoundedRect;
     self.emailInput.borderStyle = UITextBorderStyleRoundedRect;
@@ -85,11 +83,18 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self.errorLabel setHidden:YES];
     [super viewWillAppear:animated];
+    [usernameInput becomeFirstResponder];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-    return YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return YES;
+    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+        return YES;
+    }
+
+    return NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated {

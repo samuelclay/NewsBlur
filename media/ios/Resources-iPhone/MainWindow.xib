@@ -153,6 +153,15 @@
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
+			<object class="IBUIViewController" id="738062285">
+				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
 			<object class="IBUIViewController" id="1045229907">
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics"/>
 				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
@@ -168,7 +177,6 @@
 				<string key="NSFrameSize">{320, 480}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">1</int>
 					<bytes key="NSRGB">MSAxIDEAA</bytes>
@@ -343,6 +351,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">fontSettingsViewController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="738062285"/>
+					</object>
+					<int key="connectionID">147</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">appDelegate</string>
 						<reference key="source" ref="943309135"/>
 						<reference key="destination" ref="664661524"/>
@@ -428,6 +444,14 @@
 						<reference key="destination" ref="664661524"/>
 					</object>
 					<int key="connectionID">145</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">appDelegate</string>
+						<reference key="source" ref="738062285"/>
+						<reference key="destination" ref="664661524"/>
+					</object>
+					<int key="connectionID">148</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -558,6 +582,11 @@
 						<reference key="object" ref="925352312"/>
 						<reference key="parent" ref="0"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">146</int>
+						<reference key="object" ref="738062285"/>
+						<reference key="parent" ref="0"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -589,6 +618,8 @@
 					<string>141.IBPluginDependency</string>
 					<string>143.CustomClassName</string>
 					<string>143.IBPluginDependency</string>
+					<string>146.CustomClassName</string>
+					<string>146.IBPluginDependency</string>
 					<string>3.CustomClassName</string>
 					<string>3.IBPluginDependency</string>
 					<string>39.IBPluginDependency</string>
@@ -628,6 +659,8 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>FindSitesViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<string>FontSettingsViewController</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>NewsBlurAppDelegate</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -653,7 +686,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">145</int>
+			<int key="maxID">148</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2891,6 +2924,7 @@
 							<string>feedTitleGradient</string>
 							<string>fontSettingsButton</string>
 							<string>innerView</string>
+							<string>noStorySelectedLabel</string>
 							<string>originalStoryButton</string>
 							<string>progressView</string>
 							<string>progressViewContainer</string>
@@ -2909,6 +2943,7 @@
 							<string>UIView</string>
 							<string>UIBarButtonItem</string>
 							<string>UIView</string>
+							<string>UILabel</string>
 							<string>UIBarButtonItem</string>
 							<string>UIProgressView</string>
 							<string>UIView</string>
@@ -2930,6 +2965,7 @@
 							<string>feedTitleGradient</string>
 							<string>fontSettingsButton</string>
 							<string>innerView</string>
+							<string>noStorySelectedLabel</string>
 							<string>originalStoryButton</string>
 							<string>progressView</string>
 							<string>progressViewContainer</string>
@@ -2977,6 +3013,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">innerView</string>
 								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">noStorySelectedLabel</string>
+								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">originalStoryButton</string>

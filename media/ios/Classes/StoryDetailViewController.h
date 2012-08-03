@@ -7,11 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "WEPopoverController.h"
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
-@interface StoryDetailViewController : UIViewController <UIPopoverControllerDelegate> {
+@interface StoryDetailViewController : UIViewController 
+<UIPopoverControllerDelegate, WEPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;
@@ -23,9 +25,10 @@
     UIBarButtonItem *buttonNext;
     UIBarButtonItem *activity;
     UIActivityIndicatorView *loadingIndicator;
-    UIPopoverController *popoverController;
+    WEPopoverController *popoverController;
     UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
+	Class popoverClass;
 
 }
 
@@ -44,7 +47,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
 @property (nonatomic) IBOutlet UIView *feedTitleGradient;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonNextStory;
-@property (nonatomic) UIPopoverController *popoverController;
+@property (nonatomic, strong) WEPopoverController *popoverController;
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
@@ -74,7 +77,6 @@
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)setActiveStory;
 - (IBAction)toggleFontSize:(id)sender;
-- (void)hideToggleFontSize;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
 - (NSString *)getComments:(NSString *)type;
