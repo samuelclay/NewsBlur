@@ -456,8 +456,17 @@ header {
     border-bottom-right-radius: 4px;
 }
 
+.NB-story-content-wrapper {
+    max-height: 500px; /* ALSO CHANGE IN social_page_story.js */
+    padding-bottom: 24px;
+    overflow: hidden;
+    position: relative;
+}
+.NB-story-content-wrapper.NB-story-content-wrapper-height-fudged {
+    max-height: none;
+}
 .NB-story-content {
-    padding: 12px 222px 24px 28px;
+    padding: 12px 222px 0 28px;
     position: relative;
 }
 /*@media all and (max-width: 800px) {
@@ -505,6 +514,47 @@ header {
     color: #661616;
 }
 
+/* ================== */
+/* = Story Expander = */
+/* ================== */
+
+.NB-story-content-expander {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-top: 2px solid #3C6C2B;
+    color: #202020;
+    font-size: 14px;
+    text-align: center;
+    padding: 12px 0;
+    width: 100%;
+    text-shadow: 0 1px 0 #A4E68C;
+    opacity: .95;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #73BE58;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#73BE58), to(#71A35F));
+    background: -moz-linear-gradient(center bottom, #73BE58 0%, #71A35F 100%);
+}
+.NB-story-content-expander:hover {
+    color: white;
+    text-shadow: 0 1px 0 black;
+    background-color: #58A13E;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#58A13E), to(#3C7627));
+    background: -moz-linear-gradient(center bottom, #58A13E 0%, #3C7627 100%);
+}
+.NB-story-content-expander:active {
+    color: white;
+    text-shadow: 0 1px 0 black;
+    background-color: #3C7627;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3C7627), to(#265018));
+    background: -moz-linear-gradient(center bottom, #3C7627 0%, #265018 100%);
+}
+.NB-story-content-expander-pages {
+    font-size: 26px;
+}
 /* ======================= */
 /* = Shares and Comments = */
 /* ======================= */
@@ -829,7 +879,7 @@ header {
 .NB-feed-story-sideoptions-container {
     position: absolute;
     right: 28px;
-    bottom: 32px;
+    bottom: 0px;
     text-align: center;
     width: 162px;
 }

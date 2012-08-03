@@ -274,8 +274,8 @@ def load_feeds_flat(request):
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
     except UserSubscriptionFolders.DoesNotExist:
-        data = dict(folders=[], iphone_version=iphone_version)
-        return data
+        folders = []
+        flat_folders = []
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
 
@@ -284,30 +284,31 @@ def load_feeds_flat(request):
             sub.calculate_feed_scores(silent=True)
         feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
     
-    folders = json.decode(folders.folders)
-    flat_folders = {" ": []}
+    if folders:
+        folders = json.decode(folders.folders)
+        flat_folders = {" ": []}
     
-    def make_feeds_folder(items, parent_folder="", depth=0):
-        for item in items:
-            if isinstance(item, int) and item in feeds:
-                if not parent_folder:
-                    parent_folder = ' '
-                if parent_folder in flat_folders:
-                    flat_folders[parent_folder].append(item)
-                else:
-                    flat_folders[parent_folder] = [item]
-            elif isinstance(item, dict):
-                for folder_name in item:
-                    folder = item[folder_name]
-                    flat_folder_name = "%s%s%s" % (
-                        parent_folder if parent_folder and parent_folder != ' ' else "",
-                        " - " if parent_folder and parent_folder != ' ' else "",
-                        folder_name
-                    )
-                    flat_folders[flat_folder_name] = []
-                    make_feeds_folder(folder, flat_folder_name, depth+1)
+        def make_feeds_folder(items, parent_folder="", depth=0):
+            for item in items:
+                if isinstance(item, int) and item in feeds:
+                    if not parent_folder:
+                        parent_folder = ' '
+                    if parent_folder in flat_folders:
+                        flat_folders[parent_folder].append(item)
+                    else:
+                        flat_folders[parent_folder] = [item]
+                elif isinstance(item, dict):
+                    for folder_name in item:
+                        folder = item[folder_name]
+                        flat_folder_name = "%s%s%s" % (
+                            parent_folder if parent_folder and parent_folder != ' ' else "",
+                            " - " if parent_folder and parent_folder != ' ' else "",
+                            folder_name
+                        )
+                        flat_folders[flat_folder_name] = []
+                        make_feeds_folder(folder, flat_folder_name, depth+1)
         
-    make_feeds_folder(folders)
+        make_feeds_folder(folders)
     
     social_params = {
         'user_id': user.pk,

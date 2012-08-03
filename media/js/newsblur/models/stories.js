@@ -6,6 +6,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         this.bind('change:comments', this.populate_comments);
         this.bind('change:comment_count', this.populate_comments);
         this.populate_comments();
+        this.story_permalink = this.get('story_permalink');
+        this.story_title = this.get('story_title');
     },
     
     populate_comments: function(story, collection, changes) {

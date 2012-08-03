@@ -46,8 +46,9 @@
     </div>
     
     <div class="NB-story {% if story.saved %}NB-story-saved{% endif %} {% if story.shared_by_user %}NB-story-shared{% endif %}" data-feed-id="{{ story.story_feed_id }}" data-story-id="{{ story.id }}" data-guid="{{ story.guid_hash }}" {% if story.user_comments %}data-user-comments="{{ story.user_comments }}"{% endif %}>
-        <div class="NB-story-content">
-            {{ story.story_content|safe }}
+        <div class="NB-story-content-wrapper">
+            <div class="NB-story-content">
+                {{ story.story_content|safe }}
                 <div class="NB-feed-story-sideoptions-container">
                     {% if user.is_authenticated %}
                         <div class="NB-sideoption NB-feed-story-save">
@@ -66,8 +67,13 @@
                         </div>
                     {% endif %}
                 </div>
+            </div>
+            <div class="NB-story-content-expander">
+                <div class="NB-story-content-expander-text">Read the whole story</div>
+                <div class="NB-story-content-expander-pages"></div>
+            </div>
         </div>
-    
+        
         <div class="NB-story-comments-container">
         {% if story.share_count %}
             {% render_story_share story %}
