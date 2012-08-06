@@ -32,10 +32,13 @@ public class DatabaseConstants {
 	public static final String SOCIAL_FEED_NEUTRAL_COUNT = "nt";
 	public static final String SOCIAL_FEED_NEGATIVE_COUNT = "ng";
 
-
 	public static final String FEED_FOLDER_MAP_TABLE = "feed_folder_map";
 	public static final String FEED_FOLDER_FEED_ID = "feed_feed_id";
 	public static final String FEED_FOLDER_FOLDER_NAME = "feed_folder_name";
+	
+	public static final String SOCIALFEED_STORY_MAP_TABLE = "socialfeed_story_map";
+	public static final String SOCIALFEED_STORY_USER_ID = "socialfeed_story_user_id";
+	public static final String SOCIALFEED_STORY_STORYID = "socialfeed_story_storyid";
 
 	public static final String COMMENT_TABLE = "comments";
 

@@ -36,11 +36,12 @@ public class FeedProvider extends ContentProvider {
 	private static final int INDIVIDUAL_FOLDER = 4;
 	private static final int FEED_FOLDER_MAP = 5;
 	private static final int SPECIFIC_FEED_FOLDER_MAP = 6;
-	private static final int INDIVIDUAL_FEED = 7;
-	private static final int STORY_COMMENTS = 8;
-	private static final int INDIVIDUAL_STORY = 9;
-	private static final int DECREMENT_COUNT = 10;
-	private static final int OFFLINE_UPDATES = 11;
+	private static final int SPECIFIC_SOCIAL_FEED = 7;
+	private static final int INDIVIDUAL_FEED = 8;
+	private static final int STORY_COMMENTS = 9;
+	private static final int INDIVIDUAL_STORY = 10;
+	private static final int DECREMENT_COUNT = 11;
+	private static final int OFFLINE_UPDATES = 12;
 	
 
 	private BlurDatabase databaseHelper;
@@ -50,6 +51,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/", ALL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/", ALL_SOCIAL_FEEDS);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/#/", SPECIFIC_SOCIAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedcount/", DECREMENT_COUNT);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
@@ -121,6 +123,21 @@ public class FeedProvider extends ContentProvider {
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.SOCIAL_FEED_ID)).build();
 			break;
 
+			// Inserting a story for a social feed
+		case SPECIFIC_SOCIAL_FEED:
+			db.beginTransaction();
+			final ContentValues socialMapValues = new ContentValues();
+			socialMapValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, uri.getLastPathSegment());
+			socialMapValues.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
+			db.insertWithOnConflict(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, socialMapValues, SQLiteDatabase.CONFLICT_REPLACE);
+			
+			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.SOCIAL_FEED_ID)).build();
+			break;
+	
 			// Inserting a comment
 		case STORY_COMMENTS:
 			db.beginTransaction();
@@ -247,6 +264,22 @@ public class FeedProvider extends ContentProvider {
 			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
 		case ALL_SOCIAL_FEEDS:
 			return db.query(DatabaseConstants.SOCIAL_FEED_TABLE, null, selection, null, null, null, null);	
+		case SPECIFIC_SOCIAL_FEED:
+			String[] userArgument = new String[] { uri.getLastPathSegment() };
+
+			String userQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + " FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + 
+			" INNER JOIN " + DatabaseConstants.STORY_TABLE + 
+			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID + " = " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_STORYID +
+			" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ";
+			
+			StringBuilder storyBuilder = new StringBuilder();
+			storyBuilder.append(userQuery);
+			if (!TextUtils.isEmpty(selection)) {
+				storyBuilder.append("AND ");
+				storyBuilder.append(selection);
+			}
+			storyBuilder.append(" ORDER BY " + DatabaseConstants.STORY_DATE + " DESC");
+			return db.rawQuery(storyBuilder.toString(), userArgument);
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}

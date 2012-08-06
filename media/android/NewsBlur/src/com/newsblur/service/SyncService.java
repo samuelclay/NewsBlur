@@ -28,6 +28,9 @@ public class SyncService extends IntentService {
 	public static final String EXTRA_STATUS_RECEIVER = "resultReceiverExtra";
 	public static final String EXTRA_TASK_FEED_ID = "taskFeedId";
 	public static final String EXTRA_TASK_STORY_ID = "taskStoryId";
+	public static final String EXTRA_TASK_SOCIALFEED_ID = "userId";
+	public static final String EXTRA_TASK_SOCIALFEED_USERNAME = "username";
+	
 	
 	public final static int STATUS_RUNNING = 0x02;
 	public final static int STATUS_FINISHED = 0x03;
@@ -38,6 +41,7 @@ public class SyncService extends IntentService {
 	public static final int EXTRA_TASK_FEED_UPDATE = 31;
 	public static final int EXTRA_TASK_REFRESH_COUNTS = 32;
 	public static final int EXTRA_TASK_MARK_STORY_READ = 33;
+	public static final int EXTRA_TASK_SOCIALFEED_UPDATE = 34;
 	
 	public APIClient apiClient;
 	private APIManager apiManager;
@@ -101,7 +105,15 @@ public class SyncService extends IntentService {
 					Log.e(TAG, "No feed to refresh included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
-				break;	
+				break;
+			case EXTRA_TASK_SOCIALFEED_UPDATE:
+				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME))) {
+					apiManager.getStoriesForSocialFeed(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID), intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME));
+				} else {
+					Log.e(TAG, "Missing parameters forsocialfeed SyncRequest");
+					receiver.send(STATUS_ERROR, Bundle.EMPTY);
+				}
+				break;		
 			default:
 				Log.e(TAG, "SyncService called without relevant task assignment");
 				break;

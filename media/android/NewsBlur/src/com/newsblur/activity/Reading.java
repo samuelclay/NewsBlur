@@ -37,10 +37,12 @@ public class Reading extends SherlockFragmentActivity implements OnPageChangeLis
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String TAG = "ReadingActivity";
 	public static final String EXTRA_POSITION = "feed_position";
+	public static final String EXTRA_USERID = "user_id";
+	public static final String EXTRA_USERNAME = "username";
 
 	private int passedPosition;
 	private int currentState;
-	private String feedId;
+	private String feedId, userId;
 
 	private Feed feed;
 
@@ -58,22 +60,30 @@ public class Reading extends SherlockFragmentActivity implements OnPageChangeLis
 		setContentView(R.layout.activity_reading);
 
 		fragmentManager = getSupportFragmentManager();
-		feedId = getIntent().getStringExtra(EXTRA_FEED);
+		
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		contentResolver = getContentResolver();
-		Uri storiesURI = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
-		Cursor stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		Cursor stories = null;
+		if ((feedId = getIntent().getStringExtra(EXTRA_FEED)) != null) {
+			Uri storiesURI = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
+			stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+			
+			final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
+			feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
+			setTitle(feed.title);
+
+			createFloatingHeader();
+		} else if ((userId = getIntent().getStringExtra(EXTRA_USERID)) != null){
+			Uri storiesURI = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+			stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+
+			setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
+		}
 		readingAdapter = new ReadingAdapter(fragmentManager, this, feedId, stories);
-
-		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
-		setTitle(feed.title);
-
-		createFloatingHeader();
 
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {

@@ -12,6 +12,7 @@ public class APIConstants {
 	public static final String URL_USER_INTERACTIONS = "http://newsblur.com/social/interactions";
 	public static final String URL_RIVER_STORIES = "http://newsblur.com/reader/river_stories";
 	public static final String URL_FEED_STORIES = "http://newsblur.com/reader/feed";
+	public static final String URL_SOCIALFEED_STORIES = "http://newsblur.com/social/stories";
 	public static final String URL_SIGNUP = "http://newsblur.com/api/signup";
 	public static final String URL_FEED_COUNTS = "http://newsblur.com/reader/refresh_feeds/";
 	public static final String URL_MARK_FEED_AS_READ = "http://newsblur.com/reader/mark_feed_as_read/";

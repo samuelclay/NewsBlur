@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/fragment_folderfeedlist"
-        android:name="com.newsblur.fragment.FolderFeedListFragment"
+        android:name="com.newsblur.fragment.FolderListFragment"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@id/fragment_feedintelligenceselector"

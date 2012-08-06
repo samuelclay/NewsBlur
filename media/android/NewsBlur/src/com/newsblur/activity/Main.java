@@ -12,7 +12,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
-import com.newsblur.fragment.FolderFeedListFragment;
+import com.newsblur.fragment.FolderListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
@@ -20,7 +20,7 @@ import com.newsblur.view.StateToggleButton.StateChangedListener;
 public class Main extends SherlockFragmentActivity implements StateChangedListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
 
 	private ActionBar actionBar;
-	private FolderFeedListFragment folderFeedList;
+	private FolderListFragment folderFeedList;
 	private FragmentManager fragmentManager;
 	private SyncUpdateFragment syncFragment;
 	private static final String TAG = "MainActivity";
@@ -36,7 +36,7 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 		setupActionBar();
 
 		fragmentManager = getSupportFragmentManager();
-		folderFeedList = (FolderFeedListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
+		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
 
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {

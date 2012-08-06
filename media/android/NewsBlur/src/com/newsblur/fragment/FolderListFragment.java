@@ -33,7 +33,7 @@ import com.newsblur.util.UIUtils;
 import com.newsblur.view.FolderTreeViewBinder;
 import com.newsblur.view.SocialFeedViewBinder;
 
-public class FolderFeedListFragment extends Fragment implements OnGroupClickListener, OnChildClickListener, OnCreateContextMenuListener {
+public class FolderListFragment extends Fragment implements OnGroupClickListener, OnChildClickListener, OnCreateContextMenuListener {
 
 	private ExpandableListView list;
 	private ContentResolver resolver;
@@ -179,6 +179,16 @@ public class FolderFeedListFragment extends Fragment implements OnGroupClickList
 			return false;
 		} else {
 			Log.d(TAG, "Clicked blog.");
+			Cursor blurblogCursor = folderAdapter.getGroup(groupPosition);
+			String username = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_USERNAME));
+			String userId = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
+			
+			final Intent intent = new Intent(getActivity(), ItemsList.class);
+			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERNAME, username);
+			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERID, userId);
+			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
+			getActivity().startActivityForResult(intent, FEEDCHECK );
+				
 			return true;
 		}
 	}

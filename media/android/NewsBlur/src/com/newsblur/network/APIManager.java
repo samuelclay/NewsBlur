@@ -144,6 +144,40 @@ public class APIManager {
 			return null;
 		}
 	}
+	
+	public StoriesResponse getStoriesForSocialFeed(String userId, String username) {
+		final APIClient client = new APIClient(context);
+		final ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_USER_ID, userId);
+		values.put(APIConstants.PARAMETER_USERNAME, username);
+		
+		Uri feedUri = Uri.parse(APIConstants.URL_SOCIALFEED_STORIES).buildUpon().appendPath(userId).appendPath(username).build();
+		final APIResponse response = client.get(feedUri.toString(), values);
+		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			
+			for (Story story : storiesResponse.stories) {
+				Uri storyUri = FeedProvider.STORIES_URI.buildUpon().appendPath(story.feedId).build();
+				contentResolver.insert(storyUri, story.getValues());
+
+				for (Comment comment : story.comments) {
+					StringBuilder builder = new StringBuilder();
+					builder.append(story.id);
+					builder.append(story.feedId);
+					builder.append(comment.userId);
+					comment.storyId = story.id;
+					comment.id = (builder.toString());
+					contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
+				}
+				
+				Uri storySocialUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+				contentResolver.insert(storySocialUri, story.getValues());
+			}
+			return storiesResponse;
+		} else {
+			return null;
+		}
+	}
 
 	public boolean followUser(final String userId) {
 		final APIClient client = new APIClient(context);

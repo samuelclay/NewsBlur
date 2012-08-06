@@ -96,6 +96,12 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.FEED_FOLDER_FEED_ID + INTEGER + " NOT NULL, " +
 		"PRIMARY KEY (" + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + ", " + DatabaseConstants.FEED_FOLDER_FEED_ID + ") " + 
 		")";
+	
+	private final String SOCIALFEED_STORIES_SQL = "CREATE TABLE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + " (" +
+	DatabaseConstants.SOCIALFEED_STORY_STORYID  + TEXT + " NOT NULL, " +
+	DatabaseConstants.SOCIALFEED_STORY_USER_ID  + INTEGER + " NOT NULL, " +
+	"PRIMARY KEY (" + DatabaseConstants.SOCIALFEED_STORY_STORYID  + ", " + DatabaseConstants.SOCIALFEED_STORY_USER_ID + ") " + 
+	")";
 
 
 	@Override
@@ -107,6 +113,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(COMMENT_SQL);
 		db.execSQL(CLASSIFIER_SQL);
 		db.execSQL(FEED_FOLDER_SQL);
+		db.execSQL(SOCIALFEED_STORIES_SQL);
 		db.execSQL(OFFLINE_UPDATE_SQL);
 	}
 
