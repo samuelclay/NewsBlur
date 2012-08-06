@@ -72,15 +72,17 @@
 #pragma mark Get Interactions
 
 - (void)fetchInteractionsDetail:(int)page {
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     if (page == 1) {
         self.pageFetching = NO;
         self.pageFinished = NO;
         appDelegate.userInteractionsArray = nil;
     }
+
     if (!self.pageFetching && !self.pageFinished) {
         self.interactionsPage = page;
         self.pageFetching = YES;
-        self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
+  
         NSString *urlString = [NSString stringWithFormat:@"http://%@/social/interactions?user_id=%@&page=%i&limit=10",
                                NEWSBLUR_URL,
                                [appDelegate.dictUserProfile objectForKey:@"user_id"],
@@ -93,6 +95,7 @@
         [request setDidFailSelector:@selector(requestFailed:)];
         [request setDelegate:self];
         [request startAsynchronous];
+        NSLog(@"url is %@", url);
     }
 }
 

@@ -61,6 +61,7 @@
 - (void)checkScroll;
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 
+- (void)fadeSelectedCell;
 - (IBAction)doOpenMarkReadActionSheet:(id)sender;
 - (IBAction)doOpenSettingsActionSheet;
 - (void)confirmDeleteSite;

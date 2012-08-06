@@ -773,6 +773,7 @@
 
 - (void)markActiveStoryRead {
     int activeLocation = [self locationOfActiveStory];
+    NSLog(@"activeLocation is %i", activeLocation);
     if (activeLocation == -1) {
         return;
     }
@@ -781,13 +782,13 @@
     [self.feedDetailViewController changeActiveStoryTitleCellLayout];
     
     // set the current row as read
-    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
-    NSMutableDictionary *newActiveStory = [[newActiveFeedStories objectAtIndex:activeLocation] mutableCopy];
-    [newActiveStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
-    [newActiveFeedStories replaceObjectAtIndex:activeLocation withObject:newActiveStory];
-    self.activeFeedStories = newActiveFeedStories;
-    self.activeStory = [self.activeFeedStories objectAtIndex:activeLocation];
-    
+//    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
+//    NSMutableDictionary *newActiveStory = [[newActiveFeedStories objectAtIndex:activeLocation] mutableCopy];
+//    [newActiveStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+//    [newActiveFeedStories replaceObjectAtIndex:activeLocation withObject:newActiveStory];
+//    self.activeFeedStories = newActiveFeedStories;
+//    self.activeStory = [self.activeFeedStories objectAtIndex:activeLocation];
+//    
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     
     NSDictionary *feed;
@@ -865,6 +866,19 @@
     
     NSMutableDictionary *newStory = [story mutableCopy];
     [newStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+    
+    // make the story as read in self.activeFeedStories
+    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
+    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
+    for (int i = 0; i < [newActiveFeedStories count]; i++) {
+        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
+        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
+            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
+            break;
+        }
+    }
+    self.activeFeedStories = newActiveFeedStories;
 
     self.visibleUnreadCount -= 1;
     if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {

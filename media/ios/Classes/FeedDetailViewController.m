@@ -141,6 +141,11 @@
         appDelegate.inStoryDetail = NO;
         [appDelegate.storyDetailViewController clearStory];
     }
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.storyTitlesTable reloadData];
+        [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.6];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -148,14 +153,17 @@
     [self.popoverController dismissPopoverAnimated:YES];
 }
 
-- (void)viewDidAppear:(BOOL)animated { 
-	[super viewDidAppear:animated];
+
+- (void)fadeSelectedCell {
+    // have the selected cell deselect
+    int location = appDelegate.locationOfActiveStory;
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        // have the selected cell deselect
-        [self.storyTitlesTable deselectRowAtIndexPath:[self.storyTitlesTable indexPathForSelectedRow]
-                                             animated:YES];
-    }
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
+    if (indexPath) {
+        [self.storyTitlesTable deselectRowAtIndexPath:indexPath animated:YES];
+        
+    }           
+
 }
 
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation {
@@ -323,7 +331,7 @@
     }
         
     NSArray *newStories = [results objectForKey:@"stories"];
-    NSMutableArray *confirmedNewStories = [NSMutableArray array];
+    NSMutableArray *confirmedNewStories = [[NSMutableArray alloc] init];
     if ([appDelegate.activeFeedStories count]) {
         NSMutableSet *storyIds = [NSMutableSet set];
         for (id story in appDelegate.activeFeedStories) {
@@ -633,7 +641,8 @@
     int rowIndex = [appDelegate locationOfActiveStory];
     if (rowIndex == indexPath.row) {
         [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-    }
+    } 
+
     
 	return cell;
 }
