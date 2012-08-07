@@ -305,6 +305,8 @@
 
 - (IBAction)selectSignUp {
     isOnSignUpScreen = YES;
+    self.selectSignUpButton.selected = YES;
+    self.selectLoginButton.selected = NO;
     [self.errorLabel setHidden:YES];
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [UIView animateWithDuration:0.35 animations:^{
@@ -322,6 +324,8 @@
 
 - (IBAction)selectLogin {
     isOnSignUpScreen = NO;
+    self.selectSignUpButton.selected = NO;
+    self.selectLoginButton.selected = YES;
     [self.errorLabel setHidden:YES];
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [UIView animateWithDuration:0.35 animations:^{

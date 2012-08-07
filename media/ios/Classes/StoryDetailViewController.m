@@ -542,7 +542,7 @@
             NSString *reply = [NSString stringWithFormat:@
                                 "<div class=\"NB-story-comment-reply\" id=\"NB-user-comment-%@\">"
                                 "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
-                                "       <img class=\"NB-user-avatar NB-story-comment-reply-photo\" src=\"%@\" />"
+                                "       <img class=\"NB-story-comment-reply-photo\" src=\"%@\" />"
                                 "   </a>"
                                 "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
                                 "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
@@ -621,7 +621,7 @@
     
     if (contentWidth > 700) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (contentWidth > 420) {
+    } else if (contentWidth > 480) {
         contentWidthClass = @"NB-ipad-narrow";
     } else {
         contentWidthClass = @"NB-iphone";

@@ -55,11 +55,18 @@
     margin: 0 90px;
 }
 
-/*
-.NB-ipad-wide .NB-story img {
-    max-width: 540px !important;
+.NB-ipad-wide#story_pane .NB-story-comments-shares-teaser {
+    padding-left: 90px;
+    padding-right: 90px;
 }
- */
+
+.NB-ipad-wide#story_pane .nb-story-comment {
+    padding: 0 90px 2px 150px;
+}
+
+.NB-ipad-wide#story_pane .nb-story-comment .nb-user-avatar { 
+    left: 88px;
+}
 
 /**
  * iPad Narrow Style
@@ -77,12 +84,18 @@
     margin: 0 30px;
 }
 
-/*
-.NB-ipad-narrow .NB-story img {
-    max-width: 400px !important;
+.NB-ipad-narrow#story_pane .NB-story-comments-shares-teaser {
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
- */
+.NB-ipad-narrow#story_pane .nb-story-comment {
+    padding: 0 30px 2px 90px;
+}
+
+.NB-ipad-narrow#story_pane .nb-story-comment .nb-user-avatar { 
+    left: 28px;
+}
 
 /**
  * iPhone Style
@@ -336,6 +349,10 @@ del {
 #story_pane .NB-story-comment-reply,
 #story_pane .NB-story-comment {
     -webkit-transition: background-color .6s linear;
+}
+
+.NB-story-comment:last-child {
+            border-bottom: 1px solid #A6A6A6;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-content {

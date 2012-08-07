@@ -2,10 +2,6 @@
     float: right;
 }
 
-#story_pane .NB-feed-story-comments {
-        border-bottom: 1px solid #A6A6A6;
-
-}
 #story_pane .NB-story-comment {
     border-top: 1px solid #A6A6A6;
     background: -webkit-gradient(linear,0% 0,0% 100%,from(#F5F9FB),to(#ECF0F2));
@@ -138,6 +134,11 @@
     border-top: 0;
     padding-top: 0;
 }
+
+#story_pane .nb-story-comments-shares-teaser .NB-right {
+    margin-top: 2px;
+}
+
 #story_pane .NB-story-comments-public-teaser,
 #story_pane .NB-story-comments-public-header {
     background-color: #B1B6B4;
@@ -169,10 +170,7 @@
     padding: 8px 12px 0;
     overflow: hidden;
     height: 26px;
-    -webkit-transition: all .12s ease-out;
-    -moz-transition: all .12s ease-out;
-    -o-transition: all .12s ease-out;
-    -ms-transition: all .12s ease-out;
+    border-bottom: 1px solid #A6A6A6;
     background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0.10,#EBEBEC),color-stop(0.84,whiteSmoke));
     background-image: -moz-linear-gradient(center bottom,#EBEBEC 10%,whiteSmoke 84%);
 }
@@ -187,7 +185,7 @@
 }
 #story_pane .NB-story-share-label {
     display: inline-block;
-    margin: 0 4px 0 0;
+    margin: 2px 4px 0 0;
 }
 #story_pane .NB-story-share-profiles {
     display: inline-block;
