@@ -48,6 +48,7 @@
 @synthesize popoverController;
 @synthesize fontSettingsButton;
 @synthesize originalStoryButton;
+@synthesize subscribeButton;
 @synthesize noStorySelectedLabel;
 @synthesize buttonBack;
 @synthesize bottomPlaceholderToolbar;
@@ -103,6 +104,17 @@
                                        action:@selector(showOriginalSubview:)
                                        ];
     
+    self.originalStoryButton = originalButton;
+    
+    UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc] 
+                                       initWithTitle:@"Follow User" 
+                                       style:UIBarButtonSystemItemAction 
+                                       target:self 
+                                       action:@selector(subscribeToBlurblog)
+                                       ];
+    
+    self.subscribeButton = subscribeBtn;
+    
     // back button
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
                                    initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
@@ -145,6 +157,15 @@
 	[super viewWillAppear:animated];
         
     [self setActiveStory];
+    
+    
+    // set the subscribeButton flag
+    if (appDelegate.isTryFeedView) {
+        self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@", [appDelegate.activeFeed objectForKey:@"username"]]; 
+        self.navigationItem.leftBarButtonItem = self.subscribeButton;
+//        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
+    }
+    appDelegate.isTryFeedView = NO;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -555,7 +576,7 @@
     self.progressViewContainer.hidden = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.navigationItem.rightBarButtonItem = self.fontSettingsButton;
+        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalStoryButton, fontSettingsButton, nil];
     }
 
     [appDelegate hideShareView:YES];
@@ -1107,10 +1128,54 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSLog(@"results in mark as read is %@", results);
 } 
 
+# pragma mark
+# pragma mark Subscribing to blurblog
+
+- (void)subscribeToBlurblog {
+    [self showFollowingHUD];
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/follow",
+                     NEWSBLUR_URL];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:[appDelegate.activeFeed 
+                           objectForKey:@"user_id"] 
+                   forKey:@"user_id"];
+
+    [request setDidFinishSelector:@selector(finishSubscribeToBlurblog:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+} 
+
+- (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
+    NSLog(@"results in finishSubscribeToBlurblog %@", results);
+    self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
+    self.storyHUD.mode = MBProgressHUDModeCustomView;
+    self.storyHUD.removeFromSuperViewOnHide = YES;  
+    self.storyHUD.labelText = @"Followed";
+    [self.storyHUD hide:YES afterDelay:1];
+    self.navigationItem.leftBarButtonItem = nil;
+    [appDelegate reloadFeedsView:NO];
+} 
+
+
+
 - (void)showShareHUD {
     [MBProgressHUD hideHUDForView:self.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.storyHUD.labelText = @"Saving";
+    self.storyHUD.margin = 20.0f;
+}
+
+- (void)showFollowingHUD {
+    [MBProgressHUD hideHUDForView:self.view animated:NO];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.storyHUD.labelText = @"Following";
     self.storyHUD.margin = 20.0f;
 }
 

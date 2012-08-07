@@ -527,7 +527,8 @@
                                                                  vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, 
                                                                  vb.size.height);
         } completion:^(BOOL finished) {
-            
+            [self.storyNavigationController.view removeFromSuperview];
+            [self.feedDetailViewController.view removeFromSuperview];
         }];
     }
 }

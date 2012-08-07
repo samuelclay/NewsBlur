@@ -39,9 +39,10 @@
 					<object class="IBUITextView" id="993868796">
 						<reference key="NSNextResponder" ref="766721923"/>
 						<int key="NSvFlags">303</int>
-						<string key="NSFrame">{{86, 11}, {532, 54}}</string>
+						<string key="NSFrame">{{86, 11}, {532, 59}}</string>
 						<reference key="NSSuperview" ref="766721923"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">1</int>
@@ -78,11 +79,6 @@
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
-						<int key="IBUIButtonType">1</int>
-						<object class="NSColor" key="IBUITintColor" id="316356324">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MC42NjY2NjY2NjY3AA</bytes>
-						</object>
 						<string key="IBUINormalTitle">Facebook</string>
 						<object class="NSColor" key="IBUIHighlightedTitleColor" id="399517210">
 							<int key="NSColorSpace">3</int>
@@ -126,8 +122,6 @@
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
-						<int key="IBUIButtonType">1</int>
-						<reference key="IBUITintColor" ref="316356324"/>
 						<string key="IBUINormalTitle">Twitter</string>
 						<reference key="IBUIHighlightedTitleColor" ref="399517210"/>
 						<object class="NSColor" key="IBUINormalTitleColor">
@@ -1764,10 +1758,10 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="208-facebook-green.png">{60, 60}</string>
-			<string key="208-facebook.png">{60, 60}</string>
-			<string key="32-Twitter-Green.png">{60, 60}</string>
-			<string key="32-Twitter.png">{60, 60}</string>
+			<string key="208-facebook-green.png">{36, 36}</string>
+			<string key="208-facebook.png">{36, 36}</string>
+			<string key="32-Twitter-Green.png">{36, 36}</string>
+			<string key="32-Twitter.png">{36, 36}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

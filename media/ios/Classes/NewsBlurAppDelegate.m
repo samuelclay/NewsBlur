@@ -68,6 +68,7 @@
 @synthesize activeUserProfileName;
 @synthesize isRiverView;
 @synthesize isSocialView;
+@synthesize isTryFeedView;
 
 @synthesize inFindingStoryMode;
 @synthesize tryFeedStoryId;
@@ -369,11 +370,13 @@
   
         if (feed == nil) {
             feed = user;
+            self.isTryFeedView = YES;
         }
     } else {
         feed = [self.dictFeeds objectForKey:feedId];
         if (feed == nil) {
             feed = user;
+            self.isTryFeedView = YES;
 
         }
         [self setIsSocialView:NO];

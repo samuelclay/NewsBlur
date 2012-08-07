@@ -4560,15 +4560,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 								<reference key="IBUIToolbar" ref="155973878"/>
 								<int key="IBUISystemItemIdentifier">6</int>
 							</object>
-							<object class="IBUIBarButtonItem" id="672699755">
-								<object class="NSCustomResource" key="IBUIImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">safari.png</string>
-								</object>
-								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<float key="IBUIWidth">32</float>
-								<reference key="IBUIToolbar" ref="155973878"/>
-							</object>
 							<object class="IBUIBarButtonItem" id="1065495688">
 								<string key="IBUITitle">Next Unread</string>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -4677,14 +4668,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">originalStoryButton</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="672699755"/>
-					</object>
-					<int key="connectionID">109</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">buttonNext</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="1065495688"/>
@@ -4738,14 +4721,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">58</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">showOriginalSubview:</string>
-						<reference key="source" ref="672699755"/>
-						<reference key="destination" ref="372490531"/>
-					</object>
-					<int key="connectionID">110</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -4825,7 +4800,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 							<reference ref="542821156"/>
 							<reference ref="1065495688"/>
 							<reference ref="936960182"/>
-							<reference ref="672699755"/>
 							<reference ref="260979722"/>
 							<reference ref="1036122720"/>
 							<reference ref="284060761"/>
@@ -4869,11 +4843,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<reference key="parent" ref="155973878"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">63</int>
-						<reference key="object" ref="672699755"/>
-						<reference key="parent" ref="155973878"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">45</int>
 						<reference key="object" ref="936960182"/>
 						<reference key="parent" ref="155973878"/>
@@ -4910,7 +4879,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 					<string>46.IBPluginDependency</string>
 					<string>47.IBPluginDependency</string>
 					<string>48.IBPluginDependency</string>
-					<string>63.IBPluginDependency</string>
 					<string>80.IBPluginDependency</string>
 					<string>82.IBPluginDependency</string>
 					<string>86.IBPluginDependency</string>
@@ -4926,7 +4894,6 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 						<string key="NS.key.0">IBCocoaTouchFramework</string>
 						<integer value="0" key="NS.object.0"/>
 					</object>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -7338,17 +7305,8 @@ AAgAAAAIAAIACAACAAAAAgAAAAEAAQABAAE</bytes>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<bool key="EncodedWithXMLCoder">YES</bool>
-			<object class="NSArray" key="dict.sortedKeys">
-				<bool key="EncodedWithXMLCoder">YES</bool>
-				<string>06-arrow-south.png</string>
-				<string>safari.png</string>
-			</object>
-			<object class="NSArray" key="dict.values">
-				<bool key="EncodedWithXMLCoder">YES</bool>
-				<string>{10, 12}</string>
-				<string>{24, 24}</string>
-			</object>
+			<string key="NS.key.0">06-arrow-south.png</string>
+			<string key="NS.object.0">{10, 12}</string>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

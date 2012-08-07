@@ -22,7 +22,8 @@
 @interface FindSitesViewController()
 
 @property (readwrite) BOOL inSearch_;
-
+@property (nonatomic) NSString *searchTerm_;
+@property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator_;
 @end
 
 @implementation FindSitesViewController
@@ -32,6 +33,8 @@
 @synthesize sitesTable;
 @synthesize sites;
 @synthesize inSearch_;
+@synthesize searchTerm_;
+@synthesize loadingIndicator_;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -42,6 +45,17 @@
 
 - (void)viewDidLoad
 {
+    
+    // loading indicator
+    UIActivityIndicatorView *loader = [[UIActivityIndicatorView alloc] 
+                                       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    
+    
+    self.loadingIndicator_ = loader;
+    [self.view addSubview:self.loadingIndicator_];
+
+    
+    
     [super viewDidLoad];
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -74,6 +88,12 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [self.sitesSearchBar becomeFirstResponder];
+
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    CGRect vb = self.view.bounds;
+    self.loadingIndicator_.frame = CGRectMake(vb.size.width - 52, 12,20,20);
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -91,6 +111,15 @@
 #pragma mark - UISearchBar delegate methods
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    if (searchBar.text.length == 0) {
+        self.sites = nil; 
+        self.inSearch_ = NO;
+        [self.sitesTable reloadData];
+    } else {
+        self.inSearch_ = YES;
+        self.searchTerm_ = searchText;
+        [self loadSitesList:searchText];
+    }
 
 }
 
@@ -100,14 +129,7 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     [searchBar resignFirstResponder];
-    if (searchBar.text.length == 0) {
-        self.sites = nil; 
-        self.inSearch_ = NO;
-        [self.sitesTable reloadData];
-    } else {
-        self.inSearch_ = YES;
-        [self loadSitesList:searchBar.text];
-    }
+
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
@@ -115,11 +137,12 @@
 }
 
 - (void)loadSitesList:(NSString *)query {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    HUD.labelText = @"Searching...";
+    [self.loadingIndicator_ startAnimating];
+//    [MBProgressHUD hideHUDForView:self.view animated:YES];
+//    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+//    HUD.labelText = @"Searching...";
     
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/rss_feeds/feed_autocomplete?term=%@&limit=10",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/rss_feeds/feed_autocomplete?term=%@&limit=10&v=2",
                            NEWSBLUR_URL, [query stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     
     NSURL *url = [NSURL URLWithString:urlString];
@@ -146,6 +169,11 @@
         self.sites = results;
 
         [self.sitesTable reloadData];
+        
+        NSString *originalSearchTerm = @"";
+        if ([self.searchTerm_ isEqualToString:originalSearchTerm]) {
+            [self.loadingIndicator_ stopAnimating];
+        }
     }
     
 }
@@ -194,7 +222,6 @@
         [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
     }
     
-
     if (self.inSearch_){
         int sitesCount = [self.sites count];
         
@@ -202,7 +229,7 @@
             if (sitesCount > indexPath.row) {
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", [[self.sites objectAtIndex:indexPath.row] objectForKey:@"value"]];
                 cell.textLabel.text = [NSString stringWithFormat:@"%@", [[self.sites objectAtIndex:indexPath.row] objectForKey:@"label"]];
-                cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+//                cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
             }
         } else {
             // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad

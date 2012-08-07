@@ -137,7 +137,7 @@
         settingsButton.enabled = YES;
     }
     
-    if (appDelegate.inStoryDetail = YES) {
+    if (appDelegate.inStoryDetail = YES && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         appDelegate.inStoryDetail = NO;
         [appDelegate.storyDetailViewController clearStory];
     }
@@ -817,6 +817,7 @@
         [request startAsynchronous];
     }
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.navigationController popToRootViewControllerAnimated:YES];
         [appDelegate.masterContainerViewController transitionFromFeedDetail];
     } else {
         [appDelegate.navigationController 

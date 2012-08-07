@@ -76,6 +76,7 @@
     NSString * activeUserProfileName;
     BOOL isRiverView;
     BOOL isSocialView;
+    BOOL isTryFeedView;
     BOOL popoverHasFeedView;
     BOOL inFeedDetail;
     BOOL inStoryDetail;
@@ -145,6 +146,7 @@
 @property (readwrite) NSString * activeUserProfileName;
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
+@property (nonatomic, readwrite) BOOL isTryFeedView;
 @property (nonatomic, readwrite) BOOL inFindingStoryMode;
 @property (nonatomic) NSString *tryFeedStoryId;
 @property (nonatomic) NSString *tryFeedCategory;

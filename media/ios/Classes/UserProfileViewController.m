@@ -258,8 +258,12 @@
             appDelegate.activeUserProfileName = username;
 
             [appDelegate pushUserProfile];
-        } else if ([category isEqualToString:@"comment_reply"] ||
-                   [category isEqualToString:@"comment_like"]) {
+        } else if ([category isEqualToString:@"comment_reply"]) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
+            NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
+            [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"]];
+            appDelegate.tryFeedCategory = category;
+        } else if ([category isEqualToString:@"comment_like"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:self.userProfile];

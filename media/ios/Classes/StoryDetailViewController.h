@@ -51,6 +51,7 @@
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
+@property (nonatomic) IBOutlet UIBarButtonItem *subscribeButton;
 @property (nonatomic) IBOutlet UILabel *noStorySelectedLabel;
 
 
@@ -70,10 +71,13 @@
 - (void)clearStory;
 
 - (void)showShareHUD;
+- (void)showFollowingHUD;
 - (void)showFindingStoryHUD;
 - (void)refreshComments:(NSString *)replyId;
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
 - (void)finishLikeComment:(ASIHTTPRequest *)request;
+- (void)subscribeToBlurblog;
+- (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)setActiveStory;
 - (IBAction)toggleFontSize:(id)sender;
@@ -85,5 +89,7 @@
 - (NSString *)getAvatars:(BOOL)areFriends;
 - (NSDictionary *)getUser:(int)user_id;
 - (void)transitionFromFeedDetail;
+
+
 
 @end

@@ -183,6 +183,8 @@
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
                            NEWSBLUR_URL];
     
+
+        
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
@@ -191,6 +193,14 @@
 
     [request setPostValue:feedIdStr forKey:@"feed_id"]; 
     [request setPostValue:storyIdStr forKey:@"story_id"];
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
+    if ([userPreferences integerForKey:@"shareToFacebook"]){
+        [request addPostValue:@"facebook" forKey:@"post_to_services"];     
+    }
+    if ([userPreferences integerForKey:@"shareToTwitter"]){
+        [request addPostValue:@"twitter" forKey:@"post_to_services"];     
+    }
         
     if ([appDelegate.activeStory objectForKey:@"social_user_id"] != nil) {
         NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
