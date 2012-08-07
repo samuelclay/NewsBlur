@@ -705,7 +705,7 @@ class MSocialSubscription(mongo.Document):
             unread_stories_key = stories_key
         else:
             r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-            
+
         sorted_stories_key          = 'zB:%s' % (self.subscription_user_id)
         unread_ranked_stories_key   = 'zUB:%s:%s' % (self.user_id, self.subscription_user_id)
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
@@ -719,7 +719,9 @@ class MSocialSubscription(mongo.Document):
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
-            max_score = mark_read_time
+            now = datetime.datetime.now()
+            two_weeks_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+            max_score = int(time.mktime(two_weeks_ago.timetuple()))-1000
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
@@ -728,11 +730,11 @@ class MSocialSubscription(mongo.Document):
 
         if not ignore_user_stories:
             r.delete(unread_stories_key)
-        
+        print "User_id: %s, sub user: %s, order: %s, filter: %s, stories: %s, min: %s, max: %s" % (self.user_id, self.subscription_user_id, order, read_filter, story_ids, min_score, max_score)
         return [story_id for story_id in story_ids if story_id and story_id != 'None']
         
     @classmethod
-    def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):
+    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all'):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         
         if order == 'oldest':
@@ -740,8 +742,8 @@ class MSocialSubscription(mongo.Document):
         else:
             range_func = r.zrevrange
             
-        if not isinstance(feed_ids, list):
-            feed_ids = [feed_ids]
+        if not isinstance(social_user_ids, list):
+            social_user_ids = [social_user_ids]
 
         unread_ranked_stories_keys  = 'zU:%s' % (user_id)
         if offset and r.exists(unread_ranked_stories_keys):
@@ -750,12 +752,11 @@ class MSocialSubscription(mongo.Document):
         else:
             r.delete(unread_ranked_stories_keys)
 
-        for feed_id in feed_ids:
-            us = cls.objects.get(user=user_id, feed=feed_id)
-            story_guids = us.get_stories(offset=0, limit=200, 
-                                         order=order, read_filter=read_filter, 
+        for social_user_id in social_user_ids:
+            us = cls.objects.get(user_id=user_id, subscription_user_id=social_user_id)
+            story_guids = us.get_stories(offset=0, limit=100, 
+                                         # order=order, read_filter=read_filter, 
                                          withscores=True)
-
             if story_guids:
                 r.zadd(unread_ranked_stories_keys, **dict(story_guids))
             

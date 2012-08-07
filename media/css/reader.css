@@ -2811,20 +2811,24 @@ background: transparent;
 
 .NB-feeds-header-river-container {
     display: block;
+    border-bottom: 1px solid #F0F0F0;
 }
 
-.NB-feeds-header-river .NB-feeds-header-icon {
+.NB-feeds-header-river-container .NB-feeds-header-icon {
     background: transparent url('/media/embed/icons/silk/images.png') no-repeat 0 0;
 }
 
-.NB-feeds-header-river .NB-feeds-header-count {
+.NB-feeds-header-river-container .NB-feeds-header-count {
   background-color: #11448B;
   display: block;
   padding: 0 4px;
   margin: 2px 3px 0 0;
 }
 
-.NB-feeds-header-river.NB-empty .NB-feeds-header-count {
+.NB-feeds-header-river-container .NB-feeds-header {
+    border-bottom: 1px solid #303030;
+}
+.NB-feeds-header-river-container .NB-feeds-header.NB-empty .NB-feeds-header-count {
   display: none;
 }
 
