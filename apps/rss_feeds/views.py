@@ -69,6 +69,8 @@ def load_feed_favicon(request, feed_id):
 @json.json_view
 def feed_autocomplete(request):
     query = request.GET.get('term')
+    version = int(request.GET.get('v', 1))
+    
     if not query:
         return dict(code=-1, message="Specify a search 'term'.")
         
@@ -96,7 +98,13 @@ def feed_autocomplete(request):
         'num_subscribers': feed.num_subscribers,
     } for feed in feeds]
     
-    return feeds
+    if version > 1:
+        return {
+            'feeds': feeds,
+            'term': query,
+        }
+    else:
+        return feeds
     
 @json.json_view
 def load_feed_statistics(request, feed_id):
