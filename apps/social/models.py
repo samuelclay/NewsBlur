@@ -23,6 +23,7 @@ from apps.rss_feeds.models import Feed, MStory
 from apps.profile.models import Profile, MSentEmail
 from vendor import facebook
 from vendor import tweepy
+from vendor import pynliner
 from utils import log as logging
 from utils.feed_functions import relative_timesince
 from utils.story_functions import truncate_chars, strip_tags, linkify
@@ -255,6 +256,7 @@ class MSocialProfile(mongo.Document):
             'user_id': self.user_id,
             'username': self.username,
             'photo_url': self.email_photo_url,
+            'location': self.location,
             'num_subscribers': self.follower_count,
             'feed_title': self.title,
             'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
@@ -264,7 +266,6 @@ class MSocialProfile(mongo.Document):
         if not compact:
             params.update({
                 'bio': self.bio,
-                'location': self.location,
                 'website': self.website,
                 'shared_stories_count': self.shared_stories_count,
                 'following_count': self.following_count,
@@ -369,7 +370,7 @@ class MSocialProfile(mongo.Document):
             from apps.social.tasks import EmailNewFollower
             EmailNewFollower.apply_async(kwargs=dict(follower_user_id=self.user_id,
                                                      followee_user_id=user_id),
-                                         countdown=60)
+                                         countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
         
         return socialsub
     
@@ -1085,7 +1086,7 @@ class MSharedStory(mongo.Document):
                 if save:
                     self.save()
                 
-    def set_source_user_id(self, source_user_id, original_comments=None):
+    def set_source_user_id(self, source_user_id):
         if source_user_id == self.user_id:
             return
             
@@ -1105,7 +1106,9 @@ class MSharedStory(mongo.Document):
         
         if source_user_id:
             source_user_id = find_source(source_user_id, [])
-            if not self.source_user_id or source_user_id != self.source_user_id or original_comments:
+            if source_user_id == self.user_id:
+                return
+            elif not self.source_user_id or source_user_id != self.source_user_id:
                 self.source_user_id = source_user_id
                 logging.debug("   ---> Re-share from %s." % source_user_id)
                 self.save()
@@ -1115,8 +1118,7 @@ class MSharedStory(mongo.Document):
                                                 comments=self.comments,
                                                 story_title=self.story_title,
                                                 story_feed_id=self.story_feed_id,
-                                                story_id=self.story_guid,
-                                                original_comments=original_comments)
+                                                story_id=self.story_guid)
     
     def mute_for_user(self, user_id):
         if user_id not in self.mute_email_users:
@@ -1266,6 +1268,7 @@ class MSharedStory(mongo.Document):
 
     def comments_with_author(self):
         comments = {
+            'id': self.id,
             'user_id': self.user_id,
             'comments': self.comments,
             'shared_date': relative_timesince(self.shared_date),
@@ -1282,6 +1285,8 @@ class MSharedStory(mongo.Document):
         reply_user_ids = [reply['user_id'] for reply in comment['replies']]
         profile_user_ids = profile_user_ids.union(reply_user_ids)
         profile_user_ids = profile_user_ids.union(comment['liking_users'])
+        if comment['source_user_id']:
+            profile_user_ids.add(comment['source_user_id'])
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.to_json(compact=True) for profile in profiles]
 
@@ -1407,6 +1412,7 @@ class MSharedStory(mongo.Document):
         if service in self.posted_to_services:
             return
 
+        posted = False
         message = self.generate_post_to_service_message()
         social_service = MSocialServices.objects.get(user_id=self.user_id)
         user = User.objects.get(pk=self.user_id)
@@ -1492,7 +1498,7 @@ class MSharedStory(mongo.Document):
             }
         
             text    = render_to_string('mail/email_reply.txt', data)
-            html    = render_to_string('mail/email_reply.xhtml', data)
+            html    = pynliner.fromString(render_to_string('mail/email_reply.xhtml', data))
             subject = "%s replied to you on \"%s\" on NewsBlur" % (reply_user.username, self.story_title)
             msg     = EmailMultiAlternatives(subject, text, 
                                              from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
@@ -1555,7 +1561,7 @@ class MSharedStory(mongo.Document):
         }
     
         text    = render_to_string('mail/email_reshare.txt', data)
-        html    = render_to_string('mail/email_reshare.xhtml', data)
+        html    = pynliner.fromString(render_to_string('mail/email_reshare.xhtml', data))
         subject = "%s re-shared \"%s\" from you on NewsBlur" % (reshare_user.username, self.story_title)
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,

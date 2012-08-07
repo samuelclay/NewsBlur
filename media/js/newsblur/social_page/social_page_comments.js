@@ -1,7 +1,8 @@
 NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
     
     events: {
-        "click .NB-story-comment-reply-button": "check_reply_or_login",
+        "click .NB-story-comment-reply-button"  : "check_reply_or_login",
+        "focus .NB-story-comment-input"         : "check_comment_or_login",
         "click .NB-story-comments-public-teaser": "load_public_story_comments"
     },
     
@@ -19,14 +20,16 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         
         this.$('.NB-story-comment').each(function() {
             var $comment = $(this);
-            var comment = new Backbone.Model({
+            var comment = new NEWSBLUR.Models.Comment({
+                id: $comment.data('id'),
                 user_id: $comment.data('userId')
             });
-            var comment_view = new NEWSBLUR.Views.StoryComment({
+            var comment_view = new NEWSBLUR.Views.SocialPageComment({
                 el: $comment,
                 on_social_page: true,
                 story: self.model,
                 story_comments_view: self,
+                story_view: self.story_view,
                 model: comment
             });
             self.comment_views.push(comment_view);
@@ -41,7 +44,23 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         if (!NEWSBLUR.Globals.is_authenticated) {
             e.preventDefault();
             e.stopPropagation();
-            this.story_view.login_view.toggle_login_dialog();
+            this.story_view.login_view.toggle_login_dialog({
+                resize_open: true,
+                scroll: true
+            });
+            return false;
+        }
+    },
+    
+    check_comment_or_login: function(e) {
+        if (!NEWSBLUR.Globals.is_authenticated) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.story_view.expand_story({instant: true});
+            this.story_view.login_view.toggle_login_dialog({
+                resize_open: true,
+                scroll: true
+            });
             return false;
         }
     },
@@ -65,11 +84,9 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         }, this));
     },
     
-    replace_comments: function(html) {
-        var $new_comments = $(html);
+    replace_comments: function($new_comments) {
         this.$el.replaceWith($new_comments);
         this.setElement($new_comments);
-        this.story_view.attach_tooltips();
         this.initialize();
     },
     

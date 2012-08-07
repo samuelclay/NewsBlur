@@ -2,7 +2,7 @@
 
 
 {% if story.share_count %}
-<div class="NB-story-comments">
+<div class="NB-story-shares">
     <div class="NB-story-comments-shares-teaser-wrapper">
         <div class="NB-story-comments-shares-teaser">
             {% if story.share_count %}
@@ -35,34 +35,6 @@
             {% endif %}
         </div>
     </div>
-
-    <div class="NB-comments-body">
-        {% for comment in story.friend_comments %}
-            {% render_story_comment comment %}
-        {% endfor %}
-        
-        {% if story.comment_count_public %}
-            <div class="NB-story-comments-public-header-wrapper">
-                <div class="NB-story-comments-public-header">
-                    {{ story.comment_count_public }} public comment{{ story.comment_count_public|pluralize }}
-                </div>
-            </div>
-        {% endif %}
-        
-        {% for comment in story.public_comments %}
-            {% render_story_comment comment %}
-        {% endfor %}
-        
-    </div>
-    
-    {# {% if story.comment_count_public %} #}
-    {# <div class="NB-story-comments-public-teaser-wrapper"> #}
-    {#     <div class="NB-story-comments-public-teaser"> #}
-    {#         There {{ story.comment_count_public|pluralize:"is,are" }} {{ story.comment_count_public}} public comment{{ story.comment_count_public|pluralize }} #}
-    {#     </div> #}
-    {# </div> #}
-    {# {% endif %} #}
-    
 </div>
 {% endif %}
 

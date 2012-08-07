@@ -64,14 +64,15 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         this.make_request('/profile/set_preference', preferences, callback, null);
     },
     
-    mark_story_as_shared: function(story_id, feed_id, comments, source_user_id, post_to_services, callback, error_callback) {
+    mark_story_as_shared: function(params, callback, error_callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/social/share_story', {
-                story_id: story_id,
-                feed_id: feed_id,
-                comments: comments,
-                source_user_id: source_user_id,
-                post_to_services: post_to_services,
+                story_id: params.story_id,
+                feed_id: params.story_feed_id,
+                comments: params.comments,
+                source_user_id: params.source_user_id,
+                relative_user_id: params.relative_user_id,
+                post_to_services: params.post_to_services,
                 format: 'html'
             }, callback, error_callback, {
                 request_type: 'POST'
@@ -81,11 +82,12 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         }
     },
 
-    mark_story_as_unshared: function(story_id, feed_id, callback, error_callback) {
+    mark_story_as_unshared: function(params, callback, error_callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/social/unshare_story', {
-                story_id: story_id,
-                feed_id: feed_id,
+                story_id: params.story_id,
+                feed_id: params.story_feed_id,
+                relative_user_id: params.relative_user_id,
                 format: 'html'
             }, callback, error_callback, {
                 request_type: 'POST'

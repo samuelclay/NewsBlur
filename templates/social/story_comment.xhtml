@@ -1,6 +1,6 @@
 {% load social_tags %}
 
-<div class="NB-story-comment" data-user-id="{{ comment.user_id }}">
+<div class="NB-story-comment" data-id="{{ comment.id }}" data-user-id="{{ comment.user_id }}">
     <a href="{{ comment.user.feed_link }}" class="NB-user-avatar {% if comment.source_user_id %}NB-story-comment-reshare{% endif %}">
         <img src="{{ comment.user.photo_url }}">
     </a>
@@ -13,10 +13,19 @@
             </div>
         {% endif %}
         <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
+        {% if comment.user.location %}
+            <div class="NB-story-comment-location">{{ comment.user.location }}</div>
+        {% endif %}
         <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
         <div class="NB-story-comment-reply-button">
             <div class="NB-story-comment-reply-button-wrapper">reply</div>
         </div>
+        {% if comment.user_id == user.pk %}
+            <div class="NB-story-comment-edit-button">
+                <div class="NB-story-comment-edit-button-wrapper">edit</div>
+            </div>
+        {% endif %}
+        <div class="NB-spinner"></div>
     </div>
     <div class="NB-story-comment-content">
         {{ comment.comments|safe|linebreaksbr }}

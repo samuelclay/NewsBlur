@@ -43,24 +43,22 @@
                 <a href="{{ story.story_permalink }}">{{ story.story_title }}</a>
             </div>
         </div>
+        
     </div>
     
     <div class="NB-story {% if story.saved %}NB-story-saved{% endif %} {% if story.shared_by_user %}NB-story-shared{% endif %}" data-feed-id="{{ story.story_feed_id }}" data-story-id="{{ story.id }}" data-guid="{{ story.guid_hash }}" {% if story.user_comments %}data-user-comments="{{ story.user_comments }}"{% endif %}>
+        
+        <div class="NB-story-shares-container">
+        {% if story.share_count %}
+            {% render_story_share story %}
+        {% endif %}
+        </div>
+        
         <div class="NB-story-content-wrapper">
             <div class="NB-story-content">
                 {{ story.story_content|safe }}
                 <div class="NB-feed-story-sideoptions-container">
-                    {% if user.is_authenticated %}
-                        <div class="NB-sideoption NB-feed-story-save">
-                            <div class="NB-sideoption-icon">&nbsp;</div>
-                            <div class="NB-sideoption-title">{% if story.saved %}Saved{% else %}Save this story{% endif %}</div>
-                        </div>
-                        <div class="NB-sideoption NB-feed-story-share">
-                            <div class="NB-sideoption-icon">&nbsp;</div>
-                            <div class="NB-sideoption-title">{% if story.shared_by_user %}Shared{% else %}Post to Blurblog{% endif %}</div>
-                        </div>
-                        <div class="NB-feed-story-share-container"></div>
-                    {% else %}
+                    {% if not user.is_authenticated %}
                         <div class="NB-sideoption NB-feed-story-login">
                             <div class="NB-sideoption-icon">&nbsp;</div>
                             <div class="NB-sideoption-title">Login to share</div>
@@ -75,8 +73,8 @@
         </div>
         
         <div class="NB-story-comments-container">
-        {% if story.share_count %}
-            {% render_story_share story %}
+        {% if story.comment_count %}
+            {% render_story_comments story %}
         {% endif %}
         </div>
     </div>

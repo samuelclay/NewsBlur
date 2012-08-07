@@ -263,6 +263,7 @@ def load_feeds_flat(request):
     update_counts    = is_true(request.REQUEST.get('update_counts', True))
     
     feeds = {}
+    flat_folders = {" ": []}
     iphone_version = "1.2"
     
     if include_favicons == 'false': include_favicons = False
@@ -275,7 +276,6 @@ def load_feeds_flat(request):
         folders = UserSubscriptionFolders.objects.get(user=user)
     except UserSubscriptionFolders.DoesNotExist:
         folders = []
-        flat_folders = []
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
 
@@ -286,7 +286,6 @@ def load_feeds_flat(request):
     
     if folders:
         folders = json.decode(folders.folders)
-        flat_folders = {" ": []}
     
         def make_feeds_folder(items, parent_folder="", depth=0):
             for item in items:

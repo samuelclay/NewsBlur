@@ -33,7 +33,7 @@
         'email'            : "{{ user.email|safe }}",
         'MEDIA_URL'        : "{{ MEDIA_URL }}",
     };
-    NEWSBLUR.user_social_profile = {{ user_social_profile|safe }};
+    NEWSBLUR.user_social_profile = {{ user_social_profile_page|safe }};
     NEWSBLUR.Preferences = {};
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};
@@ -60,7 +60,7 @@
 
 </head>
 
-<body>
+<body class="{% if user.is_authenticated %}NB-authenticated{% else %}NB-unauthenticated{% endif %}">
     
 <div class="NB-page" style="background-color: {% if social_profile.custom_bgcolor %}{{ social_profile.custom_bgcolor }}{% else %}#EBC55F{% endif %}">
     <header class="NB-header">

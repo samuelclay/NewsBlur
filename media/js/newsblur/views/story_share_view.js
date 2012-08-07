@@ -176,7 +176,16 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         
         $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
         $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
-        NEWSBLUR.assets.mark_story_as_shared(this.model.id, this.model.get('story_feed_id'), comments, source_user_id, post_to_services, _.bind(this.post_share_story, this, true), _.bind(function(data) {
+        
+        var data = {
+            story_id: this.model.id, 
+            story_feed_id: this.model.get('story_feed_id'), 
+            comments: comments,
+            source_user_id: source_user_id,
+            relative_user_id: NEWSBLUR.Globals.blurblog_user_id,
+            post_to_services: post_to_services
+        };
+        NEWSBLUR.assets.mark_story_as_shared(data, _.bind(this.post_share_story, this, true), _.bind(function(data) {
             this.post_share_error(data, true);
         }, this));
         
@@ -190,9 +199,14 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
         var $unshare_button_menu = $('.NB-menu-manage-story-share-unshare');
         var $share_menu = $unshare_button_menu.closest('.NB-sideoption-share');
-        
+
         $unshare_button.addClass('NB-saving').addClass('NB-disabled').text('Deleting...');
-        NEWSBLUR.assets.mark_story_as_unshared(this.model.id, this.model.get('story_feed_id'), _.bind(this.post_share_story, this, false), _.bind(function(data) {
+        var params = {
+            story_id: this.model.id, 
+            story_feed_id: this.model.get('story_feed_id'),
+            relative_user_id: NEWSBLUR.Globals.blurblog_user_id
+        };
+        NEWSBLUR.assets.mark_story_as_unshared(params, _.bind(this.post_share_story, this, false), _.bind(function(data) {
             this.post_share_error(data, false);
         }, this));
         
@@ -219,7 +233,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         
         if (this.options.on_social_page) {
             this.model.social_page_story.$el.toggleClass('NB-story-shared', this.model.get('shared'));
-            this.model.social_page_comments.replace_comments(data);
+            this.model.social_page_story.replace_shares_and_comments(data);
         } else {
             this.model.story_view.$el.toggleClass('NB-story-shared', this.model.get('shared'));
             this.model.story_view.render_comments();
