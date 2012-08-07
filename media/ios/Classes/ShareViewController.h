@@ -32,6 +32,7 @@
 - (void)finishAddReply:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId;
+- (void)adjustCommentField;
 - (NSString *)stringByStrippingHTML:(NSString *)s;
 
 @end

@@ -83,7 +83,8 @@
 - (IBAction)toggleFontSize:(id)sender;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
-- (NSString *)getComments:(NSString *)type;
+- (NSString *)getShareBar;
+- (NSString *)getComments;
 - (NSString *)getComment:(NSDictionary *)commentDict;
 - (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId;
 - (NSString *)getAvatars:(BOOL)areFriends;

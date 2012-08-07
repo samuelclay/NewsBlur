@@ -155,7 +155,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-        
+    [appDelegate adjustStoryDetailWebView];
     [self setActiveStory];
 }
 
@@ -279,8 +279,8 @@
     return avatarString;
 }
 
-- (NSString *)getComments:(NSString *)type {
-    NSString *comments = @"";
+- (NSString *)getComments {
+    NSString *comments = @"<div class=\"NB-feed-story-comments\">";
 
     if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] &&
         [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
@@ -288,6 +288,42 @@
         NSDictionary *story = appDelegate.activeStory;
         NSArray *friendsCommentsArray =  [story objectForKey:@"friend_comments"];   
         NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];   
+
+        // add friends comments
+        for (int i = 0; i < friendsCommentsArray.count; i++) {
+            NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
+            comments = [comments stringByAppendingString:comment];
+        }
+        
+        if ([[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
+            NSString *publicCommentHeader = [NSString stringWithFormat:@
+                                             "<div class=\"NB-story-comments-public-header-wrapper\">"
+                                             "<div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
+                                             "</div>",
+                                             [[story objectForKey:@"comment_count_public"] intValue],
+                                             [[story objectForKey:@"comment_count_public"] intValue] == 1 ? @"" : @"s"];
+            
+            comments = [comments stringByAppendingString:publicCommentHeader];
+            
+            // add friends comments
+            for (int i = 0; i < publicCommentsArray.count; i++) {
+                NSString *comment = [self getComment:[publicCommentsArray objectAtIndex:i]];
+                comments = [comments stringByAppendingString:comment];
+            }
+        }
+
+
+        comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
+    }
+    
+    return comments;
+}
+
+- (NSString *)getShareBar {
+    NSString *comments = @"";
+    
+    if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] &&
+        [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             comments = [comments stringByAppendingString:[NSString stringWithFormat:@
@@ -325,32 +361,8 @@
                                                           [self getAvatars:YES]
                                                           ]];
         }
-                
-
-
-        // add friends comments
-        for (int i = 0; i < friendsCommentsArray.count; i++) {
-            NSString *comment = [self getComment:[friendsCommentsArray objectAtIndex:i]];
-            comments = [comments stringByAppendingString:comment];
-        }
         
-        if ([[story objectForKey:@"comment_count_public"] intValue] > 0 ) {
-            NSString *publicCommentHeader = [NSString stringWithFormat:@
-                                             "<div class=\"NB-story-comments-public-header-wrapper\">"
-                                             "<div class=\"NB-story-comments-public-header\">%i public comment%@</div>"
-                                             "</div>",
-                                             [[story objectForKey:@"comment_count_public"] intValue],
-                                             [[story objectForKey:@"comment_count_public"] intValue] == 1 ? @"" : @"s"];
-            
-            comments = [comments stringByAppendingString:publicCommentHeader];
-            
-            // add friends comments
-            for (int i = 0; i < publicCommentsArray.count; i++) {
-                NSString *comment = [self getComment:[publicCommentsArray objectAtIndex:i]];
-                comments = [comments stringByAppendingString:comment];
-            }
-        }
-
+        
 
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
     }
@@ -584,7 +596,8 @@
     [appDelegate hideShareView:YES];
         
     [appDelegate resetShareComments];
-    NSString *commentString = [self getComments:@"friends"];       
+    NSString *shareBarString = [self getShareBar]; 
+    NSString *commentString = [self getComments];       
     NSString *headerString;
     NSString *sharingHtmlString;
     NSString *footerString;
@@ -673,6 +686,7 @@
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@\">"
                             "    %@" // storyHeader
+                            "    %@" // shareBar
                             "    <div class=\"%@\" id=\"NB-font-style\">"
                             "       <div class=\"%@\" id=\"NB-font-size\">"
                             "           <div class=\"NB-story\">%@</div>"
@@ -687,7 +701,8 @@
                             "</html>",
                             headerString,
                             contentWidthClass,
-                            storyHeader, 
+                            storyHeader,
+                            shareBarString,
                             fontStyleClass,
                             fontSizeClass,
                             [appDelegate.activeStory objectForKey:@"story_content"],
@@ -696,7 +711,7 @@
                             footerString
                             ];
 
-//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -1184,7 +1199,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)refreshComments:(NSString *)replyId {
-    NSString *commentString = [self getComments:@"friends"];  
+    NSString *commentString = [self getComments];  
     NSString *jsString = [[NSString alloc] initWithFormat:@
                           "document.getElementById('NB-comments-wrapper').innerHTML = '%@';",
                           commentString];
@@ -1363,7 +1378,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     if (contentWidth > 740) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (contentWidth > 420) {
+    } else if (contentWidth > 500) {
         contentWidthClass = @"NB-ipad-narrow";
     } else {
         contentWidthClass = @"NB-iphone";

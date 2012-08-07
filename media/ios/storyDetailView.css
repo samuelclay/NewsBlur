@@ -120,6 +120,10 @@ body {
     font-family: Helvetica;
 }
 
+body.NB-iphone {
+    line-height: 110%;
+}
+
 .NB-story-author {
     color: #969696;
     text-transform: uppercase;
@@ -193,6 +197,17 @@ body {
     line-height: 140%;
 }
 
+.NB-iphone .NB-story h1, 
+.NB-iphone .NB-story h2,
+.NB-iphone .NB-story h3,
+.NB-iphone .NB-story h4,
+.NB-iphone .NB-story h5,
+.NB-iphone .NB-story h6 {
+    line-height: 120%;
+    font-size: 1.1em;
+}
+
+
 a {
     text-decoration: none;
 }
@@ -226,6 +241,10 @@ div + p {
     text-shadow: 1px 1px 0 #EFEFEF;
     overflow: hidden;
     max-width: none;
+}
+
+.NB-iphone .NB-header {
+    font-size: 14px;
 }
 
 .NB-story {

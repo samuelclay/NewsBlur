@@ -783,18 +783,11 @@
     
     // changes the story layout in story feed detail
     [self.feedDetailViewController changeActiveStoryTitleCellLayout];
-    
-    // set the current row as read
-//    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
-//    NSMutableDictionary *newActiveStory = [[newActiveFeedStories objectAtIndex:activeLocation] mutableCopy];
-//    [newActiveStory setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
-//    [newActiveFeedStories replaceObjectAtIndex:activeLocation withObject:newActiveStory];
-//    self.activeFeedStories = newActiveFeedStories;
-//    self.activeStory = [self.activeFeedStories objectAtIndex:activeLocation];
-//    
+ 
     int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
     
     NSDictionary *feed;
+    NSDictionary *friendFeed;
     id feedId;
     NSString *feedIdStr;
     NSMutableArray *otherFriendFeeds = [[self.activeStory objectForKey:@"shared_by_friends"] mutableCopy];
@@ -805,7 +798,7 @@
         feed = [self.dictSocialFeeds objectForKey:feedIdStr];
         
         [otherFriendFeeds removeObject:feedId];
-//         NSLog(@"otherFriendFeeds is %@", otherFriendFeeds);
+         NSLog(@"otherFriendFeeds is %@", otherFriendFeeds);
     } else {
         feedId = [self.activeStory objectForKey:@"story_feed_id"];
         feedIdStr = [NSString stringWithFormat:@"%@",feedId];
@@ -813,24 +806,21 @@
     }
     
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
-    if (self.activeFeed != feed) {
-//        NSLog(@"activeFeed; %@, feed: %@", activeFeed, feed);
-        self.activeFeed = feed;
-    }
-    
-    [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
-    [self markStoryRead:story feed:feed];
-    
-    // decrement all other friend feeds
+    // decrement all other friend feeds if they have the same story
     if (self.isSocialView) {
         for (int i = 0; i < otherFriendFeeds.count; i++) {
             feedIdStr = [NSString stringWithFormat:@"social:%@",
                          [otherFriendFeeds objectAtIndex:i]];   
-            feed = [self.dictSocialFeeds objectForKey:feedIdStr];
-            [self markStoryRead:story feed:feed];
+            friendFeed = [self.dictSocialFeeds objectForKey:feedIdStr];
+            [self markStoryRead:story feed:friendFeed];
         }
     }
 
+    // make sure we set the active feed
+    self.activeFeed = feed;
+    
+    [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
+    [self markStoryRead:story feed:feed];
 }
 
 - (NSDictionary *)markVisibleStoriesRead {

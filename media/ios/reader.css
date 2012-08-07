@@ -3,15 +3,12 @@
 }
 
 #story_pane .NB-feed-story-comments {
-    margin: -24px 200px 32px 28px;
-    padding: 1px 0 0;
-    max-width: 700px;
-    border-top: 2px solid #353535;
-    border-bottom: 1px solid #353535;
+        border-bottom: 1px solid #A6A6A6;
+
 }
 #story_pane .NB-story-comment {
     border-top: 1px solid #A6A6A6;
-    background-color: #FCFCFC;
+    background: -webkit-gradient(linear,0% 0,0% 100%,from(#F5F9FB),to(#ECF0F2));
     position: relative;
     padding: 0 12px 2px 72px;
     line-height: 20px;
@@ -165,17 +162,19 @@
     background-color: whiteSmoke;
     color: #202020;
     cursor: default;
-    text-shadow: 0 1px 0 #FFF;
+    text-shadow: 0 1px 0 white;
     font-weight: bold;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 8px 12px 0px;
+    padding: 8px 12px 0;
     overflow: hidden;
-    height: 27px;
+    height: 26px;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
+    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0.10,#EBEBEC),color-stop(0.84,whiteSmoke));
+    background-image: -moz-linear-gradient(center bottom,#EBEBEC 10%,whiteSmoke 84%);
 }
 
 #story_pane .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
