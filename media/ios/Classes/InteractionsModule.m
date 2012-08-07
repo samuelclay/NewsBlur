@@ -95,7 +95,6 @@
         [request setDidFailSelector:@selector(requestFailed:)];
         [request setDelegate:self];
         [request startAsynchronous];
-        NSLog(@"url is %@", url);
     }
 }
 
@@ -192,7 +191,6 @@
         cell = [[InteractionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"InteractionCell"];
     }
     
-
     if (indexPath.row >= [appDelegate.userInteractionsArray count]) {
         // add in loading cell
         return [self makeLoadingCell];

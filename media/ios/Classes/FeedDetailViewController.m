@@ -136,15 +136,22 @@
     } else {
         settingsButton.enabled = YES;
     }
-    
+        
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self.storyTitlesTable reloadData];
+        int location = appDelegate.locationOfActiveStory;
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
+        if (indexPath) {
+            [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        } 
+        [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.6];
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
     if (appDelegate.inStoryDetail = YES && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         appDelegate.inStoryDetail = NO;
         [appDelegate.storyDetailViewController clearStory];
-    }
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [self.storyTitlesTable reloadData];
-        [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.6];
     }
 }
 
@@ -273,7 +280,6 @@
         
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
-                NSLog(@"theFeedDetailURL is %@", theFeedDetailURL);
         [request setDelegate:self];
         [request setResponseEncoding:NSUTF8StringEncoding];
         [request setDefaultResponseEncoding:NSUTF8StringEncoding];
@@ -638,12 +644,13 @@
         cell.isRiverOrSocial = YES;
     }
 
-    int rowIndex = [appDelegate locationOfActiveStory];
-    if (rowIndex == indexPath.row) {
-        [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-    } 
+    if (UI_USER_INTERFACE_IDIOM() ==  UIUserInterfaceIdiomPad) {
+        int rowIndex = [appDelegate locationOfActiveStory];
+        if (rowIndex == indexPath.row) {
+            [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        } 
+    }
 
-    
 	return cell;
 }
 

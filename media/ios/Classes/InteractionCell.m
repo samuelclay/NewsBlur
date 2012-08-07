@@ -47,7 +47,7 @@
     
     // determine outer bounds
     CGRect contentRect = self.contentView.bounds;
-            
+                
     // position label to bounds
     CGRect labelRect = contentRect;
     labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
@@ -106,7 +106,12 @@
     
     // for those calls we don't specify a range so it affects the whole string
     [attrStr setFont:[UIFont fontWithName:@"Helvetica" size:14]];
-    [attrStr setTextColor:UIColorFromRGB(0x333333)];
+    if (self.highlighted) {
+        [attrStr setTextColor:UIColorFromRGB(0xffffff)];        
+    } else {
+        [attrStr setTextColor:UIColorFromRGB(0x333333)];
+
+    }
     
     if (![username isEqualToString:@"You"]){
         [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txtWithTime rangeOfString:username]];

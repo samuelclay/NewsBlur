@@ -287,8 +287,12 @@
 }
 
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
+    NSMutableDictionary *newStoryParsed = [newStory mutableCopy];
+    [newStoryParsed setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
+    [newStoryParsed setValue:[appDelegate.activeStory objectForKey:@"short_parsed_date"] forKey:@"short_parsed_date"] ;
+
     // update the current story and the activeFeedStories
-    appDelegate.activeStory = newStory;
+    appDelegate.activeStory = newStoryParsed;
     
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
     
@@ -297,7 +301,7 @@
         NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
         NSString *currentStoryId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
         if ([storyId isEqualToString: currentStoryId]){
-            [newActiveFeedStories addObject:newStory];
+            [newActiveFeedStories addObject:newStoryParsed];
         } else {
             [newActiveFeedStories addObject:[appDelegate.activeFeedStories objectAtIndex:i]];
         }

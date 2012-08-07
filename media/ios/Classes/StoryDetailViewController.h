@@ -51,7 +51,7 @@
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
-@property (nonatomic) IBOutlet UIBarButtonItem *subscribeButton;
+@property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
 @property (nonatomic) IBOutlet UILabel *noStorySelectedLabel;
 
 

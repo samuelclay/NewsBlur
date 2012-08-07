@@ -110,12 +110,15 @@ static UIFont *indicatorFont = nil;
         [textColor set];
     }
     
+
+    CGSize theSize = [self.storyTitle sizeWithFont:font constrainedToSize:CGSizeMake(rect.size.width - rightMargin, 30.0) lineBreakMode:UILineBreakModeTailTruncation];
+    
     [self.storyTitle 
-     drawInRect:CGRectMake(leftMargin, 6 + adjustForSocial, rect.size.width - rightMargin, 30.0) 
+     drawInRect:CGRectMake(leftMargin, 6 + adjustForSocial + ((30 - theSize.height)/2), rect.size.width - rightMargin, theSize.height) 
      withFont:font
      lineBreakMode:UILineBreakModeTailTruncation 
      alignment:UITextAlignmentLeft];
-    
+
     // story author style
     if (self.isRead) {
         textColor = UIColorFromRGB(0xc0c0c0);
@@ -128,6 +131,7 @@ static UIFont *indicatorFont = nil;
         textColor = UIColorFromRGB(0x686868);
     }
     [textColor set];
+    
 
     [self.storyAuthor 
      drawInRect:CGRectMake(leftMargin, 42 + adjustForSocial, (rect.size.width - rightMargin) / 2 - 10, 15.0) 
@@ -156,6 +160,18 @@ static UIFont *indicatorFont = nil;
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentRight];
     
+    // feed bar
+    CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor]));
+    if (self.isRead) {
+        CGContextSetAlpha(context, 0.25);
+    }
+    CGContextSetLineWidth(context, 10.0f);
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, 5.0f, 1.0f);
+    CGContextAddLineToPoint(context, 5.0f, 81.0f);
+    CGContextStrokePath(context);
+    
+    CGContextSetLineWidth(context, 1.0f);
     if (self.highlighted || self.selected) {
         // top border
         UIColor *blue = UIColorFromRGB(0x6eadf5);
@@ -186,25 +202,13 @@ static UIFont *indicatorFont = nil;
         // feed bar border    
         CGContextSetStrokeColor(context, CGColorGetComponents([feedColorBarTopBorder CGColor]));
         if (self.isRead) {
-            CGContextSetAlpha(context, 0.25);
+            CGContextSetAlpha(context, 0.5);
         }
         CGContextBeginPath(context);
         CGContextMoveToPoint(context, 0.0f, 0.5f);
         CGContextAddLineToPoint(context, 10.0, 0.5f);
         CGContextStrokePath(context);
     }
-
-
-    // feed bar
-    CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor]));
-    if (self.isRead) {
-        CGContextSetAlpha(context, 0.25);
-    }
-    CGContextSetLineWidth(context, 10.0f);
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 5.0f, 1.0f);
-    CGContextAddLineToPoint(context, 5.0f, 81.0f);
-    CGContextStrokePath(context);
     
     // site favicon
     if (self.isRead && !self.hasAlpha) {

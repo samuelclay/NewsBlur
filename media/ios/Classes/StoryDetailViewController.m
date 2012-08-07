@@ -145,7 +145,7 @@
 }
 
 - (void)transitionFromFeedDetail {
-    [self performSelector:@selector(clearStory) withObject:self afterDelay:0.35];
+    [self performSelector:@selector(clearStory) withObject:self afterDelay:0.5];
     [appDelegate.masterContainerViewController transitionFromFeedDetail];
 }
 
@@ -157,15 +157,17 @@
 	[super viewWillAppear:animated];
         
     [self setActiveStory];
-    
-    
+}
+
+- (void)viewDidAppear:(BOOL)animated {
     // set the subscribeButton flag
     if (appDelegate.isTryFeedView) {
         self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@", [appDelegate.activeFeed objectForKey:@"username"]]; 
         self.navigationItem.leftBarButtonItem = self.subscribeButton;
-//        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
+        //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
+
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -761,6 +763,16 @@
             titleImageView.hidden = YES;
             self.navigationItem.titleView = titleImageView; 
             titleImageView.hidden = NO;
+        } else {
+            
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+            UIImage *titleImage  = [Utilities getImage:feedIdStr];
+            titleImage = [Utilities roundCorneredImage:titleImage radius:6];
+            
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+            imageView.frame = CGRectMake(0.0, 0.0, 28.0, 28.0);
+            [imageView setImage:titleImage];
+            self.navigationItem.titleView = imageView;        
         }
     }
 }
@@ -961,30 +973,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)setNextPreviousButtons {
-    NSLog(@"\n\n\n\n\nin setNextPreviousButtons\n");
-    
     // setting up the PREV BUTTON
     int readStoryCount = [appDelegate.readStories count];
     if (readStoryCount == 0 || 
         (readStoryCount == 1 && 
-         [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
-            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-            [buttonPrevious setTitle:@"Previous"];
-            [buttonPrevious setEnabled:NO];
-        } else {
-            [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-            [buttonPrevious setTitle:@"Previous"];
-            [buttonPrevious setEnabled:YES];
-        }
-
-    // setting up the NEXT STORY BUTTON
-//    int nextStoryIndex = [appDelegate indexOfNextStory];  
-//    NSLog(@"nextStoryIndex is %i", nextStoryIndex);
-//    if (nextStoryIndex == -1) {
-//        self.buttonNextStory.enabled = NO;
-//    } else {
-//        self.buttonNextStory.enabled = YES;
-//    }
+        [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
+        [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
+        [buttonPrevious setTitle:@"Previous"];
+        [buttonPrevious setEnabled:NO];
+    } else {
+        [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
+        [buttonPrevious setTitle:@"Previous"];
+        [buttonPrevious setEnabled:YES];
+    }
 
     // setting up the NEXT UNREAD STORY BUTTON
     int nextIndex = [appDelegate indexOfNextUnreadStory];
@@ -1012,8 +1013,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         
         [appDelegate markActiveStoryRead];
 
-        NSString *urlString;
-        
+        NSString *urlString;        
         if (appDelegate.isSocialView) {
             urlString = [NSString stringWithFormat:@"http://%@/reader/mark_social_stories_as_read",
                         NEWSBLUR_URL];
@@ -1150,10 +1150,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 } 
 
 - (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
-    NSLog(@"results in finishSubscribeToBlurblog %@", results);
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
     self.storyHUD.removeFromSuperViewOnHide = YES;  
@@ -1161,9 +1157,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.storyHUD hide:YES afterDelay:1];
     self.navigationItem.leftBarButtonItem = nil;
     [appDelegate reloadFeedsView:NO];
-} 
-
-
+//    [appDelegate.feedDetailViewController resetFeedDetail];
+//    [appDelegate.feedDetailViewController fetchFeedDetail:1 withCallback:nil];
+}
 
 - (void)showShareHUD {
     [MBProgressHUD hideHUDForView:self.view animated:NO];
