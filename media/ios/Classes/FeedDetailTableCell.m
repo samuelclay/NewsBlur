@@ -171,6 +171,9 @@ static UIFont *indicatorFont = nil;
     CGContextAddLineToPoint(context, 5.0f, 81.0f);
     CGContextStrokePath(context);
     
+    
+    // reset for borders
+    CGContextSetAlpha(context, 1.0);
     CGContextSetLineWidth(context, 1.0f);
     if (self.highlighted || self.selected) {
         // top border

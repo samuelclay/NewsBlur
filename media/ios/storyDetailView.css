@@ -55,6 +55,8 @@
     margin: 0 90px;
 }
 
+.NB-ipad-wide#story_pane .nb-story-comments-public-teaser, 
+.NB-ipad-wide#story_pane .nb-story-comments-public-header,
 .NB-ipad-wide#story_pane .NB-story-comments-shares-teaser {
     padding-left: 90px;
     padding-right: 90px;
@@ -70,6 +72,8 @@
 .NB-ipad-wide#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar {
     left: 98px;
 }
+
+
 
 
 /**
@@ -88,6 +92,8 @@
     margin: 0 30px;
 }
 
+.NB-ipad-narrow#story_pane .nb-story-comments-public-teaser, 
+.NB-ipad-narrow#story_pane .nb-story-comments-public-header,
 .NB-ipad-narrow#story_pane .NB-story-comments-shares-teaser {
     padding-left: 30px;
     padding-right: 30px;
@@ -427,8 +433,8 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-share-button {
-    float: left;
-    padding: 0px 20px 20px 0px;
+    float: none;
+    padding: 0px 0px 20px 0px;
     margin-bottom: 0;
 }
 
@@ -451,8 +457,13 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-share-button div { 
-    padding: 4px 14px;
+    padding: 8px 14px;
     border-radius: 5px;
+    text-align: center;
+    background: -webkit-gradient(
+        linear, left top, left bottom, 
+        from(#42aaff),
+        to(#003366));
 }
 
 .NB-button .nb-story-comment-like-button-wrapper a {
@@ -472,8 +483,8 @@ a.NB-show-profile {
     background: transparent url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAFkSURBVCiRbZC/6xNBFMTn7e1mDVyhWIlgZSFYqSBEEsEQCUTBxsLKv0TBWrQWrGwtjFU603oEFP0T0ljYyt1lf+TNWgXCl5ty5g0f5gEDaprmQdM0T4cyuWhst1up6/o7gMs553vT6bQ/z83Fgvf+mXPuvnPuFskXg4TNZnNpPB5fE5GrdV1/9N7fIYkQwr5t25cA/qSU/q5Wq052u90ba+0jAHdFpLbWIsYIVcVoNELOGap6IPk75/zTkNyTfOi9r6uqwuFwQEoJKSV0XQeScM6NSU5KKXszmUw+hRAe933/DwBUFaUUAMDxeISIIITQppSez+fz9wYAZrPZtxjjK1UtzjmoKkiiqiqUUpBS+rBYLL4AgD2tL6W0JCEi8N7jnEYyDL31tjFGAIBkUtXWGAMRgareOB2dE673fY+c87sY41eSyVr7REReq+qVocLnruveLpfLX2fUH+v1eu2cu3ky/gOHFMgsTjV4FQAAAABJRU5ErkJggg==") no-repeat left 1px;
 }
 
-.NB-button a,
-.NB-button.NB-share-button a {
+.NB-button a {
+    display: block;
     padding-top: 1px;
     line-height: 16px;
     font-family: Helvetica, sans-serif;
@@ -482,6 +493,12 @@ a.NB-show-profile {
     text-shadow:
         0px 0px 0px rgba(000,000,000,0),
         0px 1px 0px rgba(255,255,255,1);
+}
+
+.NB-button.NB-share-button a {
+    color: #FFF;
+    text-shadow: none;
+    font-size: 11px;
 }
 
 .NB-button.hover a,

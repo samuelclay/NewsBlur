@@ -386,9 +386,9 @@
     if ([commentUserId isEqualToString:currentUserId]) {
         userEditButton = [NSString stringWithFormat:@
                           "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button NB-button\">"
-                            "<div class=\"NB-story-comment-edit-button-wrapper\">"
-                                "<a href=\"http://ios.newsblur.com/edit-share/%@\">Edit</a>"
-                            "</div>"
+                            "<a href=\"http://ios.newsblur.com/edit-share/%@\"><div class=\"NB-story-comment-edit-button-wrapper\">"
+                                "Edit"
+                            "</div></a>"
                           "</div>",
                           commentUserId];
     } else {
@@ -403,17 +403,17 @@
         if (isInLikingUsers) {
             userLikeButton = [NSString stringWithFormat:@
                               "<div class=\"NB-story-comment-like-button NB-button selected\">"
-                              "<div class=\"NB-story-comment-like-button-wrapper\">"
-                              "<a href=\"http://ios.newsblur.com/unlike-comment/%@\">Favorited</a>"
-                              "</div>"
+                              "<a href=\"http://ios.newsblur.com/unlike-comment/%@\"><div class=\"NB-story-comment-like-button-wrapper\">"
+                              "Favorited"
+                              "</div></a>"
                               "</div>",
                               commentUserId]; 
         } else {
             userLikeButton = [NSString stringWithFormat:@
                               "<div class=\"NB-story-comment-like-button NB-button\">"
-                              "<div class=\"NB-story-comment-like-button-wrapper\">"
-                              "<a href=\"http://ios.newsblur.com/like-comment/%@\">Favorite</a>"
-                              "</div>"
+                              "<a href=\"http://ios.newsblur.com/like-comment/%@\"><div class=\"NB-story-comment-like-button-wrapper\">"
+                              "Favorite"
+                              "</div></a>"
                               "</div>",
                               commentUserId]; 
         }
@@ -446,9 +446,9 @@
                     "    <div class=\"NB-story-comment-username\">%@</div>"
                     "    <div class=\"NB-story-comment-date\">%@ ago</div>"
                     "    <div class=\"NB-story-comment-reply-button NB-button\">"
-                    "        <div class=\"NB-story-comment-reply-button-wrapper\">"
-                    "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">Reply</a>"
-                    "        </div>"
+                    "        <a href=\"http://ios.newsblur.com/reply/%@/%@\"><div class=\"NB-story-comment-reply-button-wrapper\">"
+                    "            Reply"
+                    "        </div></a>"
                     "    </div>"
                     "    %@" //User Edit Button>"
                     "    %@" //User Like Button>"
@@ -482,9 +482,9 @@
 
                    "<div style=\"clear:both\">"
                    "    <div class=\"NB-story-comment-reply-button NB-button\">"
-                   "        <div class=\"NB-story-comment-reply-button-wrapper\">"
-                   "            <a href=\"http://ios.newsblur.com/reply/%@/%@\">Reply</a>"
-                   "        </div>"
+                   "        <a href=\"http://ios.newsblur.com/reply/%@/%@\"><div class=\"NB-story-comment-reply-button-wrapper\">"
+                   "            Reply"
+                   "        </div></a>"
                    "    </div>"
                    "    %@" //User Edit Button>"
                    "    %@" //User Like Button>"
@@ -527,9 +527,11 @@
             if ([replyUserId isEqualToString:currentUserId]) {
                 userEditButton = [NSString stringWithFormat:@
                                   "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button NB-button\">"
+                                  "<a href=\"http://ios.newsblur.com/edit-reply/%@/%@/%@\">"
                                   "<div class=\"NB-story-comment-edit-button-wrapper\">"
-                                  "<a href=\"http://ios.newsblur.com/edit-reply/%@/%@/%@\">edit</a>"
+                                  "edit"
                                   "</div>"
+                                  "</a>"
                                   "</div>",
                                   commentUserId,
                                   replyUserId,
@@ -643,9 +645,11 @@
     sharingHtmlString = [NSString stringWithFormat:@
                          "<div class='NB-share-header'></div>"
                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                         "<div id=\"NB-share-button-id\" class='NB-share-button NB-button'><div>"
-                         "<a href=\"http://ios.newsblur.com/share\">Post to Blurblog</a>"
-                         "</div></div>"
+                         "<div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
+                         "<a href=\"http://ios.newsblur.com/share\"><div>"
+                         "Post to Blurblog"
+                         "</div></a>"
+                         "</div>"
                          "</div></div>"];
     NSString *story_author = @"";
     if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
@@ -1029,7 +1033,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [appDelegate markActiveStoryRead];
 
         NSString *urlString;        
-        if (appDelegate.isSocialView) {
+        if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
             urlString = [NSString stringWithFormat:@"http://%@/reader/mark_social_stories_as_read",
                         NEWSBLUR_URL];
         } else {
@@ -1040,7 +1044,20 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         NSURL *url = [NSURL URLWithString:urlString];
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         
-        if (appDelegate.isSocialView) {
+        if (appDelegate.isSocialRiverView) {
+            // grab the user id from the shared_by_friends
+            NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
+            NSString *friendUserId = [NSString stringWithFormat:@"%@", 
+                                      [[appDelegate.activeStory objectForKey:@"shared_by_friends"] objectAtIndex:0]];
+            NSDictionary *feedStory = [NSDictionary dictionaryWithObject:storyId 
+                                                                  forKey:[NSString stringWithFormat:@"%@", 
+                                                                          [appDelegate.activeStory objectForKey:@"story_feed_id"]]];
+            
+            NSDictionary *usersFeedsStories = [NSDictionary dictionaryWithObject:feedStory 
+                                                                          forKey:friendUserId];
+            
+            [request setPostValue:[usersFeedsStories JSONRepresentation] forKey:@"users_feeds_stories"]; 
+        } else if (appDelegate.isSocialView) {
             NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
             NSDictionary *feedStory = [NSDictionary dictionaryWithObject:storyId 
                                                                      forKey:[NSString stringWithFormat:@"%@", 

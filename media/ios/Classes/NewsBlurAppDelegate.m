@@ -791,24 +791,30 @@
     NSDictionary *friendFeed;
     id feedId;
     NSString *feedIdStr;
+    NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
     NSMutableArray *otherFriendFeeds = [[self.activeStory objectForKey:@"shared_by_friends"] mutableCopy];
     
-    if (self.isSocialView) {
+    if (self.isSocialView || self.isSocialRiverView) {
         feedId = [self.activeStory objectForKey:@"social_user_id"];
         feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];        
         feed = [self.dictSocialFeeds objectForKey:feedIdStr];
         
         [otherFriendFeeds removeObject:feedId];
          NSLog(@"otherFriendFeeds is %@", otherFriendFeeds);
+        
+        // make sure we set the active feed
+        self.activeFeed = feed;
     } else {
         feedId = [self.activeStory objectForKey:@"story_feed_id"];
         feedIdStr = [NSString stringWithFormat:@"%@",feedId];
         feed = [self.dictFeeds objectForKey:feedIdStr];
+        
+        // make sure we set the active feed
+        self.activeFeed = feed;
     }
     
-    NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
     // decrement all other friend feeds if they have the same story
-    if (self.isSocialView) {
+    if (self.isSocialView || self.isSocialRiverView) {
         for (int i = 0; i < otherFriendFeeds.count; i++) {
             feedIdStr = [NSString stringWithFormat:@"social:%@",
                          [otherFriendFeeds objectAtIndex:i]];   
@@ -817,9 +823,6 @@
         }
     }
 
-    // make sure we set the active feed
-    self.activeFeed = feed;
-    
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryRead:story feed:feed];
 }
