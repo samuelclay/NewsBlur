@@ -85,18 +85,31 @@ def feed_autocomplete(request):
                 Q(**{'%s__icontains' % field: 'token'}) |
                 Q(**{'%s__icontains' % field: 'private'})
             ).only(
+                'id',
                 'feed_title', 
                 'feed_address', 
                 'num_subscribers'
-            ).order_by('-num_subscribers')[:5]
+            ).select_related("data").order_by('-num_subscribers')[:5]
     
-    logging.user(request, "~FRAdd Search: ~SB%s ~FG(%s matches)" % (query, len(feeds),))
-
     feeds = [{
+        'id': feed.pk,
         'value': feed.feed_address,
         'label': feed.feed_title,
+        'tagline': feed.data.feed_tagline,
         'num_subscribers': feed.num_subscribers,
     } for feed in feeds]
+    
+    feed_ids = [f['id'] for f in feeds]
+    feed_icons = dict((icon.feed_id, icon) for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids))
+    
+    for feed in feeds:
+        if feed['id'] in feed_icons:
+            feed_icon = feed_icons[feed['id']]
+            if feed_icon.data:
+                feed['favicon_color'] = feed_icon.color
+                feed['favicon'] = feed_icon.data
+    
+    logging.user(request, "~FRAdd Search: ~SB%s ~FG(%s matches)" % (query, len(feeds),))
     
     if version > 1:
         return {
