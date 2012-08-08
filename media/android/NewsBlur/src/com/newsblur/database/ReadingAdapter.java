@@ -2,7 +2,6 @@ package com.newsblur.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -19,7 +18,7 @@ public class ReadingAdapter extends FragmentStatePagerAdapter {
 	private String TAG = "ReadingAdapter";
 	private LoadingFragment loadingFragment; 
 
-	public ReadingAdapter(final FragmentManager fragmentManager, final Context context, final String feedId, final Cursor cursor) {
+	public ReadingAdapter(final FragmentManager fragmentManager, final Context context, final Cursor cursor) {
 		super(fragmentManager);
 		this.cursor = cursor;
 	}

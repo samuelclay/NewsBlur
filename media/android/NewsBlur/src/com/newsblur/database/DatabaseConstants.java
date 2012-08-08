@@ -24,7 +24,7 @@ public class DatabaseConstants {
 	public static final String FEED_NEUTRAL_COUNT = "nt";
 	public static final String FEED_NEGATIVE_COUNT = "ng";
 
-	public static final String SOCIAL_FEED_TABLE = "social_feeds";
+	public static final String SOCIALFEED_TABLE = "social_feeds";
 	public static final String SOCIAL_FEED_ID = BaseColumns._ID;
 	public static final String SOCIAL_FEED_USERNAME = "social_feed_name";
 	public static final String SOCIAL_FEED_ICON= "social_feed_icon";
@@ -70,6 +70,7 @@ public class DatabaseConstants {
 	public static final String STORY_SHARE_COUNT = "share_count";
 	public static final String STORY_SHARED_USER_IDS = "shared_user_ids";
 	public static final String STORY_SHORTDATE = "shortDate";
+	public static final String STORY_SOCIAL_USER_ID = "socialUserId";
 	public static final String STORY_TAGS = "tags";
 
 	public static final String COMMENT_ID = BaseColumns._ID;
@@ -107,7 +108,7 @@ public class DatabaseConstants {
 
 	public static final String[] STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_DATE, STORY_SHORTDATE, STORY_FEED_ID, STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TITLE,
-		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE, STORY_SHARED_USER_IDS
+		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE, STORY_SOCIAL_USER_ID, STORY_SHARED_USER_IDS
 	};
 
 	public static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
@@ -123,6 +124,7 @@ public class DatabaseConstants {
 	public static final String STORY_INTELLIGENCE_SOME = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 " + 
 	"AND " + DatabaseConstants.STORY_READ + " = '0'";
 	public static final String STORY_INTELLIGENCE_ALL = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 ";
+	
 
 
 

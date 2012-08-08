@@ -52,7 +52,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		resolver = getActivity().getContentResolver();
 		apiManager = new APIManager(getActivity());
 
-		
 		Cursor folderCursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
 		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
 		groupViewBinder = new FolderTreeViewBinder();
@@ -74,7 +73,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	}
 
 	public void hasUpdated() {
-		folderAdapter.notifyDataSetInvalidated();
+		folderAdapter.requery();
 	}
 
 	@Override

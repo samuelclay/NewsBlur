@@ -40,7 +40,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.FEED_UPDATED_SECONDS +
 		")";
 	
-	private final String SOCIAL_FEED_SQL = "CREATE TABLE " + DatabaseConstants.SOCIAL_FEED_TABLE + " (" +
+	private final String SOCIAL_FEED_SQL = "CREATE TABLE " + DatabaseConstants.SOCIALFEED_TABLE + " (" +
 		DatabaseConstants.SOCIAL_FEED_ID + INTEGER + " PRIMARY KEY, " +
 		DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + INTEGER + ", " +
 		DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT + INTEGER + ", " +
@@ -77,6 +77,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_INTELLIGENCE_TITLE + INTEGER + ", " +
 		DatabaseConstants.STORY_COMMENT_COUNT + INTEGER + ", " +
 		DatabaseConstants.STORY_SHARE_COUNT + INTEGER + ", " +
+		DatabaseConstants.STORY_SOCIAL_USER_ID + TEXT + ", " +
 		DatabaseConstants.STORY_SHARED_USER_IDS + TEXT + ", " +
 		DatabaseConstants.STORY_TAGS + TEXT + ", " +
 		DatabaseConstants.STORY_PERMALINK + TEXT + ", " + 

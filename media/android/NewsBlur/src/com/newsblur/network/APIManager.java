@@ -1,5 +1,6 @@
 package com.newsblur.network;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
@@ -27,6 +28,7 @@ import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.FeedRefreshResponse;
 import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.network.domain.ProfileResponse;
+import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.serialization.DateStringTypeAdapter;
 import com.newsblur.serialization.FolderStructureTypeAdapter;
@@ -77,12 +79,26 @@ public class APIManager {
 		}
 	}
 	
-	public boolean markStoryAsRead(final String feedId, final String storyId) {
+	public boolean markStoryAsRead(final String feedId, final ArrayList<String> storyIds) {
+		final APIClient client = new APIClient(context);
+		final ValueMultimap values = new ValueMultimap();
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		for (String storyId : storyIds) {
+			values.put(APIConstants.PARAMETER_STORYID, storyId);
+		}
+		final APIResponse response = client.post(APIConstants.URL_MARK_STORY_AS_READ, values);
+		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public boolean markSocialStoryAsRead(final String updateJson) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		values.put(APIConstants.PARAMETER_STORYID, storyId);
-		final APIResponse response = client.post(APIConstants.URL_MARK_STORY_AS_READ, values);
+		values.put(APIConstants.PARAMETER_MARKSOCIAL_JSON, updateJson);
+		final APIResponse response = client.post(APIConstants.URL_MARK_SOCIALSTORY_AS_READ, values);
 		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			return true;
 		} else {
@@ -128,7 +144,6 @@ public class APIManager {
 			Uri storyUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
 			for (Story story : storiesResponse.stories) {
 				contentResolver.insert(storyUri, story.getValues());
-
 				for (Comment comment : story.comments) {
 					StringBuilder builder = new StringBuilder();
 					builder.append(story.id);
@@ -145,7 +160,7 @@ public class APIManager {
 		}
 	}
 	
-	public StoriesResponse getStoriesForSocialFeed(String userId, String username) {
+	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
@@ -153,10 +168,10 @@ public class APIManager {
 		
 		Uri feedUri = Uri.parse(APIConstants.URL_SOCIALFEED_STORIES).buildUpon().appendPath(userId).appendPath(username).build();
 		final APIResponse response = client.get(feedUri.toString(), values);
-		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
+		SocialFeedResponse socialFeedResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			
-			for (Story story : storiesResponse.stories) {
+			for (Story story : socialFeedResponse.stories) {
 				Uri storyUri = FeedProvider.STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
 
@@ -172,8 +187,9 @@ public class APIManager {
 				
 				Uri storySocialUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storySocialUri, story.getValues());
+				
 			}
-			return storiesResponse;
+			return socialFeedResponse;
 		} else {
 			return null;
 		}
@@ -276,6 +292,13 @@ public class APIManager {
 				Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 				contentResolver.update(feedUri, feedCountUpdate.feedCounts.get(feedId).getValues(), null, null);
 			}
+			
+			for (String socialfeedId : feedCountUpdate.socialfeedCounts.keySet()) {
+				String userId = socialfeedId.split(":")[1];
+				Uri feedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+				contentResolver.update(feedUri, feedCountUpdate.socialfeedCounts.get(socialfeedId).getValues(), null, null);
+			}
+			
 		}
 	}
 

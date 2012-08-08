@@ -17,6 +17,7 @@ public class APIConstants {
 	public static final String URL_FEED_COUNTS = "http://newsblur.com/reader/refresh_feeds/";
 	public static final String URL_MARK_FEED_AS_READ = "http://newsblur.com/reader/mark_feed_as_read/";
 	public static final String URL_MARK_STORY_AS_READ = "http://newsblur.com/reader/mark_story_as_read/";
+	public static final String URL_MARK_SOCIALSTORY_AS_READ = "http://newsblur.com/reader/mark_social_stories_as_read/";
 	public static final String URL_SHARE_STORY = "http://newsblur.com/social/share_story";
 	
 	public static final String PARAMETER_FEEDS = "feeds";
@@ -28,6 +29,7 @@ public class APIConstants {
 	public static final String PARAMETER_FEEDID = "feed_id";
 	public static final String PARAMETER_SHARE_COMMENT = "comments";
 	public static final String PARAMETER_SHARE_SOURCEID = "source_user_id";
+	public static final String PARAMETER_MARKSOCIAL_JSON = "users_feeds_stories";
 	
 	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
 	

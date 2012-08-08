@@ -19,6 +19,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.newsblur.R;
+import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
@@ -105,7 +106,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Intent i = new Intent(getActivity(), Reading.class);
+		Intent i = new Intent(getActivity(), FeedReading.class);
 		i.putExtra(Reading.EXTRA_FEED, feedId);
 		i.putExtra(Reading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);

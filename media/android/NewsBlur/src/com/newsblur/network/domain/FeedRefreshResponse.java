@@ -13,6 +13,9 @@ public class FeedRefreshResponse {
 	@SerializedName("feeds")
 	public Map<String, Count> feedCounts;
 	
+	@SerializedName("social_feeds")
+	public Map<String, Count> socialfeedCounts;
+	
 	public class Count {
 	
 		@SerializedName("ps")

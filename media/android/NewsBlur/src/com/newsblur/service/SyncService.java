@@ -1,5 +1,7 @@
 package com.newsblur.service;
 
+import java.util.ArrayList;
+
 import android.app.IntentService;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,6 +32,7 @@ public class SyncService extends IntentService {
 	public static final String EXTRA_TASK_STORY_ID = "taskStoryId";
 	public static final String EXTRA_TASK_SOCIALFEED_ID = "userId";
 	public static final String EXTRA_TASK_SOCIALFEED_USERNAME = "username";
+	public static final String EXTRA_TASK_MARK_SOCIAL_JSON = "socialJson";
 	
 	
 	public final static int STATUS_RUNNING = 0x02;
@@ -42,6 +45,7 @@ public class SyncService extends IntentService {
 	public static final int EXTRA_TASK_REFRESH_COUNTS = 32;
 	public static final int EXTRA_TASK_MARK_STORY_READ = 33;
 	public static final int EXTRA_TASK_SOCIALFEED_UPDATE = 34;
+	public static final int EXTRA_TASK_MARK_SOCIALSTORY_READ = 35;
 	
 	public APIClient apiClient;
 	private APIManager apiManager;
@@ -76,7 +80,9 @@ public class SyncService extends IntentService {
 				Cursor cursor = getContentResolver().query(FeedProvider.OFFLINE_URI, null, null, null, null);
 				while (cursor.moveToNext()) {
 					OfflineUpdate update = OfflineUpdate.fromCursor(cursor);
-					if (apiManager.markStoryAsRead(update.arguments[0], update.arguments[1])) {
+					ArrayList<String> storyId = new ArrayList<String>();
+					storyId.add(update.arguments[1]);
+					if (apiManager.markStoryAsRead(update.arguments[0], storyId)) {
 						getContentResolver().delete(FeedProvider.OFFLINE_URI, DatabaseConstants.UPDATE_ID + " = ?", new String[] { Integer.toString(update.id) });
 					}
 				}
@@ -84,20 +90,30 @@ public class SyncService extends IntentService {
 				break;	
 			case EXTRA_TASK_MARK_STORY_READ:
 				final String feedId = intent.getStringExtra(EXTRA_TASK_FEED_ID);
-				final String storyId = intent.getStringExtra(EXTRA_TASK_STORY_ID);
-				if (!TextUtils.isEmpty(feedId) && !TextUtils.isEmpty(storyId)) {
-					if (!apiManager.markStoryAsRead(feedId, storyId)) {
-						Log.d(TAG, "Unable to mark-as-read online. Saving for later.");
-						OfflineUpdate update = new OfflineUpdate();
-						update.arguments = new String[] { feedId, storyId };
-						update.type = OfflineUpdate.UpdateType.MARK_FEED_AS_READ;
-						getContentResolver().insert(FeedProvider.OFFLINE_URI, update.getContentValues());
+				final ArrayList<String> storyIds = intent.getStringArrayListExtra(EXTRA_TASK_STORY_ID);
+				if (!TextUtils.isEmpty(feedId) && storyIds.size() > 0) {
+					if (!apiManager.markStoryAsRead(feedId, storyIds)) {
+						for (String storyId : storyIds) {
+							OfflineUpdate update = new OfflineUpdate();
+							update.arguments = new String[] { feedId, storyId };
+							update.type = OfflineUpdate.UpdateType.MARK_FEED_AS_READ;
+							getContentResolver().insert(FeedProvider.OFFLINE_URI, update.getContentValues());
+						}
 					}
 				} else {
 					Log.e(TAG, "No feed/story to mark as read included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
-				break;	
+				break;
+			case EXTRA_TASK_MARK_SOCIALSTORY_READ:
+				final String markSocialJson = intent.getStringExtra(EXTRA_TASK_MARK_SOCIAL_JSON);
+				if (!TextUtils.isEmpty(markSocialJson)) {
+					apiManager.markSocialStoryAsRead(markSocialJson);
+				} else {
+					Log.e(TAG, "No feed/story to mark as read included in SyncRequest");
+					receiver.send(STATUS_ERROR, Bundle.EMPTY);
+				}
+				break;
 			case EXTRA_TASK_FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
 					apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID));
@@ -127,7 +143,7 @@ public class SyncService extends IntentService {
 				receiver.send(STATUS_ERROR, bundle);
 			}
 		}
-
+	
 		if (receiver != null) {
 			receiver.send(STATUS_FINISHED, Bundle.EMPTY);
 		} else {

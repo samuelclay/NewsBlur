@@ -21,6 +21,7 @@ import android.widget.ListView;
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Reading;
+import com.newsblur.activity.SocialFeedReading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.view.ItemViewBinder;
@@ -105,7 +106,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Intent i = new Intent(getActivity(), Reading.class);
+		Intent i = new Intent(getActivity(), SocialFeedReading.class);
 		i.putExtra(Reading.EXTRA_USERID, userId);
 		i.putExtra(Reading.EXTRA_USERNAME, username);
 		i.putExtra(Reading.EXTRA_POSITION, position);

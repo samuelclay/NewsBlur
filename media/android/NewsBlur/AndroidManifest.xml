@@ -40,7 +40,10 @@
             android:name=".activity.ItemsList" />
         
         <activity
-            android:name=".activity.Reading"/>
+            android:name=".activity.FeedReading"/>
+        
+        <activity
+            android:name=".activity.SocialFeedReading"/>
 
         <service android:name=".service.SyncService" />
 

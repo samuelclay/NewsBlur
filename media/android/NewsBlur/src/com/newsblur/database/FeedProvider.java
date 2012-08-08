@@ -23,6 +23,7 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri SOCIAL_FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/social_feeds/");
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
 	public static final Uri MODIFY_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
+	public static final Uri MODIFY_SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
 	public static final Uri STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
 	public static final Uri STORY_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/story/");
 	public static final Uri COMMENTS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/comments/");
@@ -36,14 +37,14 @@ public class FeedProvider extends ContentProvider {
 	private static final int INDIVIDUAL_FOLDER = 4;
 	private static final int FEED_FOLDER_MAP = 5;
 	private static final int SPECIFIC_FEED_FOLDER_MAP = 6;
-	private static final int SPECIFIC_SOCIAL_FEED = 7;
+	private static final int INDIVIDUAL_SOCIALFEED = 7;
 	private static final int INDIVIDUAL_FEED = 8;
 	private static final int STORY_COMMENTS = 9;
 	private static final int INDIVIDUAL_STORY = 10;
-	private static final int DECREMENT_COUNT = 11;
+	private static final int DECREMENT_FEED_COUNT = 11;
 	private static final int OFFLINE_UPDATES = 12;
+	private static final int DECREMENT_SOCIALFEED_COUNT = 13;
 	
-
 	private BlurDatabase databaseHelper;
 
 	private static UriMatcher uriMatcher;
@@ -51,9 +52,10 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/", ALL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/", ALL_SOCIAL_FEEDS);
-		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/#/", SPECIFIC_SOCIAL_FEED);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/#/", INDIVIDUAL_SOCIALFEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", INDIVIDUAL_FEED);
-		uriMatcher.addURI(AUTHORITY, VERSION + "/feedcount/", DECREMENT_COUNT);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/feedcount/", DECREMENT_FEED_COUNT);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/socialfeedcount/", DECREMENT_SOCIALFEED_COUNT);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/#/", FEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/story/*/", INDIVIDUAL_STORY);
@@ -117,14 +119,14 @@ public class FeedProvider extends ContentProvider {
 			// Inserting a social feed
 		case ALL_SOCIAL_FEEDS:
 			db.beginTransaction();
-			db.insertWithOnConflict(DatabaseConstants.SOCIAL_FEED_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			db.insertWithOnConflict(DatabaseConstants.SOCIALFEED_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			db.setTransactionSuccessful();
 			db.endTransaction();
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.SOCIAL_FEED_ID)).build();
 			break;
 
 			// Inserting a story for a social feed
-		case SPECIFIC_SOCIAL_FEED:
+		case INDIVIDUAL_SOCIALFEED:
 			db.beginTransaction();
 			final ContentValues socialMapValues = new ContentValues();
 			socialMapValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, uri.getLastPathSegment());
@@ -263,8 +265,8 @@ public class FeedProvider extends ContentProvider {
 		case OFFLINE_UPDATES:
 			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
 		case ALL_SOCIAL_FEEDS:
-			return db.query(DatabaseConstants.SOCIAL_FEED_TABLE, null, selection, null, null, null, null);	
-		case SPECIFIC_SOCIAL_FEED:
+			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, null);	
+		case INDIVIDUAL_SOCIALFEED:
 			String[] userArgument = new String[] { uri.getLastPathSegment() };
 
 			String userQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + " FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + 
@@ -292,13 +294,18 @@ public class FeedProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 		case INDIVIDUAL_FEED:
 			return db.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });
+		case INDIVIDUAL_SOCIALFEED:
+			return db.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });	
 		case INDIVIDUAL_STORY:
 			return db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
 			
 			// In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider can't easily handle. Hence this circuitous hack. 
-		case DECREMENT_COUNT: 
+		case DECREMENT_FEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.FEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.FEED_ID + " = " + selectionArgs[1]);
 			return 0;
+		case DECREMENT_SOCIALFEED_COUNT: 
+			db.execSQL("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = " + selectionArgs[1]);
+			return 0;	
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);
 		}

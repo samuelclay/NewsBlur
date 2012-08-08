@@ -9,7 +9,6 @@ import java.util.Date;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class DateStringTypeAdapter implements JsonDeserializer<Date> {
