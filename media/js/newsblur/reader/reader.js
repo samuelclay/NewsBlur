@@ -3442,7 +3442,7 @@
                     }
                 }
                 return total;
-            } else if (this.flags['river_view']) {
+            } else if (this.flags['river_view'] && !this.flags['social_view']) {
                 if (feed_id == 'river:') {
                     $folder = this.$s.$feed_list;
                 } else {
@@ -3450,6 +3450,11 @@
                 }
                 var counts = this.list_feeds_with_unreads_in_folder($folder, true, visible_only);
                 return _.reduce(counts, function(m, c) { return m + c; }, 0);
+            } else if (this.flags['river_view'] && this.flags['social_view']) {
+                var unread_score = this.get_unread_view_score();
+                return NEWSBLUR.assets.social_feeds.reduce(function(m, feed) { 
+                    return m + feed.get('ps') + (unread_score >= 0 && feed.get('nt')); 
+                }, 0);
             }
         },
         
