@@ -18,6 +18,6 @@
 //    #define NEWSBLUR_URL [NSString stringWithFormat:@"nb.local.host"]
     #define NEWSBLUR_URL [NSString stringWithFormat:@"dev.newsblur.com"]
 
-    #define NEWSBLUR_ORANGE 0xAE5D15
+    #define NEWSBLUR_LINK_COLOR 0x405BA8
 
 #endif

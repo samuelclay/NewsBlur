@@ -44,6 +44,7 @@
     [MBProgressHUD hideHUDForView:self.webView animated:YES];
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.webView animated:YES];
     HUD.labelText = @"On its way...";
+    [HUD hide:YES afterDelay:2];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

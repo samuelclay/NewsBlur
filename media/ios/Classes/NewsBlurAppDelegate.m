@@ -1050,7 +1050,7 @@
 
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect {
     UIView *gradientView;
-    if (self.isRiverView || self.isSocialView) {
+    if (self.isRiverView || self.isSocialView || self.isSocialRiverView) {
         gradientView = [NewsBlurAppDelegate 
                         makeGradientView:rect
                         startColor:[feed objectForKey:@"favicon_fade"] 

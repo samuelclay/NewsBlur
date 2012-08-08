@@ -404,7 +404,7 @@
             userLikeButton = [NSString stringWithFormat:@
                               "<div class=\"NB-story-comment-like-button NB-button selected\">"
                               "<a href=\"http://ios.newsblur.com/unlike-comment/%@\"><div class=\"NB-story-comment-like-button-wrapper\">"
-                              "Favorited"
+                              "<span class=\"NB-favorite-icon\"></span>Favorited"
                               "</div></a>"
                               "</div>",
                               commentUserId]; 
@@ -412,7 +412,7 @@
             userLikeButton = [NSString stringWithFormat:@
                               "<div class=\"NB-story-comment-like-button NB-button\">"
                               "<a href=\"http://ios.newsblur.com/like-comment/%@\"><div class=\"NB-story-comment-like-button-wrapper\">"
-                              "Favorite"
+                              "<span class=\"NB-favorite-icon\"></span>Favorite"
                               "</div></a>"
                               "</div>",
                               commentUserId]; 
@@ -647,7 +647,7 @@
                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
                          "<div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
                          "<a href=\"http://ios.newsblur.com/share\"><div>"
-                         "Post to Blurblog"
+                         "<span class=\"NB-share-icon\"></span>Post to Blurblog"
                          "</div></a>"
                          "</div>"
                          "</div></div>"];
@@ -729,7 +729,7 @@
                            [appDelegate.activeStory 
                             objectForKey:@"story_feed_id"]];
                            
-    if (appDelegate.isSocialView) {
+    if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
         // this is to catch when a user is already subscribed
         if (!feed) {

@@ -10,6 +10,7 @@
     line-height: 20px;
     overflow: hidden;
     min-height: 72px;
+    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 1);shar
 }
 #story_pane .NB-story-comment .NB-user-avatar {
     position: absolute;

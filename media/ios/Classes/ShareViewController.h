@@ -19,7 +19,6 @@
 @property (nonatomic) IBOutlet UIButton *facebookButton;
 @property (nonatomic) IBOutlet UIButton *twitterButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *submitButton;
-@property (nonatomic) IBOutlet UIBarButtonItem *toolbarTitle;
 @property (nonatomic) NSString * activeReplyId;
 
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;

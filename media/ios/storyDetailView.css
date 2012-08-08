@@ -73,9 +73,6 @@
     left: 98px;
 }
 
-
-
-
 /**
  * iPad Narrow Style
  */
@@ -139,7 +136,7 @@
 body {
     text-rendering: optimizeLegibility;
     margin: 0;
-    background: #f6f6f6;
+
     -webkit-text-size-adjust: none; 
     font-size: 14px;
     line-height: 120%;
@@ -457,30 +454,47 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-share-button div { 
-    padding: 8px 14px;
+    padding: 8px 40px 8px 14px;
     border-radius: 5px;
     text-align: center;
     background: -webkit-gradient(
         linear, left top, left bottom, 
         from(#42aaff),
         to(#003366));
+    padding-left: 40px;
 }
 
-.NB-button .nb-story-comment-like-button-wrapper a {
+.NB-button.NB-share-button div span {
+    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACGUlEQVR42o2TTUsbYRSFZ+MvcNn/0EU1rSCCgkSxVRCLFgyiqFSE1tDSpNKoEaQJiAvBryDZGCVQKWIpWIeAFMHWL1qKjUJ3KRQSNUgSJzPR5PieMRMqjuLibAaec+577xkJwJ30p0jqEloXiglpQlmh3F3AaaEogWhnMw6dPTgafIljtx3i262gTSgSKbuPQ8dzxEfsSEw6kHBV4NRThrOVAaSd0o2wX0iJdj9D3PMaJ/1WKF4LtMlHyExf6jw0CO2dZAovCmWOBl4gMeFAyv0AmTyoLVRCXa1H+nsLtMgUktslpsmZ46E+JGedUMcsl2CwCumvTVD22qAcdOjS/vmQ3LVce7PCZMLa+EMdVj/XQflp06G/ezZ8/NYAV6gKUz+GcM8vXTGI8M0c20hW5QYo4XacCnhxox5dK+Wo+1SKmuUSeHdcKJ6VrpwqF3//Cqnh0kIy4djvNoyuVeNJHmwNONDrCyIg/8LjN0sFgyhPlfK/5cL4Zo7NZB2uFWDjh6fonQliXg5jQd7H3JcwDQoNy/LOPBXT9YXlx2YyYXcgpIPe+S10emTCqtAmDdbZMJaEd+apuG0ujG/m2EwmbB9fM0CrsTsaxFhPNozpvDPTuW0ujG/m2EwmbID/G2jsNutJA5aEBjyVnu7T042xrWYGWf4Y7DbryYaxJLwzT8Vtc2FGuplBTog/BrvNerJhLAnvTNDQppnBBZHZrv4ITeFuAAAAAElFTkSuQmCC") no-repeat 0 0px;
+    width: 23px;
+    display: inline-block;
+    height: 16px;
+    margin-bottom: -2px;
+}
+
+.NB-iphone .NB-button .NB-story-comment-like-button-wrapper,
+.NB-button .NB-story-comment-like-button-wrapper {
+    padding-left: 22px;
+    position: relative;
+}
+
+.NB-button .NB-story-comment-like-button-wrapper span {
     background: transparent url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAGmSURBVCiRbZG/axRBHMXfzO7tbvYua+IFJQa0sRBs1IiQFIEIgvgDEUSs7CSFCJLaA1MJYjrFI5VgmkBiCDYWNgZJlaB/wgknxOT0Lnt7s7Mz852xOgzxXvne98OXxwMG6PXm3PSbzblbgzJ21Kit3mcT4ye34NyI0AeT87PvxeGcHwVGj0d34lJyJQ6Gz1myDwZ+eLpxOapGp8Y95lVPVM4sDUdjF8kSOmK3sZ81HhpGP4XMfi3e3eqx+tcnzyM/ngVjlzjjlcgvIy1aUEaiHIwg110oynNjzXep0h1OVjeMVTNJWK34Xoh2vous6ECoA7R6TRhSiEvJEFk1Rc40+OOZ+rtU7l9r9ZopA1BoAecsHIBcZ/B4CZ18L8uK9r3a9Y+LHADmry5/TmXrmabCDQUJFEkYKhD6EcgZ9FT77cKNT2sA4PfbO7jMWA3OfBwLxwDmILUAOQ1jSPbv/gHOnvdZiWlXQFulyGrle0GFgUFJOj0ImPgtmhCq+6or/6wbp1TIyzc9imq6oNH/AHJmZS/78fLF7S/fDu20/ah+4UMcJGf7xl8kb9PTscP82wAAAABJRU5ErkJggg==") no-repeat left 1px;
-    padding-left: 16px;
-    height: 20px;
+    width: 16px;
+    position: absolute;
+    height: 16px;
+    top: 3px;
+    left: 6px;
+}
+
+.NB-iphone .NB-button .NB-story-comment-like-button-wrapper span {
+    top: 2px;
 }
 
 .NB-button.hover div,
 .NB-button.selected div { 
     background: #217412;
     box-shadow: none;
-}
-
-.NB-button.hover .nb-story-comment-like-button-wrapper a 
-.NB-button.selected .nb-story-comment-like-button-wrapper a {
-    background: transparent url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAFkSURBVCiRbZC/6xNBFMTn7e1mDVyhWIlgZSFYqSBEEsEQCUTBxsLKv0TBWrQWrGwtjFU603oEFP0T0ljYyt1lf+TNWgXCl5ty5g0f5gEDaprmQdM0T4cyuWhst1up6/o7gMs553vT6bQ/z83Fgvf+mXPuvnPuFskXg4TNZnNpPB5fE5GrdV1/9N7fIYkQwr5t25cA/qSU/q5Wq052u90ba+0jAHdFpLbWIsYIVcVoNELOGap6IPk75/zTkNyTfOi9r6uqwuFwQEoJKSV0XQeScM6NSU5KKXszmUw+hRAe933/DwBUFaUUAMDxeISIIITQppSez+fz9wYAZrPZtxjjK1UtzjmoKkiiqiqUUpBS+rBYLL4AgD2tL6W0JCEi8N7jnEYyDL31tjFGAIBkUtXWGAMRgareOB2dE673fY+c87sY41eSyVr7REReq+qVocLnruveLpfLX2fUH+v1eu2cu3ky/gOHFMgsTjV4FQAAAABJRU5ErkJggg==") no-repeat left 1px;
 }
 
 .NB-button a {
@@ -498,7 +512,7 @@ a.NB-show-profile {
 .NB-button.NB-share-button a {
     color: #FFF;
     text-shadow: none;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 .NB-button.hover a,

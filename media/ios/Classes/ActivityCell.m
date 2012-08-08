@@ -139,14 +139,14 @@
     [attrStr setTextColor:UIColorFromRGB(0x333333)];
     
     if (![username isEqualToString:@"You"]){
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txtWithTime rangeOfString:username]];
+        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:username]];
         [attrStr setTextBold:YES range:[txt rangeOfString:username]];
     }
     
-    [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txtWithTime rangeOfString:title]];
+    [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:title]];
     
     if(withUserUsername.length) {
-        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_ORANGE) range:[txtWithTime rangeOfString:withUserUsername]];
+        [attrStr setTextColor:UIColorFromRGB(NEWSBLUR_LINK_COLOR) range:[txtWithTime rangeOfString:withUserUsername]];
         [attrStr setTextBold:YES range:[txtWithTime rangeOfString:withUserUsername]]; 
     }
     

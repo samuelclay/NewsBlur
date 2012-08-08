@@ -19,7 +19,6 @@
 @synthesize facebookButton;
 @synthesize twitterButton;
 @synthesize submitButton;
-@synthesize toolbarTitle;
 @synthesize commentField;
 @synthesize appDelegate;
 @synthesize activeReplyId;
@@ -37,11 +36,21 @@
 - (void)viewDidLoad
 {
     
+
+    
+    // For textField1
+    [[NSNotificationCenter defaultCenter] 
+     addObserver:self 
+     selector:@selector(onTextChange:)
+     name:UITextViewTextDidChangeNotification 
+     object:self.commentField];
+    
     UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemCancel target:self action:@selector(doCancelButton:)];
     self.navigationItem.leftBarButtonItem = cancel;
     
     UIBarButtonItem *submit = [[UIBarButtonItem alloc] initWithTitle:@"Post" style:UIBarButtonSystemItemDone target:self action:@selector(doShareThisStory:)];
     self.submitButton = submit;
+    self.submitButton.tintColor = UIColorFromRGB(0x217412);
     self.navigationItem.rightBarButtonItem = submit;
     
     
@@ -62,13 +71,16 @@
     [super viewDidLoad];
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidUnload
 {
     [self setCommentField:nil];
     [self setFacebookButton:nil];
     [self setTwitterButton:nil];
     [self setSubmitButton:nil];
-    [self setToolbarTitle:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -133,7 +145,7 @@
         [submitButton setTitle:@"Save"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
-        [toolbarTitle setTitle:[NSString stringWithFormat:@"Edit Your Reply"]];
+        self.navigationItem.title = @"Edit Your Reply";
         [submitButton setAction:(@selector(doReplyToComment:))];
         self.activeReplyId = replyId;
         
@@ -157,7 +169,7 @@
         [submitButton setTitle:@"Reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
-        [toolbarTitle setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
+        self.navigationItem.title = [NSString stringWithFormat:@"Reply to %@", username];
         [submitButton setAction:(@selector(doReplyToComment:))];
         self.commentField.text = @"";
     } else if ([type isEqualToString: @"edit-share"]) {
@@ -168,10 +180,10 @@
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [toolbarTitle setTitle:@"Edit Your Comment"];
+            self.navigationItem.title = @"Edit Your Comment";
             [submitButton setTitle:@"Save"];
         } else {
-            [toolbarTitle setTitle:@"Edit Comment"];
+            self.navigationItem.title = @"Edit Comment";
             [submitButton setTitle:@"Save"];
         }
         [submitButton setAction:(@selector(doShareThisStory:))];
@@ -179,10 +191,10 @@
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [toolbarTitle setTitle:@"Post to Blurblog"];
-            [submitButton setTitle:@"Share this Story"];
+            self.navigationItem.title = @"Post to Blurblog";
+            [submitButton setTitle:@"Share"];
         } else {
-            [toolbarTitle setTitle:@"Post to Blurblog"];
+            self.navigationItem.title = @"Post";
             [submitButton setTitle:@"Share"];
         }
         [submitButton setAction:(@selector(doShareThisStory:))];
@@ -340,4 +352,19 @@
     return s; 
 }
 
+-(void)onTextChange:(NSNotification*)notification {
+    NSString *text = self.commentField.text;
+    if ([self.submitButton.title isEqualToString:@"Share"] || 
+        [self.submitButton.title isEqualToString:@"Share Comment"]) {
+        NSLog(@"text.length is %i", text.length);
+        if (text.length) {
+            self.submitButton.title = @"Share Comment";
+        } else {
+            self.submitButton.title = @"Share";
+        }   
+    }
+    
+    
+
+}
 @end
