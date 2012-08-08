@@ -183,7 +183,7 @@ def load_social_stories(request, user_id, username=None):
     
 @json.json_view
 def load_river_blurblog(request):
-    limit             = 12
+    limit             = 10
     start             = time.time()
     user              = get_user(request)
     social_user_ids   = [int(uid) for uid in request.REQUEST.getlist('social_user_ids') if uid]
@@ -205,12 +205,13 @@ def load_river_blurblog(request):
     offset = (page-1) * limit
     limit = page * limit - 1
     
-    story_ids = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
+    story_ids, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
                                                  offset=offset, limit=limit,
                                                  order=order, read_filter=read_filter)
-    story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
-    mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
+    mstories = MStory.objects(id__in=story_ids)
     stories = Feed.format_stories(mstories)
+    for s, story in enumerate(stories):
+        story['story_date'] = datetime.datetime.fromtimestamp(story_dates[s])
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, relative_user_id, 
                                                                              check_all=True)
 

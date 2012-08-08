@@ -747,8 +747,11 @@ class MSocialSubscription(mongo.Document):
 
         unread_ranked_stories_keys  = 'zU:%s' % (user_id)
         if offset and r.exists(unread_ranked_stories_keys):
-            story_guids = range_func(unread_ranked_stories_keys, offset, limit)
-            return story_guids
+            story_guids = range_func(unread_ranked_stories_keys, offset, limit, withscores=True)
+            if story_guids:
+                return zip(*story_guids)
+            else:
+                return [], []
         else:
             r.delete(unread_ranked_stories_keys)
 
@@ -760,10 +763,13 @@ class MSocialSubscription(mongo.Document):
             if story_guids:
                 r.zadd(unread_ranked_stories_keys, **dict(story_guids))
             
-        story_guids = range_func(unread_ranked_stories_keys, offset, limit)
+        story_guids = range_func(unread_ranked_stories_keys, offset, limit, withscores=True)
         r.expire(unread_ranked_stories_keys, 24*60*60)
         
-        return story_guids
+        if story_guids:
+            return zip(*story_guids)
+        else:
+            return [], []
         
     def mark_story_ids_as_read(self, story_ids, feed_id, request=None):
         data = dict(code=0, payload=story_ids)
