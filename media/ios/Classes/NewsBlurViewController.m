@@ -689,6 +689,7 @@
     [appDelegate setActiveFolder:folderName];
     appDelegate.readStories = [NSMutableArray array];
     appDelegate.isRiverView = NO;
+    appDelegate.isSocialRiverView = NO;
         
     [appDelegate loadFeedDetailView];
 }
@@ -766,7 +767,7 @@
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (section == 0) {
-        headerLabel.text = @"BLURBLOGS";
+        headerLabel.text = @"ALL BLURBLOG STORIES";
 //        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
 //                                      colorWithAlphaComponent:0.8];
     } else if (section == 1) {
@@ -811,7 +812,7 @@
     folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
     [customView addSubview:folderImageView];
 
-    if (section != 0 && !self.hasNoSites) {    
+    if (!self.hasNoSites) {    
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         UIImageView *disclosureImageView = [[UIImageView alloc] initWithImage:disclosureImage];
         disclosureImageView.frame = CGRectMake(customView.frame.size.width - 20, disclosureImageViewY, 9.0, 14.0);
@@ -834,12 +835,9 @@
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {
-    // current position of social header
-    if (button.tag == 0) { 
-        return;
-    }
     button.backgroundColor =[UIColor colorWithRed:0.15 green:0.55 blue:0.95 alpha:1.0];
 }
+
 - (IBAction)sectionUntapped:(UIButton *)button {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.15 * NSEC_PER_SEC), 
                    dispatch_get_current_queue(), ^{
@@ -874,15 +872,20 @@
     
     // current position of social header
     if (button.tag == 0) { 
-        return;
+        [appDelegate setActiveFolder:@"ALL BLURBLOG STORIES"];
+        appDelegate.isSocialRiverView = YES;
+        appDelegate.isRiverView = YES;
+    } else {
+        appDelegate.isSocialRiverView = NO;
+        appDelegate.isRiverView = YES;
     }
     
     appDelegate.readStories = [NSMutableArray array];
-    appDelegate.isRiverView = YES;
+    
     NSMutableArray *feeds = [NSMutableArray array];
 
     if (button.tag == 1) {
-        [appDelegate setActiveFolder:@"Everything"];
+        [appDelegate setActiveFolder:@"ALL STORIES"];
         for (NSString *folderName in self.activeFeedLocations) {
             if (![folderName isEqualToString:@""]) { // remove all blurblugs which is a blank folder name
                 NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];

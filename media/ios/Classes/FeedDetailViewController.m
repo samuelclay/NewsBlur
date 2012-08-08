@@ -71,15 +71,7 @@
     
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    
-//    if (appDelegate.isRiverView || appDelegate.isSocialView) {
-//        self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
-//        //self.storyTitlesTable.separatorColor = [UIColor clearColor];
-//    } else {
-//        self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-//        self.storyTitlesTable.separatorColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
-//    }
-    
+        
     self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
 
     
@@ -120,17 +112,10 @@
         //[self.storyTitlesTable reloadData];
     }
     [appDelegate setRecentlyReadStories:[NSMutableArray array]];
-//    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_all.png"] forSegmentAtIndex:0];
-//    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullets_yellow_green.png"] forSegmentAtIndex:1];
-//    [self.intelligenceControl setImage:[UIImage imageNamed:@"bullet_green.png"] forSegmentAtIndex:2];
-//    [self.intelligenceControl addTarget:self
-//                         action:@selector(selectIntelligence)
-//               forControlEvents:UIControlEventValueChanged];
-//    [self.intelligenceControl setSelectedSegmentIndex:[appDelegate selectedIntelligence] + 1];
     
 	[super viewWillAppear:animated];
         
-    if ((appDelegate.isRiverView || appDelegate.isSocialView) || 
+    if ((appDelegate.isSocialRiverView || appDelegate.isRiverView || appDelegate.isSocialView) || 
         [appDelegate.activeFolder isEqualToString:@"Everything"]) {
         settingsButton.enabled = NO;
     } else {
@@ -271,12 +256,21 @@
             }
         }
         
-        NSString *theFeedDetailURL = [NSString stringWithFormat:
-                                      @"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
-                                      NEWSBLUR_URL,
-                                      [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
-                                      self.feedPage,
-                                      readStoriesCount];
+        NSString *theFeedDetailURL;
+        
+        if (appDelegate.isSocialRiverView) {
+            theFeedDetailURL = [NSString stringWithFormat:
+                                @"http://%@/social/river_stories/?page=%d&order=newest", 
+                                NEWSBLUR_URL,
+                                self.feedPage];
+        } else {
+            theFeedDetailURL = [NSString stringWithFormat:
+                                @"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
+                                NEWSBLUR_URL,
+                                [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
+                                self.feedPage,
+                                readStoriesCount];
+        }
         
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
@@ -322,11 +316,12 @@
                              options:kNilOptions 
                              error:&error];
         
-    if (!(appDelegate.isRiverView || appDelegate.isSocialView) && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
+    if (!(appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) 
+        && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
         return;
     }
     
-    if ([appDelegate isSocialView]) {
+    if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         NSArray *newFeeds = [results objectForKey:@"feeds"];
         for (int i = 0; i < newFeeds.count; i++){
             NSString *feedKey = [NSString stringWithFormat:@"%@", [[newFeeds objectAtIndex:i] objectForKey:@"id"]];
@@ -579,7 +574,7 @@
     id feedId = [story objectForKey:@"story_feed_id"];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
     
-    if ([appDelegate isSocialView]) {
+    if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
         // this is to catch when a user is already subscribed
         if (!feed) {
@@ -640,7 +635,7 @@
 
     cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
 
-    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+    if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         cell.isRiverOrSocial = YES;
     }
 
@@ -680,7 +675,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+    if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         return kTableViewRiverRowHeight;
     } else {
         return kTableViewRowHeight;

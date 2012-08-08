@@ -369,6 +369,7 @@
 }
 
 - (void)transitionToFeedDetail {
+    NSLog(@"in transitionToFeedDetail");
     [self hidePopover];
     self.feedDetailIsVisible = YES;
     CGRect vb = [self.view bounds];

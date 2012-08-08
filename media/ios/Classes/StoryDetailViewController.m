@@ -1494,6 +1494,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (NSString *)textToHtml:(NSString*)htmlString {
     htmlString = [htmlString stringByReplacingOccurrencesOfString:@"'"  withString:@"&#039;"];
+    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"\n"  withString:@"<br/>"];
     return htmlString;
 }
 

@@ -82,8 +82,6 @@ static UIFont *indicatorFont = nil;
     
     
     // url
-
-
         
     // site subscribers
     

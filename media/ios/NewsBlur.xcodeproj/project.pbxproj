@@ -12,6 +12,7 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		28D7ACF80DDB3853001CB0EB /* NewsBlurViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */; };
+		4302471915D2DF580049145F /* group_white.png in Resources */ = {isa = PBXBuildFile; fileRef = 4302471815D2DF580049145F /* group_white.png */; };
 		43081E2215AFE84200B24D7A /* ShareViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43081E2115AFE84200B24D7A /* ShareViewController.xib */; };
 		431B856815A0C45200DCE497 /* FriendsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B856615A0C45100DCE497 /* FriendsListViewController.m */; };
 		431B856E15A0D91E00DCE497 /* UserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B856C15A0D91E00DCE497 /* UserProfileViewController.m */; };
@@ -340,6 +341,7 @@
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		28D7ACF60DDB3853001CB0EB /* NewsBlurViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsBlurViewController.h; sourceTree = "<group>"; };
 		28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = NewsBlurViewController.m; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 1; };
+		4302471815D2DF580049145F /* group_white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = group_white.png; sourceTree = "<group>"; };
 		43081E2115AFE84200B24D7A /* ShareViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ShareViewController.xib; sourceTree = "<group>"; };
 		431B856515A0C45100DCE497 /* FriendsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendsListViewController.h; sourceTree = "<group>"; };
 		431B856615A0C45100DCE497 /* FriendsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FriendsListViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -1043,6 +1045,7 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				4302471815D2DF580049145F /* group_white.png */,
 				432EBD1A15D1AB6B0000729D /* user_dark.png */,
 				432EBD1815D1AB580000729D /* user_dark@2x.png */,
 				43A4BACC15C866FA00F3B8D4 /* popoverArrowDown.png */,
@@ -1942,6 +1945,7 @@
 				432EBD1715D1A7800000729D /* user_on@2x.png in Resources */,
 				432EBD1915D1AB580000729D /* user_dark@2x.png in Resources */,
 				432EBD1B15D1AB6B0000729D /* user_dark.png in Resources */,
+				4302471915D2DF580049145F /* group_white.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

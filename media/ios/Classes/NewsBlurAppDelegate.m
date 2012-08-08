@@ -68,6 +68,7 @@
 @synthesize activeUserProfileName;
 @synthesize isRiverView;
 @synthesize isSocialView;
+@synthesize isSocialRiverView;
 @synthesize isTryFeedView;
 
 @synthesize inFindingStoryMode;
@@ -473,7 +474,6 @@
         UINavigationController *navController = self.navigationController;
         [navController pushViewController:feedDetailViewController animated:YES];
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-
     }
 }
 
@@ -1099,8 +1099,10 @@
 
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
     UILabel *titleLabel = [[UILabel alloc] init];
-    if (self.isRiverView) {
-        titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder];        
+    if (self.isSocialRiverView) {
+        titleLabel.text = [NSString stringWithFormat:@"     All Blurblog Stories"]; 
+    } else if (self.isRiverView) {
+        titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder]; 
     } else if (self.isSocialView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
     } else {
@@ -1121,7 +1123,9 @@
         titleLabel.center = CGPointMake(28, -2);
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage;
-        if (self.isRiverView) {
+        if (self.isSocialRiverView) {
+            titleImage = [UIImage imageNamed:@"group_white.png"];
+        } else if (self.isRiverView) {
             titleImage = [UIImage imageNamed:@"folder_white.png"];
         } else {
             titleImage = [Utilities getImage:feedIdStr];
