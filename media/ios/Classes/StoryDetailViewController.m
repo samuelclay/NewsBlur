@@ -1378,14 +1378,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     if (contentWidth > 740) {
         contentWidthClass = @"NB-ipad-wide";
-    } else if (contentWidth > 500) {
+    } else if (contentWidth > 480) {
         contentWidthClass = @"NB-ipad-narrow";
     } else {
         contentWidthClass = @"NB-iphone";
     }
     
     NSString *jsString = [[NSString alloc] initWithFormat:
-                          @"document.getElementsByTagName('body')[0].setAttribute('class', '%@');"
+                          @"$('body').attr('class', '%@');"
                           "document.getElementById(\"viewport\").setAttribute(\"content\", \"width=%i;initial-scale=1; maximum-scale=1.0; user-scalable=0;\");",
                           contentWidthClass,
                           contentWidth];

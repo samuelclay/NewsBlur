@@ -24,6 +24,9 @@
 		432EBD0F15D1A2B00000729D /* fountain_pen_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 432EBD0D15D1A2B00000729D /* fountain_pen_on@2x.png */; };
 		432EBD1615D1A7800000729D /* user_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 432EBD1415D1A7800000729D /* user_on.png */; };
 		432EBD1715D1A7800000729D /* user_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 432EBD1515D1A7800000729D /* user_on@2x.png */; };
+		432EBD1915D1AB580000729D /* user_dark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 432EBD1815D1AB580000729D /* user_dark@2x.png */; };
+		432EBD1B15D1AB6B0000729D /* user_dark.png in Resources */ = {isa = PBXBuildFile; fileRef = 432EBD1A15D1AB6B0000729D /* user_dark.png */; };
+		432EBD2315D1D4070000729D /* AddSiteTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 432EBD2215D1D4070000729D /* AddSiteTableCell.m */; };
 		433323B8158901A40025064D /* fountain_pen.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323B6158901A40025064D /* fountain_pen.png */; };
 		433323B9158901A40025064D /* fountain_pen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323B7158901A40025064D /* fountain_pen@2x.png */; };
 		433323BB158901C10025064D /* login_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 433323BA158901C10025064D /* login_background.png */; };
@@ -34,7 +37,6 @@
 		433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 433323CB158968ED0025064D /* FirstTimeUserViewController.m */; };
 		433323CE158968ED0025064D /* FirstTimeUserViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 433323CC158968ED0025064D /* FirstTimeUserViewController.xib */; };
 		433D247E1582EEB400AE9E72 /* AddSiteAutocompleteCell~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */; };
-		433D247F1582EEB900AE9E72 /* AddSiteViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */; };
 		433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045241565BC150085F811 /* LoginViewController~ipad.xib */; };
 		433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D0451F1565BC150085F811 /* MainWindow~ipad.xib */; };
 		433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */; };
@@ -353,6 +355,10 @@
 		432EBD0D15D1A2B00000729D /* fountain_pen_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fountain_pen_on@2x.png"; sourceTree = "<group>"; };
 		432EBD1415D1A7800000729D /* user_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = user_on.png; sourceTree = "<group>"; };
 		432EBD1515D1A7800000729D /* user_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "user_on@2x.png"; sourceTree = "<group>"; };
+		432EBD1815D1AB580000729D /* user_dark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "user_dark@2x.png"; sourceTree = "<group>"; };
+		432EBD1A15D1AB6B0000729D /* user_dark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = user_dark.png; sourceTree = "<group>"; };
+		432EBD2115D1D4070000729D /* AddSiteTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteTableCell.h; sourceTree = "<group>"; };
+		432EBD2215D1D4070000729D /* AddSiteTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddSiteTableCell.m; sourceTree = "<group>"; };
 		433323B6158901A40025064D /* fountain_pen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fountain_pen.png; sourceTree = "<group>"; };
 		433323B7158901A40025064D /* fountain_pen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fountain_pen@2x.png"; sourceTree = "<group>"; };
 		433323BA158901C10025064D /* login_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = login_background.png; sourceTree = "<group>"; };
@@ -585,7 +591,6 @@
 		43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "StoryDetailViewController~ipad.xib"; path = "Resources-iPad/Classes/StoryDetailViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045241565BC150085F811 /* LoginViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "LoginViewController~ipad.xib"; path = "Resources-iPad/Classes/LoginViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "OriginalStoryViewController~ipad.xib"; path = "Resources-iPad/Classes/OriginalStoryViewController~ipad.xib"; sourceTree = "<group>"; };
-		43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "AddSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/AddSiteViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "AddSiteAutocompleteCell~ipad.xib"; path = "Resources-iPad/Classes/AddSiteAutocompleteCell~ipad.xib"; sourceTree = SOURCE_ROOT; };
 		43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MoveSiteViewController~ipad.xib"; path = "Resources-iPad/Classes/MoveSiteViewController~ipad.xib"; sourceTree = "<group>"; };
 		43D818A115B940C200733444 /* DataUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataUtilities.h; sourceTree = "<group>"; };
@@ -963,6 +968,8 @@
 				43A4BAF015C89BF600F3B8D4 /* FindSitesViewController.h */,
 				43A4BAF115C89BF600F3B8D4 /* FindSitesViewController.m */,
 				43A4BAF215C89BF600F3B8D4 /* FindSitesViewController.xib */,
+				432EBD2115D1D4070000729D /* AddSiteTableCell.h */,
+				432EBD2215D1D4070000729D /* AddSiteTableCell.m */,
 			);
 			name = Social;
 			sourceTree = "<group>";
@@ -1036,6 +1043,8 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				432EBD1A15D1AB6B0000729D /* user_dark.png */,
+				432EBD1815D1AB580000729D /* user_dark@2x.png */,
 				43A4BACC15C866FA00F3B8D4 /* popoverArrowDown.png */,
 				43A4BACD15C866FA00F3B8D4 /* popoverArrowDown@2x.png */,
 				43A4BACE15C866FA00F3B8D4 /* popoverArrowDownSimple.png */,
@@ -1286,7 +1295,6 @@
 			isa = PBXGroup;
 			children = (
 				433323B5158901A40025064D /* Images */,
-				43D045261565BC150085F811 /* AddSiteViewController~ipad.xib */,
 				437F974B15ACA0ED0007136B /* DashboardViewController.xib */,
 				43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */,
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
@@ -1773,7 +1781,6 @@
 				43B8F02A156603180008733D /* OriginalStoryViewController.xib in Resources */,
 				43B8F02B156603180008733D /* StoryDetailViewController.xib in Resources */,
 				433D247E1582EEB400AE9E72 /* AddSiteAutocompleteCell~ipad.xib in Resources */,
-				433D247F1582EEB900AE9E72 /* AddSiteViewController~ipad.xib in Resources */,
 				433D24821582EEC000AE9E72 /* LoginViewController~ipad.xib in Resources */,
 				433D24831582EEC300AE9E72 /* MainWindow~ipad.xib in Resources */,
 				433D24841582EEC500AE9E72 /* MoveSiteViewController~ipad.xib in Resources */,
@@ -1933,6 +1940,8 @@
 				432EBD0F15D1A2B00000729D /* fountain_pen_on@2x.png in Resources */,
 				432EBD1615D1A7800000729D /* user_on.png in Resources */,
 				432EBD1715D1A7800000729D /* user_on@2x.png in Resources */,
+				432EBD1915D1AB580000729D /* user_dark@2x.png in Resources */,
+				432EBD1B15D1AB6B0000729D /* user_dark.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2075,6 +2084,7 @@
 				43A4BACA15C8663600F3B8D4 /* WEPopoverController.m in Sources */,
 				43A4BACB15C8663600F3B8D4 /* WETouchableView.m in Sources */,
 				43A4BAF315C89BF600F3B8D4 /* FindSitesViewController.m in Sources */,
+				432EBD2315D1D4070000729D /* AddSiteTableCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

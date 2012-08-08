@@ -485,6 +485,7 @@
 
     // change UIWebView
     int contentWidth = storyDetailViewController.view.frame.size.width;
+    NSLog(@"contentWidth is %i", contentWidth);
     [storyDetailViewController changeWebViewWidth:contentWidth];
     
 }

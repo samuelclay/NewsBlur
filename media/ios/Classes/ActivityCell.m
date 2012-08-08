@@ -91,11 +91,11 @@
             return 1;
         }
 
-        UIImage *placeholder = [UIImage imageNamed:@"user"];
+        UIImage *placeholder = [UIImage imageNamed:@"user_dark"];
         [self.faviconView setImageWithURL:[NSURL URLWithString:[[activity objectForKey:@"with_user"] objectForKey:@"photo_url"]]
                          placeholderImage:placeholder];
     } else if ([category isEqualToString:@"sharedstory"]) {
-        UIImage *placeholder = [UIImage imageNamed:@"user"];
+        UIImage *placeholder = [UIImage imageNamed:@"user_dark"];
         [self.faviconView setImageWithURL:[NSURL URLWithString:[userProfile objectForKey:@"photo_url"]]
                          placeholderImage:placeholder];
     } else {

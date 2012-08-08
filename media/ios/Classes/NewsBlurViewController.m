@@ -770,7 +770,7 @@
 //        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
 //                                      colorWithAlphaComponent:0.8];
     } else if (section == 1) {
-        headerLabel.text = @"ALL SITES";
+        headerLabel.text = @"ALL STORIES";
 //        customView.backgroundColor = [UIColorFromRGB(0xE6DDD7)
 //                                      colorWithAlphaComponent:0.8];
     } else {

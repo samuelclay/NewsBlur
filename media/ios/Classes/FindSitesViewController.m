@@ -9,7 +9,9 @@
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "FindSitesViewController.h"
+#import "AddSiteViewController.h"
 #import "MBProgressHUD.h"
+#import "AddSiteTableCell.h"
 
 #define FIND_SITES_ROW_HEIGHT 74;
 
@@ -160,17 +162,17 @@
         NSString *responseString = [request responseString];
         NSData *responseData= [responseString dataUsingEncoding:NSUTF8StringEncoding];    
         NSError *error;
-        NSArray *results = [NSJSONSerialization 
+        NSDictionary *results = [NSJSONSerialization 
                                  JSONObjectWithData:responseData
                                  options:kNilOptions 
                                  error:&error];
         // int statusCode = [request responseStatusCode];
         
-        self.sites = results;
+        self.sites = [results objectForKey:@"feeds"];
 
         [self.sitesTable reloadData];
         
-        NSString *originalSearchTerm = @"";
+        NSString *originalSearchTerm = [NSString stringWithFormat:@"%@", [results objectForKey:@"term"]];
         if ([self.searchTerm_ isEqualToString:originalSearchTerm]) {
             [self.loadingIndicator_ stopAnimating];
         }
@@ -201,16 +203,77 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {    
     if (self.inSearch_){
         int siteCount = [self.sites count];
+        if (siteCount == 0) {
+            return 3;
+        }
         return siteCount;
     } else {
-        return 0;
+        return 3;
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGRect vb = self.view.bounds;
     
-    static NSString *CellIdentifier = @"ProfileBadgeCellIdentifier";
+    static NSString *CellIdentifier = @"AddSiteEmptyCellIdentifier";
+    int sitesCount = [self.sites count];
+    
+    if (self.inSearch_ && sitesCount){
+        if (sitesCount > indexPath.row) {
+            
+            
+            
+            
+            AddSiteTableCell *cell = (AddSiteTableCell *)[tableView 
+                                                                dequeueReusableCellWithIdentifier:@"AddSiteCellIdentifier"]; 
+            if (cell == nil) {
+                cell = [[AddSiteTableCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                  reuseIdentifier:nil];
+            }
+            
+            
+            NSDictionary *site = [self.sites objectAtIndex:indexPath.row];
+            
+            NSString *siteTitle = [site objectForKey:@"label"];
+            cell.siteTitle = siteTitle; 
+            
+            // adding comma to the number of subscribers
+            NSNumberFormatter *formatter = [NSNumberFormatter new];
+            [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
+            NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[[site objectForKey:@"num_subscribers"] intValue]]];
+            NSString *subscribers = [NSString stringWithFormat:@"%@ subscribers", formatted];
+            cell.siteSubscribers = subscribers;
+            
+            // feed color bar border
+            unsigned int colorBorder = 0;
+            NSString *faviconColor = [site valueForKey:@"favicon_color"];
+            
+            if ([faviconColor class] == [NSNull class]) {
+                faviconColor = @"505050";
+            }    
+            NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
+            [scannerBorder scanHexInt:&colorBorder];
+            
+            cell.feedColorBar = UIColorFromRGB(colorBorder);
+            
+            // feed color bar border
+            NSString *faviconFade = [site valueForKey:@"favicon_fade"];
+            if ([faviconFade class] == [NSNull class]) {
+                faviconFade = @"505050";
+            }    
+            scannerBorder = [NSScanner scannerWithString:faviconFade];
+            [scannerBorder scanHexInt:&colorBorder];
+            cell.feedColorBarTopBorder =  UIColorFromRGB(colorBorder);
+            
+            // favicon
+//                cell.siteFavicon = [Utilities getImage:feedIdStr];
+            
+            // undread indicator
+            
+            return cell;
+        }
+    }
+    
     UITableViewCell *cell = [tableView 
                              dequeueReusableCellWithIdentifier:CellIdentifier];
     
@@ -222,59 +285,33 @@
         [[[cell contentView] subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)];
     }
     
-    if (self.inSearch_){
-        int sitesCount = [self.sites count];
-        
-        if (sitesCount) {
-            if (sitesCount > indexPath.row) {
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", [[self.sites objectAtIndex:indexPath.row] objectForKey:@"value"]];
-                cell.textLabel.text = [NSString stringWithFormat:@"%@", [[self.sites objectAtIndex:indexPath.row] objectForKey:@"label"]];
-//                cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-            }
-        } else {
-            // add a NO FRIENDS TO SUGGEST message on either the first or second row depending on iphone/ipad
-            int row = 0;
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                row = 1;
-            }
-            
-            if (indexPath.row == row) {
-                UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
-                [cell.contentView addSubview:msg];
-                msg.text = @"No results.";
-                msg.textColor = UIColorFromRGB(0x7a7a7a);
-                if (vb.size.width > 320) {
-                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
-                } else {
-                    msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
-                }
-                msg.textAlignment = UITextAlignmentCenter;
-            }
-            
-        }
-        
+    int row = 0;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        row = 1;
+    }
+    
+    UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 74)];
+    msg.textColor = UIColorFromRGB(0x7a7a7a);
+    if (vb.size.width > 320) {
+        msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
     } else {
-        
-        int row = 0;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            row = 1;
-        }
-        
+        msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
+    }
+    msg.textAlignment = UITextAlignmentCenter;
+    
+    if (self.inSearch_ && sitesCount){
         if (indexPath.row == row) {
-            UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 140)];
             [cell.contentView addSubview:msg];
+            msg.text = @"No results.";
+        }
+    } else {
+        if (indexPath.row == row) {
             msg.text = @"Search for sites above";
-            msg.textColor = UIColorFromRGB(0x7a7a7a);
-            if (vb.size.width > 320) {
-                msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];
-            } else {
-                msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 14.0];
-            }
-            msg.textAlignment = UITextAlignmentCenter;
         }
     }
     
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;    
+    
     return cell;
 }
 
@@ -284,6 +321,7 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self.sitesSearchBar resignFirstResponder];
+    [appDelegate.modalNavigationController pushViewController:appDelegate.addSiteViewController animated:YES];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {

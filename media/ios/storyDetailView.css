@@ -67,6 +67,10 @@
 .NB-ipad-wide#story_pane .nb-story-comment .nb-user-avatar { 
     left: 88px;
 }
+.NB-ipad-wide#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar {
+    left: 98px;
+}
+
 
 /**
  * iPad Narrow Style
@@ -95,6 +99,10 @@
 
 .NB-ipad-narrow#story_pane .nb-story-comment .nb-user-avatar { 
     left: 28px;
+}
+
+.NB-ipad-narrow#story_pane .nb-story-comment .nb-story-comment-reshares .nb-user-avatar {
+    left: 38px;
 }
 
 /**

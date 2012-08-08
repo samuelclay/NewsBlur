@@ -75,7 +75,7 @@
         photo_url = [photo_url stringByReplacingOccurrencesOfString:@"_normal" withString:@""];        
     }
     
-    UIImage *placeholder = [UIImage imageNamed:@"user"];
+    UIImage *placeholder = [UIImage imageNamed:@"user_dark"];
     UIImageView *avatar = [[UIImageView alloc] init];
     avatar.frame = CGRectMake(10, 10, 80, 80);
 

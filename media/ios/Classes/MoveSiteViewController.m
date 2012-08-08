@@ -63,11 +63,10 @@
         [subview removeFromSuperview];
     }
     UIView *label = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-    label.frame = CGRectMake(label.frame.origin.x, 
-                             label.frame.origin.y, 
-                             self.titleLabel.frame.size.width - 
-                             (self.titleLabel.frame.origin.x-label.frame.origin.x), 
-                             label.frame.size.height);
+    label.frame = CGRectMake(0, 
+                             0, 
+                             200, 
+                             20);
     [self.titleLabel addSubview:label];
     [self reload];
     [super viewWillAppear:animated];
