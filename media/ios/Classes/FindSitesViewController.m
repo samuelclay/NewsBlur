@@ -47,8 +47,9 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+    
+    self.sitesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     // loading indicator
     UIActivityIndicatorView *loader = [[UIActivityIndicatorView alloc] 
@@ -171,20 +172,8 @@
         // int statusCode = [request responseStatusCode];
         
         self.sites = [results objectForKey:@"feeds"];
-        
-        for (int i = 0; i < self.sites.count; i++) {
-            NSString *feedId = [[self.sites objectAtIndex:i] objectForKey:@"id"];
-            NSString *favicon = [[self.sites objectAtIndex:i] objectForKey:@"favicon"];
-            if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
-                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
-                UIImage *faviconImage = [UIImage imageWithData:imageData];
-                [Utilities saveImage:faviconImage feedId:feedId];
-            }
-        }
 
         [self.sitesTable reloadData];
-        
-        
         
         NSString *originalSearchTerm = [NSString stringWithFormat:@"%@", [results objectForKey:@"term"]];
         if ([self.searchTerm_ isEqualToString:originalSearchTerm]) {
@@ -281,9 +270,13 @@
             cell.feedColorBarTopBorder =  UIColorFromRGB(colorBorder);
             
             // favicon
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [site valueForKey:@"id"]];
-            cell.siteFavicon = [Utilities getImage:feedIdStr];
+            NSString *faviconStr = [NSString stringWithFormat:@"%@", [site valueForKey:@"favicon"]];
+            NSData *imageData = [NSData dataWithBase64EncodedString:faviconStr];
+            UIImage *faviconImage = [UIImage imageWithData:imageData];
+
+            cell.siteFavicon = faviconImage;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            
             return cell;
         }
     }
@@ -336,15 +329,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self.sitesSearchBar resignFirstResponder];
     [appDelegate.modalNavigationController pushViewController:appDelegate.addSiteViewController animated:YES];
-}
-
-- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-//    NSInteger currentRow = indexPath.row;
-//    int row = currentRow;
-//    [self.sitesSearchBar resignFirstResponder];
-
-//    [appDelegate.modalNavigationController pushViewController:appDelegate.userProfileViewController animated:YES];
-//    [appDelegate.userProfileViewController getUserProfile];
+    
 }
 
 @end

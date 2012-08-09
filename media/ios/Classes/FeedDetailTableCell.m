@@ -31,6 +31,7 @@ static UIFont *indicatorFont = nil;
 @synthesize feedColorBarTopBorder;
 @synthesize hasAlpha;
 
+
 #define leftMargin 39
 #define rightMargin 18
 
