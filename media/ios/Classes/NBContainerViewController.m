@@ -77,9 +77,7 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
-    
+- (void)viewDidLoad {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
@@ -170,6 +168,7 @@
     if (popoverController.isPopoverVisible) {
         [popoverController dismissPopoverAnimated:NO];
         popoverController = nil;
+        return;
     }
     
     popoverController = [[UIPopoverController alloc]
@@ -204,6 +203,7 @@
     if (popoverController.isPopoverVisible) {
         [popoverController dismissPopoverAnimated:NO];
         popoverController = nil;
+        return;
     }
 
     popoverController = [[UIPopoverController alloc]
@@ -224,6 +224,7 @@
     if (popoverController.isPopoverVisible) {
         [popoverController dismissPopoverAnimated:NO];
         popoverController = nil;
+        return;
     }
     
     popoverController = [[UIPopoverController alloc]
@@ -243,8 +244,8 @@
 - (void)hidePopover {
     if (popoverController.isPopoverVisible) {
         [popoverController dismissPopoverAnimated:YES];
-        popoverController = nil;
     }
+    popoverController = nil;
     [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
 }
 

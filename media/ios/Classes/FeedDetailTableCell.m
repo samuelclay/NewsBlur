@@ -25,6 +25,7 @@ static UIFont *indicatorFont = nil;
 @synthesize siteTitle;
 @synthesize siteFavicon;
 @synthesize isRead;
+@synthesize isShort;
 @synthesize isRiverOrSocial;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
@@ -41,7 +42,7 @@ static UIFont *indicatorFont = nil;
     }
 }
 
-- (void) drawContentView:(CGRect)r highlighted:(BOOL)highlighted {
+- (void)drawContentView:(CGRect)r highlighted:(BOOL)highlighted {
     int adjustForSocial = 3;
     if (self.isRiverOrSocial) {
         adjustForSocial = 20; 
@@ -113,12 +114,22 @@ static UIFont *indicatorFont = nil;
 
     CGSize theSize = [self.storyTitle sizeWithFont:font constrainedToSize:CGSizeMake(rect.size.width - rightMargin, 30.0) lineBreakMode:UILineBreakModeTailTruncation];
     
-    [self.storyTitle 
-     drawInRect:CGRectMake(leftMargin, 6 + adjustForSocial + ((30 - theSize.height)/2), rect.size.width - rightMargin, theSize.height) 
+    int storyTitleY = 6 + adjustForSocial + ((30 - theSize.height)/2);
+    if (self.isShort){
+        storyTitleY = 6 + adjustForSocial - 2 ;
+    }
+    
+    [self.storyTitle
+     drawInRect:CGRectMake(leftMargin, storyTitleY, rect.size.width - rightMargin, theSize.height) 
      withFont:font
      lineBreakMode:UILineBreakModeTailTruncation 
      alignment:UITextAlignmentLeft];
 
+    int storyAuthorDateY = 42 + adjustForSocial;
+    if (self.isShort){
+        storyAuthorDateY -= 20;
+    }
+    
     // story author style
     if (self.isRead) {
         textColor = UIColorFromRGB(0xc0c0c0);
@@ -131,16 +142,15 @@ static UIFont *indicatorFont = nil;
         textColor = UIColorFromRGB(0x686868);
     }
     [textColor set];
-    
-
-    [self.storyAuthor 
-     drawInRect:CGRectMake(leftMargin, 42 + adjustForSocial, (rect.size.width - rightMargin) / 2 - 10, 15.0) 
+        
+    [self.storyAuthor
+     drawInRect:CGRectMake(leftMargin, storyAuthorDateY, (rect.size.width - rightMargin) / 2 - 10, 15.0)
      withFont:font
-     lineBreakMode:UILineBreakModeTailTruncation 
+     lineBreakMode:UILineBreakModeTailTruncation
      alignment:UITextAlignmentLeft];
+
     
     // story date
-    
     if (self.isRead) {
         textColor = UIColorFromRGB(0xbabdd1);
         font = [UIFont fontWithName:@"Helvetica" size:10];
@@ -155,7 +165,7 @@ static UIFont *indicatorFont = nil;
     [textColor set];
     
     [self.storyDate 
-         drawInRect:CGRectMake(leftMargin + (rect.size.width - rightMargin) / 2 - 10, 42 + adjustForSocial, (rect.size.width - rightMargin) / 2 + 10, 15.0) 
+         drawInRect:CGRectMake(leftMargin + (rect.size.width - rightMargin) / 2 - 10, storyAuthorDateY, (rect.size.width - rightMargin) / 2 + 10, 15.0) 
          withFont:font
          lineBreakMode:UILineBreakModeTailTruncation 
          alignment:UITextAlignmentRight];
@@ -170,7 +180,6 @@ static UIFont *indicatorFont = nil;
     CGContextMoveToPoint(context, 5.0f, 1.0f);
     CGContextAddLineToPoint(context, 5.0f, 81.0f);
     CGContextStrokePath(context);
-    
     
     // reset for borders
     CGContextSetAlpha(context, 1.0);

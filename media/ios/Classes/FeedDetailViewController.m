@@ -22,8 +22,9 @@
 #import "Utilities.h"
 
 
-#define kTableViewRowHeight 65;
+#define kTableViewRowHeight 60;
 #define kTableViewRiverRowHeight 81;
+#define kTableViewShortRowDifference 20;
 #define kMarkReadActionSheet 1;
 #define kSettingsActionSheet 2;
 
@@ -138,6 +139,11 @@
         appDelegate.inStoryDetail = NO;
         [appDelegate.storyDetailViewController clearStory];
     }
+    
+    NSString *title = appDelegate.isRiverView ?
+    appDelegate.activeFolder :
+    [appDelegate.activeFeed objectForKey:@"feed_title"];
+    NSLog(@"title %@", title);
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -490,6 +496,13 @@
             height = kTableViewRowHeight;
         }
         
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+            && !appDelegate.masterContainerViewController.storyTitlesOnLeft
+            && UIInterfaceOrientationIsPortrait(orientation)) {
+            height = height - kTableViewShortRowDifference;
+        }
+
         fleuron.frame = CGRectMake(0, 0, self.view.frame.size.width, height);
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
@@ -634,6 +647,13 @@
     }
 
     cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
+    
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+        && !appDelegate.masterContainerViewController.storyTitlesOnLeft
+        && UIInterfaceOrientationIsPortrait(orientation)) {
+        cell.isShort = YES;
+    }
 
     if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
         cell.isRiverOrSocial = YES;
@@ -676,9 +696,23 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
-        return kTableViewRiverRowHeight;
+        int height = kTableViewRiverRowHeight;
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+            && !appDelegate.masterContainerViewController.storyTitlesOnLeft
+            && UIInterfaceOrientationIsPortrait(orientation)) {
+            height = height - kTableViewShortRowDifference;
+        }
+        return height;
     } else {
-        return kTableViewRowHeight;
+        int height = kTableViewRowHeight;
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+            && !appDelegate.masterContainerViewController.storyTitlesOnLeft
+            && UIInterfaceOrientationIsPortrait(orientation)) {
+            height = height - kTableViewShortRowDifference;
+        }
+        return height;
     }
 }
 

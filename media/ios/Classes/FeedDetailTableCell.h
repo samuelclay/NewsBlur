@@ -23,6 +23,7 @@
     NSString *siteTitle;
     UIImage *siteFavicon;
     BOOL isRead;
+    BOOL isShort;
     BOOL isRiverOrSocial;
     BOOL hasAlpha;
 
@@ -43,6 +44,7 @@
 @property (nonatomic) UIColor *feedColorBarTopBorder;
 
 @property (readwrite) BOOL isRead;
+@property (readwrite) BOOL isShort;
 @property (readwrite) BOOL isRiverOrSocial;
 @property (readwrite) BOOL hasAlpha;
 
