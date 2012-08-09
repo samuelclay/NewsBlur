@@ -2366,6 +2366,9 @@ background: transparent;
     float: left;
     margin-right: 12px;
 }
+#story_pane .NB-story-comments-label b {
+    font-size: 12px;
+}
 #story_pane .NB-story-share-label {
     float: right;
     margin-left: 12px;

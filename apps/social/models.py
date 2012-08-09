@@ -1348,8 +1348,10 @@ class MSharedStory(mongo.Document):
                 nonfriend_user_ids = [int(f) for f in r.sdiff(share_key, friend_key)]
                 profile_user_ids.update(nonfriend_user_ids)
                 profile_user_ids.update(friends_with_shares)
-                story['shared_by_public']    = nonfriend_user_ids
-                story['shared_by_friends']   = friends_with_shares
+                story['shared_by_public']    = list(set(nonfriend_user_ids) - 
+                                                    set([c['user_id'] for c in story['public_comments']]))
+                story['shared_by_friends']    = list(set(friends_with_shares) - 
+                                                     set([c['user_id'] for c in story['friend_comments']]))
                 story['share_count_public']  = story['share_count'] - len(friends_with_shares)
                 story['share_count_friends'] = len(friends_with_shares)
                 if story.get('source_user_id'):

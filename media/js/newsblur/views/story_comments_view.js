@@ -18,6 +18,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             this.render_teaser();
             this.render_comments_friends();
             this.render_comments_public();
+            this.$el.toggleClass('NB-hidden', !this.model.get('comment_count'));
         }
 
         return this;
@@ -122,21 +123,17 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
                         <div class="NB-story-share-profiles-comments-public"></div>\
                     </div>\
                 <% } %>\
-                <% if (story.get("share_count")) { %>\
-                    <div class="NB-right">\
-                        <% if (story.get("share_count_friends")) { %>\
-                            <div class="NB-story-share-label">\
-                                Shared by\
-                                <b><%= story.get("share_count") %></b>\
-                                <%= Inflector.pluralize("person", story.get("share_count")) %>\
-                            </div>\
-                            <div class="NB-story-share-profiles NB-story-share-profiles-shares">\
-                                <div class="NB-story-share-profiles-shares-friends"></div>\
-                                <div class="NB-story-share-profiles-shares-public"></div>\
-                            </div>\
-                        <% } %>\
+                <div class="NB-right">\
+                    <div class="NB-story-share-label">\
+                        Shared by\
+                        <b><%= story.get("share_count") %></b>\
+                        <%= Inflector.pluralize("person", story.get("share_count")) %>\
                     </div>\
-                <% } %>\
+                    <div class="NB-story-share-profiles NB-story-share-profiles-shares">\
+                        <div class="NB-story-share-profiles-shares-friends"></div>\
+                        <div class="NB-story-share-profiles-shares-public"></div>\
+                    </div>\
+                </div>\
             </div>\
         </div>\
     '),
