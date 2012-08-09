@@ -209,7 +209,11 @@ def load_river_blurblog(request):
                                                  offset=offset, limit=limit,
                                                  order=order, read_filter=read_filter)
     mstories = MStory.objects(id__in=story_ids)
-    stories = Feed.format_stories(mstories)
+    story_id_to_dates = dict(zip(story_ids, story_dates))
+    def sort_stories_by_id(a, b):
+        return int(story_id_to_dates[str(b.id)]) - int(story_id_to_dates[str(a.id)])
+    sorted_mstories = sorted(mstories, cmp=sort_stories_by_id)
+    stories = Feed.format_stories(sorted_mstories)
     for s, story in enumerate(stories):
         story['story_date'] = datetime.datetime.fromtimestamp(story_dates[s])
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, relative_user_id, 
