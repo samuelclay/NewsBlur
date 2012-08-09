@@ -4,7 +4,7 @@
 
 #story_pane .NB-story-comment {
     border-top: 1px solid #A6A6A6;
-    background: -webkit-gradient(linear,0% 0,0% 100%,from(#F5F9FB),to(#ECF0F2));
+    background:#ECF0F2;
     position: relative;
     padding: 0 12px 2px 72px;
     line-height: 20px;
@@ -172,8 +172,7 @@
     overflow: hidden;
     height: 26px;
     border-bottom: 1px solid #A6A6A6;
-    background-image: -webkit-gradient(linear,left bottom,left top,color-stop(0.10,#EBEBEC),color-stop(0.84,whiteSmoke));
-    background-image: -moz-linear-gradient(center bottom,#EBEBEC 10%,whiteSmoke 84%);
+    background-image: whiteSmoke;
 }
 
 #story_pane .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {

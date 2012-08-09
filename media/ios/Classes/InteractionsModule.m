@@ -195,8 +195,15 @@
         // add in loading cell
         return [self makeLoadingCell];
     } else {
+        NSDictionary *interaction = [appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)];
+        NSString *category = [interaction objectForKey:@"category"];
+        if (![category isEqualToString:@"follow"]) {
+            cell.accessoryType=  UITableViewCellAccessoryDisclosureIndicator;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
         // update the cell information
-        [cell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth: self.frame.size.width];
+        [cell setInteraction:interaction withWidth: self.frame.size.width];
     }
     
     return cell;

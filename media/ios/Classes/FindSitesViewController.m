@@ -11,9 +11,11 @@
 #import "FindSitesViewController.h"
 #import "AddSiteViewController.h"
 #import "MBProgressHUD.h"
-#import "AddSiteTableCell.h"
+#import "FeedDetailTableCell.h"
+#import "Utilities.h"
+#import "Base64.h"
 
-#define FIND_SITES_ROW_HEIGHT 74;
+#define FIND_SITES_ROW_HEIGHT 81;
 
 @implementation UINavigationController (DelegateAutomaticDismissKeyboard)
 - (BOOL)disablesAutomaticKeyboardDismissal {
@@ -169,8 +171,20 @@
         // int statusCode = [request responseStatusCode];
         
         self.sites = [results objectForKey:@"feeds"];
+        
+        for (int i = 0; i < self.sites.count; i++) {
+            NSString *feedId = [[self.sites objectAtIndex:i] objectForKey:@"id"];
+            NSString *favicon = [[self.sites objectAtIndex:i] objectForKey:@"favicon"];
+            if ((NSNull *)favicon != [NSNull null] && [favicon length] > 0) {
+                NSData *imageData = [NSData dataWithBase64EncodedString:favicon];
+                UIImage *faviconImage = [UIImage imageWithData:imageData];
+                [Utilities saveImage:faviconImage feedId:feedId];
+            }
+        }
 
         [self.sitesTable reloadData];
+        
+        
         
         NSString *originalSearchTerm = [NSString stringWithFormat:@"%@", [results objectForKey:@"term"]];
         if ([self.searchTerm_ isEqualToString:originalSearchTerm]) {
@@ -224,25 +238,26 @@
             
             
             
-            AddSiteTableCell *cell = (AddSiteTableCell *)[tableView 
+            FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView 
                                                                 dequeueReusableCellWithIdentifier:@"AddSiteCellIdentifier"]; 
             if (cell == nil) {
-                cell = [[AddSiteTableCell alloc] initWithStyle:UITableViewCellStyleDefault
+                cell = [[FeedDetailTableCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                   reuseIdentifier:nil];
             }
             
             
             NSDictionary *site = [self.sites objectAtIndex:indexPath.row];
             
-            NSString *siteTitle = [site objectForKey:@"label"];
-            cell.siteTitle = siteTitle; 
-            
+            cell.siteTitle = [site objectForKey:@"label"];
+            cell.storyTitle = [site objectForKey:@"tagline"];
+            cell.storyAuthor = [site objectForKey:@"value"];
             // adding comma to the number of subscribers
             NSNumberFormatter *formatter = [NSNumberFormatter new];
             [formatter setNumberStyle:NSNumberFormatterDecimalStyle]; // this line is important!
             NSString *formatted = [formatter stringFromNumber:[NSNumber numberWithInteger:[[site objectForKey:@"num_subscribers"] intValue]]];
             NSString *subscribers = [NSString stringWithFormat:@"%@ subscribers", formatted];
-            cell.siteSubscribers = subscribers;
+            cell.storyDate = subscribers;
+            cell.isRiverOrSocial = YES;
             
             // feed color bar border
             unsigned int colorBorder = 0;
@@ -257,7 +272,7 @@
             cell.feedColorBar = UIColorFromRGB(colorBorder);
             
             // feed color bar border
-            NSString *faviconFade = [site valueForKey:@"favicon_fade"];
+            NSString *faviconFade = [site valueForKey:@"favicon_border"];
             if ([faviconFade class] == [NSNull class]) {
                 faviconFade = @"505050";
             }    
@@ -266,10 +281,9 @@
             cell.feedColorBarTopBorder =  UIColorFromRGB(colorBorder);
             
             // favicon
-//                cell.siteFavicon = [Utilities getImage:feedIdStr];
-            
-            // undread indicator
-            
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [site valueForKey:@"id"]];
+            cell.siteFavicon = [Utilities getImage:feedIdStr];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             return cell;
         }
     }
@@ -290,7 +304,7 @@
         row = 1;
     }
     
-    UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 74)];
+    UILabel *msg = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, vb.size.width, 81)];
     msg.textColor = UIColorFromRGB(0x7a7a7a);
     if (vb.size.width > 320) {
         msg.font = [UIFont fontWithName:@"Helvetica-Bold" size: 20.0];

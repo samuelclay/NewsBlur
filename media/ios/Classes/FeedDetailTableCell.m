@@ -212,14 +212,16 @@ static UIFont *indicatorFont = nil;
         CGContextStrokePath(context);
         
         // feed bar border    
-        CGContextSetStrokeColor(context, CGColorGetComponents([feedColorBarTopBorder CGColor]));
         if (self.isRead) {
-            CGContextSetAlpha(context, 0.5);
+              CGContextSetAlpha(context, 0.25);
         }
+
+        CGContextSetStrokeColor(context, CGColorGetComponents([feedColorBarTopBorder CGColor]));
         CGContextBeginPath(context);
         CGContextMoveToPoint(context, 0.0f, 0.5f);
         CGContextAddLineToPoint(context, 10.0, 0.5f);
         CGContextStrokePath(context);
+        
     }
     
     // site favicon

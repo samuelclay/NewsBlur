@@ -27,6 +27,13 @@
 #define kBlurblogTableViewRowHeight 47;
 #define kPhoneBlurblogTableViewRowHeight 39;
 
+@interface NewsBlurViewController () 
+
+@property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
+@property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
+
+@end
+
 @implementation NewsBlurViewController
 
 @synthesize appDelegate;
@@ -46,6 +53,8 @@
 @synthesize popoverController;
 @synthesize currentRowAtIndexPath;
 @synthesize hasNoSites;
+@synthesize updatedDictFeeds_;
+@synthesize updatedDictSocialFeeds_;
 
 #pragma mark -
 #pragma mark Globals
@@ -222,23 +231,18 @@
     NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(BACKGROUND_REFRESH_SECONDS)];
     NSLog(@"Last Update: %@ - %f", self.lastUpdate, [self.lastUpdate timeIntervalSinceDate:decayDate]);
     if ([self.lastUpdate timeIntervalSinceDate:decayDate] < 0) {
-        [self fetchFeedList:YES refreshFeeds:YES];
+        [self fetchFeedList:YES];
     }
     
 }
 
--(void)fetchFeedList:(BOOL)showLoader refreshFeeds:(BOOL)refreshFeeds {
+-(void)fetchFeedList:(BOOL)showLoader {
     if (showLoader && appDelegate.navigationController.topViewController == appDelegate.feedsViewController) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         HUD.labelText = @"On its way...";
     }
     
-//    if (refreshFeeds) {
-//        [self refreshFeedList];
-//        return;
-//    }
-
     NSURL *urlFeedList = [NSURL URLWithString:
                           [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true&update_counts=false",
                            NEWSBLUR_URL]];
@@ -442,12 +446,14 @@
         [upgradeConfirm show];
         [upgradeConfirm setTag:2];
     }
-    
+
+    [self refreshFeedList];
 }
 
 - (void)showUserProfile {
     appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    appDelegate.activeUserProfileName = @"You";
+    appDelegate.activeUserProfileName = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"username"]];
+//    appDelegate.activeUserProfileName = @"You";
     [appDelegate showUserProfileModal:self.navigationItem.leftBarButtonItem];
 }
 
@@ -1226,7 +1232,7 @@
 
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
-    [self refreshFeedList];
+    [self fetchFeedList:NO];
 }
 
 
@@ -1249,7 +1255,55 @@
 }
 
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request {
-    [self fetchFeedList:NO refreshFeeds:NO];
+    if ([request responseStatusCode] == 403) {
+        return [appDelegate showLogin];
+    } else if ([request responseStatusCode] >= 500) {
+        [pull finishedLoading];
+        return [self informError:@"The server barfed!"];
+    }
+    
+    NSString *responseString = [request responseString];   
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    
+    NSMutableDictionary *updatedDictFeeds = [appDelegate.dictFeeds mutableCopy];    
+    NSDictionary *newFeedCounts = [results objectForKey:@"feeds"];
+    for (id feed in newFeedCounts) {
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
+        NSMutableDictionary *newFeed = [[appDelegate.dictFeeds objectForKey:feedIdStr] mutableCopy];
+        NSMutableDictionary *newFeedCount = [newFeedCounts objectForKey:feed];
+
+        if ([newFeed isKindOfClass:[NSDictionary class]]) {
+            
+            [newFeed setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
+            [newFeed setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
+            [newFeed setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
+            [updatedDictFeeds setObject:newFeed forKey:feedIdStr];
+        }
+    }
+    
+    NSMutableDictionary *updatedDictSocialFeeds = [appDelegate.dictSocialFeeds mutableCopy]; 
+    NSDictionary *newSocialFeedCounts = [results objectForKey:@"social_feeds"];
+    for (id feed in newSocialFeedCounts) {
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
+        NSMutableDictionary *newFeed = [[appDelegate.dictSocialFeeds objectForKey:feedIdStr] mutableCopy];
+        NSMutableDictionary *newFeedCount = [newSocialFeedCounts objectForKey:feed];
+
+        if ([newFeed isKindOfClass:[NSDictionary class]]) {
+            [newFeed setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
+            [newFeed setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
+            [newFeed setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
+            [updatedDictSocialFeeds setObject:newFeed forKey:feedIdStr];
+        }
+    }
+
+    appDelegate.dictSocialFeeds = updatedDictSocialFeeds;
+    appDelegate.dictFeeds = updatedDictFeeds;
+    [self.feedTitlesTable reloadData];
 }
 
 // called when the date shown needs to be updated, optional

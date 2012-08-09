@@ -131,7 +131,7 @@
     }
             
     [window makeKeyAndVisible];
-    [self.feedsViewController fetchFeedList:YES refreshFeeds:YES];
+    [self.feedsViewController fetchFeedList:YES];
     
     //[self showFirstTimeUser];
 	return YES;
@@ -321,7 +321,7 @@
 }
 
 - (void)reloadFeedsView:(BOOL)showLoader {
-    [feedsViewController fetchFeedList:showLoader refreshFeeds:YES];
+    [feedsViewController fetchFeedList:showLoader];
     [loginViewController dismissModalViewControllerAnimated:YES];
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }

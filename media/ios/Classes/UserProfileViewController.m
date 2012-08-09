@@ -136,7 +136,7 @@
     // check follow button status    
     if ([currentUserId isEqualToString:profileUserId]) {
         NSMutableDictionary *newUserProfile = [self.userProfile mutableCopy];
-        [newUserProfile setValue:@"You" forKey:@"username"];
+        [newUserProfile setValue:[NSNumber numberWithInt:1] forKey:@"yourself"];
         self.userProfile = newUserProfile;
     }
         
@@ -230,7 +230,7 @@
                     reuseIdentifier:@"ActivityCellIdentifier"];
         }
 
-   
+        cell.accessoryType=  UITableViewCellAccessoryDisclosureIndicator;
         [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
           withUserProfile:self.userProfile
                 withWidth:width];

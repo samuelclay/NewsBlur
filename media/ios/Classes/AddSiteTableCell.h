@@ -24,9 +24,12 @@
 @property (nonatomic) NSString *siteTitle;
 @property (nonatomic) NSString *siteUrl;
 @property (nonatomic) NSString *siteSubscribers;
+@property (nonatomic) NSString *siteTagline;
 @property (nonatomic) UIImage *siteFavicon;
 
 @property (nonatomic) UIColor *feedColorBar;
 @property (nonatomic) UIColor *feedColorBarTopBorder;
+
+
 
 @end

@@ -106,7 +106,7 @@
     
     // username
     UILabel *user = [[UILabel alloc] initWithFrame:CGRectZero];
-    user.textColor = UIColorFromRGB(0xAE5D15);
+    user.textColor = UIColorFromRGB(NEWSBLUR_LINK_COLOR);
     user.font = [UIFont fontWithName:@"Helvetica-Bold" size:18];
     user.backgroundColor = [UIColor clearColor];
     self.username = user;
@@ -119,10 +119,8 @@
     UIButton *follow = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     follow.frame = CGRectMake(10, 96, 80, 24);
     
-    NSString *profileUsername = [NSString stringWithFormat:@"%@", [profile objectForKey:@"username"]];   
-    
     // check follow button status    
-    if ([profileUsername isEqualToString:@"You"]) {
+    if ([[profile objectForKey:@"yourself"] intValue]) {
         [follow setTitle:@"You" forState:UIControlStateNormal];
         follow.enabled = NO;
     } else if ([[profile objectForKey:@"followed_by_you"] intValue]) {
@@ -178,7 +176,8 @@
     } 
     
     // LOCATION
-    if ([profile objectForKey:@"location"] != [NSNull null]) {
+    if ([profile objectForKey:@"location"] != [NSNull null] &&
+        [[profile objectForKey:@"location"] length]) {
         UILabel *location = [[UILabel alloc] 
                              initWithFrame:CGRectMake(kTopBadgeTextXCoordinate + 16, 
                                                       yCoordinatePointer, 

@@ -61,7 +61,7 @@
 @property (nonatomic) NSIndexPath *currentRowAtIndexPath;
 
 - (void)returnToApp;
-- (void)fetchFeedList:(BOOL)showLoader refreshFeeds:(BOOL)refreshFeeds;
+- (void)fetchFeedList:(BOOL)showLoader;
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request;
 - (void)finishRefreshingFeedList:(ASIHTTPRequest *)request;

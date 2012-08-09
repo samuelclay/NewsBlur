@@ -192,9 +192,17 @@
         NSMutableDictionary *userProfile = [appDelegate.dictUserProfile  mutableCopy];
         [userProfile setValue:@"You" forKey:@"username"];
         
+        NSDictionary *activitiy = [self.activitiesArray 
+                                   objectAtIndex:(indexPath.row)];
+        NSString *category = [activitiy objectForKey:@"category"];
+        if (![category isEqualToString:@"follow"]) {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
+
         // update the cell information
-        [cell setActivity:[self.activitiesArray 
-                           objectAtIndex:(indexPath.row)] 
+        [cell setActivity: activitiy
           withUserProfile:userProfile
                 withWidth:self.frame.size.width];
     }

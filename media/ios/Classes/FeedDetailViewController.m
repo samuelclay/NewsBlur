@@ -565,24 +565,6 @@
     } else {
         cellIdentifier = @"FeedDetailCellIdentifier";
     }
-
-//    FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView 
-//                                                        dequeueReusableCellWithIdentifier:cellIdentifier];
-//	if (cell == nil) {
-//		NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"FeedDetailTableCell"
-//                                                     owner:self
-//                                                   options:nil];
-//        for (id oneObject in nib) {
-//            if ([oneObject isKindOfClass:[FeedDetailTableCell class]]) {
-//                if (([(FeedDetailTableCell *)oneObject tag] == 0 && !(appDelegate.isRiverView || appDelegate.isSocialView)) ||
-//                    ([(FeedDetailTableCell *)oneObject tag] == 1 && (appDelegate.isRiverView || appDelegate.isSocialView))) {
-//                    cell = (FeedDetailTableCell *)oneObject;
-//                    break;
-//                }
-//
-//            }
-//        }
-//	}
     
     FeedDetailTableCell *cell = (FeedDetailTableCell *)[tableView 
                                                         dequeueReusableCellWithIdentifier:cellIdentifier]; 
@@ -638,7 +620,7 @@
     cell.feedColorBar = UIColorFromRGB(colorBorder);
     
     // feed color bar border
-    NSString *faviconFade = [feed valueForKey:@"favicon_fade"];
+    NSString *faviconFade = [feed valueForKey:@"favicon_border"];
     if ([faviconFade class] == [NSNull class]) {
         faviconFade = @"505050";
     }    
