@@ -484,6 +484,7 @@
                    "<div class=\"NB-story-comment-author-container\">"
                    "   %@"
                    "    <div class=\"NB-story-comment-username\">%@</div>"
+                   "   %@"
                    "    <div class=\"NB-story-comment-date\">%@ ago</div>"
                    "</div>"
                    "<div class=\"NB-story-comment-content\">%@"
@@ -506,6 +507,7 @@
                    [user objectForKey:@"photo_url"],
                    userReshareString,
                    [user objectForKey:@"username"],
+                   locationHtml,
                    [commentDict objectForKey:@"shared_date"],
                    commentContent,
                    [commentDict objectForKey:@"user_id"],
@@ -548,6 +550,13 @@
             }
             
             NSString *replyContent = [self textToHtml:[replyDict objectForKey:@"comments"]];
+            
+            NSString *locationHtml = @"";
+            NSString *location = [NSString stringWithFormat:@"%@", [user objectForKey:@"location"]];
+            
+            if (location.length) {
+                locationHtml = [NSString stringWithFormat:@"<div class=\"NB-story-comment-location\">%@</div>", location];
+            }
                         
             NSString *reply = [NSString stringWithFormat:@
                                 "<div class=\"NB-story-comment-reply\" id=\"NB-user-comment-%@\">"
@@ -555,6 +564,7 @@
                                 "       <img class=\"NB-story-comment-reply-photo\" src=\"%@\" />"
                                 "   </a>"
                                 "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
+                                "   %@"
                                 "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
                                 "    %@" //User Edit Button>"
                                 "   <div class=\"NB-story-comment-reply-content\">%@</div>"
@@ -562,7 +572,8 @@
                                [replyDict objectForKey:@"reply_id"],
                                [user objectForKey:@"user_id"],  
                                [user objectForKey:@"photo_url"],
-                               [user objectForKey:@"username"],  
+                               [user objectForKey:@"username"],
+                               locationHtml,
                                [replyDict objectForKey:@"publish_date"],
                                userEditButton,
                                replyContent];

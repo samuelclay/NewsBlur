@@ -4,7 +4,7 @@
 
 #story_pane .NB-story-comment {
     border-top: 1px solid #A6A6A6;
-    background:#ECF0F2;
+    background:#f5f9fb;
     position: relative;
     padding: 0 12px 2px 72px;
     line-height: 20px;
@@ -23,6 +23,8 @@
     padding: 0px 6px;
     background-color: #EFEFEF;
     border-radius: 8px;
+
+    line-height: 17px;
 }
 
 #story_pane .NB-story-comment .NB-user-avatar {
