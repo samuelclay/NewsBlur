@@ -415,15 +415,15 @@
             seconds = parseFloat(Math.max(1, parseInt(seconds, 10)), 10);
             
             if (percentage > 90) {
-                time = seconds / 5;
+                time = seconds;
             } else if (percentage > 80) {
-                time = seconds / 12;
+                time = seconds / 8;
             } else if (percentage > 70) {
-                time = seconds / 30;
+                time = seconds / 16;
             } else if (percentage > 60) {
-                time = seconds / 80;
+                time = seconds / 40;
             } else if (percentage > 50) {
-                time = seconds / 120;
+                time = seconds / 80;
             } else if (percentage > 40) {
                 time = seconds / 160;
             } else if (percentage > 30) {
@@ -1513,7 +1513,7 @@
             var unreads;
             if (feeds_loading) unreads = feeds_loading;
             else unreads = this.get_unread_count(false) / 10;
-            this.animate_progress_bar($bar, unreads);
+            this.animate_progress_bar($bar, unreads / 10);
             
             $('.NB-river-progress-text', $progress).text('Fetching stories');
             // Center the progress bar
@@ -4074,7 +4074,7 @@
                 value: percentage
             });
             
-            this.animate_progress_bar($bar, 4);
+            this.animate_progress_bar($bar, 5);
             
             this.model.start_import_from_google_reader($.rescope(this.finish_import_from_google_reader, this));
             this.show_progress_bar();
@@ -4119,7 +4119,7 @@
             
             setTimeout(function() {
                 if (self.flags['count_unreads_after_import_working']) {
-                    self.animate_progress_bar($bar, feeds_count / 10);
+                    self.animate_progress_bar($bar, feeds_count / 30);
                     self.show_progress_bar();
                 }
             }, 500);

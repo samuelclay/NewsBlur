@@ -358,9 +358,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
     
     if user.is_authenticated():
         for story in stories:
-            if (user.pk in story['shared_by_friends'] or 
-                user.pk in story['commented_by_friends'] or 
-                user.pk in story['shared_by_public']):
+            if user.pk in story['share_user_ids']:
                 story['shared_by_user'] = True
                 shared_story = MSharedStory.objects.get(user_id=user.pk, 
                                                         story_feed_id=story['story_feed_id'],

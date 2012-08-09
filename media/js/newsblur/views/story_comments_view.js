@@ -114,7 +114,7 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
                         <%= Inflector.pluralize("comment", story.get("comment_count")) %>\
                         <% if (story.get("reply_count")) { %>\
                             and \
-                            <b><%= story.get("reply_count") %></b>\
+                            <%= story.get("reply_count") %>\
                             <%= Inflector.pluralize("reply", story.get("reply_count")) %>\
                         <% } %>\
                     </div>\
