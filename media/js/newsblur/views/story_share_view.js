@@ -348,10 +348,10 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     },
     
     show_posting_label: function(twitter, facebook) {
-        NEWSBLUR.log(["show_posting_label", twitter, facebook]);
+        var social_services = NEWSBLUR.assets.social_services;
         var $text = this.$('.NB-sideoption-share-crosspost-text');
-        twitter = twitter || NEWSBLUR.assets.preference('post_to_twitter');
-        facebook = facebook || NEWSBLUR.assets.preference('post_to_facebook');
+        twitter = twitter || (social_services.twitter && social_services.twitter.twitter_uid && NEWSBLUR.assets.preference('post_to_twitter'));
+        facebook = facebook || (social_services.facebook && social_services.facebook.facebook_uid && NEWSBLUR.assets.preference('post_to_facebook'));
         
         if (twitter || facebook) {
             var message = "Post to ";

@@ -134,10 +134,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     template: _.template('\
         <%= story_header %>\
+        <div class="NB-feed-story-shares-container"></div>\
         <div class="NB-feed-story-content">\
             <%= story.get("story_content") %>\
         </div>\
-        <div class="NB-feed-story-share-container"></div>\
+        <div class="NB-feed-story-comments-container"></div>\
         <div class="NB-feed-story-sideoptions-container">\
             <div class="NB-sideoption NB-feed-story-train">\
                 <div class="NB-sideoption-icon">&nbsp;</div>\
@@ -187,12 +188,16 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     render_comments: function() {
-        var $original_comments = this.$('.NB-feed-story-share-container,.NB-feed-story-comments');
+        var $original_comments = this.$('.NB-feed-story-comments-container,.NB-feed-story-comments');
+        var $original_shares = this.$('.NB-feed-story-shares-container,.NB-feed-story-shares');
         if (this.model.get("comment_count") || this.model.get("share_count")) {
             var $comments = new NEWSBLUR.Views.StoryCommentsView({model: this.model}).render().el;
             $original_comments.replaceWith($comments);
+            var $shares = $('.NB-story-comments-shares-teaser-wrapper', $comments);
+            $original_shares.replaceWith($shares);
         } else if ($original_comments.length) {
-            $original_comments.replaceWith($.make('div', { className: 'NB-feed-story-share-container' }));
+            $original_comments.replaceWith($.make('div', { className: 'NB-feed-story-comments-container' }));
+            $original_shares.replaceWith($.make('div', { className: 'NB-feed-story-shares-container' }));
         }
     },
     

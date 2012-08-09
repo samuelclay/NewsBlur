@@ -1307,6 +1307,7 @@ class MSharedStory(mongo.Document):
         for story in stories: 
             story['friend_comments'] = []
             story['public_comments'] = []
+            story['reply_count'] = 0
             if check_all or story['comment_count']:
                 comment_key = "C:%s:%s" % (story['story_feed_id'], story['guid_hash'])
                 story['comment_count'] = r.scard(comment_key)
@@ -1322,6 +1323,7 @@ class MSharedStory(mongo.Document):
                     shared_stories = cls.objects.filter(**params)
                 for shared_story in shared_stories:
                     comments = shared_story.comments_with_author()
+                    story['reply_count'] += len(comments['replies'])
                     if shared_story.user_id in friends_with_comments:
                         story['friend_comments'].append(comments)
                     else:
