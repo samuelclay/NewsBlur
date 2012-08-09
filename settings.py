@@ -320,6 +320,7 @@ CELERY_ACKS_LATE            = True # Retry if task fails
 CELERYD_MAX_TASKS_PER_CHILD = 10
 CELERYD_TASK_TIME_LIMIT     = 12 * 30
 CELERY_DISABLE_RATE_LIMITS  = True
+SECONDS_TO_DELAY_CELERY_EMAILS = 60
 
 CELERYBEAT_SCHEDULE = {
     'freshen-homepage': {
@@ -340,6 +341,11 @@ CELERYBEAT_SCHEDULE = {
     'collect-feedback': {
         'task': 'collect-feedback',
         'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'share-popular-stories': {
+        'task': 'share-popular-stories',
+        'schedule': datetime.timedelta(hours=1),
         'options': {'queue': 'beat_tasks'},
     },
 }

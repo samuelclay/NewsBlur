@@ -259,10 +259,11 @@ def load_feed_favicons(request):
 
 def load_feeds_flat(request):
     user = request.user
-    include_favicons = request.REQUEST.get('include_favicons', False)
-    update_counts    = request.REQUEST.get('update_counts', False)
+    include_favicons = is_true(request.REQUEST.get('include_favicons', False))
+    update_counts    = is_true(request.REQUEST.get('update_counts', True))
     
     feeds = {}
+    flat_folders = {" ": []}
     iphone_version = "1.2"
     
     if include_favicons == 'false': include_favicons = False
@@ -274,40 +275,39 @@ def load_feeds_flat(request):
     try:
         folders = UserSubscriptionFolders.objects.get(user=user)
     except UserSubscriptionFolders.DoesNotExist:
-        data = dict(folders=[], iphone_version=iphone_version)
-        return data
+        folders = []
         
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user, active=True)
 
     for sub in user_subs:
-        if sub.needs_unread_recalc:
+        if update_counts and sub.needs_unread_recalc:
             sub.calculate_feed_scores(silent=True)
         feeds[sub.feed_id] = sub.canonical(include_favicon=include_favicons)
     
-    folders = json.decode(folders.folders)
-    flat_folders = {" ": []}
+    if folders:
+        folders = json.decode(folders.folders)
     
-    def make_feeds_folder(items, parent_folder="", depth=0):
-        for item in items:
-            if isinstance(item, int) and item in feeds:
-                if not parent_folder:
-                    parent_folder = ' '
-                if parent_folder in flat_folders:
-                    flat_folders[parent_folder].append(item)
-                else:
-                    flat_folders[parent_folder] = [item]
-            elif isinstance(item, dict):
-                for folder_name in item:
-                    folder = item[folder_name]
-                    flat_folder_name = "%s%s%s" % (
-                        parent_folder if parent_folder and parent_folder != ' ' else "",
-                        " - " if parent_folder and parent_folder != ' ' else "",
-                        folder_name
-                    )
-                    flat_folders[flat_folder_name] = []
-                    make_feeds_folder(folder, flat_folder_name, depth+1)
+        def make_feeds_folder(items, parent_folder="", depth=0):
+            for item in items:
+                if isinstance(item, int) and item in feeds:
+                    if not parent_folder:
+                        parent_folder = ' '
+                    if parent_folder in flat_folders:
+                        flat_folders[parent_folder].append(item)
+                    else:
+                        flat_folders[parent_folder] = [item]
+                elif isinstance(item, dict):
+                    for folder_name in item:
+                        folder = item[folder_name]
+                        flat_folder_name = "%s%s%s" % (
+                            parent_folder if parent_folder and parent_folder != ' ' else "",
+                            " - " if parent_folder and parent_folder != ' ' else "",
+                            folder_name
+                        )
+                        flat_folders[flat_folder_name] = []
+                        make_feeds_folder(folder, flat_folder_name, depth+1)
         
-    make_feeds_folder(folders)
+        make_feeds_folder(folders)
     
     social_params = {
         'user_id': user.pk,
@@ -404,7 +404,7 @@ def load_single_feed(request, feed_id):
     read_filter  = request.REQUEST.get('read_filter', 'all')
     dupe_feed_id = None
     userstories_db = None
-    user_profiles = {}
+    user_profiles = []
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404

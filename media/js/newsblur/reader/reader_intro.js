@@ -46,45 +46,47 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $.make('div', { className: 'NB-page NB-page-1' }, [
                 $.make('h4', { className: 'NB-page-1-started' }, "So much time and so little to do. Strike that! Reverse it.")
             ]),
-            $.make('div', { className: 'NB-page NB-page-2 carousel slide' }, [
-                $.make('div', { className: 'carousel-inner NB-intro-imports' }, [
-                    $.make('div', { className: 'item NB-intro-imports-start' }, [
-                        $.make('h4', { className: 'NB-page-2-started' }, "Let's get some sites to read."),
-                        $.make('div', { className: 'NB-intro-import NB-intro-import-google' }, [
-                            $.make('h3', [
-                                'Import from', 
-                                $.make('br'), 
-                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/google-reader-logo.gif' })
+            $.make('div', { className: 'NB-page NB-page-2' }, [
+                $.make('div', { className: 'carousel slide'}, [
+                    $.make('div', { className: 'carousel-inner NB-intro-imports' }, [
+                        $.make('div', { className: 'item NB-intro-imports-start' }, [
+                            $.make('h4', { className: 'NB-page-2-started' }, "Let's get some sites to read."),
+                            $.make('div', { className: 'NB-intro-import NB-intro-import-google' }, [
+                                $.make('h3', [
+                                    'Import from', 
+                                    $.make('br'), 
+                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/google-reader-logo.gif' })
+                                ]),
+                                $.make('a', { href: NEWSBLUR.URLs['google-reader-authorize'], className: 'NB-google-reader-oauth NB-modal-submit-green NB-modal-submit-button' }, [
+                                    'Connect to Google'
+                                ]),
+                                $.make('div', { className: 'NB-error' })
                             ]),
-                            $.make('a', { href: NEWSBLUR.URLs['google-reader-authorize'], className: 'NB-google-reader-oauth NB-modal-submit-green NB-modal-submit-button' }, [
-                                'Connect to Google'
-                            ]),
-                            $.make('div', { className: 'NB-error' })
+                            $.make('div', { className: 'NB-intro-import NB-intro-import-opml' }, [
+                                $.make('h3', ['Upload an', $.make('br'), 'OPML file']),
+                                $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
+                                    $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
+                                        'Upload OPML File',
+                                        $.make('input', { type: 'file', name: 'file', id: 'NB-intro-upload-opml-button', className: 'NB-intro-upload-opml-button' })
+                                    ])
+                                ]),
+                                $.make('div', { className: 'NB-error' })
+                            ])
                         ]),
-                        $.make('div', { className: 'NB-intro-import NB-intro-import-opml' }, [
-                            $.make('h3', ['Upload an', $.make('br'), 'OPML file']),
-                            $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data', className: 'NB-opml-upload-form' }, [
-                                $.make('div', { href: '#', className: 'NB-intro-upload-opml NB-modal-submit-green NB-modal-submit-button' }, [
-                                    'Upload OPML File',
-                                    $.make('input', { type: 'file', name: 'file', id: 'NB-intro-upload-opml-button', className: 'NB-intro-upload-opml-button' })
-                                ])
-                            ]),
-                            $.make('div', { className: 'NB-error' })
-                        ])
-                    ]),
-                    $.make('div', { className: 'item NB-intro-imports-progress' }, [
-                        $.make('h4', { className: 'NB-page-2-started' }, "Importing your sites..."),
-                        $.make('div', { className: 'NB-loading' })
-                    ]),
-                    $.make('div', { className: 'item NB-intro-imports-sites' }, [
-                        $.make('h4'),
-                        $.make('div', { className: 'NB-intro-import-restart NB-modal-submit-grey NB-modal-submit-button' }, [
-                            '&laquo; Restart and re-import your sites'
+                        $.make('div', { className: 'item NB-intro-imports-progress' }, [
+                            $.make('h4', { className: 'NB-page-2-started' }, "Importing your sites..."),
+                            $.make('div', { className: 'NB-loading' })
                         ]),
-                        $.make('div', { className: 'NB-intro-import-delayed' }, [
-                            'There are too many sites to process...',
-                            $.make('br'),
-                            'You will be emailed within a minute or three.'
+                        $.make('div', { className: 'item NB-intro-imports-sites' }, [
+                            $.make('h4'),
+                            $.make('div', { className: 'NB-intro-import-restart NB-modal-submit-grey NB-modal-submit-button' }, [
+                                '&laquo; Restart and re-import your sites'
+                            ]),
+                            $.make('div', { className: 'NB-intro-import-delayed' }, [
+                                'There are too many sites to process...',
+                                $.make('br'),
+                                'You will be emailed within a minute or three.'
+                            ])
                         ])
                     ])
                 ]),

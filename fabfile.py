@@ -36,7 +36,8 @@ env.roledefs ={
             'app03.newsblur.com', 
             'app04.newsblur.com'],
     'dev': ['dev.newsblur.com'],
-    'web': ['app02.newsblur.com', 
+    'web': ['app01.newsblur.com', 
+            'app02.newsblur.com', 
             'app04.newsblur.com'],
     'db': ['db01.newsblur.com', 
            'db02.newsblur.com', 
@@ -112,11 +113,9 @@ def post_deploy():
 @parallel
 def deploy():
     deploy_code(copy_assets=True)
-    post_deploy()
 
 def deploy_full():
     deploy_code(full=True)
-    post_deploy()
 
 @parallel
 def deploy_code(copy_assets=False, full=False):
@@ -686,7 +685,7 @@ def copy_task_settings():
 # ==============
 
 def restore_postgres():
-    backup_date = '2012-05-03-08-00'
+    backup_date = '2012-07-21-08-00'
     run('PYTHONPATH=/home/sclay/newsblur python s3.py get backup_postgresql_%s.sql.gz' % backup_date)
     sudo('su postgres -c "createuser -U newsblur"')
     sudo('su postgres -c "createdb newsblur -O newsblur"')

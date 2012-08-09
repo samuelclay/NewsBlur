@@ -43,7 +43,7 @@
                     </span> replied to your {% if interaction.category == 'comment_reply' %}comment{% else %}reply{% endif %}:
                 </div>
                 <div class="NB-interaction-content">
-                    "<span class="NB-interaction-reply-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|truncatewords:16 }}</span>"
+                    "<span class="NB-interaction-reply-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
                 </div>
             {% endif %}
             
@@ -59,7 +59,7 @@
                 </div>
                 {% if interaction.content %}
                     <div class="NB-interaction-content">
-                        "<span class="NB-interaction-sharedstory-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|truncatewords:16 }}</span>"
+                        "<span class="NB-interaction-sharedstory-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
                     </div>
                 {% endif %}
             {% endif %}

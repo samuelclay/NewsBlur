@@ -135,7 +135,9 @@
             <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
         </div>
         <div class="NB-story-comment-content">
-            {{ comment.comments|linebreaksbr|safe }}
+            {% autoescape off %}
+            {{ comment.comments|linebreaksbr }}
+            {% endautoescape %}
         </div>
         {% if comment.replies %}
         <div class="NB-story-comment-replies">

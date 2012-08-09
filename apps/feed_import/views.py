@@ -34,19 +34,26 @@ def opml_upload(request):
             logging.user(request, "~FR~SBOPML upload starting...")
             file = request.FILES['file']
             xml_opml = file.read()
-            UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
-            
-            opml_importer = OPMLImporter(xml_opml, request.user)
             try:
-                folders = opml_importer.try_processing()
-            except TimeoutError:
+                uploaded_opml = UploadedOPML.objects.create(user_id=request.user.pk, opml_file=xml_opml)
+            except UnicodeDecodeError:
+                uploaded_opml = None
                 folders = None
-                ProcessOPML.delay(request.user.pk)
-                feed_count = opml_importer.count_feeds_in_opml()
-                logging.user(request, "~FR~SBOPML pload took too long, found %s feeds. Tasking..." % feed_count)
-                payload = dict(folders=folders, delayed=True, feed_count=feed_count)
-                code = 2
-                message = ""
+                code = -1
+                message = "There was a Unicode decode error when reading your OPML file."
+            
+            if uploaded_opml:
+                opml_importer = OPMLImporter(xml_opml, request.user)
+                try:
+                    folders = opml_importer.try_processing()
+                except TimeoutError:
+                    folders = None
+                    ProcessOPML.delay(request.user.pk)
+                    feed_count = opml_importer.count_feeds_in_opml()
+                    logging.user(request, "~FR~SBOPML pload took too long, found %s feeds. Tasking..." % feed_count)
+                    payload = dict(folders=folders, delayed=True, feed_count=feed_count)
+                    code = 2
+                    message = ""
 
             if folders:
                 feeds = UserSubscription.objects.filter(user=request.user).values()

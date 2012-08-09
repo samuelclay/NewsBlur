@@ -309,17 +309,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             $.make('div', [
                                 $.make('input', { id: 'NB-preference-openfeedaction-1', type: 'radio', name: 'open_feed_action', value: 'newest' }),
                                 $.make('label', { 'for': 'NB-preference-openfeedaction-1' }, [
-                                    'Open the newest unread story'
+                                    'Open the first story'
                                 ])
                             ]),
                             $.make('div', [
-                                $.make('input', { id: 'NB-preference-openfeedaction-2', type: 'radio', name: 'open_feed_action', value: 'oldest' }),
-                                $.make('label', { 'for': 'NB-preference-openfeedaction-2' }, [
-                                    'Open the oldest unread story'
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-openfeedaction-0', type: 'radio', name: 'open_feed_action', value: 0 }),
+                                $.make('input', { id: 'NB-preference-openfeedaction-0', type: 'radio', name: 'open_feed_action', value: 0, checked: true }),
                                 $.make('label', { 'for': 'NB-preference-openfeedaction-0' }, [
                                     'Show all stories'
                                 ])

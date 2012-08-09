@@ -2370,7 +2370,9 @@ background: transparent;
 #story_pane .NB-feed-story-endbar {
     height: 8px;
     border-top: 1px solid #404040;
-    background: #dadada url('/media/css/jquery-ui/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
+    background-color: #dadada;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#bababa), to(#dadada));
+    background: -moz-linear-gradient(center bottom, #bababa 0%, #dadada 100%);
 }
 
 #story_pane .NB-feed-stories .NB-feed-story {
@@ -3290,30 +3292,6 @@ form.opml_import_form input {
     width: 0;
     height: 4px;
 }
-
-/* ================== */
-/* = Django Logging = */
-/* ================== */
-
-#django_log {
-    position: absolute;
-    bottom: 30px;
-    width: 850px;
-    right: 20px;
-    z-index: 10000;
-    max-height: 400px;
-    overflow-y: scroll;
-}
-
-#django_log.collapsed {
-    width: 210px;
-}
-
-#django_log h1:hover {
-    background-color: #FFFFA0;
-    cursor: pointer;
-}
-
 
 /* ============== */
 /* = Feed Frame = */

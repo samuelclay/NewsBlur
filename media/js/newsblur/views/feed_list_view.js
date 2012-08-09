@@ -217,6 +217,28 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         }        
     },
     
+    scroll_to_show_selected_folder: function(folder_view) {
+        var $feed_lists = this.$s.$feed_lists;
+        
+        if (!folder_view) {
+            var folder = NEWSBLUR.assets.folders.selected();
+            if (!folder || !folder.get('selected')) return;
+            folder_view = folder.folder_view;
+            if (!folder_view) return;
+        }
+
+        var $folder_title = folder_view.$el.find('.folder_title').eq(0);
+        var is_folder_visible = $feed_lists.isScrollVisible($folder_title);
+        // NEWSBLUR.log(["scroll_to_show_selected_folder", folder_view, folder_view.$el, $feed_lists, is_folder_visible]);
+
+        if (!is_folder_visible) {
+            var scroll = folder_view.$el.position().top;
+            var container = $feed_lists.scrollTop();
+            var height = $feed_lists.outerHeight();
+            $feed_lists.scrollTop(scroll+container-height/5);
+        }        
+    },
+    
     start_sorting: function() {
         this.options.sorting = true;
     },

@@ -6,6 +6,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         this.bind('change:comments', this.populate_comments);
         this.bind('change:comment_count', this.populate_comments);
         this.populate_comments();
+        this.story_permalink = this.get('story_permalink');
+        this.story_title = this.get('story_title');
     },
     
     populate_comments: function(story, collection, changes) {
@@ -259,10 +261,16 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         // The +1+1 is because the currently selected story is included, so it
         // counts for more than what is available.
         if (current_index+1+1 <= visible_stories.length) {
+            if (visible_stories[current_index+1])
             return visible_stories[current_index+1];
         } else if (current_index-1 >= 0) {
             return visible_stories[current_index-1];
+        } else if (visible_stories.length == 1 && visible_stories[0] == this.active_story && !this.active_story.get('read_status')) {
+            // If the current story is unread yet selected, switch it back.
+            visible_stories[current_index].set('selected', false);
+            return visible_stories[current_index];
         }
+
     },
     
     get_last_unread_story: function(unread_count, options) {

@@ -103,12 +103,7 @@ class ProcessFeed:
         self.entry_keys = sorted(self.entry_trans.keys())
     
     def refresh_feed(self):
-        try:
-            self.feed = Feed.objects.using('default').get(pk=self.feed_id)
-        except Feed.DoesNotExist:
-            duplicate_feed = Feed.objects.filter(feed_address=self.feed.feed_address, feed_link=self.feed.feed_link)
-            if duplicate_feed:
-                self.feed = duplicate_feed[0].feed
+        self.feed = Feed.get_by_id(self.feed_id)
         
     def process(self):
         """ Downloads and parses a feed.
@@ -409,6 +404,7 @@ class Dispatcher:
                     page_data = page_importer.fetch_page()
                 except TimeoutError, e:
                     logging.debug('   ---> [%-30s] ~FRPage fetch timed out...' % (feed.title[:30]))
+                    page_data = None
                     feed.save_page_history(555, 'Timeout', '')
                 except Exception, e:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))

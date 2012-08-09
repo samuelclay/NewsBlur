@@ -101,6 +101,9 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
                     } else {
                         $signup_username.focus();
                     }
+                    if (options.scroll) {
+                        this.scroll_to_login();
+                    }
                 }, this)
             });
         
@@ -116,11 +119,15 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
                     'duration': 350,
                     'easing': 'easeInOutQuint',
                     'queue': false,
-                    'complete': function() {
+                    'complete': _.bind(function() {
                         if (NEWSBLUR.app.story_list) {
                             NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
                         }
-                    }
+        
+                        if (options.scroll) {
+                            this.scroll_to_login();
+                        }
+                    }, this)
                 });
                 
                 if (!$story_content.data('original_height')) {
@@ -148,6 +155,17 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
                      .bind('keydown.login', 'return', signup);
 
         }
+    },
+    
+    scroll_to_login: function() {
+        var $sideoption = this.$('.NB-sideoption.NB-feed-story-login');
+        
+        $('body').scrollTo($sideoption, {
+            offset: -32,
+            duration: 700,
+            easing: 'easeInOutQuint',
+            queue: false
+        });
     },
     
     // ==========

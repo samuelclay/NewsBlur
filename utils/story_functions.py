@@ -76,7 +76,8 @@ def pre_process_story(entry):
     if entry.get('content'):
         entry['story_content'] = entry['content'][0].get('value', '').strip()
     else:
-        entry['story_content'] = entry.get('summary', '').strip()
+        summary = entry.get('summary') or ''
+        entry['story_content'] = summary.strip()
     
     # Add each media enclosure as a Download link
     for media_content in chain(entry.get('media_content', [])[:5], entry.get('links', [])[:5]):

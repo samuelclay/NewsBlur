@@ -1,6 +1,7 @@
 {% load bookmarklet_includes utils_tags %}
 
 (function() {
+    window.NEWSBLUR = window.NEWSBLUR || {};
     
     {% include_bookmarklet_js %}
 

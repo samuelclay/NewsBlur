@@ -292,9 +292,10 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             'website': $('input[name=website]', this.$modal).val(),
             'bio': $('input[name=bio]', this.$modal).val()
         };
-        this.model.save_user_profile(data, _.bind(function() {
+        this.model.save_user_profile(data, _.bind(function(data) {
             this.animate_profile_badge();
             this.disable_save_profile();
+            $('input[name=website]', this.$modal).val(this.profile.get('website'));
         }, this));
         this.disable_save_profile();
         $('.NB-profile-save-button', this.$modal).text('Saving...');

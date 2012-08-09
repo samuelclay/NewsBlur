@@ -22,7 +22,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     
     initialize: function() {
         _.bindAll(this, 'update_title', 'update_selected', 'delete_folder', 'check_collapsed');
-        
+
         this.options.folder_title = this.model && this.model.get('folder_title');
 
         if (this.model && !this.options.feed_chooser) {
@@ -49,25 +49,24 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var depth = this.options.depth;
         var folder_title = this.options.folder_title;
         var feed_chooser = this.options.feed_chooser;
-        var folder = this.collection;
+        var folder_collection = this.collection;
         this.options.collapsed =  folder_title && _.contains(NEWSBLUR.Preferences.collapsed_folders, folder_title);
-
         var $folder = this.render_folder();
-        $(this.el).html($folder);
+        this.$el.html($folder);
         
         if (!this.options.only_title) {
-            var $feeds = this.collection.map(function(item) {
+            var $feeds = _.compact(this.collection.map(function(item) {
                 if (item.is_feed()) {
                     var feed_title_view = new NEWSBLUR.Views.FeedTitleView({
                         model: item.feed, 
                         type: 'feed',
                         depth: depth,
                         folder_title: folder_title,
-                        folder: folder,
+                        folder: folder_collection,
                         feed_chooser: feed_chooser
                     }).render();
                     item.feed.views.push(feed_title_view);
-                    item.feed.folders.push(folder);
+                    item.feed.folders.push(folder_collection);
                     return feed_title_view.el;
                 } else if (item.is_folder()) {
                     var folder_view = new NEWSBLUR.Views.Folder({
@@ -78,9 +77,11 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                     }).render();
                     item.folder_views.push(folder_view);
                     return folder_view.el;
+                } else {
+                    console.log(["Not a feed or folder", item]);
                 }
-            });
-            $feeds.push(this.make('div', { 'class': 'feed NB-empty' }));
+            }));
+            $feeds.push(this.make('li', { 'class': 'feed NB-empty' }));
             this.$('.folder').append($feeds);
         }
         
