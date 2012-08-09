@@ -14,12 +14,13 @@ import com.newsblur.service.SyncService;
 
 public class FeedItemsList extends ItemsList {
 
+	public static final String EXTRA_FEED = "feedId";
 	private String feedId;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
-		feedId = getIntent().getStringExtra(ItemsList.EXTRA_FEED);
+		feedId = getIntent().getStringExtra(EXTRA_FEED);
 		
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		Feed feed = Feed.fromCursor(getContentResolver().query(feedUri, null, FeedProvider.getSelectionFromState(currentState), null, null));

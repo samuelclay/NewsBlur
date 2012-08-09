@@ -200,7 +200,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		final Intent intent = new Intent(getActivity(), FeedItemsList.class);
 		Cursor childCursor = folderAdapter.getChild(groupPosition, childPosition);
 		String feedId = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ID));
-		intent.putExtra(ItemsList.EXTRA_FEED, feedId);
+		intent.putExtra(FeedItemsList.EXTRA_FEED, feedId);
 		intent.putExtra(ItemsList.EXTRA_STATE, currentState);
 		getActivity().startActivityForResult(intent, FEEDCHECK );
 		return true;

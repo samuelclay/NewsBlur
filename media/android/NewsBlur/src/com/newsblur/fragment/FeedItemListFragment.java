@@ -108,7 +108,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Intent i = new Intent(getActivity(), FeedReading.class);
 		i.putExtra(Reading.EXTRA_FEED, feedId);
-		i.putExtra(Reading.EXTRA_POSITION, position);
+		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
 		startActivityForResult(i, READING_RETURNED );
 	}

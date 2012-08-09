@@ -88,6 +88,7 @@ public class SyncService extends IntentService {
 				}
 				apiManager.refreshFeedCounts();
 				break;	
+				
 			case EXTRA_TASK_MARK_STORY_READ:
 				final String feedId = intent.getStringExtra(EXTRA_TASK_FEED_ID);
 				final ArrayList<String> storyIds = intent.getStringArrayListExtra(EXTRA_TASK_STORY_ID);
@@ -101,7 +102,7 @@ public class SyncService extends IntentService {
 						}
 					}
 				} else {
-					Log.e(TAG, "No feed/story to mark as read included in SyncRequest");
+					Log.e(TAG, "No feed/stories to mark as read included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;

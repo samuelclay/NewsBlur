@@ -16,7 +16,6 @@ import com.newsblur.view.StateToggleButton.StateChangedListener;
 
 public abstract class ItemsList extends SherlockFragmentActivity implements SyncUpdateFragment.SyncUpdateFragmentInterface, StateChangedListener {
 
-	public static final String EXTRA_FEED = "feedId";
 	public static final String EXTRA_STATE = "currentIntelligenceState";
 	public static final String EXTRA_BLURBLOG_USERNAME = "blurblogName";
 	public static final String EXTRA_BLURBLOG_USERID = "blurblogId";

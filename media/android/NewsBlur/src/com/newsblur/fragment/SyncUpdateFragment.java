@@ -44,6 +44,10 @@ public class SyncUpdateFragment extends Fragment implements Receiver {
 			case SyncService.STATUS_RUNNING:
 				syncRunning = true;
 				Log.d(TAG, "Synchronisation running.");
+				break;	
+			case SyncService.STATUS_ERROR:
+				syncRunning = false;
+				Log.e(TAG, "There was an error");
 				break;		
 			default:
 				syncRunning = false;
