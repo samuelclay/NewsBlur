@@ -436,6 +436,12 @@
     NSString *commentContent = [self textToHtml:[commentDict objectForKey:@"comments"]];
     
     NSString *comment;
+    NSString *locationHtml = @"";
+    NSString *location = [NSString stringWithFormat:@"%@", [user objectForKey:@"location"]];
+    
+    if (location.length) {
+        locationHtml = [NSString stringWithFormat:@"<div class=\"NB-story-comment-location\">%@</div>", location];
+    }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         comment = [NSString stringWithFormat:@
@@ -444,6 +450,7 @@
                     "<div class=\"NB-story-comment-author-container\">"
                     "   %@"
                     "    <div class=\"NB-story-comment-username\">%@</div>"
+                    " %@" // location
                     "    <div class=\"NB-story-comment-date\">%@ ago</div>"
                     "    <div class=\"NB-story-comment-reply-button NB-button\">"
                     "        <a href=\"http://ios.newsblur.com/reply/%@/%@\"><div class=\"NB-story-comment-reply-button-wrapper\">"
@@ -462,6 +469,7 @@
                     [user objectForKey:@"photo_url"],
                     userReshareString,
                     [user objectForKey:@"username"],
+                    locationHtml,
                     [commentDict objectForKey:@"shared_date"],
                     [commentDict objectForKey:@"user_id"],
                     [user objectForKey:@"username"],

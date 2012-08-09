@@ -12,6 +12,19 @@
     min-height: 72px;
     box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 1);shar
 }
+
+#story_pane .NB-story-comment .NB-story-comment-location {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #B7B58D;
+    font-weight: bold;
+    float: left;
+    margin-right: 8px;
+    padding: 0px 6px;
+    background-color: #EFEFEF;
+    border-radius: 8px;
+}
+
 #story_pane .NB-story-comment .NB-user-avatar {
     position: absolute;
     left: 10px;
@@ -174,6 +187,8 @@
     border-bottom: 1px solid #A6A6A6;
     background-image: whiteSmoke;
 }
+
+
 
 #story_pane .NB-story-comments-public-teaser-wrapper:hover .NB-story-comments-public-teaser {
     background-color: #2B478C;

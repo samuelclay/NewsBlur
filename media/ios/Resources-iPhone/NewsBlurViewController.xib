@@ -92,7 +92,7 @@
 							<object class="IBUISegmentedControl" id="117639116">
 								<reference key="NSNextResponder" ref="895374018"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{75, 8}, {170, 30}}</string>
+								<string key="NSFrame">{{70, 8}, {180, 30}}</string>
 								<reference key="NSSuperview" ref="895374018"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView"/>
@@ -102,9 +102,9 @@
 								<int key="IBSelectedSegmentIndex">0</int>
 								<object class="NSArray" key="IBSegmentTitles">
 									<bool key="EncodedWithXMLCoder">YES</bool>
-									<string>All</string>
-									<string>Unread</string>
-									<string>Focus</string>
+									<string/>
+									<string/>
+									<string/>
 								</object>
 								<object class="NSMutableArray" key="IBSegmentWidths">
 									<bool key="EncodedWithXMLCoder">YES</bool>
@@ -126,9 +126,18 @@
 								</object>
 								<object class="NSMutableArray" key="IBSegmentImages">
 									<bool key="EncodedWithXMLCoder">YES</bool>
-									<object class="NSNull" id="4"/>
-									<reference ref="4"/>
-									<reference ref="4"/>
+									<object class="NSCustomResource">
+										<string key="NSClassName">NSImage</string>
+										<string key="NSResourceName">all.png</string>
+									</object>
+									<object class="NSCustomResource">
+										<string key="NSClassName">NSImage</string>
+										<string key="NSResourceName">unread_yellow.png</string>
+									</object>
+									<object class="NSCustomResource">
+										<string key="NSClassName">NSImage</string>
+										<string key="NSResourceName">green_focus.png</string>
+									</object>
 								</object>
 								<object class="NSColor" key="IBTintColor" id="131787584">
 									<int key="NSColorSpace">1</int>
@@ -374,6 +383,7 @@
 					<string>11.IBPluginDependency</string>
 					<string>25.IBPluginDependency</string>
 					<string>55.IBPluginDependency</string>
+					<string>55.IUISegmentedControlInspectorSelectedSegmentMetadataKey</string>
 					<string>56.IBPluginDependency</string>
 					<string>6.IBPluginDependency</string>
 					<string>79.IBPluginDependency</string>
@@ -390,6 +400,7 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+					<integer value="2"/>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -2514,7 +2525,6 @@
 							<string>commentField</string>
 							<string>facebookButton</string>
 							<string>submitButton</string>
-							<string>toolbarTitle</string>
 							<string>twitterButton</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -2522,7 +2532,6 @@
 							<string>NewsBlurAppDelegate</string>
 							<string>UITextView</string>
 							<string>UIButton</string>
-							<string>UIBarButtonItem</string>
 							<string>UIBarButtonItem</string>
 							<string>UIButton</string>
 						</object>
@@ -2535,7 +2544,6 @@
 							<string>commentField</string>
 							<string>facebookButton</string>
 							<string>submitButton</string>
-							<string>toolbarTitle</string>
 							<string>twitterButton</string>
 						</object>
 						<object class="NSArray" key="dict.values">
@@ -2554,10 +2562,6 @@
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">submitButton</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">toolbarTitle</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -2648,9 +2652,11 @@
 							<string>feedTitleGradient</string>
 							<string>fontSettingsButton</string>
 							<string>innerView</string>
+							<string>noStorySelectedLabel</string>
 							<string>originalStoryButton</string>
 							<string>progressView</string>
 							<string>progressViewContainer</string>
+							<string>subscribeButton</string>
 							<string>toolbar</string>
 							<string>webView</string>
 						</object>
@@ -2666,9 +2672,11 @@
 							<string>UIView</string>
 							<string>UIBarButtonItem</string>
 							<string>UIView</string>
+							<string>UILabel</string>
 							<string>UIBarButtonItem</string>
 							<string>UIProgressView</string>
 							<string>UIView</string>
+							<string>UIBarButtonItem</string>
 							<string>UIToolbar</string>
 							<string>UIWebView</string>
 						</object>
@@ -2687,9 +2695,11 @@
 							<string>feedTitleGradient</string>
 							<string>fontSettingsButton</string>
 							<string>innerView</string>
+							<string>noStorySelectedLabel</string>
 							<string>originalStoryButton</string>
 							<string>progressView</string>
 							<string>progressViewContainer</string>
+							<string>subscribeButton</string>
 							<string>toolbar</string>
 							<string>webView</string>
 						</object>
@@ -2736,6 +2746,10 @@
 								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">noStorySelectedLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">originalStoryButton</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
@@ -2746,6 +2760,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">progressViewContainer</string>
 								<string key="candidateClassName">UIView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">subscribeButton</string>
+								<string key="candidateClassName">UIBarButtonItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">toolbar</string>
@@ -2785,8 +2803,21 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="NS.key.0">add_button.png</string>
-			<string key="NS.object.0">{32, 24}</string>
+			<bool key="EncodedWithXMLCoder">YES</bool>
+			<object class="NSArray" key="dict.sortedKeys">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+				<string>add_button.png</string>
+				<string>all.png</string>
+				<string>green_focus.png</string>
+				<string>unread_yellow.png</string>
+			</object>
+			<object class="NSArray" key="dict.values">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+				<string>{32, 24}</string>
+				<string>{80, 16}</string>
+				<string>{80, 16}</string>
+				<string>{57, 16}</string>
+			</object>
 		</object>
 		<string key="IBCocoaTouchPluginVersion">1181</string>
 	</data>

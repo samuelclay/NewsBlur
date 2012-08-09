@@ -169,7 +169,7 @@
     int height = [activityCell setActivity:[self.activitiesArray 
                                             objectAtIndex:(indexPath.row)] 
                            withUserProfile:userProfile
-                                 withWidth:self.frame.size.width] + 30;
+                                 withWidth:self.frame.size.width - 20] + 30;
     
     return height;
 
@@ -204,7 +204,7 @@
         // update the cell information
         [cell setActivity: activitiy
           withUserProfile:userProfile
-                withWidth:self.frame.size.width];
+                withWidth:self.frame.size.width - 20];
     }
     return cell;
 }

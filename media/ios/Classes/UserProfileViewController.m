@@ -178,11 +178,11 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     CGRect vb = self.view.bounds;
     // you can only hardcode this due to limitation in apple API that doesn't give you width of grouped cell
-    int width = 300;
+    int width = 300 - 20;
     if (vb.size.width == 480) {
-        width = 460;
+        width = 460 - 20;
     } else if (vb.size.width == 540) {
-        width = 478;
+        width = 478 - 20;
     }
 
     if (indexPath.section == 0) {
@@ -200,11 +200,11 @@
     CGRect vb = self.view.bounds;
     
     // you can only hardcode this due to limitation in apple API that doesn't give you width of grouped cell
-    int width = 300;
+    int width = 300 - 20;
     if (vb.size.width == 480) {
-        width = 460;
+        width = 460 - 20;
     } else if (vb.size.width == 540) {
-        width = 478;
+        width = 478 - 20;
     }
 
     if (indexPath.section == 0) {
@@ -217,7 +217,7 @@
                     reuseIdentifier:nil];
         } 
         
-        [cell refreshWithProfile:self.userProfile showStats:YES withWidth:width];             
+        [cell refreshWithProfile:self.userProfile showStats:YES withWidth:width + 20];             
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;

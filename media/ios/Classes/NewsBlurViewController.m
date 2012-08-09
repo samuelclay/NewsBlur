@@ -82,7 +82,10 @@
     
     imageCache = [[NSCache alloc] init];
     [imageCache setDelegate:self];
-
+    
+    [self.intelligenceControl setWidth:45 forSegmentAtIndex:0];
+    [self.intelligenceControl setWidth:70 forSegmentAtIndex:1];
+    [self.intelligenceControl setWidth:65 forSegmentAtIndex:2];
 
 }
 

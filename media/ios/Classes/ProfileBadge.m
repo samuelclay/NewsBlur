@@ -15,14 +15,21 @@
 
 #define kTopBadgeHeight 125
 #define kTopBadgeTextXCoordinate 100
+#define kFollowColor 0x0a6720
+#define kFollowTextColor 0xffffff
+#define kFollowingColor 0xcccccc
+#define kFollowingTextColor 0x333333
 
 @interface ProfileBadge ()
-    @property (readwrite) int moduleWidth;
+
+@property (readwrite) int moduleWidth;
+@property (readwrite) BOOL shouldShowStats;
 
 @end
 
 @implementation ProfileBadge
 
+@synthesize shouldShowStats;
 @synthesize appDelegate;
 @synthesize userAvatar;
 @synthesize username;
@@ -77,6 +84,10 @@
             [subview removeFromSuperview];
         }
     }
+    
+    if (showStats) {
+        shouldShowStats = showStats;
+    }    
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];    
     self.activeProfile = profile;
     int yCoordinatePointer = 0;
@@ -113,11 +124,17 @@
     self.username.frame = CGRectMake(kTopBadgeTextXCoordinate, 10, width - kTopBadgeTextXCoordinate - 10, 22);
     self.username.text = [profile objectForKey:@"username"]; 
     [self.contentView addSubview:username];
-
     
     // FOLLOW BUTTON
-    UIButton *follow = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    UIButton *follow = [UIButton buttonWithType:UIButtonTypeCustom];
     follow.frame = CGRectMake(10, 96, 80, 24);
+    
+    follow.layer.borderColor = [UIColor grayColor].CGColor;
+    follow.layer.borderWidth = 0.5f;
+    follow.layer.cornerRadius = 10.0f;
+    
+    [follow setTitleColor:UIColorFromRGB(kFollowTextColor) forState:UIControlStateNormal];
+    follow.backgroundColor = UIColorFromRGB(kFollowColor);
     
     // check follow button status    
     if ([[profile objectForKey:@"yourself"] intValue]) {
@@ -125,6 +142,8 @@
         follow.enabled = NO;
     } else if ([[profile objectForKey:@"followed_by_you"] intValue]) {
         [follow setTitle:@"Following" forState:UIControlStateNormal];
+        follow.backgroundColor = UIColorFromRGB(kFollowingColor);
+        [follow setTitleColor:UIColorFromRGB(kFollowingTextColor) forState:UIControlStateNormal];
     } else {
         [follow setTitle:@"Follow" forState:UIControlStateNormal];
     }
@@ -199,7 +218,7 @@
         [self.contentView addSubview:locationIconView];
     } 
     
-    if (showStats) {
+    if (shouldShowStats) {
         UIView *horizontalBar = [[UIView alloc] initWithFrame:CGRectMake(0, kTopBadgeHeight, width, 1)];
         horizontalBar.backgroundColor = [UIColor lightGrayColor];
         [self.contentView addSubview:horizontalBar];
@@ -329,6 +348,8 @@
     } 
     
     [self.followButton setTitle:@"Following" forState:UIControlStateNormal];
+    self.followButton.backgroundColor = UIColorFromRGB(kFollowColor);
+    [self.followButton setTitleColor:UIColorFromRGB(kFollowTextColor) forState:UIControlStateNormal];
     [appDelegate reloadFeedsView:NO];
     
     NSMutableDictionary *newProfile = [self.activeProfile mutableCopy];
@@ -338,7 +359,7 @@
     
     [newProfile setObject:count forKey:@"follower_count"];
     [newProfile setObject:[NSNumber numberWithInt:1] forKey:@"followed_by_you"];
-    [self refreshWithProfile:newProfile showStats:YES withWidth:0];
+    [self refreshWithProfile:newProfile showStats:nil withWidth:0];
 }
 
 
@@ -359,6 +380,9 @@
     
     NSLog(@"results %@", results);
     [self.followButton setTitle:@"Follow" forState:UIControlStateNormal];
+    self.followButton.backgroundColor = UIColorFromRGB(kFollowingColor);
+    [self.followButton setTitleColor:UIColorFromRGB(kFollowingTextColor) forState:UIControlStateNormal];
+    
     [appDelegate reloadFeedsView:NO];
     
     NSMutableDictionary *newProfile = [self.activeProfile mutableCopy];
@@ -368,7 +392,7 @@
     
     [newProfile setObject:count forKey:@"follower_count"];
     [newProfile setObject:[NSNumber numberWithInt:0] forKey:@"followed_by_you"];
-    [self refreshWithProfile:newProfile showStats:YES withWidth:0];
+    [self refreshWithProfile:newProfile showStats:shouldShowStats withWidth:0];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request

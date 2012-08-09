@@ -47,7 +47,7 @@
     
     // determine outer bounds
     CGRect contentRect = self.contentView.bounds;
-                
+
     // position label to bounds
     CGRect labelRect = contentRect;
     labelRect.origin.x = labelRect.origin.x + leftMargin + avatarSize + leftMargin;
@@ -63,7 +63,7 @@
     CGRect interactionLabelRect = self.interactionLabel.bounds;
     interactionLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
     interactionLabelRect.size.height = 300;
-    
+
     self.interactionLabel.frame = interactionLabelRect;
     self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
     

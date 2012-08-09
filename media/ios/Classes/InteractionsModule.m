@@ -164,7 +164,7 @@
     }
     
     InteractionCell *interactionCell = [[InteractionCell alloc] init];
-    int height = [interactionCell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width] + 30;
+    int height = [interactionCell setInteraction:[appDelegate.userInteractionsArray objectAtIndex:(indexPath.row)] withWidth:self.frame.size.width - 20] + 30;
     if (height < MINIMUM_INTERACTION_HEIGHT) {
         return MINIMUM_INTERACTION_HEIGHT;
     } else {
@@ -202,8 +202,9 @@
         } else {
             cell.accessoryType = UITableViewCellAccessoryNone;
         }
+        
         // update the cell information
-        [cell setInteraction:interaction withWidth: self.frame.size.width];
+        [cell setInteraction:interaction withWidth: self.frame.size.width - 20];
     }
     
     return cell;
