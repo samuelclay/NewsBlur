@@ -5212,6 +5212,10 @@
                 e.preventDefault();
                 self.open_next_unread_story_across_feeds();
             });
+            $document.bind('keydown', 'p', function(e) {
+                e.preventDefault();
+                self.show_previous_story();
+            });
             $document.bind('keydown', 'c', function(e) {
                 e.preventDefault();
                 NEWSBLUR.app.story_list.scroll_to_selected_story(self.active_story, {
