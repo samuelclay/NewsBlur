@@ -12,13 +12,13 @@ import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
 import com.newsblur.fragment.ReadingItemFragment;
 
-public class ReadingAdapter extends FragmentStatePagerAdapter {
+public class FeedReadingAdapter extends FragmentStatePagerAdapter {
 
 	private Cursor cursor;
 	private String TAG = "ReadingAdapter";
 	private LoadingFragment loadingFragment; 
 
-	public ReadingAdapter(final FragmentManager fragmentManager, final Context context, final Cursor cursor) {
+	public FeedReadingAdapter(final FragmentManager fragmentManager, final Context context, final Cursor cursor) {
 		super(fragmentManager);
 		this.cursor = cursor;
 	}

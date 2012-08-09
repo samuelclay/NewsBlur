@@ -1,8 +1,5 @@
 package com.newsblur.activity;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -25,8 +22,8 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
+import com.newsblur.database.FeedReadingAdapter;
 import com.newsblur.database.MarkStoryAsReadIntenallyTask;
-import com.newsblur.database.ReadingAdapter;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ShareDialogFragment;
@@ -47,7 +44,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	
 	private ViewPager pager;
 	private FragmentManager fragmentManager;
-	protected ReadingAdapter readingAdapter;
+	protected FeedReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
 	protected SyncUpdateFragment syncFragment;
 
@@ -69,7 +66,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	}
 
 	protected void setupPager(Cursor stories) {
-		readingAdapter = new ReadingAdapter(fragmentManager, this, stories);
+		readingAdapter = new FeedReadingAdapter(fragmentManager, this, stories);
 
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {

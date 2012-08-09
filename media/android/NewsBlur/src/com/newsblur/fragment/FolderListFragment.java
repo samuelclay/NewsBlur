@@ -21,7 +21,9 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ImageView;
 
 import com.newsblur.R;
+import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedExpandableListAdapter;
@@ -67,7 +69,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		final String[] blogFrom = new String[] { DatabaseConstants.SOCIAL_FEED_USERNAME, DatabaseConstants.SOCIAL_FEED_ICON, DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT };
 		final int[] blogTo = new int[] { R.id.row_socialfeed_name, R.id.row_socialfeed_icon, R.id.row_socialsumneu, R.id.row_socialsumneg, R.id.row_socialsumpos };
 
-		//folderAdapter = new FolderTreeAdapter(getActivity(), cursor, R.layout.row_folder_collapsed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo);
 		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, R.layout.row_folder_collapsed, R.layout.row_folder_expanded, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
 	}
@@ -180,9 +181,11 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			Log.d(TAG, "Clicked blog.");
 			Cursor blurblogCursor = folderAdapter.getGroup(groupPosition);
 			String username = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_USERNAME));
+			String userIcon = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ICON));
 			String userId = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
 			
-			final Intent intent = new Intent(getActivity(), ItemsList.class);
+			final Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
+			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USER_ICON, userIcon);
 			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERNAME, username);
 			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERID, userId);
 			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
@@ -194,7 +197,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 	@Override
 	public boolean onChildClick(ExpandableListView list, View childView, int groupPosition, int childPosition, long id) {
-		final Intent intent = new Intent(getActivity(), ItemsList.class);
+		final Intent intent = new Intent(getActivity(), FeedItemsList.class);
 		Cursor childCursor = folderAdapter.getChild(groupPosition, childPosition);
 		String feedId = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ID));
 		intent.putExtra(ItemsList.EXTRA_FEED, feedId);

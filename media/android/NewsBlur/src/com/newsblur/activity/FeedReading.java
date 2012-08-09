@@ -23,7 +23,7 @@ public class FeedReading extends Reading {
 		
 		Uri storiesURI = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
 		
-		String feedId = super.getIntent().getStringExtra(Reading.EXTRA_FEED);
+		String feedId = getIntent().getStringExtra(Reading.EXTRA_FEED);
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();

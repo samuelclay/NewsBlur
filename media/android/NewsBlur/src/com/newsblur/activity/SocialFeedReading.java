@@ -75,10 +75,6 @@ public class SocialFeedReading extends Reading {
 			jsonMap.put(userId, feedStoryMap);
 			return jsonMap;
 		}
-		
 	}
 	
-
-	
-
 }

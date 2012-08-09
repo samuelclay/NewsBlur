@@ -37,7 +37,10 @@
             android:label="@string/profile"/>
         
         <activity
-            android:name=".activity.ItemsList" />
+            android:name=".activity.FeedItemsList" />
+        
+        <activity
+            android:name=".activity.SocialFeedItemsList" />
         
         <activity
             android:name=".activity.FeedReading"/>

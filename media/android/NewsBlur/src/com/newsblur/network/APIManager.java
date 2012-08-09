@@ -170,7 +170,6 @@ public class APIManager {
 		final APIResponse response = client.get(feedUri.toString(), values);
 		SocialFeedResponse socialFeedResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			
 			for (Story story : socialFeedResponse.stories) {
 				Uri storyUri = FeedProvider.STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
@@ -188,6 +187,10 @@ public class APIManager {
 				Uri storySocialUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storySocialUri, story.getValues());
 				
+			}
+			
+			for (Feed feed : socialFeedResponse.feeds) {
+				contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
 			}
 			return socialFeedResponse;
 		} else {

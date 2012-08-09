@@ -2,12 +2,17 @@ package com.newsblur.view;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.util.AppConstants;
@@ -17,8 +22,10 @@ public class SocialFeedViewBinder implements ViewBinder {
 
 	private int currentState = AppConstants.STATE_SOME;
 	private ImageLoader imageLoader;
+	private Context context;
 	
 	public SocialFeedViewBinder(final Context context) {
+		this.context = context;
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 	}
 	

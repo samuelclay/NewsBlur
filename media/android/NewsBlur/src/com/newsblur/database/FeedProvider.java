@@ -269,9 +269,11 @@ public class FeedProvider extends ContentProvider {
 		case INDIVIDUAL_SOCIALFEED:
 			String[] userArgument = new String[] { uri.getLastPathSegment() };
 
-			String userQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + " FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + 
+			String userQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + 
 			" INNER JOIN " + DatabaseConstants.STORY_TABLE + 
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID + " = " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_STORYID +
+			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
+			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID +
 			" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ";
 			
 			StringBuilder storyBuilder = new StringBuilder();
@@ -298,7 +300,6 @@ public class FeedProvider extends ContentProvider {
 			return db.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });	
 		case INDIVIDUAL_STORY:
 			return db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
-			
 			// In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider can't easily handle. Hence this circuitous hack. 
 		case DECREMENT_FEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.FEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.FEED_ID + " = " + selectionArgs[1]);

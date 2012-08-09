@@ -18,6 +18,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -49,6 +51,17 @@ public class ImageLoader {
 			queuePhoto(url, uid, imageView);
 			imageView.setImageResource(R.drawable.logo);
 		}
+	}
+	
+	public Drawable getImage(String url, String uid) {
+		Bitmap bitmap;
+		if ((bitmap = memoryCache.get(uid)) == null && (bitmap = memoryCache.get(url)) == null) {
+			File f = fileCache.getFile(url);
+			if (f != null) {
+				bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+			}
+		}
+		return new BitmapDrawable(bitmap);
 	}
 	
 	// Display an image assuming it's in cache

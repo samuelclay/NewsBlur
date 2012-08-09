@@ -20,11 +20,13 @@ import android.widget.ListView;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Reading;
 import com.newsblur.activity.SocialFeedReading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
-import com.newsblur.view.ItemViewBinder;
+import com.newsblur.database.SocialFeedItemsAdapter;
+import com.newsblur.view.SocialItemViewBinder;
 
 public class SocialFeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
@@ -66,14 +68,14 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		storiesUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
 		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
 		
-		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
-		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
+		String[] groupFrom = new String[] { DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
+		int[] groupTo = new int[] { R.id.row_item_feedicon, R.id.row_item_feedtitle, R.id.row_item_title, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar};
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 				
-		adapter = new SimpleCursorAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		adapter = new SocialFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		
-		adapter.setViewBinder(new ItemViewBinder());
+		adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
 		
