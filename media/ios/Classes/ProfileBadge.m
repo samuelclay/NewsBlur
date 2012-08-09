@@ -16,6 +16,11 @@
 #define kTopBadgeHeight 125
 #define kTopBadgeTextXCoordinate 100
 
+@interface ProfileBadge ()
+    @property (readwrite) int moduleWidth;
+
+@end
+
 @implementation ProfileBadge
 
 @synthesize appDelegate;
@@ -27,6 +32,7 @@
 @synthesize followButton;
 @synthesize activeProfile;
 @synthesize activityIndicator;
+@synthesize moduleWidth;
 
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
@@ -59,7 +65,18 @@
     [super layoutSubviews];
 }
 
-- (void)refreshWithProfile:(NSDictionary *)profile showStats:(BOOL)showStats withWidth:(int)width {    
+- (void)refreshWithProfile:(NSDictionary *)profile showStats:(BOOL)showStats withWidth:(int)newWidth {
+    int width;
+
+    if (newWidth) {
+        width = newWidth;
+        self.moduleWidth = newWidth;
+    } else {
+        width = self.moduleWidth;
+        for (UIView *subview in [self.contentView subviews]) {
+            [subview removeFromSuperview];
+        }
+    }
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];    
     self.activeProfile = profile;
     int yCoordinatePointer = 0;
@@ -314,6 +331,15 @@
     
     [self.followButton setTitle:@"Following" forState:UIControlStateNormal];
     [appDelegate reloadFeedsView:NO];
+    
+    NSMutableDictionary *newProfile = [self.activeProfile mutableCopy];
+    NSNumber *count = [newProfile objectForKey:@"follower_count"];
+    int value = [count intValue];
+    count = [NSNumber numberWithInt:value + 1];
+    
+    [newProfile setObject:count forKey:@"follower_count"];
+    [newProfile setObject:[NSNumber numberWithInt:1] forKey:@"followed_by_you"];
+    [self refreshWithProfile:newProfile showStats:YES withWidth:0];
 }
 
 
@@ -335,6 +361,15 @@
     NSLog(@"results %@", results);
     [self.followButton setTitle:@"Follow" forState:UIControlStateNormal];
     [appDelegate reloadFeedsView:NO];
+    
+    NSMutableDictionary *newProfile = [self.activeProfile mutableCopy];
+    NSNumber *count = [newProfile objectForKey:@"follower_count"];
+    int value = [count intValue];
+    count = [NSNumber numberWithInt:value - 1];
+    
+    [newProfile setObject:count forKey:@"follower_count"];
+    [newProfile setObject:[NSNumber numberWithInt:0] forKey:@"followed_by_you"];
+    [self refreshWithProfile:newProfile showStats:YES withWidth:0];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request

@@ -37,7 +37,7 @@
 @property ( nonatomic) NSDictionary *activeProfile;
 
 
-- (void)refreshWithProfile:(NSDictionary *)profile showStats:(BOOL)showStats withWidth:(int)width;
+- (void)refreshWithProfile:(NSDictionary *)profile showStats:(BOOL)showStats withWidth:(int)newWidth;
 
 - (IBAction)doFollowButton:(id)sender;
 - (void)finishFollowing:(ASIHTTPRequest *)request;

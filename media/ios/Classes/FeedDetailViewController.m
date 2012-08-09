@@ -28,6 +28,12 @@
 #define kMarkReadActionSheet 1;
 #define kSettingsActionSheet 2;
 
+@interface FeedDetailViewController ()
+
+@property (nonatomic) UIActionSheet* actionSheet_;  // add this line
+
+@end
+
 @implementation FeedDetailViewController
 
 @synthesize popoverController;
@@ -39,6 +45,7 @@
 @synthesize pageFetching;
 @synthesize pageFinished;
 @synthesize intelligenceControl;
+@synthesize actionSheet_;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	
@@ -117,10 +124,17 @@
 	[super viewWillAppear:animated];
         
     if ((appDelegate.isSocialRiverView || appDelegate.isRiverView || appDelegate.isSocialView) || 
-        [appDelegate.activeFolder isEqualToString:@"Everything"]) {
+        [appDelegate.activeFolder isEqualToString:@"ALL STORIES"]) {
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
+    }
+    
+    if (appDelegate.isSocialRiverView || 
+        [appDelegate.activeFolder isEqualToString:@"ALL STORIES"]) {
+        feedMarkReadButton.enabled = NO;
+    } else {
+        feedMarkReadButton.enabled = YES;
     }
         
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
@@ -876,6 +890,13 @@
 }
 
 - (IBAction)doOpenMarkReadActionSheet:(id)sender {
+    // already displaying action sheet?
+    if (self.actionSheet_) {
+        [self.actionSheet_ dismissWithClickedButtonIndex:-1 animated:YES];
+        self.actionSheet_ = nil;
+        return;
+    }
+    
     // Individual sites just get marked as read, no action sheet needed.
     if (!appDelegate.isRiverView) {
         [self markFeedsReadWithAllStories:YES];
@@ -891,6 +912,8 @@
                               cancelButtonTitle:nil
                               destructiveButtonTitle:nil
                               otherButtonTitles:nil];
+    
+    self.actionSheet_ = options;
     
     int visibleUnreadCount = appDelegate.visibleUnreadCount;
     int totalUnreadCount = [appDelegate unreadCount];
@@ -924,7 +947,11 @@
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
     
     options.tag = kMarkReadActionSheet;
-    [options showInView:self.view];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [options showFromBarButtonItem:self.feedMarkReadButton animated:YES];
+    } else {
+        [options showInView:self.view];
+    }
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -964,7 +991,18 @@
     } 
 }
 
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex {
+    // just set to nil
+    actionSheet_ = nil;
+}
+
 - (IBAction)doOpenSettingsActionSheet {
+    // already displaying action sheet?
+    if (self.actionSheet_) {
+        [self.actionSheet_ dismissWithClickedButtonIndex:-1 animated:YES];
+        self.actionSheet_ = nil;
+        return;
+    }
     NSString *title = appDelegate.isRiverView ? 
     appDelegate.activeFolder : 
     [appDelegate.activeFeed objectForKey:@"feed_title"];
@@ -974,6 +1012,8 @@
                               cancelButtonTitle:nil
                               destructiveButtonTitle:nil
                               otherButtonTitles:nil];
+    
+    self.actionSheet_ = options;
     
     if (![title isEqualToString:@"Everything"]) {
         NSString *deleteText = [NSString stringWithFormat:@"Delete %@", 
@@ -993,7 +1033,11 @@
     
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
     options.tag = kSettingsActionSheet;
-    [options showInView:self.view];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [options showFromBarButtonItem:self.settingsButton animated:YES];
+    } else {
+        [options showInView:self.view];
+    }
 }
 
 - (void)confirmDeleteSite {

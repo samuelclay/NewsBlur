@@ -454,14 +454,14 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-share-button div { 
-    padding: 8px 40px 8px 14px;
+    padding: 8px 0px 8px;
     border-radius: 5px;
     text-align: center;
     background: -webkit-gradient(
         linear, left top, left bottom, 
         from(#42aaff),
         to(#003366));
-    padding-left: 40px;
+    box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 1)
 }
 
 .NB-button.NB-share-button div span {
@@ -470,6 +470,7 @@ a.NB-show-profile {
     display: inline-block;
     height: 16px;
     margin-bottom: -2px;
+    margin-left: -23px;
 }
 
 .NB-iphone .NB-button .NB-story-comment-like-button-wrapper,
