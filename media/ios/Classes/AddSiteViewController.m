@@ -269,7 +269,9 @@
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSString *parent_folder = [self extractParentFolder];
-    [request setPostValue:parent_folder forKey:@"parent_folder"]; 
+    if (![parent_folder isEqualToString:@"- Top Level -"]) {
+        [request setPostValue:parent_folder forKey:@"parent_folder"]; 
+    }
     [request setPostValue:[addFolderInput text] forKey:@"folder"]; 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishAddFolder:)];
