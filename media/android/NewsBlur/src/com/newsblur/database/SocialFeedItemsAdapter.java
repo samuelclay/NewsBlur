@@ -23,6 +23,17 @@ public class SocialFeedItemsAdapter extends SimpleCursorAdapter {
 		this.context = context;
 		this.cursor = c;
 	}
+	
+	@Override
+	public int getCount() {
+		return cursor.getCount();
+	}
+	
+	@Override
+	public Cursor swapCursor(Cursor c) {
+		this.cursor = c;
+		return super.swapCursor(c);
+	}
 
 	@Override
 	public View getView(int position, View view, ViewGroup viewGroup) {

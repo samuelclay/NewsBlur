@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.newsblur.domain.Story;
 
@@ -44,7 +45,8 @@ public class MarkStoryAsReadIntenallyTask extends AsyncTask<Story, Void, Void>{
 			Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
 			ContentValues values = new ContentValues();
 			values.put(DatabaseConstants.STORY_READ, true);
-			contentResolver.update(storyUri, values, null, null);
+			int updated = contentResolver.update(storyUri, values, null, null);
+			Log.d("TAG", "Updated: " + updated + " stories");
 		}
 		
 		return null;

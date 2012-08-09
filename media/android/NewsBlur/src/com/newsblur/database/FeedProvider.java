@@ -269,7 +269,10 @@ public class FeedProvider extends ContentProvider {
 		case INDIVIDUAL_SOCIALFEED:
 			String[] userArgument = new String[] { uri.getLastPathSegment() };
 
-			String userQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + 
+			String userQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
+			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
+			DatabaseConstants.FEED_FAVICON_FADE +  
+			" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + 
 			" INNER JOIN " + DatabaseConstants.STORY_TABLE + 
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID + " = " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_STORYID +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
