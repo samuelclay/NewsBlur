@@ -34,7 +34,6 @@
     UILabel *addingLabel;
     UILabel *errorLabel;
     UISegmentedControl *addTypeControl;
-    BOOL hasAutomaticallyAddedSiteAddress;
 }
 
 - (void)reload;
@@ -69,7 +68,5 @@
 @property (nonatomic) IBOutlet UILabel *addingLabel;
 @property (nonatomic) IBOutlet UILabel *errorLabel;
 @property (nonatomic) IBOutlet UISegmentedControl *addTypeControl;
-
-@property (nonatomic, readwrite) BOOL hasAutomaticallyAddedSiteAddress;
 
 @end

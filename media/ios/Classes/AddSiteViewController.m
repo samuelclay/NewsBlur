@@ -11,6 +11,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
+#import "JSON.h"
 
 @implementation AddSiteViewController
 
@@ -31,39 +32,34 @@
 @synthesize addingLabel;
 @synthesize errorLabel;
 @synthesize addTypeControl;
-@synthesize hasAutomaticallyAddedSiteAddress;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-	
+    
     if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
     }
     return self;
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad {    
     UIImageView *folderImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
     [inFolderInput setLeftView:folderImage];
     [inFolderInput setLeftViewMode:UITextFieldViewModeAlways];
     UIImageView *folderImage2 = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"folder.png"]];
     [addFolderInput setLeftView:folderImage2];
     [addFolderInput setLeftViewMode:UITextFieldViewModeAlways];
+    
     UIImageView *urlImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"world.png"]];
     [siteAddressInput setLeftView:urlImage];
     [siteAddressInput setLeftViewMode:UITextFieldViewModeAlways];
     
     navBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
-    addFolderInput.frame = CGRectMake(UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ? self.view.frame.size.width : self.view.frame.size.height, 
+    addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
                                       siteAddressInput.frame.origin.y, 
                                       siteAddressInput.frame.size.width, 
                                       siteAddressInput.frame.size.height);
     
     [super viewDidLoad];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -75,17 +71,29 @@
     [super viewWillAppear:animated];
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    return YES;
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     [self.activityIndicator stopAnimating];
     [super viewDidAppear:animated];
-    // [self showFolderPicker];
+    [self showFolderPicker];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        NSLog(@"%@",  self.siteTable.frame);
+        self.siteScrollView.frame = CGRectMake(self.siteScrollView.frame.origin.x,
+                                           self.siteScrollView.frame.origin.y,
+                                           320,
+                                           295);
+    }
 }
 
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-	
+    
 	// Release any cached data, images, etc that aren't in use.
 }
 
@@ -135,22 +143,16 @@
     } else if (textField == siteAddressInput) {
         if (siteAddressInput.returnKeyType == UIReturnKeySearch) {
             [self checkSiteAddress];
+        } else {
+            [self addSite];            
         }
     } else if (textField == addFolderInput) {
         [self addFolder];
     }
-
 	return YES;
 }
 
 - (IBAction)checkSiteAddress {
-
-    // do not run the checkSiteAddress if the site was added from tableview
-    if (self.hasAutomaticallyAddedSiteAddress) {
-        self.hasAutomaticallyAddedSiteAddress = NO;
-        return;
-    }
-    
     NSString *phrase = siteAddressInput.text;
     if ([phrase length] == 0) {
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
@@ -185,14 +187,7 @@
 
 - (void)autocompleteSite:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];
-    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSArray *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    
-    autocompleteResults = [[NSMutableArray alloc] initWithArray:results];
+    autocompleteResults = [[NSMutableArray alloc] initWithArray:[responseString JSONValue]];
     
     if ([siteAddressInput.text length] > 0 && [autocompleteResults count] > 0) {
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
@@ -219,15 +214,11 @@
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_url",
                            NEWSBLUR_URL];
-    
-
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     NSString *parent_folder = [self extractParentFolder];
-    
-    [request setPostValue:parent_folder forKey:@"folder"];       
+    [request setPostValue:parent_folder forKey:@"folder"]; 
     [request setPostValue:[siteAddressInput text] forKey:@"url"]; 
-    [request setPostValue:@"true" forKey:@"auto_active"];
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];
@@ -239,13 +230,8 @@
     [self.addingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
@@ -295,13 +281,8 @@
     [self.addingLabel setHidden:YES];
     [self.activityIndicator stopAnimating];
     NSString *responseString = [request responseString];
-    NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];    
-    NSError *error;
-    NSDictionary *results = [NSJSONSerialization 
-                             JSONObjectWithData:responseData
-                             options:kNilOptions 
-                             error:&error];
-    
+    NSDictionary *results = [[NSDictionary alloc] 
+                             initWithDictionary:[responseString JSONValue]];
     // int statusCode = [request responseStatusCode];
     int code = [[results valueForKey:@"code"] intValue];
     if (code == -1) {
@@ -340,7 +321,7 @@
                                                 siteAddressInput.frame.origin.y, 
                                                 siteAddressInput.frame.size.width, 
                                                 siteAddressInput.frame.size.height);
-            addFolderInput.frame = CGRectMake(UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ? self.view.frame.size.width : self.view.frame.size.height, 
+            addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
                                               siteAddressInput.frame.origin.y, 
                                               siteAddressInput.frame.size.width, 
                                               siteAddressInput.frame.size.height);
@@ -348,7 +329,7 @@
     } else {
         [addButton setTitle:@"Add Folder"];
         [siteAddressInput resignFirstResponder];
-        addFolderInput.frame = CGRectMake(UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ? self.view.frame.size.width : self.view.frame.size.height, 
+        addFolderInput.frame = CGRectMake(self.view.frame.size.width, 
                                           siteAddressInput.frame.origin.y, 
                                           siteAddressInput.frame.size.width, 
                                           siteAddressInput.frame.size.height);
@@ -385,7 +366,7 @@ numberOfRowsInComponent:(NSInteger)component {
     if (row == 0) {
         return @"— Top Level —";
     } else {
-        return [[appDelegate dictFoldersArray] objectAtIndex:(row + 1)];
+        return [[appDelegate dictFoldersArray] objectAtIndex:row + 1];
     }
 }
 
@@ -396,13 +377,12 @@ numberOfRowsInComponent:(NSInteger)component {
     if (row == 0) {
         folder_title = @"- Top Level -";
     } else {
-        folder_title = [[appDelegate dictFoldersArray] objectAtIndex:(row + 1)];        
+        folder_title = [[appDelegate dictFoldersArray] objectAtIndex:row + 1];        
     }
     [inFolderInput setText:folder_title];
 }
 
 - (void)showFolderPicker {
-    siteScrollView.alpha = 0;
     [siteAddressInput resignFirstResponder];
     [addFolderInput resignFirstResponder];
     [inFolderInput setInputView:folderPicker];
@@ -460,10 +440,8 @@ numberOfRowsInComponent:(NSInteger)component {
 - (void)tableView:(UITableView *)tableView 
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSDictionary *result = [autocompleteResults objectAtIndex:indexPath.row];
-    self.hasAutomaticallyAddedSiteAddress = YES;
     [self.siteAddressInput setText:[result objectForKey:@"value"]];
-
-//    [self addSite];
+    [self addSite];
     [UIView animateWithDuration:.35 animations:^{
         siteScrollView.alpha = 0;
     }];

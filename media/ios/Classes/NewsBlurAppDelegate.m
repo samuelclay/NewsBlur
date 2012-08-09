@@ -147,18 +147,27 @@
 #pragma mark FeedsView
 
 - (void)showAddSiteModal {
-    FindSitesViewController *sitesVC = [[FindSitesViewController alloc] init];    
-    self.findSitesViewController = sitesVC;
+//    FindSitesViewController *sitesVC = [[FindSitesViewController alloc] init];    
+//    self.findSitesViewController = sitesVC;
+//    
+//    UINavigationController *sitesNav = [[UINavigationController alloc] initWithRootViewController:sitesVC];
+//    self.modalNavigationController = sitesNav;
+//    self.modalNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
-    UINavigationController *sitesNav = [[UINavigationController alloc] initWithRootViewController:sitesVC];
-    self.modalNavigationController = sitesNav;
-    self.modalNavigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    
+    [self.addSiteViewController reload];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.modalNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [masterContainerViewController presentModalViewController:modalNavigationController animated:YES];
+        self.addSiteViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [masterContainerViewController presentModalViewController:self.addSiteViewController animated:YES];
+        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 460);//it's important to do this after 
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (UIInterfaceOrientationIsPortrait(orientation)) {
+            addSiteViewController.view.superview.center = self.view.center;
+        } else {
+            addSiteViewController.view.superview.center = CGPointMake(self.view.center.y, self.view.center.x);
+        }
+
     } else {
-        [navigationController presentModalViewController:modalNavigationController animated:YES];
+        [navigationController presentModalViewController:self.addSiteViewController animated:YES];
     }
 }
 
