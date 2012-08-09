@@ -70,7 +70,7 @@ static NSMutableDictionary *imageCache;
         return image;
     } else {
         if (isSocial) {
-            return [UIImage imageNamed:@"user_dark.png"];
+            return [UIImage imageNamed:@"user_light.png"];
         } else {
             return [UIImage imageNamed:@"world.png"];
         }

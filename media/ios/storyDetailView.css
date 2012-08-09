@@ -40,7 +40,7 @@
  */
 
 .NB-ipad-wide .NB-header {
-    padding: 15px 0;
+    padding: 15px 0 5px;
 }
 
 .NB-ipad-wide .NB-header .NB-header-inner {
@@ -78,7 +78,7 @@
  */
 
 .NB-ipad-narrow .NB-header {
-    padding: 15px 30px;
+    padding: 15px 30px 5px;
 }
 
 .NB-ipad-narrow .NB-story {
@@ -113,7 +113,7 @@
  */
 
 .NB-iphone .NB-header {
-    padding: 12px 12px;
+    padding: 12px 12px 5px;
 }
 
 .NB-iphone .NB-story {
@@ -152,13 +152,15 @@ body.NB-iphone {
     color: #969696;
     text-transform: uppercase;
     margin: 4px 8px 0px 0;
+    margin-bottom: 8px;
     text-shadow: 0 1px 0 #F9F9F9;
     float: left;
 }
 
 .NB-story-tags {
     overflow: hidden;
-    padding: 5px 0 0 0;
+    padding: 5px 0 0px 0;
+    margin-bottom: 8px;
     text-transform: uppercase;
 }
 
@@ -460,8 +462,9 @@ a.NB-show-profile {
     background: -webkit-gradient(
         linear, left top, left bottom, 
         from(#42aaff),
-        to(#003366));
-    box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 1)
+        to(#1e78c1));
+    box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 1);
+    text-shadow: 0 1px 0 #003366;
 }
 
 .NB-button.NB-share-button div span {
@@ -492,10 +495,20 @@ a.NB-show-profile {
     top: 2px;
 }
 
-.NB-button.hover div,
+.NB-button:hover div,
 .NB-button.selected div { 
-    background: #217412;
+    background: #2379bf;
+    background: -webkit-gradient(
+    linear, left top, left bottom, 
+    from(#1e78c1),
+    to(#2379bf));
     box-shadow: none;
+}
+
+
+.NB-button.NB-share-button:hover div,
+.NB-button.NB-share-button.selected div{ 
+    box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 1);
 }
 
 .NB-button a {
@@ -516,7 +529,7 @@ a.NB-show-profile {
     font-size: 14px;
 }
 
-.NB-button.hover a,
+.NB-button:hover a,
 .NB-button.selected a {
     color: rgba(255,255,255,1);    
     text-shadow: none;

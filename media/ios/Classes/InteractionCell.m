@@ -67,7 +67,7 @@
     self.interactionLabel.frame = interactionLabelRect;
     self.avatarView.frame = CGRectMake(leftMargin, topMargin, avatarSize, avatarSize);
     
-    UIImage *placeholder = [UIImage imageNamed:@"user_dark"];
+    UIImage *placeholder = [UIImage imageNamed:@"user_light"];
     
     // this is for the rare instance when the with_user doesn't return anything
     if ([[interaction objectForKey:@"with_user"] class] == [NSNull class]) {
