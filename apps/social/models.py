@@ -665,7 +665,7 @@ class MSocialSubscription(mongo.Document):
                  sub.unread_count_updated < UNREAD_CUTOFF) or 
                 (sub.oldest_unread_story_date and
                  sub.oldest_unread_story_date < UNREAD_CUTOFF)):
-                sub = sub.calculate_feed_scores(silent=True)
+                sub = sub.calculate_feed_scores(force=True, silent=True)
 
             feed_id = "social:%s" % sub.subscription_user_id
             feeds[feed_id] = {
@@ -783,7 +783,7 @@ class MSocialSubscription(mongo.Document):
             self.save()
     
         sub_username = MSocialProfile.get_user(self.subscription_user_id).username
-
+        
         if len(story_ids) > 1:
             logging.user(request, "~FYRead %s stories in social subscription: %s" % (len(story_ids), sub_username))
         else:
@@ -801,7 +801,8 @@ class MSocialSubscription(mongo.Document):
             try:
                 m.save()
             except OperationError:
-                logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
+                if not mark_all_read:
+                    logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
                 continue
             
             # Find other social feeds with this story to update their counts
@@ -862,8 +863,8 @@ class MSocialSubscription(mongo.Document):
                 
         self.save()
     
-    def calculate_feed_scores(self, silent=False):
-        if not self.needs_unread_recalc:
+    def calculate_feed_scores(self, force=False, silent=False):
+        if not self.needs_unread_recalc and not force:
             return self
             
         now = datetime.datetime.now()
