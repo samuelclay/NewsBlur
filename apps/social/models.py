@@ -910,12 +910,12 @@ class MSocialSubscription(mongo.Document):
             if getattr(story, 'story_guid', None) in read_stories_ids:
                 continue
             feed_id = story.story_feed_id
-            if usersubs_map.get(feed_id) and story.story_date < usersubs_map[feed_id].mark_read_date:
+            if usersubs_map.get(feed_id) and story.shared_date < usersubs_map[feed_id].mark_read_date:
                 continue
                 
             unread_stories_db.append(story)
-            if story.story_date < oldest_unread_story_date:
-                oldest_unread_story_date = story.story_date
+            if story.shared_date < oldest_unread_story_date:
+                oldest_unread_story_date = story.shared_date
         stories = Feed.format_stories(unread_stories_db)
         
         classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
