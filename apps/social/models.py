@@ -8,7 +8,7 @@ import math
 import mongoengine as mongo
 import random
 from collections import defaultdict
-# from mongoengine.queryset import OperationError
+from mongoengine.queryset import OperationError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -771,12 +771,12 @@ class MSocialSubscription(mongo.Document):
         else:
             return [], []
         
-    def mark_story_ids_as_read(self, story_ids, feed_id, request=None):
+    def mark_story_ids_as_read(self, story_ids, feed_id=None, request=None):
         data = dict(code=0, payload=story_ids)
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
         if not request:
-            request = self.user
+            request = User.objects.get(pk=self.user_id)
     
         if not self.needs_unread_recalc:
             self.needs_unread_recalc = True
@@ -793,10 +793,16 @@ class MSocialSubscription(mongo.Document):
             story = MSharedStory.objects.get(user_id=self.subscription_user_id, story_guid=story_id)
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
+            if not feed_id:
+                feed_id = story.story_feed_id
             m = MUserStory(user_id=self.user_id, 
                            feed_id=feed_id, read_date=date, 
                            story_id=story.story_guid, story_date=story.story_date)
-            m.save()
+            try:
+                m.save()
+            except OperationError:
+                logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
+                continue
             
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (self.user_id)
@@ -825,7 +831,8 @@ class MSocialSubscription(mongo.Document):
         
     def mark_feed_read(self):
         latest_story_date = datetime.datetime.utcnow()
-        
+        UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+
         # Use the latest story to get last read time.
         if MSharedStory.objects(user_id=self.subscription_user_id).first():
             latest_story_date = MSharedStory.objects(user_id=self.subscription_user_id)\
@@ -833,14 +840,20 @@ class MSocialSubscription(mongo.Document):
                                 + datetime.timedelta(seconds=1)
 
         self.last_read_date = latest_story_date
-        self.mark_read_date = latest_story_date
+        self.mark_read_date = UNREAD_CUTOFF
         self.unread_count_negative = 0
         self.unread_count_positive = 0
         self.unread_count_neutral = 0
         self.unread_count_updated = latest_story_date
         self.oldest_unread_story_date = latest_story_date
-        self.needs_unread_recalc = False
-
+        self.needs_unread_recalc = True
+        
+        # Manually mark all shared stories as read.
+        stories = MSharedStory.objects.filter(user_id=self.subscription_user_id,
+                                              shared_date__gte=UNREAD_CUTOFF).only('story_guid')
+        story_ids = [s.story_guid for s in stories]
+        self.mark_story_ids_as_read(story_ids)
+        
         # Cannot delete these stories, since the original feed may not be read. 
         # Just go 2 weeks back.
         # UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
