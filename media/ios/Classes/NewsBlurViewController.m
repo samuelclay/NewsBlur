@@ -971,6 +971,7 @@
     }
     
 	[hud hide:YES afterDelay:0.75];
+    [self.feedTitlesTable reloadData];
 }
 
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {

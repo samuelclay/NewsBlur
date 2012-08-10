@@ -200,6 +200,10 @@
         } else {
             cell.accessoryType = UITableViewCellAccessoryNone;
         }
+        
+        UIView *myBackView = [[UIView alloc] initWithFrame:self.frame];
+        myBackView.backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
+        cell.selectedBackgroundView = myBackView;
 
         // update the cell information
         [cell setActivity: activitiy

@@ -31,6 +31,10 @@
         interaction.automaticallyAddLinksForType = NO;
         self.interactionLabel = interaction;
         [self.contentView addSubview:interaction];
+        
+        UIView *myBackView = [[UIView alloc] initWithFrame:self.frame];
+        myBackView.backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
+        self.selectedBackgroundView = myBackView;
     }
     
     return self;

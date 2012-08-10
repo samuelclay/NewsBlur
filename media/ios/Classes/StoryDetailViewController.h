@@ -87,7 +87,7 @@
 - (NSString *)getComments;
 - (NSString *)getComment:(NSDictionary *)commentDict;
 - (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId;
-- (NSString *)getAvatars:(BOOL)areFriends;
+- (NSString *)getAvatars:(NSString *)key;
 - (NSDictionary *)getUser:(int)user_id;
 - (void)transitionFromFeedDetail;
 

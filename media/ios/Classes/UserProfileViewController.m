@@ -229,7 +229,7 @@
                     initWithStyle:UITableViewCellStyleDefault 
                     reuseIdentifier:@"ActivityCellIdentifier"];
         }
-
+        cell.selectionStyle = UITableViewCellSelectionStyleGray;
         cell.accessoryType=  UITableViewCellAccessoryDisclosureIndicator;
         [cell setActivity:[self.activitiesArray objectAtIndex:(indexPath.row)] 
           withUserProfile:self.userProfile

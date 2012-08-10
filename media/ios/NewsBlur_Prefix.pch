@@ -15,9 +15,9 @@
 //    #define BACKGROUND_REFRESH_SECONDS -5
     #define BACKGROUND_REFRESH_SECONDS -10*60
 
-    #define NEWSBLUR_URL [NSString stringWithFormat:@"nb.local.host"]
-//    #define NEWSBLUR_URL [NSString stringWithFormat:@"dev.newsblur.com"]
+//    #define NEWSBLUR_URL [NSString stringWithFormat:@"nb.local.host"]
+    #define NEWSBLUR_URL [NSString stringWithFormat:@"dev.newsblur.com"]
 
     #define NEWSBLUR_LINK_COLOR 0x405BA8
-
+    #define NEWSBLUR_HIGHLIGHT_COLOR 0xd2e6fd
 #endif

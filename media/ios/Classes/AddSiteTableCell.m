@@ -46,7 +46,7 @@ static UIFont *indicatorFont = nil;
     // set the background color
     UIColor *backgroundColor;
     if (self.selected || self.highlighted) {
-        backgroundColor = UIColorFromRGB(0xd2e6fd);
+        backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
     } else {
         backgroundColor = [UIColor whiteColor];
     }

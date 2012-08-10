@@ -57,11 +57,11 @@ static UIFont *indicatorFont = nil;
     // set the background color
     UIColor *backgroundColor;
     if (self.selected || self.highlighted) {
-        backgroundColor = UIColorFromRGB(0xd2e6fd);
+        backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
         
         // gradient start
 //        CGRect fullRect = self.bounds;
-//        CGColorRef top = [UIColorFromRGB(0xd2e6fd) CGColor];
+//        CGColorRef top = [UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR) CGColor];
 //        CGColorRef bottom = [UIColorFromRGB(0xb0d1f9) CGColor];
 //        drawLinearGradient(context, fullRect, top, bottom);
 //        backgroundColor = [UIColor clearColor];

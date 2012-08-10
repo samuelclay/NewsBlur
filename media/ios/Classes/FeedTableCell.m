@@ -92,7 +92,7 @@ static CGFloat *psColors = nil;
     UIColor *backgroundColor;
     
     backgroundColor = self.selected || self.highlighted ? 
-                      UIColorFromRGB(0xd2e6fd) : 
+                      UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR) : 
                       [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
 
     [backgroundColor set];
