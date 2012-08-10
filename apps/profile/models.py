@@ -253,14 +253,14 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
     
     def send_launch_social_email(self, force=False):
         if not self.user.email or not self.send_emails:
-            logging.user(self.user, "~BB~FM~SB~FRNot~FM sending launch social email for user, opt-out: %s" % self.user.email)
+            logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, %s: %s" % (self.user.email and 'opt-out: ' or 'blank', self.user.email))
             return
         
         sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
                                                                email_type='launch_social')
         
         if not created and not force:
-            logging.user(self.user, "~BB~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
+            logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
             return
         
         delta      = datetime.datetime.now() - self.last_seen_on
@@ -276,7 +276,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
         
-        logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % months_ago, self.user.email)
+        logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % (months_ago, self.user.email))
     
     def autologin_url(self, next=None):
         return reverse('autologin', kwargs={
