@@ -108,8 +108,8 @@ def feed_autocomplete(request):
             if feed_icon.data:
                 feed['favicon_color'] = feed_icon.color
                 feed['favicon'] = feed_icon.data
-    
-    logging.user(request, "~FRAdd Search: ~SB%s ~FG(%s matches)" % (query, len(feeds),))
+
+    logging.user(request, "~FGAdd Search: ~SB%s ~SN(%s matches)" % (query, len(feeds),))
     
     if version > 1:
         return {

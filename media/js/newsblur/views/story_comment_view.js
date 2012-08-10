@@ -22,7 +22,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
     },
     
     render: function() {
-        this.model.set('comments', this.model.get('comments').replace(/\n+/g, '<br><br>'));
+        var comments = this.model.get('comments').replace(/\n+/g, '<br><br>');
         var reshare_class = this.model.get('source_user_id') ? 'NB-story-comment-reshare' : '';
         var has_likes = _.any(this.model.get('liking_users'));
         var liked = _.contains(this.model.get('liking_users'), NEWSBLUR.Globals.user_id);
@@ -51,7 +51,7 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                     $.make('div', { className: 'NB-story-comment-like' })
                 ]))
             ]),
-            $.make('div', { className: 'NB-story-comment-content' }, this.model.get('comments')),
+            $.make('div', { className: 'NB-story-comment-content' }, comments),
             this.make_story_share_comment_replies()
         ]);
         

@@ -47,6 +47,8 @@ NEWSBLUR.Router = Backbone.Router.extend({
         // NEWSBLUR.log(["folder", folder_name]);
         if (folder_name == "everything") {
             NEWSBLUR.reader.open_river_stories();
+        } else if (folder_name == "blurblogs") {
+            NEWSBLUR.reader.open_river_blurblogs_stories();
         } else {
             var folder = NEWSBLUR.assets.get_folder(folder_name);
             if (folder) {

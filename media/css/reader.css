@@ -1298,7 +1298,9 @@ background: transparent;
 .NB-view-river #story_titles .story {
   padding-left: 148px;
 }
-
+.NB-view-river .NB-story-pane-west #story_titles .story {
+    padding-left: 48px;
+}
 #story_titles .story .NB-storytitles-sentiment {
     position: absolute;
     width: 24px;
@@ -1416,6 +1418,9 @@ background: transparent;
     color: #707070;
     position: absolute;
 }
+.NB-story-pane-west #story_titles .story .NB-story-feed {
+    left: -24px;
+}
 .NB-view-river #story_titles .story .NB-story-feed {
     display: block;
 }
@@ -1442,6 +1447,9 @@ background: transparent;
 }
 #story_titles .story.NB-selected .NB-story-feed .feed_title {
     text-shadow: 1px 1px 0 #F0F0F0;
+}
+.NB-story-pane-west #story_titles .story .NB-story-feed .feed_title {
+    display: none;
 }
 #story_titles .story .story_id {
     display: none;
@@ -2048,7 +2056,7 @@ background: transparent;
 }
 #story_pane .NB-feed-story-comments {
     margin: -24px 200px 32px 28px;
-    padding: 1px 0 0;
+/*    padding: 1px 0 0;*/
     max-width: 700px;
     border-top: 2px solid #353535;
     border-bottom: 1px solid #353535;
@@ -2256,6 +2264,10 @@ background: transparent;
     padding: 1px 0;
     cursor: pointer;
 }
+#story_pane .NB-story-comments-public-header-wrapper:first-child {
+    border-top: none;
+}
+
 #story_pane .NB-story-comments-public-header-wrapper {
     cursor: default;
 }
@@ -2300,15 +2312,18 @@ background: transparent;
 
 #story_pane .NB-story-comments-shares-teaser {
     background-color: whiteSmoke;
+    background-image: -moz-linear-gradient(center bottom , #EBEBEC 10%, #F5F5F5 84%);
     color: #202020;
     cursor: default;
     text-shadow: 0 1px 0 #FFF;
     font-weight: bold;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 8px 12px 0px;
+    padding: 8px 12px 0px 28px;
     overflow: hidden;
     height: 27px;
+    border-bottom: 1px solid #898989;
+    border-top: 1px solid #FFFFFF;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
@@ -2327,6 +2342,7 @@ background: transparent;
 #story_pane .NB-story-share-label {
     display: inline-block;
     margin: 0 4px 0 0;
+    float: right;
 }
 #story_pane .NB-story-share-profiles {
     display: inline-block;
@@ -2336,12 +2352,36 @@ background: transparent;
     margin-top: -4px;
     overflow: hidden;
 }
-#story_pane .NB-story-share-profiles.NB-story-share-profiles-public {
+#story_pane .NB-story-share-profiles.NB-story-share-profiles-shares {
     float: right;
 }
-#story_pane .NB-story-share-profiles.NB-story-share-profiles-public .NB-story-share-profile {
+#story_pane .NB-story-share-profiles.NB-story-share-profiles-shares .NB-story-share-profile {
     float: right;
 }
+#story_pane .NB-story-share-profiles .NB-story-share-profiles-comments-public,
+#story_pane .NB-story-share-profiles .NB-story-share-profiles-shares-public {
+    opacity: .5;
+}
+#story_pane .NB-story-share-profiles .NB-story-share-profiles-comments-friends,
+#story_pane .NB-story-share-profiles .NB-story-share-profiles-comments-public {
+    float: left;
+}
+#story_pane .NB-story-share-profiles .NB-story-share-profiles-shares-friends,
+#story_pane .NB-story-share-profiles .NB-story-share-profiles-shares-public {
+    float: right;
+}
+#story_pane .NB-story-comments-label {
+    float: left;
+    margin-right: 12px;
+}
+#story_pane .NB-story-comments-label b {
+    font-size: 12px;
+}
+#story_pane .NB-story-share-label {
+    float: right;
+    margin-left: 12px;
+}
+
 
 #story_pane .NB-story-share-profile {
     display: inline-block;
@@ -2811,20 +2851,24 @@ background: transparent;
 
 .NB-feeds-header-river-container {
     display: block;
+    border-bottom: 1px solid #F0F0F0;
 }
 
-.NB-feeds-header-river .NB-feeds-header-icon {
+.NB-feeds-header-river-container .NB-feeds-header-icon {
     background: transparent url('/media/embed/icons/silk/images.png') no-repeat 0 0;
 }
 
-.NB-feeds-header-river .NB-feeds-header-count {
+.NB-feeds-header-river-container .NB-feeds-header-count {
   background-color: #11448B;
   display: block;
   padding: 0 4px;
   margin: 2px 3px 0 0;
 }
 
-.NB-feeds-header-river.NB-empty .NB-feeds-header-count {
+.NB-feeds-header-river-container .NB-feeds-header {
+    border-bottom: 1px solid #303030;
+}
+.NB-feeds-header-river-container .NB-feeds-header.NB-empty .NB-feeds-header-count {
   display: none;
 }
 
