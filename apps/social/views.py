@@ -128,7 +128,7 @@ def load_social_stories(request, user_id, username=None):
             story['read_status'] = 1
         elif not usersubs_map.get(story_feed_id):
             story['read_status'] = 0
-        elif not story.get('read_status') and story['story_date'] < usersubs_map[story_feed_id].mark_read_date:
+        elif not story.get('read_status') and story['shared_date'] < usersubs_map[story_feed_id].mark_read_date:
             story['read_status'] = 1
         elif not story.get('read_status') and story['shared_date'] < date_delta:
             story['read_status'] = 1
