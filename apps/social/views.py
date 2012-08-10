@@ -165,6 +165,7 @@ def load_social_stories(request, user_id, username=None):
                                            
     if socialsub:
         socialsub.feed_opens += 1
+        socialsub.needs_unread_recalc = True
         socialsub.save()
     
     diff1 = checkpoint1-start

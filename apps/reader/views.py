@@ -508,7 +508,9 @@ def load_single_feed(request, feed_id):
     
     if usersub:
         usersub.feed_opens += 1
+        usersub.needs_unread_recalc = True
         usersub.save()
+        
     diff1 = checkpoint1-start
     diff2 = checkpoint2-start
     diff3 = checkpoint3-start
