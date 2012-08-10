@@ -2,6 +2,7 @@ from django.conf.urls.defaults import url, patterns
 from apps.social import views
 
 urlpatterns = patterns('',
+    url(r'^river_stories/?$', views.load_river_blurblog, name='social-river-blurblog'),
     url(r'^share_story/?$', views.mark_story_as_shared, name='mark-story-as-shared'),
     url(r'^unshare_story/?$', views.mark_story_as_unshared, name='mark-story-as-unshared'),
     url(r'^load_user_friends/?$', views.load_user_friends, name='load-user-friends'),

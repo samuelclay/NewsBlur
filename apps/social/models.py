@@ -705,7 +705,7 @@ class MSocialSubscription(mongo.Document):
             unread_stories_key = stories_key
         else:
             r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-            
+
         sorted_stories_key          = 'zB:%s' % (self.subscription_user_id)
         unread_ranked_stories_key   = 'zUB:%s:%s' % (self.user_id, self.subscription_user_id)
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
@@ -719,7 +719,9 @@ class MSocialSubscription(mongo.Document):
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
-            max_score = mark_read_time
+            now = datetime.datetime.now()
+            two_weeks_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+            max_score = int(time.mktime(two_weeks_ago.timetuple()))-1000
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
@@ -728,11 +730,11 @@ class MSocialSubscription(mongo.Document):
 
         if not ignore_user_stories:
             r.delete(unread_stories_key)
-        
+        print "User_id: %s, sub user: %s, order: %s, filter: %s, stories: %s, min: %s, max: %s" % (self.user_id, self.subscription_user_id, order, read_filter, story_ids, min_score, max_score)
         return [story_id for story_id in story_ids if story_id and story_id != 'None']
         
     @classmethod
-    def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):
+    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all'):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         
         if order == 'oldest':
@@ -740,29 +742,34 @@ class MSocialSubscription(mongo.Document):
         else:
             range_func = r.zrevrange
             
-        if not isinstance(feed_ids, list):
-            feed_ids = [feed_ids]
+        if not isinstance(social_user_ids, list):
+            social_user_ids = [social_user_ids]
 
         unread_ranked_stories_keys  = 'zU:%s' % (user_id)
         if offset and r.exists(unread_ranked_stories_keys):
-            story_guids = range_func(unread_ranked_stories_keys, offset, limit)
-            return story_guids
+            story_guids = range_func(unread_ranked_stories_keys, offset, limit, withscores=True)
+            if story_guids:
+                return zip(*story_guids)
+            else:
+                return [], []
         else:
             r.delete(unread_ranked_stories_keys)
 
-        for feed_id in feed_ids:
-            us = cls.objects.get(user=user_id, feed=feed_id)
-            story_guids = us.get_stories(offset=0, limit=200, 
-                                         order=order, read_filter=read_filter, 
+        for social_user_id in social_user_ids:
+            us = cls.objects.get(user_id=user_id, subscription_user_id=social_user_id)
+            story_guids = us.get_stories(offset=0, limit=100, 
+                                         # order=order, read_filter=read_filter, 
                                          withscores=True)
-
             if story_guids:
                 r.zadd(unread_ranked_stories_keys, **dict(story_guids))
             
-        story_guids = range_func(unread_ranked_stories_keys, offset, limit)
+        story_guids = range_func(unread_ranked_stories_keys, offset, limit, withscores=True)
         r.expire(unread_ranked_stories_keys, 24*60*60)
         
-        return story_guids
+        if story_guids:
+            return zip(*story_guids)
+        else:
+            return [], []
         
     def mark_story_ids_as_read(self, story_ids, feed_id, request=None):
         data = dict(code=0, payload=story_ids)
@@ -1300,6 +1307,7 @@ class MSharedStory(mongo.Document):
         for story in stories: 
             story['friend_comments'] = []
             story['public_comments'] = []
+            story['reply_count'] = 0
             if check_all or story['comment_count']:
                 comment_key = "C:%s:%s" % (story['story_feed_id'], story['guid_hash'])
                 story['comment_count'] = r.scard(comment_key)
@@ -1315,6 +1323,7 @@ class MSharedStory(mongo.Document):
                     shared_stories = cls.objects.filter(**params)
                 for shared_story in shared_stories:
                     comments = shared_story.comments_with_author()
+                    story['reply_count'] += len(comments['replies'])
                     if shared_story.user_id in friends_with_comments:
                         story['friend_comments'].append(comments)
                     else:
@@ -1339,8 +1348,12 @@ class MSharedStory(mongo.Document):
                 nonfriend_user_ids = [int(f) for f in r.sdiff(share_key, friend_key)]
                 profile_user_ids.update(nonfriend_user_ids)
                 profile_user_ids.update(friends_with_shares)
-                story['shared_by_public']    = nonfriend_user_ids
-                story['shared_by_friends']   = friends_with_shares
+                story['commented_by_public']  = [c['user_id'] for c in story['public_comments']]
+                story['commented_by_friends'] = [c['user_id'] for c in story['friend_comments']]
+                story['shared_by_public']     = list(set(nonfriend_user_ids) - 
+                                                    set(story['commented_by_public']))
+                story['shared_by_friends']    = list(set(friends_with_shares) - 
+                                                     set(story['commented_by_friends']))
                 story['share_count_public']  = story['share_count'] - len(friends_with_shares)
                 story['share_count_friends'] = len(friends_with_shares)
                 if story.get('source_user_id'):

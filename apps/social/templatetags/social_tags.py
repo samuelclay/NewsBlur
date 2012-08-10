@@ -50,3 +50,11 @@ def render_email_comment(comment):
     return {
         'comment': comment,
     }
+    
+@register.inclusion_tag('social/avatars.xhtml')
+def render_avatars(avatars):
+    if not isinstance(avatars, list):
+        avatars = [avatars]
+    return {
+        'users': avatars,
+    }

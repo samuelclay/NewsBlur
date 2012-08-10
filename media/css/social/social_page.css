@@ -925,11 +925,35 @@ header {
     margin-top: -4px;
     overflow: hidden;
 }
-.NB-story-share-profiles.NB-story-share-profiles-public {
+
+.NB-story-share-profiles.NB-story-share-profiles-shares {
     float: right;
 }
-.NB-story-share-profiles.NB-story-share-profiles-public .NB-story-share-profile {
+.NB-story-share-profiles.NB-story-share-profiles-shares .NB-story-share-profile {
     float: right;
+}
+.NB-story-share-profiles .NB-story-share-profiles-comments-public,
+.NB-story-share-profiles .NB-story-share-profiles-shares-public {
+    opacity: .5;
+}
+.NB-story-share-profiles .NB-story-share-profiles-comments-friends,
+.NB-story-share-profiles .NB-story-share-profiles-comments-public {
+    float: left;
+}
+.NB-story-share-profiles .NB-story-share-profiles-shares-friends,
+.NB-story-share-profiles .NB-story-share-profiles-shares-public {
+    float: right;
+}
+.NB-story-comments-label {
+    float: left;
+    margin-right: 12px;
+}
+.NB-story-comments-label b {
+    font-size: 12px;
+}
+.NB-story-share-label {
+    float: right;
+    margin-left: 12px;
 }
 
 .NB-story-share-profiles {

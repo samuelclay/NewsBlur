@@ -100,7 +100,8 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
                 if (!feed) {
                     feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
                 }
-                if (feed && feed.is_social()) {
+                if ((feed && feed.is_social()) ||
+                    NEWSBLUR.reader.active_feed == 'river:blurblogs') {
                     mark_read_fn = NEWSBLUR.assets.mark_social_story_as_read;
                 }
                 mark_read_fn.call(NEWSBLUR.assets, story, feed, _.bind(function(read) {
@@ -128,6 +129,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         var unread_view           = NEWSBLUR.reader.get_unread_view_name();
         var active_feed           = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
         var story_feed            = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
+        var friend_feeds          = NEWSBLUR.assets.get_friend_feeds(story);
         
         if (!active_feed) {
             // River of News does not have an active feed.
@@ -138,16 +140,28 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
             var story_count = Math.max(story_feed.get('ps') + (options.unread?1:-1), 0);
             active_feed.set('ps', active_count, {instant: true});
             story_feed.set('ps', story_count, {instant: true});
+            _.each(friend_feeds, function(socialsub) { 
+                var socialsub_count = Math.max(socialsub.get('ps') + (options.unread?1:-1), 0);
+                socialsub.set('ps', socialsub_count, {instant: true});
+            });
         } else if (story.score() == 0) {
             var active_count = Math.max(active_feed.get('nt') + (options.unread?1:-1), 0);
             var story_count = Math.max(story_feed.get('nt') + (options.unread?1:-1), 0);
             active_feed.set('nt', active_count, {instant: true});
             story_feed.set('nt', story_count, {instant: true});
+            _.each(friend_feeds, function(socialsub) { 
+                var socialsub_count = Math.max(socialsub.get('nt') + (options.unread?1:-1), 0);
+                socialsub.set('nt', socialsub_count, {instant: true});
+            });
         } else if (story.score() < 0) {
             var active_count = Math.max(active_feed.get('ng') + (options.unread?1:-1), 0);
             var story_count = Math.max(story_feed.get('ng') + (options.unread?1:-1), 0);
             active_feed.set('ng', active_count, {instant: true});
             story_feed.set('ng', story_count, {instant: true});
+            _.each(friend_feeds, function(socialsub) { 
+                var socialsub_count = Math.max(socialsub.get('ng') + (options.unread?1:-1), 0);
+                socialsub.set('ng', socialsub_count, {instant: true});
+            });
         }
         
         if (story_unread_counter) {
