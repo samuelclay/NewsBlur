@@ -130,11 +130,14 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         var active_feed           = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
         var story_feed            = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
         var friend_feeds          = NEWSBLUR.assets.get_friend_feeds(story);
-        
+
         if (!active_feed) {
             // River of News does not have an active feed.
             active_feed = story_feed;
+        } else if (active_feed && active_feed.is_social()) {
+            friend_feeds = _.without(friend_feeds, active_feed);
         }
+        
         if (story.score() > 0) {
             var active_count = Math.max(active_feed.get('ps') + (options.unread?1:-1), 0);
             var story_count = Math.max(story_feed.get('ps') + (options.unread?1:-1), 0);
