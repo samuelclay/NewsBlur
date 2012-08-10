@@ -53,8 +53,6 @@ def load_social_stories(request, user_id, username=None):
         socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
     except MSocialSubscription.DoesNotExist:
         socialsub = None
-    mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
-    stories = Feed.format_stories(mstories)
     
     if socialsub and (read_filter == 'unread' or order == 'oldest'):
         story_ids = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
