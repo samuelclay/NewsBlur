@@ -65,6 +65,7 @@ SECRET_KEY            = 'YOUR_SECRET_KEY'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
+HOMEPAGE_USERNAME     = 'popular'
 
 # ===============
 # = Enviornment =

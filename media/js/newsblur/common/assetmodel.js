@@ -138,7 +138,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var feed_id = story.get('story_feed_id');
         var social_user_id = social_feed.get('user_id');
         if (!social_user_id) {
-            social_user_id = story.get('shared_by_friends').concat(story.get('commented_by_friends'))[0];
+            social_user_id = story.get('share_user_ids')[0];
         }
         var read = story.get('read_status');
 
@@ -772,8 +772,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
     
     get_friend_feeds: function(story) {
-        var friend_user_ids = story.get('shared_by_friends')
-                              .concat(story.get('commented_by_friends'));
+        var shares = story.get('shared_by_friends') || [];
+        var comments = story.get('commented_by_friends') || [];
+        var friend_user_ids = shares.concat(comments);
         return _.map(friend_user_ids, _.bind(function(user_id) { 
             return this.social_feeds.get('social:'+user_id); 
         }, this));
