@@ -834,17 +834,18 @@ class MSocialSubscription(mongo.Document):
         UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         # Use the latest story to get last read time.
-        if MSharedStory.objects(user_id=self.subscription_user_id).first():
-            latest_story_date = MSharedStory.objects(user_id=self.subscription_user_id)\
-                                .order_by('-shared_date').only('shared_date')[0]['shared_date']\
-                                + datetime.timedelta(seconds=1)
-
+        latest_shared_story = MSharedStory.objects(user_id=self.subscription_user_id,
+                                                   shared_date__gte=UNREAD_CUTOFF
+                              ).order_by('shared_date').only('shared_date').first()
+        if latest_shared_story:
+            latest_story_date = latest_shared_story['shared_date'] + datetime.timedelta(seconds=1)
+                
         self.last_read_date = latest_story_date
         self.mark_read_date = UNREAD_CUTOFF
         self.unread_count_negative = 0
         self.unread_count_positive = 0
         self.unread_count_neutral = 0
-        self.unread_count_updated = latest_story_date
+        self.unread_count_updated = datetime.datetime.utcnow()
         self.oldest_unread_story_date = latest_story_date
         self.needs_unread_recalc = False
         

@@ -317,6 +317,9 @@ def load_feeds_flat(request):
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
     
+    logging.user(request, "~FBLoading ~SB%s~SN/~SB%s~SN feeds/socials ~FMflat~FB. %s" % (
+            len(feeds.keys()), len(social_feeds), '~SBUpdating counts.' if update_counts else ''))
+
     data = {
         "flat_folders": flat_folders, 
         "feeds": feeds,
