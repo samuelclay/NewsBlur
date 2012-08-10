@@ -216,7 +216,8 @@ def load_river_blurblog(request):
     stories = Feed.format_stories(sorted_mstories)
     for s, story in enumerate(stories):
         story['story_date'] = datetime.datetime.fromtimestamp(story_dates[s])
-    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, relative_user_id, 
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories,
+                                                                             relative_user_id,
                                                                              check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
@@ -225,7 +226,6 @@ def load_river_blurblog(request):
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersubs_map.keys())))
     unsub_feeds = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds = [feed.canonical(include_favicon=False) for feed in unsub_feeds]
-    date_delta = UNREAD_CUTOFF
     
     # Find starred stories
     if story_feed_ids:
@@ -268,6 +268,8 @@ def load_river_blurblog(request):
     # Just need to format stories
     for story in stories:
         if story['id'] in userstories:
+            story['read_status'] = 1
+        elif story['story_date'] < UNREAD_CUTOFF:
             story['read_status'] = 1
         else:
             story['read_status'] = 0
