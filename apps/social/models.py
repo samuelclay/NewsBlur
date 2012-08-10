@@ -1369,6 +1369,8 @@ class MSharedStory(mongo.Document):
                                                      set(story['commented_by_friends']))
                 story['share_count_public']  = story['share_count'] - len(friends_with_shares)
                 story['share_count_friends'] = len(friends_with_shares)
+                story['friend_user_ids'] = list(set(story['commented_by_friends'] + story['shared_by_friends']))
+                story['public_user_ids'] = list(set(story['commented_by_public'] + story['shared_by_public']))
                 if story.get('source_user_id'):
                     profile_user_ids.add(story['source_user_id'])
             
