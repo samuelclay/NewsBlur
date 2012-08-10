@@ -862,8 +862,8 @@ class MSocialSubscription(mongo.Document):
         self.save()
     
     def calculate_feed_scores(self, silent=False):
-        # if not self.needs_unread_recalc:
-        #     return
+        if not self.needs_unread_recalc:
+            return self
             
         now = datetime.datetime.now()
         UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
