@@ -771,14 +771,14 @@ class MSocialSubscription(mongo.Document):
         else:
             return [], []
         
-    def mark_story_ids_as_read(self, story_ids, feed_id=None, request=None):
+    def mark_story_ids_as_read(self, story_ids, feed_id=None, mark_all_read=False, request=None):
         data = dict(code=0, payload=story_ids)
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
         if not request:
             request = User.objects.get(pk=self.user_id)
     
-        if not self.needs_unread_recalc:
+        if not self.needs_unread_recalc and not mark_all_read:
             self.needs_unread_recalc = True
             self.save()
     
@@ -853,7 +853,7 @@ class MSocialSubscription(mongo.Document):
         stories = MSharedStory.objects.filter(user_id=self.subscription_user_id,
                                               shared_date__gte=UNREAD_CUTOFF).only('story_guid')
         story_ids = [s.story_guid for s in stories]
-        self.mark_story_ids_as_read(story_ids)
+        self.mark_story_ids_as_read(story_ids, mark_all_read=True)
         
         # Cannot delete these stories, since the original feed may not be read. 
         # Just go 2 weeks back.
