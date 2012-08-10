@@ -104,10 +104,8 @@ def load_social_stories(request, user_id, username=None):
     userstories = set(us.story_id for us in userstories_db)
 
     starred_stories = MStarredStory.objects(user_id=user.pk, 
-                                            story_feed_id__in=story_feed_ids, 
                                             story_guid__in=story_ids).only('story_guid', 'starred_date')
     shared_stories = MSharedStory.objects(user_id=user.pk, 
-                                          story_feed_id__in=story_feed_ids, 
                                           story_guid__in=story_ids)\
                                  .only('story_guid', 'shared_date', 'comments')
     starred_stories = dict([(story.story_guid, story.starred_date) for story in starred_stories])
@@ -229,19 +227,27 @@ def load_river_blurblog(request):
     
     # Find starred stories
     if story_feed_ids:
+        story_ids = [story['id'] for story in stories]
         starred_stories = MStarredStory.objects(
             user_id=user.pk,
-            story_feed_id__in=story_feed_ids
+            story_guid__in=story_ids
         ).only('story_guid', 'starred_date')
         starred_stories = dict([(story.story_guid, story.starred_date) 
                                 for story in starred_stories])
-        story_ids = [story['id'] for story in stories]
+        shared_stories = MSharedStory.objects(user_id=user.pk, 
+                                              story_guid__in=story_ids)\
+                                     .only('story_guid', 'shared_date', 'comments')
+        shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
+                           for story in shared_stories])
+
         userstories_db = MUserStory.objects(user_id=user.pk,
                                             feed_id__in=story_feed_ids,
                                             story_id__in=story_ids).only('story_id')
         userstories = set(us.story_id for us in userstories_db)
+  
     else:
         starred_stories = {}
+        shared_stories = {}
         userstories = []
     
     # Intelligence classifiers for all feeds involved
@@ -286,6 +292,13 @@ def load_river_blurblog(request):
             'tags':   apply_classifier_tags(classifier_tags, story),
             'title':  apply_classifier_titles(classifier_titles, story),
         }
+        if story['id'] in shared_stories:
+            story['shared'] = True
+            shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'],
+                                                 user.profile.timezone)
+            story['shared_date'] = format_story_link_date__long(shared_date, now)
+            story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
+
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
