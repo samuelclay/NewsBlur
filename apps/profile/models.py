@@ -251,6 +251,33 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
                 
         logging.user(self.user, "~BB~FM~SBSending email for OPML upload: %s" % self.user.email)
     
+    def send_launch_social_email(self, force=False):
+        if not self.user.email or not self.send_emails:
+            logging.user(self.user, "~BB~FM~SB~FRNot~FM sending launch social email for user, opt-out: %s" % self.user.email)
+            return
+        
+        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
+                                                               email_type='launch_social')
+        
+        if not created and not force:
+            logging.user(self.user, "~BB~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
+            return
+        
+        delta      = datetime.datetime.now() - self.last_seen_on
+        months_ago = delta.days / 30
+        user    = self.user
+        data    = dict(user=user, months_ago=months_ago)
+        text    = render_to_string('mail/email_launch_social.txt', data)
+        html    = render_to_string('mail/email_launch_social.xhtml', data)
+        subject = "NewsBlur is now a social news reader"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % months_ago, self.user.email)
+    
     def autologin_url(self, next=None):
         return reverse('autologin', kwargs={
             'username': self.user.username, 
@@ -307,7 +334,7 @@ class MSentEmail(mongo.Document):
     meta = {
         'collection': 'sent_emails',
         'allow_inheritance': False,
-        'indexes': [('sending_user_id', 'receiver_user_id', 'email_type')],
+        'indexes': ['sending_user_id', 'receiver_user_id', 'email_type'],
     }
     
     def __unicode__(self):
