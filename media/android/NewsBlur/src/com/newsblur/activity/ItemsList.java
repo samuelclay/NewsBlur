@@ -54,6 +54,7 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 	}
 
 	public abstract void triggerRefresh();
+	public abstract void triggerRefresh(int page);
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

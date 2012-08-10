@@ -14,21 +14,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.newsblur.R;
 import com.newsblur.activity.ItemsList;
-import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Reading;
 import com.newsblur.activity.SocialFeedReading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.SocialFeedItemsAdapter;
+import com.newsblur.domain.SocialFeed;
+import com.newsblur.util.AppConstants;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class SocialFeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
+public class SocialFeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
 
 	private static final String TAG = "socialfeedListFragment";
 	public static final String FRAGMENT_TAG = "socialfeedListFragment";
@@ -36,9 +39,13 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	private String userId, username;
 	private SimpleCursorAdapter adapter;
 	private Uri storiesUri;
-	private int currentState;
+	private SocialFeed socialFeed;
+	private int currentState, currentPage = 1;
+	private boolean requestedPage;
+	
 	public static int ITEMLIST_LOADER = 0x01;
 	private int READING_RETURNED = 0x02;
+	private Uri socialFeedUri;
 
 	public SocialFeedItemListFragment(final String userId, final String username, final int currentState) {
 		this.userId = userId;
@@ -53,19 +60,12 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	}
-	
-	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState) {
-		return new SocialFeedItemListFragment(userId, username, currentState);
-	}
-	
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
-		
 		contentResolver = getActivity().getContentResolver();
-		storiesUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+		storiesUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
+		socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+		
+		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
+		
 		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
 		
 		String[] groupFrom = new String[] { DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
@@ -76,6 +76,17 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		adapter = new SocialFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		
 		adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
+	}
+	
+	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState) {
+		return new SocialFeedItemListFragment(userId, username, currentState);
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View v = inflater.inflate(R.layout.fragment_itemlist, null);
+		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+		itemList.setOnScrollListener(this);
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
 		
@@ -84,7 +95,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-		Uri uri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
 	    return cursorLoader;
 	}
@@ -98,12 +109,41 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	
 	public void hasUpdated() {
 		getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
+		requestedPage = false;
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		Log.d(TAG, "Loader reset");
 		adapter.notifyDataSetInvalidated();
+	}
+	
+	@Override
+	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
+		if (firstVisible + visibleCount == totalCount) {
+			boolean loadMore = false;
+			
+			switch (currentState) {
+			case AppConstants.STATE_ALL:
+				loadMore = socialFeed.positiveCount + socialFeed.neutralCount + socialFeed.negativeCount > totalCount;
+				break;
+			case AppConstants.STATE_BEST:
+				loadMore = socialFeed.positiveCount > totalCount;
+				break;
+			case AppConstants.STATE_SOME:
+				loadMore = socialFeed.positiveCount + socialFeed.neutralCount > totalCount;
+				break;	
+			}
+	
+			if (loadMore && !requestedPage) {
+				currentPage += 1;
+				requestedPage = true;
+				((ItemsList) getActivity()).triggerRefresh(currentPage);
+			} else {
+				Log.d(TAG, "No need");
+			}
+		}
+		
 	}
 
 	@Override
@@ -122,5 +162,8 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.STORY_DATE + " DESC");
 		adapter.swapCursor(cursor);
 	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
 }

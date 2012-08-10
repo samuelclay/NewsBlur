@@ -24,7 +24,7 @@ public class FeedReading extends Reading {
 		super.onCreate(savedInstanceBundle);
 
 		feedId = getIntent().getStringExtra(Reading.EXTRA_FEED);
-		Uri storiesURI = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
+		Uri storiesURI = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 		
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		

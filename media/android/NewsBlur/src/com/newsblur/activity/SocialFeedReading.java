@@ -24,7 +24,7 @@ public class SocialFeedReading extends Reading {
 		
 		String userId = getIntent().getStringExtra(Reading.EXTRA_USERID);
 		
-		Uri storiesURI = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+		Uri storiesURI = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 		setupPager(stories);

@@ -33,7 +33,7 @@ public class SyncService extends IntentService {
 	public static final String EXTRA_TASK_SOCIALFEED_ID = "userId";
 	public static final String EXTRA_TASK_SOCIALFEED_USERNAME = "username";
 	public static final String EXTRA_TASK_MARK_SOCIAL_JSON = "socialJson";
-	
+	public static final String EXTRA_TASK_PAGE_NUMBER = "page";
 	
 	public final static int STATUS_RUNNING = 0x02;
 	public final static int STATUS_FINISHED = 0x03;
@@ -117,7 +117,7 @@ public class SyncService extends IntentService {
 				break;
 			case EXTRA_TASK_FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
-					apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID));
+					apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
 				} else {
 					Log.e(TAG, "No feed to refresh included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
@@ -125,7 +125,7 @@ public class SyncService extends IntentService {
 				break;
 			case EXTRA_TASK_SOCIALFEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME))) {
-					apiManager.getStoriesForSocialFeed(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID), intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME));
+					apiManager.getStoriesForSocialFeed(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID), intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
 				} else {
 					Log.e(TAG, "Missing parameters forsocialfeed SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);

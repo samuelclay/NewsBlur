@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -24,10 +26,12 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
+import com.newsblur.domain.Feed;
+import com.newsblur.util.AppConstants;
 import com.newsblur.view.ItemViewBinder;
 
-public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
-	
+public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
+
 	private static final String TAG = "itemListFragment";
 	public static final String FRAGMENT_TAG = "itemListFragment";
 	private ContentResolver contentResolver;
@@ -35,56 +39,64 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	private SimpleCursorAdapter adapter;
 	private Uri storiesUri;
 	private int currentState;
+	private int currentPage = 1;
+	private boolean requestedPage = false;
 
 	public static int ITEMLIST_LOADER = 0x01;
 	private int READING_RETURNED = 0x02;
+	private Feed feed;
 
 	public FeedItemListFragment(final String feedId, final int currentState) {
 		this.feedId = feedId;
 		this.currentState = currentState;
 	}
-	
+
 	public FeedItemListFragment() {
-		
+
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
-	
+
 	public static FeedItemListFragment newInstance(final String feedId, int currentState) {
 		return new FeedItemListFragment(feedId, currentState);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
 		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
-		
+
 		contentResolver = getActivity().getContentResolver();
-		storiesUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
-		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
+		Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		
+		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
+
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
-				
+
 		adapter = new SimpleCursorAdapter(getActivity(), R.layout.row_item, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
+		itemList.setOnScrollListener(this);
 		
 		adapter.setViewBinder(new ItemViewBinder());
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
-		
+
 		return v;
 	}
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
-		Uri uri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
+		Uri uri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
-	    return cursorLoader;
+		return cursorLoader;
 	}
 
 	@Override
@@ -93,9 +105,10 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 			adapter.swapCursor(cursor);
 		}
 	}
-	
+
 	public void hasUpdated() {
 		getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
+		requestedPage = false;
 	}
 
 	@Override
@@ -120,6 +133,37 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		adapter.swapCursor(cursor);
 	}
 
+	@Override
+	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
+		if (firstVisible + visibleCount == totalCount) {
+			boolean loadMore = false;
+			
+			switch (currentState) {
+			case AppConstants.STATE_ALL:
+				loadMore = feed.positiveCount + feed.neutralCount + feed.negativeCount > totalCount;
+				break;
+			case AppConstants.STATE_BEST:
+				loadMore = feed.positiveCount > totalCount;
+				break;
+			case AppConstants.STATE_SOME:
+				loadMore = feed.positiveCount + feed.neutralCount > totalCount;
+				break;	
+			}
 	
+			if (loadMore && !requestedPage) {
+				currentPage += 1;
+				requestedPage = true;
+				((ItemsList) getActivity()).triggerRefresh(currentPage);
+			} else {
+				Log.d(TAG, "No need");
+			}
+		}
+		
+	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) { }
+
+
 
 }

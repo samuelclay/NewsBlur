@@ -36,7 +36,8 @@ public class SocialFeed {
 		return values;
 	}
 	
-	public SocialFeed fromCursor(final Cursor cursor) {
+	public static SocialFeed fromCursor(final Cursor cursor) {
+		cursor.moveToFirst();
 		SocialFeed socialFeed = new SocialFeed();
 		socialFeed.userId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
 		socialFeed.username = cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_USERNAME));

@@ -46,10 +46,18 @@ public class FeedItemsList extends ItemsList {
 
 	@Override
 	public void triggerRefresh() {
+		triggerRefresh(0);
+	}
+	
+	@Override
+	public void triggerRefresh(int page) {
 		setSupportProgressBarIndeterminateVisibility(true);
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
 		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
+		if (page > 1) {
+			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+		}
 		intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
 		startService(intent);
 	}

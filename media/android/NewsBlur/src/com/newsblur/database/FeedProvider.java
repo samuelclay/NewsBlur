@@ -24,7 +24,8 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
 	public static final Uri MODIFY_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
 	public static final Uri MODIFY_SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
-	public static final Uri STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
+	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
+	public static final Uri SOCIALFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/socialfeed/");
 	public static final Uri STORY_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/story/");
 	public static final Uri COMMENTS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/comments/");
 	public static final Uri FEED_FOLDER_MAP_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedfoldermap/");
@@ -37,27 +38,30 @@ public class FeedProvider extends ContentProvider {
 	private static final int INDIVIDUAL_FOLDER = 4;
 	private static final int FEED_FOLDER_MAP = 5;
 	private static final int SPECIFIC_FEED_FOLDER_MAP = 6;
-	private static final int INDIVIDUAL_SOCIALFEED = 7;
+	private static final int SOCIALFEED_STORIES = 7;
 	private static final int INDIVIDUAL_FEED = 8;
 	private static final int STORY_COMMENTS = 9;
 	private static final int INDIVIDUAL_STORY = 10;
 	private static final int DECREMENT_FEED_COUNT = 11;
 	private static final int OFFLINE_UPDATES = 12;
 	private static final int DECREMENT_SOCIALFEED_COUNT = 13;
+	private static final int INDIVIDUAL_SOCIAL_FEED = 14;
 	
 	private BlurDatabase databaseHelper;
 
 	private static UriMatcher uriMatcher;
 	static {
+		// TODO: Tidy this url-structure. It's not forward-facing but it's kind of a mess.
 		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/", ALL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/", ALL_SOCIAL_FEEDS);
-		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/#/", INDIVIDUAL_SOCIALFEED);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/#/", INDIVIDUAL_SOCIAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedcount/", DECREMENT_FEED_COUNT);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/socialfeedcount/", DECREMENT_SOCIALFEED_COUNT);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
-		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/#/", FEED_STORIES);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/socialfeed/#/", SOCIALFEED_STORIES);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feed/#/", FEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/story/*/", INDIVIDUAL_STORY);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/comments/", STORY_COMMENTS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/", FEED_FOLDER_MAP);
@@ -126,7 +130,7 @@ public class FeedProvider extends ContentProvider {
 			break;
 
 			// Inserting a story for a social feed
-		case INDIVIDUAL_SOCIALFEED:
+		case SOCIALFEED_STORIES:
 			db.beginTransaction();
 			final ContentValues socialMapValues = new ContentValues();
 			socialMapValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, uri.getLastPathSegment());
@@ -265,8 +269,10 @@ public class FeedProvider extends ContentProvider {
 		case OFFLINE_UPDATES:
 			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
 		case ALL_SOCIAL_FEEDS:
-			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, null);	
-		case INDIVIDUAL_SOCIALFEED:
+			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, null);
+		case INDIVIDUAL_SOCIAL_FEED:
+			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() }, null, null, null);	
+		case SOCIALFEED_STORIES:
 			String[] userArgument = new String[] { uri.getLastPathSegment() };
 
 			String userQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
@@ -299,7 +305,7 @@ public class FeedProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 		case INDIVIDUAL_FEED:
 			return db.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });
-		case INDIVIDUAL_SOCIALFEED:
+		case SOCIALFEED_STORIES:
 			return db.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });	
 		case INDIVIDUAL_STORY:
 			return db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });

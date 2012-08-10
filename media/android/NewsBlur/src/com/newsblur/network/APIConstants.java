@@ -30,6 +30,7 @@ public class APIConstants {
 	public static final String PARAMETER_SHARE_COMMENT = "comments";
 	public static final String PARAMETER_SHARE_SOURCEID = "source_user_id";
 	public static final String PARAMETER_MARKSOCIAL_JSON = "users_feeds_stories";
+	public static final String PARAMETER_PAGE_NUMBER = "page";
 	
 	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
 	

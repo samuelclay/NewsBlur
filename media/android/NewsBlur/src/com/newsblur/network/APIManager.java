@@ -133,15 +133,18 @@ public class APIManager {
 		}
 	}
 
-	public StoriesResponse getStoriesForFeed(String feedId) {
+	public StoriesResponse getStoriesForFeed(String feedId, String pageNumber) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEEDS, feedId);
+		if (!TextUtils.isEmpty(pageNumber)) {
+			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
+		}
 		Uri feedUri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(feedId).build();
 		final APIResponse response = client.get(feedUri.toString(), values);
 		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			Uri storyUri = FeedProvider.STORIES_URI.buildUpon().appendPath(feedId).build();
+			Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 			for (Story story : storiesResponse.stories) {
 				contentResolver.insert(storyUri, story.getValues());
 				for (Comment comment : story.comments) {
@@ -160,18 +163,20 @@ public class APIManager {
 		}
 	}
 	
-	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username) {
+	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, String pageNumber) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USER_ID, userId);
 		values.put(APIConstants.PARAMETER_USERNAME, username);
-		
+		if (!TextUtils.isEmpty(pageNumber)) {
+			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
+		}
 		Uri feedUri = Uri.parse(APIConstants.URL_SOCIALFEED_STORIES).buildUpon().appendPath(userId).appendPath(username).build();
 		final APIResponse response = client.get(feedUri.toString(), values);
 		SocialFeedResponse socialFeedResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			for (Story story : socialFeedResponse.stories) {
-				Uri storyUri = FeedProvider.STORIES_URI.buildUpon().appendPath(story.feedId).build();
+				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
 
 				for (Comment comment : story.comments) {
@@ -184,9 +189,8 @@ public class APIManager {
 					contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
 				}
 				
-				Uri storySocialUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+				Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storySocialUri, story.getValues());
-				
 			}
 			
 			for (Feed feed : socialFeedResponse.feeds) {
