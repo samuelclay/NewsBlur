@@ -495,7 +495,6 @@ a.NB-show-profile {
     top: 2px;
 }
 
-.NB-button:hover div,
 .NB-button.selected div { 
     background: #2379bf;
     background: -webkit-gradient(
@@ -505,8 +504,6 @@ a.NB-show-profile {
     box-shadow: none;
 }
 
-
-.NB-button.NB-share-button:hover div,
 .NB-button.NB-share-button.selected div{ 
     box-shadow: inset 0 0 1px 1px rgba(255, 255, 255, 1);
 }
@@ -528,8 +525,7 @@ a.NB-show-profile {
     text-shadow: none;
     font-size: 14px;
 }
-
-.NB-button:hover a,
+story
 .NB-button.selected a {
     color: rgba(255,255,255,1);    
     text-shadow: none;

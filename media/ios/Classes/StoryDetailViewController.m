@@ -325,42 +325,27 @@
     if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] &&
         [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
         
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            comments = [comments stringByAppendingString:[NSString stringWithFormat:@
-                                                          "<div class=\"NB-feed-story-comments\">"
-                                                          "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
-                                                          "<div class=\"NB-story-comments-shares-teaser\">"
-                                                          
-                                                          "<div class=\"NB-right\">Shared by %@</div>"
-                                                          
-                                                          "<div class=\"NB-story-share-profiles NB-story-share-profiles-public\">"
-                                                          "%@"
-                                                          "</div>"
-                                                          
-                                                          "%@"
-                                                          
-                                                          "</div></div>",
-                                                          [[appDelegate.activeStory objectForKey:@"share_count"] intValue] == 1
-                                                          ? [NSString stringWithFormat:@"1 person"] : 
-                                                          [NSString stringWithFormat:@"%@ people", [appDelegate.activeStory objectForKey:@"share_count"]],
-                                                          [self getAvatars:NO],
-                                                          [self getAvatars:YES]
-                                                          ]];
-        } else {
-            comments = [comments stringByAppendingString:[NSString stringWithFormat:@
-                                                          "<div class=\"NB-feed-story-comments\">"
-                                                          "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
-                                                          "<div class=\"NB-story-comments-shares-teaser\">"
-                                                          
-                                                          "<div class=\"NB-story-share-label\">Shared by: </div>"
-                                                          "%@%@"
-                                                          
-                                                          
-                                                          "</div></div>",
-                                                          [self getAvatars:NO],
-                                                          [self getAvatars:YES]
-                                                          ]];
-        }
+        comments = [comments stringByAppendingString:[NSString stringWithFormat:@
+                                                      "<div class=\"NB-story-shares\">"
+                                                      "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
+                                                      "<div class=\"NB-story-comments-shares-teaser\">"
+                                                      
+                                                      "<div class=\"NB-right\">Shared by %@</div>"
+                                                      
+                                                      "<div class=\"NB-story-share-profiles NB-story-share-profiles-public\">"
+                                                      "%@"
+                                                      "</div>"
+                                                      
+                                                      "%@"
+                                                      
+                                                      "</div></div>",
+                                                      [[appDelegate.activeStory objectForKey:@"share_count"] intValue] == 1
+                                                      ? [NSString stringWithFormat:@"1 person"] : 
+                                                      [NSString stringWithFormat:@"%@ people", [appDelegate.activeStory objectForKey:@"share_count"]],
+                                                      [self getAvatars:NO],
+                                                      [self getAvatars:YES]
+                                                      ]];
+
         
         
 
