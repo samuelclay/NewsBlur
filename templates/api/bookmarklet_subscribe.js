@@ -29,6 +29,7 @@
         
         fix_title: function() {
             var d = document;
+            d.title = d.title.replace(/\(Sharing\.\.\.\)\s?/g, '');
             d.title = d.title.replace(/\(Adding\.\.\.\)\s?/g, '');
         },
         
@@ -48,6 +49,7 @@
             this.attach_css();
             this.make_modal();
             this.open_modal();
+            this.get_page_content();
         
             this.$modal.bind('click', $.rescope(this.handle_clicks, this));
         },
@@ -86,7 +88,13 @@
                     'Signed in as ',
                     $.make('b', { style: 'color: #505050' }, this.username)
                 ]),
-                $.make('div', { className: 'NB-modal-title' }, 'Adding \"'+this.get_page_title()+'\"'),
+                $.make('div', { className: 'NB-modal-title' }, 'Sharing \"'+this.get_page_title()+'\"'),
+                $.make('div', { className: 'NB-bookmarklet-main'}, [
+                    $.make('div', { className: 'NB-bookmarklet-page' }, [
+                        $.make('div', { className: 'NB-bookmarklet-page-title' }),
+                        $.make('div', { className: 'NB-bookmarklet-page-content' })
+                    ])
+                ]),
                 $.make('div', { className: 'NB-bookmarklet-folder-container' }, [
                     $.make('img', { className: 'NB-bookmarklet-folder-add-button', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: 'Add New Folder' }),
                     this.make_folders(),
@@ -104,8 +112,8 @@
         get_page_title: function() {
             var title = document.title;
             
-            if (title.length > 20) {
-                title = title.substr(0, 20) + '...';
+            if (title.length > 256) {
+                title = title.substr(0, 256) + '...';
             }
             
             return title;
@@ -149,8 +157,8 @@
             var self = this;
         
             this.$modal.modal({
-                'minWidth': 600,
-                'maxWidth': 600,
+                'minWidth': 800,
+                'maxWidth': 800,
                 'overlayClose': true,
                 'onOpen': function (dialog) {
                     dialog.overlay.fadeIn(200, function () {
@@ -235,6 +243,19 @@
             var $new_folder = $('.NB-bookmarklet-new-folder-container', this.$modal);
             $new_folder.slideUp(500);
             this.flags['new_folder'] = false;
+        },
+        
+        // =========================
+        // = Page-specific actions =
+        // =========================
+        
+        get_page_content: function() {
+            var $title = $('.NB-bookmarklet-page-title', this.$modal);
+            var $content = $('.NB-bookmarklet-page-content', this.$modal);
+            
+            var readability = window.readability.init();
+            $title.append(readability);
+            console.log(["readability", readability, $title]);
         },
         
         // ===========
