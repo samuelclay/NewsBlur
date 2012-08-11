@@ -86,6 +86,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     
     check_services_sync_status: function() {
         NEWSBLUR.assets.fetch_friends(_.bind(function(data) {
+            console.log(["Find friends", data]);
             this.profile = NEWSBLUR.assets.user_profile;
             this.services = data.services;
             if (!this.services['twitter'].syncing && !this.services['facebook'].syncing) {
