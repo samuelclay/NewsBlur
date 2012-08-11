@@ -96,6 +96,7 @@ def reader_authorize(request):
         scope="http://www.google.com/reader/api",
         redirect_uri=STEP2_URI,
         user_agent='NewsBlur Pro, www.newsblur.com',
+        approval_prompt="force",
         )
     logging.user(request, "~BB~FW~SBAuthorize Google Reader import - %s" % (
         request.META['REMOTE_ADDR'],
