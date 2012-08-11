@@ -1731,7 +1731,8 @@ class MSocialServices(mongo.Document):
         profile = MSocialProfile.get_user(self.user_id)
         profile.location = profile.location or (facebook_user.get('location') and facebook_user['location']['name'])
         profile.bio = profile.bio or facebook_user.get('bio')
-        profile.website = profile.website or facebook_user.get('website')
+        if not profile.website and facebook_user.get('website'):
+            profile.website = facebook_user.get('website').split()[0]
         profile.save()
         profile.count_follows()
         if not profile.photo_url or not profile.photo_service:

@@ -218,8 +218,10 @@ class GoogleReaderImporter(Importer):
         self.subscription_folders = []
         self.scope = "http://www.google.com/reader/api"
         self.xml = xml
+        self.auto_active = False
     
-    def import_feeds(self):
+    def import_feeds(self, auto_active=False):
+        self.auto_active = auto_active
         sub_url = "%s/0/subscription/list" % self.scope
         if not self.xml:
             feeds_xml = self.send_request(sub_url)
@@ -296,7 +298,7 @@ class GoogleReaderImporter(Importer):
                 defaults={
                     'needs_unread_recalc': True,
                     'mark_read_date': datetime.datetime.utcnow() - datetime.timedelta(days=1),
-                    'active': self.user.profile.is_premium,
+                    'active': self.user.profile.is_premium or self.auto_active,
                 }
             )
             if not us.needs_unread_recalc:
