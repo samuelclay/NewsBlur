@@ -1078,6 +1078,7 @@ window.readability = {
                 // Remove style attribute(s) :
                 if(cur.className !== "readability-styled") {
                     cur.removeAttribute("style");                   
+                    cur.removeAttribute("class");                   
                 }
                 readability.cleanStyles( cur );
             }

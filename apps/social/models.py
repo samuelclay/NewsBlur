@@ -433,16 +433,16 @@ class MSocialProfile(mongo.Document):
     def send_email_for_new_follower(self, follower_user_id):
         user = User.objects.get(pk=self.user_id)
         if follower_user_id not in self.follower_user_ids:
-            logging.user(user, "~BB~FMNo longer being followed by %s" % follower_user_id)
+            logging.user(user, "~FMNo longer being followed by %s" % follower_user_id)
             return
         if not user.email:
-            logging.user(user, "~BB~FMNo email to send to, skipping.")
+            logging.user(user, "~FMNo email to send to, skipping.")
             return
         elif not user.profile.send_emails:
-            logging.user(user, "~BB~FMDisabled emails, skipping.")
+            logging.user(user, "~FMDisabled emails, skipping.")
             return
         if self.user_id == follower_user_id:
-            logging.user(user, "~BB~FMDisabled emails, skipping.")
+            logging.user(user, "~FMDisabled emails, skipping.")
             return
         
         emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,
@@ -451,7 +451,7 @@ class MSocialProfile(mongo.Document):
         day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
         for email in emails_sent:
             if email.date_sent > day_ago:
-                logging.user(user, "~BB~SK~FMNot sending new follower email, already sent before. NBD.")
+                logging.user(user, "~SK~FMNot sending new follower email, already sent before. NBD.")
                 return
         
         follower_profile = MSocialProfile.get_user(follower_user_id)
@@ -483,7 +483,7 @@ class MSocialProfile(mongo.Document):
         MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
                           email_type='new_follower')
                 
-        logging.user(user, "~BB~FM~SBSending email for new follower: %s" % follower_profile.username)
+        logging.user(user, "~BB~FR~SBSending email for new follower: %s" % follower_profile.username)
             
     def save_feed_story_history_statistics(self):
         """
@@ -1507,9 +1507,9 @@ class MSharedStory(mongo.Document):
 
             if not user.email or not user.profile.send_emails:
                 if not user.email:
-                    logging.user(user, "~BB~FMNo email to send to, skipping.")
+                    logging.user(user, "~FMNo email to send to, skipping.")
                 elif not user.profile.send_emails:
-                    logging.user(user, "~BB~FMDisabled emails, skipping.")
+                    logging.user(user, "~FMDisabled emails, skipping.")
                 continue
             
             mute_url = "http://%s%s" % (
@@ -1558,9 +1558,9 @@ class MSharedStory(mongo.Document):
                                                          
         if not original_user.email or not original_user.profile.send_emails:
             if not original_user.email:
-                logging.user(original_user, "~BB~FMNo email to send to, skipping.")
+                logging.user(original_user, "~FMNo email to send to, skipping.")
             elif not original_user.profile.send_emails:
-                logging.user(original_user, "~BB~FMDisabled emails, skipping.")
+                logging.user(original_user, "~FMDisabled emails, skipping.")
             return
             
         story_feed = Feed.objects.get(pk=self.story_feed_id)
@@ -1766,7 +1766,7 @@ class MSocialServices(mongo.Document):
                 followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
+        logging.user(user, "~BM~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
         
         return following
         

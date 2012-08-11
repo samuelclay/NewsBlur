@@ -1,0 +1,62 @@
+/* ========== */
+/* = Resets = */
+/* ========== */
+
+.NB-modal p, 
+.NB-modal ol,
+.NB-modal ul,
+.NB-modal li,
+.NB-modal h1,
+.NB-modal h2,
+.NB-modal h3,
+.NB-modal h4,
+.NB-modal h5,
+.NB-modal h6 {
+    font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif !important;
+    letter-spacing: normal !important;
+    line-height: 16px !important;
+    margin: 12px 0;
+    padding: 0;
+    color: #202020;
+}
+.NB-modal p, 
+.NB-modal ol,
+.NB-modal ul,
+.NB-modal li,
+.NB-modal #readability-content {
+    font-size: 12px !important;
+}
+
+.NB-modal h1,
+.NB-modal h2,
+.NB-modal h3,
+.NB-modal h4,
+.NB-modal h5,
+.NB-modal h6 {
+    font-weight: bold;
+}
+
+.NB-modal h1 {
+    font-size: 24px !important;
+    margin: 30px 0 24px !important;
+}
+.NB-modal h2 {
+    font-size: 18px !important;
+    margin: 24px 0 18px !important;
+}
+.NB-modal h3 {
+    font-size: 15px !important;
+    margin: 18px 0 12px !important;
+}
+.NB-modal h4 {
+    font-size: 12px !important;
+    margin: 12px 0 12px !important;
+}
+.NB-modal h5 {
+    font-size: 11px !important;
+    margin: 12px 0 12px !important;
+}
+.NB-modal h6 {
+    font-size: 10px !important;
+    margin: 12px 0 12px !important;
+}

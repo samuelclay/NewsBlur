@@ -5,7 +5,7 @@
     
     {% include_bookmarklet_js %}
 
-    NEWSBLUR.BookmarkletModal = function(options) {
+    NEWSBLUR.Bookmarklet = function(options) {
         var defaults = {};
         
         this.token    = "{{ token }}";
@@ -25,7 +25,7 @@
         {% endif %}
     };
 
-    NEWSBLUR.BookmarkletModal.prototype = {
+    NEWSBLUR.Bookmarklet.prototype = {
         
         fix_title: function() {
             var d = document;
@@ -35,6 +35,7 @@
         
         close: function() {
             this.active = false;
+            $('body').css('overflow', 'scroll');
         },
         
         runner: function() {
@@ -65,9 +66,14 @@
         
         attach_css: function() {
             var css = "{% include_bookmarklet_css %}";
-            var style = '<style>' + css + '</style>';
-            if ($('head').length) $('head').append(style);
-            else $('body').append(style);
+            var style = '<style id="newsblur_bookmarklet_css">' + css + '</style>';
+            if ($('#newsblur_bookmarklet_css').length) {
+                $('#newsblur_bookmarklet_css').replaceWith(style);
+            } else if ($('head').length) {
+                $('head').append(style);
+            } else {
+                $('body').append(style);
+            }
         },
         
         alert: function(message) {
@@ -183,6 +189,8 @@
                     $('.NB-modal-holder').empty().remove();
                 }
             });
+            
+            $('body').css('overflow', 'hidden');
         },
         
         save: function() {
@@ -293,10 +301,10 @@
     
     };
 
-    if (NEWSBLUR.bookmarklet_modal && NEWSBLUR.bookmarklet_modal.active) {
-        NEWSBLUR.bookmarklet_modal.fix_title();
+    if (NEWSBLUR.bookmarklet && NEWSBLUR.bookmarklet.active) {
+        NEWSBLUR.bookmarklet.fix_title();
         return;
     }
-    NEWSBLUR.bookmarklet_modal = new NEWSBLUR.BookmarkletModal();
+    NEWSBLUR.bookmarklet = new NEWSBLUR.Bookmarklet();
   
 })();
