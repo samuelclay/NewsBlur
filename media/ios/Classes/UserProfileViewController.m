@@ -10,6 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "ProfileBadge.h"
 #import "SmallActivityCell.h"
+#import "FollowGrid.h"
 #import "ASIHTTPRequest.h"
 #import "Utilities.h"
 #import "MBProgressHUD.h"
@@ -156,12 +157,14 @@
 #pragma mark Table View - Profile Modules List
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 3;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     if (section == 1 && self.activitiesArray.count) {
         return @"Latest Activity";
+    } else if (section == 2 && self.activitiesArray.count) {
+        return @"Followers";
     } else {
         return nil;
     }
@@ -169,6 +172,8 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {    
     if (section == 0) {
+        return 1;
+    } else if (section == 2) {
         return 1;
     } else {
         return [self.activitiesArray count];
@@ -185,7 +190,7 @@
         width = 478 - 20;
     }
 
-    if (indexPath.section == 0) {
+    if (indexPath.section == 0 || indexPath.section == 2) {
         return 180;
     } else {
         SmallActivityCell *activityCell = [[SmallActivityCell alloc] init];
@@ -221,7 +226,7 @@
         
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
-    } else {
+    } else if(indexPath.section == 1) {
         SmallActivityCell *cell = [tableView 
                               dequeueReusableCellWithIdentifier:@"ActivityCellIdentifier"];
         if (cell == nil) {
@@ -236,6 +241,17 @@
                 withWidth:width];
         
             return cell;
+    } else {
+        FollowGrid *cell = [tableView 
+                                   dequeueReusableCellWithIdentifier:@"FollowGridCellIdentifier"];
+        if (cell == nil) {
+            cell = [[FollowGrid alloc] 
+                    initWithStyle:UITableViewCellStyleDefault 
+                    reuseIdentifier:@"FollowGridCellIdentifier"];
+        }
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [cell refreshWithWidth:width];
+        return cell;
     }
 }
 
@@ -243,7 +259,7 @@
     int activitiesCount = [self.activitiesArray count];
     
     // badge is not tappable
-    if (indexPath.section == 0) {
+    if (indexPath.section == 0 || indexPath.section == 2) {
         return;
     }
     

@@ -894,6 +894,7 @@
     NSMutableArray *feeds = [NSMutableArray array];
 
     if (button.tag == 1) {
+        // add all the feeds from every NON blurblog folder
         [appDelegate setActiveFolder:@"ALL STORIES"];
         for (NSString *folderName in self.activeFeedLocations) {
             if (![folderName isEqualToString:@""]) { // remove all blurblugs which is a blank folder name
@@ -1162,7 +1163,7 @@
     NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/favicons",
                            NEWSBLUR_URL];
     NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    ASIHTTPRequest  *request = [ASIHTTPRequest  requestWithURL:url];
     
     [request setDidFinishSelector:@selector(saveAndDrawFavicons:)];
     [request setDidFailSelector:@selector(requestFailed:)];

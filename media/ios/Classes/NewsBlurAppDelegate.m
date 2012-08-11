@@ -471,7 +471,6 @@
     [feedDetailViewController resetFeedDetail];
     [feedDetailViewController fetchRiverPage:1 withCallback:nil];
     
-    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToFeedDetail];
     } else {
@@ -487,11 +486,6 @@
 }
 
 - (void)adjustStoryDetailWebView {
-//        UIView *titleLabel = [self makeFeedTitle:self.activeFeed];
-//        if (storyDetailViewController.navigationItem){
-//            storyDetailViewController.navigationItem.titleView = titleLabel;
-//        }
-
     // change UIWebView
     int contentWidth = storyDetailViewController.view.frame.size.width;
     NSLog(@"contentWidth is %i", contentWidth);
@@ -801,15 +795,30 @@
     id feedId;
     NSString *feedIdStr;
     NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
-    NSMutableArray *otherFriendFeeds = [[self.activeStory objectForKey:@"shared_by_friends"] mutableCopy];
+    NSMutableArray *otherFriendShares = [[self.activeStory objectForKey:@"shared_by_friends"] mutableCopy];
+    NSMutableArray *otherFriendComments = [[self.activeStory objectForKey:@"commented_by_friends"] mutableCopy];
     
-    if (self.isSocialView || self.isSocialRiverView) {
+    if (self.isSocialView) {
         feedId = [self.activeStory objectForKey:@"social_user_id"];
         feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];        
         feed = [self.dictSocialFeeds objectForKey:feedIdStr];
         
-        [otherFriendFeeds removeObject:feedId];
-         NSLog(@"otherFriendFeeds is %@", otherFriendFeeds);
+        [otherFriendShares removeObject:feedId];
+        NSLog(@"otherFriendFeeds is %@", otherFriendShares);
+        [otherFriendComments removeObject:feedId];
+        NSLog(@"otherFriendFeeds is %@", otherFriendComments);
+        
+        // make sure we set the active feed
+        self.activeFeed = feed;
+    } else if (self.isSocialRiverView) {
+        feedId = [[self.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0];
+        feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];  
+        feed = [self.dictSocialFeeds objectForKey:feedIdStr];
+        
+        [otherFriendShares removeObject:feedId];
+        NSLog(@"otherFriendFeeds is %@", otherFriendShares);
+        [otherFriendComments removeObject:feedId];
+        NSLog(@"otherFriendFeeds is %@", otherFriendComments);
         
         // make sure we set the active feed
         self.activeFeed = feed;
@@ -824,9 +833,16 @@
     
     // decrement all other friend feeds if they have the same story
     if (self.isSocialView || self.isSocialRiverView) {
-        for (int i = 0; i < otherFriendFeeds.count; i++) {
+        for (int i = 0; i < otherFriendShares.count; i++) {
             feedIdStr = [NSString stringWithFormat:@"social:%@",
-                         [otherFriendFeeds objectAtIndex:i]];   
+                         [otherFriendShares objectAtIndex:i]];   
+            friendFeed = [self.dictSocialFeeds objectForKey:feedIdStr];
+            [self markStoryRead:story feed:friendFeed];
+        }
+        
+        for (int i = 0; i < otherFriendComments.count; i++) {
+            feedIdStr = [NSString stringWithFormat:@"social:%@",
+                         [otherFriendComments objectAtIndex:i]];   
             friendFeed = [self.dictSocialFeeds objectForKey:feedIdStr];
             [self markStoryRead:story feed:friendFeed];
         }
@@ -904,7 +920,7 @@
         [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
     }
     
-    if (self.isSocialView) {
+    if (self.isSocialView || self.isSocialRiverView) {
         [self.dictSocialFeeds setValue:newFeed forKey:feedIdStr];
     } else {
         [self.dictFeeds setValue:newFeed forKey:feedIdStr];

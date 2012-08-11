@@ -24,7 +24,7 @@
 
 #define kTableViewRowHeight 60;
 #define kTableViewRiverRowHeight 81;
-#define kTableViewShortRowDifference 20;
+#define kTableViewShortRowDifference 15;
 #define kMarkReadActionSheet 1;
 #define kSettingsActionSheet 2;
 
@@ -55,7 +55,9 @@
 }
  
 - (void)viewDidLoad {
-    [super viewDidLoad];    
+    [super viewDidLoad];
+    
+    self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -79,10 +81,7 @@
     
     self.pageFinished = NO;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-        
-    self.storyTitlesTable.separatorStyle = UITableViewCellSeparatorStyleNone;
-
-    
+            
     // set center title
     UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
     self.navigationItem.titleView = titleLabel;
@@ -520,7 +519,6 @@
         fleuron.frame = CGRectMake(0, 0, self.view.frame.size.width, height);
         fleuron.contentMode = UIViewContentModeCenter;
         [cell.contentView addSubview:fleuron];
-        fleuron.backgroundColor = [UIColor whiteColor];
     } else {
         cell.textLabel.text = @"Loading...";
         
@@ -535,11 +533,6 @@
         [cell.imageView addSubview:spinner];
         [spinner startAnimating];
     }
-    
-    UIView *topBorder = [[UIView alloc] init];
-    topBorder.frame = CGRectMake(0, 0, self.view.frame.size.width, 1);
-    topBorder.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
-    [cell addSubview:topBorder]; 
     
     return cell;
 }
@@ -572,8 +565,7 @@
         cell = [[FeedDetailTableCell alloc] initWithStyle:UITableViewCellStyleDefault
                                           reuseIdentifier:nil];
     }
-    
-    
+        
     if (indexPath.row >= [[appDelegate activeFeedStoryLocations] count]) {
         return [self makeLoadingCell];
     }
@@ -634,13 +626,7 @@
     // undread indicator
     
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-    if (score > 0) {
-        cell.storyUnreadIndicator = [UIImage imageNamed:@"bullet_green.png"];
-    } else if (score == 0) {
-        cell.storyUnreadIndicator = [UIImage imageNamed:@"bullet_yellow.png"];
-    } else if (score < 0) {
-        cell.storyUnreadIndicator = [UIImage imageNamed:@"bullet_red.png"];
-    }
+    cell.storyScore = score;
 
     cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
     

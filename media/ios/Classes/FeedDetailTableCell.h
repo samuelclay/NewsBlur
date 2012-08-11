@@ -17,7 +17,7 @@
     NSString *storyTitle;
     NSString *storyAuthor;
     NSString *storyDate;
-    UIImage *storyUnreadIndicator;
+    int storyScore;
     
     // River view    
     NSString *siteTitle;
@@ -34,7 +34,7 @@
 @property (nonatomic) NSString *siteTitle;
 @property (nonatomic) UIImage *siteFavicon;
 
-@property (nonatomic) UIImage *storyUnreadIndicator;
+@property (readwrite) int storyScore;
 
 @property (nonatomic) NSString *storyTitle;
 @property (nonatomic) NSString *storyAuthor;

@@ -303,8 +303,16 @@
     NSString *comments = @"";
     NSString *commentLabel = @"";
     NSString *shareLabel = @"";
+    NSString *replyStr = @"";
     
-    if ([[appDelegate.activeStory objectForKey:@"comment_count"] intValue]) {
+    if ([[appDelegate.activeStory objectForKey:@"reply_count"] intValue] == 1) {
+        replyStr = [NSString stringWithFormat:@" and <b>1 reply</b>"];        
+    } else if ([[appDelegate.activeStory objectForKey:@"reply_count"] intValue] == 1) {
+        replyStr = [NSString stringWithFormat:@" and <b>%@ replies</b>", [appDelegate.activeStory objectForKey:@"reply_count"]];
+    }
+    NSLog(@"[appDelegate.activeStory objectForKey:@'comment_count'] %@", [[appDelegate.activeStory objectForKey:@"comment_count"] class]);
+    if (![[appDelegate.activeStory objectForKey:@"comment_count"] isKindOfClass:[NSNull class]] &&
+        [[appDelegate.activeStory objectForKey:@"comment_count"] intValue]) {
         commentLabel = [commentLabel stringByAppendingString:[NSString stringWithFormat:@
                                                               "<div class=\"NB-story-comments-label\">"
                                                               "%@" // comment count
@@ -322,15 +330,14 @@
                                                               ? [NSString stringWithFormat:@"<b>1 comment</b>"] : 
                                                               [NSString stringWithFormat:@"<b>%@ comments</b>", [appDelegate.activeStory objectForKey:@"comment_count"]],
                                                               
-                                                              [[appDelegate.activeStory objectForKey:@"reply_count"] intValue] == 1
-                                                              ? [NSString stringWithFormat:@" and <b>1 reply</b>"] : 
-                                                              [NSString stringWithFormat:@" and <b>%@ replies</b>", [appDelegate.activeStory objectForKey:@"reply_count"]],
+                                                              replyStr,
                                                               [self getAvatars:@"commented_by_friends"],
                                                               [self getAvatars:@"commented_by_public"]]];
         NSLog(@"commentLabel is %@", commentLabel);
     }
     
-    if ([[appDelegate.activeStory objectForKey:@"share_count"] intValue]) {
+    if (![[appDelegate.activeStory objectForKey:@"share_count"] isKindOfClass:[NSNull class]] &&
+        [[appDelegate.activeStory objectForKey:@"share_count"] intValue]) {
         shareLabel = [shareLabel stringByAppendingString:[NSString stringWithFormat:@
                                                               "<div class=\"NB-right\"><div class=\"NB-story-share-label\">"
                                                               "%@" // comment count
@@ -1229,7 +1236,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)showShareHUD {
     [MBProgressHUD hideHUDForView:self.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    self.storyHUD.labelText = @"Saving";
+    self.storyHUD.labelText = @"Sharing";
     self.storyHUD.margin = 20.0f;
 }
 

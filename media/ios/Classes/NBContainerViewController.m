@@ -19,7 +19,7 @@
 #import "FontSettingsViewController.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
-#define NB_DEFAULT_STORY_TITLE_HEIGHT 1024 - 640
+#define NB_DEFAULT_STORY_TITLE_HEIGHT 640
 #define NB_DEFAULT_SLIDER_INTERVAL 0.35
 #define NB_DEFAULT_SLIDER_INTERVAL_OUT 0.35
 #define NB_DEFAULT_SHARE_HEIGHT 120
@@ -328,6 +328,7 @@
             } completion:^(BOOL finished) {
                 [self.feedDetailViewController checkScroll];
                 [appDelegate adjustStoryDetailWebView];
+                [self.feedDetailViewController.storyTitlesTable reloadData];
             }];
         } 
     } else if (self.storyTitlesOnLeft) {
@@ -365,6 +366,7 @@
             self.storyTitlesStub.hidden = YES;
             [self.feedDetailViewController checkScroll];
             [appDelegate adjustStoryDetailWebView];
+            [self.feedDetailViewController.storyTitlesTable reloadData];
         }];    
     }
 }

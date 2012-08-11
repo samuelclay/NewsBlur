@@ -16,11 +16,11 @@ $('a.NB-show-profile').live('click', function () {
 })
 
 $('.NB-button').live('touchstart', function () {
-    $(this).addClass('hover');
+    $(this).addClass('selected');
 });
 
 $('.NB-button').live('touchend', function (e) {
-    $(this).removeClass('hover');
+    $(this).removeClass('selected');
 });
 
 function setImage(img) {

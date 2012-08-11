@@ -200,7 +200,7 @@
         UILabel *location = [[UILabel alloc] 
                              initWithFrame:CGRectMake(kTopBadgeTextXCoordinate + 16, 
                                                       yCoordinatePointer, 
-                                                      width - kTopBadgeTextXCoordinate - 10, 
+                                                      width - kTopBadgeTextXCoordinate - 10 - 16, 
                                                       20)];
         location.text = [profile objectForKey:@"location"];
         location.textColor = UIColorFromRGB(0x666666);
@@ -359,7 +359,7 @@
     
     [newProfile setObject:count forKey:@"follower_count"];
     [newProfile setObject:[NSNumber numberWithInt:1] forKey:@"followed_by_you"];
-    [self refreshWithProfile:newProfile showStats:nil withWidth:0];
+    [self refreshWithProfile:newProfile showStats:self.shouldShowStats withWidth:0];
 }
 
 
@@ -392,7 +392,7 @@
     
     [newProfile setObject:count forKey:@"follower_count"];
     [newProfile setObject:[NSNumber numberWithInt:0] forKey:@"followed_by_you"];
-    [self refreshWithProfile:newProfile showStats:shouldShowStats withWidth:0];
+    [self refreshWithProfile:newProfile showStats:self.shouldShowStats withWidth:0];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
