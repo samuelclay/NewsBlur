@@ -4089,12 +4089,17 @@
             if (data.code >= 1) {
                 $bar.progressbar({value: 100});
                 NEWSBLUR.assets.load_feeds();
+                $('.NB-progress-title', $progress).text('');
+                $('.NB-progress-link', $progress).html('');
             } else {
                 NEWSBLUR.log(['Import Error!', data]);
                 this.$s.$feed_link_loader.fadeOut(250);
                 $progress.addClass('NB-progress-error');
                 $('.NB-progress-title', $progress).text('Error importing Google Reader');
-                $('.NB-progress-link', $progress).html($.make('a', { href: NEWSBLUR.URLs['google-reader-authorize'], className: 'NB-splash-link' }, 'Try importing again'));
+                $('.NB-progress-link', $progress).html($.make('a', { 
+                    className: 'NB-modal-submit-button NB-modal-submit-green',
+                    href: NEWSBLUR.URLs['google-reader-authorize']
+                }, ['Try importing again']));
                 $('.left-center-footer').css('height', 'auto');
             }
         },

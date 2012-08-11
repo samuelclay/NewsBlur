@@ -112,16 +112,16 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 
 .NB-account .NB-import-signup {
     float: left;
-    width: 142px;
+    width: 146px;
     padding: 0 0 64px 0;
-    margin: 0 50px 0 12px;
+    margin: 0 24px 0 12px;
     height: 206px;
     overflow: hidden;
 }
 
 .NB-account .NB-import-signup-text {
     text-align: center;
-    width: 152px;
+    width: 190px;
 }
 .NB-account .NB-import-signup-text h3 {
     margin-top: 48px;
