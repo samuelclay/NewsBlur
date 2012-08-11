@@ -38,24 +38,21 @@ public class SocialFeedItemsAdapter extends SimpleCursorAdapter {
 	@Override
 	public View getView(int position, View view, ViewGroup viewGroup) {
 		View v = super.getView(position, view, viewGroup);
-		View border = v.findViewById(R.id.row_item_favicon_borderbar);
-
-		cursor.moveToPosition(position);
+		View borderOne = v.findViewById(R.id.row_item_favicon_borderbar_1);
+		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
 		
-		GradientDrawable gradient;
+		cursor.moveToPosition(position);
 		String feedColour = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
 		String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
 
 		if (!TextUtils.equals(feedColour, "#null") && !TextUtils.equals(feedFade, "#null")) {
-			gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { Color.parseColor(feedColour), Color.parseColor(feedFade)});
+			borderOne.setBackgroundColor(Color.parseColor(feedColour));
+			borderTwo.setBackgroundColor(Color.parseColor(feedFade));
 		} else {
-			gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { Color.DKGRAY, Color.LTGRAY });
+			borderOne.setBackgroundColor(Color.GRAY);
+			borderTwo.setBackgroundColor(Color.LTGRAY);
 		}
-		Drawable[] layers = new Drawable[2];
-		layers[0] = gradient;
-		layers[1] = context.getResources().getDrawable(R.drawable.shiny_plastic);
-		border.setBackgroundDrawable(new LayerDrawable(layers));
-
+		
 		return v;
 	}
 

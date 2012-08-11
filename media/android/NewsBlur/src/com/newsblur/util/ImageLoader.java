@@ -68,14 +68,14 @@ public class ImageLoader {
 	public void displayImageByUid(String uid, ImageView imageView) {
 		Bitmap bitmap = memoryCache.get(uid);
 		if (bitmap != null) {
-			bitmap = UIUtils.roundCorners(bitmap, 10f);
+			bitmap = UIUtils.roundBitmap(bitmap);
 			imageView.setImageBitmap(bitmap);
 		} else {
 			File f = fileCache.getFile(uid);
 			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 			if (bitmap != null) {
 				memoryCache.put(uid, bitmap);
-				bitmap = UIUtils.roundCorners(bitmap, 10f);
+				bitmap = UIUtils.roundBitmap(bitmap);
 				imageView.setImageBitmap(bitmap);
 			} else {
 				imageView.setImageResource(R.drawable.logo);
@@ -102,7 +102,7 @@ public class ImageLoader {
 		if (bitmap != null) {
 			Log.d(TAG, "Retrieving bitmap From file cache");
 			memoryCache.put(uid, bitmap);			
-			bitmap = UIUtils.roundCorners(bitmap, 10f);
+			bitmap = UIUtils.roundBitmap(bitmap);
 			return bitmap;
 		}
 

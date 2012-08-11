@@ -28,6 +28,7 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.NetworkUtils;
 import com.newsblur.view.ItemViewBinder;
 
 public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
@@ -41,6 +42,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	private int currentState;
 	private int currentPage = 1;
 	private boolean requestedPage = false;
+	private boolean doRequest = true;
 
 	public static int ITEMLIST_LOADER = 0x01;
 	private int READING_RETURNED = 0x02;
@@ -58,6 +60,9 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if (!NetworkUtils.isOnline(getActivity())) {
+			doRequest = false;
+		}
 	}
 
 	public static FeedItemListFragment newInstance(final String feedId, int currentState) {
@@ -150,7 +155,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 				break;	
 			}
 	
-			if (loadMore && !requestedPage) {
+			if (loadMore && !requestedPage && doRequest) {
 				currentPage += 1;
 				requestedPage = true;
 				((ItemsList) getActivity()).triggerRefresh(currentPage);
@@ -158,7 +163,6 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 				Log.d(TAG, "No need");
 			}
 		}
-		
 	}
 
 	@Override

@@ -25,14 +25,13 @@ public class FeedReading extends Reading {
 
 		feedId = getIntent().getStringExtra(Reading.EXTRA_FEED);
 		Uri storiesURI = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		
+		storiesToMarkAsRead = new HashSet<String>();
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		Feed feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
 		setTitle(feed.title);
 		setupPager(stories);
-		storiesToMarkAsRead = new HashSet<String>();
 			
 		createFloatingHeader(feed);
 		Story story = readingAdapter.getStory(passedPosition);

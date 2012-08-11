@@ -192,9 +192,10 @@ public class APIManager {
 				Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storySocialUri, story.getValues());
 			}
-			
-			for (Feed feed : socialFeedResponse.feeds) {
-				contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
+			if (socialFeedResponse != null && socialFeedResponse .feeds!= null) {
+				for (Feed feed : socialFeedResponse.feeds) {
+					contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
+				}
 			}
 			return socialFeedResponse;
 		} else {

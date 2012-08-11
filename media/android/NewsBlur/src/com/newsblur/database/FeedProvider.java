@@ -283,7 +283,7 @@ public class FeedProvider extends ContentProvider {
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID + " = " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_STORYID +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID +
-			" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ";
+			" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ?";
 			
 			StringBuilder storyBuilder = new StringBuilder();
 			storyBuilder.append(userQuery);

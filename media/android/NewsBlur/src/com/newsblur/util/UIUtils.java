@@ -41,6 +41,29 @@ public class UIUtils {
         return rounded;
     }
 	
+	public static Bitmap roundBitmap(Bitmap source) {
+        int width = source.getWidth();
+        int height = source.getHeight();
+
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(WHITE);
+
+        Bitmap clipped = Bitmap.createBitmap(width, height, ARGB_8888);
+        Canvas canvas = new Canvas(clipped);
+        canvas.drawCircle(width / 2, height / 2, width / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(DST_IN));
+        
+        Bitmap rounded = Bitmap.createBitmap(width, height, ARGB_8888);
+        canvas = new Canvas(rounded);
+        canvas.drawBitmap(source, 0, 0, null);
+        canvas.drawBitmap(clipped, 0, 0, paint);
+
+        clipped.recycle();
+
+        return rounded;
+    }
+	
 	/*
 	 * Convert from device-independent-pixels to pixels for use in custom view drawing, as
 	 * used throughout Android. 

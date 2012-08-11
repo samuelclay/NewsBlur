@@ -1,6 +1,7 @@
 package com.newsblur.activity;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
@@ -24,8 +25,8 @@ public class SocialFeedItemsList extends ItemsList {
 		userIcon = getIntent().getStringExtra(EXTRA_BLURBLOG_USER_ICON );
 		userId = getIntent().getStringExtra(EXTRA_BLURBLOG_USERID);
 		
-		//		Drawable drawable = ((NewsBlurApplication) getApplication()).getImageLoader().getImage(userIcon, userId);
-		//		getSupportActionBar().setLogo(drawable);
+//		Drawable drawable = ((NewsBlurApplication) getApplication()).getImageLoader().getImage(userIcon, userId);
+//		getSupportActionBar().setLogo(drawable);
 		
 		setTitle(username);
 		

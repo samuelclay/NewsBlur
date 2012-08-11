@@ -23,14 +23,13 @@ public class SocialFeedReading extends Reading {
 		super.onCreate(savedInstanceBundle);
 		
 		String userId = getIntent().getStringExtra(Reading.EXTRA_USERID);
+		markSocialAsReadList = new MarkSocialAsReadUpdate(userId);
 		
 		Uri storiesURI = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 		setupPager(stories);
 
-		markSocialAsReadList = new MarkSocialAsReadUpdate(userId);
-		
 		Story story = readingAdapter.getStory(passedPosition);
 		markSocialAsReadList.add(story.feedId, story.id);
 		
@@ -41,7 +40,9 @@ public class SocialFeedReading extends Reading {
 	public void onPageSelected(int position) {
 		super.onPageSelected(position);
 		Story story = readingAdapter.getStory(position);
-		markSocialAsReadList.add(story.feedId, story.id);
+		if (story != null) {
+			markSocialAsReadList.add(story.feedId, story.id);
+		}
 	}
 
 	@Override

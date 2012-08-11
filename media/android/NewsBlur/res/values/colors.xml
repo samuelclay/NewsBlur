@@ -12,6 +12,8 @@
 	<color name="lightgreen">#3b8207</color>
     <color name="darkgreen">#134c00</color>
     
+    <color name="item_background">#f5f5f5</color>
+    
     <color name="half_black">#7000</color>
     <color name="transparent">#0000</color>
     <color name="half_darkgray">#77434343</color>

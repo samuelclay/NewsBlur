@@ -42,6 +42,9 @@ public class Story implements Serializable {
 
 	@SerializedName("story_date")
 	public Date date;
+	
+	@SerializedName("shared_date")
+	public Date sharedDate;
 
 	@SerializedName("story_content")
 	public String content;
@@ -66,6 +69,7 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_ID, id);
 		values.put(DatabaseConstants.STORY_TITLE, title);
 		values.put(DatabaseConstants.STORY_DATE, date.getTime());
+		values.put(DatabaseConstants.STORY_SHARED_DATE, sharedDate != null ? sharedDate.getTime() : new Date().getTime());
 		values.put(DatabaseConstants.STORY_SHORTDATE, shortDate);
 		values.put(DatabaseConstants.STORY_CONTENT, content);
 		values.put(DatabaseConstants.STORY_PERMALINK, permalink);
@@ -90,6 +94,7 @@ public class Story implements Serializable {
 		story.content = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_CONTENT));
 		story.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TITLE));
 		story.date = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_DATE)));
+		story.sharedDate = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_DATE)));
 		story.shortDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHORTDATE));
 		story.shareCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHARE_COUNT));
 		story.commentCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_COMMENT_COUNT));

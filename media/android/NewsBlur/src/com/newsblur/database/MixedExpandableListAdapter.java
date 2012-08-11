@@ -46,7 +46,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private ViewBinder groupViewBinder;
 	private ViewBinder blogViewBinder;
 
-	public String currentState = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
+	public String currentState = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
 
 	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final int collapsedGroupLayout,
 			int expandedGroupLayout, int blogGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, String[] blogFrom, int[] blogTo) {

@@ -6,6 +6,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.text.TextUtils;
+import android.util.Log;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -18,9 +21,14 @@ public class DateStringTypeAdapter implements JsonDeserializer<Date> {
 	@Override
 	public Date deserialize(JsonElement element, Type type, JsonDeserializationContext arg2) throws JsonParseException {
 			try {
-				return df.parse(element.getAsString());
+				if (element == null || TextUtils.isEmpty(element.getAsString())) {
+					return new Date();	
+				} else {
+					return df.parse(element.getAsString());
+				}
 			} catch (ParseException e) {
-				throw new JsonParseException(e);
+				Log.e("DateTypeAdapter", e.getLocalizedMessage());
+				return new Date();	
 			}
 	}
 
