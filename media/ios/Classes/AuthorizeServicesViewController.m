@@ -59,7 +59,7 @@
     if ([URLString isEqualToString:[NSString stringWithFormat:@"http://%@/", NEWSBLUR_URL]]) {
         [self.navigationController popViewControllerAnimated:YES];
         if ([type isEqualToString:@"google"]) {
-            [appDelegate.firstTimeUserAddSitesViewController selectGoogleReaderButton];
+            [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReader];
         } else if ([type isEqualToString:@"facebook"]) {
             [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
         } else if ([type isEqualToString:@"twitter"]) {

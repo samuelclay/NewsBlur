@@ -260,7 +260,7 @@
     [request setDidFailSelector:@selector(finishedWithError:)];
     [request setTimeOutSeconds:30];
     [request startAsynchronous];
-    
+    NSLog(@"urlFeedList is %@", urlFeedList);
     self.lastUpdate = [NSDate date];
 }
 
@@ -289,6 +289,7 @@
                              options:kNilOptions 
                              error:&error];
 
+    NSLog(@"results are %@", results);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     self.visibleFeeds = [NSMutableDictionary dictionary];

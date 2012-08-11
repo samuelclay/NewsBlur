@@ -17,12 +17,14 @@
 @property (nonatomic) NSMutableArray *categories;
 @property (nonatomic) IBOutlet UIButton *googleReaderButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *nextButton;
+@property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property (nonatomic) IBOutlet UILabel *instructionLabel;
 
 - (IBAction)tapNextButton;
 - (IBAction)tapGoogleReaderButton;
 - (IBAction)tapCategoryButton:(id)sender;
 
 - (void)addCategories;
-- (void)selectGoogleReaderButton;
-
+- (void)importFromGoogleReader;
+- (void)updateSites;
 @end

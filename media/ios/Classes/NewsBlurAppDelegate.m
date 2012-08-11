@@ -133,7 +133,7 @@
     [window makeKeyAndVisible];
     [self.feedsViewController fetchFeedList:YES];
     
-    [self showFirstTimeUser];
+//    [self showFirstTimeUser];
 	return YES;
 }
 
