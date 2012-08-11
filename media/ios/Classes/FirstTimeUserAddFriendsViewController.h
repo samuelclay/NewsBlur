@@ -10,36 +10,21 @@
 
 #import "NewsBlurAppDelegate.h"
 
-@interface FirstTimeUserAddFriendsViewController  : UIViewController <ASIHTTPRequestDelegate> {
+@interface FirstTimeUserAddFriendsViewController  : UIViewController <UIWebViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
-    NSMutableArray *categories;
-    int currentStep;
-    int importedGoogle;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) NSMutableArray *categories;
-@property (nonatomic) IBOutlet UIButton *googleReaderButton;
-@property (nonatomic) IBOutlet UIView *welcomeView;
-@property (nonatomic) IBOutlet UIView *addSitesView;
-@property (nonatomic) IBOutlet UIView *addFriendsView;
-@property (nonatomic) IBOutlet UIView *addNewsBlurView;
-@property (nonatomic) IBOutlet UIToolbar *toolbar;
-@property (nonatomic) IBOutlet UIButton *toolbarTitle;
 @property (nonatomic) IBOutlet UIBarButtonItem *nextButton;
-@property (nonatomic) IBOutlet UIImageView *logo;
-@property (nonatomic) IBOutlet UIBarButtonItem *previousButton;
+@property (weak, nonatomic) IBOutlet UIButton *facebookButton;
+@property (weak, nonatomic) IBOutlet UIButton *twitterButton;
+
 
 - (IBAction)tapNextButton;
-- (IBAction)tapGoogleReaderButton;
-- (IBAction)tapCategoryButton:(id)sender;
-- (IBAction)tapNewsBlurButton:(id)sender;
+- (IBAction)tapTwitterButton;
+- (IBAction)tapFacebookButton;
 
-- (void)addCategories;
-- (void)selectGoogleReaderButton;
-- (void)finishAddFolder:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request;
-- (void)addSite:(NSString *)siteUrl;
-- (void)rotateLogo;
+- (void)selectTwitterButton;
+- (void)selectFacebookButton;
 
 @end

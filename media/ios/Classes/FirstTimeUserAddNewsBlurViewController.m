@@ -41,11 +41,11 @@
     // Do any additional setup after loading the view from its nib.
     
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Start Enjoying" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Step 3 of 4";
+    self.navigationItem.title = @"Step 4 of 4";
     
 }
 

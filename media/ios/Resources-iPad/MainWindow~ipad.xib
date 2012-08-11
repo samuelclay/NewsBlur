@@ -46,7 +46,6 @@
 				<int key="NSvFlags">292</int>
 				<string key="NSFrameSize">{768, 1024}</string>
 				<reference key="NSSuperview"/>
-				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">1</int>
 					<bytes key="NSRGB">MSAxIDEAA</bytes>
@@ -303,7 +302,6 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<object class="IBUIViewController" id="813520712">
 						<object class="IBUINavigationItem" key="IBUINavigationItem" id="165811166">
-							<reference key="IBUINavigationBar"/>
 							<string key="IBUITitle">Title</string>
 							<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						</object>
@@ -399,14 +397,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">firstTimeUserViewController</string>
-						<reference key="source" ref="664661524"/>
-						<reference key="destination" ref="560953651"/>
-					</object>
-					<int key="connectionID">153</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">googleReaderViewController</string>
 						<reference key="source" ref="664661524"/>
 						<reference key="destination" ref="571684433"/>
@@ -463,30 +453,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">firstTimeUserAddSitesViewController</string>
-						<reference key="source" ref="664661524"/>
-						<reference key="destination" ref="390171581"/>
-					</object>
-					<int key="connectionID">254</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">firstTimeUserAddFriendsViewController</string>
-						<reference key="source" ref="664661524"/>
-						<reference key="destination" ref="834602961"/>
-					</object>
-					<int key="connectionID">255</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">firstTimeUserAddNewsBlurViewController</string>
-						<reference key="source" ref="664661524"/>
-						<reference key="destination" ref="519060991"/>
-					</object>
-					<int key="connectionID">256</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">masterContainerViewController</string>
 						<reference key="source" ref="664661524"/>
 						<reference key="destination" ref="375827920"/>
@@ -508,6 +474,38 @@
 						<reference key="destination" ref="490421765"/>
 					</object>
 					<int key="connectionID">272</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">firstTimeUserViewController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="560953651"/>
+					</object>
+					<int key="connectionID">273</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">firstTimeUserAddSitesViewController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="390171581"/>
+					</object>
+					<int key="connectionID">274</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">firstTimeUserAddFriendsViewController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="834602961"/>
+					</object>
+					<int key="connectionID">275</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">firstTimeUserAddNewsBlurViewController</string>
+						<reference key="source" ref="664661524"/>
+						<reference key="destination" ref="519060991"/>
+					</object>
+					<int key="connectionID">276</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -1010,7 +1008,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">272</int>
+			<int key="maxID">276</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes"/>
 		<int key="IBDocument.localizationMode">0</int>

@@ -8,20 +8,13 @@
 
 #import "FirstTimeUserAddSitesViewController.h"
 #import "FirstTimeUserAddFriendsViewController.h"
+#import "AuthorizeServicesViewController.h"
 
 @implementation FirstTimeUserAddSitesViewController
 
 @synthesize appDelegate;
 @synthesize googleReaderButton;
-@synthesize welcomeView;
-@synthesize addSitesView;
-@synthesize addFriendsView;
-@synthesize addNewsBlurView;
-@synthesize toolbar;
-@synthesize toolbarTitle;
 @synthesize nextButton;
-@synthesize logo;
-@synthesize previousButton;
 @synthesize categories;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -42,33 +35,21 @@
     
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
+//    self.nextButton.enabled = NO;
     self.navigationItem.rightBarButtonItem = next;
+    
+    self.navigationItem.title = @"Step 2 of 4";
     
 }
 
 - (void)viewDidUnload
 {
-    [self setGoogleReaderButton:nil];
-    [self setWelcomeView:nil];
-    [self setAddSitesView:nil];
-    [self setAddFriendsView:nil];
-    [self setAddNewsBlurView:nil];
-    [self setToolbar:nil];
-    [self setToolbarTitle:nil];
-    [self setNextButton:nil];
-    [self setLogo:nil];
-    [self setPreviousButton:nil];
+
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [self rotateLogo];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    
+    [self setGoogleReaderButton:nil];
+    [self setNextButton:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -82,21 +63,16 @@
 }
 
 - (IBAction)tapCategoryButton:(id)sender {
-
-}
-
-- (IBAction)tapNewsBlurButton:(id)sender {
-    UIButton *button = (UIButton *)sender;
-    button.selected = YES;
-    button.userInteractionEnabled = NO;
-    [self addSite:@"http://blog.newsblur.com/"];
 }
 
 #pragma mark -
 #pragma mark Import Google Reader
 
 - (IBAction)tapGoogleReaderButton {
-    [appDelegate showGoogleReaderAuthentication];
+    AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
+    service.url = @"/import/authorize";
+    service.type = @"google";
+    [appDelegate.ftuxNavigationController pushViewController:service animated:YES];
 }
 
 - (void)selectGoogleReaderButton {
@@ -150,23 +126,6 @@
     [request setDidFinishSelector:@selector(finishAddFolder:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
-}
-
-- (void)rotateLogo {
-    // Setup the animation
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:(NSTimeInterval)60.0];
-    [UIView setAnimationCurve:UIViewAnimationCurveLinear];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    
-    NSLog(@"%f", M_PI);
-    
-    // The transform matrix
-    CGAffineTransform transform = CGAffineTransformMakeRotation(3.14);
-    self.logo.transform = transform;
-    
-    // Commit the changes
-    [UIView commitAnimations];
 }
 
 @end

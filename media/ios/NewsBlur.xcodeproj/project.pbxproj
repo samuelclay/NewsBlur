@@ -197,6 +197,8 @@
 		43ABBCAA15B53A1400EA3111 /* InteractionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43ABBCA915B53A1400EA3111 /* InteractionCell.m */; };
 		43AF417715C30B1600758366 /* 37x-Checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 43AF417515C30B1600758366 /* 37x-Checkmark.png */; };
 		43AF417815C30B1600758366 /* 37x-Checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43AF417615C30B1600758366 /* 37x-Checkmark@2x.png */; };
+		43B232C015D5F61700D035B4 /* AuthorizeServicesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43B232BE15D5F61700D035B4 /* AuthorizeServicesViewController.m */; };
+		43B232C115D5F61700D035B4 /* AuthorizeServicesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43B232BF15D5F61700D035B4 /* AuthorizeServicesViewController.xib */; };
 		43B3E32D15C4FC8200528A81 /* safari.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B3E32B15C4FC8200528A81 /* safari.png */; };
 		43B3E32E15C4FC8200528A81 /* safari@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B3E32C15C4FC8200528A81 /* safari@2x.png */; };
 		43B6A27315B6952F00CEA2E6 /* folder_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 43B6A26D15B6952F00CEA2E6 /* folder_2.png */; };
@@ -583,6 +585,9 @@
 		43ABBCA915B53A1400EA3111 /* InteractionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InteractionCell.m; sourceTree = "<group>"; };
 		43AF417515C30B1600758366 /* 37x-Checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "37x-Checkmark.png"; sourceTree = "<group>"; };
 		43AF417615C30B1600758366 /* 37x-Checkmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "37x-Checkmark@2x.png"; sourceTree = "<group>"; };
+		43B232BD15D5F61700D035B4 /* AuthorizeServicesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AuthorizeServicesViewController.h; sourceTree = "<group>"; };
+		43B232BE15D5F61700D035B4 /* AuthorizeServicesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthorizeServicesViewController.m; sourceTree = "<group>"; };
+		43B232BF15D5F61700D035B4 /* AuthorizeServicesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AuthorizeServicesViewController.xib; sourceTree = "<group>"; };
 		43B3E32B15C4FC8200528A81 /* safari.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = safari.png; sourceTree = "<group>"; };
 		43B3E32C15C4FC8200528A81 /* safari@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "safari@2x.png"; sourceTree = "<group>"; };
 		43B6A26D15B6952F00CEA2E6 /* folder_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = folder_2.png; sourceTree = "<group>"; };
@@ -1036,6 +1041,9 @@
 				43C95C46158BEC440086C69B /* GoogleReaderViewController.m */,
 				784B50EA127E3F68008F90EA /* LoginViewController.h */,
 				784B50EB127E3F68008F90EA /* LoginViewController.m */,
+				43B232BD15D5F61700D035B4 /* AuthorizeServicesViewController.h */,
+				43B232BE15D5F61700D035B4 /* AuthorizeServicesViewController.m */,
+				43B232BF15D5F61700D035B4 /* AuthorizeServicesViewController.xib */,
 			);
 			name = FTUX;
 			sourceTree = "<group>";
@@ -2023,6 +2031,7 @@
 				43C3D42415D478570066D36D /* redButton@2x.png in Resources */,
 				43C3D42515D478570066D36D /* redButtonActivated.png in Resources */,
 				43C3D42615D478570066D36D /* redButtonActivated@2x.png in Resources */,
+				43B232C115D5F61700D035B4 /* AuthorizeServicesViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2167,6 +2176,7 @@
 				43A4BAF315C89BF600F3B8D4 /* FindSitesViewController.m in Sources */,
 				432EBD2315D1D4070000729D /* AddSiteTableCell.m in Sources */,
 				438FEDE815D5B15F00E3B3C9 /* FollowGrid.m in Sources */,
+				43B232C015D5F61700D035B4 /* AuthorizeServicesViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

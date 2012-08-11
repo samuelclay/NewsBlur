@@ -8,6 +8,7 @@
 
 #import "FirstTimeUserAddFriendsViewController.h"
 #import "FirstTimeUserAddNewsBlurViewController.h"
+#import "AuthorizeServicesViewController.h"
 
 @interface FirstTimeUserAddFriendsViewController ()
 
@@ -16,17 +17,9 @@
 @implementation FirstTimeUserAddFriendsViewController
 
 @synthesize appDelegate;
-@synthesize googleReaderButton;
-@synthesize welcomeView;
-@synthesize addSitesView;
-@synthesize addFriendsView;
-@synthesize addNewsBlurView;
-@synthesize toolbar;
-@synthesize toolbarTitle;
 @synthesize nextButton;
-@synthesize logo;
-@synthesize previousButton;
-@synthesize categories;
+@synthesize facebookButton;
+@synthesize twitterButton;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -37,11 +30,7 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
-    categories = [[NSMutableArray alloc] init];
-    currentStep = 0;
-    importedGoogle = 0;
+- (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
@@ -50,145 +39,52 @@
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Step 2 of 4";
+    self.navigationItem.title = @"Step 3 of 4";
 }
 
-- (void)viewDidUnload
-{
-    [self setGoogleReaderButton:nil];
-    [self setWelcomeView:nil];
-    [self setAddSitesView:nil];
-    [self setAddFriendsView:nil];
-    [self setAddNewsBlurView:nil];
-    [self setToolbar:nil];
-    [self setToolbarTitle:nil];
+- (void)viewDidUnload {
     [self setNextButton:nil];
-    [self setLogo:nil];
-    [self setPreviousButton:nil];
+    [self setFacebookButton:nil];
+    [self setTwitterButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [self rotateLogo];
-}
 
-- (void)viewDidAppear:(BOOL)animated {
-    
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
-
 
 - (IBAction)tapNextButton {
     [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddNewsBlurViewController animated:YES];
 }
 
-- (IBAction)tapCategoryButton:(id)sender {
-//    UIButton *categoryButton = (UIButton *)sender;
-//    NSString *category = categoryButton.currentTitle;
-//    
-//    if (categoryButton.selected) {
-//        categoryButton.selected = NO;
-//        [categories removeObject:category];
-//    } else {
-//        [categories addObject: category];
-//        categoryButton.selected = YES;
-//    }
-//    
-//    if (categories.count || importedGoogle) {
-//        nextButton.title = ADD_SITES_BUTTON_TITLE;
-//    } else {
-//        nextButton.title = ADD_SITES_SKIP_BUTTON_TITLE;
-//    }
+- (IBAction)tapTwitterButton {
+    AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
+    service.url = @"/oauth/twitter_connect";
+    service.type = @"twitter";
+    [appDelegate.ftuxNavigationController pushViewController:service animated:YES];
 }
 
-- (IBAction)tapNewsBlurButton:(id)sender {
-    UIButton *button = (UIButton *)sender;
-    button.selected = YES;
-    button.userInteractionEnabled = NO;
-    [self addSite:@"http://blog.newsblur.com/"];
+
+- (IBAction)tapFacebookButton {
+    AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
+    service.url = @"/oauth/facebook_connect";
+    service.type = @"facebook";
+    [appDelegate.ftuxNavigationController pushViewController:service animated:YES];
 }
 
-#pragma mark -
-#pragma mark Import Google Reader
 
-- (IBAction)tapGoogleReaderButton {
-    [appDelegate showGoogleReaderAuthentication];
+- (void)selectTwitterButton {
+    self.twitterButton.selected = YES;
+    self.twitterButton.userInteractionEnabled = NO;
 }
 
-- (void)selectGoogleReaderButton {
-    self.googleReaderButton.selected = YES;
-    self.googleReaderButton.userInteractionEnabled = NO;
+- (void)selectFacebookButton {
+    self.facebookButton.selected = YES;
+    self.facebookButton.userInteractionEnabled = NO;
 }
 
-#pragma mark -
-#pragma mark Add Categories
-
-- (void)addCategories {
-    
-    // TO DO: curate the list of sites
-    
-    for (id key in categories) {
-        // add folder 
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_folder",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:key forKey:@"folder"]; 
-        [request setDelegate:self];
-        [request setDidFinishSelector:@selector(finishAddFolder:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request startAsynchronous];
-    }
-    
-}
-
-- (void)finishAddFolder:(ASIHTTPRequest *)request {
-    NSLog(@"Successfully added.");
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
-}
-
-#pragma mark -
-#pragma mark Add Site
-
-- (void)addSite:(NSString *)siteUrl {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_url",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    [request setPostValue:siteUrl forKey:@"url"]; 
-    
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishAddFolder:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request startAsynchronous];
-}
-
-- (void)rotateLogo {
-    // Setup the animation
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:(NSTimeInterval)60.0];
-    [UIView setAnimationCurve:UIViewAnimationCurveLinear];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    
-    NSLog(@"%f", M_PI);
-    
-    // The transform matrix
-    CGAffineTransform transform = CGAffineTransformMakeRotation(3.14);
-    self.logo.transform = transform;
-    
-    // Commit the changes
-    [UIView commitAnimations];
-}
 
 @end

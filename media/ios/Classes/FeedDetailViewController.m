@@ -22,7 +22,7 @@
 #import "Utilities.h"
 
 
-#define kTableViewRowHeight 60;
+#define kTableViewRowHeight 61;
 #define kTableViewRiverRowHeight 81;
 #define kTableViewShortRowDifference 15;
 #define kMarkReadActionSheet 1;

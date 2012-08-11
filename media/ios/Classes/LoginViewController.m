@@ -145,10 +145,6 @@
     }
 }
 
-
-
-
-
 #pragma mark -
 #pragma mark Login
 
@@ -287,8 +283,8 @@
     } else {
         [self.passwordInput setText:@""];
         [self.signUpPasswordInput setText:@""];
-//        [appDelegate showFirstTimeUser];
-        [appDelegate reloadFeedsView:YES];
+        [appDelegate showFirstTimeUser];
+//        [appDelegate reloadFeedsView:YES];
         [self dismissModalViewControllerAnimated:NO];
     }
     
