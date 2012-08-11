@@ -243,7 +243,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         }
 
         if (service_syncing) {
-            _.delay(_.bind(this.fetch_friends, this), 3000);
+            clearInterval(this.sync_interval);
+            this.sync_interval = setInterval(_.bind(function() {
+                this.fetch_friends();
+            }, this), 3000);
         }
     },
     
@@ -251,6 +254,18 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var options = "location=0,status=0,width=800,height=500";
         var url = "/oauth/" + service + "_connect";
         this.connect_window = window.open(url, '_blank', options);
+        this.connect_window_timer = setInterval(_.bind(function() {
+            console.log(["post connect window?", this.connect_window, this.connect_window.closed, this.connect_window.location]);
+            try {
+                if (!this.connect_window || 
+                    !this.connect_window.location || 
+                    this.connect_window.closed) {
+                    this.post_connect({});
+                }
+            } catch (err) {
+                this.post_connect({});
+            }
+        }, this), 1000);
         _gaq.push(['_trackEvent', 'reader_intro', 'Connect to ' + service.name + ' attempt']);
     },
     
@@ -268,6 +283,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     
     post_connect: function(data) {
         console.log(["Intro post_connect", data]);
+        clearInterval(this.connect_window_timer);
         $('.NB-error', this.$modal).remove();
         if (data.error) {
             var $error = $.make('div', { className: 'NB-error' }, [
@@ -342,6 +358,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
           this.show_twitter_follow_buttons();
       }
       
+      clearInterval(this.sync_interval);
       NEWSBLUR.assets.preference('intro_page', page_number);
       _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
     },
@@ -425,10 +442,24 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var options = "location=0,status=0,width=800,height=500";
         var url = "/import/authorize?modal=true";
         this.connect_window = window.open(url, '_blank', options);
+        this.connect_window_timer = setInterval(_.bind(function() {
+            console.log(["post connect window?", this.connect_window, this.connect_window.closed, this.connect_window.location]);
+            try {
+                if (!this.connect_window || 
+                    !this.connect_window.location || 
+                    this.connect_window.closed) {
+                    this.start_import_from_google_reader({});
+                }
+            } catch (err) {
+                this.start_import_from_google_reader({});
+            }
+        }, this), 1000);
+
         NEWSBLUR.reader.flags.importing_from_google_reader = true;
     },
     
     start_import_from_google_reader: function(data) {
+        clearInterval(this.connect_window_timer);
         var $error = $('.NB-intro-gitgoogle .NB-error', this.$modal);
         var $loading = $('.NB-intro-imports-progress .NB-loading', this.$modal);
         if (data && data.error) {

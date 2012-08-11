@@ -1298,7 +1298,9 @@ background: transparent;
 .NB-view-river #story_titles .story {
   padding-left: 148px;
 }
-
+.NB-view-river .NB-story-pane-west #story_titles .story {
+    padding-left: 48px;
+}
 #story_titles .story .NB-storytitles-sentiment {
     position: absolute;
     width: 24px;
@@ -1416,6 +1418,9 @@ background: transparent;
     color: #707070;
     position: absolute;
 }
+.NB-story-pane-west #story_titles .story .NB-story-feed {
+    left: -24px;
+}
 .NB-view-river #story_titles .story .NB-story-feed {
     display: block;
 }
@@ -1442,6 +1447,9 @@ background: transparent;
 }
 #story_titles .story.NB-selected .NB-story-feed .feed_title {
     text-shadow: 1px 1px 0 #F0F0F0;
+}
+.NB-story-pane-west #story_titles .story .NB-story-feed .feed_title {
+    display: none;
 }
 #story_titles .story .story_id {
     display: none;
