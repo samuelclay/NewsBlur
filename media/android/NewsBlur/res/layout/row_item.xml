@@ -1,47 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:orientation="vertical"
-    android:padding="10dp" >
+    android:background="@color/item_background"
+    android:orientation="horizontal" >
 
-    <TextView
-        android:id="@+id/row_item_sidebar"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="15dp" />
-
-    <TextView
-        android:id="@+id/row_item_title"
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/row_item_sidebar"
-        android:maxLines="2"
-        android:textColor="@color/darkgray"
-        android:textSize="18dp" />
+        android:layout_height="match_parent" >
 
-    <TextView
-        android:id="@+id/row_item_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/row_item_title"
-        android:layout_marginTop="10dp"
-        android:textColor="@color/darkgray"
-        android:textSize="12dp" />
+        <View
+            android:id="@+id/row_item_favicon_borderbar_1"
+            android:layout_width="8dp"
+            android:layout_height="match_parent" />
 
-    <TextView
-        android:id="@+id/row_item_author"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/row_item_title"
-        android:layout_marginTop="10dp"
-        android:layout_toLeftOf="@id/row_item_date"
-        android:layout_toRightOf="@id/row_item_sidebar"
-        android:textColor="@color/lightgray"
-        android:textSize="12dp" />
+        <View
+            android:id="@+id/row_item_favicon_borderbar_2"
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/row_item_favicon_borderbar_1" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/row_item_sidebar"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_toRightOf="@id/row_item_favicon_borderbar_1" />
+
+        <TextView
+            android:id="@+id/row_item_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="8dp"
+            android:textColor="@color/darkgray"
+            android:textSize="11dp" />
+
+        <TextView
+            android:id="@+id/row_item_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_toLeftOf="@id/row_item_date"
+            android:layout_toRightOf="@id/row_item_sidebar"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/darkgray"
+            android:textSize="11dp" />
+
+        <TextView
+            android:id="@+id/row_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/row_item_author"
+            android:layout_below="@id/row_item_author"
+            android:layout_marginRight="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="12dp"
+            android:textColor="@color/darkgray"
+            android:textSize="20dp" />
+    </RelativeLayout>
+
+</LinearLayout>

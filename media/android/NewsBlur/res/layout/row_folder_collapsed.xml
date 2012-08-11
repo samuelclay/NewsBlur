@@ -12,7 +12,8 @@
         android:layout_height="20dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/folder" />
 

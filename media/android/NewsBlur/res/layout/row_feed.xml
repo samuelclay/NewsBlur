@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
         android:gravity="right"
         android:orientation="horizontal" >
 
@@ -58,7 +59,7 @@
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="18dp"
         android:contentDescription="@string/description_favicon" />
 
     <TextView

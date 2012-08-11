@@ -9,15 +9,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.newsblur.R;
+import com.newsblur.domain.Feed;
 
-public class SocialFeedItemsAdapter extends SimpleCursorAdapter {
+public class FeedItemsAdapter extends SimpleCursorAdapter {
 
 	private Cursor cursor;
 	private Context context;
+	private final Feed feed;
 
-	public SocialFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to, int flags) {
 		super(context, layout, c, from, to, flags);
 		this.context = context;
+		this.feed = feed;
 		this.cursor = c;
 	}
 	
@@ -39,12 +42,10 @@ public class SocialFeedItemsAdapter extends SimpleCursorAdapter {
 		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
 		
 		cursor.moveToPosition(position);
-		String feedColour = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
-		String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
-
-		if (!TextUtils.equals(feedColour, "#null") && !TextUtils.equals(feedFade, "#null")) {
-			borderOne.setBackgroundColor(Color.parseColor(feedColour));
-			borderTwo.setBackgroundColor(Color.parseColor(feedFade));
+		
+		if (!TextUtils.equals(feed.faviconColour, "#null") && !TextUtils.equals(feed.faviconFade, "#null")) {
+			borderOne.setBackgroundColor(Color.parseColor(feed.faviconColour));
+			borderTwo.setBackgroundColor(Color.parseColor(feed.faviconFade));
 		} else {
 			borderOne.setBackgroundColor(Color.GRAY);
 			borderTwo.setBackgroundColor(Color.LTGRAY);

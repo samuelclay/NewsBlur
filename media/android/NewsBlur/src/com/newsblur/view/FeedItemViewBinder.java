@@ -1,7 +1,7 @@
 package com.newsblur.view;
 
+import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
 import android.view.View;
@@ -10,17 +10,23 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 
-public class ItemViewBinder implements ViewBinder {
+public class FeedItemViewBinder implements ViewBinder {
 
+	private final Context context;
+
+	public FeedItemViewBinder(final Context context) {
+		this.context = context;
+	}
+	
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		final String columnName = cursor.getColumnName(columnIndex);
 		if (TextUtils.equals(columnName, DatabaseConstants.STORY_READ)) {
 			String read = cursor.getString(columnIndex);
 			if (TextUtils.equals(read, "0")) {
-				((TextView) view).setTypeface(null, Typeface.BOLD);
+				((TextView) view).setTextColor(context.getResources().getColor(R.color.darkgray));
 			} else {
-				((TextView) view).setTypeface(null, Typeface.NORMAL);
+				((TextView) view).setTextColor(context.getResources().getColor(R.color.lightgray));
 			}
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_AUTHORS)) {

@@ -25,11 +25,12 @@ import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Reading;
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
-import com.newsblur.view.ItemViewBinder;
+import com.newsblur.view.FeedItemViewBinder;
 
 public class FeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
 
@@ -86,11 +87,11 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
-		adapter = new SimpleCursorAdapter(getActivity(), R.layout.row_item, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 		itemList.setOnScrollListener(this);
 		
-		adapter.setViewBinder(new ItemViewBinder());
+		adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
 
