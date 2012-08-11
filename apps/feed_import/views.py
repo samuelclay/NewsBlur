@@ -193,8 +193,9 @@ def import_from_google_reader(request):
 
     if request.user.is_authenticated():
         reader_importer = GoogleReaderImporter(request.user)
+        auto_active = bool(request.REQUEST.get('auto_active') or False)
         try:
-            reader_importer.import_feeds()
+            reader_importer.import_feeds(auto_active=auto_active)
             reader_importer.import_starred_items()
         except AssertionError:
             code = -1
