@@ -38,7 +38,7 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUIImageView" id="796119457">
+					<object class="IBUIImageView" id="37499781">
 						<reference key="NSNextResponder" ref="874391841"/>
 						<int key="NSvFlags">274</int>
 						<string key="NSFrameSize">{540, 576}</string>
@@ -97,12 +97,17 @@
 						<string key="NSFrame">{{178, 190}, {184, 34}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="832721982"/>
+						<reference key="NSNextKeyView" ref="36248693"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
+						<double key="IBUIContentEdgeInsets.top">0.0</double>
+						<double key="IBUIContentEdgeInsets.bottom">0.0</double>
+						<double key="IBUIContentEdgeInsets.left">15</double>
+						<double key="IBUIContentEdgeInsets.right">0.0</double>
+						<string key="IBUISelectedTitle">Added xx friends</string>
 						<string key="IBUINormalTitle">Facebook</string>
 						<reference key="IBUIHighlightedTitleColor" ref="937995787"/>
 						<reference key="IBUISelectedTitleColor" ref="937995787"/>
@@ -110,10 +115,6 @@
 						<object class="NSColor" key="IBUINormalTitleShadowColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwLjI1MDk4MDQwNyAwLjUwMTk2MDgxNAA</bytes>
-						</object>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">google_reader_selected_background.png</string>
 						</object>
 						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 							<string key="NSClassName">NSImage</string>
@@ -129,7 +130,7 @@
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
-					<object class="IBUIActivityIndicatorView" id="832721982">
+					<object class="IBUIActivityIndicatorView" id="36248693">
 						<reference key="NSNextResponder" ref="874391841"/>
 						<int key="NSvFlags">-2147483356</int>
 						<string key="NSFrame">{{215, 197}, {20, 20}}</string>
@@ -146,13 +147,17 @@
 						<string key="NSFrame">{{178, 298}, {184, 34}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="743781180"/>
+						<reference key="NSNextKeyView" ref="765133113"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
-						<string key="IBUISelectedTitle">Finding Twitter Friends..</string>
+						<double key="IBUIContentEdgeInsets.top">0.0</double>
+						<double key="IBUIContentEdgeInsets.bottom">0.0</double>
+						<double key="IBUIContentEdgeInsets.left">15</double>
+						<double key="IBUIContentEdgeInsets.right">0.0</double>
+						<string key="IBUISelectedTitle">Added xx friends</string>
 						<string key="IBUINormalTitle">Twitter</string>
 						<reference key="IBUIHighlightedTitleColor" ref="937995787"/>
 						<reference key="IBUISelectedTitleColor" ref="937995787"/>
@@ -161,11 +166,10 @@
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwLjUwMTk2MDgxNCAxAA</bytes>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage" id="949126612">
+						<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">twitter.png</string>
 						</object>
-						<reference key="IBUINormalBackgroundImage" ref="949126612"/>
 						<object class="IBUIFontDescription" key="IBUIFontDescription">
 							<int key="type">2</int>
 							<double key="pointSize">15</double>
@@ -176,10 +180,10 @@
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
-					<object class="IBUIActivityIndicatorView" id="743781180">
+					<object class="IBUIActivityIndicatorView" id="765133113">
 						<reference key="NSNextResponder" ref="874391841"/>
 						<int key="NSvFlags">-2147483356</int>
-						<string key="NSFrame">{{221, 305}, {20, 20}}</string>
+						<string key="NSFrame">{{215, 305}, {20, 20}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView"/>
@@ -191,7 +195,7 @@
 				<string key="NSFrame">{{0, 44}, {540, 576}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="796119457"/>
+				<reference key="NSNextKeyView" ref="37499781"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -252,7 +256,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">facebookActivityIndicator</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="832721982"/>
+						<reference key="destination" ref="36248693"/>
 					</object>
 					<int key="connectionID">140</int>
 				</object>
@@ -260,7 +264,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">twitterActivityIndicator</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="743781180"/>
+						<reference key="destination" ref="765133113"/>
 					</object>
 					<int key="connectionID">141</int>
 				</object>
@@ -306,12 +310,12 @@
 						<int key="objectID">129</int>
 						<reference key="object" ref="874391841"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="796119457"/>
+							<reference ref="37499781"/>
 							<reference ref="736025522"/>
-							<reference ref="832721982"/>
-							<reference ref="467269529"/>
+							<reference ref="36248693"/>
 							<reference ref="406293652"/>
-							<reference ref="743781180"/>
+							<reference ref="467269529"/>
+							<reference ref="765133113"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -332,17 +336,17 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">138</int>
-						<reference key="object" ref="832721982"/>
+						<reference key="object" ref="36248693"/>
 						<reference key="parent" ref="874391841"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">139</int>
-						<reference key="object" ref="743781180"/>
+						<reference key="object" ref="765133113"/>
 						<reference key="parent" ref="874391841"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">142</int>
-						<reference key="object" ref="796119457"/>
+						<reference key="object" ref="37499781"/>
 						<reference key="parent" ref="874391841"/>
 					</object>
 				</array>
@@ -358,9 +362,9 @@
 				<string key="142.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="53.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="54.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="54.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="2" key="54.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="56.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="56.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="2" key="56.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
@@ -1785,7 +1789,6 @@
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="facebook.png">{184, 34}</string>
-			<string key="google_reader_selected_background.png">{280, 80}</string>
 			<string key="subtle-pattern-4.jpg">{1000, 1000}</string>
 			<string key="twitter.png">{184, 34}</string>
 		</dictionary>

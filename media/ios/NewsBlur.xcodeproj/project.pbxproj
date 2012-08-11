@@ -18,6 +18,7 @@
 		430C4BBD15D71D0300B9F63B /* subtle-pattern-4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 430C4BBC15D71D0300B9F63B /* subtle-pattern-4.jpg */; };
 		430C4BC015D7208600B9F63B /* facebook.png in Resources */ = {isa = PBXBuildFile; fileRef = 430C4BBF15D7208600B9F63B /* facebook.png */; };
 		430C4BC215D7214E00B9F63B /* twitter.png in Resources */ = {isa = PBXBuildFile; fileRef = 430C4BC115D7214E00B9F63B /* twitter.png */; };
+		430C4BC415D7271200B9F63B /* google.png in Resources */ = {isa = PBXBuildFile; fileRef = 430C4BC315D7271200B9F63B /* google.png */; };
 		431B856815A0C45200DCE497 /* FriendsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B856615A0C45100DCE497 /* FriendsListViewController.m */; };
 		431B856E15A0D91E00DCE497 /* UserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B856C15A0D91E00DCE497 /* UserProfileViewController.m */; };
 		431B858115A23C6B00DCE497 /* ProfileBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = 431B858015A23C6B00DCE497 /* ProfileBadge.m */; };
@@ -372,6 +373,7 @@
 		430C4BBC15D71D0300B9F63B /* subtle-pattern-4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "subtle-pattern-4.jpg"; sourceTree = "<group>"; };
 		430C4BBF15D7208600B9F63B /* facebook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = facebook.png; sourceTree = "<group>"; };
 		430C4BC115D7214E00B9F63B /* twitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = twitter.png; sourceTree = "<group>"; };
+		430C4BC315D7271200B9F63B /* google.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = google.png; sourceTree = "<group>"; };
 		431B856515A0C45100DCE497 /* FriendsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendsListViewController.h; sourceTree = "<group>"; };
 		431B856615A0C45100DCE497 /* FriendsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FriendsListViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		431B856B15A0D91E00DCE497 /* UserProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = UserProfileViewController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1006,6 +1008,7 @@
 		430C4BBE15D7208000B9F63B /* FTUX */ = {
 			isa = PBXGroup;
 			children = (
+				430C4BC315D7271200B9F63B /* google.png */,
 				430C4BBF15D7208600B9F63B /* facebook.png */,
 				430C4BC115D7214E00B9F63B /* twitter.png */,
 			);
@@ -2056,6 +2059,7 @@
 				430C4BBD15D71D0300B9F63B /* subtle-pattern-4.jpg in Resources */,
 				430C4BC015D7208600B9F63B /* facebook.png in Resources */,
 				430C4BC215D7214E00B9F63B /* twitter.png in Resources */,
+				430C4BC415D7271200B9F63B /* google.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
