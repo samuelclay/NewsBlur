@@ -366,6 +366,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     advance_import_carousel: function(page) {
         var $carousel = $('.carousel', this.$modal);
         $carousel.carousel('pause');
+        console.log(["Advancing import carousel", page, !_.isNumber(page), NEWSBLUR.assets.feeds.size(), !this.options.force_import]);
         if (!_.isNumber(page)) { 
             if (NEWSBLUR.assets.feeds.size() && !this.options.force_import) {
                 page = 2;
@@ -381,7 +382,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             $('.NB-tutorial-next-page-text', this.$modal).text('Next step ');
         }
         
-        $carousel.carousel(page || 0);
+        $carousel.carousel(page && parseInt(page, 10) || 0);
         $carousel.carousel('pause');
         this.count_feeds();
     },

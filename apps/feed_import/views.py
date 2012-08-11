@@ -1,11 +1,11 @@
 import datetime
-import urllib
-import urlparse
+import pickle
+import base64
 from utils import log as logging
-import oauth2 as oauth
+from oauth2client.client import OAuth2WebServerFlow
 import uuid
 from django.contrib.sites.models import Site
-from django.db import IntegrityError
+# from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -80,34 +80,34 @@ def opml_export(request):
     )
     
     return response
-        
+
+
 def reader_authorize(request): 
-    is_modal = request.GET.get('modal', False)
+    # is_modal = request.GET.get('modal', False)
+    domain = Site.objects.get_current().domain
+    STEP2_URI = "http://%s%s" % (
+        (domain + '.com') if not domain.endswith('.com') else domain,
+        reverse('google-reader-callback'),
+    )
+
+    FLOW = OAuth2WebServerFlow(
+        client_id=settings.GOOGLE_OAUTH2_CLIENTID,
+        client_secret=settings.GOOGLE_OAUTH2_SECRET,
+        scope="http://www.google.com/reader/api",
+        redirect_uri=STEP2_URI,
+        user_agent='NewsBlur Pro, www.newsblur.com',
+        )
     logging.user(request, "~BB~FW~SBAuthorize Google Reader import - %s" % (
         request.META['REMOTE_ADDR'],
     ))
-    oauth_key = settings.OAUTH_KEY
-    oauth_secret = settings.OAUTH_SECRET
-    scope = "http://www.google.com/reader/api"
-    domain = Site.objects.get_current().domain
-    request_token_url = ("https://www.google.com/accounts/OAuthGetRequestToken?"
-                         "scope=%s&secure=1&session=1&oauth_callback=http://%s%s%s") % (
-                            urllib.quote_plus(scope),
-                            domain,
-                            reverse('google-reader-callback'),
-                            '?modal=true' if is_modal else ''
-                         )
-    authorize_url = 'https://www.google.com/accounts/OAuthAuthorizeToken'
-    
-    # Grab request token from Google's OAuth
-    consumer = oauth.Consumer(oauth_key, oauth_secret)
-    client = oauth.Client(consumer)
-    resp, content = client.request(request_token_url, "GET")
-    request_token = dict(urlparse.parse_qsl(content))
+
+    authorize_url = FLOW.step1_get_authorize_url(redirect_uri=STEP2_URI)
+    response = render_to_response('social/social_connect.xhtml', {
+        'next': authorize_url,
+    }, context_instance=RequestContext(request))
     
     # Save request token and delete old tokens
-    auth_token_dict = dict(request_token=request_token['oauth_token'], 
-                           request_token_secret=request_token['oauth_token_secret'])
+    auth_token_dict = dict()
     if request.user.is_authenticated():
         OAuthToken.objects.filter(user=request.user).delete()
         auth_token_dict['user'] = request.user
@@ -118,23 +118,29 @@ def reader_authorize(request):
     auth_token_dict['session_id'] = request.session.session_key
     auth_token_dict['remote_ip'] = request.META['REMOTE_ADDR']
     OAuthToken.objects.create(**auth_token_dict)
-                 
-    redirect = "%s?oauth_token=%s" % (authorize_url, request_token['oauth_token'])
-    
-    if is_modal:
-        response = render_to_response('social/social_connect.xhtml', {
-            'next': redirect,
-        }, context_instance=RequestContext(request))
-    else:
-        response = HttpResponseRedirect(redirect)
 
-    response.set_cookie('newsblur_reader_uuid', auth_token_dict['uuid'])
+    response.set_cookie('newsblur_reader_uuid', str(uuid.uuid4()))
     return response
 
 def reader_callback(request):
+    
+    domain = Site.objects.get_current().domain
+    STEP2_URI = "http://%s%s" % (
+        (domain + '.com') if not domain.endswith('.com') else domain,
+        reverse('google-reader-callback'),
+    )
+    FLOW = OAuth2WebServerFlow(
+        client_id=settings.GOOGLE_OAUTH2_CLIENTID,
+        client_secret=settings.GOOGLE_OAUTH2_SECRET,
+        scope="http://www.google.com/reader/api",
+        redirect_uri=STEP2_URI,
+        user_agent='NewsBlur Pro, www.newsblur.com',
+        )
+    FLOW.redirect_uri = STEP2_URI
     is_modal = request.GET.get('modal', False)
-    access_token_url = 'https://www.google.com/accounts/OAuthGetAccessToken'
-    consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
+
+    credential = FLOW.step2_exchange(request.REQUEST)
+    
     user_token = None
     if request.user.is_authenticated():
         user_token = OAuthToken.objects.filter(user=request.user).order_by('-created_date')
@@ -148,48 +154,36 @@ def reader_callback(request):
             user_token = OAuthToken.objects.filter(session_id=request.session.session_key).order_by('-created_date')
     if not user_token:
         user_token = OAuthToken.objects.filter(remote_ip=request.META['REMOTE_ADDR']).order_by('-created_date')
-        # logging.info("Found ip user_tokens: %s" % user_tokens)
 
     if user_token:
         user_token = user_token[0]
+        user_token.credential = base64.b64encode(pickle.dumps(credential))
         user_token.session_id = request.session.session_key
         user_token.save()
     
-    if user_token and request.GET.get('oauth_verifier'):
-        # logging.info("Google Reader request.GET: %s" % request.GET)
-        # Authenticated in Google, so verify and fetch access tokens
-        token = oauth.Token(user_token.request_token, user_token.request_token_secret)
-        token.set_verifier(request.GET['oauth_verifier'])
-        client = oauth.Client(consumer, token)
-        resp, content = client.request(access_token_url, "POST")
-        access_token = dict(urlparse.parse_qsl(content))
-        user_token.access_token = access_token.get('oauth_token')
-        user_token.access_token_secret = access_token.get('oauth_token_secret')
-        try:
-            if not user_token.access_token:
-                raise IntegrityError
-            user_token.save()
-        except IntegrityError:
-            if is_modal:
-                return render_to_response('social/social_connect.xhtml', {
-                    'error': 'There was an error trying to import from Google Reader. Trying again will probably fix the issue.'
-                }, context_instance=RequestContext(request))
-            logging.info(" ***> [%s] Bad token from Google Reader. Re-authenticating." % (request.user,))
-            return HttpResponseRedirect(reverse('google-reader-authorize'))
-    
-        # Fetch imported feeds on next page load
-        request.session['import_from_google_reader'] = True
-    
-        logging.user(request, "~BB~FW~SBFinishing Google Reader import - %s" % (request.META['REMOTE_ADDR'],))
-    
-        if request.user.is_authenticated():
-            if is_modal:
-                return render_to_response('social/social_connect.xhtml', {}, context_instance=RequestContext(request))
-            else:
-                return HttpResponseRedirect(reverse('index'))
-    else:
-        logging.info(" ***> [%s] Bad token from Google Reader. Re-authenticating." % (request.user,))
-        return HttpResponseRedirect(reverse('google-reader-authorize'))    
+    # 
+    # try:
+    #     if not user_token.access_token:
+    #         raise IntegrityError
+    #     user_token.save()
+    # except IntegrityError:
+    #     if is_modal:
+    #         return render_to_response('social/social_connect.xhtml', {
+    #             'error': 'There was an error trying to import from Google Reader. Trying again will probably fix the issue.'
+    #         }, context_instance=RequestContext(request))
+    #     logging.info(" ***> [%s] Bad token from Google Reader. Re-authenticating." % (request.user,))
+    #     return HttpResponseRedirect(reverse('google-reader-authorize'))
+
+    # Fetch imported feeds on next page load
+    request.session['import_from_google_reader'] = True
+
+    logging.user(request, "~BB~FW~SBFinishing Google Reader import - %s" % (request.META['REMOTE_ADDR'],))
+
+    if request.user.is_authenticated():
+        if is_modal or True:
+            return render_to_response('social/social_connect.xhtml', {}, context_instance=RequestContext(request))
+        else:
+            return HttpResponseRedirect(reverse('index'))
 
     return HttpResponseRedirect(reverse('import-signup'))
     
