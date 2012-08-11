@@ -118,8 +118,8 @@
         get_page_title: function() {
             var title = document.title;
             
-            if (title.length > 256) {
-                title = title.substr(0, 256) + '...';
+            if (title.length > 40) {
+                title = title.substr(0, 40) + '...';
             }
             
             return title;
@@ -258,12 +258,15 @@
         // =========================
         
         get_page_content: function() {
-            var $title = $('.NB-bookmarklet-page-title', this.$modal);
+            var $title = $('.NB-modal-title', this.$modal);
             var $content = $('.NB-bookmarklet-page-content', this.$modal);
+            var $readability = $(window.readability.init());
             
-            var readability = window.readability.init();
-            $title.append(readability);
-            console.log(["readability", readability, $title]);
+            var title = $readability.children("h1").text();
+            $title.html(title);
+            
+            var content = $("#readability-content", $readability).html();
+            $content.html(content);
         },
         
         // ===========
