@@ -190,7 +190,8 @@ def reader_callback(request):
 @json.json_view
 def import_from_google_reader(request):
     code = 0
-
+    feed_count = 0
+    
     if request.user.is_authenticated():
         reader_importer = GoogleReaderImporter(request.user)
         auto_active = bool(request.REQUEST.get('auto_active') or False)
@@ -203,8 +204,10 @@ def import_from_google_reader(request):
             code = 1
         if 'import_from_google_reader' in request.session:
             del request.session['import_from_google_reader']
-
-    return dict(code=code)
+    
+        feed_count = UserSubscription.objects.filter(user=request.user).count()
+        
+    return dict(code=code, feed_count=feed_count)
 
 def import_signup(request):
     if request.method == "POST":
