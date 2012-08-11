@@ -18,6 +18,8 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *nextButton;
 @property (weak, nonatomic) IBOutlet UIButton *facebookButton;
 @property (weak, nonatomic) IBOutlet UIButton *twitterButton;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *facebookActivityIndicator;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *twitterActivityIndicator;
 
 
 - (IBAction)tapNextButton;

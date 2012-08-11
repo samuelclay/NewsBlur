@@ -20,6 +20,8 @@
 @synthesize nextButton;
 @synthesize facebookButton;
 @synthesize twitterButton;
+@synthesize facebookActivityIndicator;
+@synthesize twitterActivityIndicator;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -46,6 +48,8 @@
     [self setNextButton:nil];
     [self setFacebookButton:nil];
     [self setTwitterButton:nil];
+    [self setFacebookActivityIndicator:nil];
+    [self setTwitterActivityIndicator:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;

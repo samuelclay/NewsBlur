@@ -46,7 +46,7 @@
     
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
-    self.nextButton.enabled = NO;
+//    self.nextButton.enabled = NO;
     self.navigationItem.rightBarButtonItem = next;
     
     self.navigationItem.title = @"Step 2 of 4";

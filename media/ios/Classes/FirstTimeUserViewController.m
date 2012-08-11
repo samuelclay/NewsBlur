@@ -17,11 +17,18 @@
 #define ADD_FRIENDS_BUTTON_TITLE @"SKIP THIS STEP"
 #define ADD_NEWSBLUR_BUTTON_TITLE @"FINISH"
 
+@interface FirstTimeUserViewController ()
+
+@property (readwrite) float angle_;
+
+@end
+
 @implementation FirstTimeUserViewController
 
 @synthesize appDelegate;
 @synthesize nextButton;
 @synthesize logo;
+@synthesize angle_;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -71,23 +78,31 @@
 
 - (IBAction)tapNextButton {
     [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddSitesViewController animated:YES];
+    
 }
 
 - (void)rotateLogo {
-    // Setup the animation
+    angle_ = 0;
     [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:(NSTimeInterval)60.0];
-    [UIView setAnimationCurve:UIViewAnimationCurveLinear];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    
-    NSLog(@"%f", M_PI);
-    
-    // The transform matrix
-    CGAffineTransform transform = CGAffineTransformMakeRotation(3.14);
-    self.logo.transform = transform;
-    
-    // Commit the changes
-    [UIView commitAnimations];
+	[UIView setAnimationDelegate:self];
+	[UIView setAnimationDuration:1];
+	[UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
+	
+	[NSTimer scheduledTimerWithTimeInterval: 0.016666 target: self selector:@selector(hadleTimer:) userInfo: nil repeats: YES];
+	[UIView commitAnimations];
+
 }
+
+-(void)hadleTimer:(NSTimer *)timer
+{
+	angle_ += 0.001;
+	if (angle_ > 6.283) { 
+		angle_ = 0;
+	}
+	
+	CGAffineTransform transform=CGAffineTransformMakeRotation(angle_);
+	self.logo.transform = transform;
+}
+
 
 @end
