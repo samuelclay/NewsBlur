@@ -47,11 +47,11 @@
     // Do any additional setup after loading the view from its nib.
 
 
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Let's get started" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Get Started" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Step 1 of 4";
+    self.navigationItem.title = @"Welcome";
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         logo.frame = CGRectMake(80, 135, 160, 160);

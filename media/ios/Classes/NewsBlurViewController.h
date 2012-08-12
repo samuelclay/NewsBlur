@@ -68,6 +68,7 @@
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;
+- (void)changeToAllMode;
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
 - (void)calculateFeedLocations:(BOOL)markVisible;
 - (IBAction)sectionTapped:(UIButton *)button;

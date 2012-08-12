@@ -177,11 +177,11 @@ static UIFont *indicatorFont = nil;
     CGContextAddLineToPoint(context, 3.0f, self.frame.size.height - 1);
     CGContextStrokePath(context);
 
-    CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor]));
-    CGContextBeginPath(context);
-    CGContextMoveToPoint(context, 9.0f, 1.0f);
-    CGContextAddLineToPoint(context, 9.0, self.frame.size.height - 1);
-    CGContextStrokePath(context);
+//    CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor]));
+//    CGContextBeginPath(context);
+//    CGContextMoveToPoint(context, 9.0f, 1.0f);
+//    CGContextAddLineToPoint(context, 9.0, self.frame.size.height - 1);
+//    CGContextStrokePath(context);
     
     // reset for borders
     
@@ -242,14 +242,14 @@ static UIFont *indicatorFont = nil;
         scoreColor = UIColorFromRGB(0x3B7613);
     }
     CGContextSetFillColorWithColor(context, UIColorFromRGB(0xf4f4f4).CGColor);
-    CGContextFillEllipseInRect(context, CGRectMake(7, storyIndicatorY + 12, 12, 12));
+    CGContextFillEllipseInRect(context, CGRectMake(1, storyIndicatorY + 12, 12, 12));
 
     if (self.isRead) {
         CGContextSetAlpha(context, 0.25);
     }
     
     CGContextSetFillColorWithColor(context, scoreColor.CGColor);
-    CGContextFillEllipseInRect(context, CGRectMake(9, storyIndicatorY + 14, 8, 8));
+    CGContextFillEllipseInRect(context, CGRectMake(3, storyIndicatorY + 14, 8, 8));
 }
 
 - (UIImage *)imageByApplyingAlpha:(UIImage *)image withAlpha:(CGFloat) alpha {

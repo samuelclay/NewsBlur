@@ -42,7 +42,7 @@
 						<string key="NSFrameSize">{540, 576}</string>
 						<reference key="NSSuperview" ref="437257068"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="797930801"/>
+						<reference key="NSNextKeyView" ref="524213128"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUIContentMode">4</int>
@@ -56,69 +56,38 @@
 					<object class="IBUILabel" id="197119979">
 						<reference key="NSNextResponder" ref="437257068"/>
 						<int key="NSvFlags">302</int>
-						<string key="NSFrame">{{20, 439}, {500, 82}}</string>
+						<string key="NSFrame">{{70, 400}, {400, 97}}</string>
 						<reference key="NSSuperview" ref="437257068"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-						<string key="IBUIText">Faster! Faster! Until the thrill of speed overcomes the fear of death.</string>
-						<object class="NSColor" key="IBUITextColor" id="252007782">
+						<string key="IBUIText">Thank you for trying out NewsBlur. We've worked hard to make a great app, so congratulations on discovering a handcrafted experience.</string>
+						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
 						</object>
 						<nil key="IBUIHighlightedColor"/>
-						<object class="NSColor" key="IBUIShadowColor" id="953471020">
+						<object class="NSColor" key="IBUIShadowColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
 						</object>
 						<string key="IBUIShadowOffset">{0, 1}</string>
 						<int key="IBUIBaselineAdjustment">0</int>
 						<float key="IBUIMinimumFontSize">12</float>
-						<int key="IBUINumberOfLines">2</int>
+						<int key="IBUINumberOfLines">5</int>
 						<int key="IBUITextAlignment">1</int>
 						<object class="IBUIFontDescription" key="IBUIFontDescription">
 							<int key="type">1</int>
-							<double key="pointSize">22</double>
+							<double key="pointSize">18</double>
 						</object>
 						<object class="NSFont" key="IBUIFont">
 							<string key="NSName">Helvetica</string>
-							<double key="NSSize">22</double>
-							<int key="NSfFlags">16</int>
-						</object>
-						<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
-					</object>
-					<object class="IBUILabel" id="797930801">
-						<reference key="NSNextResponder" ref="437257068"/>
-						<int key="NSvFlags">298</int>
-						<string key="NSFrame">{{20, 65}, {500, 59}}</string>
-						<reference key="NSSuperview" ref="437257068"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="524213128"/>
-						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<bool key="IBUIOpaque">NO</bool>
-						<bool key="IBUIClipsSubviews">YES</bool>
-						<int key="IBUIContentMode">7</int>
-						<bool key="IBUIUserInteractionEnabled">NO</bool>
-						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-						<string key="IBUIText">Welcome to NewsBlur</string>
-						<reference key="IBUITextColor" ref="252007782"/>
-						<reference key="IBUIHighlightedColor" ref="252007782"/>
-						<reference key="IBUIShadowColor" ref="953471020"/>
-						<string key="IBUIShadowOffset">{0, 1}</string>
-						<int key="IBUIBaselineAdjustment">0</int>
-						<float key="IBUIMinimumFontSize">10</float>
-						<int key="IBUITextAlignment">1</int>
-						<object class="IBUIFontDescription" key="IBUIFontDescription">
-							<int key="type">1</int>
-							<double key="pointSize">32</double>
-						</object>
-						<object class="NSFont" key="IBUIFont">
-							<string key="NSName">Helvetica</string>
-							<double key="NSSize">32</double>
+							<double key="NSSize">18</double>
 							<int key="NSfFlags">16</int>
 						</object>
 						<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
@@ -126,7 +95,7 @@
 					<object class="IBUIImageView" id="524213128">
 						<reference key="NSNextResponder" ref="437257068"/>
 						<int key="NSvFlags">301</int>
-						<string key="NSFrame">{{150, 168}, {240, 240}}</string>
+						<string key="NSFrame">{{150, 99}, {240, 240}}</string>
 						<reference key="NSSuperview" ref="437257068"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="197119979"/>
@@ -193,14 +162,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">header</string>
-						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="797930801"/>
-					</object>
-					<int key="connectionID">132</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">footer</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="197119979"/>
@@ -231,21 +192,15 @@
 						<int key="objectID">129</int>
 						<reference key="object" ref="437257068"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="197119979"/>
 							<reference ref="90654000"/>
-							<reference ref="797930801"/>
 							<reference ref="524213128"/>
+							<reference ref="197119979"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">116</int>
 						<reference key="object" ref="197119979"/>
-						<reference key="parent" ref="437257068"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">50</int>
-						<reference key="object" ref="797930801"/>
 						<reference key="parent" ref="437257068"/>
 					</object>
 					<object class="IBObjectRecord">
@@ -268,7 +223,6 @@
 				<string key="116.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="129.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="131.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<string key="50.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="66.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
@@ -618,6 +572,7 @@
 						<string key="appDelegate">NewsBlurAppDelegate</string>
 						<string key="facebookActivityIndicator">UIActivityIndicatorView</string>
 						<string key="facebookButton">UIButton</string>
+						<string key="friendsLabel">UILabel</string>
 						<string key="nextButton">UIBarButtonItem</string>
 						<string key="twitterActivityIndicator">UIActivityIndicatorView</string>
 						<string key="twitterButton">UIButton</string>
@@ -634,6 +589,10 @@
 						<object class="IBToOneOutletInfo" key="facebookButton">
 							<string key="name">facebookButton</string>
 							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="friendsLabel">
+							<string key="name">friendsLabel</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="nextButton">
 							<string key="name">nextButton</string>

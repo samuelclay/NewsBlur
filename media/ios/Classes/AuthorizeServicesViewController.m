@@ -42,6 +42,14 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    
+    if ([type isEqualToString:@"google"]) {
+        self.navigationItem.title = @"Google Reader";
+    } else if ([type isEqualToString:@"facebook"]) {
+        self.navigationItem.title = @"Facebook";
+    } else if ([type isEqualToString:@"twitter"]) {
+        self.navigationItem.title = @"Twitter";    
+    }    
     NSString *urlAddress = [NSString stringWithFormat:@"http://%@%@", NEWSBLUR_URL, url];
     NSURL *fullUrl = [NSURL URLWithString:urlAddress];
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:fullUrl];

@@ -283,7 +283,7 @@
     } else {
         [self.passwordInput setText:@""];
         [self.signUpPasswordInput setText:@""];
-        [appDelegate showFirstTimeUser];
+//        [appDelegate showFirstTimeUser];
         [appDelegate reloadFeedsView:YES];
         [self dismissModalViewControllerAnimated:NO];
     }

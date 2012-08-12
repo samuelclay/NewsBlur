@@ -429,9 +429,7 @@
     
     [self.feedTitlesTable reloadData];
 
-    
-//    NSLog(@"appDelegate.dictFolders: %@", appDelegate.dictFolders);
-//    NSLog(@"appDelegate.dictFoldersArray: %@", appDelegate.dictFoldersArray);
+
     
     // test for latest version of app
     NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];  
@@ -456,6 +454,13 @@
     }
 
     [self refreshFeedList];
+    
+    // start up the first time user experience
+    if ([[results objectForKey:@"social_feeds"] count] == 0 &&
+        [[[results objectForKey:@"feeds"] allKeys] count] == 0) {
+        [appDelegate showFirstTimeUser];
+        return;
+    }
 }
 
 - (void)showUserProfile {
@@ -924,6 +929,13 @@
     appDelegate.activeFolderFeeds = feeds;
 
     [appDelegate loadRiverFeedDetailView];
+}
+
+- (void)changeToAllMode {
+    [self.intelligenceControl setSelectedSegmentIndex:0];
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
+    [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
+    [userPreferences synchronize];
 }
 
 - (IBAction)selectIntelligence {

@@ -45,7 +45,7 @@
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Step 4 of 4";
+    self.navigationItem.title = @"All Done!";
     
 }
 

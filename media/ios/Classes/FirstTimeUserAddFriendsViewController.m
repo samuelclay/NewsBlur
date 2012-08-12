@@ -9,6 +9,7 @@
 #import "FirstTimeUserAddFriendsViewController.h"
 #import "FirstTimeUserAddNewsBlurViewController.h"
 #import "AuthorizeServicesViewController.h"
+#import "ASIHTTPRequest.h"
 
 @interface FirstTimeUserAddFriendsViewController ()
 
@@ -22,6 +23,7 @@
 @synthesize twitterButton;
 @synthesize facebookActivityIndicator;
 @synthesize twitterActivityIndicator;
+@synthesize friendsLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -41,7 +43,7 @@
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Step 3 of 4";
+    self.navigationItem.title = @"Find Friends";
 }
 
 - (void)viewDidUnload {
@@ -97,5 +99,54 @@
     self.facebookButton.userInteractionEnabled = NO;
 }
 
+- (IBAction)toggleAutoFollowFriends:(id)sender {
+    UISwitch *button = (UISwitch *)sender;
+    
+    NSURL *preferenceURL = [NSURL URLWithString:
+                          [NSString stringWithFormat:@"http://%@/profile/set_preference",
+                           NEWSBLUR_URL]];
+    
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:preferenceURL];
+    [[NSHTTPCookieStorage sharedHTTPCookieStorage]
+     setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
+    
+    if (button.on) {
+        [request setPostValue:@"false" forKey:@"autofollow_friends"];
+    } else {
+        [request setPostValue:@"true" forKey:@"autofollow_friends"];
+    }
+    
+    [request setDelegate:self];
+    [request setResponseEncoding:NSUTF8StringEncoding];
+    [request setDefaultResponseEncoding:NSUTF8StringEncoding];
+    [request setDidFinishSelector:@selector(finishToggleAutoFollowFriends:)];
+    [request setDidFailSelector:@selector(finishedWithError:)];
+    [request setTimeOutSeconds:30];
+    [request startAsynchronous];
+
+}
+
+- (void)finishedWithError:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    NSLog(@"results are %@", results);
+    
+}
+
+- (void)finishToggleAutoFollowFriends:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    NSLog(@"results are %@", results);
+}
 
 @end

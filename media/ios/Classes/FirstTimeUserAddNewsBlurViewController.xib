@@ -57,7 +57,7 @@
 					<object class="IBUILabel" id="804223306">
 						<reference key="NSNextResponder" ref="874391841"/>
 						<int key="NSvFlags">303</int>
-						<string key="NSFrame">{{20, 129}, {500, 100}}</string>
+						<string key="NSFrame">{{70, 112}, {400, 100}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="754909752"/>
@@ -67,7 +67,7 @@
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-						<string key="IBUIText">Add our blog for the latest news</string>
+						<string key="IBUIText">Add our blog for the latest news.</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
@@ -79,14 +79,15 @@
 						</object>
 						<int key="IBUIBaselineAdjustment">0</int>
 						<float key="IBUIMinimumFontSize">10</float>
+						<int key="IBUINumberOfLines">7</int>
 						<int key="IBUITextAlignment">1</int>
 						<object class="IBUIFontDescription" key="IBUIFontDescription">
 							<int key="type">1</int>
-							<double key="pointSize">24</double>
+							<double key="pointSize">18</double>
 						</object>
 						<object class="NSFont" key="IBUIFont">
 							<string key="NSName">Helvetica</string>
-							<double key="NSSize">24</double>
+							<double key="NSSize">18</double>
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
@@ -102,9 +103,7 @@
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
-						<int key="IBUIButtonType">1</int>
-						<string key="IBUISelectedTitle">Added NewsBlur</string>
-						<string key="IBUINormalTitle">Add NewsBlur Blog</string>
+						<string key="IBUINormalTitle">Follow NewsBlur Blog</string>
 						<reference key="IBUIHighlightedTitleColor" ref="222909269"/>
 						<object class="NSColor" key="IBUISelectedTitleColor">
 							<int key="NSColorSpace">3</int>
@@ -113,25 +112,23 @@
 								<int key="NSID">2</int>
 							</object>
 						</object>
-						<object class="NSColor" key="IBUINormalTitleColor">
-							<int key="NSColorSpace">1</int>
-							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
-						</object>
+						<reference key="IBUINormalTitleColor" ref="222909269"/>
 						<object class="NSColor" key="IBUINormalTitleShadowColor">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MC41AA</bytes>
+							<int key="NSColorSpace">1</int>
+							<bytes key="NSRGB">MC42IDAuNiAwLjYAA</bytes>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage">
+						<object class="NSCustomResource" key="IBUISelectedBackgroundImage" id="613312933">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">google_reader_selected_background.png</string>
+							<string key="NSResourceName">google.png</string>
 						</object>
+						<reference key="IBUINormalBackgroundImage" ref="613312933"/>
 						<object class="IBUIFontDescription" key="IBUIFontDescription">
 							<int key="type">2</int>
-							<double key="pointSize">15</double>
+							<double key="pointSize">13</double>
 						</object>
 						<object class="NSFont" key="IBUIFont">
 							<string key="NSName">Helvetica-Bold</string>
-							<double key="NSSize">15</double>
+							<double key="NSSize">13</double>
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
@@ -234,7 +231,7 @@
 				<string key="131.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="57.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="58.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="2" key="58.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="0.0" key="58.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
@@ -583,6 +580,7 @@
 						<string key="appDelegate">NewsBlurAppDelegate</string>
 						<string key="facebookActivityIndicator">UIActivityIndicatorView</string>
 						<string key="facebookButton">UIButton</string>
+						<string key="friendsLabel">UILabel</string>
 						<string key="nextButton">UIBarButtonItem</string>
 						<string key="twitterActivityIndicator">UIActivityIndicatorView</string>
 						<string key="twitterButton">UIButton</string>
@@ -599,6 +597,10 @@
 						<object class="IBToOneOutletInfo" key="facebookButton">
 							<string key="name">facebookButton</string>
 							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="friendsLabel">
+							<string key="name">friendsLabel</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="nextButton">
 							<string key="name">nextButton</string>
@@ -781,6 +783,8 @@
 					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="appDelegate">NewsBlurAppDelegate</string>
+						<string key="footer">UILabel</string>
+						<string key="header">UILabel</string>
 						<string key="logo">UIImageView</string>
 						<string key="nextButton">UIBarButtonItem</string>
 					</dictionary>
@@ -788,6 +792,14 @@
 						<object class="IBToOneOutletInfo" key="appDelegate">
 							<string key="name">appDelegate</string>
 							<string key="candidateClassName">NewsBlurAppDelegate</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="footer">
+							<string key="name">footer</string>
+							<string key="candidateClassName">UILabel</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="header">
+							<string key="name">header</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="logo">
 							<string key="name">logo</string>
@@ -1658,7 +1670,7 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="google_reader_selected_background.png">{280, 80}</string>
+			<string key="google.png">{184, 34}</string>
 			<string key="subtle-pattern-4.jpg">{1000, 1000}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1181</string>

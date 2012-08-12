@@ -36,8 +36,6 @@
 - (void)viewDidLoad
 {
     
-
-    
     // For textField1
     [[NSNotificationCenter defaultCenter] 
      addObserver:self 
@@ -50,7 +48,7 @@
     
     UIBarButtonItem *submit = [[UIBarButtonItem alloc] initWithTitle:@"Post" style:UIBarButtonSystemItemDone target:self action:@selector(doShareThisStory:)];
     self.submitButton = submit;
-    self.submitButton.tintColor = UIColorFromRGB(0x217412);
+//    self.submitButton.tintColor = UIColorFromRGB(0x217412);
     self.navigationItem.rightBarButtonItem = submit;
     
     

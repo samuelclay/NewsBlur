@@ -14,7 +14,7 @@
 #import "FeedsMenuViewController.h"
 #import "StoryDetailViewController.h"
 #import "FirstTimeUserViewController.h"
-#import "FriendsListViewController.h"
+#import "FriendsListViewController.h"u
 #import "GoogleReaderViewController.h"
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
@@ -294,13 +294,13 @@
 }
 
 - (void)showFirstTimeUser {
+    [self.feedsViewController changeToAllMode];
     UINavigationController *ftux = [[UINavigationController alloc] initWithRootViewController:self.firstTimeUserViewController];
     
     ftux.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     
     self.ftuxNavigationController = ftux;
     
-    [loginViewController dismissModalViewControllerAnimated:NO];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [self.masterContainerViewController presentModalViewController:self.ftuxNavigationController animated:YES];
@@ -331,7 +331,7 @@
 
 - (void)reloadFeedsView:(BOOL)showLoader {
     [feedsViewController fetchFeedList:showLoader];
-    [loginViewController dismissModalViewControllerAnimated:YES];
+    [loginViewController dismissModalViewControllerAnimated:NO];
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
 }
 

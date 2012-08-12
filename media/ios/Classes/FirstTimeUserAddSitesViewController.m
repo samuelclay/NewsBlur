@@ -49,7 +49,7 @@
 //    self.nextButton.enabled = NO;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Step 2 of 4";
+    self.navigationItem.title = @"Add Sites";
     self.activityIndicator.hidesWhenStopped = YES;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
@@ -136,7 +136,7 @@
 }
 
 - (void)updateSites {
-    self.instructionLabel.text = @"And just like that, we're done!  Time to see what your friends are sharing.";
+    self.instructionLabel.text = @"And just like that, we're done!  Time to see what your friends are sharing or add some categories.";
     [appDelegate.feedsViewController fetchFeedList:NO];
     NSString *msg = [NSString stringWithFormat:@"Imported %i site%@", 
                      self.importedFeedCount_,
@@ -144,6 +144,14 @@
     [self.googleReaderButton setTitle:msg  forState:UIControlStateSelected];
     self.googleReaderButton.selected = YES;
     [self.activityIndicator stopAnimating];
+    
+    UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
+    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
+    checkmarkView.frame = CGRectMake(self.googleReaderButton.frame.origin.x + self.googleReaderButton.frame.size.width - 24,
+                                     self.googleReaderButton.frame.origin.y + 8,
+                                     16,
+                                     16);
+    [self.view addSubview:checkmarkView];
 }
 
 #pragma mark -

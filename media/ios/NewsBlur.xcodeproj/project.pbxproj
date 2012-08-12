@@ -60,6 +60,8 @@
 		437F974D15ACA0ED0007136B /* DashboardViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437F974B15ACA0ED0007136B /* DashboardViewController.xib */; };
 		437F976F15AE21290007136B /* ActivityModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F976E15AE21280007136B /* ActivityModule.m */; };
 		437F977215AE70E30007136B /* InteractionsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F977115AE70E30007136B /* InteractionsModule.m */; };
+		43821AD315D8703F0034A4EF /* 258-checkmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 43821AD115D8703F0034A4EF /* 258-checkmark.png */; };
+		43821AD415D8703F0034A4EF /* 258-checkmark@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43821AD215D8703F0034A4EF /* 258-checkmark@2x.png */; };
 		4383DCD615BB8B88007E6611 /* SmallActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4383DCD515BB8B88007E6611 /* SmallActivityCell.m */; };
 		438FEDE815D5B15F00E3B3C9 /* FollowGrid.m in Sources */ = {isa = PBXBuildFile; fileRef = 438FEDE715D5B15F00E3B3C9 /* FollowGrid.m */; };
 		439DAB201590DA350019B0EB /* FeedsMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 439DAB1E1590DA350019B0EB /* FeedsMenuViewController.m */; };
@@ -362,7 +364,7 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* NewsBlurAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = NewsBlurAppDelegate.h; path = Classes/NewsBlurAppDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		1D3623250D0F684500981E51 /* NewsBlurAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = NewsBlurAppDelegate.m; path = Classes/NewsBlurAppDelegate.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		1D6058910D05DD3D006BFB54 /* NewsBlur.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewsBlur.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* NewsBlur Pro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "NewsBlur Pro.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		28D7ACF60DDB3853001CB0EB /* NewsBlurViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsBlurViewController.h; sourceTree = "<group>"; };
@@ -420,6 +422,8 @@
 		437F976E15AE21280007136B /* ActivityModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ActivityModule.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		437F977015AE70E30007136B /* InteractionsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InteractionsModule.h; sourceTree = "<group>"; };
 		437F977115AE70E30007136B /* InteractionsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = InteractionsModule.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		43821AD115D8703F0034A4EF /* 258-checkmark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "258-checkmark.png"; sourceTree = "<group>"; };
+		43821AD215D8703F0034A4EF /* 258-checkmark@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "258-checkmark@2x.png"; sourceTree = "<group>"; };
 		4383DCD415BB8B87007E6611 /* SmallActivityCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmallActivityCell.h; sourceTree = "<group>"; };
 		4383DCD515BB8B88007E6611 /* SmallActivityCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmallActivityCell.m; sourceTree = "<group>"; };
 		438FEDE615D5B15F00E3B3C9 /* FollowGrid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FollowGrid.h; sourceTree = "<group>"; };
@@ -911,7 +915,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* NewsBlur.app */,
+				1D6058910D05DD3D006BFB54 /* NewsBlur Pro.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1115,6 +1119,8 @@
 		431B857615A132B600DCE497 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				43821AD115D8703F0034A4EF /* 258-checkmark.png */,
+				43821AD215D8703F0034A4EF /* 258-checkmark@2x.png */,
 				430C4BBC15D71D0300B9F63B /* subtle-pattern-4.jpg */,
 				430C4BB915D71BDD00B9F63B /* subtle-pattern-2.jpg */,
 				43C3D41715D478570066D36D /* greenButton.png */,
@@ -1821,7 +1827,7 @@
 			);
 			name = NewsBlur;
 			productName = NewsBlur;
-			productReference = 1D6058910D05DD3D006BFB54 /* NewsBlur.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* NewsBlur Pro.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -2060,6 +2066,8 @@
 				430C4BC015D7208600B9F63B /* facebook.png in Resources */,
 				430C4BC215D7214E00B9F63B /* twitter.png in Resources */,
 				430C4BC415D7271200B9F63B /* google.png in Resources */,
+				43821AD315D8703F0034A4EF /* 258-checkmark.png in Resources */,
+				43821AD415D8703F0034A4EF /* 258-checkmark@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2242,7 +2250,7 @@
 					"-all_load",
 					"-ObjC",
 				);
-				PRODUCT_NAME = NewsBlur;
+				PRODUCT_NAME = "NewsBlur Pro";
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2279,7 +2287,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_NAME = NewsBlur;
+				PRODUCT_NAME = "NewsBlur Pro";
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
