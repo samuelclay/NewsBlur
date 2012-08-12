@@ -6,10 +6,12 @@ import java.util.List;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayout;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Profile;
+import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Story;
@@ -39,12 +42,15 @@ public class ReadingItemFragment extends Fragment {
 	private LayoutInflater inflater;
 	private APIManager apiManager;
 	private ImageLoader imageLoader;
+	private String feedColor;
+	private String feedFade;
 	
-	public static ReadingItemFragment newInstance(Story story) { 
+	public static ReadingItemFragment newInstance(Story story, String feedFaviconColor, String feedFaviconFade) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
-
 		Bundle args = new Bundle();
 		args.putSerializable("story", story);
+		args.putString("feedColor", feedFaviconColor);
+		args.putString("feedFade", feedFaviconFade);
 		readingFragment.setArguments(args);
 
 		return readingFragment;
@@ -57,12 +63,16 @@ public class ReadingItemFragment extends Fragment {
 		imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
 		apiManager = new APIManager(getActivity());
 		story = getArguments() != null ? (Story) getArguments().getSerializable("story") : null;
+		feedColor = getArguments().getString("feedColor");
+		feedFade = getArguments().getString("feedFade");
 	}
 
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		this.inflater = inflater;
 
 		View view = inflater.inflate(R.layout.fragment_readingitem, null);
+		
+		
 		WebView web = (WebView) view.findViewById(R.id.reading_webview);
 		setupWebview(web);
 		setupItemMetadata(view);
@@ -141,20 +151,42 @@ public class ReadingItemFragment extends Fragment {
 
 
 	private void setupItemMetadata(View view) {
+		
+		View borderOne = view.findViewById(R.id.row_item_favicon_borderbar_1);
+		View borderTwo = view.findViewById(R.id.row_item_favicon_borderbar_2);
+		
+		if (!TextUtils.equals(feedColor, "#null") && !TextUtils.equals(feedFade, "#null")) {
+			borderOne.setBackgroundColor(Color.parseColor(feedColor));
+			borderTwo.setBackgroundColor(Color.parseColor(feedFade));
+		} else {
+			borderOne.setBackgroundColor(Color.GRAY);
+			borderTwo.setBackgroundColor(Color.LTGRAY);
+		}
+		
+		View sidebar = view.findViewById(R.id.row_item_sidebar);
+		int storyIntelligence = story.intelligence.intelligenceAuthors + story.intelligence.intelligenceTags + story.intelligence.intelligenceFeed + story.intelligence.intelligenceTitle;
+		if (storyIntelligence > 0) {
+			sidebar.setBackgroundResource(R.drawable.positive_count_circle);
+		} else if (storyIntelligence == 0) {
+			sidebar.setBackgroundResource(R.drawable.neutral_count_circle);
+		} else {
+			sidebar.setBackgroundResource(R.drawable.negative_count_circle);
+		}
+		
 		TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
 		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
 		TextView itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
-		GridLayout tagContainer = (GridLayout) view.findViewById(R.id.reading_item_tags);
-
-		if (story.tags != null || story.tags.length > 0) {
-			tagContainer.setVisibility(View.VISIBLE);
-			for (String tag : story.tags) {
-				View v = inflater.inflate(R.layout.tag_view, null);
-				TextView tagText = (TextView) v.findViewById(R.id.tag_text);
-				tagText.setText(tag);
-				tagContainer.addView(v);
-			}
-		}
+//		GridLayout tagContainer = (GridLayout) view.findViewById(R.id.reading_item_tags);
+//
+//		if (story.tags != null || story.tags.length > 0) {
+//			tagContainer.setVisibility(View.VISIBLE);
+//			for (String tag : story.tags) {
+//				View v = inflater.inflate(R.layout.tag_view, null);
+//				TextView tagText = (TextView) v.findViewById(R.id.tag_text);
+//				tagText.setText(tag);
+//				tagContainer.addView(v);
+//			}
+//		}
 
 		itemDate.setText(story.shortDate);
 		itemTitle.setText(story.title);

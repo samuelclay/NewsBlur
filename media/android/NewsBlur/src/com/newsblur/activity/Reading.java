@@ -44,7 +44,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	
 	private ViewPager pager;
 	private FragmentManager fragmentManager;
-	protected FeedReadingAdapter readingAdapter;
+	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
 	protected SyncUpdateFragment syncFragment;
 
@@ -65,9 +65,8 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 		setResult(RESULT_OK);
 	}
 
-	protected void setupPager(Cursor stories) {
-		readingAdapter = new FeedReadingAdapter(fragmentManager, this, stories);
-
+	protected void setupPager() {
+		
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
@@ -81,25 +80,6 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 
 		pager.setAdapter(readingAdapter);
 		pager.setCurrentItem(passedPosition);
-	}
-	
-	protected void createFloatingHeader(final Feed feed) {
-		View view = findViewById(R.id.reading_floatbar);
-		GradientDrawable gradient;
-		int borderColor = Color.BLACK;
-		if (!TextUtils.equals(feed.faviconColour, "#null") && !TextUtils.equals(feed.faviconFade, "#null")) {
-			gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { Color.parseColor(feed.faviconColour), Color.parseColor(feed.faviconFade)});
-			borderColor = Color.parseColor(feed.faviconBorder);
-		} else {
-			gradient = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[] { Color.DKGRAY, Color.LTGRAY });
-		}
-		Drawable[] layers = new Drawable[2];
-		layers[0] = gradient;
-		layers[1] = getResources().getDrawable(R.drawable.shiny_plastic);
-		view.setBackgroundDrawable(new LayerDrawable(layers));
-
-		findViewById(R.id.reading_divider).setBackgroundColor(borderColor);
-		findViewById(R.id.reading_divider_bottom).setBackgroundColor(borderColor);
 	}
 
 	@Override

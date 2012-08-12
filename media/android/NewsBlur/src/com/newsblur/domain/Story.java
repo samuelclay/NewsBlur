@@ -112,7 +112,7 @@ public class Story implements Serializable {
 		return story;
 	}
 	
-	private class Intelligence implements Serializable {
+	public class Intelligence implements Serializable {
 		private static final long serialVersionUID = -1314486209455376730L;
 
 		@SerializedName("feed")

@@ -75,7 +75,6 @@ public class Feed {
 
 	public static Feed fromCursor(Cursor childCursor) {
 		Feed feed = new Feed();
-		childCursor.moveToFirst();
 		feed.active = Boolean.parseBoolean(childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ACTIVE)));
 		feed.address = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_ADDRESS));
 		feed.favicon = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_FAVICON));

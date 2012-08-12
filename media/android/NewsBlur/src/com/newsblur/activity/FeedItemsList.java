@@ -1,6 +1,7 @@
 package com.newsblur.activity;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -23,7 +24,9 @@ public class FeedItemsList extends ItemsList {
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
 		
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-		Feed feed = Feed.fromCursor(getContentResolver().query(feedUri, null, FeedProvider.getSelectionFromState(currentState), null, null));
+		Cursor cursor = getContentResolver().query(feedUri, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		cursor.moveToFirst();
+		Feed feed = Feed.fromCursor(cursor);
 		setTitle(feed.title);
 		
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);

@@ -48,6 +48,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	public static int ITEMLIST_LOADER = 0x01;
 	private int READING_RETURNED = 0x02;
 	private Feed feed;
+	private Cursor feedCursor;
 
 	public FeedItemListFragment(final String feedId, final int currentState) {
 		this.feedId = feedId;
@@ -77,10 +78,9 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-		Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-		
 		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
-		feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
+		
+		setupFeed();
 
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
@@ -98,6 +98,13 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		return v;
 	}
 
+	private void setupFeed() {
+		Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
+		feedCursor = contentResolver.query(feedUri, null, null, null, null);
+		feedCursor.moveToFirst();
+		feed = Feed.fromCursor(feedCursor);
+	}
+
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
@@ -113,6 +120,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	}
 
 	public void hasUpdated() {
+		setupFeed();
 		getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
 		requestedPage = false;
 	}

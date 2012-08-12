@@ -7,7 +7,7 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <View
             android:id="@+id/row_item_favicon_borderbar_1"
@@ -54,8 +54,9 @@
             android:id="@+id/row_item_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/row_item_author"
-            android:layout_below="@id/row_item_author"
+            android:layout_toRightOf="@id/row_item_sidebar"
+            android:layout_marginLeft="8dp"
+            android:layout_below="@id/row_item_date"
             android:layout_marginRight="8dp"
             android:paddingTop="8dp"
             android:paddingBottom="12dp"

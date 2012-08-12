@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.newsblur.database.FeedProvider;
+import com.newsblur.database.FeedReadingAdapter;
 import com.newsblur.database.MarkStoryAsReadIntenallyTask;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
@@ -29,11 +30,16 @@ public class FeedReading extends Reading {
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-		Feed feed = Feed.fromCursor(contentResolver.query(feedUri, null, null, null, null));
+		Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);
+		
+		feedCursor.moveToFirst();
+		Feed feed = Feed.fromCursor(feedCursor);
 		setTitle(feed.title);
-		setupPager(stories);
+		
+		readingAdapter = new FeedReadingAdapter(getSupportFragmentManager(), feed, stories);
+
+		setupPager();
 			
-		createFloatingHeader(feed);
 		Story story = readingAdapter.getStory(passedPosition);
 		
 		storiesToMarkAsRead.add(readingAdapter.getStory(passedPosition).id);

@@ -7,79 +7,80 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingTop="9dp" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/list_background"
-            android:padding="10dp" >
+            android:orientation="horizontal" >
 
-            <TextView
-                android:id="@+id/reading_item_title"
+            <View
+                android:id="@+id/row_item_favicon_borderbar_1"
+                android:layout_width="8dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:id="@+id/row_item_favicon_borderbar_2"
+                android:layout_width="8dp"
+                android:layout_height="match_parent" />
+
+            <View
+                android:id="@+id/row_item_sidebar"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginLeft="-8dp"
+                android:layout_marginTop="12dp" />
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginBottom="5dp"
-                android:shadowColor="@color/darkgray"
-                android:shadowDx="0"
-                android:shadowDy="0"
-                android:shadowRadius="15"
-                android:textColor="@color/white"
-                android:textSize="18dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/reading_item_authors"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/reading_item_title"
-                android:gravity="center_vertical|right"
-                android:minWidth="80dp"
-                android:textColor="@color/lightgray"
-                android:textSize="11dp" />
-
-            <TextView
-                android:id="@+id/reading_item_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/reading_item_title"
-                android:layout_marginBottom="5dp"
-                android:layout_marginRight="10dp"
-                android:textColor="@color/lightgray"
-                android:textSize="11dp"
-                android:textStyle="italic" />
-
-            <android.support.v7.widget.GridLayout
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/reading_item_tags"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/reading_item_date"
-                android:layout_marginTop="5dp"
-                android:visibility="invisible" />
-        </RelativeLayout>
+                android:layout_height="wrap_content" 
+                android:padding="8dp"
+                android:layout_marginBottom="8dp">
+                
+                <TextView
+                    android:id="@+id/reading_item_authors"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:maxLines="1"
+                    android:minWidth="80dp"
+                    android:textColor="@color/darkgray"
+                    android:textSize="11dp" />
+                
+                <TextView
+                    android:id="@+id/reading_item_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@color/darkgray"
+                    android:textSize="11dp" />
+                
+                <TextView
+                    android:id="@+id/reading_item_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/reading_item_date"
+                    android:maxLines="2"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@color/darkgray"
+                    android:textSize="18dp" />
+              
+            </RelativeLayout>
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/darkgray" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/lightgray" />
+            android:layout_height="3dp"
+            android:background="@drawable/divider_light" />
 
         <WebView
             android:id="@+id/reading_webview"
             android:layout_width="match_parent"
-            android:background="@color/item_background"
             android:layout_height="wrap_content"
+            android:background="@color/item_background"
             android:scrollbars="none" />
 
         <RelativeLayout
