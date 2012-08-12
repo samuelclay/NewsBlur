@@ -596,7 +596,6 @@ header {
     position: absolute;
     left: 28px;
     top: 10px;
-    cursor: pointer;
 }
 .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
     top: 26px;
