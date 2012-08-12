@@ -1682,6 +1682,8 @@ class MSocialServices(mongo.Document):
 
     def sync_twitter_friends(self):
         user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~BB~FRTwitter import starting...")
+        
         api = self.twitter_api()
         if not api:
             logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no api access.")
@@ -1704,8 +1706,6 @@ class MSocialServices(mongo.Document):
         self.syncing_twitter = False
         self.save()
         
-        self.follow_twitter_friends()
-        
         profile = MSocialProfile.get_user(self.user_id)
         profile.location = profile.location or twitter_user.location
         profile.bio = profile.bio or twitter_user.description
@@ -1716,41 +1716,7 @@ class MSocialServices(mongo.Document):
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('twitter')
         
-    def sync_facebook_friends(self):
-        user = User.objects.get(pk=self.user_id)
-        graph = self.facebook_api()
-        if not graph:
-            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no api access.")
-            self.syncing_facebook = False
-            self.save()
-            return
-
-        friends = graph.get_connections("me", "friends")
-        if not friends:
-            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no friend_ids.")
-            self.syncing_facebook = False
-            self.save()
-            return
-
-        facebook_friend_ids = [unicode(friend["id"]) for friend in friends["data"]]
-        self.facebook_friend_ids = facebook_friend_ids
-        self.facebook_refresh_date = datetime.datetime.utcnow()
-        self.facebook_picture_url = "//graph.facebook.com/%s/picture" % self.facebook_uid
-        self.syncing_facebook = False
-        self.save()
-        
-        self.follow_facebook_friends()
-        
-        facebook_user = graph.request('me', args={'fields':'website,bio,location'})
-        profile = MSocialProfile.get_user(self.user_id)
-        profile.location = profile.location or (facebook_user.get('location') and facebook_user['location']['name'])
-        profile.bio = profile.bio or facebook_user.get('bio')
-        if not profile.website and facebook_user.get('website'):
-            profile.website = facebook_user.get('website').split()[0]
-        profile.save()
-        profile.count_follows()
-        if not profile.photo_url or not profile.photo_service:
-            self.set_photo('facebook')
+        self.follow_twitter_friends()
         
     def follow_twitter_friends(self):
         social_profile = MSocialProfile.get_user(self.user_id)
@@ -1780,6 +1746,44 @@ class MSocialServices(mongo.Document):
         logging.user(user, "~BB~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
         
         return following
+        
+    def sync_facebook_friends(self):
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~BB~FRFacebook import starting...")
+        
+        graph = self.facebook_api()
+        if not graph:
+            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no api access.")
+            self.syncing_facebook = False
+            self.save()
+            return
+
+        friends = graph.get_connections("me", "friends")
+        if not friends:
+            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no friend_ids.")
+            self.syncing_facebook = False
+            self.save()
+            return
+
+        facebook_friend_ids = [unicode(friend["id"]) for friend in friends["data"]]
+        self.facebook_friend_ids = facebook_friend_ids
+        self.facebook_refresh_date = datetime.datetime.utcnow()
+        self.facebook_picture_url = "//graph.facebook.com/%s/picture" % self.facebook_uid
+        self.syncing_facebook = False
+        self.save()
+        
+        facebook_user = graph.request('me', args={'fields':'website,bio,location'})
+        profile = MSocialProfile.get_user(self.user_id)
+        profile.location = profile.location or (facebook_user.get('location') and facebook_user['location']['name'])
+        profile.bio = profile.bio or facebook_user.get('bio')
+        if not profile.website and facebook_user.get('website'):
+            profile.website = facebook_user.get('website').split()[0]
+        profile.save()
+        profile.count_follows()
+        if not profile.photo_url or not profile.photo_service:
+            self.set_photo('facebook')
+        
+        self.follow_facebook_friends()
         
     def follow_facebook_friends(self):
         social_profile = MSocialProfile.get_user(self.user_id)
