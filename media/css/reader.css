@@ -2457,14 +2457,16 @@ background: transparent;
     white-space: nowrap;
     font-weight: bold;
     text-shadow: 0 1px 0 #000;
-    background-color: gainsboro;
+    margin-top: 1px;
+    border-bottom: 1px solid #A9A9A9;
 }
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
     padding: 4px;
     height: 100%;
     float: right;
-    background: linen url('/media/embed/icons/silk/time.png') no-repeat 8px 4px;
+    background: #B0C4DE url('/media/embed/icons/silk/time.png') no-repeat 8px 4px;
+    border-left: 1px solid #92A6C0;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
@@ -2481,6 +2483,8 @@ background: transparent;
     padding: 4px 36px 4px 6px;
     color: white;
     text-shadow: none;
+    background-color: #DCDCDC;
+    border-left: 1px solid #DCDCDC;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
@@ -2505,6 +2509,7 @@ background: transparent;
     color: #D7DDF7;
     opacity: 1;
     text-shadow: 0 1px 0 #101010;
+    border-left: 1px solid #2B478C;
 }
 .NB-sideoption-share-wrapper {
     background-color: #EBF6DA;

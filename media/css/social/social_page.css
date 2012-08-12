@@ -882,6 +882,7 @@ header {
     font-size: 10px;
 /*    padding: 8px 14px 0px;*/
     padding: 8px 28px 0px;
+    position: relative;
     overflow: hidden;
     height: 26px;
     -webkit-transition: all .12s ease-out;
@@ -889,14 +890,14 @@ header {
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
 
-    background-image: -webkit-gradient(
+    background-image: url('/media/embed/reader/background-control-light.png'), -webkit-gradient(
       linear,
       left bottom,
       left top,
       color-stop(0.10, #EBEBEC),
       color-stop(0.84, #F5F5F5)
     );
-    background-image: -moz-linear-gradient(
+    background-image: url('/media/embed/reader/background-control-light.png'), -moz-linear-gradient(
       center bottom,
       #EBEBEC 10%,
       #F5F5F5 84%
