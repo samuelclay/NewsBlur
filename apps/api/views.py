@@ -8,6 +8,7 @@ from django.contrib.auth import login as login_user
 from django.contrib.auth import logout as logout_user
 from apps.reader.forms import SignupForm, LoginForm
 from apps.profile.models import Profile
+from apps.social.models import MSocialProfile
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 from utils import log as logging
@@ -61,14 +62,16 @@ def logout(request):
 def add_site_load_script(request, token):
     code = 0
     usf = None
+    user_profile = None;
     def image_base64(image_name, path='icons/silk/'):
-        image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s.png' % (path, image_name)))
+        image_file = open(os.path.join(settings.MEDIA_ROOT, 'img/%s%s' % (path, image_name)))
         return base64.b64encode(image_file.read())
     
-    accept_image     = image_base64('accept')
-    error_image      = image_base64('error')
-    new_folder_image = image_base64('arrow_down_right')
-    add_image        = image_base64('add')
+    accept_image     = image_base64('accept.png')
+    error_image      = image_base64('error.png')
+    new_folder_image = image_base64('arrow_down_right.png')
+    add_image        = image_base64('add.png')
+    side_background  = image_base64('subtle-pattern-11.jpg', path='reader/')
 
     try:
         profiles = Profile.objects.filter(secret_token=token)
@@ -77,6 +80,7 @@ def add_site_load_script(request, token):
             usf = UserSubscriptionFolders.objects.get(
                 user=profile.user
             )
+            user_profile = MSocialProfile.objects.get(user_id=profile.user.pk)
         else:
             code = -1
     except Profile.DoesNotExist:
@@ -88,9 +92,12 @@ def add_site_load_script(request, token):
         'code': code,
         'token': token,
         'folders': (usf and usf.folders) or [],
+        'user': profile and profile.user or {},
+        'user_profile': user_profile and json.encode(user_profile.to_json()) or {},
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,
+        'side_background': side_background,
         'new_folder_image': new_folder_image,
     }, 
     context_instance=RequestContext(request),

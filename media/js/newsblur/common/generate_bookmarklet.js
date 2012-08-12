@@ -4,7 +4,7 @@ NEWSBLUR.generate_bookmarklet = function() {
     var $bookmarklet = $.make('a', { 
         className: 'NB-goodies-bookmarklet-button',
         href: href
-    }, 'Subscribe in NewsBlur');
+    }, 'Share on NewsBlur');
     
     return $bookmarklet;
 };

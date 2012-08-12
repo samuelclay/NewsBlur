@@ -964,7 +964,7 @@ window.readability = {
         readability.prepArticle(articleContent);
 
         if (readability.curPageNum === 1) {
-            articleContent.innerHTML = '<div id="readability-page-1" class="page">' + articleContent.innerHTML + '</div>';
+            articleContent.innerHTML = '<div id="readability-page-1" class="">' + articleContent.innerHTML + '</div>';
         }
 
         /**

@@ -15,9 +15,27 @@
     font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif !important;
     letter-spacing: normal !important;
     line-height: 16px !important;
-    margin: 12px 0;
+    margin: 12px 0 !important;
     padding: 0;
     color: #202020;
+    background: none !important;
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    text-transform: none !important;
+}
+.NB-modal ol {
+    list-style: decimal outside none !important;
+    margin-left: 24px !important;
+}
+.NB-modal ul {
+    list-style: disc outside none !important;
+    margin-left: 24px !important;
+}
+.NB-modal p:first-child {
+    margin-top: 0;
 }
 .NB-modal p, 
 .NB-modal ol,
@@ -61,16 +79,34 @@
     margin: 12px 0 12px !important;
 }
 
-
-/* ======================== */
-/* = Bookmarklet Add Site = */
-/* ======================== */
+/* ====================== */
+/* = Bookmarklet Layout = */
+/* ====================== */
 
 .NB-bookmarklet {
   font-family: 'Lucida Sans', 'Lucida Grande', Verdana, Arial, Helvetica, sans-serif;
   font-size: 12px;
   text-align: left;
+  overflow: hidden;
 }
+.NB-bookmarklet .NB-bookmarklet-main {
+    width: 60%;
+    overflow: hidden;
+    float: right;
+    border-left: 6px solid #74B3B7;
+    margin: 24px 0 0;
+}
+.NB-bookmarklet .NB-bookmarklet-side {
+    width: 36%;
+    float: left;
+    height: 100%;
+    padding: 12px;
+}
+
+/* ======================== */
+/* = Bookmarklet Add Site = */
+/* ======================== */
+
 
 .NB-bookmarklet .NB-modal-information {
   float: right;
@@ -170,11 +206,43 @@
 /* = Bookmarklet Content = */
 /* ======================= */
 
+.NB-bookmarklet .NB-bookmarklet-page-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 0 24px;
+    line-height: 24px;
+}
 .NB-bookmarklet .NB-bookmarklet-page-content {
-    max-height: 300px;
+    max-height: 340px;
     overflow-y: scroll;
     padding: 0 24px;
-    margin: 24px 0 0;
-    border-left: 6px solid #74B3B7;
-    
+    margin: 12px 0 0;
+    background-color: white;
+}
+.NB-bookmarklet .NB-bookmarklet-page-comment {
+    margin-top: 12px;
+/*    border-top: 1px solid #F0F0F0;*/
+    padding: 12px 0 0 88px;
+    position: relative;
+}
+.NB-bookmarklet .NB-bookmarklet-comment-photo {
+    position: absolute;
+    left: 24px;
+    top: 12px;
+}
+.NB-bookmarklet .NB-bookmarklet-comment-photo img {
+    border-radius: 6px;
+    width: 48px;
+    height: 48px;
+}
+.NB-bookmarklet .NB-bookmarklet-comment-input textarea {
+    width: 364px;
+    border: 1px solid #E0E0E0;
+    padding: 6px;
+    margin: 0;
+    font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif !important;   
+    color: #404040;
+    font-size: 13px;
+    height: 34px;
+    background-color: white;
 }
