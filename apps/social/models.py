@@ -1681,14 +1681,17 @@ class MSocialServices(mongo.Document):
         return graph
 
     def sync_twitter_friends(self):
+        user = User.objects.get(pk=self.user_id)
         api = self.twitter_api()
         if not api:
+            logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no api access.")
             self.syncing_twitter = False
             self.save()
             return
             
         friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
         if not friend_ids:
+            logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no friend_ids.")
             self.syncing_twitter = False
             self.save()
             return
@@ -1698,6 +1701,7 @@ class MSocialServices(mongo.Document):
         self.twitter_username = twitter_user.screen_name
         self.twitter_friend_ids = friend_ids
         self.twitter_refreshed_date = datetime.datetime.utcnow()
+        self.syncing_twitter = False
         self.save()
         
         self.follow_twitter_friends()
@@ -1712,18 +1716,18 @@ class MSocialServices(mongo.Document):
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('twitter')
         
-        self.syncing_twitter = False
-        self.save()
-        
     def sync_facebook_friends(self):
+        user = User.objects.get(pk=self.user_id)
         graph = self.facebook_api()
         if not graph:
+            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no api access.")
             self.syncing_facebook = False
             self.save()
             return
 
         friends = graph.get_connections("me", "friends")
         if not friends:
+            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no friend_ids.")
             self.syncing_facebook = False
             self.save()
             return
@@ -1732,6 +1736,7 @@ class MSocialServices(mongo.Document):
         self.facebook_friend_ids = facebook_friend_ids
         self.facebook_refresh_date = datetime.datetime.utcnow()
         self.facebook_picture_url = "//graph.facebook.com/%s/picture" % self.facebook_uid
+        self.syncing_facebook = False
         self.save()
         
         self.follow_facebook_friends()
@@ -1746,9 +1751,6 @@ class MSocialServices(mongo.Document):
         profile.count_follows()
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('facebook')
-            
-        self.syncing_facebook = False
-        self.save()
         
     def follow_twitter_friends(self):
         social_profile = MSocialProfile.get_user(self.user_id)
