@@ -41,7 +41,7 @@ def set_preference(request):
             setattr(request.user.profile, preference_name, preference_value)
         elif preference_name in SPECIAL_PREFERENCES:
             if preference_name == 'autofollow_friends':
-                social_services = MSocialServices.objects.get(user_id=request.user.pk)
+                social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
                 social_services.autofollow = preference_value
                 social_services.save()
             elif preference_name == 'dashboard_date':
