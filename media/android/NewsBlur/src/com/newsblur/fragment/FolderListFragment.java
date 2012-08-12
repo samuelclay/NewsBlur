@@ -30,6 +30,7 @@ import com.newsblur.database.MixedExpandableListAdapter;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.MarkFeedAsReadTask;
 import com.newsblur.network.MarkFolderAsReadTask;
+import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.FolderTreeViewBinder;
@@ -66,7 +67,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		final int[] groupTo = new int[] { R.id.row_foldername, R.id.row_foldersumpos, R.id.row_foldersumneg, R.id.row_foldersumneu };
 		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON, DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.FEED_NEGATIVE_COUNT, DatabaseConstants.FEED_POSITIVE_COUNT };
 		final int[] childTo = new int[] { R.id.row_feedname, R.id.row_feedfavicon, R.id.row_feedneutral, R.id.row_feednegative, R.id.row_feedpositive };
-		final String[] blogFrom = new String[] { DatabaseConstants.SOCIAL_FEED_USERNAME, DatabaseConstants.SOCIAL_FEED_ICON, DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT };
+		final String[] blogFrom = new String[] { DatabaseConstants.SOCIAL_FEED_TITLE, DatabaseConstants.SOCIAL_FEED_ICON, DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT };
 		final int[] blogTo = new int[] { R.id.row_socialfeed_name, R.id.row_socialfeed_icon, R.id.row_socialsumneu, R.id.row_socialsumneg, R.id.row_socialsumpos };
 
 		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, R.layout.row_folder_collapsed, R.layout.row_folder_expanded, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
@@ -126,11 +127,16 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			
 		case R.id.menu_mark_folder_as_read:
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-			final Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
-			
-			String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
-			
-			new MarkFolderAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(folderId);
+			if (folderAdapter.isGroup(groupPosition)) {
+				final Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
+				String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
+				new MarkFolderAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(folderId);
+			} else {
+				// TODO: Include the mark-social-feed-as-read functionality here
+				final Cursor socialFeedCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
+				String socialFeedId = socialFeedCursor.getString(socialFeedCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
+				new MarkSocialFeedAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(socialFeedId);
+			}
 			return true;	
 		}
 		return super.onContextItemSelected(item);

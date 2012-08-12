@@ -305,6 +305,8 @@ public class FeedProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 		case INDIVIDUAL_FEED:
 			return db.update(DatabaseConstants.FEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });
+		case INDIVIDUAL_SOCIAL_FEED:
+			return db.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });	
 		case SOCIALFEED_STORIES:
 			return db.update(DatabaseConstants.SOCIALFEED_TABLE, values, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() });	
 		case INDIVIDUAL_STORY:

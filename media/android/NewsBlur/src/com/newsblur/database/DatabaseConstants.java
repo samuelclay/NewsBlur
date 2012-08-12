@@ -27,6 +27,7 @@ public class DatabaseConstants {
 
 	public static final String SOCIALFEED_TABLE = "social_feeds";
 	public static final String SOCIAL_FEED_ID = BaseColumns._ID;
+	public static final String SOCIAL_FEED_TITLE = "social_feed_title";
 	public static final String SOCIAL_FEED_USERNAME = "social_feed_name";
 	public static final String SOCIAL_FEED_ICON= "social_feed_icon";
 	public static final String SOCIAL_FEED_POSITIVE_COUNT = "ps";
@@ -97,7 +98,7 @@ public class DatabaseConstants {
 	};
 
 	public static final String[] SOCIAL_FEED_COLUMNS = {
-		SOCIAL_FEED_ID, SOCIAL_FEED_USERNAME, SOCIAL_FEED_ICON, SOCIAL_FEED_POSITIVE_COUNT, SOCIAL_FEED_NEUTRAL_COUNT, SOCIAL_FEED_NEGATIVE_COUNT
+		SOCIAL_FEED_ID, SOCIAL_FEED_USERNAME, SOCIAL_FEED_TITLE, SOCIAL_FEED_ICON, SOCIAL_FEED_POSITIVE_COUNT, SOCIAL_FEED_NEUTRAL_COUNT, SOCIAL_FEED_NEGATIVE_COUNT
 	};
 
 	public static final String[] COMMENT_COLUMNS = {

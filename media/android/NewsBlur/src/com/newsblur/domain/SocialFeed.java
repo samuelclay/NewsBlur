@@ -10,6 +10,9 @@ public class SocialFeed {
 	
 	public String username;
 	
+	@SerializedName("feed_title")
+	public String feedTitle;
+	
 	@SerializedName("user_id")
 	public String userId;
 	
@@ -28,6 +31,7 @@ public class SocialFeed {
 	public ContentValues getValues() {
 		ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.SOCIAL_FEED_ID, userId);
+		values.put(DatabaseConstants.SOCIAL_FEED_TITLE, feedTitle);
 		values.put(DatabaseConstants.SOCIAL_FEED_USERNAME, username);
 		values.put(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, neutralCount);
 		values.put(DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, negativeCount);
@@ -41,6 +45,7 @@ public class SocialFeed {
 		SocialFeed socialFeed = new SocialFeed();
 		socialFeed.userId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
 		socialFeed.username = cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_USERNAME));
+		socialFeed.feedTitle = cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_TITLE));
 		socialFeed.photoUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ICON));
 		socialFeed.negativeCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT));
 		socialFeed.positiveCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT));

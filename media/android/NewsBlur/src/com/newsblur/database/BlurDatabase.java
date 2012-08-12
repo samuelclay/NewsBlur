@@ -47,6 +47,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT + INTEGER + ", " +
 		DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + INTEGER + ", " +
 		DatabaseConstants.SOCIAL_FEED_ICON + TEXT + ", " + 
+		DatabaseConstants.SOCIAL_FEED_TITLE + TEXT + ", " + 
 		DatabaseConstants.SOCIAL_FEED_USERNAME + TEXT +
 		")";
 

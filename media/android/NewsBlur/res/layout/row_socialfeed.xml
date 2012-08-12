@@ -6,29 +6,7 @@
     android:paddingBottom="10dp"
     android:paddingTop="10dp" >
 
-    <ImageView
-        android:id="@+id/row_socialfeed_icon"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
-        android:contentDescription="@string/description_row_folder_icon" />
-
-    <TextView
-        android:id="@+id/row_socialfeed_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/row_socialfeed_icon"
-        android:textColor="@color/white"
-        android:textSize="16dp"
-        android:textStyle="bold" />
-
-    <LinearLayout
+     <LinearLayout
         android:id="@+id/row_foldersums"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -72,5 +50,28 @@
             android:textSize="12dp"
             android:textStyle="bold" />
     </LinearLayout>
+    
+    <ImageView
+        android:id="@+id/row_socialfeed_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:contentDescription="@string/description_row_folder_icon" />
 
+    <TextView
+        android:id="@+id/row_socialfeed_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/row_foldersums"
+        android:layout_toRightOf="@id/row_socialfeed_icon"
+        android:textColor="@color/white"
+        android:textSize="16dp" />
+
+   
 </RelativeLayout>

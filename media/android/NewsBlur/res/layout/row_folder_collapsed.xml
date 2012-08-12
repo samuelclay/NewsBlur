@@ -24,8 +24,7 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_folder_icon"
         android:textColor="@color/darkgray"
-        android:textSize="16dp"
-        android:textStyle="bold" />
+        android:textSize="16dp" />
     
     <ImageView 
         android:id="@+id/indicator_icon"
