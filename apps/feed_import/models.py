@@ -1,13 +1,14 @@
 import datetime
-import oauth2 as oauth
 import mongoengine as mongo
+import httplib2
+import pickle
+import base64
 from collections import defaultdict
 from StringIO import StringIO
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 from lxml import etree
 from django.db import models
 from django.contrib.auth.models import User
-from django.conf import settings
 from mongoengine.queryset import OperationError
 import vendor.opml as opml
 from apps.rss_feeds.models import Feed, DuplicateFeed, MStarredStory
@@ -15,7 +16,12 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json, urlnorm
 from utils import log as logging
 from utils.feed_functions import timelimit
-    
+
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^oauth2client\.django_orm\.FlowField"])
+add_introspection_rules([], ["^oauth2client\.django_orm\.CredentialsField"])
+
+
 class OAuthToken(models.Model):
     user = models.OneToOneField(User, null=True, blank=True)
     session_id = models.CharField(max_length=50, null=True, blank=True)
@@ -25,6 +31,7 @@ class OAuthToken(models.Model):
     request_token_secret = models.CharField(max_length=50)
     access_token = models.CharField(max_length=50)
     access_token_secret = models.CharField(max_length=50)
+    credential = models.TextField(null=True, blank=True)
     created_date = models.DateTimeField(default=datetime.datetime.now)
     
     
@@ -211,8 +218,10 @@ class GoogleReaderImporter(Importer):
         self.subscription_folders = []
         self.scope = "http://www.google.com/reader/api"
         self.xml = xml
+        self.auto_active = False
     
-    def import_feeds(self):
+    def import_feeds(self, auto_active=False):
+        self.auto_active = auto_active
         sub_url = "%s/0/subscription/list" % self.scope
         if not self.xml:
             feeds_xml = self.send_request(sub_url)
@@ -225,11 +234,11 @@ class GoogleReaderImporter(Importer):
 
         if user_tokens.count():
             user_token = user_tokens[0]
-            consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
-            token = oauth.Token(user_token.access_token, user_token.access_token_secret)
-            client = oauth.Client(consumer, token)
-            _, content = client.request(url, 'GET')
-            return content
+            credential = pickle.loads(base64.b64decode(user_token.credential))
+            http = httplib2.Http()
+            http = credential.authorize(http)
+            content = http.request(url)
+            return content and content[1]
         
     def process_feeds(self, feeds_xml):
         self.clear_feeds()
@@ -289,7 +298,7 @@ class GoogleReaderImporter(Importer):
                 defaults={
                     'needs_unread_recalc': True,
                     'mark_read_date': datetime.datetime.utcnow() - datetime.timedelta(days=1),
-                    'active': self.user.profile.is_premium,
+                    'active': self.user.profile.is_premium or self.auto_active,
                 }
             )
             if not us.needs_unread_recalc:

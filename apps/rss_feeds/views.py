@@ -95,7 +95,7 @@ def feed_autocomplete(request):
         'id': feed.pk,
         'value': feed.feed_address,
         'label': feed.feed_title,
-        'tagline': feed.data.feed_tagline,
+        'tagline': feed.data and feed.data.feed_tagline,
         'num_subscribers': feed.num_subscribers,
     } for feed in feeds]
     

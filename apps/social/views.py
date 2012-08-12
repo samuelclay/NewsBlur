@@ -53,8 +53,6 @@ def load_social_stories(request, user_id, username=None):
         socialsub = MSocialSubscription.objects.get(user_id=user.pk, subscription_user_id=social_user_id)
     except MSocialSubscription.DoesNotExist:
         socialsub = None
-    mstories = MSharedStory.objects(user_id=social_user.pk).order_by('-shared_date')[offset:offset+limit]
-    stories = Feed.format_stories(mstories)
     
     if socialsub and (read_filter == 'unread' or order == 'oldest'):
         story_ids = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
@@ -128,7 +126,7 @@ def load_social_stories(request, user_id, username=None):
             story['read_status'] = 1
         elif not usersubs_map.get(story_feed_id):
             story['read_status'] = 0
-        elif not story.get('read_status') and story['story_date'] < usersubs_map[story_feed_id].mark_read_date:
+        elif not story.get('read_status') and story['shared_date'] < usersubs_map[story_feed_id].mark_read_date:
             story['read_status'] = 1
         elif not story.get('read_status') and story['shared_date'] < date_delta:
             story['read_status'] = 1
@@ -165,6 +163,7 @@ def load_social_stories(request, user_id, username=None):
                                            
     if socialsub:
         socialsub.feed_opens += 1
+        socialsub.needs_unread_recalc = True
         socialsub.save()
     
     diff1 = checkpoint1-start

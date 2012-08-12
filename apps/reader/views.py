@@ -317,6 +317,9 @@ def load_feeds_flat(request):
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
     
+    logging.user(request, "~FBLoading ~SB%s~SN/~SB%s~SN feeds/socials ~FMflat~FB. %s" % (
+            len(feeds.keys()), len(social_feeds), '~SBUpdating counts.' if update_counts else ''))
+
     data = {
         "flat_folders": flat_folders, 
         "feeds": feeds,
@@ -505,7 +508,9 @@ def load_single_feed(request, feed_id):
     
     if usersub:
         usersub.feed_opens += 1
+        usersub.needs_unread_recalc = True
         usersub.save()
+        
     diff1 = checkpoint1-start
     diff2 = checkpoint2-start
     diff3 = checkpoint3-start

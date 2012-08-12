@@ -665,7 +665,7 @@ class MSocialSubscription(mongo.Document):
                  sub.unread_count_updated < UNREAD_CUTOFF) or 
                 (sub.oldest_unread_story_date and
                  sub.oldest_unread_story_date < UNREAD_CUTOFF)):
-                sub = sub.calculate_feed_scores(silent=True)
+                sub = sub.calculate_feed_scores(force=True, silent=True)
 
             feed_id = "social:%s" % sub.subscription_user_id
             feeds[feed_id] = {
@@ -771,19 +771,19 @@ class MSocialSubscription(mongo.Document):
         else:
             return [], []
         
-    def mark_story_ids_as_read(self, story_ids, feed_id=None, request=None):
+    def mark_story_ids_as_read(self, story_ids, feed_id=None, mark_all_read=False, request=None):
         data = dict(code=0, payload=story_ids)
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         
         if not request:
             request = User.objects.get(pk=self.user_id)
     
-        if not self.needs_unread_recalc:
+        if not self.needs_unread_recalc and not mark_all_read:
             self.needs_unread_recalc = True
             self.save()
     
         sub_username = MSocialProfile.get_user(self.subscription_user_id).username
-
+        
         if len(story_ids) > 1:
             logging.user(request, "~FYRead %s stories in social subscription: %s" % (len(story_ids), sub_username))
         else:
@@ -801,7 +801,8 @@ class MSocialSubscription(mongo.Document):
             try:
                 m.save()
             except OperationError:
-                logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
+                if not mark_all_read:
+                    logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
                 continue
             
             # Find other social feeds with this story to update their counts
@@ -834,25 +835,26 @@ class MSocialSubscription(mongo.Document):
         UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
 
         # Use the latest story to get last read time.
-        if MSharedStory.objects(user_id=self.subscription_user_id).first():
-            latest_story_date = MSharedStory.objects(user_id=self.subscription_user_id)\
-                                .order_by('-shared_date').only('shared_date')[0]['shared_date']\
-                                + datetime.timedelta(seconds=1)
-
+        latest_shared_story = MSharedStory.objects(user_id=self.subscription_user_id,
+                                                   shared_date__gte=UNREAD_CUTOFF
+                              ).order_by('shared_date').only('shared_date').first()
+        if latest_shared_story:
+            latest_story_date = latest_shared_story['shared_date'] + datetime.timedelta(seconds=1)
+                
         self.last_read_date = latest_story_date
         self.mark_read_date = UNREAD_CUTOFF
         self.unread_count_negative = 0
         self.unread_count_positive = 0
         self.unread_count_neutral = 0
-        self.unread_count_updated = latest_story_date
+        self.unread_count_updated = datetime.datetime.utcnow()
         self.oldest_unread_story_date = latest_story_date
-        self.needs_unread_recalc = True
+        self.needs_unread_recalc = False
         
         # Manually mark all shared stories as read.
         stories = MSharedStory.objects.filter(user_id=self.subscription_user_id,
                                               shared_date__gte=UNREAD_CUTOFF).only('story_guid')
         story_ids = [s.story_guid for s in stories]
-        self.mark_story_ids_as_read(story_ids)
+        self.mark_story_ids_as_read(story_ids, mark_all_read=True)
         
         # Cannot delete these stories, since the original feed may not be read. 
         # Just go 2 weeks back.
@@ -861,9 +863,9 @@ class MSocialSubscription(mongo.Document):
                 
         self.save()
     
-    def calculate_feed_scores(self, silent=False):
-        # if not self.needs_unread_recalc:
-        #     return
+    def calculate_feed_scores(self, force=False, silent=False):
+        if not self.needs_unread_recalc and not force:
+            return self
             
         now = datetime.datetime.now()
         UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -909,12 +911,12 @@ class MSocialSubscription(mongo.Document):
             if getattr(story, 'story_guid', None) in read_stories_ids:
                 continue
             feed_id = story.story_feed_id
-            if usersubs_map.get(feed_id) and story.story_date < usersubs_map[feed_id].mark_read_date:
+            if usersubs_map.get(feed_id) and story.shared_date < usersubs_map[feed_id].mark_read_date:
                 continue
                 
             unread_stories_db.append(story)
-            if story.story_date < oldest_unread_story_date:
-                oldest_unread_story_date = story.story_date
+            if story.shared_date < oldest_unread_story_date:
+                oldest_unread_story_date = story.shared_date
         stories = Feed.format_stories(unread_stories_db)
         
         classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
@@ -1679,12 +1681,19 @@ class MSocialServices(mongo.Document):
         return graph
 
     def sync_twitter_friends(self):
+        user = User.objects.get(pk=self.user_id)
         api = self.twitter_api()
         if not api:
+            logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no api access.")
+            self.syncing_twitter = False
+            self.save()
             return
             
         friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
         if not friend_ids:
+            logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no friend_ids.")
+            self.syncing_twitter = False
+            self.save()
             return
         
         twitter_user = api.me()
@@ -1692,6 +1701,7 @@ class MSocialServices(mongo.Document):
         self.twitter_username = twitter_user.screen_name
         self.twitter_friend_ids = friend_ids
         self.twitter_refreshed_date = datetime.datetime.utcnow()
+        self.syncing_twitter = False
         self.save()
         
         self.follow_twitter_friends()
@@ -1702,25 +1712,31 @@ class MSocialServices(mongo.Document):
         profile.website = profile.website or twitter_user.url
         profile.save()
         profile.count_follows()
+        
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('twitter')
         
     def sync_facebook_friends(self):
-        self.syncing_facebook = False
-        self.save()
-        
+        user = User.objects.get(pk=self.user_id)
         graph = self.facebook_api()
         if not graph:
+            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no api access.")
+            self.syncing_facebook = False
+            self.save()
             return
 
         friends = graph.get_connections("me", "friends")
         if not friends:
+            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no friend_ids.")
+            self.syncing_facebook = False
+            self.save()
             return
 
         facebook_friend_ids = [unicode(friend["id"]) for friend in friends["data"]]
         self.facebook_friend_ids = facebook_friend_ids
         self.facebook_refresh_date = datetime.datetime.utcnow()
         self.facebook_picture_url = "//graph.facebook.com/%s/picture" % self.facebook_uid
+        self.syncing_facebook = False
         self.save()
         
         self.follow_facebook_friends()
@@ -1729,16 +1745,14 @@ class MSocialServices(mongo.Document):
         profile = MSocialProfile.get_user(self.user_id)
         profile.location = profile.location or (facebook_user.get('location') and facebook_user['location']['name'])
         profile.bio = profile.bio or facebook_user.get('bio')
-        profile.website = profile.website or facebook_user.get('website')
+        if not profile.website and facebook_user.get('website'):
+            profile.website = facebook_user.get('website').split()[0]
         profile.save()
         profile.count_follows()
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('facebook')
         
     def follow_twitter_friends(self):
-        self.syncing_twitter = False
-        self.save()
-        
         social_profile = MSocialProfile.get_user(self.user_id)
         following = []
         followers = 0

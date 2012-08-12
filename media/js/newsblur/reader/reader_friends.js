@@ -86,12 +86,12 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     
     check_services_sync_status: function() {
         NEWSBLUR.assets.fetch_friends(_.bind(function(data) {
+            console.log(["Find friends", data]);
             this.profile = NEWSBLUR.assets.user_profile;
             this.services = data.services;
             if (!this.services['twitter'].syncing && !this.services['facebook'].syncing) {
+                clearInterval(this.sync_interval);
                 this.make_find_friends_and_services();
-            } else {
-                _.delay(_.bind(this.check_services_sync_status, this), 3000);
             }
         }, this));
     },
@@ -155,7 +155,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         }
         
         if (service_syncing) {
-            _.delay(_.bind(this.check_services_sync_status, this), 3000);
+            clearInterval(this.sync_interval);
+            this.sync_interval = setInterval(_.bind(function() {
+                this.check_services_sync_status();
+            }, this), 3000);
         }
     },
     
@@ -278,6 +281,18 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         var options = "location=0,status=0,width=800,height=500";
         var url = "/oauth/" + service + "_connect";
         this.connect_window = window.open(url, '_blank', options);
+        this.connect_window_timer = setInterval(_.bind(function() {
+            console.log(["post connect window?", this.connect_window, this.connect_window.closed, this.connect_window.location]);
+            try {
+                if (!this.connect_window || 
+                    !this.connect_window.location || 
+                    this.connect_window.closed) {
+                    this.post_connect({});
+                }
+            } catch (err) {
+                this.post_connect({});
+            }
+        }, this), 1000);
     },
     
     disconnect: function(service) {
@@ -291,6 +306,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
     
     post_connect: function(data) {
+        clearInterval(this.connect_window_timer);
         $('.NB-error', this.$modal).remove();
         if (data.error) {
             var $error = $.make('div', { className: 'NB-error' }, [

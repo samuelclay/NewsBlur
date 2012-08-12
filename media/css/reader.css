@@ -112,16 +112,16 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
 
 .NB-account .NB-import-signup {
     float: left;
-    width: 142px;
+    width: 146px;
     padding: 0 0 64px 0;
-    margin: 0 50px 0 12px;
+    margin: 0 24px 0 12px;
     height: 206px;
     overflow: hidden;
 }
 
 .NB-account .NB-import-signup-text {
     text-align: center;
-    width: 152px;
+    width: 190px;
 }
 .NB-account .NB-import-signup-text h3 {
     margin-top: 48px;
@@ -2457,13 +2457,14 @@ background: transparent;
     white-space: nowrap;
     font-weight: bold;
     text-shadow: 0 1px 0 #000;
+    background-color: gainsboro;
 }
 .NB-sideoption .NB-sideoption-icon {
     width: 24px;
     padding: 4px;
     height: 100%;
     float: right;
-    background: #EBF6DA url('/media/embed/icons/silk/time.png') no-repeat 8px 4px;
+    background: linen url('/media/embed/icons/silk/time.png') no-repeat 8px 4px;
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
     -o-transition: all .12s ease-out;
