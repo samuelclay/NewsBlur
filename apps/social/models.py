@@ -1683,10 +1683,14 @@ class MSocialServices(mongo.Document):
     def sync_twitter_friends(self):
         api = self.twitter_api()
         if not api:
+            self.syncing_twitter = False
+            self.save()
             return
             
         friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
         if not friend_ids:
+            self.syncing_twitter = False
+            self.save()
             return
         
         twitter_user = api.me()
@@ -1704,19 +1708,24 @@ class MSocialServices(mongo.Document):
         profile.website = profile.website or twitter_user.url
         profile.save()
         profile.count_follows()
+        
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('twitter')
         
-    def sync_facebook_friends(self):
-        self.syncing_facebook = False
+        self.syncing_twitter = False
         self.save()
         
+    def sync_facebook_friends(self):
         graph = self.facebook_api()
         if not graph:
+            self.syncing_facebook = False
+            self.save()
             return
 
         friends = graph.get_connections("me", "friends")
         if not friends:
+            self.syncing_facebook = False
+            self.save()
             return
 
         facebook_friend_ids = [unicode(friend["id"]) for friend in friends["data"]]
@@ -1737,11 +1746,11 @@ class MSocialServices(mongo.Document):
         profile.count_follows()
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('facebook')
-        
-    def follow_twitter_friends(self):
-        self.syncing_twitter = False
+            
+        self.syncing_facebook = False
         self.save()
         
+    def follow_twitter_friends(self):
         social_profile = MSocialProfile.get_user(self.user_id)
         following = []
         followers = 0
