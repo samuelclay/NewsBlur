@@ -62,9 +62,8 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		super.onCreate(savedInstanceState);
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-		socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
 		
-		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
+		setupSocialFeed();
 		
 		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
 		
@@ -76,6 +75,11 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		adapter = new SocialFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		
 		adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
+	}
+
+	private void setupSocialFeed() {
+		socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
 	}
 	
 	public static SocialFeedItemListFragment newInstance(final String userId, final String username, final int currentState) {
@@ -108,6 +112,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	}
 	
 	public void hasUpdated() {
+		setupSocialFeed();
 		getLoaderManager().restartLoader(ITEMLIST_LOADER , null, this);
 		requestedPage = false;
 	}
