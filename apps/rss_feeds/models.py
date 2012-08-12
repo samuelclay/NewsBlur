@@ -63,6 +63,7 @@ class Feed(models.Model):
     has_page_exception = models.BooleanField(default=False, db_index=True)
     has_page = models.BooleanField(default=True)
     exception_code = models.IntegerField(default=0)
+    errors_since_good = models.IntegerField(default=0)
     min_to_decay = models.IntegerField(default=0)
     days_to_trim = models.IntegerField(default=90)
     creation = models.DateField(auto_now_add=True)
@@ -364,9 +365,11 @@ class Feed(models.Model):
         # for history in old_fetch_histories:
         #     history.delete()
         if status_code not in (200, 304):
-            errors, non_errors = self.count_errors_in_history('feed', status_code)
-            self.set_next_scheduled_update(error_count=len(errors), non_error_count=len(non_errors))
-        elif self.has_feed_exception:
+            self.errors_since_good += 1
+            self.count_errors_in_history('feed', status_code)
+            self.set_next_scheduled_update()
+        elif self.has_feed_exception or self.errors_since_good:
+            self.errors_since_good = 0
             self.has_feed_exception = False
             self.active = True
             self.save()
@@ -398,9 +401,10 @@ class Feed(models.Model):
         errors     = [h for h in fetch_history if int(h) not in (200, 304)]
         
         if len(non_errors) == 0 and len(errors) > 1:
+            self.active = True
             if exception_type == 'feed':
                 self.has_feed_exception = True
-                self.active = False
+                # self.active = False # No longer, just geometrically fetch
             elif exception_type == 'page':
                 self.has_page_exception = True
             self.exception_code = status_code or int(errors[0])
@@ -1141,12 +1145,12 @@ class Feed(models.Model):
         
         return total, random_factor*2
         
-    def set_next_scheduled_update(self, error_count=0, non_error_count=0):
+    def set_next_scheduled_update(self):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
-        if error_count:
-            total = total * error_count
-            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s/%s errors. Time: %s min' % (unicode(self)[:30], error_count, non_error_count, total))
+        if self.errors_since_good:
+            total = total * self.errors_since_good
+            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors. Time: %s min' % (unicode(self)[:30], self.errors_since_good, total))
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
