@@ -289,7 +289,7 @@
                              options:kNilOptions 
                              error:&error];
 
-    NSLog(@"results are %@", results);
+//    NSLog(@"results are %@", results);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     self.visibleFeeds = [NSMutableDictionary dictionary];
@@ -323,6 +323,7 @@
     
     self.navigationItem.leftBarButtonItem = userAvatar;
     [self setUserAvatarLayout:orientation];
+    
     // adding settings button to right
 
 //    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
@@ -345,9 +346,12 @@
     // Set up dictUserProfile and userActivitiesArray
     appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
-    [appDelegate.dashboardViewController refreshInteractions];
-    [appDelegate.dashboardViewController refreshActivity];
-
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.dashboardViewController refreshInteractions];
+        [appDelegate.dashboardViewController refreshActivity];
+    }
+    
     // Set up dictSocialFeeds
     NSArray *socialFeedsArray = [results objectForKey:@"social_feeds"];
     NSMutableArray *socialFolder = [[NSMutableArray alloc] init];

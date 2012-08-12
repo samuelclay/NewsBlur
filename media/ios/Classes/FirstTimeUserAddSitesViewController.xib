@@ -38,7 +38,7 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUIImageView" id="62410955">
+					<object class="IBUIImageView" id="809490040">
 						<reference key="NSNextResponder" ref="874391841"/>
 						<int key="NSvFlags">274</int>
 						<string key="NSFrameSize">{540, 576}</string>
@@ -57,7 +57,7 @@
 					</object>
 					<object class="IBUIButton" id="35612574">
 						<reference key="NSNextResponder" ref="874391841"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">301</int>
 						<string key="NSFrame">{{178, 271}, {184, 34}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
@@ -69,7 +69,7 @@
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<string key="IBUISelectedTitle">Imported!</string>
 						<string key="IBUINormalTitle">Google Reader</string>
-						<object class="NSColor" key="IBUIHighlightedTitleColor" id="322601585">
+						<object class="NSColor" key="IBUIHighlightedTitleColor" id="387740236">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
 						</object>
@@ -80,7 +80,7 @@
 								<int key="NSID">2</int>
 							</object>
 						</object>
-						<reference key="IBUINormalTitleColor" ref="322601585"/>
+						<reference key="IBUINormalTitleColor" ref="387740236"/>
 						<object class="NSColor" key="IBUINormalTitleShadowColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC41AA</bytes>
@@ -101,7 +101,7 @@
 					</object>
 					<object class="IBUILabel" id="895169245">
 						<reference key="NSNextResponder" ref="874391841"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">303</int>
 						<string key="NSFrame">{{20, 146}, {500, 100}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
@@ -118,7 +118,7 @@
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
 						</object>
 						<nil key="IBUIHighlightedColor"/>
-						<reference key="IBUIShadowColor" ref="322601585"/>
+						<reference key="IBUIShadowColor" ref="387740236"/>
 						<int key="IBUIBaselineAdjustment">0</int>
 						<float key="IBUIMinimumFontSize">10</float>
 						<int key="IBUINumberOfLines">3</int>
@@ -148,7 +148,7 @@
 				<string key="NSFrame">{{0, 44}, {540, 576}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="62410955"/>
+				<reference key="NSNextKeyView" ref="809490040"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -244,7 +244,7 @@
 						<int key="objectID">129</int>
 						<reference key="object" ref="874391841"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="62410955"/>
+							<reference ref="809490040"/>
 							<reference ref="35612574"/>
 							<reference ref="659331283"/>
 							<reference ref="895169245"/>
@@ -268,7 +268,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">138</int>
-						<reference key="object" ref="62410955"/>
+						<reference key="object" ref="809490040"/>
 						<reference key="parent" ref="874391841"/>
 					</object>
 				</array>

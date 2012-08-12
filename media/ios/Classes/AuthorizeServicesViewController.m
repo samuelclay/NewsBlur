@@ -68,6 +68,14 @@
         return NO;
     }
     
+    // for failed google reader authorization
+    if ([URLString isEqualToString:[NSString stringWithFormat:@"http://%@/import/callback?error=access_denied", NEWSBLUR_URL]]) {
+        [self.navigationController popViewControllerAnimated:YES];
+        [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed];
+        return NO;
+    }
+
+    
     return YES;
 }
 

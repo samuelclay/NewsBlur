@@ -28,6 +28,8 @@
 @synthesize appDelegate;
 @synthesize nextButton;
 @synthesize logo;
+@synthesize header;
+@synthesize footer;
 @synthesize angle_;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -50,6 +52,12 @@
     self.navigationItem.rightBarButtonItem = next;
     
     self.navigationItem.title = @"Step 1 of 4";
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        logo.frame = CGRectMake(80, 135, 160, 160);
+        header.font = [UIFont systemFontOfSize:22];
+        footer.font = [UIFont systemFontOfSize:16];
+    }
 
 }
 
@@ -57,12 +65,15 @@
 {
     [self setNextButton:nil];
     [self setLogo:nil];
+    [self setHeader:nil];
+    [self setFooter:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+
     [self rotateLogo];
 }
 
@@ -70,9 +81,15 @@
 
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-	return YES;
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return YES;
+    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+        return YES;
+    }
+    
+    return NO;
 }
 
 

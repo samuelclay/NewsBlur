@@ -36,7 +36,7 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUIImageView" id="971611551">
+					<object class="IBUIImageView" id="90654000">
 						<reference key="NSNextResponder" ref="437257068"/>
 						<int key="NSvFlags">274</int>
 						<string key="NSFrameSize">{540, 576}</string>
@@ -55,8 +55,8 @@
 					</object>
 					<object class="IBUILabel" id="197119979">
 						<reference key="NSNextResponder" ref="437257068"/>
-						<int key="NSvFlags">306</int>
-						<string key="NSFrame">{{87, 439}, {366, 82}}</string>
+						<int key="NSvFlags">302</int>
+						<string key="NSFrame">{{20, 439}, {500, 82}}</string>
 						<reference key="NSSuperview" ref="437257068"/>
 						<reference key="NSWindow"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
@@ -71,13 +71,13 @@
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
 						</object>
 						<nil key="IBUIHighlightedColor"/>
-						<object class="NSColor" key="IBUIShadowColor" id="316775812">
+						<object class="NSColor" key="IBUIShadowColor" id="953471020">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
 						</object>
 						<string key="IBUIShadowOffset">{0, 1}</string>
 						<int key="IBUIBaselineAdjustment">0</int>
-						<float key="IBUIMinimumFontSize">10</float>
+						<float key="IBUIMinimumFontSize">12</float>
 						<int key="IBUINumberOfLines">2</int>
 						<int key="IBUITextAlignment">1</int>
 						<object class="IBUIFontDescription" key="IBUIFontDescription">
@@ -89,11 +89,12 @@
 							<double key="NSSize">22</double>
 							<int key="NSfFlags">16</int>
 						</object>
+						<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 					</object>
 					<object class="IBUILabel" id="797930801">
 						<reference key="NSNextResponder" ref="437257068"/>
-						<int key="NSvFlags">306</int>
-						<string key="NSFrame">{{93, 65}, {355, 59}}</string>
+						<int key="NSvFlags">298</int>
+						<string key="NSFrame">{{20, 65}, {500, 59}}</string>
 						<reference key="NSSuperview" ref="437257068"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="524213128"/>
@@ -106,7 +107,7 @@
 						<string key="IBUIText">Welcome to NewsBlur</string>
 						<reference key="IBUITextColor" ref="252007782"/>
 						<reference key="IBUIHighlightedColor" ref="252007782"/>
-						<reference key="IBUIShadowColor" ref="316775812"/>
+						<reference key="IBUIShadowColor" ref="953471020"/>
 						<string key="IBUIShadowOffset">{0, 1}</string>
 						<int key="IBUIBaselineAdjustment">0</int>
 						<float key="IBUIMinimumFontSize">10</float>
@@ -120,10 +121,11 @@
 							<double key="NSSize">32</double>
 							<int key="NSfFlags">16</int>
 						</object>
+						<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 					</object>
 					<object class="IBUIImageView" id="524213128">
 						<reference key="NSNextResponder" ref="437257068"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">301</int>
 						<string key="NSFrame">{{150, 168}, {240, 240}}</string>
 						<reference key="NSSuperview" ref="437257068"/>
 						<reference key="NSWindow"/>
@@ -140,7 +142,7 @@
 				<string key="NSFrame">{{0, 44}, {540, 576}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="971611551"/>
+				<reference key="NSNextKeyView" ref="90654000"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -189,6 +191,22 @@
 					</object>
 					<int key="connectionID">115</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">header</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="797930801"/>
+					</object>
+					<int key="connectionID">132</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">footer</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="197119979"/>
+					</object>
+					<int key="connectionID">133</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -213,10 +231,10 @@
 						<int key="objectID">129</int>
 						<reference key="object" ref="437257068"/>
 						<array class="NSMutableArray" key="children">
+							<reference ref="197119979"/>
+							<reference ref="90654000"/>
 							<reference ref="797930801"/>
 							<reference ref="524213128"/>
-							<reference ref="197119979"/>
-							<reference ref="971611551"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -237,7 +255,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">131</int>
-						<reference key="object" ref="971611551"/>
+						<reference key="object" ref="90654000"/>
 						<reference key="parent" ref="437257068"/>
 					</object>
 				</array>
@@ -257,7 +275,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">131</int>
+			<int key="maxID">133</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -798,6 +816,8 @@
 					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="appDelegate">NewsBlurAppDelegate</string>
+						<string key="footer">UILabel</string>
+						<string key="header">UILabel</string>
 						<string key="logo">UIImageView</string>
 						<string key="nextButton">UIBarButtonItem</string>
 					</dictionary>
@@ -805,6 +825,14 @@
 						<object class="IBToOneOutletInfo" key="appDelegate">
 							<string key="name">appDelegate</string>
 							<string key="candidateClassName">NewsBlurAppDelegate</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="footer">
+							<string key="name">footer</string>
+							<string key="candidateClassName">UILabel</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="header">
+							<string key="name">header</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="logo">
 							<string key="name">logo</string>

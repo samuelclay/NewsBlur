@@ -20,7 +20,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *twitterButton;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *facebookActivityIndicator;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *twitterActivityIndicator;
-
+@property (weak, nonatomic) IBOutlet UILabel *friendsLabel;
 
 - (IBAction)tapNextButton;
 - (IBAction)tapTwitterButton;

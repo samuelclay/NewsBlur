@@ -52,6 +52,10 @@
     self.navigationItem.title = @"Step 2 of 4";
     self.activityIndicator.hidesWhenStopped = YES;
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        self.instructionLabel.font = [UIFont systemFontOfSize:16];
+    }
+    
 }
 
 - (void)viewDidUnload
@@ -66,9 +70,15 @@
     [self setNextButton:nil];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-	return YES;
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+    // Return YES for supported orientations
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return YES;
+    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+        return YES;
+    }
+    
+    return NO;
 }
 
 
@@ -104,6 +114,11 @@
     [request setDidFinishSelector:@selector(finishImportFromGoogleReader:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
+}
+
+- (void)importFromGoogleReaderFailed {
+    [self.googleReaderButton setTitle:@"Retry Google Reader" forState:UIControlStateNormal];
+    self.instructionLabel.text = @"Importing from Google Reader failed.  Please try again.";
 }
 
 - (void)finishImportFromGoogleReader:(ASIHTTPRequest *)request {

@@ -38,7 +38,7 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUIImageView" id="37499781">
+					<object class="IBUIImageView" id="425746832">
 						<reference key="NSNextResponder" ref="874391841"/>
 						<int key="NSvFlags">274</int>
 						<string key="NSFrameSize">{540, 576}</string>
@@ -57,8 +57,8 @@
 					</object>
 					<object class="IBUILabel" id="736025522">
 						<reference key="NSNextResponder" ref="874391841"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{0, 59}, {540, 100}}</string>
+						<int key="NSvFlags">303</int>
+						<string key="NSFrame">{{20, 59}, {500, 100}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="467269529"/>
@@ -93,11 +93,11 @@
 					</object>
 					<object class="IBUIButton" id="467269529">
 						<reference key="NSNextResponder" ref="874391841"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">301</int>
 						<string key="NSFrame">{{178, 190}, {184, 34}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="36248693"/>
+						<reference key="NSNextKeyView" ref="886247703"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -130,9 +130,9 @@
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
-					<object class="IBUIActivityIndicatorView" id="36248693">
+					<object class="IBUIActivityIndicatorView" id="886247703">
 						<reference key="NSNextResponder" ref="874391841"/>
-						<int key="NSvFlags">-2147483356</int>
+						<int key="NSvFlags">-2147483347</int>
 						<string key="NSFrame">{{215, 197}, {20, 20}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
@@ -143,11 +143,11 @@
 					</object>
 					<object class="IBUIButton" id="406293652">
 						<reference key="NSNextResponder" ref="874391841"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">301</int>
 						<string key="NSFrame">{{178, 298}, {184, 34}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="765133113"/>
+						<reference key="NSNextKeyView" ref="43930813"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -180,9 +180,9 @@
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
-					<object class="IBUIActivityIndicatorView" id="765133113">
+					<object class="IBUIActivityIndicatorView" id="43930813">
 						<reference key="NSNextResponder" ref="874391841"/>
-						<int key="NSvFlags">-2147483356</int>
+						<int key="NSvFlags">-2147483347</int>
 						<string key="NSFrame">{{215, 305}, {20, 20}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
@@ -195,7 +195,7 @@
 				<string key="NSFrame">{{0, 44}, {540, 576}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="37499781"/>
+				<reference key="NSNextKeyView" ref="425746832"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -256,7 +256,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">facebookActivityIndicator</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="36248693"/>
+						<reference key="destination" ref="886247703"/>
 					</object>
 					<int key="connectionID">140</int>
 				</object>
@@ -264,9 +264,17 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">twitterActivityIndicator</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="765133113"/>
+						<reference key="destination" ref="43930813"/>
 					</object>
 					<int key="connectionID">141</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">friendsLabel</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="736025522"/>
+					</object>
+					<int key="connectionID">143</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -310,12 +318,12 @@
 						<int key="objectID">129</int>
 						<reference key="object" ref="874391841"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="37499781"/>
+							<reference ref="425746832"/>
 							<reference ref="736025522"/>
-							<reference ref="36248693"/>
 							<reference ref="406293652"/>
 							<reference ref="467269529"/>
-							<reference ref="765133113"/>
+							<reference ref="43930813"/>
+							<reference ref="886247703"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -336,17 +344,17 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">138</int>
-						<reference key="object" ref="36248693"/>
+						<reference key="object" ref="886247703"/>
 						<reference key="parent" ref="874391841"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">139</int>
-						<reference key="object" ref="765133113"/>
+						<reference key="object" ref="43930813"/>
 						<reference key="parent" ref="874391841"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">142</int>
-						<reference key="object" ref="37499781"/>
+						<reference key="object" ref="425746832"/>
 						<reference key="parent" ref="874391841"/>
 					</object>
 				</array>
@@ -370,7 +378,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">142</int>
+			<int key="maxID">143</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -713,6 +721,7 @@
 						<string key="appDelegate">NewsBlurAppDelegate</string>
 						<string key="facebookActivityIndicator">UIActivityIndicatorView</string>
 						<string key="facebookButton">UIButton</string>
+						<string key="friendsLabel">UILabel</string>
 						<string key="nextButton">UIBarButtonItem</string>
 						<string key="twitterActivityIndicator">UIActivityIndicatorView</string>
 						<string key="twitterButton">UIButton</string>
@@ -729,6 +738,10 @@
 						<object class="IBToOneOutletInfo" key="facebookButton">
 							<string key="name">facebookButton</string>
 							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="friendsLabel">
+							<string key="name">friendsLabel</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="nextButton">
 							<string key="name">nextButton</string>
@@ -911,6 +924,8 @@
 					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="appDelegate">NewsBlurAppDelegate</string>
+						<string key="footer">UILabel</string>
+						<string key="header">UILabel</string>
 						<string key="logo">UIImageView</string>
 						<string key="nextButton">UIBarButtonItem</string>
 					</dictionary>
@@ -918,6 +933,14 @@
 						<object class="IBToOneOutletInfo" key="appDelegate">
 							<string key="name">appDelegate</string>
 							<string key="candidateClassName">NewsBlurAppDelegate</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="footer">
+							<string key="name">footer</string>
+							<string key="candidateClassName">UILabel</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="header">
+							<string key="name">header</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="logo">
 							<string key="name">logo</string>

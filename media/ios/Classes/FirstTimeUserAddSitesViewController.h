@@ -26,5 +26,6 @@
 
 - (void)addCategories;
 - (void)importFromGoogleReader;
+- (void)importFromGoogleReaderFailed;
 - (void)updateSites;
 @end

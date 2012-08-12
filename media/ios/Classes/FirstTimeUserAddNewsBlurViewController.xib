@@ -37,7 +37,7 @@
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<array class="NSMutableArray" key="NSSubviews">
-					<object class="IBUIImageView" id="245132710">
+					<object class="IBUIImageView" id="641072983">
 						<reference key="NSNextResponder" ref="874391841"/>
 						<int key="NSvFlags">292</int>
 						<string key="NSFrameSize">{540, 576}</string>
@@ -56,8 +56,8 @@
 					</object>
 					<object class="IBUILabel" id="804223306">
 						<reference key="NSNextResponder" ref="874391841"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{0, 100}, {540, 100}}</string>
+						<int key="NSvFlags">303</int>
+						<string key="NSFrame">{{20, 129}, {500, 100}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="754909752"/>
@@ -73,7 +73,7 @@
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
 						</object>
 						<nil key="IBUIHighlightedColor"/>
-						<object class="NSColor" key="IBUIShadowColor" id="61998700">
+						<object class="NSColor" key="IBUIShadowColor" id="222909269">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
 						</object>
@@ -92,10 +92,11 @@
 					</object>
 					<object class="IBUIButton" id="754909752">
 						<reference key="NSNextResponder" ref="874391841"/>
-						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{130, 248}, {280, 80}}</string>
+						<int key="NSvFlags">301</int>
+						<string key="NSFrame">{{178, 271}, {184, 34}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -104,7 +105,7 @@
 						<int key="IBUIButtonType">1</int>
 						<string key="IBUISelectedTitle">Added NewsBlur</string>
 						<string key="IBUINormalTitle">Add NewsBlur Blog</string>
-						<reference key="IBUIHighlightedTitleColor" ref="61998700"/>
+						<reference key="IBUIHighlightedTitleColor" ref="222909269"/>
 						<object class="NSColor" key="IBUISelectedTitleColor">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
@@ -138,7 +139,7 @@
 				<string key="NSFrame">{{0, 44}, {540, 576}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="245132710"/>
+				<reference key="NSNextKeyView" ref="641072983"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -201,8 +202,8 @@
 						<int key="objectID">129</int>
 						<reference key="object" ref="874391841"/>
 						<array class="NSMutableArray" key="children">
+							<reference ref="641072983"/>
 							<reference ref="804223306"/>
-							<reference ref="245132710"/>
 							<reference ref="754909752"/>
 						</array>
 						<reference key="parent" ref="0"/>
@@ -214,7 +215,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">131</int>
-						<reference key="object" ref="245132710"/>
+						<reference key="object" ref="641072983"/>
 						<reference key="parent" ref="874391841"/>
 					</object>
 					<object class="IBObjectRecord">
