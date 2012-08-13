@@ -672,7 +672,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             self.handle_opml_upload();
         });
         $.targetIs(e, { tagSelector: '.NB-friends-autofollow-checkbox' }, function($t, $p) {
-            self.model.preference('autofollow_friends', $t.is(':checked'));
+            NEWSBLUR.assets.preference('autofollow_friends', $t.is(':checked'));
         });
         $.targetIs(e, { tagSelector: '#NB-intro-uptodate-follow-newsblur' }, function($t, $p) {
             self.follow_twitter_account('newsblur');
