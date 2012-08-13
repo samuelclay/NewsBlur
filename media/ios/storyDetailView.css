@@ -429,12 +429,6 @@ a.NB-show-profile {
     margin-bottom: -4px;
 }
 
-.NB-iphone .NB-button {
-    float: right;
-    padding: 4px 0px 10px 4px;
-    margin: 0;
-}
-
 .NB-button.NB-share-button {
     float: none;
     padding: 0px 0px 20px 0px;
@@ -458,6 +452,10 @@ a.NB-show-profile {
 
 .NB-iphone .NB-button div {
     padding: 1px 5px 0px;
+}
+
+.NB-iphone #story_pane .NB-story-comment .NB-story-comment-content {
+    padding-bottom: 0px;
 }
 
 .NB-button.NB-share-button div { 
@@ -530,7 +528,7 @@ a.NB-show-profile {
     text-shadow: none;
     font-size: 14px;
 }
-story
+
 .NB-button.selected a {
     color: rgba(255,255,255,1);    
     text-shadow: none;

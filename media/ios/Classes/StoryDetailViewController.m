@@ -501,17 +501,16 @@
                    "   %@"
                    "    <div class=\"NB-story-comment-date\">%@ ago</div>"
                    "</div>"
-                   "<div class=\"NB-story-comment-content\">%@"
+                   "<div class=\"NB-story-comment-content\">%@</div>"
 
-                   "<div style=\"clear:both\">"
+                   "    <div class=\"NB-button-wrapper\" style=\"clear:both; padding-bottom: 8px;\">"
+                   "    %@" //User Like Button>"
+                   "    %@" //User Edit Button>"
                    "    <div class=\"NB-story-comment-reply-button NB-button\">"
                    "        <a href=\"http://ios.newsblur.com/reply/%@/%@\"><div class=\"NB-story-comment-reply-button-wrapper\">"
                    "            Reply"
                    "        </div></a>"
                    "    </div>"
-                   "    %@" //User Edit Button>"
-                   "    %@" //User Like Button>"
-                   "</div>"
                    "</div>"
                    "%@"
                    "</div>",
@@ -524,10 +523,10 @@
                    locationHtml,
                    [commentDict objectForKey:@"shared_date"],
                    commentContent,
-                   [commentDict objectForKey:@"user_id"],
-                   [user objectForKey:@"username"],
                    userEditButton,
                    userLikeButton,
+                   [commentDict objectForKey:@"user_id"],
+                   [user objectForKey:@"username"],
                    [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
 
     }
@@ -553,7 +552,7 @@
                                   "<div class=\"NB-story-comment-edit-button NB-story-comment-share-edit-button NB-button\">"
                                   "<a href=\"http://ios.newsblur.com/edit-reply/%@/%@/%@\">"
                                   "<div class=\"NB-story-comment-edit-button-wrapper\">"
-                                  "edit"
+                                  "Edit"
                                   "</div>"
                                   "</a>"
                                   "</div>",
@@ -583,7 +582,9 @@
                         "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
                         "   %@"
                         "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
+                        "    <div class=\"NB-button-wrapper\">"
                         "    %@" //User Edit Button>"
+                        "    </div>"
                         "   <div class=\"NB-story-comment-reply-content\">%@</div>"
                         "</div>",
                        [replyDict objectForKey:@"reply_id"],
@@ -595,7 +596,27 @@
                        userEditButton,
                        replyContent];
             } else {
-                
+                reply = [NSString stringWithFormat:@
+                         "<div class=\"NB-story-comment-reply\" id=\"NB-user-comment-%@\">"
+                         "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
+                         "       <img class=\"NB-story-comment-reply-photo\" src=\"%@\" />"
+                         "   </a>"
+                         "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
+                         "   %@"
+                         "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
+                         "   <div class=\"NB-story-comment-reply-content\">%@</div>"
+                         "    <div style=\"clear:both;\" class=\"NB-button-wrapper\">"
+                         "    %@" //User Edit Button>"
+                         "    </div>"
+                         "</div>",
+                         [replyDict objectForKey:@"reply_id"],
+                         [user objectForKey:@"user_id"],  
+                         [user objectForKey:@"photo_url"],
+                         [user objectForKey:@"username"],
+                         locationHtml,
+                         [replyDict objectForKey:@"publish_date"],
+                         replyContent,
+                         userEditButton];
             }
             repliesString = [repliesString stringByAppendingString:reply];
         }
