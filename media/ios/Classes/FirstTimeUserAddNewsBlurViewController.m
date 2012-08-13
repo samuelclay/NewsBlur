@@ -7,6 +7,7 @@
 //
 
 #import "FirstTimeUserAddNewsBlurViewController.h"
+#import "NewsBlurViewController.h"
 
 @implementation FirstTimeUserAddNewsBlurViewController
 
@@ -141,7 +142,15 @@
 }
 
 - (void)finishAddSite:(ASIHTTPRequest *)request {
-    NSLog(@"request: %@", request);
+    NSString *responseString = [request responseString];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    NSLog(@"results are %@", results);
+    [appDelegate.feedsViewController fetchFeedList:NO];
 }
 
 @end

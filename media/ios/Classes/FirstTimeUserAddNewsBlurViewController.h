@@ -23,7 +23,6 @@
 - (IBAction)tapPopularButton:(id)sender;
 
 - (void)finishAddSite:(ASIHTTPRequest *)request;
-- (void)finishAddPopular:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)addSite:(NSString *)siteUrl;
 - (void)addPopular;
