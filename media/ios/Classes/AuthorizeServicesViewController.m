@@ -71,7 +71,12 @@
         
         [self.navigationController popViewControllerAnimated:YES];
         if ([type isEqualToString:@"google"]) {
-            [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReader];
+            if (error.length) {
+                [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed:error];
+            } else {
+                [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReader];
+            }
+
         } else if ([type isEqualToString:@"facebook"]) {
             if (error.length) {
                 [self showError:error];
@@ -89,12 +94,12 @@
         return NO;
     }
     
-    // for failed google reader authorization
-    if ([URLString hasPrefix:[NSString stringWithFormat:@"http://%@/import/callback", NEWSBLUR_URL]]) {
-        [self.navigationController popViewControllerAnimated:YES];
-        [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed];
-        return NO;
-    }
+//    // for failed google reader authorization
+//    if ([URLString hasPrefix:[NSString stringWithFormat:@"http://%@/import/callback", NEWSBLUR_URL]]) {
+//        [self.navigationController popViewControllerAnimated:YES];
+//        [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed];
+//        return NO;
+//    }
 
     
     return YES;

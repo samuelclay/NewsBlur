@@ -86,7 +86,7 @@
                                      16);
     [self.view addSubview:checkmarkView];
     
-    [self addSite:@"http://blog.newsblur.com/"];
+    [self addSite:@"http://blog.newsblur.com/rss"];
 }
 
 - (IBAction)tapPopularButton:(id)sender {
@@ -129,7 +129,8 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
     [request setPostValue:siteUrl forKey:@"url"]; 
-    
+    [request setPostValue:@"true" forKey:@"auto_active"]; 
+    [request setPostValue:@"true" forKey:@"skip_fetch"]; 
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(finishAddSite:)];
     [request setDidFailSelector:@selector(requestFailed:)];

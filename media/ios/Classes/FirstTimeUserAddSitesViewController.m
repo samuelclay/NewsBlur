@@ -117,9 +117,9 @@
     [request startAsynchronous];
 }
 
-- (void)importFromGoogleReaderFailed {
+- (void)importFromGoogleReaderFailed:(NSString *)error {
     [self.googleReaderButton setTitle:@"Retry Google Reader" forState:UIControlStateNormal];
-    self.instructionLabel.text = @"Importing from Google Reader failed.  Please try again.";
+    self.instructionLabel.text = error;
 }
 
 - (void)finishImportFromGoogleReader:(ASIHTTPRequest *)request {

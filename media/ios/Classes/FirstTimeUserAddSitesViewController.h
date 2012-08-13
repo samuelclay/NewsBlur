@@ -27,6 +27,6 @@
 
 - (void)addCategories;
 - (void)importFromGoogleReader;
-- (void)importFromGoogleReaderFailed;
+- (void)importFromGoogleReaderFailed:(NSString *)error;
 - (void)updateSites;
 @end
