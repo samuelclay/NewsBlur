@@ -62,7 +62,6 @@
     
     // make mutable copy
     NSMutableDictionary *newActiveStory = [appDelegate.activeStory mutableCopy];
-    [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
     
     if (!foundComment) {
         NSArray *publicComments = [appDelegate.activeStory objectForKey:@"public_comments"];
@@ -77,7 +76,7 @@
             }
         }
         
-        [newActiveStory setValue:[NSArray arrayWithArray:publicComments] forKey:@"public_comments"];
+        [newActiveStory setValue:[NSArray arrayWithArray:newPublicComments] forKey:@"public_comments"];
     } else {
         [newActiveStory setValue:[NSArray arrayWithArray:newFriendsComments] forKey:@"friend_comments"];
     }

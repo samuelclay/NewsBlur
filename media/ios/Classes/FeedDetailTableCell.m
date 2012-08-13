@@ -167,7 +167,7 @@ static UIFont *indicatorFont = nil;
     
     // feed bar
     
-    CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBarTopBorder CGColor]));
+    CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor])); //feedColorBarTopBorder
     if (self.isRead) {
         CGContextSetAlpha(context, 0.25);
     }

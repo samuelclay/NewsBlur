@@ -372,15 +372,15 @@ del {
     float: none;
 }
 
-.NB-iphone#story_pane .nb-story-share-label {
+.nb-story-comments-label {
     float: left;
-    display: block;
-    margin: 2px 4px 0 0;
+    margin-right: 5px;
+    margin-top: 6px;
 }
 
-.NB-iphone .NB-story-share-profile {
-    margin-top: -2px;
-    margin-bottom: 10px;
+.nb-story-share-label {
+    float: right;
+    margin-top: 6px;
 }
 
 /* Sharing */
@@ -417,9 +417,13 @@ a.NB-show-profile {
 
 /* Edit, Like, and Reply buttons */
 
-.NB-button {
-    padding: 0px 0px 4px 10px;
+.NB-button-wrapper {
     float: right;
+}
+
+.NB-button {
+    padding: 0px 0px 4px 4px;
+    display: inline-block;
     cursor: pointer;
     margin-top: -5px;
     margin-bottom: -4px;
@@ -435,6 +439,7 @@ a.NB-show-profile {
     float: none;
     padding: 0px 0px 20px 0px;
     margin-bottom: 0;
+    display: block;
 }
 
 .NB-button div {
@@ -468,12 +473,12 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-share-button div span {
-    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACGUlEQVR42o2TTUsbYRSFZ+MvcNn/0EU1rSCCgkSxVRCLFgyiqFSE1tDSpNKoEaQJiAvBryDZGCVQKWIpWIeAFMHWL1qKjUJ3KRQSNUgSJzPR5PieMRMqjuLibAaec+577xkJwJ30p0jqEloXiglpQlmh3F3AaaEogWhnMw6dPTgafIljtx3i262gTSgSKbuPQ8dzxEfsSEw6kHBV4NRThrOVAaSd0o2wX0iJdj9D3PMaJ/1WKF4LtMlHyExf6jw0CO2dZAovCmWOBl4gMeFAyv0AmTyoLVRCXa1H+nsLtMgUktslpsmZ46E+JGedUMcsl2CwCumvTVD22qAcdOjS/vmQ3LVce7PCZMLa+EMdVj/XQflp06G/ezZ8/NYAV6gKUz+GcM8vXTGI8M0c20hW5QYo4XacCnhxox5dK+Wo+1SKmuUSeHdcKJ6VrpwqF3//Cqnh0kIy4djvNoyuVeNJHmwNONDrCyIg/8LjN0sFgyhPlfK/5cL4Zo7NZB2uFWDjh6fonQliXg5jQd7H3JcwDQoNy/LOPBXT9YXlx2YyYXcgpIPe+S10emTCqtAmDdbZMJaEd+apuG0ujG/m2EwmbB9fM0CrsTsaxFhPNozpvDPTuW0ujG/m2EwmbID/G2jsNutJA5aEBjyVnu7T042xrWYGWf4Y7DbryYaxJLwzT8Vtc2FGuplBTog/BrvNerJhLAnvTNDQppnBBZHZrv4ITeFuAAAAAElFTkSuQmCC") no-repeat 0 0px;
+    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACGUlEQVR42o2TTUsbYRSFZ+MvcNn/0EU1rSCCgkSxVRCLFgyiqFSE1tDSpNKoEaQJiAvBryDZGCVQKWIpWIeAFMHWL1qKjUJ3KRQSNUgSJzPR5PieMRMqjuLibAaec+577xkJwJ30p0jqEloXiglpQlmh3F3AaaEogWhnMw6dPTgafIljtx3i262gTSgSKbuPQ8dzxEfsSEw6kHBV4NRThrOVAaSd0o2wX0iJdj9D3PMaJ/1WKF4LtMlHyExf6jw0CO2dZAovCmWOBl4gMeFAyv0AmTyoLVRCXa1H+nsLtMgUktslpsmZ46E+JGedUMcsl2CwCumvTVD22qAcdOjS/vmQ3LVce7PCZMLa+EMdVj/XQflp06G/ezZ8/NYAV6gKUz+GcM8vXTGI8M0c20hW5QYo4XacCnhxox5dK+Wo+1SKmuUSeHdcKJ6VrpwqF3//Cqnh0kIy4djvNoyuVeNJHmwNONDrCyIg/8LjN0sFgyhPlfK/5cL4Zo7NZB2uFWDjh6fonQliXg5jQd7H3JcwDQoNy/LOPBXT9YXlx2YyYXcgpIPe+S10emTCqtAmDdbZMJaEd+apuG0ujG/m2EwmbB9fM0CrsTsaxFhPNozpvDPTuW0ujG/m2EwmbID/G2jsNutJA5aEBjyVnu7T042xrWYGWf4Y7DbryYaxJLwzT8Vtc2FGuplBTog/BrvNerJhLAnvTNDQppnBBZHZrv4ITeFuAAAAAElFTkSuQmCC") no-repeat top right;
     width: 23px;
     display: inline-block;
     height: 16px;
     margin-bottom: -2px;
-    margin-left: -23px;
+    margin-right: -23px;
 }
 
 .NB-iphone .NB-button .NB-story-comment-like-button-wrapper,

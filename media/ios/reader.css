@@ -13,31 +13,13 @@
     box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 1);shar
 }
 
-#story_pane .NB-story-comment .NB-story-comment-location {
-    text-transform: uppercase;
-    font-size: 10px;
-    color: #B7B58D;
-    font-weight: bold;
+.NB-story-share-profiles-comments-friends,
+.NB-story-share-profiles-comments-public {
     float: left;
-    margin-right: 8px;
-    padding: 0px 6px;
-    background-color: #EFEFEF;
-    border-radius: 8px;
-
-    line-height: 17px;
 }
 
-.NB-story-comments-label {
-    float: left;
-    margin-right: 12px;
-}
-
-.NB-story-share-label {
-    float: right;
-    margin-left: 12px;
-}
-
-.NB-story-share-profiles .NB-story-share-profiles-shares-friends, .NB-story-share-profiles .NB-story-share-profiles-shares-public {
+.NB-story-share-profiles-shares-friends, 
+.NB-story-share-profiles-shares-public {
     float: right;
 }
 
@@ -62,7 +44,7 @@
     width: 32px;
 }
 #story_pane .NB-story-comment .NB-story-comment-author-container {
-    margin: 10px 0 0;
+    margin: 4px 0 0;
 }
 #story_pane .NB-story-comment .NB-story-comment-reshares {
     position: absolute;
@@ -79,7 +61,7 @@
     font-size: 11px;
     color: #1D4BA6;
     font-weight: bold;
-    margin: 0 10px 0 0;
+    margin: 4px 10px 0 0;
     text-shadow: 0 -1px 0 #F0F0F0;
     cursor: pointer;
     line-height: 17px;
@@ -91,7 +73,22 @@
     font-weight: bold;
     float: left;
     line-height: 17px;
+    margin-top: 4px;
 }
+
+#story_pane .NB-story-comment .NB-story-comment-location {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #B7B58D;
+    font-weight: bold;
+    float: left;
+    margin-right: 8px;
+    margin: 4px 10px 0 0;
+    background-color: #EFEFEF;
+    border-radius: 8px;
+    line-height: 17px;
+}
+
 #story_pane .NB-story-comment .NB-story-comment-content {
     float: left;
     color: #303030;
@@ -165,10 +162,6 @@
     padding-top: 0;
 }
 
-#story_pane .nb-story-comments-shares-teaser .NB-right {
-    margin-top: 2px;
-}
-
 #story_pane .NB-story-comments-public-teaser,
 #story_pane .NB-story-comments-public-header {
     background-color: #B1B6B4;
@@ -197,9 +190,9 @@
     font-weight: bold;
     text-transform: uppercase;
     font-size: 10px;
-    padding: 8px 12px 0;
+    padding: 4px 12px 0;
     overflow: hidden;
-    height: 26px;
+    min-height: 26px;
     border-bottom: 1px solid #A6A6A6;
     background-image: whiteSmoke;
 }
@@ -214,18 +207,16 @@
     padding: 0 1px;
     font-size: 12px;
 }
-#story_pane .NB-story-share-label {
-    display: inline-block;
-    margin: 2px 4px 0 0;
-}
+
 #story_pane .NB-story-share-profiles {
-    display: inline-block;
+    float: left;
     vertical-align: top;
-    height: 24px;
+    min-height: 24px;
     padding-top: 2px;
-    margin-top: -4px;
+    margin-top: 0px;
     overflow: hidden;
 }
+
 #story_pane .NB-story-share-profiles.NB-story-share-profiles-public {
     float: right;
 }
@@ -236,15 +227,21 @@
 #story_pane .NB-story-share-profile {
     display: inline-block;
 }
+
 #story_pane .NB-story-share-profile .NB-user-avatar {
     float: left;
     font-size: 0;
     vertical-align: middle;
     height: 22px;
     width: 22px;
-    margin: 0 4px 0 0;
+    margin: 0 4px 4px 0;
     cursor: pointer;
 }
+
+#story_pane .NB-story-share-profile .NB-public-user {
+    opacity: 0.5;
+}
+
 #story_pane .NB-story-share-profile .NB-user-avatar img {
     width: 22px;
     height: 22px;
@@ -254,7 +251,7 @@
     float: left;
 }
 #story_pane .NB-story-comment .NB-story-comment-content {
-    clear: both;
+    clear: left;
     padding: 0 0 8px 0;
 }
 #story_pane .NB-feed-story-endbar {
