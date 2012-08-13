@@ -1782,8 +1782,9 @@ background: transparent;
     max-width: 100%;
 }
 #story_pane .NB-feed-stories .NB-feed-story img {
-  max-width: 100%;
-  height: auto;
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
 }
 #story_pane .NB-feed-story {
     position: relative;

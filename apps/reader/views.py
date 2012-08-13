@@ -1054,6 +1054,7 @@ def add_url(request):
     code = 0
     url = request.POST['url']
     auto_active = is_true(request.POST.get('auto_active', 1))
+    skip_fetch = is_true(request.POST.get('skip_fetch', False))
     
     if not url:
         code = -1
@@ -1061,7 +1062,8 @@ def add_url(request):
     else:
         folder = request.POST.get('folder', '')
         code, message, _ = UserSubscription.add_subscription(user=request.user, feed_address=url, 
-                                                             folder=folder, auto_active=auto_active)
+                                                             folder=folder, auto_active=auto_active,
+                                                             skip_fetch=skip_fetch)
     
     return dict(code=code, message=message)
 
