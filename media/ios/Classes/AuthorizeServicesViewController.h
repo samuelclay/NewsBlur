@@ -22,4 +22,5 @@
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 
+- (void)showError:(NSString *)error;
 @end

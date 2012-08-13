@@ -65,19 +65,32 @@
     NSLog(@"URL STRING IS %@", URLString);
     
     if ([URLString isEqualToString:[NSString stringWithFormat:@"http://%@/", NEWSBLUR_URL]]) {
+        
+        
+        NSString *error = [self.webView stringByEvaluatingJavaScriptFromString:@"NEWSBLUR.error"];
+        
         [self.navigationController popViewControllerAnimated:YES];
         if ([type isEqualToString:@"google"]) {
             [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReader];
         } else if ([type isEqualToString:@"facebook"]) {
-            [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
+            if (error.length) {
+                [self showError:error];
+            } else {
+                [appDelegate.firstTimeUserAddFriendsViewController selectFacebookButton];
+            }
+            
         } else if ([type isEqualToString:@"twitter"]) {
-            [appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
+            if (error.length) {
+                [self showError:error];
+            } else {
+                [appDelegate.firstTimeUserAddFriendsViewController selectTwitterButton];
+            }
         }
         return NO;
     }
     
     // for failed google reader authorization
-    if ([URLString isEqualToString:[NSString stringWithFormat:@"http://%@/import/callback?error=access_denied", NEWSBLUR_URL]]) {
+    if ([URLString hasPrefix:[NSString stringWithFormat:@"http://%@/import/callback", NEWSBLUR_URL]]) {
         [self.navigationController popViewControllerAnimated:YES];
         [appDelegate.firstTimeUserAddSitesViewController importFromGoogleReaderFailed];
         return NO;
@@ -85,6 +98,16 @@
 
     
     return YES;
+}
+
+- (void)showError:(NSString *)error {
+    [MBProgressHUD hideHUDForView:appDelegate.firstTimeUserAddFriendsViewController.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:appDelegate.firstTimeUserAddFriendsViewController.view animated:YES];
+    [HUD setCustomView:[[UIImageView alloc] 
+                        initWithImage:[UIImage imageNamed:@"warning.gif"]]];
+    [HUD setMode:MBProgressHUDModeCustomView];
+    HUD.labelText = error;
+    [HUD hide:YES afterDelay:4];
 }
 
 

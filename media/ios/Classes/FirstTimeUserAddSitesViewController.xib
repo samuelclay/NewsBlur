@@ -11,13 +11,13 @@
 			<string key="NS.object.0">1181</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
-			<string>IBUIView</string>
-			<string>IBUIImageView</string>
 			<string>IBProxyObject</string>
+			<string>IBUIImageView</string>
 			<string>IBUILabel</string>
+			<string>IBUIButton</string>
 			<string>IBUIActivityIndicatorView</string>
 			<string>IBUIScrollView</string>
-			<string>IBUIButton</string>
+			<string>IBUIView</string>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -60,57 +60,13 @@
 						<reference key="NSNextResponder" ref="874391841"/>
 						<int key="NSvFlags">274</int>
 						<array class="NSMutableArray" key="NSSubviews">
-							<object class="IBUIButton" id="35612574">
-								<reference key="NSNextResponder" ref="7287691"/>
-								<int key="NSvFlags">301</int>
-								<string key="NSFrame">{{178, 128}, {184, 34}}</string>
-								<reference key="NSSuperview" ref="7287691"/>
-								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="659331283"/>
-								<string key="NSReuseIdentifierKey">_NS:9</string>
-								<bool key="IBUIOpaque">NO</bool>
-								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<int key="IBUIContentHorizontalAlignment">0</int>
-								<int key="IBUIContentVerticalAlignment">0</int>
-								<string key="IBUISelectedTitle">Importing...</string>
-								<string key="IBUINormalTitle">Google Reader</string>
-								<object class="NSColor" key="IBUIHighlightedTitleColor" id="387740236">
-									<int key="NSColorSpace">3</int>
-									<bytes key="NSWhite">MQA</bytes>
-								</object>
-								<object class="NSColor" key="IBUISelectedTitleColor">
-									<int key="NSColorSpace">3</int>
-									<bytes key="NSWhite">MQA</bytes>
-									<object class="NSColorSpace" key="NSCustomColorSpace" id="616856063">
-										<int key="NSID">2</int>
-									</object>
-								</object>
-								<reference key="IBUINormalTitleColor" ref="387740236"/>
-								<object class="NSColor" key="IBUINormalTitleShadowColor">
-									<int key="NSColorSpace">3</int>
-									<bytes key="NSWhite">MC41AA</bytes>
-								</object>
-								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">google.png</string>
-								</object>
-								<object class="IBUIFontDescription" key="IBUIFontDescription">
-									<int key="type">2</int>
-									<double key="pointSize">13</double>
-								</object>
-								<object class="NSFont" key="IBUIFont">
-									<string key="NSName">Helvetica-Bold</string>
-									<double key="NSSize">13</double>
-									<int key="NSfFlags">16</int>
-								</object>
-							</object>
 							<object class="IBUILabel" id="895169245">
 								<reference key="NSNextResponder" ref="7287691"/>
 								<int key="NSvFlags">303</int>
 								<string key="NSFrame">{{70, 12}, {400, 108}}</string>
 								<reference key="NSSuperview" ref="7287691"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="35612574"/>
+								<reference key="NSNextKeyView" ref="584835291"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -123,7 +79,10 @@
 									<bytes key="NSRGB">MCAwIDAAA</bytes>
 								</object>
 								<nil key="IBUIHighlightedColor"/>
-								<reference key="IBUIShadowColor" ref="387740236"/>
+								<object class="NSColor" key="IBUIShadowColor" id="387740236">
+									<int key="NSColorSpace">3</int>
+									<bytes key="NSWhite">MQA</bytes>
+								</object>
 								<int key="IBUIBaselineAdjustment">0</int>
 								<float key="IBUIMinimumFontSize">10</float>
 								<int key="IBUINumberOfLines">3</int>
@@ -138,16 +97,75 @@
 									<int key="NSfFlags">16</int>
 								</object>
 							</object>
-							<object class="IBUIActivityIndicatorView" id="659331283">
+							<object class="IBUIView" id="584835291">
 								<reference key="NSNextResponder" ref="7287691"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{184, 136}, {20, 20}}</string>
+								<int key="NSvFlags">301</int>
+								<array class="NSMutableArray" key="NSSubviews">
+									<object class="IBUIButton" id="35612574">
+										<reference key="NSNextResponder" ref="584835291"/>
+										<int key="NSvFlags">301</int>
+										<string key="NSFrameSize">{184, 34}</string>
+										<reference key="NSSuperview" ref="584835291"/>
+										<reference key="NSWindow"/>
+										<reference key="NSNextKeyView" ref="659331283"/>
+										<string key="NSReuseIdentifierKey">_NS:9</string>
+										<bool key="IBUIOpaque">NO</bool>
+										<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+										<int key="IBUIContentHorizontalAlignment">0</int>
+										<int key="IBUIContentVerticalAlignment">0</int>
+										<string key="IBUISelectedTitle">Importing...</string>
+										<string key="IBUINormalTitle">Google Reader</string>
+										<reference key="IBUIHighlightedTitleColor" ref="387740236"/>
+										<object class="NSColor" key="IBUISelectedTitleColor">
+											<int key="NSColorSpace">3</int>
+											<bytes key="NSWhite">MQA</bytes>
+											<object class="NSColorSpace" key="NSCustomColorSpace" id="616856063">
+												<int key="NSID">2</int>
+											</object>
+										</object>
+										<reference key="IBUINormalTitleColor" ref="387740236"/>
+										<object class="NSColor" key="IBUINormalTitleShadowColor">
+											<int key="NSColorSpace">3</int>
+											<bytes key="NSWhite">MC41AA</bytes>
+										</object>
+										<object class="NSCustomResource" key="IBUINormalBackgroundImage">
+											<string key="NSClassName">NSImage</string>
+											<string key="NSResourceName">google.png</string>
+										</object>
+										<object class="IBUIFontDescription" key="IBUIFontDescription">
+											<int key="type">2</int>
+											<double key="pointSize">13</double>
+										</object>
+										<object class="NSFont" key="IBUIFont">
+											<string key="NSName">Helvetica-Bold</string>
+											<double key="NSSize">13</double>
+											<int key="NSfFlags">16</int>
+										</object>
+									</object>
+									<object class="IBUIActivityIndicatorView" id="659331283">
+										<reference key="NSNextResponder" ref="584835291"/>
+										<int key="NSvFlags">301</int>
+										<string key="NSFrame">{{7, 7}, {20, 20}}</string>
+										<reference key="NSSuperview" ref="584835291"/>
+										<reference key="NSWindow"/>
+										<reference key="NSNextKeyView"/>
+										<string key="NSReuseIdentifierKey">_NS:9</string>
+										<bool key="IBUIOpaque">NO</bool>
+										<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+										<bool key="IBUIHidesWhenStopped">NO</bool>
+									</object>
+								</array>
+								<string key="NSFrame">{{178, 128}, {184, 34}}</string>
 								<reference key="NSSuperview" ref="7287691"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="35612574"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<object class="NSColor" key="IBUIBackgroundColor">
+									<int key="NSColorSpace">3</int>
+									<bytes key="NSWhite">MCAwAA</bytes>
+								</object>
 								<bool key="IBUIOpaque">NO</bool>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<bool key="IBUIHidesWhenStopped">NO</bool>
 							</object>
 						</array>
 						<string key="NSFrameSize">{540, 800}</string>
@@ -204,11 +222,11 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">googleReaderButton</string>
+						<string key="label">instructionLabel</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="35612574"/>
+						<reference key="destination" ref="895169245"/>
 					</object>
-					<int key="connectionID">134</int>
+					<int key="connectionID">136</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -220,11 +238,19 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">instructionLabel</string>
+						<string key="label">googleReaderButton</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="895169245"/>
+						<reference key="destination" ref="35612574"/>
 					</object>
-					<int key="connectionID">136</int>
+					<int key="connectionID">134</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">googleReaderButtonWrapper</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="35612574"/>
+					</object>
+					<int key="connectionID">159</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -273,26 +299,34 @@
 						<int key="objectID">139</int>
 						<reference key="object" ref="7287691"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="35612574"/>
-							<reference ref="659331283"/>
 							<reference ref="895169245"/>
+							<reference ref="584835291"/>
 						</array>
 						<reference key="parent" ref="874391841"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">5</int>
-						<reference key="object" ref="35612574"/>
-						<reference key="parent" ref="7287691"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">133</int>
-						<reference key="object" ref="659331283"/>
+						<int key="objectID">158</int>
+						<reference key="object" ref="584835291"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="659331283"/>
+							<reference ref="35612574"/>
+						</array>
 						<reference key="parent" ref="7287691"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">108</int>
 						<reference key="object" ref="895169245"/>
 						<reference key="parent" ref="7287691"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">133</int>
+						<reference key="object" ref="659331283"/>
+						<reference key="parent" ref="584835291"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">5</int>
+						<reference key="object" ref="35612574"/>
+						<reference key="parent" ref="584835291"/>
 					</object>
 				</array>
 			</object>
@@ -306,6 +340,7 @@
 				<string key="133.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="138.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="139.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="158.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="5.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="2" key="5.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
 				<real value="2" key="5.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
@@ -314,7 +349,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">157</int>
+			<int key="maxID">159</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -706,20 +741,11 @@
 					<string key="className">FirstTimeUserAddNewsBlurViewController</string>
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="tapCategoryButton:">id</string>
-						<string key="tapGoogleReaderButton">id</string>
 						<string key="tapNewsBlurButton:">id</string>
 						<string key="tapNextButton">id</string>
+						<string key="tapPopularButton:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="tapCategoryButton:">
-							<string key="name">tapCategoryButton:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="tapGoogleReaderButton">
-							<string key="name">tapGoogleReaderButton</string>
-							<string key="candidateClassName">id</string>
-						</object>
 						<object class="IBActionInfo" key="tapNewsBlurButton:">
 							<string key="name">tapNewsBlurButton:</string>
 							<string key="candidateClassName">id</string>
@@ -728,64 +754,28 @@
 							<string key="name">tapNextButton</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="tapPopularButton:">
+							<string key="name">tapPopularButton:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="addFriendsView">UIView</string>
-						<string key="addNewsBlurView">UIView</string>
-						<string key="addSitesView">UIView</string>
 						<string key="appDelegate">NewsBlurAppDelegate</string>
-						<string key="googleReaderButton">UIButton</string>
-						<string key="logo">UIImageView</string>
+						<string key="instructionsLabel">UIButton</string>
 						<string key="nextButton">UIBarButtonItem</string>
-						<string key="previousButton">UIBarButtonItem</string>
-						<string key="toolbar">UIToolbar</string>
-						<string key="toolbarTitle">UIButton</string>
-						<string key="welcomeView">UIView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="addFriendsView">
-							<string key="name">addFriendsView</string>
-							<string key="candidateClassName">UIView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="addNewsBlurView">
-							<string key="name">addNewsBlurView</string>
-							<string key="candidateClassName">UIView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="addSitesView">
-							<string key="name">addSitesView</string>
-							<string key="candidateClassName">UIView</string>
-						</object>
 						<object class="IBToOneOutletInfo" key="appDelegate">
 							<string key="name">appDelegate</string>
 							<string key="candidateClassName">NewsBlurAppDelegate</string>
 						</object>
-						<object class="IBToOneOutletInfo" key="googleReaderButton">
-							<string key="name">googleReaderButton</string>
+						<object class="IBToOneOutletInfo" key="instructionsLabel">
+							<string key="name">instructionsLabel</string>
 							<string key="candidateClassName">UIButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="logo">
-							<string key="name">logo</string>
-							<string key="candidateClassName">UIImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="nextButton">
 							<string key="name">nextButton</string>
 							<string key="candidateClassName">UIBarButtonItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="previousButton">
-							<string key="name">previousButton</string>
-							<string key="candidateClassName">UIBarButtonItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="toolbar">
-							<string key="name">toolbar</string>
-							<string key="candidateClassName">UIToolbar</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="toolbarTitle">
-							<string key="name">toolbarTitle</string>
-							<string key="candidateClassName">UIButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="welcomeView">
-							<string key="name">welcomeView</string>
-							<string key="candidateClassName">UIView</string>
 						</object>
 					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
@@ -819,6 +809,7 @@
 						<string key="activityIndicator">UIActivityIndicatorView</string>
 						<string key="appDelegate">NewsBlurAppDelegate</string>
 						<string key="googleReaderButton">UIButton</string>
+						<string key="googleReaderButtonWrapper">UIView</string>
 						<string key="instructionLabel">UILabel</string>
 						<string key="nextButton">UIBarButtonItem</string>
 					</dictionary>
@@ -834,6 +825,10 @@
 						<object class="IBToOneOutletInfo" key="googleReaderButton">
 							<string key="name">googleReaderButton</string>
 							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="googleReaderButtonWrapper">
+							<string key="name">googleReaderButtonWrapper</string>
+							<string key="candidateClassName">UIView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="instructionLabel">
 							<string key="name">instructionLabel</string>
@@ -973,39 +968,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/FriendsListViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">GoogleReaderViewController</string>
-					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">tapCancelButton:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">tapCancelButton:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">tapCancelButton:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="appDelegate">NewsBlurAppDelegate</string>
-						<string key="webView">UIWebView</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="appDelegate">
-							<string key="name">appDelegate</string>
-							<string key="candidateClassName">NewsBlurAppDelegate</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="webView">
-							<string key="name">webView</string>
-							<string key="candidateClassName">UIWebView</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/GoogleReaderViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1270,7 +1232,6 @@
 						<string key="fontSettingsViewController">FontSettingsViewController</string>
 						<string key="friendsListViewController">FriendsListViewController</string>
 						<string key="ftuxNavigationController">UINavigationController</string>
-						<string key="googleReaderViewController">GoogleReaderViewController</string>
 						<string key="loginViewController">LoginViewController</string>
 						<string key="masterContainerViewController">NBContainerViewController</string>
 						<string key="moveSiteViewController">MoveSiteViewController</string>
@@ -1337,10 +1298,6 @@
 						<object class="IBToOneOutletInfo" key="ftuxNavigationController">
 							<string key="name">ftuxNavigationController</string>
 							<string key="candidateClassName">UINavigationController</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="googleReaderViewController">
-							<string key="name">googleReaderViewController</string>
-							<string key="candidateClassName">GoogleReaderViewController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="loginViewController">
 							<string key="name">loginViewController</string>

@@ -92,7 +92,9 @@
         } else {
             console.log(["No opener, directing to /", opener]);
             window.close();
-            window.location.href = "/{% if error %}?error={{ error|urlencode }}{% endif %}";
+            window.NEWSBLUR =  window.NEWSBLUR || {};
+            NEWSBLUR.error = "{{ error }}";
+            window.location.href = "/";
         }
     </script>
 </head>

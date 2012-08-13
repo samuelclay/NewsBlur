@@ -16,6 +16,7 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) NSMutableArray *categories;
 @property (nonatomic) IBOutlet UIButton *googleReaderButton;
+@property (nonatomic) IBOutlet UIView *googleReaderButtonWrapper;
 @property (nonatomic) IBOutlet UIBarButtonItem *nextButton;
 @property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (nonatomic) IBOutlet UILabel *instructionLabel;

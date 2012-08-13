@@ -1,0 +1,684 @@
+diff --git a/media/ios/Classes/FirstTimeUserAddFriendsViewController.xib b/media/ios/Classes/FirstTimeUserAddFriendsViewController.xib
+index 5234018..6deafe2 100644
+--- a/media/ios/Classes/FirstTimeUserAddFriendsViewController.xib
++++ b/media/ios/Classes/FirstTimeUserAddFriendsViewController.xib
+@@ -62,7 +62,7 @@
+ 						<string key="NSFrame">{{20, 70}, {500, 100}}</string>
+ 						<reference key="NSSuperview" ref="874391841"/>
+ 						<reference key="NSWindow"/>
+-						<reference key="NSNextKeyView" ref="467269529"/>
++						<reference key="NSNextKeyView" ref="406293652"/>
+ 						<string key="NSReuseIdentifierKey">_NS:9</string>
+ 						<bool key="IBUIOpaque">NO</bool>
+ 						<bool key="IBUIClipsSubviews">YES</bool>
+@@ -92,59 +92,37 @@
+ 							<int key="NSfFlags">16</int>
+ 						</object>
+ 					</object>
+-					<object class="IBUILabel" id="353080965">
++					<object class="IBUILabel" id="961208593">
+ 						<reference key="NSNextResponder" ref="874391841"/>
+-						<int key="NSvFlags">301</int>
+-						<string key="NSFrame">{{166, 405}, {122, 34}}</string>
++						<int key="NSvFlags">303</int>
++						<string key="NSFrame">{{70, 456}, {400, 106}}</string>
+ 						<reference key="NSSuperview" ref="874391841"/>
+ 						<reference key="NSWindow"/>
+-						<reference key="NSNextKeyView" ref="761624383"/>
++						<reference key="NSNextKeyView" ref="436803934"/>
+ 						<string key="NSReuseIdentifierKey">_NS:9</string>
+ 						<bool key="IBUIOpaque">NO</bool>
+ 						<bool key="IBUIClipsSubviews">YES</bool>
+ 						<int key="IBUIContentMode">7</int>
+ 						<bool key="IBUIUserInteractionEnabled">NO</bool>
+ 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+-						<string key="IBUIText">Auto-follow friends</string>
++						<string key="IBUIText">Feel comfortable connecting to these services. Nothing happens without your permission.</string>
+ 						<reference key="IBUITextColor" ref="827336334"/>
+ 						<nil key="IBUIHighlightedColor"/>
+ 						<reference key="IBUIShadowColor" ref="937995787"/>
+ 						<int key="IBUIBaselineAdjustment">0</int>
+ 						<float key="IBUIMinimumFontSize">10</float>
++						<int key="IBUINumberOfLines">4</int>
+ 						<int key="IBUITextAlignment">1</int>
+ 						<object class="IBUIFontDescription" key="IBUIFontDescription" id="227994000">
+ 							<int key="type">1</int>
+ 							<double key="pointSize">13</double>
+ 						</object>
+-						<object class="NSFont" key="IBUIFont" id="55312406">
++						<object class="NSFont" key="IBUIFont" id="659372579">
+ 							<string key="NSName">Helvetica</string>
+ 							<double key="NSSize">13</double>
+ 							<int key="NSfFlags">16</int>
+ 						</object>
+ 					</object>
+-					<object class="IBUILabel" id="961208593">
+-						<reference key="NSNextResponder" ref="874391841"/>
+-						<int key="NSvFlags">303</int>
+-						<string key="NSFrame">{{118, 458}, {304, 34}}</string>
+-						<reference key="NSSuperview" ref="874391841"/>
+-						<reference key="NSWindow"/>
+-						<string key="NSReuseIdentifierKey">_NS:9</string>
+-						<bool key="IBUIOpaque">NO</bool>
+-						<bool key="IBUIClipsSubviews">YES</bool>
+-						<int key="IBUIContentMode">7</int>
+-						<bool key="IBUIUserInteractionEnabled">NO</bool>
+-						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+-						<string key="IBUIText">Feel comfortable connecting to these services. Nothing happens without your permission.</string>
+-						<reference key="IBUITextColor" ref="827336334"/>
+-						<nil key="IBUIHighlightedColor"/>
+-						<reference key="IBUIShadowColor" ref="937995787"/>
+-						<int key="IBUIBaselineAdjustment">0</int>
+-						<float key="IBUIMinimumFontSize">10</float>
+-						<int key="IBUINumberOfLines">4</int>
+-						<int key="IBUITextAlignment">1</int>
+-						<reference key="IBUIFontDescription" ref="227994000"/>
+-						<reference key="IBUIFont" ref="55312406"/>
+-					</object>
+ 					<object class="IBUIButton" id="406293652">
+ 						<reference key="NSNextResponder" ref="874391841"/>
+ 						<int key="NSvFlags">301</int>
+@@ -174,11 +152,11 @@
+ 							<string key="NSClassName">NSImage</string>
+ 							<string key="NSResourceName">twitter.png</string>
+ 						</object>
+-						<object class="IBUIFontDescription" key="IBUIFontDescription" id="236447593">
++						<object class="IBUIFontDescription" key="IBUIFontDescription" id="466751131">
+ 							<int key="type">2</int>
+ 							<double key="pointSize">13</double>
+ 						</object>
+-						<object class="NSFont" key="IBUIFont" id="29410824">
++						<object class="NSFont" key="IBUIFont" id="525354183">
+ 							<string key="NSName">Helvetica-Bold</string>
+ 							<double key="NSSize">13</double>
+ 							<int key="NSfFlags">16</int>
+@@ -190,7 +168,7 @@
+ 						<string key="NSFrame">{{215, 195}, {20, 20}}</string>
+ 						<reference key="NSSuperview" ref="874391841"/>
+ 						<reference key="NSWindow"/>
+-						<reference key="NSNextKeyView" ref="353080965"/>
++						<reference key="NSNextKeyView" ref="467269529"/>
+ 						<string key="NSReuseIdentifierKey">_NS:9</string>
+ 						<bool key="IBUIOpaque">NO</bool>
+ 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+@@ -224,8 +202,8 @@
+ 							<string key="NSClassName">NSImage</string>
+ 							<string key="NSResourceName">facebook.png</string>
+ 						</object>
+-						<reference key="IBUIFontDescription" ref="236447593"/>
+-						<reference key="IBUIFont" ref="29410824"/>
++						<reference key="IBUIFontDescription" ref="466751131"/>
++						<reference key="IBUIFont" ref="525354183"/>
+ 					</object>
+ 					<object class="IBUIActivityIndicatorView" id="886247703">
+ 						<reference key="NSNextResponder" ref="874391841"/>
+@@ -233,24 +211,64 @@
+ 						<string key="NSFrame">{{215, 288}, {20, 20}}</string>
+ 						<reference key="NSSuperview" ref="874391841"/>
+ 						<reference key="NSWindow"/>
+-						<reference key="NSNextKeyView" ref="406293652"/>
++						<reference key="NSNextKeyView" ref="961208593"/>
+ 						<string key="NSReuseIdentifierKey">_NS:9</string>
+ 						<bool key="IBUIOpaque">NO</bool>
+ 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+ 					</object>
+-					<object class="IBUISwitch" id="761624383">
++					<object class="IBUIView" id="436803934">
+ 						<reference key="NSNextResponder" ref="874391841"/>
+ 						<int key="NSvFlags">301</int>
+-						<string key="NSFrame">{{281, 408}, {94, 27}}</string>
++						<array class="NSMutableArray" key="NSSubviews">
++							<object class="IBUILabel" id="353080965">
++								<reference key="NSNextResponder" ref="436803934"/>
++								<int key="NSvFlags">301</int>
++								<string key="NSFrame">{{27, 17}, {122, 34}}</string>
++								<reference key="NSSuperview" ref="436803934"/>
++								<reference key="NSWindow"/>
++								<reference key="NSNextKeyView" ref="761624383"/>
++								<string key="NSReuseIdentifierKey">_NS:9</string>
++								<bool key="IBUIOpaque">NO</bool>
++								<bool key="IBUIClipsSubviews">YES</bool>
++								<int key="IBUIContentMode">7</int>
++								<bool key="IBUIUserInteractionEnabled">NO</bool>
++								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
++								<string key="IBUIText">Auto-follow friends</string>
++								<reference key="IBUITextColor" ref="827336334"/>
++								<nil key="IBUIHighlightedColor"/>
++								<reference key="IBUIShadowColor" ref="937995787"/>
++								<int key="IBUIBaselineAdjustment">0</int>
++								<float key="IBUIMinimumFontSize">10</float>
++								<int key="IBUITextAlignment">1</int>
++								<reference key="IBUIFontDescription" ref="227994000"/>
++								<reference key="IBUIFont" ref="659372579"/>
++							</object>
++							<object class="IBUISwitch" id="761624383">
++								<reference key="NSNextResponder" ref="436803934"/>
++								<int key="NSvFlags">301</int>
++								<string key="NSFrame">{{142, 20}, {94, 27}}</string>
++								<reference key="NSSuperview" ref="436803934"/>
++								<reference key="NSWindow"/>
++								<reference key="NSNextKeyView"/>
++								<string key="NSReuseIdentifierKey">_NS:9</string>
++								<bool key="IBUIOpaque">NO</bool>
++								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
++								<int key="IBUIContentHorizontalAlignment">0</int>
++								<int key="IBUIContentVerticalAlignment">0</int>
++								<bool key="IBUIOn">YES</bool>
++							</object>
++						</array>
++						<string key="NSFrame">{{145, 374}, {251, 68}}</string>
+ 						<reference key="NSSuperview" ref="874391841"/>
+ 						<reference key="NSWindow"/>
+-						<reference key="NSNextKeyView" ref="961208593"/>
++						<reference key="NSNextKeyView" ref="353080965"/>
+ 						<string key="NSReuseIdentifierKey">_NS:9</string>
++						<object class="NSColor" key="IBUIBackgroundColor">
++							<int key="NSColorSpace">3</int>
++							<bytes key="NSWhite">MCAwAA</bytes>
++						</object>
+ 						<bool key="IBUIOpaque">NO</bool>
+ 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+-						<int key="IBUIContentHorizontalAlignment">0</int>
+-						<int key="IBUIContentVerticalAlignment">0</int>
+-						<bool key="IBUIOn">YES</bool>
+ 					</object>
+ 				</array>
+ 				<string key="NSFrame">{{0, 44}, {540, 576}}</string>
+@@ -394,9 +412,8 @@
+ 							<reference ref="886247703"/>
+ 							<reference ref="406293652"/>
+ 							<reference ref="43930813"/>
++							<reference ref="436803934"/>
+ 							<reference ref="961208593"/>
+-							<reference ref="353080965"/>
+-							<reference ref="761624383"/>
+ 						</array>
+ 						<reference key="parent" ref="0"/>
+ 					</object>
+@@ -431,19 +448,28 @@
+ 						<reference key="parent" ref="874391841"/>
+ 					</object>
+ 					<object class="IBObjectRecord">
+-						<int key="objectID">144</int>
+-						<reference key="object" ref="761624383"/>
++						<int key="objectID">146</int>
++						<reference key="object" ref="961208593"/>
++						<reference key="parent" ref="874391841"/>
++					</object>
++					<object class="IBObjectRecord">
++						<int key="objectID">149</int>
++						<reference key="object" ref="436803934"/>
++						<array class="NSMutableArray" key="children">
++							<reference ref="353080965"/>
++							<reference ref="761624383"/>
++						</array>
+ 						<reference key="parent" ref="874391841"/>
+ 					</object>
+ 					<object class="IBObjectRecord">
+ 						<int key="objectID">145</int>
+ 						<reference key="object" ref="353080965"/>
+-						<reference key="parent" ref="874391841"/>
++						<reference key="parent" ref="436803934"/>
+ 					</object>
+ 					<object class="IBObjectRecord">
+-						<int key="objectID">146</int>
+-						<reference key="object" ref="961208593"/>
+-						<reference key="parent" ref="874391841"/>
++						<int key="objectID">144</int>
++						<reference key="object" ref="761624383"/>
++						<reference key="parent" ref="436803934"/>
+ 					</object>
+ 				</array>
+ 			</object>
+@@ -459,6 +485,7 @@
+ 				<string key="144.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+ 				<string key="145.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+ 				<string key="146.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
++				<string key="149.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+ 				<string key="53.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+ 				<string key="54.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+ 				<real value="2" key="54.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+@@ -469,7 +496,7 @@
+ 			<nil key="activeLocalization"/>
+ 			<dictionary class="NSMutableDictionary" key="localizations"/>
+ 			<nil key="sourceID"/>
+-			<int key="maxID">148</int>
++			<int key="maxID">149</int>
+ 		</object>
+ 		<object class="IBClassDescriber" key="IBDocument.Classes">
+ 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
+@@ -861,20 +888,10 @@
+ 					<string key="className">FirstTimeUserAddNewsBlurViewController</string>
+ 					<string key="superclassName">UIViewController</string>
+ 					<dictionary class="NSMutableDictionary" key="actions">
+-						<string key="tapCategoryButton:">id</string>
+-						<string key="tapGoogleReaderButton">id</string>
+ 						<string key="tapNewsBlurButton:">id</string>
+ 						<string key="tapNextButton">id</string>
+ 					</dictionary>
+ 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+-						<object class="IBActionInfo" key="tapCategoryButton:">
+-							<string key="name">tapCategoryButton:</string>
+-							<string key="candidateClassName">id</string>
+-						</object>
+-						<object class="IBActionInfo" key="tapGoogleReaderButton">
+-							<string key="name">tapGoogleReaderButton</string>
+-							<string key="candidateClassName">id</string>
+-						</object>
+ 						<object class="IBActionInfo" key="tapNewsBlurButton:">
+ 							<string key="name">tapNewsBlurButton:</string>
+ 							<string key="candidateClassName">id</string>
+@@ -885,63 +902,23 @@
+ 						</object>
+ 					</dictionary>
+ 					<dictionary class="NSMutableDictionary" key="outlets">
+-						<string key="addFriendsView">UIView</string>
+-						<string key="addNewsBlurView">UIView</string>
+-						<string key="addSitesView">UIView</string>
+ 						<string key="appDelegate">NewsBlurAppDelegate</string>
+-						<string key="googleReaderButton">UIButton</string>
+-						<string key="logo">UIImageView</string>
++						<string key="instructionsLabel">UIButton</string>
+ 						<string key="nextButton">UIBarButtonItem</string>
+-						<string key="previousButton">UIBarButtonItem</string>
+-						<string key="toolbar">UIToolbar</string>
+-						<string key="toolbarTitle">UIButton</string>
+-						<string key="welcomeView">UIView</string>
+ 					</dictionary>
+ 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+-						<object class="IBToOneOutletInfo" key="addFriendsView">
+-							<string key="name">addFriendsView</string>
+-							<string key="candidateClassName">UIView</string>
+-						</object>
+-						<object class="IBToOneOutletInfo" key="addNewsBlurView">
+-							<string key="name">addNewsBlurView</string>
+-							<string key="candidateClassName">UIView</string>
+-						</object>
+-						<object class="IBToOneOutletInfo" key="addSitesView">
+-							<string key="name">addSitesView</string>
+-							<string key="candidateClassName">UIView</string>
+-						</object>
+ 						<object class="IBToOneOutletInfo" key="appDelegate">
+ 							<string key="name">appDelegate</string>
+ 							<string key="candidateClassName">NewsBlurAppDelegate</string>
+ 						</object>
+-						<object class="IBToOneOutletInfo" key="googleReaderButton">
+-							<string key="name">googleReaderButton</string>
++						<object class="IBToOneOutletInfo" key="instructionsLabel">
++							<string key="name">instructionsLabel</string>
+ 							<string key="candidateClassName">UIButton</string>
+ 						</object>
+-						<object class="IBToOneOutletInfo" key="logo">
+-							<string key="name">logo</string>
+-							<string key="candidateClassName">UIImageView</string>
+-						</object>
+ 						<object class="IBToOneOutletInfo" key="nextButton">
+ 							<string key="name">nextButton</string>
+ 							<string key="candidateClassName">UIBarButtonItem</string>
+ 						</object>
+-						<object class="IBToOneOutletInfo" key="previousButton">
+-							<string key="name">previousButton</string>
+-							<string key="candidateClassName">UIBarButtonItem</string>
+-						</object>
+-						<object class="IBToOneOutletInfo" key="toolbar">
+-							<string key="name">toolbar</string>
+-							<string key="candidateClassName">UIToolbar</string>
+-						</object>
+-						<object class="IBToOneOutletInfo" key="toolbarTitle">
+-							<string key="name">toolbarTitle</string>
+-							<string key="candidateClassName">UIButton</string>
+-						</object>
+-						<object class="IBToOneOutletInfo" key="welcomeView">
+-							<string key="name">welcomeView</string>
+-							<string key="candidateClassName">UIView</string>
+-						</object>
+ 					</dictionary>
+ 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+ 						<string key="majorKey">IBProjectSource</string>
+@@ -1131,39 +1108,6 @@
+ 					</object>
+ 				</object>
+ 				<object class="IBPartialClassDescription">
+-					<string key="className">GoogleReaderViewController</string>
+-					<string key="superclassName">UIViewController</string>
+-					<object class="NSMutableDictionary" key="actions">
+-						<string key="NS.key.0">tapCancelButton:</string>
+-						<string key="NS.object.0">id</string>
+-					</object>
+-					<object class="NSMutableDictionary" key="actionInfosByName">
+-						<string key="NS.key.0">tapCancelButton:</string>
+-						<object class="IBActionInfo" key="NS.object.0">
+-							<string key="name">tapCancelButton:</string>
+-							<string key="candidateClassName">id</string>
+-						</object>
+-					</object>
+-					<dictionary class="NSMutableDictionary" key="outlets">
+-						<string key="appDelegate">NewsBlurAppDelegate</string>
+-						<string key="webView">UIWebView</string>
+-					</dictionary>
+-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+-						<object class="IBToOneOutletInfo" key="appDelegate">
+-							<string key="name">appDelegate</string>
+-							<string key="candidateClassName">NewsBlurAppDelegate</string>
+-						</object>
+-						<object class="IBToOneOutletInfo" key="webView">
+-							<string key="name">webView</string>
+-							<string key="candidateClassName">UIWebView</string>
+-						</object>
+-					</dictionary>
+-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+-						<string key="majorKey">IBProjectSource</string>
+-						<string key="minorKey">./Classes/GoogleReaderViewController.h</string>
+-					</object>
+-				</object>
+-				<object class="IBPartialClassDescription">
+ 					<string key="className">InteractionsModule</string>
+ 					<string key="superclassName">UIView</string>
+ 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+@@ -1425,7 +1369,6 @@
+ 						<string key="fontSettingsViewController">FontSettingsViewController</string>
+ 						<string key="friendsListViewController">FriendsListViewController</string>
+ 						<string key="ftuxNavigationController">UINavigationController</string>
+-						<string key="googleReaderViewController">GoogleReaderViewController</string>
+ 						<string key="loginViewController">LoginViewController</string>
+ 						<string key="masterContainerViewController">NBContainerViewController</string>
+ 						<string key="moveSiteViewController">MoveSiteViewController</string>
+@@ -1493,10 +1436,6 @@
+ 							<string key="name">ftuxNavigationController</string>
+ 							<string key="candidateClassName">UINavigationController</string>
+ 						</object>
+-						<object class="IBToOneOutletInfo" key="googleReaderViewController">
+-							<string key="name">googleReaderViewController</string>
+-							<string key="candidateClassName">GoogleReaderViewController</string>
+-						</object>
+ 						<object class="IBToOneOutletInfo" key="loginViewController">
+ 							<string key="name">loginViewController</string>
+ 							<string key="candidateClassName">LoginViewController</string>
+diff --git a/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.h b/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.h
+index 2ab7b89..2a8f0a1 100644
+--- a/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.h
++++ b/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.h
+@@ -20,9 +20,11 @@
+ 
+ - (IBAction)tapNextButton;
+ - (IBAction)tapNewsBlurButton:(id)sender;
++- (IBAction)tapPopularButton:(id)sender;
+ 
+ - (void)finishAddSite:(ASIHTTPRequest *)request;
++- (void)finishAddPopular:(ASIHTTPRequest *)request;
+ - (void)requestFailed:(ASIHTTPRequest *)request;
+ - (void)addSite:(NSString *)siteUrl;
+-
++- (void)addPopular;
+ @end
+\ No newline at end of file
+diff --git a/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.m b/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.m
+index b6ad1ca..6a8c5b8 100644
+--- a/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.m
++++ b/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.m
+@@ -76,13 +76,51 @@
+     UIButton *button = (UIButton *)sender;
+     button.selected = YES;
+     button.userInteractionEnabled = NO;
++
++    UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
++    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
++    checkmarkView.frame = CGRectMake(button.frame.origin.x + button.frame.size.width - 24,
++                                     button.frame.origin.y + 8,
++                                     16,
++                                     16);
++    [self.view addSubview:checkmarkView];
++    
+     [self addSite:@"http://blog.newsblur.com/"];
+ }
+ 
++- (IBAction)tapPopularButton:(id)sender {
++    UIButton *button = (UIButton *)sender;
++    button.selected = YES;
++    button.userInteractionEnabled = NO;
++    
++    UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
++    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
++    checkmarkView.frame = CGRectMake(button.frame.origin.x + button.frame.size.width - 24,
++                                     button.frame.origin.y + 8,
++                                     16,
++                                     16);
++    [self.view addSubview:checkmarkView];
++    
++    [self addPopular];
++}
++
+ 
+ #pragma mark -
+ #pragma mark Add Site
+ 
++- (void)addPopular {
++    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/follow",
++                           NEWSBLUR_URL];
++    NSURL *url = [NSURL URLWithString:urlString];
++    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
++    
++    [request setPostValue:@"social:popular" forKey:@"user_id"];     
++    [request setDelegate:self];
++    [request setDidFinishSelector:@selector(finishAddSite:)];
++    [request setDidFailSelector:@selector(requestFailed:)];
++    [request startAsynchronous];
++}
++
+ - (void)addSite:(NSString *)siteUrl {
+     NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_url",
+                            NEWSBLUR_URL];
+diff --git a/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.xib b/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.xib
+index a5a7437..bab9e97 100644
+--- a/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.xib
++++ b/media/ios/Classes/FirstTimeUserAddNewsBlurViewController.xib
+@@ -94,14 +94,16 @@
+ 					<object class="IBUIButton" id="754909752">
+ 						<reference key="NSNextResponder" ref="874391841"/>
+ 						<int key="NSvFlags">301</int>
+-						<string key="NSFrame">{{178, 271}, {184, 34}}</string>
++						<string key="NSFrame">{{178, 220}, {184, 34}}</string>
+ 						<reference key="NSSuperview" ref="874391841"/>
+ 						<reference key="NSWindow"/>
++						<reference key="NSNextKeyView" ref="896197534"/>
+ 						<string key="NSReuseIdentifierKey">_NS:9</string>
+ 						<bool key="IBUIOpaque">NO</bool>
+ 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+ 						<int key="IBUIContentHorizontalAlignment">0</int>
+ 						<int key="IBUIContentVerticalAlignment">0</int>
++						<string key="IBUISelectedTitle">Following NewsBlur</string>
+ 						<string key="IBUINormalTitle">Follow NewsBlur Blog</string>
+ 						<reference key="IBUIHighlightedTitleColor" ref="222909269"/>
+ 						<object class="NSColor" key="IBUISelectedTitleColor">
+@@ -116,21 +118,51 @@
+ 							<int key="NSColorSpace">1</int>
+ 							<bytes key="NSRGB">MC42IDAuNiAwLjYAA</bytes>
+ 						</object>
+-						<object class="NSCustomResource" key="IBUISelectedBackgroundImage" id="776631698">
++						<object class="NSCustomResource" key="IBUISelectedBackgroundImage" id="800745180">
+ 							<string key="NSClassName">NSImage</string>
+ 							<string key="NSResourceName">google.png</string>
+ 						</object>
+-						<reference key="IBUINormalBackgroundImage" ref="776631698"/>
+-						<object class="IBUIFontDescription" key="IBUIFontDescription">
++						<reference key="IBUINormalBackgroundImage" ref="800745180"/>
++						<object class="IBUIFontDescription" key="IBUIFontDescription" id="1710574">
+ 							<int key="type">2</int>
+ 							<double key="pointSize">13</double>
+ 						</object>
+-						<object class="NSFont" key="IBUIFont">
++						<object class="NSFont" key="IBUIFont" id="961490593">
+ 							<string key="NSName">Helvetica-Bold</string>
+ 							<double key="NSSize">13</double>
+ 							<int key="NSfFlags">16</int>
+ 						</object>
+ 					</object>
++					<object class="IBUIButton" id="896197534">
++						<reference key="NSNextResponder" ref="874391841"/>
++						<int key="NSvFlags">301</int>
++						<string key="NSFrame">{{178, 300}, {184, 34}}</string>
++						<reference key="NSSuperview" ref="874391841"/>
++						<reference key="NSWindow"/>
++						<reference key="NSNextKeyView"/>
++						<string key="NSReuseIdentifierKey">_NS:9</string>
++						<bool key="IBUIOpaque">NO</bool>
++						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
++						<int key="IBUIContentHorizontalAlignment">0</int>
++						<int key="IBUIContentVerticalAlignment">0</int>
++						<string key="IBUISelectedTitle">Following Popular</string>
++						<string key="IBUINormalTitle">Follow Popular Stories</string>
++						<reference key="IBUIHighlightedTitleColor" ref="222909269"/>
++						<object class="NSColor" key="IBUISelectedTitleColor">
++							<int key="NSColorSpace">3</int>
++							<bytes key="NSWhite">MQA</bytes>
++							<reference key="NSCustomColorSpace" ref="616856063"/>
++						</object>
++						<reference key="IBUINormalTitleColor" ref="222909269"/>
++						<object class="NSColor" key="IBUINormalTitleShadowColor">
++							<int key="NSColorSpace">1</int>
++							<bytes key="NSRGB">MC42IDAuNiAwLjYAA</bytes>
++						</object>
++						<reference key="IBUISelectedBackgroundImage" ref="800745180"/>
++						<reference key="IBUINormalBackgroundImage" ref="800745180"/>
++						<reference key="IBUIFontDescription" ref="1710574"/>
++						<reference key="IBUIFont" ref="961490593"/>
++					</object>
+ 				</array>
+ 				<string key="NSFrame">{{0, 44}, {540, 576}}</string>
+ 				<reference key="NSSuperview"/>
+@@ -182,6 +214,33 @@
+ 					</object>
+ 					<int key="connectionID">132</int>
+ 				</object>
++				<object class="IBConnectionRecord">
++					<object class="IBCocoaTouchEventConnection" key="connection">
++						<string key="label">tapNewsBlurButton:</string>
++						<reference key="source" ref="754909752"/>
++						<reference key="destination" ref="841351856"/>
++						<int key="IBEventType">7</int>
++					</object>
++					<int key="connectionID">133</int>
++				</object>
++				<object class="IBConnectionRecord">
++					<object class="IBCocoaTouchEventConnection" key="connection">
++						<string key="label">tapNewsBlurButton:</string>
++						<reference key="source" ref="896197534"/>
++						<reference key="destination" ref="841351856"/>
++						<int key="IBEventType">7</int>
++					</object>
++					<int key="connectionID">135</int>
++				</object>
++				<object class="IBConnectionRecord">
++					<object class="IBCocoaTouchEventConnection" key="connection">
++						<string key="label">tapPopularButton:</string>
++						<reference key="source" ref="896197534"/>
++						<reference key="destination" ref="841351856"/>
++						<int key="IBEventType">7</int>
++					</object>
++					<int key="connectionID">136</int>
++				</object>
+ 			</array>
+ 			<object class="IBMutableOrderedSet" key="objectRecords">
+ 				<array key="orderedObjects">
+@@ -207,8 +266,9 @@
+ 						<reference key="object" ref="874391841"/>
+ 						<array class="NSMutableArray" key="children">
+ 							<reference ref="804223306"/>
+-							<reference ref="754909752"/>
+ 							<reference ref="641072983"/>
++							<reference ref="754909752"/>
++							<reference ref="896197534"/>
+ 						</array>
+ 						<reference key="parent" ref="0"/>
+ 					</object>
+@@ -227,6 +287,11 @@
+ 						<reference key="object" ref="754909752"/>
+ 						<reference key="parent" ref="874391841"/>
+ 					</object>
++					<object class="IBObjectRecord">
++						<int key="objectID">134</int>
++						<reference key="object" ref="896197534"/>
++						<reference key="parent" ref="874391841"/>
++					</object>
+ 				</array>
+ 			</object>
+ 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
+@@ -236,15 +301,17 @@
+ 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+ 				<string key="129.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+ 				<string key="131.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
++				<string key="134.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
++				<real value="2" key="134.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+ 				<string key="57.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+ 				<string key="58.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+-				<real value="0.0" key="58.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
++				<real value="2" key="58.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+ 			</dictionary>
+ 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
+ 			<nil key="activeLocalization"/>
+ 			<dictionary class="NSMutableDictionary" key="localizations"/>
+ 			<nil key="sourceID"/>
+-			<int key="maxID">132</int>
++			<int key="maxID">136</int>
+ 		</object>
+ 		<object class="IBClassDescriber" key="IBDocument.Classes">
+ 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
+@@ -856,39 +923,6 @@
+ 					</object>
+ 				</object>
+ 				<object class="IBPartialClassDescription">
+-					<string key="className">GoogleReaderViewController</string>
+-					<string key="superclassName">UIViewController</string>
+-					<object class="NSMutableDictionary" key="actions">
+-						<string key="NS.key.0">tapCancelButton:</string>
+-						<string key="NS.object.0">id</string>
+-					</object>
+-					<object class="NSMutableDictionary" key="actionInfosByName">
+-						<string key="NS.key.0">tapCancelButton:</string>
+-						<object class="IBActionInfo" key="NS.object.0">
+-							<string key="name">tapCancelButton:</string>
+-							<string key="candidateClassName">id</string>
+-						</object>
+-					</object>
+-					<dictionary class="NSMutableDictionary" key="outlets">
+-						<string key="appDelegate">NewsBlurAppDelegate</string>
+-						<string key="webView">UIWebView</string>
+-					</dictionary>
+-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+-						<object class="IBToOneOutletInfo" key="appDelegate">
+-							<string key="name">appDelegate</string>
+-							<string key="candidateClassName">NewsBlurAppDelegate</string>
+-						</object>
+-						<object class="IBToOneOutletInfo" key="webView">
+-							<string key="name">webView</string>
+-							<string key="candidateClassName">UIWebView</string>
+-						</object>
+-					</dictionary>
+-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+-						<string key="majorKey">IBProjectSource</string>
+-						<string key="minorKey">./Classes/GoogleReaderViewController.h</string>
+-					</object>
+-				</object>
+-				<object class="IBPartialClassDescription">
+ 					<string key="className">InteractionsModule</string>
+ 					<string key="superclassName">UIView</string>
+ 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+@@ -1150,7 +1184,6 @@
+ 						<string key="fontSettingsViewController">FontSettingsViewController</string>
+ 						<string key="friendsListViewController">FriendsListViewController</string>
+ 						<string key="ftuxNavigationController">UINavigationController</string>
+-						<string key="googleReaderViewController">GoogleReaderViewController</string>
+ 						<string key="loginViewController">LoginViewController</string>
+ 						<string key="masterContainerViewController">NBContainerViewController</string>
+ 						<string key="moveSiteViewController">MoveSiteViewController</string>
+@@ -1218,10 +1251,6 @@
+ 							<string key="name">ftuxNavigationController</string>
+ 							<string key="candidateClassName">UINavigationController</string>
+ 						</object>
+-						<object class="IBToOneOutletInfo" key="googleReaderViewController">
+-							<string key="name">googleReaderViewController</string>
+-							<string key="candidateClassName">GoogleReaderViewController</string>
+-						</object>
+ 						<object class="IBToOneOutletInfo" key="loginViewController">
+ 							<string key="name">loginViewController</string>
+ 							<string key="candidateClassName">LoginViewController</string>

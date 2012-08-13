@@ -26,6 +26,7 @@
 @synthesize activityIndicator;
 @synthesize instructionLabel;
 @synthesize categories;
+@synthesize googleReaderButtonWrapper;
 @synthesize importedFeedCount_;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -147,11 +148,11 @@
     
     UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
     UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
-    checkmarkView.frame = CGRectMake(self.googleReaderButton.frame.origin.x + self.googleReaderButton.frame.size.width - 24,
-                                     self.googleReaderButton.frame.origin.y + 8,
+    checkmarkView.frame = CGRectMake(self.googleReaderButton.frame.size.width - 24,
+                                     8,
                                      16,
                                      16);
-    [self.view addSubview:checkmarkView];
+    [self.googleReaderButtonWrapper addSubview:checkmarkView];
 }
 
 #pragma mark -

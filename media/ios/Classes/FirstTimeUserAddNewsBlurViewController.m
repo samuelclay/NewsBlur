@@ -76,12 +76,50 @@
     UIButton *button = (UIButton *)sender;
     button.selected = YES;
     button.userInteractionEnabled = NO;
+
+    UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
+    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
+    checkmarkView.frame = CGRectMake(button.frame.origin.x + button.frame.size.width - 24,
+                                     button.frame.origin.y + 8,
+                                     16,
+                                     16);
+    [self.view addSubview:checkmarkView];
+    
     [self addSite:@"http://blog.newsblur.com/"];
+}
+
+- (IBAction)tapPopularButton:(id)sender {
+    UIButton *button = (UIButton *)sender;
+    button.selected = YES;
+    button.userInteractionEnabled = NO;
+    
+    UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
+    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
+    checkmarkView.frame = CGRectMake(button.frame.origin.x + button.frame.size.width - 24,
+                                     button.frame.origin.y + 8,
+                                     16,
+                                     16);
+    [self.view addSubview:checkmarkView];
+    
+    [self addPopular];
 }
 
 
 #pragma mark -
 #pragma mark Add Site
+
+- (void)addPopular {
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/follow",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:@"social:popular" forKey:@"user_id"];     
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(finishAddSite:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request startAsynchronous];
+}
 
 - (void)addSite:(NSString *)siteUrl {
     NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_url",
