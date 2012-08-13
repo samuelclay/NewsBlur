@@ -12,34 +12,17 @@
 
 @interface FirstTimeUserAddNewsBlurViewController  : UIViewController <ASIHTTPRequestDelegate> {
     NewsBlurAppDelegate *appDelegate;
-    NSMutableArray *categories;
-    int currentStep;
-    int importedGoogle;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) NSMutableArray *categories;
-@property (nonatomic) IBOutlet UIButton *googleReaderButton;
-@property (nonatomic) IBOutlet UIView *welcomeView;
-@property (nonatomic) IBOutlet UIView *addSitesView;
-@property (nonatomic) IBOutlet UIView *addFriendsView;
-@property (nonatomic) IBOutlet UIView *addNewsBlurView;
-@property (nonatomic) IBOutlet UIToolbar *toolbar;
-@property (nonatomic) IBOutlet UIButton *toolbarTitle;
 @property (nonatomic) IBOutlet UIBarButtonItem *nextButton;
-@property (nonatomic) IBOutlet UIImageView *logo;
-@property (nonatomic) IBOutlet UIBarButtonItem *previousButton;
+@property (strong, nonatomic) IBOutlet UIButton *instructionsLabel;
 
 - (IBAction)tapNextButton;
-- (IBAction)tapGoogleReaderButton;
-- (IBAction)tapCategoryButton:(id)sender;
 - (IBAction)tapNewsBlurButton:(id)sender;
 
-- (void)addCategories;
-- (void)selectGoogleReaderButton;
-- (void)finishAddFolder:(ASIHTTPRequest *)request;
+- (void)finishAddSite:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)addSite:(NSString *)siteUrl;
-- (void)rotateLogo;
 
 @end

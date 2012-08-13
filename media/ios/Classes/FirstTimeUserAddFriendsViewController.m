@@ -44,6 +44,10 @@
     self.navigationItem.rightBarButtonItem = next;
     
     self.navigationItem.title = @"Find Friends";
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        self.friendsLabel.font = [UIFont systemFontOfSize:13];
+    }
 }
 
 - (void)viewDidUnload {
@@ -135,19 +139,23 @@
     BOOL facebookSync = [[[[results objectForKey:@"services"] objectForKey:@"facebook"] objectForKey:@"syncing"] boolValue];
     BOOL twitterSync = [[[[results objectForKey:@"services"] objectForKey:@"twitter"] objectForKey:@"syncing"] boolValue];
 
-    if (facebookSync || twitterSync) {
-        [self performSelector:@selector(connectToSocial) withObject:self afterDelay:3];
-    }
+
     
     if (![[[[results objectForKey:@"services"] objectForKey:@"facebook"] objectForKey:@"facebook_uid"] isKindOfClass:[NSNull class]]) {
         [self finishFacebookConnect];
+    } else {
+        if (facebookSync) {
+            [self performSelector:@selector(connectToSocial) withObject:self afterDelay:3];
+        }
     }
     
     if (![[[[results objectForKey:@"services"] objectForKey:@"twitter"] objectForKey:@"twitter_uid"] isKindOfClass:[NSNull class]]) {
         [self finishTwitterConnect];
+    } else {
+        if (twitterSync) {
+            [self performSelector:@selector(connectToSocial) withObject:self afterDelay:3];
+        }
     }
-    [self finishTwitterConnect];
-    
 }
 
 - (void)finishFacebookConnect {

@@ -180,6 +180,15 @@
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
+			<object class="IBUIViewController" id="778518863">
+				<reference key="IBUISimulatedStatusBarMetrics" ref="482200929"/>
+				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
+					<int key="IBUIInterfaceOrientation">1</int>
+					<int key="interfaceOrientation">1</int>
+				</object>
+				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
+				<bool key="IBUIHorizontal">NO</bool>
+			</object>
 			<object class="IBUIViewController" id="877202670">
 				<reference key="IBUISimulatedStatusBarMetrics" ref="482200929"/>
 				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
@@ -198,22 +207,12 @@
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 				<bool key="IBUIHorizontal">NO</bool>
 			</object>
-			<object class="IBUIViewController" id="778518863">
-				<reference key="IBUISimulatedStatusBarMetrics" ref="482200929"/>
-				<object class="IBUISimulatedOrientationMetrics" key="IBUISimulatedOrientationMetrics">
-					<int key="IBUIInterfaceOrientation">1</int>
-					<int key="interfaceOrientation">1</int>
-				</object>
-				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-				<bool key="IBUIHorizontal">NO</bool>
-			</object>
 			<object class="IBUIWindow" id="117978783">
 				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<string key="NSFrameSize">{320, 480}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">1</int>
 					<bytes key="NSRGB">MSAxIDEAA</bytes>
@@ -1353,9 +1352,11 @@
 							<string>tapFacebookButton</string>
 							<string>tapNextButton</string>
 							<string>tapTwitterButton</string>
+							<string>toggleAutoFollowFriends:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -1368,6 +1369,7 @@
 							<string>tapFacebookButton</string>
 							<string>tapNextButton</string>
 							<string>tapTwitterButton</string>
+							<string>toggleAutoFollowFriends:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1383,6 +1385,10 @@
 								<string key="name">tapTwitterButton</string>
 								<string key="candidateClassName">id</string>
 							</object>
+							<object class="IBActionInfo">
+								<string key="name">toggleAutoFollowFriends:</string>
+								<string key="candidateClassName">id</string>
+							</object>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
@@ -1392,6 +1398,7 @@
 							<string>appDelegate</string>
 							<string>facebookActivityIndicator</string>
 							<string>facebookButton</string>
+							<string>friendsLabel</string>
 							<string>nextButton</string>
 							<string>twitterActivityIndicator</string>
 							<string>twitterButton</string>
@@ -1401,6 +1408,7 @@
 							<string>NewsBlurAppDelegate</string>
 							<string>UIActivityIndicatorView</string>
 							<string>UIButton</string>
+							<string>UILabel</string>
 							<string>UIBarButtonItem</string>
 							<string>UIActivityIndicatorView</string>
 							<string>UIButton</string>
@@ -1413,6 +1421,7 @@
 							<string>appDelegate</string>
 							<string>facebookActivityIndicator</string>
 							<string>facebookButton</string>
+							<string>friendsLabel</string>
 							<string>nextButton</string>
 							<string>twitterActivityIndicator</string>
 							<string>twitterButton</string>
@@ -1430,6 +1439,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">facebookButton</string>
 								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">friendsLabel</string>
+								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">nextButton</string>
@@ -1718,12 +1731,16 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
+							<string>footer</string>
+							<string>header</string>
 							<string>logo</string>
 							<string>nextButton</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NewsBlurAppDelegate</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
 							<string>UIImageView</string>
 							<string>UIBarButtonItem</string>
 						</object>
@@ -1733,6 +1750,8 @@
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>appDelegate</string>
+							<string>footer</string>
+							<string>header</string>
 							<string>logo</string>
 							<string>nextButton</string>
 						</object>
@@ -1741,6 +1760,14 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">footer</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">header</string>
+								<string key="candidateClassName">UILabel</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">logo</string>

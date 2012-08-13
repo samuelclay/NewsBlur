@@ -11,17 +11,8 @@
 @implementation FirstTimeUserAddNewsBlurViewController
 
 @synthesize appDelegate;
-@synthesize googleReaderButton;
-@synthesize welcomeView;
-@synthesize addSitesView;
-@synthesize addFriendsView;
-@synthesize addNewsBlurView;
-@synthesize toolbar;
-@synthesize toolbarTitle;
 @synthesize nextButton;
-@synthesize logo;
-@synthesize previousButton;
-@synthesize categories;
+@synthesize instructionsLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -32,11 +23,7 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
-    categories = [[NSMutableArray alloc] init];
-    currentStep = 0;
-    importedGoogle = 0;
+- (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
@@ -47,27 +34,22 @@
     
     self.navigationItem.title = @"All Done!";
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        self.instructionsLabel.font = [UIFont systemFontOfSize:13];
+    }
+    
 }
 
 - (void)viewDidUnload
 {
-    [self setGoogleReaderButton:nil];
-    [self setWelcomeView:nil];
-    [self setAddSitesView:nil];
-    [self setAddFriendsView:nil];
-    [self setAddNewsBlurView:nil];
-    [self setToolbar:nil];
-    [self setToolbarTitle:nil];
     [self setNextButton:nil];
-    [self setLogo:nil];
-    [self setPreviousButton:nil];
+    [self setInstructionsLabel:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self rotateLogo];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -90,10 +72,6 @@
     [appDelegate.ftuxNavigationController dismissModalViewControllerAnimated:YES];
 }
 
-- (IBAction)tapCategoryButton:(id)sender {
-
-}
-
 - (IBAction)tapNewsBlurButton:(id)sender {
     UIButton *button = (UIButton *)sender;
     button.selected = YES;
@@ -101,48 +79,6 @@
     [self addSite:@"http://blog.newsblur.com/"];
 }
 
-#pragma mark -
-#pragma mark Import Google Reader
-
-- (IBAction)tapGoogleReaderButton {
-    [appDelegate showGoogleReaderAuthentication];
-}
-
-- (void)selectGoogleReaderButton {
-    self.googleReaderButton.selected = YES;
-    self.googleReaderButton.userInteractionEnabled = NO;
-}
-
-#pragma mark -
-#pragma mark Add Categories
-
-- (void)addCategories {
-    
-    // TO DO: curate the list of sites
-    
-    for (id key in categories) {
-        // add folder 
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_folder",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:key forKey:@"folder"]; 
-        [request setDelegate:self];
-        [request setDidFinishSelector:@selector(finishAddFolder:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request startAsynchronous];
-    }
-    
-}
-
-- (void)finishAddFolder:(ASIHTTPRequest *)request {
-    NSLog(@"Successfully added.");
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
-    NSLog(@"Error: %@", error);
-}
 
 #pragma mark -
 #pragma mark Add Site
@@ -156,26 +92,18 @@
     [request setPostValue:siteUrl forKey:@"url"]; 
     
     [request setDelegate:self];
-    [request setDidFinishSelector:@selector(finishAddFolder:)];
+    [request setDidFinishSelector:@selector(finishAddSite:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
 }
 
-- (void)rotateLogo {
-    // Setup the animation
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:(NSTimeInterval)60.0];
-    [UIView setAnimationCurve:UIViewAnimationCurveLinear];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    
-    NSLog(@"%f", M_PI);
-    
-    // The transform matrix
-    CGAffineTransform transform = CGAffineTransformMakeRotation(3.14);
-    self.logo.transform = transform;
-    
-    // Commit the changes
-    [UIView commitAnimations];
+- (void)requestFailed:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
+    NSLog(@"Error: %@", error);
+}
+
+- (void)finishAddSite:(ASIHTTPRequest *)request {
+    NSLog(@"request: %@", request);
 }
 
 @end

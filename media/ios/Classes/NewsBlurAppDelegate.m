@@ -14,8 +14,7 @@
 #import "FeedsMenuViewController.h"
 #import "StoryDetailViewController.h"
 #import "FirstTimeUserViewController.h"
-#import "FriendsListViewController.h"u
-#import "GoogleReaderViewController.h"
+#import "FriendsListViewController.h"
 #import "LoginViewController.h"
 #import "AddSiteViewController.h"
 #import "FindSitesViewController.h"
@@ -40,7 +39,6 @@
 @synthesize modalNavigationController;
 @synthesize userProfileNavigationController;
 @synthesize masterContainerViewController;
-@synthesize googleReaderViewController;
 @synthesize dashboardViewController;
 @synthesize feedsViewController;
 @synthesize feedsMenuViewController;
@@ -307,15 +305,6 @@
     } else {
         [self.navigationController presentModalViewController:self.ftuxNavigationController animated:YES];
     }
-}
-
-- (void)showGoogleReaderAuthentication {
-    googleReaderViewController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [firstTimeUserViewController presentModalViewController:googleReaderViewController animated:YES];
-}
-
-- (void)addedGoogleReader {
-//    [firstTimeUserViewController selectGoogleReaderButton];
 }
 
 - (void)showMoveSite {

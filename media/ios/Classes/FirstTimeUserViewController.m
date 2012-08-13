@@ -57,7 +57,7 @@
     self.navigationItem.title = @"Welcome";
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        logo.frame = CGRectMake(80, 135, 160, 160);
+        logo.frame = CGRectMake(80, 115, 160, 160);
         header.font = [UIFont systemFontOfSize:22];
         footer.font = [UIFont systemFontOfSize:16];
     }

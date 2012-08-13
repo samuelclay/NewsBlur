@@ -53,7 +53,7 @@
     self.activityIndicator.hidesWhenStopped = YES;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.instructionLabel.font = [UIFont systemFontOfSize:16];
+        self.instructionLabel.font = [UIFont systemFontOfSize:13];
     }
     
 }

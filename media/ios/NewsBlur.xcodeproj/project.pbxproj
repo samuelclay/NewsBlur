@@ -247,7 +247,6 @@
 		43C95C3F158BCDD70086C69B /* 19-circle-check.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C3D158BCDD70086C69B /* 19-circle-check.png */; };
 		43C95C40158BCDD70086C69B /* 19-circle-check@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C3E158BCDD70086C69B /* 19-circle-check@2x.png */; };
 		43C95C42158BD13D0086C69B /* category_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C41158BD13D0086C69B /* category_selected_background.png */; };
-		43C95C48158BEC450086C69B /* GoogleReaderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43C95C46158BEC440086C69B /* GoogleReaderViewController.m */; };
 		43C95C49158BEC450086C69B /* GoogleReaderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */; };
 		43C95C4B158BF8810086C69B /* google_reader_selected_background.png in Resources */ = {isa = PBXBuildFile; fileRef = 43C95C4A158BF8810086C69B /* google_reader_selected_background.png */; };
 		43D818A315B940C200733444 /* DataUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 43D818A215B940C200733444 /* DataUtilities.m */; };
@@ -643,8 +642,6 @@
 		43C95C3D158BCDD70086C69B /* 19-circle-check.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "19-circle-check.png"; sourceTree = "<group>"; };
 		43C95C3E158BCDD70086C69B /* 19-circle-check@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "19-circle-check@2x.png"; sourceTree = "<group>"; };
 		43C95C41158BD13D0086C69B /* category_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = category_selected_background.png; sourceTree = "<group>"; };
-		43C95C45158BEC440086C69B /* GoogleReaderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoogleReaderViewController.h; sourceTree = "<group>"; };
-		43C95C46158BEC440086C69B /* GoogleReaderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoogleReaderViewController.m; sourceTree = "<group>"; };
 		43C95C47158BEC440086C69B /* GoogleReaderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = GoogleReaderViewController.xib; path = Classes/GoogleReaderViewController.xib; sourceTree = "<group>"; };
 		43C95C4A158BF8810086C69B /* google_reader_selected_background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = google_reader_selected_background.png; sourceTree = "<group>"; };
 		43D0451F1565BC150085F811 /* MainWindow~ipad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "MainWindow~ipad.xib"; path = "Resources-iPad/MainWindow~ipad.xib"; sourceTree = "<group>"; };
@@ -1062,8 +1059,6 @@
 				43E8381815BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.h */,
 				43E8381915BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.m */,
 				43E8381A15BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib */,
-				43C95C45158BEC440086C69B /* GoogleReaderViewController.h */,
-				43C95C46158BEC440086C69B /* GoogleReaderViewController.m */,
 				784B50EA127E3F68008F90EA /* LoginViewController.h */,
 				784B50EB127E3F68008F90EA /* LoginViewController.m */,
 				43B232BD15D5F61700D035B4 /* AuthorizeServicesViewController.h */,
@@ -2165,7 +2160,6 @@
 				FF2D8CE114886ECF00057B80 /* OAToken.m in Sources */,
 				FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */,
 				433323CD158968ED0025064D /* FirstTimeUserViewController.m in Sources */,
-				43C95C48158BEC450086C69B /* GoogleReaderViewController.m in Sources */,
 				43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */,
 				439DAB201590DA350019B0EB /* FeedsMenuViewController.m in Sources */,
 				437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */,

@@ -28,7 +28,6 @@
 @class FirstTimeUserAddNewsBlurViewController;
 @class FriendsListViewController;
 @class FontSettingsViewController;
-@class GoogleReaderViewController;
 @class StoryDetailViewController;
 @class ShareViewController;
 @class LoginViewController;
@@ -61,7 +60,6 @@
     FontSettingsViewController *fontSettingsViewController;
     FeedDetailViewController *feedDetailViewController;
 
-    GoogleReaderViewController *googleReaderViewController;
     StoryDetailViewController *storyDetailViewController;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
@@ -126,7 +124,6 @@
 @property (nonatomic) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
-@property (nonatomic) IBOutlet GoogleReaderViewController *googleReaderViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
@@ -187,8 +184,6 @@
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 
 - (void)showFirstTimeUser;
-- (void)showGoogleReaderAuthentication;
-- (void)addedGoogleReader;
 - (void)showLogin;
 
 // social
