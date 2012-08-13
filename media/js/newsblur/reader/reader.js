@@ -3162,9 +3162,9 @@
             var to_folder   = $('.NB-menu-manage-folder-move-confirm select').val();
             var folder_view = NEWSBLUR.assets.folders.get_view($folder);
             var in_folder   = folder_view.collection.options.title;
-            var folder_name = folder_view.options.title;
+            var folder_name = folder_view.options.folder_title;
             var child_folders = folder_view.collection.child_folder_names();
-        
+            
             if (to_folder == in_folder || 
                 to_folder == folder_name ||
                  _.contains(child_folders, to_folder)) {

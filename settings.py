@@ -229,6 +229,7 @@ INSTALLED_APPS = (
     'apps.push',
     'apps.social',
     'apps.oauth',
+    'apps.categories',
     'south',
     'utils',
     'vendor',

@@ -34,6 +34,7 @@ except:
     pass
 from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
 from apps.social.models import MSocialSubscription, MActivity
+from apps.categories.models import MCategory
 from apps.social.views import load_social_page
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
@@ -234,6 +235,10 @@ def load_feeds(request):
     user.profile.dashboard_date = datetime.datetime.now()
     user.profile.save()
     
+    categories = None
+    if not user_subs:
+        categories = MCategory.serialize()
+    
     data = {
         'feeds': feeds.values() if version == 2 else feeds,
         'social_feeds': social_feeds,
@@ -241,6 +246,7 @@ def load_feeds(request):
         'social_services': social_services,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
+        'categories': categories
     }
     return data
 
@@ -317,6 +323,10 @@ def load_feeds_flat(request):
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
     
+    categories = None
+    if not user_subs:
+        categories = MCategory.serialize()
+        
     logging.user(request, "~FBLoading ~SB%s~SN/~SB%s~SN feeds/socials ~FMflat~FB. %s" % (
             len(feeds.keys()), len(social_feeds), '~SBUpdating counts.' if update_counts else ''))
 
@@ -328,6 +338,7 @@ def load_feeds_flat(request):
         "user": user.username,
         "user_profile": user.profile,
         "iphone_version": iphone_version,
+        "categories": categories,
     }
     return data
 
