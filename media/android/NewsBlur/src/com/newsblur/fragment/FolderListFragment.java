@@ -56,7 +56,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		apiManager = new APIManager(getActivity());
 
 		Cursor folderCursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
-		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
+		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
 		groupViewBinder = new FolderTreeViewBinder();
 		blogViewBinder = new SocialFeedViewBinder(getActivity());
 
@@ -70,7 +70,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		final String[] blogFrom = new String[] { DatabaseConstants.SOCIAL_FEED_TITLE, DatabaseConstants.SOCIAL_FEED_ICON, DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT };
 		final int[] blogTo = new int[] { R.id.row_socialfeed_name, R.id.row_socialfeed_icon, R.id.row_socialsumneu, R.id.row_socialsumneg, R.id.row_socialsumpos };
 
-		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, R.layout.row_folder_collapsed, R.layout.row_folder_expanded, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
+		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
 	}
 
