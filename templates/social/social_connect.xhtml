@@ -62,14 +62,14 @@
                     console.log(['Using Intro dialog']);
                     opener.NEWSBLUR.intro.start_import_from_google_reader({
                         {% if error %}
-                            'error': "{{ error }}",
+                            'error': "{{ error }}"
                         {% endif %}
                     });
                 } else {
                     console.log(['Using some other dialog']);
                     opener.NEWSBLUR.reader.post_google_reader_connect({
                         {% if error %}
-                            'error': "{{ error }}",
+                            'error': "{{ error }}"
                         {% endif %}
                     });
                 }
@@ -77,14 +77,14 @@
                 console.log(['Connecting through intro']);
                 opener.NEWSBLUR.intro.post_connect({
                     {% if error %}
-                        'error': "{{ error }}",
+                        'error': "{{ error }}"
                     {% endif %}
                 });
             } else if (opener.NEWSBLUR.reader_friends) {
                 console.log(["Connecting through friends dialog"]);
                 opener.NEWSBLUR.reader_friends.post_connect({
                     {% if error %}
-                        'error': "{{ error }}",
+                        'error': "{{ error }}"
                     {% endif %}
                 });
             }
@@ -92,7 +92,7 @@
         } else {
             console.log(["No opener, directing to /", opener]);
             window.close();
-            window.location.href = "/{% if error %}?error={{ error|urlencode }}{% endif %};";
+            window.location.href = "/{% if error %}?error={{ error|urlencode }}{% endif %}";
         }
     </script>
 </head>
