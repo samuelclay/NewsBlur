@@ -31,6 +31,12 @@
 - (void)selectFacebookButton;
 - (IBAction)toggleAutoFollowFriends:(id)sender;
 
+- (void)connectToSocial;
+- (void)finishConnectFromSocial:(ASIHTTPRequest *)request;
+
+- (void)finishTwitterConnect;
+- (void)finishFacebookConnect;
+
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishToggleAutoFollowFriends:(ASIHTTPRequest *)request;
 

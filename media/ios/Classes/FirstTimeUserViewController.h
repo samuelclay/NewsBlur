@@ -23,5 +23,6 @@
 
 - (IBAction)tapNextButton;
 - (void)rotateLogo;
+-(void)handleTimer:(NSTimer *)timer;
 
 @end

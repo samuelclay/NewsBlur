@@ -39,7 +39,7 @@
     // Do any additional setup after loading the view from its nib.
     
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Skip" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
@@ -57,6 +57,9 @@
     // e.g. self.myOutlet = nil;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+//    [self selectTwitterButton];
+}
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
@@ -90,14 +93,92 @@
 
 
 - (void)selectTwitterButton {
-    self.twitterButton.selected = YES;
+    self.nextButton.title = @"Next";
     self.twitterButton.userInteractionEnabled = NO;
+    [self.twitterButton setTitle:@"Connecting" forState:UIControlStateNormal];
+    [self.twitterActivityIndicator startAnimating];
+    [self connectToSocial];
 }
 
 - (void)selectFacebookButton {
-    self.facebookButton.selected = YES;
+    self.nextButton.title = @"Next";
     self.facebookButton.userInteractionEnabled = NO;
+    [self.facebookButton setTitle:@"Connecting" forState:UIControlStateNormal];
+    [self.facebookActivityIndicator startAnimating];
+    [self connectToSocial];
 }
+
+#pragma mark -
+#pragma mark Check Social
+
+- (void)connectToSocial {
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/load_user_friends",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(finishConnectFromSocial:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request startAsynchronous];
+}
+
+- (void)finishConnectFromSocial:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    NSLog(@"results are %@", results);
+    
+    BOOL facebookSync = [[[[results objectForKey:@"services"] objectForKey:@"facebook"] objectForKey:@"syncing"] boolValue];
+    BOOL twitterSync = [[[[results objectForKey:@"services"] objectForKey:@"twitter"] objectForKey:@"syncing"] boolValue];
+
+    if (facebookSync || twitterSync) {
+        [self performSelector:@selector(connectToSocial) withObject:self afterDelay:3];
+    }
+    
+    if (![[[[results objectForKey:@"services"] objectForKey:@"facebook"] objectForKey:@"facebook_uid"] isKindOfClass:[NSNull class]]) {
+        [self finishFacebookConnect];
+    }
+    
+    if (![[[[results objectForKey:@"services"] objectForKey:@"twitter"] objectForKey:@"twitter_uid"] isKindOfClass:[NSNull class]]) {
+        [self finishTwitterConnect];
+    }
+    [self finishTwitterConnect];
+    
+}
+
+- (void)finishFacebookConnect {
+    [self.facebookActivityIndicator stopAnimating];
+    
+    self.facebookButton.selected = YES;
+    UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
+    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
+    checkmarkView.frame = CGRectMake(self.facebookButton.frame.origin.x + self.facebookButton.frame.size.width - 24,
+                                     self.facebookButton.frame.origin.y + 8,
+                                     16,
+                                     16);
+    [self.view addSubview:checkmarkView];
+
+}
+
+- (void)finishTwitterConnect {
+    [self.twitterActivityIndicator stopAnimating];
+    
+    self.twitterButton.selected = YES;
+    UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
+    UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
+    checkmarkView.frame = CGRectMake(self.twitterButton.frame.origin.x + self.twitterButton.frame.size.width - 24,
+                                     self.twitterButton.frame.origin.y + 8,
+                                     16,
+                                     16);
+    [self.view addSubview:checkmarkView];
+}
+
+#pragma mark -
+#pragma mark Toggle Auto Follow
 
 - (IBAction)toggleAutoFollowFriends:(id)sender {
     UISwitch *button = (UISwitch *)sender;
@@ -123,7 +204,6 @@
     [request setDidFailSelector:@selector(finishedWithError:)];
     [request setTimeOutSeconds:30];
     [request startAsynchronous];
-
 }
 
 - (void)finishedWithError:(ASIHTTPRequest *)request {

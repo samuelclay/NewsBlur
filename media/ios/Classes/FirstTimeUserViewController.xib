@@ -56,17 +56,17 @@
 					<object class="IBUILabel" id="197119979">
 						<reference key="NSNextResponder" ref="437257068"/>
 						<int key="NSvFlags">302</int>
-						<string key="NSFrame">{{70, 400}, {400, 97}}</string>
+						<string key="NSFrame">{{70, 407}, {400, 97}}</string>
 						<reference key="NSSuperview" ref="437257068"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
+						<reference key="NSNextKeyView" ref="90654000"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-						<string key="IBUIText">Thank you for trying out NewsBlur. We've worked hard to make a great app, so congratulations on discovering a handcrafted experience.</string>
+						<string key="IBUIText">Faster! Faster! Until the thrill of speed overcomes the fear of death.</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
@@ -98,7 +98,7 @@
 						<string key="NSFrame">{{150, 99}, {240, 240}}</string>
 						<reference key="NSSuperview" ref="437257068"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="197119979"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -111,7 +111,7 @@
 				<string key="NSFrame">{{0, 44}, {540, 576}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="90654000"/>
+				<reference key="NSNextKeyView" ref="197119979"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -553,6 +553,7 @@
 						<string key="tapFacebookButton">id</string>
 						<string key="tapNextButton">id</string>
 						<string key="tapTwitterButton">id</string>
+						<string key="toggleAutoFollowFriends:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="tapFacebookButton">
@@ -565,6 +566,10 @@
 						</object>
 						<object class="IBActionInfo" key="tapTwitterButton">
 							<string key="name">tapTwitterButton</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="toggleAutoFollowFriends:">
+							<string key="name">toggleAutoFollowFriends:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 					</dictionary>

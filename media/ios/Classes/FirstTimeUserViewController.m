@@ -20,7 +20,8 @@
 @interface FirstTimeUserViewController ()
 
 @property (readwrite) float angle_;
-
+@property (readwrite) float timerInterval_;
+@property (nonatomic) NSTimer *timer_;
 @end
 
 @implementation FirstTimeUserViewController
@@ -31,6 +32,8 @@
 @synthesize header;
 @synthesize footer;
 @synthesize angle_;
+@synthesize timerInterval_;
+@synthesize timer_;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -46,7 +49,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
 
-
+//
     UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Get Started" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
@@ -100,18 +103,21 @@
 
 - (void)rotateLogo {
     angle_ = 0;
+    timerInterval_ = 0.01;
+    
     [UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDelegate:self];
 	[UIView setAnimationDuration:1];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
 	
-	[NSTimer scheduledTimerWithTimeInterval: 0.016666 target: self selector:@selector(hadleTimer:) userInfo: nil repeats: YES];
+	timer_ = [NSTimer scheduledTimerWithTimeInterval: timerInterval_ target: self selector:@selector(handleTimer:) userInfo: nil repeats: YES];
 	[UIView commitAnimations];
 
 }
 
--(void)hadleTimer:(NSTimer *)timer
+-(void)handleTimer:(NSTimer *)timer
 {
+    timerInterval_ += .01;
 	angle_ += 0.001;
 	if (angle_ > 6.283) { 
 		angle_ = 0;
