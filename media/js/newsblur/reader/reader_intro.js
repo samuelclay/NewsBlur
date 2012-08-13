@@ -384,6 +384,10 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         
         $carousel.carousel(page && parseInt(page, 10) || 0);
         $carousel.carousel('pause');
+        _.defer(function() {
+            $carousel.carousel(page && parseInt(page, 10) || 0);
+            $carousel.carousel('pause');
+        });
         this.count_feeds();
     },
     
