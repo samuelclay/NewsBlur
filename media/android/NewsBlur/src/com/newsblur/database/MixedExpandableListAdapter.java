@@ -28,6 +28,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	private final int GROUP = 0;
     private final int BLOG = 1;
+    private final int EVERYTHING = 2;
 	
 	private SparseArray<MyCursorHelper> mChildrenCursorHelpers;
 	private MyCursorHelper folderCursorHelper, blogCursorHelper;

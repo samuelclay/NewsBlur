@@ -43,7 +43,7 @@ public class SocialItemViewBinder implements ViewBinder {
 			}
 		} else	if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
 			String faviconUrl = AppConstants.NEWSBLUR_URL + cursor.getString(columnIndex);
-			imageLoader.displayImage(faviconUrl, cursor.getString(columnIndex), ((ImageView) view));
+			imageLoader.displayImage(faviconUrl, ((ImageView) view));
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS)) {
 			int authors = cursor.getInt(columnIndex);

@@ -1,6 +1,7 @@
 package com.newsblur.fragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.content.ContentResolver;
@@ -25,7 +26,6 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Profile;
-import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Story;
@@ -44,9 +44,13 @@ public class ReadingItemFragment extends Fragment {
 	private ImageLoader imageLoader;
 	private String feedColor;
 	private String feedFade;
-	
+	private HashMap<String, UserProfile> friendUserMap = new HashMap<String, UserProfile>();
+	private HashMap<String, UserProfile> publicUserMap = new HashMap<String, UserProfile>();
+	private ContentResolver resolver;
+
 	public static ReadingItemFragment newInstance(Story story, String feedFaviconColor, String feedFaviconFade) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
+
 		Bundle args = new Bundle();
 		args.putSerializable("story", story);
 		args.putString("feedColor", feedFaviconColor);
@@ -63,6 +67,10 @@ public class ReadingItemFragment extends Fragment {
 		imageLoader = ((NewsBlurApplication) getActivity().getApplicationContext()).getImageLoader();
 		apiManager = new APIManager(getActivity());
 		story = getArguments() != null ? (Story) getArguments().getSerializable("story") : null;
+
+		resolver = getActivity().getContentResolver();
+		inflater = getActivity().getLayoutInflater();
+		
 		feedColor = getArguments().getString("feedColor");
 		feedFade = getArguments().getString("feedFade");
 	}
@@ -71,12 +79,12 @@ public class ReadingItemFragment extends Fragment {
 		this.inflater = inflater;
 
 		View view = inflater.inflate(R.layout.fragment_readingitem, null);
-		
-		
+
+
 		WebView web = (WebView) view.findViewById(R.id.reading_webview);
 		setupWebview(web);
 		setupItemMetadata(view);
-		if (story.sharedUserIds.length > 0) {
+		if (story.sharedUserIds.length > 0 || story.commentCount > 0 ) {
 			view.findViewById(R.id.reading_shared_container).setVisibility(View.VISIBLE);
 			setupItemCommentsAndShares(view);
 		}
@@ -87,33 +95,55 @@ public class ReadingItemFragment extends Fragment {
 	private void setupItemCommentsAndShares(final View view) {
 		new AsyncTask<Void, Void, Void>() {
 			private List<UserProfile> profiles = new ArrayList<UserProfile>();
-			private ArrayList<View> commentViews; 
-			
+			private ArrayList<View> publicCommentViews;
+			private ArrayList<View> friendCommentViews;
+
 			@Override
 			protected Void doInBackground(Void... arg0) {
-				inflater = getActivity().getLayoutInflater();
 				for (String userId : story.sharedUserIds) {
-					if (!imageLoader.hasImage(userId)) {
-						ProfileResponse user = apiManager.getUser(userId);
-						imageLoader.cacheImage(user.user.photoUrl, user.user.userId);
-					}
+					ProfileResponse user = apiManager.getUser(userId);
+					friendUserMap.put(userId, user.user);
+				}
+
+				for (String userId : story.friendUserIds) {
+					ProfileResponse user = apiManager.getUser(userId);
+					friendUserMap.put(userId, user.user);
 				}
 				
-				ContentResolver resolver = getActivity().getContentResolver();
+				for (String userId : story.publicUserIds) {
+					ProfileResponse user = apiManager.getUser(userId);
+					publicUserMap.put(userId, user.user);
+				}
+
 				Cursor cursor = resolver.query(FeedProvider.COMMENTS_URI, null, null, new String[] { story.id }, null);
+
+				publicCommentViews = new ArrayList<View>();
+				friendCommentViews = new ArrayList<View>();
 				
-				commentViews = new ArrayList<View>();
 				while (cursor.moveToNext()) {
 					Comment comment = Comment.fromCursor(cursor);
-					View commentView = inflater.inflate(R.layout.include_comment, null);
-					TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-					commentText.setText(comment.commentText);
-					ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
-					imageLoader.displayImageByUid(Integer.toString(comment.userId), commentImage);
-					TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
-					commentSharedDate.setText(comment.sharedDate);
-					
-					commentViews.add(commentView);
+						View commentView = inflater.inflate(R.layout.include_comment, null);
+						TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
+						commentText.setText(comment.commentText);
+						ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
+						TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
+						commentSharedDate.setText(comment.sharedDate);
+						
+					if (publicUserMap.containsKey(comment.userId)) {
+						UserProfile commentUser = publicUserMap.get(comment.userId);
+						TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
+						commentUsername.setText(commentUser.username);
+						String userPhoto = commentUser.photoUrl;
+						imageLoader.displayImage(userPhoto, commentImage);
+						publicCommentViews.add(commentView);
+					} else {
+						UserProfile commentUser = friendUserMap.get(comment.userId);
+						TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
+						commentUsername.setText(commentUser.username);
+						String userPhoto = commentUser.photoUrl;
+						imageLoader.displayImage(userPhoto, commentImage);
+						friendCommentViews.add(commentView);
+					}
 				}
 				return null;
 			}
@@ -128,10 +158,9 @@ public class ReadingItemFragment extends Fragment {
 					imageParameters.height = imageLength;
 					imageParameters.width = imageLength;
 					image.setLayoutParams(imageParameters);
-					
-					GridLayout grid = (GridLayout) view.findViewById(R.id.reading_social_shareimages);
-					grid.addView(image);
-					imageLoader.displayImageByUid(userId, image);
+
+					GridLayout grid = (GridLayout) view.findViewById(R.id.reading_social_shareimages);					
+					imageLoader.displayImageByUid(friendUserMap.get(userId).photoUrl, image);
 					image.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View view) {
@@ -140,10 +169,38 @@ public class ReadingItemFragment extends Fragment {
 							startActivity(i);
 						}
 					});
+					grid.addView(image);
 				}
 				
-				for (View comment : commentViews) {
-					((LinearLayout) view.findViewById(R.id.reading_comment_container)).addView(comment);
+				for (final String userId : story.friendUserIds) {
+					ImageView image = new ImageView(getActivity());
+					int imageLength = UIUtils.convertDPsToPixels(getActivity(), 25);
+					image.setMaxHeight(imageLength);
+					image.setMaxWidth(imageLength);
+					GridLayout.LayoutParams imageParameters = new GridLayout.LayoutParams();
+					imageParameters.height = imageLength;
+					imageParameters.width = imageLength;
+					image.setLayoutParams(imageParameters);
+
+					GridLayout grid = (GridLayout) view.findViewById(R.id.reading_social_shareimages);					
+					imageLoader.displayImageByUid(friendUserMap.get(userId).photoUrl, image);
+					image.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View view) {
+							Intent i = new Intent(getActivity(), Profile.class);
+							i.putExtra(Profile.USER_ID, userId);
+							startActivity(i);
+						}
+					});
+					grid.addView(image);
+				}
+
+
+				for (View comment : publicCommentViews) {
+					((LinearLayout) view.findViewById(R.id.reading_public_comment_container)).addView(comment);
+				}
+				for (View comment : friendCommentViews) {
+					((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(comment);
 				}
 			};
 		}.execute();
@@ -151,10 +208,10 @@ public class ReadingItemFragment extends Fragment {
 
 
 	private void setupItemMetadata(View view) {
-		
+
 		View borderOne = view.findViewById(R.id.row_item_favicon_borderbar_1);
 		View borderTwo = view.findViewById(R.id.row_item_favicon_borderbar_2);
-		
+
 		if (!TextUtils.equals(feedColor, "#null") && !TextUtils.equals(feedFade, "#null")) {
 			borderOne.setBackgroundColor(Color.parseColor(feedColor));
 			borderTwo.setBackgroundColor(Color.parseColor(feedFade));
@@ -162,7 +219,7 @@ public class ReadingItemFragment extends Fragment {
 			borderOne.setBackgroundColor(Color.GRAY);
 			borderTwo.setBackgroundColor(Color.LTGRAY);
 		}
-		
+
 		View sidebar = view.findViewById(R.id.row_item_sidebar);
 		int storyIntelligence = story.intelligence.intelligenceAuthors + story.intelligence.intelligenceTags + story.intelligence.intelligenceFeed + story.intelligence.intelligenceTitle;
 		if (storyIntelligence > 0) {
@@ -172,21 +229,21 @@ public class ReadingItemFragment extends Fragment {
 		} else {
 			sidebar.setBackgroundResource(R.drawable.negative_count_circle);
 		}
-		
+
 		TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
 		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
 		TextView itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
-//		GridLayout tagContainer = (GridLayout) view.findViewById(R.id.reading_item_tags);
-//
-//		if (story.tags != null || story.tags.length > 0) {
-//			tagContainer.setVisibility(View.VISIBLE);
-//			for (String tag : story.tags) {
-//				View v = inflater.inflate(R.layout.tag_view, null);
-//				TextView tagText = (TextView) v.findViewById(R.id.tag_text);
-//				tagText.setText(tag);
-//				tagContainer.addView(v);
-//			}
-//		}
+		//		GridLayout tagContainer = (GridLayout) view.findViewById(R.id.reading_item_tags);
+		//
+		//		if (story.tags != null || story.tags.length > 0) {
+		//			tagContainer.setVisibility(View.VISIBLE);
+		//			for (String tag : story.tags) {
+		//				View v = inflater.inflate(R.layout.tag_view, null);
+		//				TextView tagText = (TextView) v.findViewById(R.id.tag_text);
+		//				tagText.setText(tag);
+		//				tagContainer.addView(v);
+		//			}
+		//		}
 
 		itemDate.setText(story.shortDate);
 		itemTitle.setText(story.title);

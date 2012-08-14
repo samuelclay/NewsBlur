@@ -82,6 +82,8 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_SHARE_COUNT + INTEGER + ", " +
 		DatabaseConstants.STORY_SOCIAL_USER_ID + TEXT + ", " +
 		DatabaseConstants.STORY_SHARED_USER_IDS + TEXT + ", " +
+		DatabaseConstants.STORY_PUBLIC_USER_IDS + TEXT + ", " +
+		DatabaseConstants.STORY_FRIEND_USER_IDS + TEXT + ", " +
 		DatabaseConstants.STORY_TAGS + TEXT + ", " +
 		DatabaseConstants.STORY_PERMALINK + TEXT + ", " + 
 		DatabaseConstants.STORY_READ + TEXT + ", " +

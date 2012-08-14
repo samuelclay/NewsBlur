@@ -25,8 +25,14 @@ public class Story implements Serializable {
 	@SerializedName("share_user_ids")
 	public String[] sharedUserIds;
 
+	@SerializedName("friend_user_ids")
+	public String[] friendUserIds = new String[]{};
+	
+	@SerializedName("public_user_ids")
+	public String[] publicUserIds = new String[]{};
+	
 	@SerializedName("comment_count")
-	public String commentCount;
+	public int commentCount;
 
 	@SerializedName("read_status")
 	public String read;
@@ -56,7 +62,10 @@ public class Story implements Serializable {
 	public String feedId;
 
 	@SerializedName("public_comments")
-	public Comment[] comments;
+	public Comment[] publicComments;
+	
+	@SerializedName("friend_comments")
+	public Comment[] friendsComments;
 
 	@SerializedName("intelligence")
 	public Intelligence intelligence = new Intelligence();
@@ -78,6 +87,8 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_AUTHORS, authors);
 		values.put(DatabaseConstants.STORY_SOCIAL_USER_ID, socialUserId);
 		values.put(DatabaseConstants.STORY_SHARED_USER_IDS, TextUtils.join(",", sharedUserIds));
+		values.put(DatabaseConstants.STORY_FRIEND_USER_IDS, TextUtils.join(",", friendUserIds));
+		values.put(DatabaseConstants.STORY_PUBLIC_USER_IDS, TextUtils.join(",", publicUserIds));
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, intelligence.intelligenceAuthors);
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_FEED, intelligence.intelligenceFeed);
 		values.put(DatabaseConstants.STORY_INTELLIGENCE_TAGS, intelligence.intelligenceTags);
@@ -97,10 +108,12 @@ public class Story implements Serializable {
 		story.sharedDate = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_DATE)));
 		story.shortDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHORTDATE));
 		story.shareCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHARE_COUNT));
-		story.commentCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_COMMENT_COUNT));
+		story.commentCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_COMMENT_COUNT));
 		story.socialUserId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SOCIAL_USER_ID));
 		story.permalink = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_PERMALINK));
 		story.sharedUserIds = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHARED_USER_IDS)), ",");
+		story.friendUserIds = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FRIEND_USER_IDS)), ",");
+		story.publicUserIds = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_PUBLIC_USER_IDS)), ",");
 		story.intelligence.intelligenceAuthors = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_AUTHORS));
 		story.intelligence.intelligenceFeed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
 		story.intelligence.intelligenceTags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));

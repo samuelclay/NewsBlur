@@ -147,7 +147,7 @@ public class APIManager {
 			Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 			for (Story story : storiesResponse.stories) {
 				contentResolver.insert(storyUri, story.getValues());
-				for (Comment comment : story.comments) {
+				for (Comment comment : story.publicComments) {
 					StringBuilder builder = new StringBuilder();
 					builder.append(story.id);
 					builder.append(story.feedId);
@@ -179,7 +179,17 @@ public class APIManager {
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
 
-				for (Comment comment : story.comments) {
+				for (Comment comment : story.publicComments) {
+					StringBuilder builder = new StringBuilder();
+					builder.append(story.id);
+					builder.append(story.feedId);
+					builder.append(comment.userId);
+					comment.storyId = story.id;
+					comment.id = (builder.toString());
+					contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
+				}
+				
+				for (Comment comment : story.friendsComments) {
 					StringBuilder builder = new StringBuilder();
 					builder.append(story.id);
 					builder.append(story.feedId);

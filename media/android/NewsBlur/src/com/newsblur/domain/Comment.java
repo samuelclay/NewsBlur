@@ -17,7 +17,7 @@ public class Comment implements Serializable {
 	public String commentText;
 	
 	@SerializedName("user_id")
-	public int userId;
+	public String userId;
 	
 	@SerializedName("shared_date")
 	public String sharedDate;
@@ -45,7 +45,7 @@ public class Comment implements Serializable {
 		comment.sharedDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_SHAREDDATE));
 		comment.commentText = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_TEXT));
 		comment.storyId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_STORYID));
-		comment.userId = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.COMMENT_USERID));
+		comment.userId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_USERID));
 		comment.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_ID));
 		
 		return comment;

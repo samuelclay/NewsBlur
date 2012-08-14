@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:background="@color/item_background"
             android:scrollbars="none" />
-
+        
         <RelativeLayout
             android:id="@+id/reading_shared_container"
             android:layout_width="match_parent"
@@ -96,12 +96,13 @@
                 android:background="@drawable/list_background"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="10dp" >
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp" >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/reading_sharedby"
                     android:textColor="@color/white"
@@ -118,10 +119,25 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/reading_comment_container"
+                android:id="@+id/reading_friend_comment_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/reading_share_bar"
+                android:background="@color/white"
+                android:orientation="vertical" />
+            
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_below="@id/reading_friend_comment_container"
+                android:id="@+id/comment_divider"
+                android:background="@drawable/divider_light" />
+            
+             <LinearLayout
+                android:id="@+id/reading_public_comment_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/comment_divider"
                 android:background="@color/white"
                 android:orientation="vertical" />
         </RelativeLayout>

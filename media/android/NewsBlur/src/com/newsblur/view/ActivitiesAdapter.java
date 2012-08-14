@@ -115,7 +115,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		
 		activityTime.setText(activity.timeSince + " " + ago);
 		if (activity.user != null) {
-			imageLoader.displayImage(activity.user.photoUrl, activity.id, imageView);
+			imageLoader.displayImage(activity.user.photoUrl, imageView);
 		} else {
 			imageView.setImageResource(R.drawable.logo);
 		}

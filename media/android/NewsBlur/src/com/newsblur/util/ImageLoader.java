@@ -18,8 +18,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -38,9 +36,9 @@ public class ImageLoader {
 		executorService = Executors.newFixedThreadPool(5);
 	}
 	
-	public void displayImage(String url, String uid, ImageView imageView) {
-		imageViews.put(imageView, uid);
-		Bitmap bitmap = memoryCache.get(uid);
+	public void displayImage(String url, ImageView imageView) {
+		imageViews.put(imageView, url);
+		Bitmap bitmap = memoryCache.get(url);
 		if (bitmap == null) {
 			bitmap = memoryCache.get(url);
 		}
@@ -48,20 +46,9 @@ public class ImageLoader {
 			bitmap = UIUtils.roundCorners(bitmap, 10f);
 			imageView.setImageBitmap(bitmap);
 		} else {
-			queuePhoto(url, uid, imageView);
+			queuePhoto(url, imageView);
 			imageView.setImageResource(R.drawable.logo);
 		}
-	}
-	
-	public Drawable getImage(String url, String uid) {
-		Bitmap bitmap;
-		if ((bitmap = memoryCache.get(uid)) == null && (bitmap = memoryCache.get(url)) == null) {
-			File f = fileCache.getFile(url);
-			if (f != null) {
-				bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
-			}
-		}
-		return new BitmapDrawable(bitmap);
 	}
 	
 	// Display an image assuming it's in cache
@@ -83,8 +70,8 @@ public class ImageLoader {
 		}
 	}
 
-	private void queuePhoto(String url, String uid, ImageView imageView) {
-		PhotoToLoad p = new PhotoToLoad(url, uid, imageView);
+	private void queuePhoto(String url, ImageView imageView) {
+		PhotoToLoad p = new PhotoToLoad(url, imageView);
 		executorService.submit(new PhotosLoader(p));
 	}
 	
@@ -95,13 +82,13 @@ public class ImageLoader {
 		return true;
 	}
 
-	private Bitmap getBitmap(String url, String uid) {
-		File f = fileCache.getFile(uid);
+	private Bitmap getBitmap(String url) {
+		File f = fileCache.getFile(url);
 		Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 		
 		if (bitmap != null) {
 			Log.d(TAG, "Retrieving bitmap From file cache");
-			memoryCache.put(uid, bitmap);			
+			memoryCache.put(url, bitmap);			
 			bitmap = UIUtils.roundBitmap(bitmap);
 			return bitmap;
 		}
@@ -120,7 +107,7 @@ public class ImageLoader {
 				outputStream.write(b, 0, read);  
 			}
 			bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
-			memoryCache.put(uid, bitmap);
+			memoryCache.put(url, bitmap);
 			outputStream.close();
 			bitmap = UIUtils.roundCorners(bitmap, 10f);
 			return bitmap;
@@ -134,10 +121,8 @@ public class ImageLoader {
 	private class PhotoToLoad {
 		public String url;
 		public ImageView imageView;
-		public String uid;
-		public PhotoToLoad(final String u, final String id, final ImageView i) {
+		public PhotoToLoad(final String u, final ImageView i) {
 			url = u; 
-			uid = id;
 			imageView = i;
 		}
 	}
@@ -155,8 +140,8 @@ public class ImageLoader {
 				return;
 			}
 			
-			Bitmap bmp = getBitmap(photoToLoad.url, photoToLoad.uid);
-			memoryCache.put(photoToLoad.uid, bmp);
+			Bitmap bmp = getBitmap(photoToLoad.url);
+			memoryCache.put(photoToLoad.url, bmp);
 			if (imageViewReused(photoToLoad)) {
 				return;
 			}
@@ -169,7 +154,7 @@ public class ImageLoader {
 
 	private boolean imageViewReused(PhotoToLoad photoToLoad){
 		final String tag = imageViews.get(photoToLoad.imageView);
-		return (tag == null || !tag.equals(photoToLoad.uid));
+		return (tag == null || !tag.equals(photoToLoad.url));
 	}
 
 	private class BitmapDisplayer implements Runnable {
@@ -194,10 +179,6 @@ public class ImageLoader {
 	public void clearCache() {
 		memoryCache.clear();
 		fileCache.clear();
-	}
-
-	public void cacheImage(String photoUrl, String userId) {
-		getBitmap(photoUrl, userId);
 	}
 
 }
