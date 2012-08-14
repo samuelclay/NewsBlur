@@ -54,7 +54,7 @@ body.NB-theme-sans-serif #story_pane {
 }
 
 body.NB-theme-serif #story_pane .NB-feed-story-content {
-    font-family: “Palatino Linotype”, Georgia, “URW Palladio L”, “Century Schoolbook L”, serif;
+    font-family: "Palatino Linotype", Georgia, "URW Palladio L", "Century Schoolbook L", serif;
     font-size: 14px;
     line-height: 20px;
 }
@@ -760,7 +760,6 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     margin: 3px 1px 0;
     background-color: #8eb6e8;
     display: none;
-    -moz-border-radius: 4px;
     border-radius: 4px;
 }
 .unread_count_positive {
@@ -1031,7 +1030,6 @@ background: transparent;
     text-transform: uppercase;
     display: none;
     border-radius: 3px;
-    -moz-border-radius: 3px;
     
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
@@ -1205,7 +1203,6 @@ background: transparent;
     text-transform: uppercase;
     overflow: hidden;
     border-radius: 3px;
-    -moz-border-radius: 3px;
 }
 
 #story_titles .NB-story-title-indicator:hover {
@@ -1511,9 +1508,9 @@ background: transparent;
     position: static;
     margin: 0 0 4px 0;
     color: #888C9B;
-    top: none;
-    left: none;
-    right: none;
+    top: 0;
+    left: 0;
+    right: 0;
     display: block;
     font-size: 9px;
     clear: both;
@@ -1781,7 +1778,7 @@ background: transparent;
 #story_pane .NB-feed-stories .NB-feed-story .NB-feed-story-content div {
     max-width: 100%;
 }
-#story_pane .NB-feed-stories .NB-feed-story img {
+#story_pane .NB-feed-stories .NB-feed-story .NB-feed-story-content img {
   max-width: 100% !important;
   width: auto !important;
   height: auto !important;
@@ -1931,8 +1928,6 @@ background: transparent;
     color: #9D9A95;
     text-shadow: 0 1px 0 #E9E9E9;
     border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
     cursor: pointer;
 } 
 
@@ -2948,8 +2943,6 @@ background: transparent;
   width: 20px;
   height: 20px;
   border: 1px solid #818181;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
   border-radius: 0;
   -webkit-border-top-right-radius: 6px;
   -webkit-border-bottom-right-radius: 6px;
@@ -3534,7 +3527,6 @@ form.opml_import_form input {
 
 .NB-classifier {
     border-radius: 14px;
-    -moz-border-radius: 14px;
 }
 
 .NB-classifier .NB-modal-loading {
@@ -6337,8 +6329,6 @@ form.opml_import_form input {
   text-align: center;
   background: #222222;
   border: 3px solid #ffffff;
-  -webkit-border-radius: 23px;
-  -moz-border-radius: 23px;
   border-radius: 23px;
   opacity: 0.5;
   filter: alpha(opacity=50);
@@ -6900,8 +6890,6 @@ form.opml_import_form input {
     font-family: 'Lucida Grande', Verdana, sans-serif;
     font-weight: bold;
     font-size: 11px;
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
     border-radius: 8px;
     color: #fff;
     background-color: #626262;
@@ -7009,8 +6997,6 @@ form.opml_import_form input {
 
 .NB-keyboard-shortcut-key {
   border-radius: 6px;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
   border-top: 1px solid #717171;
   border-left: 1px solid #717171;
   border-bottom: 1px solid #303030;
@@ -7068,7 +7054,6 @@ form.opml_import_form input {
   margin: 12px 0 12px;
   padding: 12px;
   background-color: #F6F6F6;
-  -moz-border-radius: 4px;
   border-radius: 4px;
 }
 
@@ -7135,7 +7120,7 @@ form.opml_import_form input {
   font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 .NB-modal-preferences .NB-preference-story-styling .NB-preference-story-styling-serif {
-  font-family: “Palatino Linotype”, Georgia, “URW Palladio L”, “Century Schoolbook L”, serif;  
+  font-family: "Palatino Linotype", Georgia, "URW Palladio L", "Century Schoolbook L", serif;  
 }
 .NB-modal-preferences .NB-preference-window input {
   margin-top: 4px;
