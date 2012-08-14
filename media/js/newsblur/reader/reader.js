@@ -166,6 +166,15 @@
                                                                 NEWSBLUR.app.story_list.reset_story_positions();
                                                             }, 2000);
             this.flags.fetch_story_locations_in_feed_view();
+            
+            if ((NEWSBLUR.reader.layout.contentLayout.panes.north &&
+                 NEWSBLUR.reader.layout.contentLayout.panes.north.width() < 600) ||
+                (NEWSBLUR.reader.layout.contentLayout.panes.center &&
+                 NEWSBLUR.reader.layout.contentLayout.panes.center.width() < 700)) {
+                this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
+            } else {
+                this.$s.$feed_view.removeClass('NB-feed-story-view-narrow');
+            }
         },
         
         apply_resizable_layout: function(refresh) {
