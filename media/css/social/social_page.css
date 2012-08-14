@@ -785,8 +785,9 @@ header {
     color: #404040;
     font-size: 13px;
     height: 28px;
-    margin: 8px 0 0;
+    margin: 8px 0 4px;
     border: 1px solid #C0C0C0;
+    box-shadow: 2px 2px 0 #E3E8EB;
     z-index: 1;
     position: relative;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -797,6 +798,7 @@ header {
     position: absolute;
     left: 0;
     bottom: 0;
+    width: 100%;
     display: none;
 }
 .NB-story-comment-input-form .NB-modal-submit-button {
@@ -804,9 +806,9 @@ header {
     font-size: 12px;
     line-height: 19px;
     padding: 2px 16px;
+    margin: 4px 12px 4px 0;
     z-index: 0;
     opacity: 0;
-    margin: 4px 0 4px 0;
     -webkit-transition: opacity .44s ease-out;
     -moz-transition: opacity .44s ease-out;
     -o-transition: opacity .44s ease-out;
@@ -815,6 +817,46 @@ header {
 
 .NB-story-comment-input-form.NB-active .NB-modal-submit-button {
     opacity: 1;
+}
+
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter,
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook {
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 10px 0 0 6px;
+    opacity: .4;
+    cursor: pointer;
+    -webkit-filter: grayscale(100%);
+    filter: gray;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter:hover,
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook:hover {
+    opacity: .7;
+    -webkit-filter: none;
+    filter: none;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter.NB-active,
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook.NB-active {
+    opacity: 1;
+    -webkit-filter: none;
+    filter: none;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter {
+    background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook {
+    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-text {
+    font-size: 9px;
+    text-transform: uppercase;
+    text-align: left;
+    color: #7483A2;
+    text-shadow: 0 1px 0 #FBFBFB;
+    line-height: 16px;
+    float: left;
+    margin: 10px 0 0 8px;
 }
 
 /* =================== */

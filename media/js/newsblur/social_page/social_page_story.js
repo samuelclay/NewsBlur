@@ -11,7 +11,9 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         "focus .NB-story-comment-input"     : "focus_comment_input",
         // "blur .NB-story-comment-input"      : "blur_comment_input"
         "keyup .NB-story-comment-input"     : "keypress_comment_input",
-        "click .NB-story-comment-save"      : "mark_story_as_shared"
+        "click .NB-story-comment-save"      : "mark_story_as_shared",
+        "click .NB-story-comment-crosspost-twitter"  : "toggle_twitter",
+        "click .NB-story-comment-crosspost-facebook" : "toggle_facebook"
     },
     
     initialize: function() {
@@ -226,6 +228,25 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         }, this));
     },
     
+    check_crosspost_buttons: function() {
+        var $twitter = this.$('.NB-story-comment-crosspost-twitter');
+        var $facebook = this.$('.NB-story-comment-crosspost-facebook');
+
+        if (!NEWSBLUR.user_social_services) return;
+        
+        if (NEWSBLUR.user_social_services.twitter &&
+            NEWSBLUR.user_social_services.twitter.twitter_uid) {
+            $twitter.removeClass('NB-hidden');
+        }
+        if (NEWSBLUR.user_social_services.facebook &&
+            NEWSBLUR.user_social_services.facebook.facebook_uid) {
+            $facebook.removeClass('NB-hidden');
+        }
+        
+        $twitter.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_twitter'));
+        $facebook.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_facebook'));
+    },
+    
     // ==========
     // = Events =
     // ==========
@@ -265,7 +286,9 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         // $form.toggleClass('NB-active', $input.is(':focus'));
         $buttons.css('display', 'block');
         $form.addClass('NB-active');
+        this.check_crosspost_buttons();
         this.keypress_comment_input();
+        this.reset_posting_label();
     },
     
     blur_comment_input: function() {
@@ -295,6 +318,66 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         
         var input_width = $input.innerWidth();
         // Perform auto-height expansion
+    },
+    
+    toggle_twitter: function() {
+        var $twitter_button = this.$('.NB-story-comment-crosspost-twitter');
+        
+        if (NEWSBLUR.assets.preference('post_to_twitter')) {
+            NEWSBLUR.assets.preference('post_to_twitter', false);
+        } else {
+            NEWSBLUR.assets.preference('post_to_twitter', true);
+        }
+        
+        $twitter_button.toggleClass('NB-active', NEWSBLUR.assets.preference('post_to_twitter'));
+        this.reset_posting_label();
+    },
+    
+    toggle_facebook: function() {
+        var $facebook_button = this.$('.NB-story-comment-crosspost-facebook');
+        
+        if (NEWSBLUR.assets.preference('post_to_facebook')) {
+            NEWSBLUR.assets.preference('post_to_facebook', false);
+        } else {
+            NEWSBLUR.assets.preference('post_to_facebook', true);
+        }
+        
+        $facebook_button.toggleClass('NB-active', NEWSBLUR.assets.preference('post_to_facebook'));
+        this.reset_posting_label();
+    },
+    
+    show_twitter_posting_label: function() {
+        this.show_posting_label(true, false);
+    },
+    
+    show_facebook_posting_label: function() {
+        this.show_posting_label(false, true);
+    },
+    
+    reset_posting_label: function() {
+        this.show_posting_label();
+    },
+    
+    show_posting_label: function(twitter, facebook) {
+        var social_services = NEWSBLUR.user_social_services || {};
+        var $text = this.$('.NB-story-comment-crosspost-text');
+        twitter = twitter || (social_services.twitter && social_services.twitter.twitter_uid && NEWSBLUR.assets.preference('post_to_twitter'));
+        facebook = facebook || (social_services.facebook && social_services.facebook.facebook_uid && NEWSBLUR.assets.preference('post_to_facebook'));
+        
+        if (twitter || facebook) {
+            var message = "Post to ";
+            if (twitter && !facebook) {
+                message += "Twitter";
+            } else if (!twitter && facebook) {
+                message += "Facebook";
+            } else {
+                message += "Twitter & FB";
+            }
+            
+            $text.text(message);
+        } else {
+            $text.text("");
+        }
     }
     
 });
