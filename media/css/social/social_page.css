@@ -825,27 +825,28 @@ header {
     width: 16px;
     height: 16px;
     margin: 10px 0 0 6px;
-    opacity: .4;
     cursor: pointer;
-    -webkit-filter: grayscale(100%);
-    filter: gray;
 }
 .NB-story-comment-crossposts .NB-story-comment-crosspost-twitter:hover,
 .NB-story-comment-crossposts .NB-story-comment-crosspost-facebook:hover {
     opacity: .7;
-    -webkit-filter: none;
-    filter: none;
 }
 .NB-story-comment-crossposts .NB-story-comment-crosspost-twitter.NB-active,
 .NB-story-comment-crossposts .NB-story-comment-crosspost-facebook.NB-active {
     opacity: 1;
-    -webkit-filter: none;
-    filter: none;
 }
 .NB-story-comment-crossposts .NB-story-comment-crosspost-twitter {
-    background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
+    background: transparent url('/media/embed/reader/twitter_icon_gray.png') no-repeat 0 0;
 }
 .NB-story-comment-crossposts .NB-story-comment-crosspost-facebook {
+    background: transparent url('/media/embed/reader/facebook_icon_gray.png') no-repeat 0 0;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter.NB-active,
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter:hover {
+    background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook.NB-active,
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook:hover {
     background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
 }
 .NB-story-comment-crossposts .NB-story-comment-crosspost-text {
@@ -857,6 +858,7 @@ header {
     line-height: 16px;
     float: left;
     margin: 10px 0 0 8px;
+    width: 200px;
 }
 
 /* =================== */
@@ -1108,78 +1110,6 @@ header {
 }
 .NB-sideoption-share {
     padding: 4px 12px 6px;
-}
-.NB-sideoption-share .NB-sideoption-share-title {
-    text-transform: uppercase;
-    font-size: 10px;
-    text-align: left;
-    text-shadow: 0 1px 0 #F6F6F6;
-    color: #202020;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost {
-    margin-right: -4px;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-twitter,
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
-    float: right;
-    width: 16px;
-    height: 16px;
-    margin: 0 0 0 6px;
-    opacity: .4;
-    cursor: pointer;
-    -webkit-filter: grayscale(100%);
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-twitter:hover,
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook:hover {
-    opacity: .7;
-    -webkit-filter: none;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-twitter.NB-active,
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook.NB-active {
-    opacity: 1;
-    -webkit-filter: none;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-twitter {
-    background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
-    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
-}
-.NB-sideoption-share .NB-sideoption-share-comments {
-    width: 100%;
-    height: 52px;
-}
-.NB-sideoption-share .NB-sideoption-share-save {
-  font-size: 10px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: white;
-  padding: 2px 6px;
-  margin: 2px 0;
-  width: 92%;
-  background-color: #639510;
-  cursor: pointer;
-  -moz-box-shadow: 2px 2px 0 #95AB76;
-  -webkit-box-shadow: 2px 2px 0 #95AB76;
-  box-shadow: 2px 2px 0 #95AB76;
-  text-shadow: 0 1px 0 #101010;
-}
-.NB-sideoption-share .NB-sideoption-share-save.NB-saving {
-    background-color: #b5b4bB;
-    text-shadow: none;
-}
-.NB-sideoption-share .NB-sideoption-share-unshare {
-    color: #404040;
-    text-shadow: 0 1px 0 #E0E0E0;
-    line-height: 1;
-    font-size: 11px;
-    padding: 2px 6px;
-    margin: 6px 0;
-    width: 92%;
-    font-weight: normal;
-    -moz-box-shadow: 1px 1px 0 #95AB76;
-    -webkit-box-shadow: 1px 1px 0 #95AB76;
-    box-shadow: 1px 1px 0 #95AB76;
 }
 .NB-sideoption-share .NB-error {
     font-size: 10px;
