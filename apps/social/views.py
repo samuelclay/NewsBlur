@@ -141,9 +141,6 @@ def load_social_stories(request, user_id, username=None):
             story['starred_date'] = format_story_link_date__long(starred_date, now)
         if story['id'] in shared_stories:
             story['shared'] = True
-            shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'],
-                                                 user.profile.timezone)
-            story['shared_date'] = format_story_link_date__long(shared_date, now)
             story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
 
         story['intelligence'] = {
