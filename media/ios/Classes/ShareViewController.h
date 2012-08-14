@@ -20,6 +20,7 @@
 @property (nonatomic) IBOutlet UIButton *twitterButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *submitButton;
 @property (nonatomic) NSString * activeReplyId;
+@property (nonatomic) NSString* currentType;
 
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)commentIndex;
 - (void)clearComments;

@@ -268,6 +268,7 @@
 - (void)hideShareView:(BOOL)resetComment {
     if (resetComment) {
         self.shareViewController.commentField.text = @"";
+        self.shareViewController.currentType = nil;
     }
         
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {        

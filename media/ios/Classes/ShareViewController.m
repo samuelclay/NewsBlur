@@ -22,6 +22,7 @@
 @synthesize commentField;
 @synthesize appDelegate;
 @synthesize activeReplyId;
+@synthesize currentType;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -144,6 +145,7 @@
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)replyId {
     [self.submitButton setStyle:UIBarButtonItemStyleDone];
     if ([type isEqualToString: @"edit-reply"]) {
+        self.currentType = nil;
         [submitButton setTitle:@"Save your reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
@@ -167,14 +169,21 @@
             self.commentField.text = [self stringByStrippingHTML:[reply objectForKey:@"comments"]]; 
         }
     } else if ([type isEqualToString: @"reply"]) {
+        
         self.activeReplyId = nil;
         [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
 //        self.navigationItem.title = [NSString stringWithFormat:@"Reply to %@", username];
         [submitButton setAction:(@selector(doReplyToComment:))];
-        self.commentField.text = @"";
+        
+        if (![self.currentType isEqualToString:@"share"] &&
+            ![self.currentType isEqualToString:@"reply"]) {
+            self.commentField.text = @"";
+            self.currentType = type;
+        }
     } else if ([type isEqualToString: @"edit-share"]) {
+        self.currentType = nil;
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
         
@@ -195,12 +204,17 @@
         twitterButton.hidden = NO;
         [submitButton setTitle:@"Share this story"];
         [submitButton setAction:(@selector(doShareThisStory:))];
-        self.commentField.text = @"";
+        if (![self.currentType isEqualToString:@"share"] &&
+            ![self.currentType isEqualToString:@"reply"]) {
+            self.commentField.text = @"";
+            self.currentType = type;
+        }
     }
 }
 
 - (void)clearComments {
     self.commentField.text = nil;
+    self.currentType = nil;
 }
 
 # pragma mark
@@ -210,9 +224,7 @@
     [appDelegate.storyDetailViewController showShareHUD];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
                            NEWSBLUR_URL];
-    
 
-        
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
