@@ -669,7 +669,7 @@
 }
 
 - (int)unreadCount {
-    if (self.isRiverView) {
+    if (self.isRiverView || self.isSocialRiverView) {
         return [self unreadCountForFolder:nil];
     } else { 
         return [self unreadCountForFeed:nil];
@@ -703,7 +703,7 @@
 
     if (feedId) {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-        if (self.isSocialView) {
+        if (self.isSocialView || self.isSocialRiverView) {
             feed = [self.dictSocialFeeds objectForKey:feedIdStr];
         } else {
             feed = [self.dictFeeds objectForKey:feedIdStr];
@@ -728,7 +728,11 @@
     int total = 0;
     NSArray *folder;
     
-    if (!folderName && self.activeFolder == @"Everything") {
+    if (!folderName && self.activeFolder == @"ALL BLURBLOG STORIES") {
+        for (id feedId in self.dictSocialFeeds) {
+            total += [self unreadCountForFeed:feedId];
+        }
+    } else if (!folderName && self.activeFolder == @"ALL STORIES") {
         for (id feedId in self.dictFeeds) {
             total += [self unreadCountForFeed:feedId];
         }

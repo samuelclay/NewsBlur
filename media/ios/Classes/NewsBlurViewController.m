@@ -347,6 +347,7 @@
     appDelegate.dictUserProfile = [results objectForKey:@"social_profile"];
     appDelegate.userActivitiesArray = [results objectForKey:@"activities"];
     
+    // Only update the dashboard if there is a social profile
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.dashboardViewController refreshInteractions];
         [appDelegate.dashboardViewController refreshActivity];
@@ -889,21 +890,27 @@
     // reset pointer to the cells
     self.currentRowAtIndexPath = nil;
     
-    // current position of social header
-    if (button.tag == 0) { 
-        [appDelegate setActiveFolder:@"ALL BLURBLOG STORIES"];
-        appDelegate.isSocialRiverView = YES;
-        appDelegate.isRiverView = YES;
-    } else {
-        appDelegate.isSocialRiverView = NO;
-        appDelegate.isRiverView = YES;
-    }
-    
     appDelegate.readStories = [NSMutableArray array];
     
     NSMutableArray *feeds = [NSMutableArray array];
 
-    if (button.tag == 1) {
+    if (button.tag == 0) {
+        appDelegate.isSocialRiverView = YES;
+        appDelegate.isRiverView = YES;
+        // add all the feeds from every NON blurblog folder
+        [appDelegate setActiveFolder:@"ALL BLURBLOG STORIES"];
+        for (NSString *folderName in self.activeFeedLocations) {
+            if ([folderName isEqualToString:@""]) { // remove all blurblugs which is a blank folder name
+                NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+                NSArray *folderFeeds = [self.activeFeedLocations objectForKey:folderName];
+                for (int l=0; l < [folderFeeds count]; l++) {
+                    [feeds addObject:[originalFolder objectAtIndex:[[folderFeeds objectAtIndex:l] intValue]]];
+                }
+            }
+        }
+    } else if (button.tag == 1) {
+        appDelegate.isSocialRiverView = NO;
+        appDelegate.isRiverView = YES;
         // add all the feeds from every NON blurblog folder
         [appDelegate setActiveFolder:@"ALL STORIES"];
         for (NSString *folderName in self.activeFeedLocations) {

@@ -72,6 +72,18 @@
 #pragma mark Get Interactions
 
 - (void)fetchActivitiesDetail:(int)page {
+    
+    // if there is no social profile, we are DONE
+//    if ([[appDelegate.dictUserProfile allKeys] count] == 0) {
+//        self.pageFinished = YES;
+//        [self.activitiesTable reloadData];
+//        return;
+//    } else {
+//        if (page == 1) {
+//            self.pageFinished = NO;
+//        }
+//    }
+
     if (page == 1) {
         self.pageFetching = NO;
         self.pageFinished = NO;
