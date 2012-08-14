@@ -53,7 +53,7 @@
     
     // Do any additional setup after loading the view from its nib.
     commentField.layer.borderWidth = 1.0f;
-    commentField.layer.cornerRadius = 8;
+    commentField.layer.cornerRadius = 4;
     commentField.layer.borderColor = [[UIColor grayColor] CGColor];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
@@ -104,13 +104,13 @@
 - (void)adjustCommentField {
 	UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication] statusBarOrientation];
     if (UIInterfaceOrientationIsPortrait(orientation)){
-        self.commentField.frame = CGRectMake(20, 20, 280, 114);
-        self.twitterButton.frame = CGRectMake(228, 142, 32, 32);
-        self.facebookButton.frame = CGRectMake(268, 142, 32, 32);
+        self.commentField.frame = CGRectMake(20, 20, 280, 124);
+        self.twitterButton.frame = CGRectMake(228, 152, 32, 32);
+        self.facebookButton.frame = CGRectMake(268, 152, 32, 32);
     } else {
         self.commentField.frame = CGRectMake(60, 20, 400, 74);
         self.twitterButton.frame = CGRectMake(15, 20, 32, 32);
-        self.facebookButton.frame = CGRectMake(15, 60, 32, 32);
+        self.facebookButton.frame = CGRectMake(15, 63, 32, 32);
     }
 }
 
