@@ -48,6 +48,7 @@
 - (void)showFolderPicker;
 - (void)hideFolderPicker;
 - (IBAction)checkSiteAddress;
+- (void)reloadSearchResults;
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITextField *inFolderInput;

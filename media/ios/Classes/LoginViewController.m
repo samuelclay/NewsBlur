@@ -93,7 +93,6 @@
     } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
         return YES;
     }
-
     return NO;
 }
 

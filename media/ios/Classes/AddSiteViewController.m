@@ -13,6 +13,13 @@
 #import "ASIFormDataRequest.h"
 #import "JSON.h"
 
+@interface AddSiteViewController()
+
+@property (nonatomic) NSString *activeTerm_;
+@property (nonatomic, strong) NSMutableDictionary *searchResults_;
+
+@end
+
 @implementation AddSiteViewController
 
 @synthesize appDelegate;
@@ -32,6 +39,8 @@
 @synthesize addingLabel;
 @synthesize errorLabel;
 @synthesize addTypeControl;
+@synthesize activeTerm_;
+@synthesize searchResults_;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     
@@ -59,6 +68,8 @@
                                       siteAddressInput.frame.size.width, 
                                       siteAddressInput.frame.size.height);
     
+    self.activeTerm_ = @"";
+    self.searchResults_ = [[NSMutableDictionary alloc] init];
     [super viewDidLoad];
 }
 
@@ -72,7 +83,14 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
+    // Return YES for supported orientations
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        return YES;
+    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+        return YES;
+    }
+    
+    return NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -154,11 +172,18 @@
 
 - (IBAction)checkSiteAddress {
     NSString *phrase = siteAddressInput.text;
+    
     if ([phrase length] == 0) {
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
                          animations:^{
                              [siteScrollView setAlpha:0];
                          } completion:nil];
+        return;
+    }
+    
+    if ([self.searchResults_ objectForKey:phrase]) {
+        self.autocompleteResults = [self.searchResults_ objectForKey:phrase];
+        [self reloadSearchResults];
         return;
     }
     
@@ -176,7 +201,7 @@
     }
     
     [self.siteActivityIndicator startAnimating];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/rss_feeds/feed_autocomplete?term=%@",
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/rss_feeds/feed_autocomplete?term=%@&v=2",
                            NEWSBLUR_URL, [phrase stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIHTTPRequest requestWithURL:url];
@@ -187,8 +212,30 @@
 
 - (void)autocompleteSite:(ASIHTTPRequest *)request {
     NSString *responseString = [request responseString];
-    autocompleteResults = [[NSMutableArray alloc] initWithArray:[responseString JSONValue]];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
     
+
+    NSString *query = [NSString stringWithFormat:@"%@", [results objectForKey:@"term"]];
+    NSString *phrase = siteAddressInput.text;
+    
+    // cache the results
+    [self.searchResults_ setValue:[results objectForKey:@"feeds"] forKey:query];
+
+    if ([phrase isEqualToString:query]) {
+        self.autocompleteResults = [results objectForKey:@"feeds"];
+        [self reloadSearchResults];       
+    }
+    
+//    NSRange range = [query rangeOfString : activeTerm_];
+//    BOOL found = (range.location != NSNotFound);
+}
+
+- (void)reloadSearchResults {
     if ([siteAddressInput.text length] > 0 && [autocompleteResults count] > 0) {
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction 
                          animations:^{
@@ -239,7 +286,7 @@
         [self.errorLabel setHidden:NO];
     } else {
         [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
-        [appDelegate reloadFeedsView:YES];
+        [appDelegate reloadFeedsView:NO];
     }
     
 }

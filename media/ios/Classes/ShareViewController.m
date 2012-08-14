@@ -142,10 +142,10 @@
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)replyId {
     [self.submitButton setStyle:UIBarButtonItemStyleDone];
     if ([type isEqualToString: @"edit-reply"]) {
-        [submitButton setTitle:@"Save"];
+        [submitButton setTitle:@"Save your reply"];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
-        self.navigationItem.title = @"Edit Your Reply";
+//        self.navigationItem.title = @"Edit Your Reply";
         [submitButton setAction:(@selector(doReplyToComment:))];
         self.activeReplyId = replyId;
         
@@ -166,10 +166,10 @@
         }
     } else if ([type isEqualToString: @"reply"]) {
         self.activeReplyId = nil;
-        [submitButton setTitle:@"Reply"];
+        [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         facebookButton.hidden = YES;
         twitterButton.hidden = YES;
-        self.navigationItem.title = [NSString stringWithFormat:@"Reply to %@", username];
+//        self.navigationItem.title = [NSString stringWithFormat:@"Reply to %@", username];
         [submitButton setAction:(@selector(doReplyToComment:))];
         self.commentField.text = @"";
     } else if ([type isEqualToString: @"edit-share"]) {
@@ -179,24 +179,19 @@
         // get old comment
         self.commentField.text = [self stringByStrippingHTML:[appDelegate.activeComment objectForKey:@"comments"]];
         
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            self.navigationItem.title = @"Edit Your Comment";
-            [submitButton setTitle:@"Save"];
-        } else {
-            self.navigationItem.title = @"Edit Comment";
-            [submitButton setTitle:@"Save"];
-        }
+//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//            self.navigationItem.title = @"Edit Your Comment";
+//            [submitButton setTitle:@"Save your comments"];
+//        } else {
+//            self.navigationItem.title = @"Edit Comment";
+//            [submitButton setTitle:@"Save"];
+//        }
+        [submitButton setTitle:@"Save your comments"];
         [submitButton setAction:(@selector(doShareThisStory:))];
     } else if ([type isEqualToString: @"share"]) {        
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//            self.navigationItem.title = @"Post to Blurblog";
-            [submitButton setTitle:@"Share this story"];
-        } else {
-//            self.navigationItem.title = @"Post";
-            [submitButton setTitle:@"Share this story"];
-        }
+        [submitButton setTitle:@"Share this story"];
         [submitButton setAction:(@selector(doShareThisStory:))];
         self.commentField.text = @"";
     }
@@ -355,10 +350,10 @@
 -(void)onTextChange:(NSNotification*)notification {
     NSString *text = self.commentField.text;
     if ([self.submitButton.title isEqualToString:@"Share this story"] || 
-        [self.submitButton.title isEqualToString:@"Share with comment"]) {
+        [self.submitButton.title isEqualToString:@"Share with comments"]) {
         NSLog(@"text.length is %i", text.length);
         if (text.length) {
-            self.submitButton.title = @"Share with comment";
+            self.submitButton.title = @"Share with comments";
         } else {
             self.submitButton.title = @"Share this story";
         }   
