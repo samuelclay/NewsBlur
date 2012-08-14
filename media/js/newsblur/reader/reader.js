@@ -2463,11 +2463,11 @@
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    // $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-recommend' }, [
-                    //     $.make('div', { className: 'NB-menu-manage-image' }),
-                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
-                    // ]),
-                    // $.make('li', { className: 'NB-menu-separator' }),
+                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-recommend' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
+                    ])),
+                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-separator' })),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-settings' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')

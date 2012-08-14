@@ -795,17 +795,18 @@ header {
 
 .NB-story-comment-input-form .NB-story-comment-buttons {
     position: absolute;
-    right: 0;
+    left: 0;
     bottom: 0;
     display: none;
 }
 .NB-story-comment-input-form .NB-modal-submit-button {
-    float: right;
+    float: left;
     font-size: 12px;
     line-height: 19px;
     padding: 2px 16px;
     z-index: 0;
     opacity: 0;
+    margin: 4px 0 4px 0;
     -webkit-transition: opacity .44s ease-out;
     -moz-transition: opacity .44s ease-out;
     -o-transition: opacity .44s ease-out;
