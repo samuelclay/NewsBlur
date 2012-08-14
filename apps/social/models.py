@@ -172,10 +172,7 @@ class MSocialProfile(mongo.Document):
         
     @classmethod
     def profile(cls, user_id, include_follows=True):
-        try:
-            profile = cls.objects.get(user_id=user_id)
-        except cls.DoesNotExist:
-            return {}
+        profile = cls.get_user(user_id)
         return profile.to_json(include_follows=True)
         
     @classmethod

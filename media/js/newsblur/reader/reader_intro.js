@@ -445,7 +445,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     
     google_reader_connect: function() {
         var options = "location=0,status=0,width=800,height=500";
-        var url = "/import/authorize?modal=true";
+        var url = "/import/authorize";
         this.connect_window = window.open(url, '_blank', options);
         this.connect_window_timer = setInterval(_.bind(function() {
             console.log(["post connect window?", this.connect_window, this.connect_window.closed, this.connect_window.location]);
@@ -464,8 +464,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     },
     
     start_import_from_google_reader: function(data) {
+        console.log(["start_import_from_google_reader", data]);
         clearInterval(this.connect_window_timer);
-        var $error = $('.NB-intro-gitgoogle .NB-error', this.$modal);
+        var $error = $('.NB-intro-import-google .NB-error', this.$modal);
         var $loading = $('.NB-intro-imports-progress .NB-loading', this.$modal);
         if (data && data.error) {
             $error.show().text(data.error);
@@ -583,7 +584,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
     subscribe_to_feed: function(feed) {
         var $input = $('#NB-intro-uptodate-follow-'+feed, this.$modal);
         var $button = $input.closest('.NB-intro-uptodate-follow');
-        var blog_url = 'http://blog.newsblur.com/';
+        var blog_url = 'http://blog.newsblur.com/rss';
         var popular_username = 'social:popular';
         
         if ($input.is(':checked')) {
@@ -591,7 +592,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             if (feed == 'blog') {
                 NEWSBLUR.assets.save_add_url(blog_url, "", function() {
                     NEWSBLUR.assets.load_feeds();
-                }, {auto_active: false});
+                }, {auto_active: false, skip_fetch: true});
             } else if (feed == 'popular') {
                 NEWSBLUR.assets.follow_user(popular_username, function() {
                     NEWSBLUR.app.feed_list.make_social_feeds();

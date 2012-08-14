@@ -191,7 +191,8 @@ class UserSubscription(models.Model):
         return story_guids
         
     @classmethod
-    def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False, auto_active=True):
+    def add_subscription(cls, user, feed_address, folder=None, bookmarklet=False, auto_active=True,
+                         skip_fetch=False):
         feed = None
         us = None
     
@@ -235,7 +236,7 @@ class UserSubscription(models.Model):
                 us.active = True
                 us.save()
         
-            if feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
+            if not skip_fetch and feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
                 feed = feed.update()
             
             from apps.social.models import MActivity

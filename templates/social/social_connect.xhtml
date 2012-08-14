@@ -43,6 +43,8 @@
         } 
     </style>
     <script type="text/javascript" charset="utf-8">
+        window.NEWSBLUR = window.NEWSBLUR || {};
+
         if (!window.console) {
             window.console = {};
             window.console.log = function() {};
@@ -91,9 +93,9 @@
             window.close();
         } else {
             console.log(["No opener, directing to /", opener]);
-            window.close();
             window.NEWSBLUR =  window.NEWSBLUR || {};
             NEWSBLUR.error = "{{ error }}";
+            window.close();
             window.location.href = "/";
         }
     </script>
