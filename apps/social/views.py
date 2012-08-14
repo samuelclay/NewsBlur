@@ -329,6 +329,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
     if page: offset = limit * (int(page) - 1)
 
     user_social_profile = None
+    user_social_services = None
     if user.is_authenticated():
         user_social_profile = MSocialProfile.get_user(user.pk)
         user_social_services = MSocialServices.get_user(user.pk)
