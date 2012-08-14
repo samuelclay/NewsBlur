@@ -100,12 +100,13 @@
     [self.profileBadge initProfile];
     NSString *urlString = [NSString stringWithFormat:@
                            "http://%@/social/profile?user_id=%@"
-                           "&category=follow,comment_reply,comment_like,sharedstory",
+                           "&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
                            NEWSBLUR_URL,
                            appDelegate.activeUserProfileId];
     NSURL *url = [NSURL URLWithString:urlString];
 
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];

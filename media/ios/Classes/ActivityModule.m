@@ -95,7 +95,7 @@
         self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
         NSString *urlString = [NSString stringWithFormat:@
                                "http://%@/social/activities?user_id=%@&page=%i&limit=10"
-                               "&category=star,feedsub,follow,comment_reply,comment_like,sharedstory",
+                               "&category=star&category=feedsub&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
                                NEWSBLUR_URL,
                                [appDelegate.dictUserProfile objectForKey:@"user_id"],
                                page];
