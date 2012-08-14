@@ -159,7 +159,7 @@ NEWSBLUR.utils = {
             'stackoverflow.com',
             'stackexchange.com',
             'twitter.com',
-            'RankExploits'
+            'rankexploits'
         ];
         return _.any(BROKEN_URLS, function(broken_url) {
             return _.string.contains(url, broken_url);

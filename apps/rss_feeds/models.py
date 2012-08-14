@@ -40,7 +40,7 @@ BROKEN_PAGE_URLS = [
     'stackoverflow.com',
     'stackexchange.com',
     'twitter.com',
-    'RankExploits',
+    'rankexploits',
 ]
 
 class Feed(models.Model):
