@@ -266,6 +266,7 @@
         return;
     }
     
+    
     if (indexPath.row < activitiesCount) {
         NSDictionary *activity = [self.activitiesArray objectAtIndex:indexPath.row];
         NSString *category = [activity objectForKey:@"category"];

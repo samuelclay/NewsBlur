@@ -151,6 +151,7 @@
     if (appDelegate.inStoryDetail = YES && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         appDelegate.inStoryDetail = NO;
         [appDelegate.storyDetailViewController clearStory];
+        [self checkScroll];
     }
     
     NSString *title = appDelegate.isRiverView ?
@@ -497,7 +498,6 @@
                               reuseIdentifier:@"NoReuse"];
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
     if (self.pageFinished) {
         UIImage *img = [UIImage imageNamed:@"fleuron.png"];
         UIImageView *fleuron = [[UIImageView alloc] initWithImage:img];

@@ -214,7 +214,12 @@
     userProfileView.navigationItem.title = self.activeUserProfileName;
     userProfileView.navigationItem.backBarButtonItem.title = self.activeUserProfileName;
     [userProfileView getUserProfile];   
-    [self.userProfileNavigationController pushViewController:userProfileView animated:YES];
+    if (self.modalNavigationController.view.window == nil) {
+        [self.userProfileNavigationController pushViewController:userProfileView animated:YES];
+    } else {
+        [self.modalNavigationController pushViewController:userProfileView animated:YES];
+    };
+
 }
 
 - (void)hideUserProfileModal {
@@ -580,7 +585,7 @@
 }
 
 - (void)hideStoryDetailView {
-    [self.storyDetailViewController clearStory];
+//    [self.storyDetailViewController clearStory];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromFeedDetail];
     } else {

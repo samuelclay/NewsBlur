@@ -390,13 +390,28 @@ viewForHeaderInSection:(NSInteger)section {
     NSInteger currentRow = indexPath.row;
     int row = currentRow;
     appDelegate.activeUserProfileId = [[self.userProfiles objectAtIndex:row] objectForKey:@"user_id"];
+    appDelegate.activeUserProfileName = [[self.userProfiles objectAtIndex:row] objectForKey:@"username"];
     [self.friendSearchBar resignFirstResponder];
+    
+    // adding Done button
+    UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
+                                   initWithTitle:@"Close" 
+                                   style:UIBarButtonItemStyleDone 
+                                   target:self 
+                                   action:@selector(hideUserProfileModal)];
     
     // instantiate a new userProfileController
     UserProfileViewController *newUserProfile = [[UserProfileViewController alloc] init];
+    newUserProfile.navigationItem.rightBarButtonItem = donebutton;
+    newUserProfile.navigationItem.title = appDelegate.activeUserProfileName;
     appDelegate.userProfileViewController = newUserProfile; 
     [appDelegate.modalNavigationController pushViewController:newUserProfile animated:YES];
     [appDelegate.userProfileViewController getUserProfile];
+}
+
+- (void)hideUserProfileModal {
+    [appDelegate.modalNavigationController dismissModalViewControllerAnimated:YES];
+
 }
 
 @end

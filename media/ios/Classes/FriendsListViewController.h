@@ -33,4 +33,5 @@
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)loadSuggestedFriendsList;
 - (void)loadSuggestedFriendsListFinished:(ASIHTTPRequest *)request;
+- (void)hideUserProfileModal;
 @end
