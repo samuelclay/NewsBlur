@@ -33,8 +33,8 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
+    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
     
     // For textField1
     [[NSNotificationCenter defaultCenter] 
@@ -48,7 +48,6 @@
     
     UIBarButtonItem *submit = [[UIBarButtonItem alloc] initWithTitle:@"Post" style:UIBarButtonSystemItemDone target:self action:@selector(doShareThisStory:)];
     self.submitButton = submit;
-//    self.submitButton.tintColor = UIColorFromRGB(0x217412);
     self.navigationItem.rightBarButtonItem = submit;
     
     
@@ -65,7 +64,10 @@
         twitterButton.selected = YES;
     }
     
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+    }
+
     [super viewDidLoad];
 }
 
@@ -95,7 +97,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.commentField becomeFirstResponder];
-        
         [self adjustCommentField];
     }
 }
@@ -139,6 +140,7 @@
 }
 
 - (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)replyId {
+    [self.submitButton setStyle:UIBarButtonItemStyleDone];
     if ([type isEqualToString: @"edit-reply"]) {
         [submitButton setTitle:@"Save"];
         facebookButton.hidden = YES;
@@ -189,11 +191,11 @@
         facebookButton.hidden = NO;
         twitterButton.hidden = NO;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            self.navigationItem.title = @"Post to Blurblog";
-            [submitButton setTitle:@"Share"];
+//            self.navigationItem.title = @"Post to Blurblog";
+            [submitButton setTitle:@"Share this story"];
         } else {
-            self.navigationItem.title = @"Post";
-            [submitButton setTitle:@"Share"];
+//            self.navigationItem.title = @"Post";
+            [submitButton setTitle:@"Share this story"];
         }
         [submitButton setAction:(@selector(doShareThisStory:))];
         self.commentField.text = @"";
@@ -352,13 +354,13 @@
 
 -(void)onTextChange:(NSNotification*)notification {
     NSString *text = self.commentField.text;
-    if ([self.submitButton.title isEqualToString:@"Share"] || 
-        [self.submitButton.title isEqualToString:@"Share Comment"]) {
+    if ([self.submitButton.title isEqualToString:@"Share this story"] || 
+        [self.submitButton.title isEqualToString:@"Share with comment"]) {
         NSLog(@"text.length is %i", text.length);
         if (text.length) {
-            self.submitButton.title = @"Share Comment";
+            self.submitButton.title = @"Share with comment";
         } else {
-            self.submitButton.title = @"Share";
+            self.submitButton.title = @"Share this story";
         }   
     }
     

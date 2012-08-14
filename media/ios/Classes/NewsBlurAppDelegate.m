@@ -37,6 +37,7 @@
 @synthesize ftuxNavigationController;
 @synthesize navigationController;
 @synthesize modalNavigationController;
+@synthesize shareNavigationController;
 @synthesize userProfileNavigationController;
 @synthesize masterContainerViewController;
 @synthesize dashboardViewController;
@@ -250,8 +251,11 @@
         [self.masterContainerViewController transitionToShareView];
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId]; 
     } else {
-        UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
-        [self.navigationController presentModalViewController:shareNav animated:YES];
+        if (self.shareNavigationController == nil) {
+            UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
+            self.shareNavigationController = shareNav;
+        }
+        [self.navigationController presentModalViewController:self.shareNavigationController animated:YES];
         [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId]; 
     }
 }

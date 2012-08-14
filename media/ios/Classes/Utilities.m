@@ -69,12 +69,12 @@ static NSMutableDictionary *imageCache;
     if (image) {  
         return image;
     } else {
-//        if (isSocial) {
+        if (isSocial) {
 //            return [UIImage imageNamed:@"user_light.png"];
-//        } else {
-//            return [UIImage imageNamed:@"world.png"];
-//        }
-        return nil;
+            return nil;
+        } else {
+            return [UIImage imageNamed:@"world.png"];
+        }
     }
 }
 

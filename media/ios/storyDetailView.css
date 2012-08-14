@@ -2,29 +2,27 @@
  * Font Size Style
  */
 
+.NB-story {
+    line-height: 1.5em;
+}
 .NB-extra-small .NB-story {
-    line-height: 1.6em;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .NB-small .NB-story {
-    line-height: 1.6em;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .NB-medium .NB-story{
-    line-height: 1.6em;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .NB-large .NB-story {
-    line-height: 1.6em;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .NB-extra-large .NB-story {
-    line-height: 1.6em;
-    font-size: 22px;
+    font-size: 18px;
 }
 
 .NB-san-serif {
@@ -384,6 +382,10 @@ del {
 }
 
 /* Sharing */
+
+.NB-share-wrapper {
+    margin-top: 36px;
+}
 
 a.NB-show-profile {
     display: inline-block;

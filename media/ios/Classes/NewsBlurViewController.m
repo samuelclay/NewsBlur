@@ -747,15 +747,15 @@
     
     int headerLabelHeight, folderImageViewY, disclosureImageViewY;
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        headerLabelHeight = 28;
+//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        headerLabelHeight = 27;
         folderImageViewY = 3;
         disclosureImageViewY = 7;
-    } else {
-        headerLabelHeight = 20;
-        folderImageViewY = 0;
-        disclosureImageViewY = 4;
-    }
+//    } else {
+//        headerLabelHeight = 20;
+//        folderImageViewY = 0;
+//        disclosureImageViewY = 4;
+//    }
         
     // create the parent view that will hold header Label
     UIControl* customView = [[UIControl alloc] 
@@ -879,11 +879,7 @@
         return 0;
     }
     
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad){
-        return 28;
-    }else{
-        return 21;
-    }
+    return 28;
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {
@@ -923,6 +919,8 @@
             }
         }
     } else {
+        appDelegate.isSocialRiverView = NO;
+        appDelegate.isRiverView = YES;
         NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:button.tag];
         
         [appDelegate setActiveFolder:folderName];

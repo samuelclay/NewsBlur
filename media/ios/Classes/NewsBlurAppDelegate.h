@@ -44,6 +44,7 @@
     UINavigationController *ftuxNavigationController;
     UINavigationController *navigationController;
     UINavigationController *modalNavigationController;
+    UINavigationController *shareNavigationController;
     UINavigationController *userProfileNavigationController;
     NBContainerViewController *masterContainerViewController;
 
@@ -116,6 +117,7 @@
 @property (nonatomic) IBOutlet UINavigationController *ftuxNavigationController;
 @property (nonatomic) IBOutlet UINavigationController *navigationController;
 @property (nonatomic) UINavigationController *modalNavigationController;
+@property (nonatomic) UINavigationController *shareNavigationController;
 @property (nonatomic) UINavigationController *userProfileNavigationController;
 @property (nonatomic) IBOutlet NBContainerViewController *masterContainerViewController;
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;

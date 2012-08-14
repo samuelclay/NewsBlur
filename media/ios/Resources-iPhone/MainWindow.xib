@@ -243,7 +243,6 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<object class="IBUIViewController" id="121528350">
 						<object class="IBUINavigationItem" key="IBUINavigationItem" id="451803536">
-							<reference key="IBUINavigationBar"/>
 							<string key="IBUITitle">Title</string>
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						</object>
@@ -822,7 +821,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">160</int>
+			<int key="maxID">164</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1470,14 +1469,12 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>tapCategoryButton:</string>
-							<string>tapGoogleReaderButton</string>
 							<string>tapNewsBlurButton:</string>
 							<string>tapNextButton</string>
+							<string>tapPopularButton:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -1487,21 +1484,12 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>tapCategoryButton:</string>
-							<string>tapGoogleReaderButton</string>
 							<string>tapNewsBlurButton:</string>
 							<string>tapNextButton</string>
+							<string>tapPopularButton:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBActionInfo">
-								<string key="name">tapCategoryButton:</string>
-								<string key="candidateClassName">id</string>
-							</object>
-							<object class="IBActionInfo">
-								<string key="name">tapGoogleReaderButton</string>
-								<string key="candidateClassName">id</string>
-							</object>
 							<object class="IBActionInfo">
 								<string key="name">tapNewsBlurButton:</string>
 								<string key="candidateClassName">id</string>
@@ -1510,100 +1498,48 @@
 								<string key="name">tapNextButton</string>
 								<string key="candidateClassName">id</string>
 							</object>
+							<object class="IBActionInfo">
+								<string key="name">tapPopularButton:</string>
+								<string key="candidateClassName">id</string>
+							</object>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>addFriendsView</string>
-							<string>addNewsBlurView</string>
-							<string>addSitesView</string>
 							<string>appDelegate</string>
-							<string>googleReaderButton</string>
-							<string>logo</string>
+							<string>instructionsLabel</string>
 							<string>nextButton</string>
-							<string>previousButton</string>
-							<string>toolbar</string>
-							<string>toolbarTitle</string>
-							<string>welcomeView</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>UIView</string>
-							<string>UIView</string>
-							<string>UIView</string>
 							<string>NewsBlurAppDelegate</string>
 							<string>UIButton</string>
-							<string>UIImageView</string>
 							<string>UIBarButtonItem</string>
-							<string>UIBarButtonItem</string>
-							<string>UIToolbar</string>
-							<string>UIButton</string>
-							<string>UIView</string>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>addFriendsView</string>
-							<string>addNewsBlurView</string>
-							<string>addSitesView</string>
 							<string>appDelegate</string>
-							<string>googleReaderButton</string>
-							<string>logo</string>
+							<string>instructionsLabel</string>
 							<string>nextButton</string>
-							<string>previousButton</string>
-							<string>toolbar</string>
-							<string>toolbarTitle</string>
-							<string>welcomeView</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBToOneOutletInfo">
-								<string key="name">addFriendsView</string>
-								<string key="candidateClassName">UIView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">addNewsBlurView</string>
-								<string key="candidateClassName">UIView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">addSitesView</string>
-								<string key="candidateClassName">UIView</string>
-							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">appDelegate</string>
 								<string key="candidateClassName">NewsBlurAppDelegate</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">googleReaderButton</string>
+								<string key="name">instructionsLabel</string>
 								<string key="candidateClassName">UIButton</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">logo</string>
-								<string key="candidateClassName">UIImageView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">nextButton</string>
 								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">previousButton</string>
-								<string key="candidateClassName">UIBarButtonItem</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">toolbar</string>
-								<string key="candidateClassName">UIToolbar</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">toolbarTitle</string>
-								<string key="candidateClassName">UIButton</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">welcomeView</string>
-								<string key="candidateClassName">UIView</string>
 							</object>
 						</object>
 					</object>
@@ -1661,6 +1597,7 @@
 							<string>activityIndicator</string>
 							<string>appDelegate</string>
 							<string>googleReaderButton</string>
+							<string>googleReaderButtonWrapper</string>
 							<string>instructionLabel</string>
 							<string>nextButton</string>
 						</object>
@@ -1669,6 +1606,7 @@
 							<string>UIActivityIndicatorView</string>
 							<string>NewsBlurAppDelegate</string>
 							<string>UIButton</string>
+							<string>UIView</string>
 							<string>UILabel</string>
 							<string>UIBarButtonItem</string>
 						</object>
@@ -1680,6 +1618,7 @@
 							<string>activityIndicator</string>
 							<string>appDelegate</string>
 							<string>googleReaderButton</string>
+							<string>googleReaderButtonWrapper</string>
 							<string>instructionLabel</string>
 							<string>nextButton</string>
 						</object>
@@ -1696,6 +1635,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">googleReaderButton</string>
 								<string key="candidateClassName">UIButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">googleReaderButtonWrapper</string>
+								<string key="candidateClassName">UIView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">instructionLabel</string>
@@ -1922,57 +1865,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">./Classes/FriendsListViewController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">GoogleReaderViewController</string>
-					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">tapCancelButton:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">tapCancelButton:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">tapCancelButton:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="outlets">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>appDelegate</string>
-							<string>webView</string>
-						</object>
-						<object class="NSArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>NewsBlurAppDelegate</string>
-							<string>UIWebView</string>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSArray" key="dict.sortedKeys">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>appDelegate</string>
-							<string>webView</string>
-						</object>
-						<object class="NSArray" key="dict.values">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBToOneOutletInfo">
-								<string key="name">appDelegate</string>
-								<string key="candidateClassName">NewsBlurAppDelegate</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">webView</string>
-								<string key="candidateClassName">UIWebView</string>
-							</object>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/GoogleReaderViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -2370,7 +2262,6 @@
 							<string>fontSettingsViewController</string>
 							<string>friendsListViewController</string>
 							<string>ftuxNavigationController</string>
-							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>masterContainerViewController</string>
 							<string>moveSiteViewController</string>
@@ -2397,7 +2288,6 @@
 							<string>FontSettingsViewController</string>
 							<string>FriendsListViewController</string>
 							<string>UINavigationController</string>
-							<string>GoogleReaderViewController</string>
 							<string>LoginViewController</string>
 							<string>NBContainerViewController</string>
 							<string>MoveSiteViewController</string>
@@ -2427,7 +2317,6 @@
 							<string>fontSettingsViewController</string>
 							<string>friendsListViewController</string>
 							<string>ftuxNavigationController</string>
-							<string>googleReaderViewController</string>
 							<string>loginViewController</string>
 							<string>masterContainerViewController</string>
 							<string>moveSiteViewController</string>
@@ -2495,10 +2384,6 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">ftuxNavigationController</string>
 								<string key="candidateClassName">UINavigationController</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">googleReaderViewController</string>
-								<string key="candidateClassName">GoogleReaderViewController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">loginViewController</string>
