@@ -95,7 +95,9 @@
         self.interactionsPage = page;
         self.pageFetching = YES;
   
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/social/interactions?user_id=%@&page=%i&limit=10",
+        NSString *urlString = [NSString stringWithFormat:@
+                               "http://%@/social/interactions?user_id=%@&page=%i&limit=10"
+                               "&categories=follow,comment_reply,comment_like,reply_reply,story_reshare",
                                NEWSBLUR_URL,
                                [appDelegate.dictUserProfile objectForKey:@"user_id"],
                                page];

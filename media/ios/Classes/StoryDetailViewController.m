@@ -834,9 +834,17 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!appDelegate.isSocialView) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
-            UIImage *titleImage = appDelegate.isRiverView ?
-            [UIImage imageNamed:@"folder_white.png"] :
-            [Utilities getImage:feedIdStr];
+            
+            
+            UIImage *titleImage;
+            if (appDelegate.isSocialRiverView) {
+                titleImage = [UIImage imageNamed:@"group_white.png"];
+            } else if (appDelegate.isRiverView) {
+                titleImage = [UIImage imageNamed:@"folder_white.png"];
+            } else {
+                titleImage = [Utilities getImage:feedIdStr];
+            }
+
             UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
             titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
             titleImageView.hidden = YES;

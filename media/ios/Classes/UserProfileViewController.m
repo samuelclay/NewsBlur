@@ -98,7 +98,9 @@
     MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     HUD.labelText = @"Profiling...";
     [self.profileBadge initProfile];
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/social/profile?user_id=%@",
+    NSString *urlString = [NSString stringWithFormat:@
+                           "http://%@/social/profile?user_id=%@"
+                           "&category=follow,comment_reply,comment_like,sharedstory",
                            NEWSBLUR_URL,
                            appDelegate.activeUserProfileId];
     NSURL *url = [NSURL URLWithString:urlString];

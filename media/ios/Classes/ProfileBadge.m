@@ -103,12 +103,12 @@
         photo_url = [photo_url stringByReplacingOccurrencesOfString:@"_normal" withString:@""];        
     }
     
-    UIImage *placeholder = [UIImage imageNamed:@"user_light"];
+//    UIImage *placeholder = [UIImage imageNamed:@"user_light"];
     UIImageView *avatar = [[UIImageView alloc] init];
     avatar.frame = CGRectMake(10, 10, 80, 80);
 
     [avatar setImageWithURL:[NSURL URLWithString:photo_url]
-                    placeholderImage:placeholder];
+                    placeholderImage:nil];
     
     // scale and crop image
     [avatar setContentMode:UIViewContentModeScaleAspectFill];

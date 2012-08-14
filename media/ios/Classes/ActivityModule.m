@@ -93,7 +93,9 @@
         self.activitiesPage = page;
         self.pageFetching = YES;
         self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/social/activities?user_id=%@&page=%i&limit=10",
+        NSString *urlString = [NSString stringWithFormat:@
+                               "http://%@/social/activities?user_id=%@&page=%i&limit=10"
+                               "&category=star,feedsub,follow,comment_reply,comment_like,sharedstory",
                                NEWSBLUR_URL,
                                [appDelegate.dictUserProfile objectForKey:@"user_id"],
                                page];
@@ -207,12 +209,15 @@
         NSDictionary *activitiy = [self.activitiesArray 
                                    objectAtIndex:(indexPath.row)];
         NSString *category = [activitiy objectForKey:@"category"];
-        if (![category isEqualToString:@"follow"]) {
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        } else {
+        if ([category isEqualToString:@"follow"]) {
             cell.accessoryType = UITableViewCellAccessoryNone;
+        } else if ([category isEqualToString:@"star"]){
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
-        
+    
         UIView *myBackView = [[UIView alloc] initWithFrame:self.frame];
         myBackView.backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
         cell.selectedBackgroundView = myBackView;
@@ -257,8 +262,8 @@
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"feed_id"]];
             NSString *contentIdStr = nil;
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO withUser:[activity objectForKey:@"with_user"] showFindingStory:NO];
-        }
-        
+        } 
+
         // have the selected cell deselect
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }

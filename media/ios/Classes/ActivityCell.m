@@ -64,7 +64,6 @@
 }
 
 - (int)setActivity:(NSDictionary *)activity withUserProfile:(NSDictionary *)userProfile withWidth:(int)width {
-    
     // must set the height again for dynamic height in heightForRowAtIndexPath in 
     CGRect activityLabelRect = self.activityLabel.bounds;
     activityLabelRect.size.width = width - leftMargin - avatarSize - leftMargin - rightMargin;
@@ -95,10 +94,10 @@
         [self.faviconView setImageWithURL:[NSURL URLWithString:[[activity objectForKey:@"with_user"] objectForKey:@"photo_url"]]
                          placeholderImage:nil];
     } else if ([category isEqualToString:@"sharedstory"]) {
-        UIImage *placeholder = [UIImage imageNamed:@"user_light"];
+//        UIImage *placeholder = [UIImage imageNamed:@"user_light"];
         [self.faviconView setImageWithURL:[NSURL URLWithString:[userProfile objectForKey:@"photo_url"]]
-                         placeholderImage:placeholder];
-    } else {
+                         placeholderImage:nil];
+    } else if ([category isEqualToString:@"feedsub"]) {
 //        UIImage *placeholder = [UIImage imageNamed:@"world"];
         NSString *faviconUrl = [NSString stringWithFormat:@"http://%@/rss_feeds/icon/%i", 
                                 NEWSBLUR_URL,
