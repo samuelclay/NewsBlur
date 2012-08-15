@@ -58,7 +58,7 @@
     self.navigationItem.title = @"Welcome";
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        logo.frame = CGRectMake(80, 115, 160, 160);
+        logo.frame = CGRectMake(80, 90, 160, 160);
         header.font = [UIFont systemFontOfSize:22];
         footer.font = [UIFont systemFontOfSize:16];
     }
@@ -87,7 +87,7 @@
     UIImage *logoImg = [UIImage imageNamed:@"logo_512"];
     UIImageView *logoView = [[UIImageView alloc] initWithImage:logoImg];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        logoView.frame = CGRectMake(80, 115, 160, 160);
+        logoView.frame = CGRectMake(80, 90, 160, 160);
     } else {
         logoView.frame = CGRectMake(150, 99, 240, 240);
     }

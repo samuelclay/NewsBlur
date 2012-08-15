@@ -21,7 +21,7 @@
         NSString *newUserIdStr = [NSString stringWithFormat:@"%@", [newUser objectForKey:@"user_id"]];
         
         for (int j = 0; j < userProfiles.count; j++) {
-            NSDictionary *user = [userProfiles objectAtIndex:i];
+            NSDictionary *user = [userProfiles objectAtIndex:j];
             NSString *userIdStr = [NSString stringWithFormat:@"%@", [user objectForKey:@"user_id"]];
             if ([newUserIdStr isEqualToString:userIdStr]) {
                 isInUserProfiles = YES;

@@ -22,6 +22,8 @@ static UIFont *indicatorFont = nil;
 @synthesize siteFavicon;
 @synthesize feedColorBar;
 @synthesize feedColorBarTopBorder;
+@synthesize hasAlpha;
+@synthesize isRead;
 
 #define leftMargin 18
 #define rightMargin 18
@@ -45,11 +47,11 @@ static UIFont *indicatorFont = nil;
     
     CGContextFillRect(context, r);
     
-//    if (self.selected) {
-//        CGContextSetAlpha(context, 1);
-//    } else {
-//        CGContextSetAlpha(context, 0.5);
-//    }
+    if (!self.isRead) {
+        CGContextSetAlpha(context, 1);
+    } else {
+        CGContextSetAlpha(context, 0.5);
+    }
     // set site title
     UIColor *textColor;
     UIFont *font;
@@ -75,13 +77,40 @@ static UIFont *indicatorFont = nil;
     CGContextSetStrokeColor(context, CGColorGetComponents([self.feedColorBar CGColor])); //feedColorBarTopBorder
     CGContextSetLineWidth(context, 6.0f);
     CGContextBeginPath(context);
-    float width = self.bounds.size.width - 23.0f;
+    float width = self.bounds.size.width - 20.0f;
     CGContextMoveToPoint(context, width, 1.0f);
     CGContextAddLineToPoint(context, width, self.frame.size.height);
     CGContextStrokePath(context);
 
     // site favicon
+    if (self.isRead) {
+        self.siteFavicon = [self imageByApplyingAlpha:self.siteFavicon withAlpha:0.25];
+    } 
+    
     [self.siteFavicon drawInRect:CGRectMake(leftMargin, 5.0, 16.0, 16.0)];
 }
+
+- (UIImage *)imageByApplyingAlpha:(UIImage *)image withAlpha:(CGFloat) alpha {
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0f);
+    
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGRect area = CGRectMake(0, 0, image.size.width, image.size.height);
+    
+    CGContextScaleCTM(ctx, 1, -1);
+    CGContextTranslateCTM(ctx, 0, -area.size.height);
+    
+    CGContextSetBlendMode(ctx, kCGBlendModeMultiply);
+    
+    CGContextSetAlpha(ctx, alpha);
+    
+    CGContextDrawImage(ctx, area, image.CGImage);
+    
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return newImage;
+}
+
 
 @end

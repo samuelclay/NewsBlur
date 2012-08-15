@@ -16,11 +16,19 @@
     UIImage *siteFavicon;
     UIColor *feedColorBar;
     UIColor *feedColorBarTopBorder;
+    
+    BOOL hasAlpha;
+    BOOL isRead;
 }
 
 @property (nonatomic) NSString *siteTitle;
 @property (nonatomic) UIImage *siteFavicon;
 @property (nonatomic) UIColor *feedColorBar;
 @property (nonatomic) UIColor *feedColorBarTopBorder;
+
+@property (readwrite) BOOL hasAlpha;
+@property (readwrite) BOOL isRead;
+
+- (UIImage *)imageByApplyingAlpha:(UIImage *)image withAlpha:(CGFloat) alpha;
 
 @end

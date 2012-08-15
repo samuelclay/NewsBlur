@@ -46,7 +46,7 @@
     self.navigationItem.title = @"Find Friends";
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.friendsLabel.font = [UIFont systemFontOfSize:13];
+        self.friendsLabel.font = [UIFont systemFontOfSize:14];
     }
 }
 

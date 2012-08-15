@@ -70,15 +70,25 @@
     self.categoriesTable.backgroundView = nil;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.instructionLabel.font = [UIFont systemFontOfSize:13];
+        self.instructionLabel.font = [UIFont systemFontOfSize:14];
     }
+    
+    
+    UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] 
+                                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    activityView.frame = CGRectMake(75, 7, 20, 20.0);
+    self.activityIndicator = activityView;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
     [self.categoriesTable reloadData];
     [self.scrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.tableViewHeight + 100)];
-    self.categoriesTable.frame = CGRectMake((self.view.frame.size.width - 320)/2, 60, self.categoriesTable.frame.size.width, self.tableViewHeight);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        self.categoriesTable.frame = CGRectMake((self.view.frame.size.width - 320)/2, 60, self.categoriesTable.frame.size.width, self.tableViewHeight);        
+    } else {
+        self.categoriesTable.frame = CGRectMake(10, 60, self.categoriesTable.frame.size.width, self.tableViewHeight); 
+    }
     
     NSLog(@"%f height", self.tableViewHeight);
 }
@@ -145,11 +155,16 @@
     [appDelegate.ftuxNavigationController pushViewController:service animated:YES];
 }
 
-- (void)importFromGoogleReader {
+- (void)importFromGoogleReader {    
+    UIView *header = [self.categoriesTable viewWithTag:0];
+    UIButton *button = (UIButton *)[header viewWithTag:1000];
+    self.googleReaderButton = button;
+
     self.nextButton.enabled = YES;
-    [self.googleReaderButton setTitle:@"Importing..." forState:UIControlStateNormal];
+    [self.googleReaderButton setTitle:@"Importing sites..." forState:UIControlStateNormal];
     self.googleReaderButton.userInteractionEnabled = NO;
-    self.instructionLabel.text = @"This might take a minute.  Feel free to continue and we'll let you know when we finish importing...";
+    self.instructionLabel.text = @"This might take a minute.  Feel free to continue...";
+    [self.googleReaderButton addSubview:self.activityIndicator];
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/import/import_from_google_reader/",
                            NEWSBLUR_URL];
@@ -178,12 +193,12 @@
     NSLog(@"results are %@", results);
     
     self.importedFeedCount_ = [[results objectForKey:@"feed_count"] intValue];
-    [self performSelector:@selector(updateSites) withObject:nil afterDelay:10];
+    [self performSelector:@selector(updateSites) withObject:nil afterDelay:1];
     self.googleImportSuccess_ = YES;
 }
 
 - (void)updateSites {
-    self.instructionLabel.text = @"And just like that, we're done!  Add some categories or tap Next step to see what your friends are sharing.";
+    self.instructionLabel.text = @"And just like that, we're done!  Add more categories or tap Next step...";
     NSString *msg = [NSString stringWithFormat:@"Imported %i site%@", 
                      self.importedFeedCount_,
                      self.importedFeedCount_ == 1 ? @"" : @"s"];
@@ -197,7 +212,7 @@
                                      8,
                                      16,
                                      16);
-    [self.googleReaderButtonWrapper addSubview:checkmarkView];
+    [self.googleReaderButton addSubview:checkmarkView];
 }
 
 #pragma mark -
@@ -208,8 +223,7 @@
 
     // set the currentButton
     self.currentButton_ = (UIButton *)sender;
-    if (tag == 0) {
-        self.googleReaderButton = self.currentButton_;
+    if (tag == 1000) {
         [self tapGoogleReaderButton];
     } else {
         UIButton *button = (UIButton *)sender;
@@ -224,15 +238,6 @@
         } else {
             [self.selectedCategories_ addObject:self.currentButton_.titleLabel.text];
             button.selected = YES;
-
-            UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
-            UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
-            checkmarkView.frame = CGRectMake(button.frame.origin.x + button.frame.size.width - 24,
-                                             8,
-                                             16,
-                                             16);
-            checkmarkView.tag = 100;
-            [button addSubview:checkmarkView];
         }
     }
     if (self.googleImportSuccess_) {
@@ -243,7 +248,9 @@
         self.nextButton.enabled = NO;
     }
     
-    [self.categoriesTable setNeedsDisplay];
+    NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(tag - 1000, 1)];
+
+    [self.categoriesTable reloadSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)finishAddFolder:(ASIHTTPRequest *)request {
@@ -312,27 +319,50 @@ viewForHeaderInSection:(NSInteger)section {
     UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 300.0, 34.0)];
     customView.tag = section;
     
+    
     UIImage *buttonImage =[[UIImage imageNamed:@"google.png"] stretchableImageWithLeftCapWidth:5.0 topCapHeight:0.0];
     UIButton *headerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    headerBtn.tag = section;
+    headerBtn.tag = section + 1000;
     [headerBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
-    
+    headerBtn.titleLabel.font = [UIFont systemFontOfSize:13];
+    headerBtn.frame = CGRectMake(0, 20.0, 300, 34.0);
     NSString *categoryTitle;
     if (section == 0) {
         categoryTitle = @"Google Reader";
     } else {
         NSDictionary *category = [appDelegate.categories objectAtIndex:section - 1];
         categoryTitle = [category objectForKey:@"title"];
-        // create the button object
-        [headerBtn setTitle:[NSString stringWithFormat:@"Added %@", categoryTitle] forState:UIControlStateSelected];
+        
+        BOOL inSelect = [self.selectedCategories_ containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
+        NSLog(@"inselected %i", inSelect);
+        if (inSelect) {
+            headerBtn.selected = YES;
+            UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
+            UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
+            checkmarkView.frame = CGRectMake(headerBtn.frame.origin.x + headerBtn.frame.size.width - 24,
+                                             8,
+                                             16,
+                                             16);
+            checkmarkView.tag = 100;
+            [headerBtn addSubview:checkmarkView];
+        }
+
     }
     
-    headerBtn.titleLabel.font = [UIFont systemFontOfSize:13];
-    headerBtn.frame = CGRectMake(0, 22.0, 300, 34.0);
+
     [headerBtn setTitle:categoryTitle forState:UIControlStateNormal];
 
     [headerBtn addTarget:self action:@selector(addCategory:) forControlEvents:UIControlEventTouchUpInside];
+    
+       
+    
     [customView addSubview:headerBtn];
+    
+    
+
+
+    
+    
     return customView;
 }
 
@@ -362,11 +392,11 @@ viewForHeaderInSection:(NSInteger)section {
         siteTitle = [feed objectForKey:@"feed_title"];
         
         BOOL inSelect = [self.selectedCategories_ containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
-        
-        NSLog(@" in it %i", inSelect);
+
         if (inSelect) {
-            cell.selected = YES;
-            NSLog(@"cell is selected");
+            cell.isRead = NO;
+        } else {
+            cell.isRead = YES;
         }
 
         // feed color bar border
@@ -409,17 +439,16 @@ viewForHeaderInSection:(NSInteger)section {
 - (void)tableView:(UITableView *)tableView 
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     UIView *header = [self.categoriesTable viewWithTag:indexPath.section];
-    UIButton *button = (UIButton *)[header viewWithTag:50];
+    UIButton *button = (UIButton *)[header viewWithTag:indexPath.section + 1000];
     [button sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
 
 -(NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     UIView *header = [self.categoriesTable viewWithTag:indexPath.section];
-    UIButton *button = (UIButton *)[header viewWithTag:50];
+    UIButton *button = (UIButton *)[header viewWithTag:indexPath.section + 1000];
     [button sendActionsForControlEvents:UIControlStateSelected];
     return indexPath;
 }
-
 
 - (CGFloat)tableViewHeight {
     [self.categoriesTable layoutIfNeeded];

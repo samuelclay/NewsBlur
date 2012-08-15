@@ -65,7 +65,6 @@
 								<string key="NSFrame">{{120, 80}, {300, 463}}</string>
 								<reference key="NSSuperview" ref="75178207"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<object class="NSColor" key="IBUIBackgroundColor">
 									<int key="NSColorSpace">3</int>
@@ -84,10 +83,10 @@
 								<float key="IBUISectionHeaderHeight">10</float>
 								<float key="IBUISectionFooterHeight">10</float>
 							</object>
-							<object class="IBUILabel" id="984433713">
+							<object class="IBUILabel" id="849964160">
 								<reference key="NSNextResponder" ref="75178207"/>
 								<int key="NSvFlags">303</int>
-								<string key="NSFrame">{{70, 7}, {400, 60}}</string>
+								<string key="NSFrame">{{70, 12}, {400, 60}}</string>
 								<reference key="NSSuperview" ref="75178207"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1020189204"/>
@@ -97,7 +96,7 @@
 								<int key="IBUIContentMode">7</int>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<string key="IBUIText">Choose reading categories.</string>
+								<string key="IBUIText">Start your collection of great sites to follow.</string>
 								<object class="NSColor" key="IBUITextColor">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MCAwIDAAA</bytes>
@@ -121,7 +120,7 @@
 						<string key="NSFrameSize">{540, 540}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="984433713"/>
+						<reference key="NSNextKeyView" ref="849964160"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<bool key="IBUIMultipleTouchEnabled">YES</bool>
@@ -180,7 +179,7 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">instructionLabel</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="984433713"/>
+						<reference key="destination" ref="849964160"/>
 					</object>
 					<int key="connectionID">171</int>
 				</object>
@@ -223,7 +222,7 @@
 						<reference key="object" ref="75178207"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="1020189204"/>
-							<reference ref="984433713"/>
+							<reference ref="849964160"/>
 						</array>
 						<reference key="parent" ref="874391841"/>
 					</object>
@@ -234,7 +233,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">170</int>
-						<reference key="object" ref="984433713"/>
+						<reference key="object" ref="849964160"/>
 						<reference key="parent" ref="75178207"/>
 					</object>
 				</array>
@@ -666,7 +665,7 @@
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="appDelegate">NewsBlurAppDelegate</string>
-						<string key="instructionsLabel">UIButton</string>
+						<string key="instructionsLabel">UILabel</string>
 						<string key="nextButton">UIBarButtonItem</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -676,7 +675,7 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="instructionsLabel">
 							<string key="name">instructionsLabel</string>
-							<string key="candidateClassName">UIButton</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="nextButton">
 							<string key="name">nextButton</string>

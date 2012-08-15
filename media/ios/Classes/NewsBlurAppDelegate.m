@@ -323,18 +323,6 @@
 - (void)showFirstTimeUser {
 //    [self.feedsViewController changeToAllMode];
     
-    FirstTimeUserViewController *ftuvc = [[FirstTimeUserViewController alloc] init];
-    self.firstTimeUserViewController = ftuvc;
-    
-    FirstTimeUserAddSitesViewController *addsites = [[FirstTimeUserAddSitesViewController alloc] init];
-    self.firstTimeUserAddSitesViewController = addsites;
-    
-    FirstTimeUserAddFriendsViewController *addFriends = [[FirstTimeUserAddFriendsViewController alloc] init];
-    self.firstTimeUserAddFriendsViewController = addFriends;
-    
-    FirstTimeUserAddNewsBlurViewController *addNewsBlur = [[FirstTimeUserAddNewsBlurViewController alloc] init];
-    self.firstTimeUserAddNewsBlurViewController = addNewsBlur;
-
     UINavigationController *ftux = [[UINavigationController alloc] initWithRootViewController:self.firstTimeUserViewController];
     
     ftux.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];

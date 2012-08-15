@@ -267,6 +267,11 @@
                              options:kNilOptions 
                              error:&error];
     
+    NSArray *userProfiles = [results objectForKey:@"user_profiles"];
+    appDelegate.activeFeedUserProfiles = [DataUtilities 
+                                          updateUserProfiles:appDelegate.activeFeedUserProfiles 
+                                          withNewUserProfiles:userProfiles];
+    
     [self replaceStory:[results objectForKey:@"story"] withReplyId:nil];
 }
 

@@ -43,7 +43,7 @@
 						<string key="NSFrameSize">{540, 576}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="804223306"/>
+						<reference key="NSNextKeyView" ref="754909752"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUIContentMode">4</int>
@@ -57,17 +57,17 @@
 					<object class="IBUILabel" id="804223306">
 						<reference key="NSNextResponder" ref="874391841"/>
 						<int key="NSvFlags">303</int>
-						<string key="NSFrame">{{70, 112}, {400, 100}}</string>
+						<string key="NSFrame">{{70, 86}, {400, 100}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="754909752"/>
+						<reference key="NSNextKeyView" ref="641072983"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-						<string key="IBUIText">Add our blog for the latest news.</string>
+						<string key="IBUIText">Wonderful things are happening at NewsBlur.  Add our blog for the latest news.</string>
 						<object class="NSColor" key="IBUITextColor">
 							<int key="NSColorSpace">1</int>
 							<bytes key="NSRGB">MCAwIDAAA</bytes>
@@ -167,7 +167,7 @@
 				<string key="NSFrame">{{0, 44}, {540, 576}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="641072983"/>
+				<reference key="NSNextKeyView" ref="804223306"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -210,9 +210,9 @@
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">instructionsLabel</string>
 						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="754909752"/>
+						<reference key="destination" ref="804223306"/>
 					</object>
-					<int key="connectionID">132</int>
+					<int key="connectionID">138</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -265,10 +265,10 @@
 						<int key="objectID">129</int>
 						<reference key="object" ref="874391841"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="804223306"/>
 							<reference ref="641072983"/>
-							<reference ref="754909752"/>
 							<reference ref="896197534"/>
+							<reference ref="754909752"/>
+							<reference ref="804223306"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -305,13 +305,13 @@
 				<real value="2" key="134.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="57.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="58.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="2" key="58.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="0.0" key="58.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">136</int>
+			<int key="maxID">138</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -705,6 +705,7 @@
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="tapNewsBlurButton:">id</string>
 						<string key="tapNextButton">id</string>
+						<string key="tapPopularButton:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="tapNewsBlurButton:">
@@ -715,10 +716,14 @@
 							<string key="name">tapNextButton</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="tapPopularButton:">
+							<string key="name">tapPopularButton:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="appDelegate">NewsBlurAppDelegate</string>
-						<string key="instructionsLabel">UIButton</string>
+						<string key="instructionsLabel">UILabel</string>
 						<string key="nextButton">UIBarButtonItem</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
@@ -728,7 +733,7 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="instructionsLabel">
 							<string key="name">instructionsLabel</string>
-							<string key="candidateClassName">UIButton</string>
+							<string key="candidateClassName">UILabel</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="nextButton">
 							<string key="name">nextButton</string>
@@ -743,31 +748,26 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">FirstTimeUserAddSitesViewController</string>
 					<string key="superclassName">UIViewController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="tapCategoryButton:">id</string>
-						<string key="tapGoogleReaderButton">id</string>
-						<string key="tapNextButton">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="tapCategoryButton:">
-							<string key="name">tapCategoryButton:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="tapGoogleReaderButton">
-							<string key="name">tapGoogleReaderButton</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="tapNextButton">
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">tapNextButton</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">tapNextButton</string>
+						<object class="IBActionInfo" key="NS.object.0">
 							<string key="name">tapNextButton</string>
 							<string key="candidateClassName">id</string>
 						</object>
-					</dictionary>
+					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="activityIndicator">UIActivityIndicatorView</string>
 						<string key="appDelegate">NewsBlurAppDelegate</string>
+						<string key="categoriesTable">UITableView</string>
 						<string key="googleReaderButton">UIButton</string>
+						<string key="googleReaderButtonWrapper">UIView</string>
 						<string key="instructionLabel">UILabel</string>
 						<string key="nextButton">UIBarButtonItem</string>
+						<string key="scrollView">UIScrollView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="activityIndicator">
@@ -778,9 +778,17 @@
 							<string key="name">appDelegate</string>
 							<string key="candidateClassName">NewsBlurAppDelegate</string>
 						</object>
+						<object class="IBToOneOutletInfo" key="categoriesTable">
+							<string key="name">categoriesTable</string>
+							<string key="candidateClassName">UITableView</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="googleReaderButton">
 							<string key="name">googleReaderButton</string>
 							<string key="candidateClassName">UIButton</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="googleReaderButtonWrapper">
+							<string key="name">googleReaderButtonWrapper</string>
+							<string key="candidateClassName">UIView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="instructionLabel">
 							<string key="name">instructionLabel</string>
@@ -789,6 +797,10 @@
 						<object class="IBToOneOutletInfo" key="nextButton">
 							<string key="name">nextButton</string>
 							<string key="candidateClassName">UIBarButtonItem</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="scrollView">
+							<string key="name">scrollView</string>
+							<string key="candidateClassName">UIScrollView</string>
 						</object>
 					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">

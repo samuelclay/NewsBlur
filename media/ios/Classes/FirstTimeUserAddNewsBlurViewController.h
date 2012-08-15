@@ -16,7 +16,7 @@
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIBarButtonItem *nextButton;
-@property (strong, nonatomic) IBOutlet UIButton *instructionsLabel;
+@property (strong, nonatomic) IBOutlet UILabel *instructionsLabel;
 
 - (IBAction)tapNextButton;
 - (IBAction)tapNewsBlurButton:(id)sender;

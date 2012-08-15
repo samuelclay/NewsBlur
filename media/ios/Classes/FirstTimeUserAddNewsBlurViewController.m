@@ -36,7 +36,7 @@
     self.navigationItem.title = @"All Done!";
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.instructionsLabel.font = [UIFont systemFontOfSize:13];
+        self.instructionsLabel.font = [UIFont systemFontOfSize:14];
     }
     
 }
