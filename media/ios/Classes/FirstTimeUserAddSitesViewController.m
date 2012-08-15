@@ -59,7 +59,7 @@
     self.nextButton.enabled = NO;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Choose reading categories";
+    self.navigationItem.title = @"Add Sites";
     self.activityIndicator.hidesWhenStopped = YES;
     
     self.categoriesTable.delegate = self;
@@ -77,8 +77,8 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
     [self.categoriesTable reloadData];
-    [self.scrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.tableViewHeight + 20)];
-    self.categoriesTable.frame = CGRectMake((self.view.frame.size.width - 320)/2,0,self.categoriesTable.frame.size.width, self.tableViewHeight);
+    [self.scrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.tableViewHeight + 100)];
+    self.categoriesTable.frame = CGRectMake((self.view.frame.size.width - 320)/2, 60, self.categoriesTable.frame.size.width, self.tableViewHeight);
     
     NSLog(@"%f height", self.tableViewHeight);
 }
@@ -100,7 +100,6 @@
     } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
         return YES;
     }
-    
     return NO;
 }
 
@@ -134,13 +133,12 @@
                              options:kNilOptions 
                              error:&error];
     NSLog(@"results are %@", results);
-    [appDelegate.feedsViewController fetchFeedList:NO];
 }
     
 #pragma mark -
 #pragma mark Import Google Reader
 
-- (IBAction)tapGoogleReaderButton {
+- (void)tapGoogleReaderButton {
     AuthorizeServicesViewController *service = [[AuthorizeServicesViewController alloc] init];
     service.url = @"/import/authorize";
     service.type = @"google";
@@ -151,7 +149,7 @@
     self.nextButton.enabled = YES;
     [self.googleReaderButton setTitle:@"Importing..." forState:UIControlStateNormal];
     self.googleReaderButton.userInteractionEnabled = NO;
-    self.instructionLabel.text = @"This might take a minute.  Feel free to continue and we'll let you know when we finish importing";
+    self.instructionLabel.text = @"This might take a minute.  Feel free to continue and we'll let you know when we finish importing...";
     [self.activityIndicator startAnimating];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/import/import_from_google_reader/",
                            NEWSBLUR_URL];
@@ -180,13 +178,12 @@
     NSLog(@"results are %@", results);
     
     self.importedFeedCount_ = [[results objectForKey:@"feed_count"] intValue];
-    [self performSelector:@selector(updateSites) withObject:nil afterDelay:1];
+    [self performSelector:@selector(updateSites) withObject:nil afterDelay:10];
     self.googleImportSuccess_ = YES;
 }
 
 - (void)updateSites {
-    self.instructionLabel.text = @"And just like that, we're done!  Time to see what your friends are sharing or add some categories.";
-    [appDelegate.feedsViewController fetchFeedList:NO];
+    self.instructionLabel.text = @"And just like that, we're done!  Add some categories or tap Next step to see what your friends are sharing.";
     NSString *msg = [NSString stringWithFormat:@"Imported %i site%@", 
                      self.importedFeedCount_,
                      self.importedFeedCount_ == 1 ? @"" : @"s"];

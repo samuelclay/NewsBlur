@@ -72,6 +72,7 @@
 
 - (IBAction)tapNextButton {
     [appDelegate.ftuxNavigationController dismissModalViewControllerAnimated:YES];
+        [appDelegate.feedsViewController fetchFeedList:NO];
 }
 
 - (IBAction)tapNewsBlurButton:(id)sender {
@@ -102,10 +103,8 @@
                                      16,
                                      16);
     [self.view addSubview:checkmarkView];
-    
     [self addPopular];
 }
-
 
 #pragma mark -
 #pragma mark Add Site
@@ -152,7 +151,6 @@
                              options:kNilOptions 
                              error:&error];
     NSLog(@"results are %@", results);
-    [appDelegate.feedsViewController fetchFeedList:NO];
 }
 
 @end

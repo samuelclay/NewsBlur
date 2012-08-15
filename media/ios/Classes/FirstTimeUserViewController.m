@@ -63,6 +63,10 @@
         footer.font = [UIFont systemFontOfSize:16];
     }
     
+    UITapGestureRecognizer *singleFingerTap = 
+    [[UITapGestureRecognizer alloc] initWithTarget:self 
+                                            action:@selector(tapNextButton)];
+    [self.view addGestureRecognizer:singleFingerTap];
 
 }
 

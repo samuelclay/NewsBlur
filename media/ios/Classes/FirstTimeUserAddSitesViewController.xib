@@ -11,6 +11,7 @@
 			<string key="NS.object.0">1181</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
+			<string>IBUILabel</string>
 			<string>IBUITableView</string>
 			<string>IBUIImageView</string>
 			<string>IBUIView</string>
@@ -61,7 +62,7 @@
 							<object class="IBUITableView" id="1020189204">
 								<reference key="NSNextResponder" ref="75178207"/>
 								<int key="NSvFlags">277</int>
-								<string key="NSFrame">{{120, 0}, {300, 540}}</string>
+								<string key="NSFrame">{{120, 80}, {300, 463}}</string>
 								<reference key="NSSuperview" ref="75178207"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView"/>
@@ -83,11 +84,44 @@
 								<float key="IBUISectionHeaderHeight">10</float>
 								<float key="IBUISectionFooterHeight">10</float>
 							</object>
+							<object class="IBUILabel" id="984433713">
+								<reference key="NSNextResponder" ref="75178207"/>
+								<int key="NSvFlags">303</int>
+								<string key="NSFrame">{{70, 7}, {400, 60}}</string>
+								<reference key="NSSuperview" ref="75178207"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="1020189204"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<bool key="IBUIClipsSubviews">YES</bool>
+								<int key="IBUIContentMode">7</int>
+								<bool key="IBUIUserInteractionEnabled">NO</bool>
+								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+								<string key="IBUIText">Choose reading categories.</string>
+								<object class="NSColor" key="IBUITextColor">
+									<int key="NSColorSpace">1</int>
+									<bytes key="NSRGB">MCAwIDAAA</bytes>
+								</object>
+								<nil key="IBUIHighlightedColor"/>
+								<int key="IBUIBaselineAdjustment">0</int>
+								<float key="IBUIMinimumFontSize">10</float>
+								<int key="IBUINumberOfLines">2</int>
+								<int key="IBUITextAlignment">1</int>
+								<object class="IBUIFontDescription" key="IBUIFontDescription">
+									<int key="type">1</int>
+									<double key="pointSize">17</double>
+								</object>
+								<object class="NSFont" key="IBUIFont">
+									<string key="NSName">Helvetica</string>
+									<double key="NSSize">17</double>
+									<int key="NSfFlags">16</int>
+								</object>
+							</object>
 						</array>
 						<string key="NSFrameSize">{540, 540}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="1020189204"/>
+						<reference key="NSNextKeyView" ref="984433713"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<bool key="IBUIMultipleTouchEnabled">YES</bool>
@@ -142,6 +176,14 @@
 					</object>
 					<int key="connectionID">169</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">instructionLabel</string>
+						<reference key="source" ref="841351856"/>
+						<reference key="destination" ref="984433713"/>
+					</object>
+					<int key="connectionID">171</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -181,12 +223,18 @@
 						<reference key="object" ref="75178207"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="1020189204"/>
+							<reference ref="984433713"/>
 						</array>
 						<reference key="parent" ref="874391841"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">160</int>
 						<reference key="object" ref="1020189204"/>
+						<reference key="parent" ref="75178207"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">170</int>
+						<reference key="object" ref="984433713"/>
 						<reference key="parent" ref="75178207"/>
 					</object>
 				</array>
@@ -200,12 +248,13 @@
 				<string key="138.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="160.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="168.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="170.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">169</int>
+			<int key="maxID">171</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -642,25 +691,17 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">FirstTimeUserAddSitesViewController</string>
 					<string key="superclassName">UIViewController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="tapCategoryButton:">id</string>
-						<string key="tapGoogleReaderButton">id</string>
-						<string key="tapNextButton">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="tapCategoryButton:">
-							<string key="name">tapCategoryButton:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="tapGoogleReaderButton">
-							<string key="name">tapGoogleReaderButton</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="tapNextButton">
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">tapNextButton</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">tapNextButton</string>
+						<object class="IBActionInfo" key="NS.object.0">
 							<string key="name">tapNextButton</string>
 							<string key="candidateClassName">id</string>
 						</object>
-					</dictionary>
+					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="activityIndicator">UIActivityIndicatorView</string>
 						<string key="appDelegate">NewsBlurAppDelegate</string>

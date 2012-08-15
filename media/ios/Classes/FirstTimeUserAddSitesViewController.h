@@ -23,9 +23,7 @@
 @property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 
 - (IBAction)tapNextButton;
-- (IBAction)tapGoogleReaderButton;
-- (IBAction)tapCategoryButton:(id)sender;
-
+- (void)tapGoogleReaderButton;
 
 - (void)addCategory:(id)sender;
 - (void)importFromGoogleReader;
