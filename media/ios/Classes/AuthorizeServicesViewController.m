@@ -106,13 +106,7 @@
 }
 
 - (void)showError:(NSString *)error {
-    [MBProgressHUD hideHUDForView:appDelegate.firstTimeUserAddFriendsViewController.view animated:YES];
-    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:appDelegate.firstTimeUserAddFriendsViewController.view animated:YES];
-    [HUD setCustomView:[[UIImageView alloc] 
-                        initWithImage:[UIImage imageNamed:@"warning.gif"]]];
-    [HUD setMode:MBProgressHUDModeCustomView];
-    HUD.labelText = error;
-    [HUD hide:YES afterDelay:4];
+    [appDelegate.firstTimeUserAddFriendsViewController changeMessaging:error];
 }
 
 

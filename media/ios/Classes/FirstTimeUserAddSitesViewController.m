@@ -11,10 +11,15 @@
 #import "FirstTimeUserAddFriendsViewController.h"
 #import "AuthorizeServicesViewController.h"
 #import "NewsBlurViewController.h"
+#import "SiteCell.h"
+#import "Base64.h"
 
 @interface FirstTimeUserAddSitesViewController()
 
 @property (readwrite) int importedFeedCount_;
+@property (nonatomic) UIButton *currentButton_;
+@property (nonatomic, strong) NSMutableSet *selectedCategories_;
+@property (readwrite) BOOL googleImportSuccess_;
 
 @end;
 
@@ -25,9 +30,13 @@
 @synthesize nextButton;
 @synthesize activityIndicator;
 @synthesize instructionLabel;
-@synthesize categories;
+@synthesize categoriesTable;
+@synthesize scrollView;
 @synthesize googleReaderButtonWrapper;
 @synthesize importedFeedCount_;
+@synthesize currentButton_;
+@synthesize selectedCategories_;
+@synthesize googleImportSuccess_;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -38,36 +47,49 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
-    categories = [[NSMutableArray alloc] init];
+- (void)viewDidLoad {
+    self.selectedCategories_ = [[NSMutableSet alloc] init];
+    
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Next step" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
-//    self.nextButton.enabled = NO;
+    self.nextButton.enabled = NO;
     self.navigationItem.rightBarButtonItem = next;
     
-    self.navigationItem.title = @"Add Sites";
+    self.navigationItem.title = @"Choose reading categories";
     self.activityIndicator.hidesWhenStopped = YES;
+    
+    self.categoriesTable.delegate = self;
+    self.categoriesTable.dataSource = self;
+    self.categoriesTable.backgroundColor = [UIColor clearColor];
+//    self.categoriesTable.separatorColor = [UIColor clearColor];
+    self.categoriesTable.opaque = NO;
+    self.categoriesTable.backgroundView = nil;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         self.instructionLabel.font = [UIFont systemFontOfSize:13];
     }
-    
 }
 
-- (void)viewDidUnload
-{
+- (void)viewWillAppear:(BOOL)animated {
+    [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
+    [self.categoriesTable reloadData];
+    [self.scrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.tableViewHeight + 20)];
+    self.categoriesTable.frame = CGRectMake((self.view.frame.size.width - 320)/2,0,self.categoriesTable.frame.size.width, self.tableViewHeight);
+    
+    NSLog(@"%f height", self.tableViewHeight);
+}
 
+- (void)viewDidUnload {
+    [super viewDidUnload];
     [self setActivityIndicator:nil];
     [self setInstructionLabel:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
+    [self setCategoriesTable:nil];
     [self setGoogleReaderButton:nil];
+    [self setScrollView:nil];
     [self setNextButton:nil];
 }
 
@@ -85,11 +107,36 @@
 
 - (IBAction)tapNextButton {
     [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddFriendsViewController animated:YES];
+    
+    if (self.selectedCategories_.count) {
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/categories/subscribe",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        
+        for(NSObject *category in self.selectedCategories_) {
+            [request addPostValue:category forKey:@"category"];
+        }
+
+        [request setDelegate:self];
+        [request setDidFinishSelector:@selector(finishAddingCategories:)];
+        [request setDidFailSelector:@selector(requestFailed:)];
+        [request startAsynchronous];
+    }
 }
 
-- (IBAction)tapCategoryButton:(id)sender {
+- (void)finishAddingCategories:(ASIHTTPRequest *)request {
+    NSString *responseString = [request responseString];
+    NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
+    NSError *error;
+    NSDictionary *results = [NSJSONSerialization 
+                             JSONObjectWithData:responseData
+                             options:kNilOptions 
+                             error:&error];
+    NSLog(@"results are %@", results);
+    [appDelegate.feedsViewController fetchFeedList:NO];
 }
-
+    
 #pragma mark -
 #pragma mark Import Google Reader
 
@@ -134,6 +181,7 @@
     
     self.importedFeedCount_ = [[results objectForKey:@"feed_count"] intValue];
     [self performSelector:@selector(updateSites) withObject:nil afterDelay:1];
+    self.googleImportSuccess_ = YES;
 }
 
 - (void)updateSites {
@@ -158,23 +206,47 @@
 #pragma mark -
 #pragma mark Add Categories
 
-- (void)addCategories {
-    
-    // TO DO: curate the list of sites
-    
-    for (id key in categories) {
-        // add folder 
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/add_folder",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:key forKey:@"folder"]; 
-        [request setDelegate:self];
-        [request setDidFinishSelector:@selector(finishAddFolder:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request startAsynchronous];
+- (void)addCategory:(id)sender {
+    NSInteger tag = ((UIControl *) sender).tag;
+
+    // set the currentButton
+    self.currentButton_ = (UIButton *)sender;
+    if (tag == 0) {
+        self.googleReaderButton = self.currentButton_;
+        [self tapGoogleReaderButton];
+    } else {
+        UIButton *button = (UIButton *)sender;
+        NSLog(@"self.currentButton_.titleLabel.text is %@", self.currentButton_.titleLabel.text);
+        if (button.selected) {
+            [self.selectedCategories_ removeObject:self.currentButton_.titleLabel.text];
+            
+            self.nextButton.enabled = YES;
+            button.selected = NO;
+            UIImageView *imageView = (UIImageView*)[button viewWithTag:100];
+            [imageView removeFromSuperview];
+        } else {
+            [self.selectedCategories_ addObject:self.currentButton_.titleLabel.text];
+            button.selected = YES;
+
+            UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
+            UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
+            checkmarkView.frame = CGRectMake(button.frame.origin.x + button.frame.size.width - 24,
+                                             8,
+                                             16,
+                                             16);
+            checkmarkView.tag = 100;
+            [button addSubview:checkmarkView];
+        }
+    }
+    if (self.googleImportSuccess_) {
+        self.nextButton.enabled = YES;
+    } else if (self.selectedCategories_.count) {
+        self.nextButton.enabled = YES;
+    } else {
+        self.nextButton.enabled = NO;
     }
     
+    [self.categoriesTable setNeedsDisplay];
 }
 
 - (void)finishAddFolder:(ASIHTTPRequest *)request {
@@ -201,6 +273,160 @@
     [request setDidFinishSelector:@selector(finishAddFolder:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
+}
+
+#pragma mark -
+#pragma mark Table View - Interactions List
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return appDelegate.categories.count + 1;
+}
+
+//- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+//{    
+//    NSDictionary *category = [appDelegate.categories objectAtIndex:section];
+//    return [category objectForKey:@"title"];
+//}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {    
+    if (section == 0 ) {
+        return 1;
+    } else {
+        NSDictionary *category = [appDelegate.categories objectAtIndex:section - 1];
+        NSArray *categorySiteList = [category objectForKey:@"feed_ids"];
+        return categorySiteList.count;
+    }
+    return 0;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {        
+    return 26;
+}
+
+- (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 54.0;
+}
+
+- (UIView *)tableView:(UITableView *)tableView 
+viewForHeaderInSection:(NSInteger)section {
+
+    // create the parent view that will hold header Label
+    UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 300.0, 34.0)];
+    customView.tag = section;
+    
+    UIImage *buttonImage =[[UIImage imageNamed:@"google.png"] stretchableImageWithLeftCapWidth:5.0 topCapHeight:0.0];
+    UIButton *headerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    headerBtn.tag = section;
+    [headerBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    
+    NSString *categoryTitle;
+    if (section == 0) {
+        categoryTitle = @"Google Reader";
+    } else {
+        NSDictionary *category = [appDelegate.categories objectAtIndex:section - 1];
+        categoryTitle = [category objectForKey:@"title"];
+        // create the button object
+        [headerBtn setTitle:[NSString stringWithFormat:@"Added %@", categoryTitle] forState:UIControlStateSelected];
+    }
+    
+    headerBtn.titleLabel.font = [UIFont systemFontOfSize:13];
+    headerBtn.frame = CGRectMake(0, 22.0, 300, 34.0);
+    [headerBtn setTitle:categoryTitle forState:UIControlStateNormal];
+
+    [headerBtn addTarget:self action:@selector(addCategory:) forControlEvents:UIControlEventTouchUpInside];
+    [customView addSubview:headerBtn];
+    return customView;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    SiteCell *cell = [tableView 
+                             dequeueReusableCellWithIdentifier:@"ActivityCell"];
+    if (cell == nil) {
+        cell = [[SiteCell alloc] 
+                initWithStyle:UITableViewCellStyleDefault 
+                reuseIdentifier:@"ActivityCell"];
+    } 
+
+    NSString *siteTitle;
+
+    if (indexPath.section == 0 ) {
+        siteTitle = @"Import your sites from Google Reader";
+        cell.siteFavicon = nil;
+        cell.feedColorBar = nil;
+        cell.feedColorBarTopBorder = nil;
+    } else {
+        NSDictionary *category = [appDelegate.categories objectAtIndex:indexPath.section - 1];
+        NSArray *categorySiteList = [category objectForKey:@"feed_ids"];
+        NSString * feedId = [NSString stringWithFormat:@"%@", [categorySiteList objectAtIndex:indexPath.row ]];
+        
+        NSDictionary *feed = [appDelegate.categoryFeeds objectForKey:feedId];
+        siteTitle = [feed objectForKey:@"feed_title"];
+        
+        BOOL inSelect = [self.selectedCategories_ containsObject:[NSString stringWithFormat:@"%@", [category objectForKey:@"title"]]];
+        
+        NSLog(@" in it %i", inSelect);
+        if (inSelect) {
+            cell.selected = YES;
+            NSLog(@"cell is selected");
+        }
+
+        // feed color bar border
+        unsigned int colorBorder = 0;
+        NSString *faviconColor = [feed valueForKey:@"favicon_color"];
+        
+        if ([faviconColor class] == [NSNull class]) {
+            faviconColor = @"505050";
+        }    
+        NSScanner *scannerBorder = [NSScanner scannerWithString:faviconColor];
+        [scannerBorder scanHexInt:&colorBorder];
+        
+        cell.feedColorBar = UIColorFromRGB(colorBorder);
+        
+        // feed color bar border
+        NSString *faviconFade = [feed valueForKey:@"favicon_border"];
+        if ([faviconFade class] == [NSNull class]) {
+            faviconFade = @"505050";
+        }    
+        scannerBorder = [NSScanner scannerWithString:faviconFade];
+        [scannerBorder scanHexInt:&colorBorder];
+        cell.feedColorBarTopBorder =  UIColorFromRGB(colorBorder);
+        
+        // favicon
+        
+        NSString *faviconStr = [NSString stringWithFormat:@"%@", [feed valueForKey:@"favicon"]];
+        NSData *imageData = [NSData dataWithBase64EncodedString:faviconStr];
+        UIImage *faviconImage = [UIImage imageWithData:imageData];
+        
+
+        cell.siteFavicon = faviconImage;
+    }
+
+    cell.opaque = NO;
+    cell.siteTitle = siteTitle; 
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView 
+didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    UIView *header = [self.categoriesTable viewWithTag:indexPath.section];
+    UIButton *button = (UIButton *)[header viewWithTag:50];
+    [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+}
+
+-(NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    UIView *header = [self.categoriesTable viewWithTag:indexPath.section];
+    UIButton *button = (UIButton *)[header viewWithTag:50];
+    [button sendActionsForControlEvents:UIControlStateSelected];
+    return indexPath;
+}
+
+
+- (CGFloat)tableViewHeight {
+    [self.categoriesTable layoutIfNeeded];
+    return [self.categoriesTable contentSize].height;
 }
 
 @end

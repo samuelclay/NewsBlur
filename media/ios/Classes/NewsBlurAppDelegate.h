@@ -111,6 +111,9 @@
     NSArray * userInteractionsArray;
     NSArray * userActivitiesArray;
     NSMutableArray * dictFoldersArray;
+    
+    NSArray *categories;
+    NSDictionary *categoryFeeds;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -182,6 +185,9 @@
 @property (nonatomic) NSArray *userInteractionsArray;
 @property (nonatomic) NSArray *userActivitiesArray;
 @property (nonatomic) NSMutableArray *dictFoldersArray;
+
+@property (nonatomic) NSArray *categories;
+@property (nonatomic) NSDictionary *categoryFeeds;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
 

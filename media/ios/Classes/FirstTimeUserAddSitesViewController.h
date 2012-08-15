@@ -9,24 +9,28 @@
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
 
-@interface FirstTimeUserAddSitesViewController  : UIViewController <ASIHTTPRequestDelegate> {
+@interface FirstTimeUserAddSitesViewController  : UIViewController <ASIHTTPRequestDelegate, UITableViewDataSource, UITableViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) NSMutableArray *categories;
 @property (nonatomic) IBOutlet UIButton *googleReaderButton;
 @property (nonatomic) IBOutlet UIView *googleReaderButtonWrapper;
 @property (nonatomic) IBOutlet UIBarButtonItem *nextButton;
 @property (nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (nonatomic) IBOutlet UILabel *instructionLabel;
+@property (nonatomic) IBOutlet UITableView *categoriesTable;
+@property (strong, nonatomic) IBOutlet UIScrollView *scrollView;
 
 - (IBAction)tapNextButton;
 - (IBAction)tapGoogleReaderButton;
 - (IBAction)tapCategoryButton:(id)sender;
 
-- (void)addCategories;
+
+- (void)addCategory:(id)sender;
 - (void)importFromGoogleReader;
 - (void)importFromGoogleReaderFailed:(NSString *)error;
 - (void)updateSites;
+
+- (CGFloat)tableViewHeight;
 @end

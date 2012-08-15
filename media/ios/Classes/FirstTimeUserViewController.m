@@ -10,6 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "FirstTimeUserAddSitesViewController.h"
+#import <QuartzCore/QuartzCore.h>
 
 #define WELCOME_BUTTON_TITLE @"LET'S GET STARTED"
 #define ADD_SITES_SKIP_BUTTON_TITLE @"SKIP THIS STEP"
@@ -61,6 +62,7 @@
         header.font = [UIFont systemFontOfSize:22];
         footer.font = [UIFont systemFontOfSize:16];
     }
+    
 
 }
 
@@ -76,12 +78,27 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-
+    [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
+    
+    UIImage *logoImg = [UIImage imageNamed:@"logo_512"];
+    UIImageView *logoView = [[UIImageView alloc] initWithImage:logoImg];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        logoView.frame = CGRectMake(80, 115, 160, 160);
+    } else {
+        logoView.frame = CGRectMake(150, 99, 240, 240);
+    }
+    
+    self.logo = logoView;
+    [self.view addSubview:self.logo];
     [self rotateLogo];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+    
+}
 
+- (void)viewDidDisappear:(BOOL)animated {
+    self.logo = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -98,7 +115,6 @@
 
 - (IBAction)tapNextButton {
     [appDelegate.ftuxNavigationController pushViewController:appDelegate.firstTimeUserAddSitesViewController animated:YES];
-    
 }
 
 - (void)rotateLogo {
@@ -112,7 +128,6 @@
 	
 	timer_ = [NSTimer scheduledTimerWithTimeInterval: timerInterval_ target: self selector:@selector(handleTimer:) userInfo: nil repeats: YES];
 	[UIView commitAnimations];
-
 }
 
 -(void)handleTimer:(NSTimer *)timer
@@ -123,9 +138,8 @@
 		angle_ = 0;
 	}
 	
-	CGAffineTransform transform=CGAffineTransformMakeRotation(angle_);
+	CGAffineTransform transform = CGAffineTransformMakeRotation(angle_);
 	self.logo.transform = transform;
 }
-
 
 @end

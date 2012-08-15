@@ -18,7 +18,6 @@
 
 @synthesize appDelegate;
 @synthesize activitiesTable;
-@synthesize activitiesArray;
 @synthesize popoverController;
 @synthesize pageFetching;
 @synthesize pageFinished;
@@ -48,7 +47,7 @@
     
 - (void)refreshWithActivities:(NSArray *)activities {
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];   
-    self.activitiesArray = activities;
+    appDelegate.userActivitiesArray = activities;
 
     [self.activitiesTable reloadData];
     
@@ -165,12 +164,12 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {    
-    int activitesCount = [self.activitiesArray count];
+    int activitesCount = [appDelegate.userActivitiesArray count];
     return activitesCount + 1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {    
-    int activitiesCount = [self.activitiesArray count];
+    int activitiesCount = [appDelegate.userActivitiesArray count];
     if (indexPath.row >= activitiesCount) {
         return MINIMUM_ACTIVITY_HEIGHT;
     }
@@ -180,7 +179,7 @@
     NSMutableDictionary *userProfile = [appDelegate.dictUserProfile  mutableCopy];
     [userProfile setValue:@"You" forKey:@"username"];
     
-    int height = [activityCell setActivity:[self.activitiesArray 
+    int height = [activityCell setActivity:[appDelegate.userActivitiesArray 
                                             objectAtIndex:(indexPath.row)] 
                            withUserProfile:userProfile
                                  withWidth:self.frame.size.width - 20] + 30;
@@ -206,7 +205,7 @@
         NSMutableDictionary *userProfile = [appDelegate.dictUserProfile  mutableCopy];
         [userProfile setValue:@"You" forKey:@"username"];
         
-        NSDictionary *activitiy = [self.activitiesArray 
+        NSDictionary *activitiy = [appDelegate.userActivitiesArray 
                                    objectAtIndex:(indexPath.row)];
         NSString *category = [activitiy objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {
@@ -231,13 +230,11 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    int activitiesCount = [self.activitiesArray count];
+    int activitiesCount = [appDelegate.userActivitiesArray count];
     if (indexPath.row < activitiesCount) {
-        NSDictionary *activity = [self.activitiesArray objectAtIndex:indexPath.row];
+        NSDictionary *activity = [appDelegate.userActivitiesArray objectAtIndex:indexPath.row];
         NSString *category = [activity objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {
-
-            
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
             
             NSString *userId = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"user_id"]];

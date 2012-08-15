@@ -25,6 +25,8 @@
 #import "NBContainerViewController.h"
 #import "AFJSONRequestOperation.h"
 #import "findSitesViewController.h"
+#import "InteractionsModule.h"
+#import "ActivityModule.h"
 
 #import "MBProgressHUD.h"
 #import "Utilities.h"
@@ -104,6 +106,9 @@
 @synthesize userInteractionsArray;
 @synthesize userActivitiesArray;
 @synthesize dictFoldersArray;
+
+@synthesize categories;
+@synthesize categoryFeeds;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate {
 	return (NewsBlurAppDelegate*) [UIApplication sharedApplication].delegate;
@@ -291,8 +296,19 @@
     self.dictSocialFeeds = nil;
     self.dictFolders = nil;
     self.dictFoldersArray = nil;
+    self.userActivitiesArray = nil;
+    self.userInteractionsArray = nil;
     
     [self.feedsViewController.feedTitlesTable reloadData];
+    [self.feedsViewController resetToolbar];
+    
+    [self.dashboardViewController.interactionsModule.interactionsTable reloadData];
+    [self.dashboardViewController.activitiesModule.activitiesTable reloadData];
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
+    [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
+    [userPreferences synchronize];
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController presentModalViewController:loginViewController animated:NO];
     } else {
@@ -312,6 +328,15 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         self.ftuxNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
         [self.masterContainerViewController presentModalViewController:self.ftuxNavigationController animated:YES];
+        
+        self.ftuxNavigationController.view.superview.frame = CGRectMake(0, 0, 540, 540);//it's important to do this after 
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (UIInterfaceOrientationIsPortrait(orientation)) {
+            self.ftuxNavigationController.view.superview.center = self.view.center;
+        } else {
+            self.ftuxNavigationController.view.superview.center = CGPointMake(self.view.center.y, self.view.center.x);
+        }
+            
     } else {
         [self.navigationController presentModalViewController:self.ftuxNavigationController animated:YES];
     }

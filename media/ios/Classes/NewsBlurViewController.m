@@ -430,7 +430,12 @@
     
     [self.feedTitlesTable reloadData];
 
-
+    // assign categories for FTUX
+    
+    if (![[results objectForKey:@"categories"] isKindOfClass:[NSNull class]]){
+        appDelegate.categories = [[results objectForKey:@"categories"] objectForKey:@"categories"];
+        appDelegate.categoryFeeds = [[results objectForKey:@"categories"] objectForKey:@"feeds"];
+    }
     
     // test for latest version of app
     NSString *serveriPhoneVersion = [results objectForKey:@"iphone_version"];  
@@ -1388,6 +1393,12 @@
 	props.leftArrowImageName = @"popoverArrowLeft.png";
 	props.rightArrowImageName = @"popoverArrowRight.png";
 	return props;	
+}
+
+- (void)resetToolbar {
+    self.navigationItem.leftBarButtonItem = nil;
+    self.navigationItem.titleView = nil;
+    self.navigationItem.rightBarButtonItem = nil;
 }
 
 

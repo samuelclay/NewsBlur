@@ -89,5 +89,7 @@
 - (void)fadeSelectedCell;
 - (IBAction)tapAddSite:(id)sender;
 
+- (void)resetToolbar;
+
 
 @end

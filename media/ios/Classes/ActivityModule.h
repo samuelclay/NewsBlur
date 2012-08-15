@@ -16,7 +16,6 @@
     UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
     UITableView *activitiesTable;
-    NSArray *activitiesArray;
     UIPopoverController *popoverController;
         
     BOOL pageFetching;
@@ -26,7 +25,6 @@
 
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
 @property (nonatomic, strong) UITableView *activitiesTable;
-@property (nonatomic) NSArray *activitiesArray;
 @property (nonatomic, strong) UIPopoverController *popoverController;
 
 @property (nonatomic, readwrite) BOOL pageFetching;

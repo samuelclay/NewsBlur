@@ -39,7 +39,7 @@
     // Do any additional setup after loading the view from its nib.
     
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Skip" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Skip this step" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     
@@ -63,6 +63,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 //    [self selectTwitterButton];
+    [self.navigationItem.rightBarButtonItem setStyle:UIBarButtonItemStyleDone];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -235,6 +236,10 @@
                              options:kNilOptions 
                              error:&error];
     NSLog(@"results are %@", results);
+}
+
+- (void)changeMessaging:(NSString *)msg {
+    self.friendsLabel.text = msg;
 }
 
 @end

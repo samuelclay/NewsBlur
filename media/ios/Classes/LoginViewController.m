@@ -315,6 +315,8 @@
         }]; 
     }
     
+    [self.signUpUsernameInput becomeFirstResponder];
+    
 }
 
 - (IBAction)selectLogin {
@@ -333,6 +335,8 @@
             self.signUpView.frame = CGRectMake(902 + LANDSCAPE_MARGIN, 80, 500, 300); 
         }];
     }
+    
+    [self.usernameInput becomeFirstResponder];
 }
 
 - (IBAction)tapLoginButton {

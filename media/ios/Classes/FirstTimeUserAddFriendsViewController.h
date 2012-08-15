@@ -40,4 +40,6 @@
 - (void)finishedWithError:(ASIHTTPRequest *)request;
 - (void)finishToggleAutoFollowFriends:(ASIHTTPRequest *)request;
 
+- (void)changeMessaging:(NSString *)msg;
+
 @end
