@@ -1,0 +1,89 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+
+@import "compass/reset";
+
+$page-width: 700px;
+$text-color: #333333;
+$light-text-color: #808080;
+$title-font-size: 20px;
+$small-font-size: 14px;
+
+body {
+    background: image-url('background.png') repeat 0 0;
+    font-family: Helvetica, arial, san-serif;
+    color: $text-color;
+}
+
+a {
+    color: $text-color;
+    text-decoration: none;
+}
+
+.NB-page {
+    width: $page-width;
+    margin: 0 auto;
+}
+
+.NB-header {
+  background: image-url('header_background.png') repeat-x 0 0;
+  height: 99px;
+  display: none;
+}
+
+.NB-mark {
+    margin: 20px 0;
+}
+
+.NB-story-wrapper {
+    border-left: 5px solid #fff;
+    padding: 25px;
+    background: #fff;
+
+    .NB-story-title {
+        a {
+            font-size: $title-font-size;
+            font-weight: bold;
+            line-height: 120%;
+            text-decoration: none;
+            color: $text-color;
+        }
+        
+        span {
+            font-size: $small-font-size;
+            color: $light-text-color;
+            font-weight: normal;
+            display: inline-block; /* to ensure that the author is always on one line */
+        }
+    }
+}
+
+.NB-story {
+    font-size: $small-font-size;
+    line-height: 140%;
+    
+    p {
+        margin: 20px 0;
+    }
+}
+
+.NB-story-shares-container {
+    background: #000;
+}
+
+.NB-feed {
+    margin: 10px 0;
+    
+    a {
+        color: $light-text-color;
+        font-size: $small-font-size;
+    }
+    img {
+        float: left;
+        width: 16px;
+        height: 16px;
+        margin-right: 4px;
+    }
+}

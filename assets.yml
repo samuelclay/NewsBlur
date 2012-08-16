@@ -123,5 +123,5 @@ stylesheets:
         - media/css/modals.css
     blurblog:
         - media/css/jquery.tipsy.css
-        - media/css/social/social_page.css
+        - media/css/circular/css/screen.css
         - media/css/modals.css

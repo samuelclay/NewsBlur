@@ -62,7 +62,7 @@
 
 <body class="{% if user.is_authenticated %}NB-authenticated{% else %}NB-unauthenticated{% endif %}">
     
-<div class="NB-page" style="background-color: {% if social_profile.custom_bgcolor %}{{ social_profile.custom_bgcolor }}{% else %}#EBC55F{% endif %}">
+<div class="NB-page">
     <header class="NB-header">
         <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
 
