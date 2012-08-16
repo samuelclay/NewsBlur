@@ -95,6 +95,20 @@
                                 <div class="NB-header-stat"><b>{{ social_profile.shared_stories_count }}</b> shared {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
                                 <div class="NB-header-stat">&middot;</div>
                                 <div class="NB-header-stat"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
+                                {% if user.is_authenticated %}
+                                    <div class="NB-header-stat">&middot;</div>
+                                    <div class="NB-header-stat NB-header-following-user">
+                                        {% if user_following_social_profile %}
+                                            {% if social_profile.user_id == user.pk %}
+                                                This is your blurblog
+                                            {% else %}
+                                                You are following {{ social_profile.username }}
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="NB-follow-user">Follow {{ social_profile.username }}</div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </td>

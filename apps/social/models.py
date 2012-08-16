@@ -372,9 +372,11 @@ class MSocialProfile(mongo.Document):
         return socialsub
     
     def is_following_user(self, user_id):
+        # XXX TODO: Outsource to redis
         return user_id in self.following_user_ids
     
     def is_followed_by_user(self, user_id):
+        # XXX TODO: Outsource to redis
         return user_id in self.follower_user_ids
         
     def unfollow_user(self, user_id):
@@ -2246,3 +2248,8 @@ class MActivity(mongo.Document):
         
         a.delete()
         
+    @classmethod
+    def new_signup(cls, user_id):
+        cls.objects.get_or_create(user_id=user_id,
+                                  with_user_id=user_id,
+                                  category="signup")

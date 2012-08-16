@@ -327,9 +327,11 @@ def load_social_page(request, user_id, username=None, **kwargs):
 
     user_social_profile = None
     user_social_services = None
+    user_following_social_profile = None
     if user.is_authenticated():
         user_social_profile = MSocialProfile.get_user(user.pk)
         user_social_services = MSocialServices.get_user(user.pk)
+        user_following_social_profile = user_social_profile.is_following_user(social_user_id)
     social_profile = MSocialProfile.get_user(social_user_id)
     
     params = dict(user_id=social_user.pk)
@@ -352,6 +354,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
             "social_profile": social_profile,
             "user_social_services": user_social_services,
             'user_social_profile' : json.encode(user_social_profile and user_social_profile.page()),
+            'user_following_social_profile': user_following_social_profile,
         }
         template = 'social/social_page.xhtml'
         return render_to_response(template, params, context_instance=RequestContext(request))
@@ -389,6 +392,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'user_social_profile_page' : json.encode(user_social_profile and user_social_profile.page()),
         'user_social_services' : user_social_services,
         'user_social_services_page' : json.encode(user_social_services and user_social_services.to_json()),
+        'user_following_social_profile': user_following_social_profile,
         'social_profile': social_profile,
         'feeds'         : feeds,
         'user_profile'  : hasattr(user, 'profile') and user.profile,

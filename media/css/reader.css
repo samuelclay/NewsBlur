@@ -8459,7 +8459,9 @@ form.opml_import_form input {
     overflow: hidden;
     cursor: pointer;
 }
-
+.NB-interaction.NB-disabled {
+    cursor: default;
+}
 .NB-interaction.NB-highlighted {
     background-color: #FFFFF6;
     border-bottom: 1px solid #F0F0E6;
@@ -8468,7 +8470,7 @@ form.opml_import_form input {
     border-bottom: 1px solid transparent;
     margin-bottom: 0;
 }
-.NB-interaction:hover {
+.NB-interaction:hover:not(.NB-disabled) {
     background-color: #F3F6FD;
     background-image: -moz-linear-gradient(top, #F5F7FB, #EBF1FE); /* FF3.6 */
     background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F7FB), to(#EBF1FE)); /* Saf4+, Chrome */
@@ -8476,7 +8478,7 @@ form.opml_import_form input {
     border: 1px solid #C3CFE2;
     border-bottom: 1px solid #B9C5DC;
 }
-.NB-interaction:active {
+.NB-interaction:active:not(.NB-disabled) {
     background-color: #FBE5C7;
     background-image: -moz-linear-gradient(top, #FBE5C7, #F7D9AD); /* FF3.6 */
     background-image: -webkit-gradient(linear, left top, left bottom, from(#FBE5C7), to(#F7D9AD)); /* Saf4+, Chrome */
@@ -8486,7 +8488,7 @@ form.opml_import_form input {
 .NB-interaction .NB-splash-link:hover {
     color: #405BA8;
 }
-.NB-interaction:active .NB-interaction-content .NB-splash-link {
+.NB-interaction:active:not(.NB-disabled) .NB-interaction-content .NB-splash-link {
     color: #A85B40;
 }
 .NB-interaction-photo {
@@ -8505,7 +8507,7 @@ form.opml_import_form input {
     text-transform: uppercase;
     padding: 5px 0 3px 4px;
 }
-.NB-interaction:hover .NB-interaction-date { 
+.NB-interaction:hover:not(.NB-disabled) .NB-interaction-date { 
     color: #808080;
 }
 .NB-interaction-title {
