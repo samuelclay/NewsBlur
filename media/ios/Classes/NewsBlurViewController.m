@@ -379,6 +379,11 @@
     }
 
     [allFolders setValue:socialFolder forKey:@""]; 
+    
+    if (![[allFolders allKeys] containsObject:@" "]) {
+        [allFolders setValue:[[NSArray alloc] init] forKey:@" "]; 
+    }
+    
     appDelegate.dictFolders = allFolders;
     
     // set up dictFeeds
@@ -477,7 +482,7 @@
 }
 
 - (IBAction)tapAddSite:(id)sender {
-    [appDelegate showAddSiteModal];
+    [appDelegate showAddSiteModal:sender];
 }
 
 - (void)showSettingsPopover:(id)sender {
@@ -880,7 +885,8 @@
 //        return 0;
 //    }
     
-    if ([tableView.dataSource tableView:tableView numberOfRowsInSection:section] == 0) {
+    if ([tableView.dataSource tableView:tableView numberOfRowsInSection:section] == 0 &&
+        section != 1) {
         return 0;
     }
     
@@ -999,7 +1005,7 @@
     }
     
 	[hud hide:YES afterDelay:0.75];
-    [self.feedTitlesTable reloadData];
+//    [self.feedTitlesTable reloadData];
 }
 
 - (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {

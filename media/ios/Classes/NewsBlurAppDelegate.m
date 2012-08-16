@@ -153,7 +153,7 @@
 #pragma mark -
 #pragma mark FeedsView
 
-- (void)showAddSiteModal {
+- (void)showAddSiteModal:(id)sender {
 //    FindSitesViewController *sitesVC = [[FindSitesViewController alloc] init];    
 //    self.findSitesViewController = sitesVC;
 //    
@@ -163,16 +163,7 @@
     
     [self.addSiteViewController reload];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.addSiteViewController.modalPresentationStyle = UIModalPresentationFormSheet;
-        [masterContainerViewController presentModalViewController:self.addSiteViewController animated:YES];
-        addSiteViewController.view.superview.frame = CGRectMake(0, 0, 320, 460);//it's important to do this after 
-        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-        if (UIInterfaceOrientationIsPortrait(orientation)) {
-            addSiteViewController.view.superview.center = self.view.center;
-        } else {
-            addSiteViewController.view.superview.center = CGPointMake(self.view.center.y, self.view.center.x);
-        }
-
+        [self.masterContainerViewController showSitePopover:sender];
     } else {
         [navigationController presentModalViewController:self.addSiteViewController animated:YES];
     }

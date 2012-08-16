@@ -34,5 +34,6 @@
 - (void)showUserProfilePopover:(id)sender;
 - (void)showFeedMenuPopover:(id)sender;
 - (void)showFontSettingsPopover:(id)sender;
+- (void)showSitePopover:(id)sender;
 - (void)hidePopover;
 @end

@@ -369,10 +369,6 @@
     
     // Adding new user profiles to appDelegate.activeFeedUserProfiles
 
-    NSLog(@"newUserProfiles class %@", [results objectForKey:@"user_profiles"]);
-    NSLog(@"newUserProfiles count %@", [[results objectForKey:@"user_profiles"] count]);
-    NSLog(@"newUserProfiles class %i", [results objectForKey:@"user_profiles"] == nil);
-
     NSArray *newUserProfiles = [[NSArray alloc] init];
     if ([results objectForKey:@"user_profiles"] != nil) {
         newUserProfiles = [results objectForKey:@"user_profiles"];

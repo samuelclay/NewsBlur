@@ -200,7 +200,7 @@
 - (void)hideUserProfileModal;
 - (void)showFindFriends;
 
-- (void)showAddSiteModal;
+- (void)showAddSiteModal:(id)sender;
 - (void)showMoveSite;
 - (void)loadFeedDetailView;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;

@@ -11,6 +11,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
+#import "NBContainerViewController.h"
 #import "JSON.h"
 
 @interface AddSiteViewController()
@@ -100,6 +101,7 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         NSLog(@"%@",  self.siteTable.frame);
+        self.siteTable.hidden = NO;
         self.siteScrollView.frame = CGRectMake(self.siteScrollView.frame.origin.x,
                                            self.siteScrollView.frame.origin.y,
                                            320,
@@ -117,7 +119,12 @@
 
 
 - (IBAction)doCancelButton {
-    [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController hidePopover];
+    } else {
+        [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
+        
+    }
 }
 
 - (IBAction)doAddButton {
@@ -249,11 +256,13 @@
     }
     
     [self.siteActivityIndicator stopAnimating];
+    self.siteTable.hidden = NO;
     [siteTable reloadData];
 }
 
 - (IBAction)addSite {
     [self hideFolderPicker];
+    self.siteTable.hidden = YES;
     [siteAddressInput resignFirstResponder];
     [self.addingLabel setHidden:NO];
     [self.addingLabel setText:@"Adding site..."];
@@ -285,7 +294,12 @@
         [self.errorLabel setText:[results valueForKey:@"message"]];   
         [self.errorLabel setHidden:NO];
     } else {
-        [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            [appDelegate.masterContainerViewController hidePopover];
+        } else {
+            [appDelegate.addSiteViewController dismissModalViewControllerAnimated:YES];
+            
+        }
         [appDelegate reloadFeedsView:NO];
     }
     
@@ -352,6 +366,7 @@
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
     [self.errorLabel setText:error.localizedDescription];
+    self.siteTable.hidden = YES;
 }
 
 #pragma mark -
@@ -441,6 +456,7 @@ numberOfRowsInComponent:(NSInteger)component {
             folderPicker.frame = CGRectMake(0, self.view.bounds.size.height - folderPicker.frame.size.height, folderPicker.frame.size.width, folderPicker.frame.size.height);            
         }];
     }
+    self.siteTable.hidden = YES;
 }
 
 - (void)hideFolderPicker {

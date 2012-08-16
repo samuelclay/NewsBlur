@@ -17,6 +17,7 @@
 #import "ActivityCell.h"
 #import "FeedsMenuViewController.h"
 #import "FontSettingsViewController.h"
+#import "AddSiteViewController.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 760
@@ -198,6 +199,42 @@
                                          animated:YES];
     } 
 }
+
+- (void)showSitePopover:(id)sender {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+        popoverController = nil;
+        return;
+    }
+    
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:appDelegate.addSiteViewController];
+    
+    popoverController.delegate = self;
+    
+    [popoverController setPopoverContentSize:CGSizeMake(320, 454)];
+    
+    if ([sender class] == [InteractionCell class] ||
+        [sender class] == [ActivityCell class]) {
+        InteractionCell *cell = (InteractionCell *)sender;
+        
+        [popoverController presentPopoverFromRect:cell.bounds 
+                                           inView:cell
+                         permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                         animated:YES];
+    } else if ([sender class] == [UIBarButtonItem class]) {
+        [popoverController presentPopoverFromBarButtonItem:sender 
+                                  permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                                  animated:YES];  
+    } else {
+        CGRect frame = [sender CGRectValue];
+        [popoverController presentPopoverFromRect:frame 
+                                           inView:self.feedsViewController.view
+                         permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                         animated:YES];
+    } 
+}
+
 
 - (void)showFeedMenuPopover:(id)sender {
     if (popoverController.isPopoverVisible) {
