@@ -123,14 +123,14 @@
 	[super viewWillAppear:animated];
         
     if ((appDelegate.isSocialRiverView || appDelegate.isRiverView || appDelegate.isSocialView) || 
-        [appDelegate.activeFolder isEqualToString:@"ALL STORIES"]) {
+        [appDelegate.activeFolder isEqualToString:@"All Stories"]) {
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
     }
     
     if (appDelegate.isSocialRiverView || 
-        [appDelegate.activeFolder isEqualToString:@"ALL STORIES"]) {
+        [appDelegate.activeFolder isEqualToString:@"All Stories"]) {
         feedMarkReadButton.enabled = NO;
     } else {
         feedMarkReadButton.enabled = YES;

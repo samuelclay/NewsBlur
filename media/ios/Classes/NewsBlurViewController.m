@@ -106,17 +106,14 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if ([userPreferences integerForKey:@"selectedIntelligence"] == 1) {
-        NSLog(@"Show FOCUS stories");
         self.viewShowingAllFeeds = NO;
         [self.intelligenceControl setSelectedSegmentIndex:2];
         [appDelegate setSelectedIntelligence:1];
     } else if ([userPreferences integerForKey:@"selectedIntelligence"] == 0) {
-        NSLog(@"Show UNREAD stories");
         self.viewShowingAllFeeds = NO;
         [self.intelligenceControl setSelectedSegmentIndex:1];
         [appDelegate setSelectedIntelligence:0];
-    } else { // default state, ALL stories
-        NSLog(@"Show ALL stories");
+    } else { // default state, all stories
         self.viewShowingAllFeeds = YES;
         [self.intelligenceControl setSelectedSegmentIndex:0];
         [appDelegate setSelectedIntelligence:0];
@@ -830,11 +827,11 @@
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (section == 0) {
-        headerLabel.text = @"ALL BLURBLOG STORIES";
+        headerLabel.text = @"All Blurblog Stories";
 //        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
 //                                      colorWithAlphaComponent:0.8];
     } else if (section == 1) {
-        headerLabel.text = @"ALL STORIES";
+        headerLabel.text = @"All Stories";
 //        customView.backgroundColor = [UIColorFromRGB(0xE6DDD7)
 //                                      colorWithAlphaComponent:0.8];
     } else {
@@ -938,7 +935,7 @@
         appDelegate.isSocialRiverView = YES;
         appDelegate.isRiverView = YES;
         // add all the feeds from every NON blurblog folder
-        [appDelegate setActiveFolder:@"ALL BLURBLOG STORIES"];
+        [appDelegate setActiveFolder:@"All Blurblog Stories"];
         for (NSString *folderName in self.activeFeedLocations) {
             if ([folderName isEqualToString:@""]) { // remove all blurblugs which is a blank folder name
                 NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
@@ -952,7 +949,7 @@
         appDelegate.isSocialRiverView = NO;
         appDelegate.isRiverView = YES;
         // add all the feeds from every NON blurblog folder
-        [appDelegate setActiveFolder:@"ALL STORIES"];
+        [appDelegate setActiveFolder:@"All Stories"];
         for (NSString *folderName in self.activeFeedLocations) {
             if (![folderName isEqualToString:@""]) { // remove all blurblugs which is a blank folder name
                 NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];

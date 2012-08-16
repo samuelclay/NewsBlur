@@ -707,7 +707,7 @@
                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
                          "<div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
                          "<a href=\"http://ios.newsblur.com/share\"><div>"
-                         "Post to Blurblog <span class=\"NB-share-icon\"></span>"
+                         "Share this story <span class=\"NB-share-icon\"></span>"
                          "</div></a>"
                          "</div>"
                          "</div></div>"];

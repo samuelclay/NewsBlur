@@ -758,11 +758,11 @@
     int total = 0;
     NSArray *folder;
     
-    if (!folderName && self.activeFolder == @"ALL BLURBLOG STORIES") {
+    if (!folderName && self.activeFolder == @"All Blurblog Stories") {
         for (id feedId in self.dictSocialFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
-    } else if (!folderName && self.activeFolder == @"ALL STORIES") {
+    } else if (!folderName && self.activeFolder == @"All Stories") {
         for (id feedId in self.dictFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
