@@ -64,6 +64,8 @@
 <header class="NC-header">
     <div class="NC-header-inner">
         <h1 class="NC-logo"><a href="/">Circular</a></h1>
+        <div class="NC-button NC-comment-toggle-button">Toggle Comments</div>
+
         <div class="NC-button NC-invite-button">Request an Invite</div>
     </div>
 </header>
@@ -154,6 +156,10 @@
 if ($(window).width() < 600) { 
     $('meta[name=viewport]').attr('content','initial-scale=0.9, maximum-scale=1.5'); 
 }
+
+$('.NC-comment-toggle-button').click(function(){
+    $('body').toggleClass('NC-hide-comments')
+});
 </script>
 
 </body>

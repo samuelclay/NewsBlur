@@ -39,6 +39,8 @@ $default-box-shadow-blur: 1px;
     line-height: 20px;
     text-align: center;
     cursor: pointer;
+    padding: 4px 15px;
+    font-size: 14px;
     
     &:hover {
         @include background-image(linear-gradient(#f6f6f6, white));
@@ -64,7 +66,8 @@ $default-box-shadow-blur: 1px;
     line-height: 20px;
     text-align: center;
     cursor: pointer;
-    padding: 5px 20px;
+    padding: 4px 15px;
+    font-size: 14px;
     
     &:hover {
         @include background-image(linear-gradient(#6bb1e0, #6bb1e0));
@@ -130,6 +133,14 @@ a {
             float: right;
             @include NC-blue-button;
             margin-top: 32px;
+            margin-left: 10px;
+        }
+        
+        .NC-comment-toggle-button {
+            float: right;
+            @include NC-default-button;
+            margin-top: 32px;
+            margin-left: 10px;
         }
     }
 }
@@ -249,11 +260,15 @@ a {
     }
 }
 
+body.NC-hide-comments .NB-story-comments-container {
+    display: none;
+}
+
 .NB-story-comments-container {
     font-size: $small-font-size;
     width: $comment-width;
     margin: 0 auto;
-    
+
     .NB-user-avatar img,
     img.NB-user-avatar {
         position: absolute;
@@ -342,7 +357,8 @@ a {
     }
 }
 
-.NB-page-controls-next, .NB-page-controls-end {
+.NB-page-controls-next, 
+.NB-page-controls-end {
     background-color: #6eb4e3;
     @include NC-blue-button;
     position: relative;
