@@ -2043,7 +2043,7 @@ background: transparent;
     color: #27452D;
 }
 #story_pane .NB-feed-story-content del {
-    display: block;
+    display: inline;
     color: #661616;
 }
 .NB-pref-hide-changes #story_pane .NB-feed-story-content ins {
@@ -2535,6 +2535,9 @@ background: transparent;
     background-color: #EBF6FA;
     height: 0;
     overflow: hidden;
+}
+.NB-menu-manage .NB-sideoption-share-wrapper {
+    background-color: #EBF6DA;
 }
 .NB-feed-story-view-narrow .NB-sideoption-share-wrapper {
     clear: both;
