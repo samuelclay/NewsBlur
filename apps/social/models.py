@@ -796,7 +796,7 @@ class MSocialSubscription(mongo.Document):
                 feed_id = story.story_feed_id
             m = MUserStory(user_id=self.user_id, 
                            feed_id=feed_id, read_date=date, 
-                           story_id=story.story_guid, story_date=story.story_date)
+                           story_id=story.story_guid, story_date=story.shared_date)
             try:
                 m.save()
             except OperationError:
