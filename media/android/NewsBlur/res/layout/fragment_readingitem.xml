@@ -89,13 +89,12 @@
             android:layout_height="wrap_content"
             android:visibility="gone" >
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/reading_share_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/list_background"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp" >
 
@@ -105,18 +104,31 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/reading_sharedby"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/reading_share_text"
                     android:textColor="@color/white"
-                    android:textSize="12dp"
-                    android:textStyle="bold" />
+                    android:textSize="12dp" />
 
                 <android.support.v7.widget.GridLayout
                     xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/reading_social_shareimages"
-                    android:layout_width="match_parent"
+                    android:id="@+id/reading_social_friendimages"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:columnCount="8"
+                    android:layout_alignParentRight="true"
+                    app:columnCount="3"
                     app:useDefaultMargins="true" />
-            </LinearLayout>
+                
+                <android.support.v7.widget.GridLayout
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/reading_social_shareimages"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/reading_share_text"
+                    android:layout_toLeftOf="@+id/reading_social_friendimages"
+                    app:columnCount="3"
+                    app:useDefaultMargins="true" />
+                
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/reading_friend_comment_container"

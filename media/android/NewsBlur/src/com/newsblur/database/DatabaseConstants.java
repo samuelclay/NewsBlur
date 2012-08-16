@@ -82,9 +82,19 @@ public class DatabaseConstants {
 	public static final String COMMENT_STORYID = "comment_storyid";
 	public static final String COMMENT_TEXT = "comment_text";
 	public static final String COMMENT_DATE = "comment_date";
+	public static final String COMMENT_LIKING_USERS = "comment_liking_users";
 	public static final String COMMENT_SHAREDDATE = "comment_shareddate";
 	public static final String COMMENT_USERID = "comment_userid";
 
+	public static final String REPLY_TABLE = "comment_replies";
+	
+	public static final String REPLY_ID = BaseColumns._ID;
+	public static final String REPLY_COMMENTID = "comment_id"; 
+	public static final String REPLY_TEXT = "reply_text";
+	public static final String REPLY_USERID = "reply_userid";
+	public static final String REPLY_DATE = "reply_date";
+	public static final String REPLY_SHORTDATE = "reply_shortdate";
+	
 	// Aggregated columns
 	public static final String SUM_POS = "sum_postive";
 	public static final String SUM_NEUT = "sum_neutral";
@@ -104,7 +114,11 @@ public class DatabaseConstants {
 	};
 
 	public static final String[] COMMENT_COLUMNS = {
-		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_USERID, COMMENT_DATE, COMMENT_SHAREDDATE
+		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_USERID, COMMENT_DATE, COMMENT_LIKING_USERS, COMMENT_SHAREDDATE
+	};
+	
+	public static final String[] REPLY_COLUMNS = {
+		REPLY_COMMENTID, REPLY_DATE, REPLY_ID, REPLY_SHORTDATE, REPLY_TEXT, REPLY_USERID
 	};
 
 	public static final String[] FOLDER_COLUMNS = {

@@ -76,6 +76,8 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
 		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
 
+		itemList.setEmptyView(v.findViewById(R.id.empty_view));
+		
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");

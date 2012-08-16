@@ -14,24 +14,11 @@
         android:layout_height="1dip"
         android:layout_alignParentTop="true" />
 
-    <LinearLayout
-        android:id="@+id/reading_floatbar"
+      <View
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/reading_divider"
-        android:alpha="0.7"
-        android:minHeight="8dp" />
+        android:layout_height="8dip"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/orangeline_shadow" />
 
-    <View
-        android:id="@+id/reading_divider_bottom"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:layout_below="@id/reading_floatbar" />
-
-    <View
-        android:id="@+id/reading_divider_bottom"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:layout_below="@id/reading_floatbar" />
 
 </RelativeLayout>

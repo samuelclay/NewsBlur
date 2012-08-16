@@ -75,4 +75,6 @@
     
     <string name="unsorted_folder_name">Unsorted</string>
     
+    <string name="empty_list_notice">There aren\'t any stories to display here right now.</string>
+    
 </resources>

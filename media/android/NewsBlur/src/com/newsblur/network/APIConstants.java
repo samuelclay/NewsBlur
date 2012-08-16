@@ -20,18 +20,24 @@ public class APIConstants {
 	public static final String URL_MARK_SOCIALSTORY_AS_READ = "http://newsblur.com/reader/mark_social_stories_as_read/";
 	public static final String URL_SHARE_STORY = "http://newsblur.com/social/share_story";
 	
+	public static final String URL_LIKE_COMMENT = "http://www.newsblur.com/social/like_comment";
+	public static final String URL_UNLIKE_COMMENT = "http://www.newsblur.com/social/remove_like_comment";
+	
 	public static final String PARAMETER_FEEDS = "feeds";
 	public static final String PARAMETER_PASSWORD = "password";
 	public static final String PARAMETER_USER_ID = "user_id";
 	public static final String PARAMETER_USERNAME = "username";
 	public static final String PARAMETER_USERID = "user_id";
 	public static final String PARAMETER_STORYID = "story_id";
+	public static final String PARAMETER_COMMENT_USERID = "comment_user_id";
 	public static final String PARAMETER_FEEDID = "feed_id";
+	public static final String PARAMETER_STORY_FEEDID = "story_feed_id";
 	public static final String PARAMETER_SHARE_COMMENT = "comments";
 	public static final String PARAMETER_SHARE_SOURCEID = "source_user_id";
 	public static final String PARAMETER_MARKSOCIAL_JSON = "users_feeds_stories";
 	public static final String PARAMETER_PAGE_NUMBER = "page";
 	
 	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
+	
 	
 }

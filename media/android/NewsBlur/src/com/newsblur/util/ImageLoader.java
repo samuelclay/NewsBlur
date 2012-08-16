@@ -43,7 +43,7 @@ public class ImageLoader {
 			bitmap = memoryCache.get(url);
 		}
 		if (bitmap != null) {
-			bitmap = UIUtils.roundCorners(bitmap, 10f);
+			bitmap = UIUtils.roundBitmap(bitmap);
 			imageView.setImageBitmap(bitmap);
 		} else {
 			queuePhoto(url, imageView);
@@ -109,7 +109,7 @@ public class ImageLoader {
 			bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
 			memoryCache.put(url, bitmap);
 			outputStream.close();
-			bitmap = UIUtils.roundCorners(bitmap, 10f);
+			bitmap = UIUtils.roundBitmap(bitmap);
 			return bitmap;
 		} catch (IOException ex) {
 			Log.e(TAG, "Error loading image from network", ex.fillInStackTrace());

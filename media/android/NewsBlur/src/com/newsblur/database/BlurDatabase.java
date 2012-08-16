@@ -55,9 +55,19 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.COMMENT_DATE + TEXT + ", " +
 		DatabaseConstants.COMMENT_SHAREDDATE + TEXT + ", " +
 		DatabaseConstants.COMMENT_ID + TEXT + " PRIMARY KEY, " +
+		DatabaseConstants.COMMENT_LIKING_USERS + TEXT + ", " +
 		DatabaseConstants.COMMENT_STORYID + TEXT + ", " + 
 		DatabaseConstants.COMMENT_TEXT + TEXT + ", " +
 		DatabaseConstants.COMMENT_USERID + TEXT +
+		")";
+	
+	private final String REPLY_SQL = "CREATE TABLE " + DatabaseConstants.REPLY_TABLE + " (" +
+		DatabaseConstants.REPLY_DATE + TEXT + ", " +
+		DatabaseConstants.REPLY_SHORTDATE + TEXT + ", " +
+		DatabaseConstants.REPLY_ID + TEXT + " PRIMARY KEY, " +
+		DatabaseConstants.REPLY_COMMENTID + TEXT + ", " + 
+		DatabaseConstants.REPLY_TEXT + TEXT + ", " +
+		DatabaseConstants.REPLY_USERID + TEXT +
 		")";
 	
 	private final String OFFLINE_UPDATE_SQL = "CREATE TABLE " + DatabaseConstants.UPDATE_TABLE + " (" +
@@ -117,6 +127,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(FOLDER_SQL);
 		db.execSQL(STORY_SQL);
 		db.execSQL(COMMENT_SQL);
+		db.execSQL(REPLY_SQL);
 		db.execSQL(CLASSIFIER_SQL);
 		db.execSQL(FEED_FOLDER_SQL);
 		db.execSQL(SOCIALFEED_STORIES_SQL);

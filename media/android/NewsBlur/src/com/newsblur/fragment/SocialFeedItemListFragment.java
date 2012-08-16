@@ -65,7 +65,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		
 		setupSocialFeed();
 		
-		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
 		
 		String[] groupFrom = new String[] { DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
 		int[] groupTo = new int[] { R.id.row_item_feedicon, R.id.row_item_feedtitle, R.id.row_item_title, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar};
@@ -90,6 +90,8 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
 		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
+		itemList.setEmptyView(v.findViewById(R.id.empty_view));
+		
 		itemList.setOnScrollListener(this);
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
@@ -100,7 +102,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
 	    return cursorLoader;
 	}
 
@@ -164,7 +166,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	public void changeState(int state) {
 		currentState = state;
 		final String selection = FeedProvider.getSelectionFromState(state);
-		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
 		adapter.swapCursor(cursor);
 	}
 

@@ -21,6 +21,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FolderStructure;
+import com.newsblur.domain.Reply;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
@@ -187,6 +188,11 @@ public class APIManager {
 					comment.storyId = story.id;
 					comment.id = (builder.toString());
 					contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
+					
+					for (Reply reply : comment.replies) {
+						reply.commentId = comment.id;
+						contentResolver.insert(FeedProvider.REPLIES_URI, reply.getValues());
+					}
 				}
 				
 				for (Comment comment : story.friendsComments) {
@@ -197,6 +203,11 @@ public class APIManager {
 					comment.storyId = story.id;
 					comment.id = (builder.toString());
 					contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
+					
+					for (Reply reply : comment.replies) {
+						reply.commentId = comment.id;
+						contentResolver.insert(FeedProvider.REPLIES_URI, reply.getValues());
+					}
 				}
 				
 				Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
@@ -316,8 +327,27 @@ public class APIManager {
 				Uri feedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
 				contentResolver.update(feedUri, feedCountUpdate.socialfeedCounts.get(socialfeedId).getValues(), null, null);
 			}
-			
 		}
+	}
+
+	public boolean favouriteComment(String storyId, String commentId, String feedId) {
+		final APIClient client = new APIClient(context);
+		ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		values.put(APIConstants.PARAMETER_STORY_FEEDID, feedId);
+		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentId);
+		final APIResponse response = client.post(APIConstants.URL_LIKE_COMMENT, values);
+		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+	}
+
+	public Boolean unFavouriteComment(String storyId, String commentId, String feedId) {
+		final APIClient client = new APIClient(context);
+		ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		values.put(APIConstants.PARAMETER_STORY_FEEDID, feedId);
+		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentId);
+		final APIResponse response = client.post(APIConstants.URL_UNLIKE_COMMENT, values);
+		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
 
 }

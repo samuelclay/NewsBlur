@@ -28,6 +28,7 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri SOCIALFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/socialfeed/");
 	public static final Uri STORY_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/story/");
 	public static final Uri COMMENTS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/comments/");
+	public static final Uri REPLIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/replies/");
 	public static final Uri FEED_FOLDER_MAP_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedfoldermap/");
 	public static final Uri FOLDERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/folders/");
 	
@@ -46,6 +47,8 @@ public class FeedProvider extends ContentProvider {
 	private static final int OFFLINE_UPDATES = 12;
 	private static final int DECREMENT_SOCIALFEED_COUNT = 13;
 	private static final int INDIVIDUAL_SOCIAL_FEED = 14;
+	private static final int REPLIES = 15;
+	
 	
 	private BlurDatabase databaseHelper;
 
@@ -64,6 +67,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feed/#/", FEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/story/*/", INDIVIDUAL_STORY);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/comments/", STORY_COMMENTS);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/replies/", REPLIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/", FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedfoldermap/*/", SPECIFIC_FEED_FOLDER_MAP);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
@@ -151,6 +155,14 @@ public class FeedProvider extends ContentProvider {
 			db.setTransactionSuccessful();
 			db.endTransaction();
 			break;	
+		
+			// Inserting a reply
+		case REPLIES:
+			db.beginTransaction();
+			db.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			break;
 
 			// Inserting a story	
 		case FEED_STORIES:
@@ -215,6 +227,11 @@ public class FeedProvider extends ContentProvider {
 			selection = DatabaseConstants.COMMENT_STORYID + " = ?";
 			return db.query(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_COLUMNS, selection, selectionArgs, null, null, null);
 
+			// Querying for replies to a comment
+		case REPLIES:
+			selection = DatabaseConstants.REPLY_COMMENTID+ " = ?";
+			return db.query(DatabaseConstants.REPLY_TABLE, DatabaseConstants.REPLY_COLUMNS, selection, selectionArgs, null, null, null);
+			
 			// Query for feeds with no folder mapping	
 		case FEED_FOLDER_MAP:
 			String nullFolderQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE + 
