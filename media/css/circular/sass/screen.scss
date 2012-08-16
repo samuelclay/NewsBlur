@@ -27,6 +27,55 @@ $default-box-shadow-v-offset: 0px;
 $default-box-shadow-blur: 1px;
 
 
+@mixin NC-default-button {
+    border: 1px solid $border-color;
+    @include border-radius(3px, 3px);
+    @include single-box-shadow(white, 0px, 0px, 2px, false, true);
+    @include background-image(linear-gradient(white, #f6f6f6));
+    @include single-text-shadow(0px, -1px, 1px, false, white);
+    color: $light-text-color;
+    height: 20px;
+    text-transform: capitalize;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    
+    &:hover {
+        @include background-image(linear-gradient(#f6f6f6, white));
+    }
+    
+    &:active {
+        @include background-image(linear-gradient(#e9e9e9, #e9e9e9));
+        @include single-box-shadow(#c1c1c1, 0px, 0px, 10px, false, true);
+        @include single-text-shadow(0px, -1px, 1px, false, white);
+        color: $text-color;
+    }
+}
+
+@mixin NC-blue-button {
+    border: 1px solid #4388b5;
+    @include border-radius(3px, 3px);
+    @include single-box-shadow(#80c5f2, 0px, 0px, 2px, false, true);
+    @include background-image(linear-gradient(#6eb4e3, #4d98d2));
+    @include single-text-shadow(0px, -1px, 1px, false, #4388b5);
+    color: white;
+    height: 20px;
+    text-transform: capitalize;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    padding: 5px 20px;
+    
+    &:hover {
+        @include background-image(linear-gradient(#6bb1e0, #6bb1e0));
+    }
+    
+    &:active {
+        @include background-image(linear-gradient(#4d98d2, #4d98d2));
+        @include single-box-shadow(#1f74b8, 0px, 0px, 10px, false, true);
+    }
+}
+
 body {
     background: #ebedee image-url('background.png') repeat 0 0;
     font-family: Helvetica, arial, san-serif;
@@ -41,12 +90,48 @@ a {
 .NB-page {
     width: $page-width;
     margin: 0 auto;
+    padding-top: 120px;
 }
 
 .NB-header {
-  background: image-url('header_background.png') repeat-x 0 0;
-  height: 99px;
-  display: none;
+    display: none;
+}
+
+.NB-footer-logo {
+    margin: 20px auto;
+    width: $page-width;
+    text-align: center;
+}
+
+.NC-header {
+    background: image-url('header_background.png') repeat 0 0;
+    height: 100px;
+    @include single-box-shadow(#A7A7A7, 0px, 0px, 10px, false, false);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    
+    .NC-header-inner {
+        width: $page-width;
+        margin: 0 auto;
+        
+        h1.NC-logo a {
+            width: 217px;
+            height: 100px;
+            text-indent: -10000em;
+            display: block;
+            float: left;
+            background: image-url('circular_logo.png') repeat-x 0 0;
+        }
+        
+        .NC-invite-button {
+            float: right;
+            @include NC-blue-button;
+            margin-top: 32px;
+        }
+    }
 }
 
 .NB-mark {
@@ -59,7 +144,7 @@ a {
     background: #fff;
     position: relative; /* contains all children */
     overflow: hidden;
-    @include single-box-shadow(#dcddde, 0px, 0px, 2px, false, false);
+    @include single-box-shadow(#c8c8c8, 0px, 0px, 2px, false, false);
 
     .NB-story-title {
         a {
@@ -103,7 +188,6 @@ a {
     .NB-story-content-wrapper {
         margin: 10px 0;
         max-height: 300px;
-        padding-bottom: 24px;
         overflow: hidden;
     }
     
@@ -119,6 +203,7 @@ a {
         img {
             width: 100% !important;
             height: auto !important;
+            margin: 10px 0;
         }
     }
     
@@ -168,23 +253,24 @@ a {
     font-size: $small-font-size;
     width: $comment-width;
     margin: 0 auto;
+    
+    .NB-user-avatar img,
+    img.NB-user-avatar {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        top: 15px;
+        left: 0;
+         @include border-radius(3px, 3px);
+         /* @include single-box-shadow; gets in the way of transparent PNGs */
+    }
 
     .NB-story-comment {
-        padding: 10px 0 10px 44px;
+        padding: 15px 0 18px 44px;
         border-bottom: 1px solid $border-color;
         position: relative;
         min-height: 32px;
-    
-        .NB-user-avatar img {
-            position: absolute;
-            width: 32px;
-            height: 32px;
-            top: 10px;
-            left: 0;
-             @include border-radius(3px, 3px);
-             /* @include single-box-shadow; gets in the way of transparent PNGs */
-        }
-        
+
         .NB-story-comment-username {
             float: left;
             font-size: $smallest-font-size;
@@ -205,43 +291,42 @@ a {
         
         .NB-story-comment-content {
             padding-top: 4px;
+            line-height: 18px;
+            clear: both;
+        }
+    }
+    
+    .NB-story-comment-replies {
+        margin-left: -29px;
+        margin-top: 15px;
+        padding: 15px 0 0px 44px;
+        border-top: 1px solid $border-color;
+        position: relative;
+        min-height: 32px;
+        
+        .NB-story-comment-reply-content {
+            padding-top: 4px;
+            line-height: 18px;
             clear: both;
         }
     }
     
     .NB-story-comment-input {
         width: 376px;
-        height: 24px;
+        height: 16px;
         margin-top: 2px;
+        font-size: 12px;
+        padding: 6px 4px;
         border: 1px solid $border-color;
     }
     
     .NB-story-comment-buttons {
         .NB-story-comment-save {
             position: absolute;
-            top: 10px;
+            top: 15px;
             right: 0;
             width: 120px;
-            border: 1px solid $border-color;
-            @include border-radius(3px, 3px);
-            @include single-box-shadow(white, 0px, 0px, 2px, false, true);
-            @include background-image(linear-gradient(white, #f6f6f6));
-            background-color: #000;
-            color: $light-text-color;
-            height: 20px;
-            text-transform: capitalize;
-            line-height: 20px;
-            text-align: center;
-            
-            &:hover {
-                @include background-image(linear-gradient(#f6f6f6, white));
-            }
-            
-            &:active {
-                @include background-image(linear-gradient(#e9e9e9, #e9e9e9));
-                @include single-box-shadow(#c1c1c1, 0px, 0px, 10px, false, true);
-                color: $text-color;
-            }
+            @include NC-default-button;
         }
         
         .NB-story-comment-delete {
@@ -255,5 +340,24 @@ a {
         border-bottom: 1px solid $border-color;
         padding: 3px 0;
     }
+}
+
+.NB-page-controls-next, .NB-page-controls-end {
+    background-color: #6eb4e3;
+    @include NC-blue-button;
+    position: relative;
+    overflow: hidden;
     
+    -webkit-transition: all .12s ease-out;
+    -moz-transition: all .12s ease-out;
+    -o-transition: all .12s ease-out;
+    -ms-transition: all .12s ease-out;
+    
+    .NB-page-controls-text {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        margin-bottom: -15px;
+        bottom: 20px;
+    }
 }

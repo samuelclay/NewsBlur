@@ -61,8 +61,14 @@
 </head>
 
 <body class="{% if user.is_authenticated %}NB-authenticated{% else %}NB-unauthenticated{% endif %}">
-    
+<header class="NC-header">
+    <div class="NC-header-inner">
+        <h1 class="NC-logo"><a href="/">Circular</a></h1>
+        <div class="NC-button NC-invite-button">Request an Invite</div>
+    </div>
+</header>
 <div class="NB-page">
+
     <header class="NB-header">
         <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
 
@@ -134,7 +140,7 @@
     
 <footer>
     <div class="NB-footer-logo">
-        <a href="//{% current_domain %}"><img src="{{ MEDIA_URL }}img/logo_newsblur_blur.png" />
+        <a href="//{% current_domain %}"><img src="{{ MEDIA_URL }}img/circular/circular_footer.png" />
     </div>
 </footer>
 

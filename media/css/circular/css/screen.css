@@ -67,38 +67,116 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
 }
 
-/* line 30, ../sass/screen.scss */
+/* line 79, ../sass/screen.scss */
 body {
   background: #ebedee url('/media/img/circular/background.png') repeat 0 0;
   font-family: Helvetica, arial, san-serif;
   color: #333333;
 }
 
-/* line 36, ../sass/screen.scss */
+/* line 85, ../sass/screen.scss */
 a {
   color: #333333;
   text-decoration: none;
 }
 
-/* line 41, ../sass/screen.scss */
+/* line 90, ../sass/screen.scss */
 .NB-page {
   width: 700px;
   margin: 0 auto;
+  padding-top: 120px;
 }
 
-/* line 46, ../sass/screen.scss */
+/* line 96, ../sass/screen.scss */
 .NB-header {
-  background: url('/media/img/circular/header_background.png') repeat-x 0 0;
-  height: 99px;
   display: none;
 }
 
-/* line 52, ../sass/screen.scss */
+/* line 100, ../sass/screen.scss */
+.NB-footer-logo {
+  margin: 20px auto;
+  width: 700px;
+  text-align: center;
+}
+
+/* line 106, ../sass/screen.scss */
+.NC-header {
+  background: url('/media/img/circular/header_background.png') repeat 0 0;
+  height: 100px;
+  -webkit-box-shadow: 0px 0px 10px #a7a7a7;
+  -moz-box-shadow: 0px 0px 10px #a7a7a7;
+  box-shadow: 0px 0px 10px #a7a7a7;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+/* line 116, ../sass/screen.scss */
+.NC-header .NC-header-inner {
+  width: 700px;
+  margin: 0 auto;
+}
+/* line 120, ../sass/screen.scss */
+.NC-header .NC-header-inner h1.NC-logo a {
+  width: 217px;
+  height: 100px;
+  text-indent: -10000em;
+  display: block;
+  float: left;
+  background: url('/media/img/circular/circular_logo.png') repeat-x 0 0;
+}
+/* line 129, ../sass/screen.scss */
+.NC-header .NC-header-inner .NC-invite-button {
+  float: right;
+  border: 1px solid #4388b5;
+  -webkit-border-radius: 3px 3px;
+  -moz-border-radius: 3px / 3px;
+  border-radius: 3px / 3px;
+  -webkit-box-shadow: inset 0px 0px 2px #80c5f2;
+  -moz-box-shadow: inset 0px 0px 2px #80c5f2;
+  box-shadow: inset 0px 0px 2px #80c5f2;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6eb4e3), color-stop(100%, #4d98d2));
+  background-image: -webkit-linear-gradient(#6eb4e3, #4d98d2);
+  background-image: -moz-linear-gradient(#6eb4e3, #4d98d2);
+  background-image: -o-linear-gradient(#6eb4e3, #4d98d2);
+  background-image: linear-gradient(#6eb4e3, #4d98d2);
+  text-shadow: 0px -1px 1px #4388b5;
+  color: white;
+  height: 20px;
+  text-transform: capitalize;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
+  padding: 5px 20px;
+  margin-top: 32px;
+}
+/* line 69, ../sass/screen.scss */
+.NC-header .NC-header-inner .NC-invite-button:hover {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
+  background-image: -webkit-linear-gradient(#6bb1e0, #6bb1e0);
+  background-image: -moz-linear-gradient(#6bb1e0, #6bb1e0);
+  background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
+  background-image: linear-gradient(#6bb1e0, #6bb1e0);
+}
+/* line 73, ../sass/screen.scss */
+.NC-header .NC-header-inner .NC-invite-button:active {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
+  background-image: -webkit-linear-gradient(#4d98d2, #4d98d2);
+  background-image: -moz-linear-gradient(#4d98d2, #4d98d2);
+  background-image: -o-linear-gradient(#4d98d2, #4d98d2);
+  background-image: linear-gradient(#4d98d2, #4d98d2);
+  -webkit-box-shadow: inset 0px 0px 10px #1f74b8;
+  -moz-box-shadow: inset 0px 0px 10px #1f74b8;
+  box-shadow: inset 0px 0px 10px #1f74b8;
+}
+
+/* line 137, ../sass/screen.scss */
 .NB-mark {
   margin: 20px 0 50px 0;
 }
 
-/* line 56, ../sass/screen.scss */
+/* line 141, ../sass/screen.scss */
 .NB-story-wrapper {
   border-left: 5px solid #fff;
   padding: 25px 25px 15px;
@@ -106,11 +184,11 @@ a {
   position: relative;
   /* contains all children */
   overflow: hidden;
-  -webkit-box-shadow: 0px 0px 2px #dcddde;
-  -moz-box-shadow: 0px 0px 2px #dcddde;
-  box-shadow: 0px 0px 2px #dcddde;
+  -webkit-box-shadow: 0px 0px 2px #c8c8c8;
+  -moz-box-shadow: 0px 0px 2px #c8c8c8;
+  box-shadow: 0px 0px 2px #c8c8c8;
 }
-/* line 65, ../sass/screen.scss */
+/* line 150, ../sass/screen.scss */
 .NB-story-wrapper .NB-story-title a {
   font-size: 20px;
   font-weight: bold;
@@ -118,7 +196,7 @@ a {
   text-decoration: none;
   color: #333333;
 }
-/* line 73, ../sass/screen.scss */
+/* line 158, ../sass/screen.scss */
 .NB-story-wrapper .NB-story-title span {
   font-size: 14px;
   color: gray;
@@ -126,17 +204,17 @@ a {
   display: inline-block;
   /* to ensure that the author is always on one line */
 }
-/* line 81, ../sass/screen.scss */
+/* line 166, ../sass/screen.scss */
 .NB-story-wrapper .NB-feed {
   margin: 2px 0 10px;
   text-transform: capitalize;
 }
-/* line 85, ../sass/screen.scss */
+/* line 170, ../sass/screen.scss */
 .NB-story-wrapper .NB-feed a {
   color: gray;
   font-size: 12px;
 }
-/* line 90, ../sass/screen.scss */
+/* line 175, ../sass/screen.scss */
 .NB-story-wrapper .NB-feed img {
   float: left;
   width: 16px;
@@ -144,7 +222,7 @@ a {
   margin-right: 4px;
 }
 
-/* line 99, ../sass/screen.scss */
+/* line 184, ../sass/screen.scss */
 .NB-story {
   font-size: 14px;
   line-height: 140%;
@@ -153,23 +231,23 @@ a {
   
   */
 }
-/* line 103, ../sass/screen.scss */
+/* line 188, ../sass/screen.scss */
 .NB-story .NB-story-content-wrapper {
   margin: 10px 0;
   max-height: 300px;
-  padding-bottom: 24px;
   overflow: hidden;
 }
-/* line 115, ../sass/screen.scss */
+/* line 199, ../sass/screen.scss */
 .NB-story .NB-story-content p {
   margin: 10px 0;
 }
-/* line 119, ../sass/screen.scss */
+/* line 203, ../sass/screen.scss */
 .NB-story .NB-story-content img {
   width: 100% !important;
   height: auto !important;
+  margin: 10px 0;
 }
-/* line 125, ../sass/screen.scss */
+/* line 210, ../sass/screen.scss */
 .NB-story .NB-story-content-expander {
   display: none;
   position: absolute;
@@ -180,31 +258,31 @@ a {
   color: #1a9fff;
   font-size: 14px;
 }
-/* line 136, ../sass/screen.scss */
+/* line 221, ../sass/screen.scss */
 .NB-story .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story .NB-story-content-expander .NB-story-content-expander-pages {
   display: inline-block;
 }
 
-/* line 142, ../sass/screen.scss */
+/* line 227, ../sass/screen.scss */
 .NB-story-shares-container {
   text-align: right;
   color: gray;
   font-size: 11px;
   line-height: 16px;
 }
-/* line 148, ../sass/screen.scss */
+/* line 233, ../sass/screen.scss */
 .NB-story-shares-container .NB-story-share-label {
   display: inline-block;
   vertical-align: top;
   margin-top: 3px;
 }
-/* line 154, ../sass/screen.scss */
+/* line 239, ../sass/screen.scss */
 .NB-story-shares-container .NB-user-avatar {
   display: inline-block;
   margin: 2px 0 0 2px;
 }
-/* line 158, ../sass/screen.scss */
+/* line 243, ../sass/screen.scss */
 .NB-story-shares-container .NB-user-avatar img {
   -webkit-box-shadow: 0px 0px 1px #bdbdbd;
   -moz-box-shadow: 0px 0px 1px #bdbdbd;
@@ -214,65 +292,84 @@ a {
   display: block;
 }
 
-/* line 167, ../sass/screen.scss */
+/* line 252, ../sass/screen.scss */
 .NB-story-comments-container {
   font-size: 14px;
   width: 586px;
   margin: 0 auto;
 }
-/* line 172, ../sass/screen.scss */
-.NB-story-comments-container .NB-story-comment {
-  padding: 10px 0 10px 44px;
-  border-bottom: 1px solid #bdbdbd;
-  position: relative;
-  min-height: 32px;
-}
-/* line 178, ../sass/screen.scss */
-.NB-story-comments-container .NB-story-comment .NB-user-avatar img {
+/* line 258, ../sass/screen.scss */
+.NB-story-comments-container .NB-user-avatar img,
+.NB-story-comments-container img.NB-user-avatar {
   position: absolute;
   width: 32px;
   height: 32px;
-  top: 10px;
+  top: 15px;
   left: 0;
   -webkit-border-radius: 3px 3px;
   -moz-border-radius: 3px / 3px;
   border-radius: 3px / 3px;
   /* @include single-box-shadow; gets in the way of transparent PNGs */
 }
-/* line 188, ../sass/screen.scss */
+/* line 268, ../sass/screen.scss */
+.NB-story-comments-container .NB-story-comment {
+  padding: 15px 0 18px 44px;
+  border-bottom: 1px solid #bdbdbd;
+  position: relative;
+  min-height: 32px;
+}
+/* line 274, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-username {
   float: left;
   font-size: 12px;
   font-weight: bold;
 }
-/* line 194, ../sass/screen.scss */
+/* line 280, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
   float: right;
   font-size: 12px;
   color: gray;
   text-shadow: 0px 1px 1px white;
 }
-/* line 202, ../sass/screen.scss */
+/* line 288, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reply-button,
 .NB-story-comments-container .NB-story-comment .NB-story-comment-edit-button {
   display: none;
 }
-/* line 206, ../sass/screen.scss */
+/* line 292, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-content {
   padding-top: 4px;
+  line-height: 18px;
   clear: both;
 }
-/* line 212, ../sass/screen.scss */
+/* line 299, ../sass/screen.scss */
+.NB-story-comments-container .NB-story-comment-replies {
+  margin-left: -29px;
+  margin-top: 15px;
+  padding: 15px 0 0px 44px;
+  border-top: 1px solid #bdbdbd;
+  position: relative;
+  min-height: 32px;
+}
+/* line 307, ../sass/screen.scss */
+.NB-story-comments-container .NB-story-comment-replies .NB-story-comment-reply-content {
+  padding-top: 4px;
+  line-height: 18px;
+  clear: both;
+}
+/* line 314, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-input {
   width: 376px;
-  height: 24px;
+  height: 16px;
   margin-top: 2px;
+  font-size: 12px;
+  padding: 6px 4px;
   border: 1px solid #bdbdbd;
 }
-/* line 220, ../sass/screen.scss */
+/* line 324, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save {
   position: absolute;
-  top: 10px;
+  top: 15px;
   right: 0;
   width: 120px;
   border: 1px solid #bdbdbd;
@@ -287,14 +384,15 @@ a {
   background-image: -moz-linear-gradient(#ffffff, #f6f6f6);
   background-image: -o-linear-gradient(#ffffff, #f6f6f6);
   background-image: linear-gradient(#ffffff, #f6f6f6);
-  background-color: #000;
+  text-shadow: 0px -1px 1px white;
   color: gray;
   height: 20px;
   text-transform: capitalize;
   line-height: 20px;
   text-align: center;
+  cursor: pointer;
 }
-/* line 236, ../sass/screen.scss */
+/* line 43, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f6f6f6), color-stop(100%, #ffffff));
   background-image: -webkit-linear-gradient(#f6f6f6, #ffffff);
@@ -302,7 +400,7 @@ a {
   background-image: -o-linear-gradient(#f6f6f6, #ffffff);
   background-image: linear-gradient(#f6f6f6, #ffffff);
 }
-/* line 240, ../sass/screen.scss */
+/* line 47, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e9e9e9), color-stop(100%, #e9e9e9));
   background-image: -webkit-linear-gradient(#e9e9e9, #e9e9e9);
@@ -312,16 +410,75 @@ a {
   -webkit-box-shadow: inset 0px 0px 10px #c1c1c1;
   -moz-box-shadow: inset 0px 0px 10px #c1c1c1;
   box-shadow: inset 0px 0px 10px #c1c1c1;
+  text-shadow: 0px -1px 1px white;
   color: #333333;
 }
-/* line 247, ../sass/screen.scss */
+/* line 332, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-delete {
   display: none;
 }
-/* line 252, ../sass/screen.scss */
+/* line 337, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comments-public-header-wrapper {
   color: gray;
   font-size: 12px;
   border-bottom: 1px solid #bdbdbd;
   padding: 3px 0;
+}
+
+/* line 345, ../sass/screen.scss */
+.NB-page-controls-next, .NB-page-controls-end {
+  background-color: #6eb4e3;
+  border: 1px solid #4388b5;
+  -webkit-border-radius: 3px 3px;
+  -moz-border-radius: 3px / 3px;
+  border-radius: 3px / 3px;
+  -webkit-box-shadow: inset 0px 0px 2px #80c5f2;
+  -moz-box-shadow: inset 0px 0px 2px #80c5f2;
+  box-shadow: inset 0px 0px 2px #80c5f2;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6eb4e3), color-stop(100%, #4d98d2));
+  background-image: -webkit-linear-gradient(#6eb4e3, #4d98d2);
+  background-image: -moz-linear-gradient(#6eb4e3, #4d98d2);
+  background-image: -o-linear-gradient(#6eb4e3, #4d98d2);
+  background-image: linear-gradient(#6eb4e3, #4d98d2);
+  text-shadow: 0px -1px 1px #4388b5;
+  color: white;
+  height: 20px;
+  text-transform: capitalize;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
+  padding: 5px 20px;
+  position: relative;
+  overflow: hidden;
+  -webkit-transition: all .12s ease-out;
+  -moz-transition: all .12s ease-out;
+  -o-transition: all .12s ease-out;
+  -ms-transition: all .12s ease-out;
+}
+/* line 69, ../sass/screen.scss */
+.NB-page-controls-next:hover, .NB-page-controls-end:hover {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
+  background-image: -webkit-linear-gradient(#6bb1e0, #6bb1e0);
+  background-image: -moz-linear-gradient(#6bb1e0, #6bb1e0);
+  background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
+  background-image: linear-gradient(#6bb1e0, #6bb1e0);
+}
+/* line 73, ../sass/screen.scss */
+.NB-page-controls-next:active, .NB-page-controls-end:active {
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
+  background-image: -webkit-linear-gradient(#4d98d2, #4d98d2);
+  background-image: -moz-linear-gradient(#4d98d2, #4d98d2);
+  background-image: -o-linear-gradient(#4d98d2, #4d98d2);
+  background-image: linear-gradient(#4d98d2, #4d98d2);
+  -webkit-box-shadow: inset 0px 0px 10px #1f74b8;
+  -moz-box-shadow: inset 0px 0px 10px #1f74b8;
+  box-shadow: inset 0px 0px 10px #1f74b8;
+}
+/* line 356, ../sass/screen.scss */
+.NB-page-controls-next .NB-page-controls-text, .NB-page-controls-end .NB-page-controls-text {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  margin-bottom: -15px;
+  bottom: 20px;
 }
