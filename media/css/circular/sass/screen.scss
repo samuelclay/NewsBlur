@@ -39,7 +39,7 @@ $default-box-shadow-blur: 1px;
     line-height: 20px;
     text-align: center;
     cursor: pointer;
-    padding: 4px 15px;
+    padding: 4px 12px;
     font-size: 14px;
     
     &:hover {
@@ -66,7 +66,7 @@ $default-box-shadow-blur: 1px;
     line-height: 20px;
     text-align: center;
     cursor: pointer;
-    padding: 4px 15px;
+    padding: 4px 12px;
     font-size: 14px;
     
     &:hover {
@@ -155,7 +155,7 @@ a {
     background: #fff;
     position: relative; /* contains all children */
     overflow: hidden;
-    @include single-box-shadow(#c8c8c8, 0px, 0px, 2px, false, false);
+    @include single-box-shadow(#c8c8c8, 0px, 0px, 5px, false, false);
 
     .NB-story-title {
         a {
@@ -198,7 +198,7 @@ a {
     
     .NB-story-content-wrapper {
         margin: 10px 0;
-        max-height: 300px;
+        max-height: 400px;
         overflow: hidden;
     }
     

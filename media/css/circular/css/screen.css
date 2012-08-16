@@ -148,7 +148,7 @@ a {
   line-height: 20px;
   text-align: center;
   cursor: pointer;
-  padding: 4px 15px;
+  padding: 4px 12px;
   font-size: 14px;
   margin-top: 32px;
   margin-left: 10px;
@@ -194,7 +194,7 @@ a {
   line-height: 20px;
   text-align: center;
   cursor: pointer;
-  padding: 4px 15px;
+  padding: 4px 12px;
   font-size: 14px;
   margin-top: 32px;
   margin-left: 10px;
@@ -234,9 +234,9 @@ a {
   position: relative;
   /* contains all children */
   overflow: hidden;
-  -webkit-box-shadow: 0px 0px 2px #c8c8c8;
-  -moz-box-shadow: 0px 0px 2px #c8c8c8;
-  box-shadow: 0px 0px 2px #c8c8c8;
+  -webkit-box-shadow: 0px 0px 5px #c8c8c8;
+  -moz-box-shadow: 0px 0px 5px #c8c8c8;
+  box-shadow: 0px 0px 5px #c8c8c8;
 }
 /* line 161, ../sass/screen.scss */
 .NB-story-wrapper .NB-story-title a {
@@ -284,7 +284,7 @@ a {
 /* line 199, ../sass/screen.scss */
 .NB-story .NB-story-content-wrapper {
   margin: 10px 0;
-  max-height: 300px;
+  max-height: 400px;
   overflow: hidden;
 }
 /* line 210, ../sass/screen.scss */
@@ -446,7 +446,7 @@ body.NC-hide-comments .NB-story-comments-container {
   line-height: 20px;
   text-align: center;
   cursor: pointer;
-  padding: 4px 15px;
+  padding: 4px 12px;
   font-size: 14px;
 }
 /* line 45, ../sass/screen.scss */
@@ -505,7 +505,7 @@ body.NC-hide-comments .NB-story-comments-container {
   line-height: 20px;
   text-align: center;
   cursor: pointer;
-  padding: 4px 15px;
+  padding: 4px 12px;
   font-size: 14px;
   position: relative;
   overflow: hidden;
