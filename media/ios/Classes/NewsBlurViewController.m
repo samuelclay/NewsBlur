@@ -52,6 +52,8 @@
 @synthesize imageCache;
 @synthesize popoverController;
 @synthesize currentRowAtIndexPath;
+@synthesize noFocusMessage;
+@synthesize toolbarLeftMargin;
 @synthesize hasNoSites;
 @synthesize updatedDictFeeds_;
 @synthesize updatedDictSocialFeeds_;
@@ -83,9 +85,11 @@
     imageCache = [[NSCache alloc] init];
     [imageCache setDelegate:self];
     
-    [self.intelligenceControl setWidth:45 forSegmentAtIndex:0];
-    [self.intelligenceControl setWidth:70 forSegmentAtIndex:1];
-    [self.intelligenceControl setWidth:65 forSegmentAtIndex:2];
+    [self.intelligenceControl setWidth:50 forSegmentAtIndex:0];
+    [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
+    [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
+    self.intelligenceControl.hidden = YES;
+    
 
 }
 
@@ -170,6 +174,7 @@
     
     [super viewDidAppear:animated];
     [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.6];
+    self.navigationController.navigationBar.backItem.title = @"All Sites";
 }
 
 - (void)fadeSelectedCell {
@@ -220,6 +225,8 @@
 }
 
 - (void)viewDidUnload {
+    [self setToolbarLeftMargin:nil];
+    [self setNoFocusMessage:nil];
     [self setInnerView:nil];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -472,6 +479,31 @@
         [appDelegate showFirstTimeUser];
         return;
     }
+    
+    BOOL hasFocusStory = NO;
+    for (id feedId in appDelegate.dictFeeds) {
+        NSDictionary *feed = [appDelegate.dictFeeds objectForKey:feedId];
+        if ([[feed objectForKey:@"ps"] intValue] > 0) {
+            hasFocusStory = YES;
+            break;
+        }
+    }
+
+    if (!hasFocusStory) {
+        [self.intelligenceControl removeSegmentAtIndex:2 animated:NO];
+        [self.intelligenceControl setWidth:90 forSegmentAtIndex:0];
+        [self.intelligenceControl setWidth:90 forSegmentAtIndex:1];
+    } else {
+        UIImage *green = [UIImage imageNamed:@"green_focus.png"];
+        if (self.intelligenceControl.numberOfSegments == 2) {
+            [self.intelligenceControl insertSegmentWithImage:green atIndex:2 animated:NO];
+            [self.intelligenceControl setWidth:50 forSegmentAtIndex:0];
+            [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
+            [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
+        }
+    }
+    
+    self.intelligenceControl.hidden = NO;
 }
 
 - (void)showUserProfile {
@@ -638,6 +670,7 @@
         
         return cell;
     }
+
     
     NSDictionary *feed;
 
@@ -1005,6 +1038,7 @@
     }
     
 	[hud hide:YES afterDelay:0.75];
+        
 //    [self.feedTitlesTable reloadData];
 }
 

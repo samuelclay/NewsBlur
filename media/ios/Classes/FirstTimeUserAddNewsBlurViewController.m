@@ -29,7 +29,7 @@
     // Do any additional setup after loading the view from its nib.
     
     
-    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Start Enjoying" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
+    UIBarButtonItem *next = [[UIBarButtonItem alloc] initWithTitle:@"Start reading" style:UIBarButtonSystemItemDone target:self action:@selector(tapNextButton)];
     self.nextButton = next;
     self.navigationItem.rightBarButtonItem = next;
     

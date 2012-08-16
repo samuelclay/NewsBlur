@@ -20,7 +20,7 @@
 #import "AddSiteViewController.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
-#define NB_DEFAULT_STORY_TITLE_HEIGHT 760
+#define NB_DEFAULT_STORY_TITLE_HEIGHT 1004
 #define NB_DEFAULT_SLIDER_INTERVAL 0.35
 #define NB_DEFAULT_SLIDER_INTERVAL_OUT 0.35
 #define NB_DEFAULT_SHARE_HEIGHT 144
@@ -72,8 +72,6 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        
-
     }
     return self;
 }
@@ -121,7 +119,7 @@
         self.storyTitlesOnLeft = NO;
     } else {
         self.storyTitlesYCoordinate = NB_DEFAULT_STORY_TITLE_HEIGHT;
-        self.storyTitlesOnLeft = NO;
+        self.storyTitlesOnLeft = YES;
     }
     
     // set up story titles stub

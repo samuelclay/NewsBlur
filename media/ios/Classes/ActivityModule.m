@@ -94,7 +94,7 @@
         self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];  
         NSString *urlString = [NSString stringWithFormat:@
                                "http://%@/social/activities?user_id=%@&page=%i&limit=10"
-                               "&category=star&category=feedsub&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
+                               "&category=signup&category=star&category=feedsub&category=follow&category=comment_reply&category=comment_like&category=sharedstory",
                                NEWSBLUR_URL,
                                [appDelegate.dictUserProfile objectForKey:@"user_id"],
                                page];
@@ -210,7 +210,8 @@
         NSString *category = [activitiy objectForKey:@"category"];
         if ([category isEqualToString:@"follow"]) {
             cell.accessoryType = UITableViewCellAccessoryNone;
-        } else if ([category isEqualToString:@"star"]){
+        } else if ([category isEqualToString:@"star"] ||
+                   [category isEqualToString:@"signup"]){
             cell.accessoryType = UITableViewCellAccessoryNone;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         } else {
@@ -251,14 +252,19 @@
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [[activity objectForKey:@"with_user"] objectForKey:@"id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"] showFindingStory:YES];
+            appDelegate.tryFeedCategory = category;
         } else if ([category isEqualToString:@"sharedstory"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]];
             NSString *contentIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"content_id"]];
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:YES withUser:[activity objectForKey:@"with_user"] showFindingStory:YES];
+            appDelegate.tryFeedCategory = category;
+
         } else if ([category isEqualToString:@"feedsub"]) {
             NSString *feedIdStr = [NSString stringWithFormat:@"%@", [activity objectForKey:@"feed_id"]];
             NSString *contentIdStr = nil;
             [appDelegate loadTryFeedDetailView:feedIdStr withStory:contentIdStr isSocial:NO withUser:[activity objectForKey:@"with_user"] showFindingStory:NO];
+            appDelegate.tryFeedCategory = category;
+
         } 
 
         // have the selected cell deselect

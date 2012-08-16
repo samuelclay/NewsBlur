@@ -76,7 +76,7 @@
     
     UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] 
                                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    activityView.frame = CGRectMake(75, 7, 20, 20.0);
+    activityView.frame = CGRectMake(68, 7, 20, 20.0);
     self.activityIndicator = activityView;
 }
 
@@ -85,7 +85,7 @@
     [self.categoriesTable reloadData];
     [self.scrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.tableViewHeight + 100)];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.categoriesTable.frame = CGRectMake((self.view.frame.size.width - 320)/2, 60, self.categoriesTable.frame.size.width, self.tableViewHeight);        
+        self.categoriesTable.frame = CGRectMake((self.view.frame.size.width - 300)/2, 60, self.categoriesTable.frame.size.width, self.tableViewHeight);        
     } else {
         self.categoriesTable.frame = CGRectMake(10, 60, self.categoriesTable.frame.size.width, self.tableViewHeight); 
     }
@@ -162,6 +162,7 @@
 
     self.nextButton.enabled = YES;
     [self.googleReaderButton setTitle:@"Importing sites..." forState:UIControlStateNormal];
+    self.instructionLabel.textColor = UIColorFromRGB(0x333333);
     self.googleReaderButton.userInteractionEnabled = NO;
     self.instructionLabel.text = @"This might take a minute.  Feel free to continue...";
     [self.googleReaderButton addSubview:self.activityIndicator];
@@ -179,6 +180,7 @@
 
 - (void)importFromGoogleReaderFailed:(NSString *)error {
     [self.googleReaderButton setTitle:@"Retry Google Reader" forState:UIControlStateNormal];
+    self.instructionLabel.textColor = [UIColor redColor];
     self.instructionLabel.text = error;
 }
 
@@ -198,7 +200,7 @@
 }
 
 - (void)updateSites {
-    self.instructionLabel.text = @"And just like that, we're done!  Add more categories or tap Next step...";
+    self.instructionLabel.text = @"And just like that, we're done!\nAdd more categories or move on...";
     NSString *msg = [NSString stringWithFormat:@"Imported %i site%@", 
                      self.importedFeedCount_,
                      self.importedFeedCount_ == 1 ? @"" : @"s"];
@@ -324,8 +326,11 @@ viewForHeaderInSection:(NSInteger)section {
     UIButton *headerBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     headerBtn.tag = section + 1000;
     [headerBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
-    headerBtn.titleLabel.font = [UIFont systemFontOfSize:13];
+    headerBtn.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
+    
     headerBtn.frame = CGRectMake(0, 20.0, 300, 34.0);
+    headerBtn.titleLabel.shadowColor = UIColorFromRGB(0x1E5BDB);
+    headerBtn.titleLabel.shadowOffset = CGSizeMake(0, 1);
     NSString *categoryTitle;
     if (section == 0) {
         categoryTitle = @"Google Reader";

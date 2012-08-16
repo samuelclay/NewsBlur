@@ -384,7 +384,7 @@
 
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD {
     if (showHUD) {
-        [self.storyDetailViewController showFindingStoryHUD];        
+        [self.storyDetailViewController showShareHUD:@"Loading story"];        
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {

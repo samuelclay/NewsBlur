@@ -140,8 +140,6 @@
     BOOL facebookSync = [[[[results objectForKey:@"services"] objectForKey:@"facebook"] objectForKey:@"syncing"] boolValue];
     BOOL twitterSync = [[[[results objectForKey:@"services"] objectForKey:@"twitter"] objectForKey:@"syncing"] boolValue];
 
-
-    
     if (![[[[results objectForKey:@"services"] objectForKey:@"facebook"] objectForKey:@"facebook_uid"] isKindOfClass:[NSNull class]]) {
         [self finishFacebookConnect];
     } else {
@@ -161,8 +159,9 @@
 
 - (void)finishFacebookConnect {
     [self.facebookActivityIndicator stopAnimating];
-    
+    self.friendsLabel.textColor = UIColorFromRGB(0x333333);
     self.facebookButton.selected = YES;
+    self.friendsLabel.text = @"You have successfully connected to Facebook.";
     UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
     UIImageView *checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
     checkmarkView.frame = CGRectMake(self.facebookButton.frame.origin.x + self.facebookButton.frame.size.width - 24,
@@ -175,6 +174,8 @@
 
 - (void)finishTwitterConnect {
     [self.twitterActivityIndicator stopAnimating];
+    self.friendsLabel.textColor = UIColorFromRGB(0x333333);
+    self.friendsLabel.text = @"You have successfully connected to Twitter.";
     
     self.twitterButton.selected = YES;
     UIImage *checkmark = [UIImage imageNamed:@"258-checkmark"];
@@ -240,6 +241,7 @@
 
 - (void)changeMessaging:(NSString *)msg {
     self.friendsLabel.text = msg;
+    self.friendsLabel.textColor = [UIColor redColor];
 }
 
 @end

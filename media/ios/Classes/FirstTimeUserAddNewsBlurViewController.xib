@@ -43,7 +43,7 @@
 						<string key="NSFrameSize">{540, 576}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="754909752"/>
+						<reference key="NSNextKeyView" ref="804223306"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUIContentMode">4</int>
@@ -60,7 +60,7 @@
 						<string key="NSFrame">{{70, 86}, {400, 100}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="641072983"/>
+						<reference key="NSNextKeyView" ref="754909752"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -77,6 +77,7 @@
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MQA</bytes>
 						</object>
+						<string key="IBUIShadowOffset">{0, 1}</string>
 						<int key="IBUIBaselineAdjustment">0</int>
 						<float key="IBUIMinimumFontSize">10</float>
 						<int key="IBUINumberOfLines">7</int>
@@ -139,7 +140,6 @@
 						<string key="NSFrame">{{178, 300}, {184, 34}}</string>
 						<reference key="NSSuperview" ref="874391841"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -167,7 +167,7 @@
 				<string key="NSFrame">{{0, 44}, {540, 576}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="804223306"/>
+				<reference key="NSNextKeyView" ref="641072983"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -1345,6 +1345,7 @@
 						<string key="homeButton">UIBarButtonItem</string>
 						<string key="innerView">UIView</string>
 						<string key="intelligenceControl">UISegmentedControl</string>
+						<string key="noFocusMessage">UIView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
 						<object class="IBToOneOutletInfo" key="appDelegate">
@@ -1374,6 +1375,10 @@
 						<object class="IBToOneOutletInfo" key="intelligenceControl">
 							<string key="name">intelligenceControl</string>
 							<string key="candidateClassName">UISegmentedControl</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="noFocusMessage">
+							<string key="name">noFocusMessage</string>
+							<string key="candidateClassName">UIView</string>
 						</object>
 					</dictionary>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">

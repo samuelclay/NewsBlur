@@ -82,7 +82,8 @@
     
     if ([category isEqualToString:@"follow"] ||
         [category isEqualToString:@"comment_reply"] ||
-        [category isEqualToString:@"comment_like"]) {
+        [category isEqualToString:@"comment_like"] ||
+        [category isEqualToString:@"signup"]) {
         // this is for the rare instance when the with_user doesn't return anything
         if ([[activity objectForKey:@"with_user"] class] == [NSNull class]) {
             self.faviconView.frame = CGRectZero;
@@ -110,7 +111,7 @@
     
     if ([category isEqualToString:@"follow"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
-        txt = [NSString stringWithFormat:@"%@ followed %@.", username, withUserUsername];        
+        txt = [NSString stringWithFormat:@"%@ followed %@.", username, withUserUsername];
     } else if ([category isEqualToString:@"comment_reply"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
         txt = [NSString stringWithFormat:@"%@ replied to %@: \n%@", username, withUserUsername, comment];  
@@ -128,6 +129,8 @@
         txt = [NSString stringWithFormat:@"You saved \"%@\".", content];
     } else if ([category isEqualToString:@"feedsub"]) {
         txt = [NSString stringWithFormat:@"You subscribed to %@.", content];
+    } else if ([category isEqualToString:@"signup"]) {
+        txt = [NSString stringWithFormat:@"You signed up for NewsBlur.", content];
     }
 
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];

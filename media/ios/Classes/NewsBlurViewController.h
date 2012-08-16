@@ -59,6 +59,8 @@
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
 @property (nonatomic, retain) WEPopoverController *popoverController;
 @property (nonatomic) NSIndexPath *currentRowAtIndexPath;
+@property (strong, nonatomic) IBOutlet UIView *noFocusMessage;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *toolbarLeftMargin;
 
 - (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader;

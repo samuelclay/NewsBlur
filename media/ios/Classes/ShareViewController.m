@@ -221,7 +221,7 @@
 # pragma mark Share Story
 
 - (IBAction)doShareThisStory:(id)sender {
-    [appDelegate.storyDetailViewController showShareHUD];
+    [appDelegate.storyDetailViewController showShareHUD:@"Sharing"];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
                            NEWSBLUR_URL];
 
@@ -279,7 +279,7 @@
 # pragma mark Reply to Story
 
 - (IBAction)doReplyToComment:(id)sender {
-    [appDelegate.storyDetailViewController showShareHUD];
+    [appDelegate.storyDetailViewController showShareHUD:@"Replying"];
     NSString *comments = commentField.text;
     if ([comments length] == 0) {
         return;
@@ -308,7 +308,7 @@
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
     [appDelegate hideShareView:YES];
-    [appDelegate.storyDetailViewController showShareHUD];
+    [appDelegate.storyDetailViewController showShareHUD:@"Replying"];
 }
 
 - (void)finishAddReply:(ASIHTTPRequest *)request {

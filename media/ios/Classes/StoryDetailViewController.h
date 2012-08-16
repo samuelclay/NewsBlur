@@ -70,9 +70,7 @@
 - (void)initStory;
 - (void)clearStory;
 
-- (void)showShareHUD;
-- (void)showFollowingHUD;
-- (void)showFindingStoryHUD;
+- (void)showShareHUD:(NSString *)msg;
 - (void)refreshComments:(NSString *)replyId;
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
 - (void)finishLikeComment:(ASIHTTPRequest *)request;

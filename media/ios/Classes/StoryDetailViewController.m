@@ -117,7 +117,7 @@
     
     // back button
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
-                                   initWithTitle:@"Back" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
+                                   initWithTitle:@"All Sites" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
     self.buttonBack = backButton;
     
     // loading indicator
@@ -1162,7 +1162,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)toggleLikeComment:(BOOL)likeComment {
-    [self showShareHUD];
+    [self showShareHUD:@"Favoriting"];
     NSString *urlString;
     if (likeComment) {
         urlString = [NSString stringWithFormat:@"http://%@/social/like_comment",
@@ -1241,7 +1241,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 # pragma mark Subscribing to blurblog
 
 - (void)subscribeToBlurblog {
-    [self showFollowingHUD];
+    [self showShareHUD:@"Following"];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/follow",
                      NEWSBLUR_URL];
     
@@ -1270,24 +1270,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 //    [appDelegate.feedDetailViewController fetchFeedDetail:1 withCallback:nil];
 }
 
-- (void)showShareHUD {
+- (void)showShareHUD:(NSString *)msg {
     [MBProgressHUD hideHUDForView:self.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    self.storyHUD.labelText = @"Sharing";
-    self.storyHUD.margin = 20.0f;
-}
-
-- (void)showFollowingHUD {
-    [MBProgressHUD hideHUDForView:self.view animated:NO];
-    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    self.storyHUD.labelText = @"Following";
-    self.storyHUD.margin = 20.0f;
-}
-
-- (void)showFindingStoryHUD {
-    [MBProgressHUD hideHUDForView:self.view animated:NO];
-    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    self.storyHUD.labelText = @"Loading Story";
+    self.storyHUD.labelText = msg;
     self.storyHUD.margin = 20.0f;
     self.noStorySelectedLabel.hidden = YES;
 }
