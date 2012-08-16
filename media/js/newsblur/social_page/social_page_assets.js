@@ -61,7 +61,9 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         NEWSBLUR.Preferences[preference] = value;
         var preferences = {};
         preferences[preference] = value;
-        this.make_request('/profile/set_preference', preferences, callback, null);
+        this.make_request('/profile/set_preference', preferences, null, null, {
+            request_type: 'POST'
+        });
     },
     
     mark_story_as_shared: function(params, callback, error_callback) {

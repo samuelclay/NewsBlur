@@ -1203,6 +1203,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     fetch_friends: function(callback) {
         this.make_request('/social/load_user_friends', null, _.bind(function(data) {
             this.user_profile.set(data.user_profile);
+            this.social_services = data.services;
             this.follower_profiles = new NEWSBLUR.Collections.Users(data.follower_profiles);
             this.following_profiles = new NEWSBLUR.Collections.Users(data.following_profiles);
             callback(data);

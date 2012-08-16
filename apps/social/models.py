@@ -172,10 +172,7 @@ class MSocialProfile(mongo.Document):
         
     @classmethod
     def profile(cls, user_id, include_follows=True):
-        try:
-            profile = cls.objects.get(user_id=user_id)
-        except cls.DoesNotExist:
-            return {}
+        profile = cls.get_user(user_id)
         return profile.to_json(include_follows=True)
         
     @classmethod
@@ -375,9 +372,11 @@ class MSocialProfile(mongo.Document):
         return socialsub
     
     def is_following_user(self, user_id):
+        # XXX TODO: Outsource to redis
         return user_id in self.following_user_ids
     
     def is_followed_by_user(self, user_id):
+        # XXX TODO: Outsource to redis
         return user_id in self.follower_user_ids
         
     def unfollow_user(self, user_id):
@@ -797,7 +796,7 @@ class MSocialSubscription(mongo.Document):
                 feed_id = story.story_feed_id
             m = MUserStory(user_id=self.user_id, 
                            feed_id=feed_id, read_date=date, 
-                           story_id=story.story_guid, story_date=story.story_date)
+                           story_id=story.story_guid, story_date=story.shared_date)
             try:
                 m.save()
             except OperationError:
@@ -1373,6 +1372,8 @@ class MSharedStory(mongo.Document):
                 story['share_count_friends'] = len(friends_with_shares)
                 story['friend_user_ids'] = list(set(story['commented_by_friends'] + story['shared_by_friends']))
                 story['public_user_ids'] = list(set(story['commented_by_public'] + story['shared_by_public']))
+                if not story['share_user_ids']:
+                    story['share_user_ids'] = story['friend_user_ids'] + story['public_user_ids']
                 if story.get('source_user_id'):
                     profile_user_ids.add(story['source_user_id'])
             
@@ -1661,11 +1662,15 @@ class MSocialServices(mongo.Document):
         }
     
     @classmethod
+    def get_user(cls, user_id):
+        profile, created = cls.objects.get_or_create(user_id=user_id)
+        if created:
+            profile.save()
+        return profile
+        
+    @classmethod
     def profile(cls, user_id):
-        try:
-            profile = cls.objects.get(user_id=user_id)
-        except cls.DoesNotExist:
-            return {}
+        profile = cls.get_user(user_id=user_id)
         return profile.to_json()
 
     def twitter_api(self):
@@ -1901,13 +1906,18 @@ class MInteraction(mongo.Document):
         }
         
     @classmethod
-    def user(cls, user_id, page=1, limit=None):
+    def user(cls, user_id, page=1, limit=None, categories=None):
         user_profile = Profile.objects.get(user=user_id)
         dashboard_date = user_profile.dashboard_date or user_profile.last_seen_on
         page = max(1, page)
         limit = int(limit) if limit else 4
         offset = (page-1) * limit
-        interactions_db = cls.objects.filter(user_id=user_id)[offset:offset+limit+1]
+        
+        interactions_db = cls.objects.filter(user_id=user_id)
+        if categories:
+            interactions_db = interactions_db.filter(category__in=categories)
+        interactions_db = interactions_db[offset:offset+limit+1]
+        
         has_next_page = len(interactions_db) > limit
         interactions_db = interactions_db[offset:offset+limit]
         with_user_ids = [i.with_user_id for i in interactions_db if i.with_user_id]
@@ -2093,7 +2103,7 @@ class MActivity(mongo.Document):
         }
         
     @classmethod
-    def user(cls, user_id, page=1, limit=4, public=False):
+    def user(cls, user_id, page=1, limit=4, public=False, categories=None):
         user_profile = Profile.objects.get(user=user_id)
         dashboard_date = user_profile.dashboard_date or user_profile.last_seen_on
         page = max(1, page)
@@ -2101,10 +2111,12 @@ class MActivity(mongo.Document):
         offset = (page-1) * limit
         
         activities_db = cls.objects.filter(user_id=user_id)
+        if categories:
+            activities_db = activities_db.filter(category__in=categories)
         if public:
             activities_db = activities_db.filter(category__nin=['star', 'feedsub'])
-            
         activities_db = activities_db[offset:offset+limit+1]
+        
         has_next_page = len(activities_db) > limit
         activities_db = activities_db[offset:offset+limit]
         with_user_ids = [a.with_user_id for a in activities_db if a.with_user_id]
@@ -2236,3 +2248,8 @@ class MActivity(mongo.Document):
         
         a.delete()
         
+    @classmethod
+    def new_signup(cls, user_id):
+        cls.objects.get_or_create(user_id=user_id,
+                                  with_user_id=user_id,
+                                  category="signup")
