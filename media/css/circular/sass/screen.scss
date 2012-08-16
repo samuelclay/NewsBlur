@@ -41,6 +41,7 @@ $default-box-shadow-blur: 1px;
     cursor: pointer;
     padding: 4px 12px;
     font-size: 14px;
+    font-weight: normal;
     
     &:hover {
         @include background-image(linear-gradient(#f6f6f6, white));
@@ -68,6 +69,7 @@ $default-box-shadow-blur: 1px;
     cursor: pointer;
     padding: 4px 12px;
     font-size: 14px;
+    font-weight: normal;
     
     &:hover {
         @include background-image(linear-gradient(#6bb1e0, #6bb1e0));
@@ -101,7 +103,7 @@ a {
 }
 
 .NB-footer-logo {
-    margin: 20px auto;
+    margin: 100px auto;
     width: $page-width;
     text-align: center;
 }
