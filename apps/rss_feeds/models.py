@@ -688,6 +688,7 @@ class Feed(models.Model):
             'single_threaded': kwargs.get('single_threaded', True),
             'force': kwargs.get('force'),
             'compute_scores': kwargs.get('compute_scores', True),
+            'mongodb_replication_lag': kwargs.get('mongodb_replication_lag', None),
             'fake': kwargs.get('fake'),
             'quick': kwargs.get('quick'),
             'debug': kwargs.get('debug'),
