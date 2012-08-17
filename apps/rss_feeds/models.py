@@ -892,8 +892,6 @@ class Feed(models.Model):
             self.save_popular_authors(feed_authors=feed_authors[:-1])
             
     def trim_feed(self, verbose=False):
-        from apps.reader.models import MUserStory
-        DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         trim_cutoff = 500
         if self.active_subscribers <= 1 and self.premium_subscribers < 1:
             trim_cutoff = 100
@@ -907,31 +905,29 @@ class Feed(models.Model):
             trim_cutoff = 400
         elif self.active_subscribers <= 25 and self.premium_subscribers < 5:
             trim_cutoff = 450
+            
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
+        
         if stories.count() > trim_cutoff:
-            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' % (unicode(self)[:30], stories.count(), trim_cutoff))
+            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
+                          (unicode(self)[:30], stories.count(), trim_cutoff))
             try:
                 story_trim_date = stories[trim_cutoff].story_date
             except IndexError, e:
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(self)[:30], e))
                 return
-            extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
+            extra_stories = MStory.objects(story_feed_id=self.pk, 
+                                           story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
             for story in extra_stories:
                 story.delete()
             if verbose:
-                print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
-                
-            # Can't use the story_trim_date because some users may have shared stories from
-            # this feed, but the trim date isn't past the two weeks of unreads.
-            userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=DAYS_OF_UNREAD)
-            if userstories.count():
-                logging.debug("   ---> [%-30s] ~FBFound %s user stories. Deleting..." % (unicode(self)[:30], userstories.count()))
-                for userstory in userstories:
-                    userstory.delete()
-        
+                existing_story_count = MStory.objects(story_feed_id=self.pk).count()
+                print "Deleted %s stories, %s left." % (extra_stories_count,
+                                                        existing_story_count)
+                        
     def get_stories(self, offset=0, limit=25, force=False):
         stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
         stories = self.format_stories(stories_db, self.pk)
