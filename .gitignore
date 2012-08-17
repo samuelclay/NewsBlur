@@ -2,7 +2,6 @@ logs/*.log
 logs/*.log.*
 logs/*.pid
 *.pyc
-static.tgz
 static/*
 local_settings.py
 media/iphone/NewsBlur/build
