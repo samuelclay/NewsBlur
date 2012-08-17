@@ -19,19 +19,28 @@
         android:contentDescription="@string/description_comment_user"
         android:scaleType="fitCenter" />
 
+    <ImageView
+        android:id="@+id/comment_reply_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/reply" />
+
     <TextView
         android:id="@+id/comment_shareddate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/comment_reply_icon"
         android:textColor="@color/lightgray"
         android:textSize="11dp" />
 
     <ImageView
         android:id="@+id/comment_favourite_icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
         android:layout_alignBottom="@id/comment_shareddate"
         android:layout_marginRight="8dp"
         android:layout_toLeftOf="@id/comment_shareddate"
@@ -42,10 +51,10 @@
         android:id="@+id/comment_favourite_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/comment_favourite_icon"
         android:layout_alignBottom="@id/comment_shareddate"
-        android:textColor="@color/darkgray"
         android:layout_marginRight="4dp"
+        android:layout_toLeftOf="@id/comment_favourite_icon"
+        android:textColor="@color/darkgray"
         android:textSize="11dp" />
 
     <TextView

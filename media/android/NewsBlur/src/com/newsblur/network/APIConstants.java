@@ -22,6 +22,7 @@ public class APIConstants {
 	
 	public static final String URL_LIKE_COMMENT = "http://www.newsblur.com/social/like_comment";
 	public static final String URL_UNLIKE_COMMENT = "http://www.newsblur.com/social/remove_like_comment";
+	public static final String URL_REPLY_TO = "http://www.newsblur.com/social/save_comment_reply";
 	
 	public static final String PARAMETER_FEEDS = "feeds";
 	public static final String PARAMETER_PASSWORD = "password";
@@ -31,6 +32,7 @@ public class APIConstants {
 	public static final String PARAMETER_STORYID = "story_id";
 	public static final String PARAMETER_COMMENT_USERID = "comment_user_id";
 	public static final String PARAMETER_FEEDID = "feed_id";
+	public static final String PARAMETER_REPLY_TEXT = "reply_comments";
 	public static final String PARAMETER_STORY_FEEDID = "story_feed_id";
 	public static final String PARAMETER_SHARE_COMMENT = "comments";
 	public static final String PARAMETER_SHARE_SOURCEID = "source_user_id";
@@ -38,6 +40,7 @@ public class APIConstants {
 	public static final String PARAMETER_PAGE_NUMBER = "page";
 	
 	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
+	
 	
 	
 }

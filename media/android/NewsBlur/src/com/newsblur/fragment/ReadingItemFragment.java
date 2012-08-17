@@ -75,7 +75,7 @@ public class ReadingItemFragment extends Fragment {
 	}
 
 	private void setupItemCommentsAndShares(final View view) {
-		new SetupCommentSectionTask(getActivity(), view, inflater, resolver, apiManager, story, imageLoader).execute();
+		new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, resolver, apiManager, story, imageLoader).execute();
 	}
 
 

@@ -350,4 +350,15 @@ public class APIManager {
 		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
 
+	public boolean replyToComment(String storyId, String storyFeedId, String commentUserId, String reply) {
+		final APIClient client = new APIClient(context);
+		ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_STORYID, storyId);
+		values.put(APIConstants.PARAMETER_STORY_FEEDID, storyFeedId);
+		values.put(APIConstants.PARAMETER_COMMENT_USERID, commentUserId);
+		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
+		final APIResponse response = client.post(APIConstants.URL_REPLY_TO, values);
+		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+	}
+
 }

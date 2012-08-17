@@ -28,6 +28,7 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.Story;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.view.FeedItemViewBinder;
@@ -50,25 +51,26 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	private Feed feed;
 	private Cursor feedCursor;
 
-	public FeedItemListFragment(final String feedId, final int currentState) {
-		this.feedId = feedId;
-		this.currentState = currentState;
-	}
+	public static FeedItemListFragment newInstance(String feedId, int currentState) {
+		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
+		
+		Bundle args = new Bundle();
+		args.putInt("currentState", currentState);
+		args.putString("feedId", feedId);
+		feedItemFragment.setArguments(args);
 
-	public FeedItemListFragment() {
-
+		return feedItemFragment;
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		currentState = getArguments().getInt("currentState");
+		feedId = getArguments().getString("feedId");
+		
 		if (!NetworkUtils.isOnline(getActivity())) {
 			doRequest = false;
 		}
-	}
-
-	public static FeedItemListFragment newInstance(final String feedId, int currentState) {
-		return new FeedItemListFragment(feedId, currentState);
 	}
 
 	@Override

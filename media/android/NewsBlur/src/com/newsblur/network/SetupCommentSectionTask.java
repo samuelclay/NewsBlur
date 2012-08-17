@@ -10,17 +10,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.view.View.OnClickListener;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.GridLayout;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.support.v7.widget.GridLayout;
-
-import com.newsblur.util.PrefsUtil;
-import com.newsblur.util.UIUtils;
 
 import com.newsblur.R;
 import com.newsblur.activity.Profile;
@@ -30,8 +28,12 @@ import com.newsblur.domain.Comment;
 import com.newsblur.domain.Reply;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
+import com.newsblur.fragment.ReplyDialogFragment;
+import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.PrefsUtil;
+import com.newsblur.util.UIUtils;
 
 public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	private ArrayList<View> publicCommentViews;
@@ -47,9 +49,11 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	private WeakReference<View> viewHolder;
 	private final Context context;
 	private UserProfile user;
+	private final FragmentManager manager;
 
-	public SetupCommentSectionTask(final Context context, final View view, LayoutInflater inflater, final ContentResolver resolver, final APIManager apiManager, final Story story, final ImageLoader imageLoader) {
+	public SetupCommentSectionTask(final Context context, final View view, final FragmentManager manager, LayoutInflater inflater, final ContentResolver resolver, final APIManager apiManager, final Story story, final ImageLoader imageLoader) {
 		this.context = context;
+		this.manager = manager;
 		this.inflater = inflater;
 		this.resolver = resolver;
 		this.apiManager = apiManager;
@@ -92,8 +96,9 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 			final TextView favouriteCount = (TextView) commentView.findViewById(R.id.comment_favourite_count);
 			final ImageView favouriteIcon = (ImageView) commentView.findViewById(R.id.comment_favourite_icon);
+			final ImageView replyIcon = (ImageView) commentView.findViewById(R.id.comment_reply_icon);
+			
 			if (comment.likingUsers != null) {
-				
 				if (Arrays.asList(comment.likingUsers).contains(user.id)) {
 					favouriteIcon.setImageResource(R.drawable.have_favourite);
 				}
@@ -101,7 +106,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				favouriteIcon.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						
 						if (!Arrays.asList(comment.likingUsers).contains(user.id)) {
 							new LikeCommentTask(context, apiManager, favouriteCount, favouriteIcon, story.id, comment, story.feedId, user.id).execute();
 						} else {
@@ -110,8 +114,20 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					}
 				});
 			}
-
+			
+			replyIcon.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (story != null) {
+						DialogFragment newFragment = ReplyDialogFragment.newInstance(story.id, story.feedId, comment.userId, friendUserMap.get(comment.userId).username);
+						newFragment.show(manager, "dialog");
+					}
+				}
+			});
+			
+			
 			Cursor replies = resolver.query(FeedProvider.REPLIES_URI, null, null, new String[] { comment.id }, DatabaseConstants.REPLY_DATE + " DESC");
+			
 			while (replies.moveToNext()) {
 				Reply reply = Reply.fromCursor(replies);
 				View replyView = inflater.inflate(R.layout.include_reply, null);
