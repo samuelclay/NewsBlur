@@ -34,6 +34,7 @@ except:
     pass
 from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
 from apps.social.models import MSocialSubscription, MActivity
+from apps.categories.models import MCategory
 from apps.social.views import load_social_page
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
@@ -46,12 +47,6 @@ from utils.view_functions import get_argument_or_404, render_to, is_true
 from utils.ratelimit import ratelimit
 from vendor.timezones.utilities import localtime_for_timezone
 
-from pymongo.helpers import OperationFailure
-from operator import itemgetter
-from utils.story_functions import bunch
-from utils.story_functions import story_score
-
-SINGLE_DAY = 60*60*24
 
 @never_cache
 @render_to('reader/feeds.xhtml')
@@ -234,6 +229,10 @@ def load_feeds(request):
     user.profile.dashboard_date = datetime.datetime.now()
     user.profile.save()
     
+    categories = None
+    if not user_subs:
+        categories = MCategory.serialize()
+    
     data = {
         'feeds': feeds.values() if version == 2 else feeds,
         'social_feeds': social_feeds,
@@ -241,6 +240,7 @@ def load_feeds(request):
         'social_services': social_services,
         'folders': json.decode(folders.folders),
         'starred_count': starred_count,
+        'categories': categories
     }
     return data
 
@@ -317,6 +317,10 @@ def load_feeds_flat(request):
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
     
+    categories = None
+    if not user_subs:
+        categories = MCategory.serialize()
+        
     logging.user(request, "~FBLoading ~SB%s~SN/~SB%s~SN feeds/socials ~FMflat~FB. %s" % (
             len(feeds.keys()), len(social_feeds), '~SBUpdating counts.' if update_counts else ''))
 
@@ -328,6 +332,7 @@ def load_feeds_flat(request):
         "user": user.username,
         "user_profile": user.profile,
         "iphone_version": iphone_version,
+        "categories": categories,
     }
     return data
 
@@ -587,163 +592,6 @@ def load_starred_stories(request):
     
     return dict(stories=stories, feeds=unsub_feeds)
 
-
-@json.json_view
-def load_river_stories(request):
-    limit                = 18
-    offset               = int(request.REQUEST.get('offset', 0))
-    start                = time.time()
-    user                 = get_user(request)
-    feed_ids             = [int(feed_id) for feed_id in request.REQUEST.getlist('feeds') if feed_id]
-    original_feed_ids    = list(feed_ids)
-    page                 = int(request.REQUEST.get('page', 1))
-    read_stories_count   = int(request.REQUEST.get('read_stories_count', 0))
-    days_to_keep_unreads = datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-    now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
-
-    if not feed_ids: 
-        logging.user(request, "~FCLoading empty river stories: page %s" % (page))
-        return dict(stories=[])
-    
-    # Fetch all stories at and before the page number.
-    # Not a single page, because reading stories can move them up in the unread order.
-    # `read_stories_count` is an optimization, works best when all 25 stories before have been read.
-    offset = (page-1) * limit - read_stories_count
-    limit = page * limit - read_stories_count
-    
-    # Read stories to exclude
-    read_stories = MUserStory.objects(user_id=user.pk, 
-                                      feed_id__in=feed_ids
-                                      ).only('story_id').hint([('user_id', 1), ('feed_id', 1), ('story_id', 1)])
-    read_stories = [rs.story_id for rs in read_stories]
-    
-    # Determine mark_as_read dates for all feeds to ignore all stories before this date.
-    feed_counts     = {}
-    feed_last_reads = {}
-    for feed_id in feed_ids:
-        try:
-            usersub = UserSubscription.objects.get(feed__pk=feed_id, user=user)
-        except UserSubscription.DoesNotExist:
-            continue
-        if not usersub: continue
-        feed_counts[feed_id] = (usersub.unread_count_negative * 1 + 
-                                usersub.unread_count_neutral * 10 +
-                                usersub.unread_count_positive * 20)
-        feed_last_reads[feed_id] = int(time.mktime(usersub.mark_read_date.timetuple()))
-
-    feed_counts = sorted(feed_counts.items(), key=itemgetter(1))[:40]
-    feed_ids = [f[0] for f in feed_counts]
-    feed_last_reads = dict([(str(feed_id), feed_last_reads[feed_id]) for feed_id in feed_ids
-                            if feed_id in feed_last_reads])
-    feed_counts = dict(feed_counts)
-
-    # After excluding read stories, all that's left are stories 
-    # past the mark_read_date. Everything returned is guaranteed to be unread.
-    mstories = MStory.objects(
-        story_guid__nin=read_stories,
-        story_feed_id__in=feed_ids,
-        # story_date__gte=start - days_to_keep_unreads
-    ).map_reduce("""function() {
-            var d = feed_last_reads[this[~story_feed_id]];
-            if (this[~story_date].getTime()/1000 > d) {
-                emit(this[~id], this);
-            }
-        }""",
-        """function(key, values) {
-            return values[0];
-        }""",
-        output='inline',
-        scope={
-            'feed_last_reads': feed_last_reads
-        }
-    )
-    try:
-        mstories = [story.value for story in mstories if story and story.value]
-    except OperationFailure, e:
-        return dict(error=str(e), code=-1)
-
-    mstories = sorted(mstories, cmp=lambda x, y: cmp(story_score(y, days_to_keep_unreads), 
-                                                     story_score(x, days_to_keep_unreads)))
-
-    # Prune the river to only include a set number of stories per feed
-    # story_feed_counts = defaultdict(int)
-    # mstories_pruned = []
-    # for story in mstories:
-    #     print story['story_title'], story_feed_counts[story['story_feed_id']]
-    #     if story_feed_counts[story['story_feed_id']] >= 3: continue
-    #     mstories_pruned.append(story)
-    #     story_feed_counts[story['story_feed_id']] += 1
-    
-    stories = []
-    for i, story in enumerate(mstories):
-        if i < offset: continue
-        if i >= limit: break
-        stories.append(bunch(story))
-    stories = Feed.format_stories(stories)
-    found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
-    
-    # Find starred stories
-    # try:
-    if found_feed_ids:
-        starred_stories = MStarredStory.objects(
-            user_id=user.pk,
-            story_feed_id__in=found_feed_ids
-        ).only('story_guid', 'starred_date')
-        starred_stories = dict([(story.story_guid, story.starred_date) 
-                                for story in starred_stories])
-    else:
-        starred_stories = {}
-    # except OperationFailure:
-    #     logging.info(" ***> Starred stories failure")
-    #     starred_stories = {}
-    
-    # Intelligence classifiers for all feeds involved
-    if found_feed_ids:
-        classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
-                                                   feed_id__in=found_feed_ids))
-        classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
-                                                       feed_id__in=found_feed_ids))
-        classifier_titles = list(MClassifierTitle.objects(user_id=user.pk, 
-                                                     feed_id__in=found_feed_ids))
-        classifier_tags = list(MClassifierTag.objects(user_id=user.pk, 
-                                                 feed_id__in=found_feed_ids))
-    else:
-        classifier_feeds = []
-        classifier_authors = []
-        classifier_titles = []
-        classifier_tags = []
-    classifiers = sort_classifiers_by_feed(user=user, feed_ids=found_feed_ids,
-                                           classifier_feeds=classifier_feeds,
-                                           classifier_authors=classifier_authors,
-                                           classifier_titles=classifier_titles,
-                                           classifier_tags=classifier_tags)
-    
-    # Just need to format stories
-    for story in stories:
-        story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
-        story['short_parsed_date'] = format_story_link_date__short(story_date, now)
-        story['long_parsed_date']  = format_story_link_date__long(story_date, now)
-        story['read_status'] = 0
-        if story['id'] in starred_stories:
-            story['starred'] = True
-            starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
-            story['starred_date'] = format_story_link_date__long(starred_date, now)
-        story['intelligence'] = {
-            'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
-            'author': apply_classifier_authors(classifier_authors, story),
-            'tags':   apply_classifier_tags(classifier_tags, story),
-            'title':  apply_classifier_titles(classifier_titles, story),
-        }
-
-    diff = time.time() - start
-    timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FCriver stories~FY: ~SBp%s~SN (%s/%s "
-                               "stories, ~SN%s/%s/%s feeds)" % 
-                               (page, len(stories), len(mstories), len(found_feed_ids), 
-                               len(feed_ids), len(original_feed_ids)))
-    
-    return dict(stories=stories, classifiers=classifiers, elapsed_time=timediff)
-    
 @json.json_view
 def load_river_stories__redis(request):
     limit             = 12
@@ -769,6 +617,7 @@ def load_river_stories__redis(request):
     mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
     stories = Feed.format_stories(mstories)
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
     
     # Find starred stories
     if found_feed_ids:
@@ -826,7 +675,10 @@ def load_river_stories__redis(request):
                                (page, len(stories), len(mstories), len(found_feed_ids), 
                                len(feed_ids), len(original_feed_ids)))
     
-    return dict(stories=stories, classifiers=classifiers, elapsed_time=timediff)
+    return dict(stories=stories,
+                classifiers=classifiers, 
+                elapsed_time=timediff, 
+                user_profiles=user_profiles)
     
     
 @ajax_login_required
@@ -1043,6 +895,7 @@ def add_url(request):
     code = 0
     url = request.POST['url']
     auto_active = is_true(request.POST.get('auto_active', 1))
+    skip_fetch = is_true(request.POST.get('skip_fetch', False))
     
     if not url:
         code = -1
@@ -1050,7 +903,8 @@ def add_url(request):
     else:
         folder = request.POST.get('folder', '')
         code, message, _ = UserSubscription.add_subscription(user=request.user, feed_address=url, 
-                                                             folder=folder, auto_active=auto_active)
+                                                             folder=folder, auto_active=auto_active,
+                                                             skip_fetch=skip_fetch)
     
     return dict(code=code, message=message)
 

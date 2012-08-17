@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 from apps.social.models import MSocialProfile
 
 register = template.Library()
@@ -27,6 +28,7 @@ def render_story_share(context, story):
 def render_story_comments(context, story):
     user = context['user']
     user_social_profile = context.get('user_social_profile')
+    MEDIA_URL = settings.MEDIA_URL
     if not user_social_profile and user.is_authenticated():
         user_social_profile = MSocialProfile.objects.get(user_id=user.pk)
     
@@ -34,6 +36,7 @@ def render_story_comments(context, story):
         'user': user,
         'user_social_profile': user_social_profile,
         'story': story,
+        'MEDIA_URL': MEDIA_URL,
     }
 
 @register.inclusion_tag('social/story_comment.xhtml', takes_context=True)

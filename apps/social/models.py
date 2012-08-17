@@ -172,10 +172,7 @@ class MSocialProfile(mongo.Document):
         
     @classmethod
     def profile(cls, user_id, include_follows=True):
-        try:
-            profile = cls.objects.get(user_id=user_id)
-        except cls.DoesNotExist:
-            return {}
+        profile = cls.get_user(user_id)
         return profile.to_json(include_follows=True)
         
     @classmethod
@@ -375,9 +372,11 @@ class MSocialProfile(mongo.Document):
         return socialsub
     
     def is_following_user(self, user_id):
+        # XXX TODO: Outsource to redis
         return user_id in self.following_user_ids
     
     def is_followed_by_user(self, user_id):
+        # XXX TODO: Outsource to redis
         return user_id in self.follower_user_ids
         
     def unfollow_user(self, user_id):
@@ -797,7 +796,7 @@ class MSocialSubscription(mongo.Document):
                 feed_id = story.story_feed_id
             m = MUserStory(user_id=self.user_id, 
                            feed_id=feed_id, read_date=date, 
-                           story_id=story.story_guid, story_date=story.story_date)
+                           story_id=story.story_guid, story_date=story.shared_date)
             try:
                 m.save()
             except OperationError:
@@ -1373,6 +1372,8 @@ class MSharedStory(mongo.Document):
                 story['share_count_friends'] = len(friends_with_shares)
                 story['friend_user_ids'] = list(set(story['commented_by_friends'] + story['shared_by_friends']))
                 story['public_user_ids'] = list(set(story['commented_by_public'] + story['shared_by_public']))
+                if not story['share_user_ids']:
+                    story['share_user_ids'] = story['friend_user_ids'] + story['public_user_ids']
                 if story.get('source_user_id'):
                     profile_user_ids.add(story['source_user_id'])
             
@@ -1661,11 +1662,15 @@ class MSocialServices(mongo.Document):
         }
     
     @classmethod
+    def get_user(cls, user_id):
+        profile, created = cls.objects.get_or_create(user_id=user_id)
+        if created:
+            profile.save()
+        return profile
+        
+    @classmethod
     def profile(cls, user_id):
-        try:
-            profile = cls.objects.get(user_id=user_id)
-        except cls.DoesNotExist:
-            return {}
+        profile = cls.get_user(user_id=user_id)
         return profile.to_json()
 
     def twitter_api(self):
@@ -1681,12 +1686,21 @@ class MSocialServices(mongo.Document):
         return graph
 
     def sync_twitter_friends(self):
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~BB~FRTwitter import starting...")
+        
         api = self.twitter_api()
         if not api:
+            logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no api access.")
+            self.syncing_twitter = False
+            self.save()
             return
             
         friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
         if not friend_ids:
+            logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no friend_ids.")
+            self.syncing_twitter = False
+            self.save()
             return
         
         twitter_user = api.me()
@@ -1694,9 +1708,8 @@ class MSocialServices(mongo.Document):
         self.twitter_username = twitter_user.screen_name
         self.twitter_friend_ids = friend_ids
         self.twitter_refreshed_date = datetime.datetime.utcnow()
+        self.syncing_twitter = False
         self.save()
-        
-        self.follow_twitter_friends()
         
         profile = MSocialProfile.get_user(self.user_id)
         profile.location = profile.location or twitter_user.location
@@ -1704,44 +1717,13 @@ class MSocialServices(mongo.Document):
         profile.website = profile.website or twitter_user.url
         profile.save()
         profile.count_follows()
+        
         if not profile.photo_url or not profile.photo_service:
             self.set_photo('twitter')
         
-    def sync_facebook_friends(self):
-        self.syncing_facebook = False
-        self.save()
-        
-        graph = self.facebook_api()
-        if not graph:
-            return
-
-        friends = graph.get_connections("me", "friends")
-        if not friends:
-            return
-
-        facebook_friend_ids = [unicode(friend["id"]) for friend in friends["data"]]
-        self.facebook_friend_ids = facebook_friend_ids
-        self.facebook_refresh_date = datetime.datetime.utcnow()
-        self.facebook_picture_url = "//graph.facebook.com/%s/picture" % self.facebook_uid
-        self.save()
-        
-        self.follow_facebook_friends()
-        
-        facebook_user = graph.request('me', args={'fields':'website,bio,location'})
-        profile = MSocialProfile.get_user(self.user_id)
-        profile.location = profile.location or (facebook_user.get('location') and facebook_user['location']['name'])
-        profile.bio = profile.bio or facebook_user.get('bio')
-        if not profile.website and facebook_user.get('website'):
-            profile.website = facebook_user.get('website').split()[0]
-        profile.save()
-        profile.count_follows()
-        if not profile.photo_url or not profile.photo_service:
-            self.set_photo('facebook')
+        self.follow_twitter_friends()
         
     def follow_twitter_friends(self):
-        self.syncing_twitter = False
-        self.save()
-        
         social_profile = MSocialProfile.get_user(self.user_id)
         following = []
         followers = 0
@@ -1769,6 +1751,44 @@ class MSocialServices(mongo.Document):
         logging.user(user, "~BM~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
         
         return following
+        
+    def sync_facebook_friends(self):
+        user = User.objects.get(pk=self.user_id)
+        logging.user(user, "~BB~FRFacebook import starting...")
+        
+        graph = self.facebook_api()
+        if not graph:
+            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no api access.")
+            self.syncing_facebook = False
+            self.save()
+            return
+
+        friends = graph.get_connections("me", "friends")
+        if not friends:
+            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no friend_ids.")
+            self.syncing_facebook = False
+            self.save()
+            return
+
+        facebook_friend_ids = [unicode(friend["id"]) for friend in friends["data"]]
+        self.facebook_friend_ids = facebook_friend_ids
+        self.facebook_refresh_date = datetime.datetime.utcnow()
+        self.facebook_picture_url = "//graph.facebook.com/%s/picture" % self.facebook_uid
+        self.syncing_facebook = False
+        self.save()
+        
+        facebook_user = graph.request('me', args={'fields':'website,bio,location'})
+        profile = MSocialProfile.get_user(self.user_id)
+        profile.location = profile.location or (facebook_user.get('location') and facebook_user['location']['name'])
+        profile.bio = profile.bio or facebook_user.get('bio')
+        if not profile.website and facebook_user.get('website'):
+            profile.website = facebook_user.get('website').split()[0]
+        profile.save()
+        profile.count_follows()
+        if not profile.photo_url or not profile.photo_service:
+            self.set_photo('facebook')
+        
+        self.follow_facebook_friends()
         
     def follow_facebook_friends(self):
         social_profile = MSocialProfile.get_user(self.user_id)
@@ -1886,13 +1906,18 @@ class MInteraction(mongo.Document):
         }
         
     @classmethod
-    def user(cls, user_id, page=1, limit=None):
+    def user(cls, user_id, page=1, limit=None, categories=None):
         user_profile = Profile.objects.get(user=user_id)
         dashboard_date = user_profile.dashboard_date or user_profile.last_seen_on
         page = max(1, page)
         limit = int(limit) if limit else 4
         offset = (page-1) * limit
-        interactions_db = cls.objects.filter(user_id=user_id)[offset:offset+limit+1]
+        
+        interactions_db = cls.objects.filter(user_id=user_id)
+        if categories:
+            interactions_db = interactions_db.filter(category__in=categories)
+        interactions_db = interactions_db[offset:offset+limit+1]
+        
         has_next_page = len(interactions_db) > limit
         interactions_db = interactions_db[offset:offset+limit]
         with_user_ids = [i.with_user_id for i in interactions_db if i.with_user_id]
@@ -2078,7 +2103,7 @@ class MActivity(mongo.Document):
         }
         
     @classmethod
-    def user(cls, user_id, page=1, limit=4, public=False):
+    def user(cls, user_id, page=1, limit=4, public=False, categories=None):
         user_profile = Profile.objects.get(user=user_id)
         dashboard_date = user_profile.dashboard_date or user_profile.last_seen_on
         page = max(1, page)
@@ -2086,10 +2111,12 @@ class MActivity(mongo.Document):
         offset = (page-1) * limit
         
         activities_db = cls.objects.filter(user_id=user_id)
+        if categories:
+            activities_db = activities_db.filter(category__in=categories)
         if public:
             activities_db = activities_db.filter(category__nin=['star', 'feedsub'])
-            
         activities_db = activities_db[offset:offset+limit+1]
+        
         has_next_page = len(activities_db) > limit
         activities_db = activities_db[offset:offset+limit]
         with_user_ids = [a.with_user_id for a in activities_db if a.with_user_id]
@@ -2221,3 +2248,8 @@ class MActivity(mongo.Document):
         
         a.delete()
         
+    @classmethod
+    def new_signup(cls, user_id):
+        cls.objects.get_or_create(user_id=user_id,
+                                  with_user_id=user_id,
+                                  category="signup")

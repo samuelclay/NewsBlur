@@ -166,6 +166,15 @@
                                                                 NEWSBLUR.app.story_list.reset_story_positions();
                                                             }, 2000);
             this.flags.fetch_story_locations_in_feed_view();
+            
+            if ((NEWSBLUR.reader.layout.contentLayout.panes.north &&
+                 NEWSBLUR.reader.layout.contentLayout.panes.north.width() < 600) ||
+                (NEWSBLUR.reader.layout.contentLayout.panes.center &&
+                 NEWSBLUR.reader.layout.contentLayout.panes.center.width() < 700)) {
+                this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
+            } else {
+                this.$s.$feed_view.removeClass('NB-feed-story-view-narrow');
+            }
         },
         
         apply_resizable_layout: function(refresh) {
@@ -2463,11 +2472,11 @@
                         $.make('div', { className: 'NB-menu-manage-subtitle' }, 'What you like and dislike.')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    // $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-recommend' }, [
-                    //     $.make('div', { className: 'NB-menu-manage-image' }),
-                    //     $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
-                    // ]),
-                    // $.make('li', { className: 'NB-menu-separator' }),
+                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-recommend' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Recommend this site')
+                    ])),
+                    (NEWSBLUR.Globals.is_admin && $.make('li', { className: 'NB-menu-separator' })),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-settings' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Site settings')
@@ -3162,9 +3171,9 @@
             var to_folder   = $('.NB-menu-manage-folder-move-confirm select').val();
             var folder_view = NEWSBLUR.assets.folders.get_view($folder);
             var in_folder   = folder_view.collection.options.title;
-            var folder_name = folder_view.options.title;
+            var folder_name = folder_view.options.folder_title;
             var child_folders = folder_view.collection.child_folder_names();
-        
+            
             if (to_folder == in_folder || 
                 to_folder == folder_name ||
                  _.contains(child_folders, to_folder)) {

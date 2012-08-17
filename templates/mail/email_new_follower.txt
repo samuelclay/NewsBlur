@@ -2,6 +2,8 @@
 
 {% block body %}Say hello to your newest follower: {{ follower_profile.username }}.
 
+    {{ follower_profile.blurblog_url }} - {{ follower_profile.shared_stories_count }} shared {{ follower_profile.shared_stories_count|pluralize:"story,stories" }} - {{ follower_profile.follower_count }} follower{{ follower_profile.follower_count|pluralize }}
+
 {% if common_followers %}
 You follow {{ common_followers|length }} {{ common_followers|pluralize:"person,people" }} who follow{{ common_followers|pluralize:"s," }} {{ follower_profile.username }}:
 

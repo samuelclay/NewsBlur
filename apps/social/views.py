@@ -141,9 +141,6 @@ def load_social_stories(request, user_id, username=None):
             story['starred_date'] = format_story_link_date__long(starred_date, now)
         if story['id'] in shared_stories:
             story['shared'] = True
-            shared_date = localtime_for_timezone(shared_stories[story['id']]['shared_date'],
-                                                 user.profile.timezone)
-            story['shared_date'] = format_story_link_date__long(shared_date, now)
             story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
 
         story['intelligence'] = {
@@ -329,9 +326,14 @@ def load_social_page(request, user_id, username=None, **kwargs):
     if page: offset = limit * (int(page) - 1)
 
     user_social_profile = None
+    user_social_services = None
+    user_following_social_profile = None
     if user.is_authenticated():
         user_social_profile = MSocialProfile.get_user(user.pk)
+        user_social_services = MSocialServices.get_user(user.pk)
+        user_following_social_profile = user_social_profile.is_following_user(social_user_id)
     social_profile = MSocialProfile.get_user(social_user_id)
+    
     params = dict(user_id=social_user.pk)
     if feed_id:
         params['story_feed_id'] = feed_id
@@ -350,7 +352,9 @@ def load_social_page(request, user_id, username=None, **kwargs):
             "feeds": {},
             "social_user": social_user,
             "social_profile": social_profile,
+            "user_social_services": user_social_services,
             'user_social_profile' : json.encode(user_social_profile and user_social_profile.page()),
+            'user_following_social_profile': user_following_social_profile,
         }
         template = 'social/social_page.xhtml'
         return render_to_response(template, params, context_instance=RequestContext(request))
@@ -386,6 +390,9 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'stories'       : stories,
         'user_social_profile' : user_social_profile,
         'user_social_profile_page' : json.encode(user_social_profile and user_social_profile.page()),
+        'user_social_services' : user_social_services,
+        'user_social_services_page' : json.encode(user_social_services and user_social_services.to_json()),
+        'user_following_social_profile': user_following_social_profile,
         'social_profile': social_profile,
         'feeds'         : feeds,
         'user_profile'  : hasattr(user, 'profile') and user.profile,
@@ -735,6 +742,7 @@ def shared_stories_public(request, username):
 def profile(request):
     user = get_user(request.user)
     user_id = request.GET.get('user_id', user.pk)
+    categories = request.GET.getlist('category')
     include_activities_html = request.REQUEST.get('include_activities_html', None)
 
     user_profile = MSocialProfile.get_user(user_id)
@@ -743,7 +751,7 @@ def profile(request):
     profile_ids = set(user_profile['followers_youknow'] + user_profile['followers_everybody'] + 
                       user_profile['following_youknow'] + user_profile['following_everybody'])
     profiles = MSocialProfile.profiles(profile_ids)
-    activities, _ = MActivity.user(user_id, page=1, public=True)
+    activities, _ = MActivity.user(user_id, page=1, public=True, categories=categories)
     logging.user(request, "~BB~FRLoading social profile: %s" % user_profile['username'])
         
     payload = {
@@ -1095,11 +1103,13 @@ def load_social_settings(request, social_user_id, username=None):
 @ajax_login_required
 def load_interactions(request):
     user_id = request.REQUEST.get('user_id', None)
+    categories = request.GET.getlist('category')
     if not user_id:
         user_id = get_user(request).pk
     page = max(1, int(request.REQUEST.get('page', 1)))
     limit = request.REQUEST.get('limit')
-    interactions, has_next_page = MInteraction.user(user_id, page=page, limit=limit)
+    interactions, has_next_page = MInteraction.user(user_id, page=page, limit=limit,
+                                                    categories=categories)
     format = request.REQUEST.get('format', None)
     
     data = {
@@ -1117,6 +1127,7 @@ def load_interactions(request):
 @ajax_login_required
 def load_activities(request):
     user_id = request.REQUEST.get('user_id', None)
+    categories = request.GET.getlist('category')
     if user_id:
         user_id = int(user_id)
         user = User.objects.get(pk=user_id)
@@ -1127,7 +1138,8 @@ def load_activities(request):
     public = user_id != request.user.pk
     page = max(1, int(request.REQUEST.get('page', 1)))
     limit = request.REQUEST.get('limit', 4)
-    activities, has_next_page = MActivity.user(user_id, page=page, limit=limit, public=public)
+    activities, has_next_page = MActivity.user(user_id, page=page, limit=limit, public=public,
+                                               categories=categories)
     format = request.REQUEST.get('format', None)
     
     data = {

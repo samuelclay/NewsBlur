@@ -4,6 +4,8 @@
 <title>NewsBlur - Connecting...</title>
 
 <head>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    
     <style>
         body {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -23,6 +25,14 @@
             -moz-animation-iteration-count: infinite;  
             -moz-animation-timing-function: linear;  
         }
+        @media screen and (max-width: 320px) {
+            .NB-loader {
+                margin: 42px auto;
+                width: 200px;
+                height: 200px;
+            }
+        }
+        
         @-webkit-keyframes -webkit-slow-spin {
             from {-webkit-transform: rotate(0deg)}
             to  {-webkit-transform: rotate(360deg)}
@@ -33,6 +43,8 @@
         } 
     </style>
     <script type="text/javascript" charset="utf-8">
+        window.NEWSBLUR = window.NEWSBLUR || {};
+
         if (!window.console) {
             window.console = {};
             window.console.log = function() {};
@@ -52,14 +64,14 @@
                     console.log(['Using Intro dialog']);
                     opener.NEWSBLUR.intro.start_import_from_google_reader({
                         {% if error %}
-                            'error': "{{ error }}",
+                            'error': "{{ error }}"
                         {% endif %}
                     });
                 } else {
                     console.log(['Using some other dialog']);
                     opener.NEWSBLUR.reader.post_google_reader_connect({
                         {% if error %}
-                            'error': "{{ error }}",
+                            'error': "{{ error }}"
                         {% endif %}
                     });
                 }
@@ -67,20 +79,21 @@
                 console.log(['Connecting through intro']);
                 opener.NEWSBLUR.intro.post_connect({
                     {% if error %}
-                        'error': "{{ error }}",
+                        'error': "{{ error }}"
                     {% endif %}
                 });
             } else if (opener.NEWSBLUR.reader_friends) {
                 console.log(["Connecting through friends dialog"]);
                 opener.NEWSBLUR.reader_friends.post_connect({
                     {% if error %}
-                        'error': "{{ error }}",
+                        'error': "{{ error }}"
                     {% endif %}
                 });
             }
             window.close();
         } else {
             console.log(["No opener, directing to /", opener]);
+            NEWSBLUR.error = "{{ error }}";
             window.close();
             window.location.href = "/";
         }

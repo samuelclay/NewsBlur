@@ -40,6 +40,7 @@ BROKEN_PAGE_URLS = [
     'stackoverflow.com',
     'stackexchange.com',
     'twitter.com',
+    'rankexploits',
 ]
 
 class Feed(models.Model):
@@ -63,6 +64,7 @@ class Feed(models.Model):
     has_page_exception = models.BooleanField(default=False, db_index=True)
     has_page = models.BooleanField(default=True)
     exception_code = models.IntegerField(default=0)
+    errors_since_good = models.IntegerField(default=0)
     min_to_decay = models.IntegerField(default=0)
     days_to_trim = models.IntegerField(default=90)
     creation = models.DateField(auto_now_add=True)
@@ -364,9 +366,11 @@ class Feed(models.Model):
         # for history in old_fetch_histories:
         #     history.delete()
         if status_code not in (200, 304):
-            errors, non_errors = self.count_errors_in_history('feed', status_code)
-            self.set_next_scheduled_update(error_count=len(errors), non_error_count=len(non_errors))
-        elif self.has_feed_exception:
+            self.errors_since_good += 1
+            self.count_errors_in_history('feed', status_code)
+            self.set_next_scheduled_update()
+        elif self.has_feed_exception or self.errors_since_good:
+            self.errors_since_good = 0
             self.has_feed_exception = False
             self.active = True
             self.save()
@@ -398,9 +402,10 @@ class Feed(models.Model):
         errors     = [h for h in fetch_history if int(h) not in (200, 304)]
         
         if len(non_errors) == 0 and len(errors) > 1:
+            self.active = True
             if exception_type == 'feed':
                 self.has_feed_exception = True
-                self.active = False
+                # self.active = False # No longer, just geometrically fetch
             elif exception_type == 'page':
                 self.has_page_exception = True
             self.exception_code = status_code or int(errors[0])
@@ -683,6 +688,7 @@ class Feed(models.Model):
             'single_threaded': kwargs.get('single_threaded', True),
             'force': kwargs.get('force'),
             'compute_scores': kwargs.get('compute_scores', True),
+            'mongodb_replication_lag': kwargs.get('mongodb_replication_lag', None),
             'fake': kwargs.get('fake'),
             'quick': kwargs.get('quick'),
             'debug': kwargs.get('debug'),
@@ -846,11 +852,12 @@ class Feed(models.Model):
     def save_popular_tags(self, feed_tags=None, verbose=False):
         if not feed_tags:
             all_tags = MStory.objects(story_feed_id=self.pk, story_tags__exists=True).item_frequencies('story_tags')
-                
-            feed_tags = sorted([(k, v) for k, v in all_tags.items() if isinstance(v, float) and int(v) > 1], 
+            feed_tags = sorted([(k, v) for k, v in all_tags.items() if int(v) > 0], 
                                key=itemgetter(1), 
                                reverse=True)[:25]
         popular_tags = json.encode(feed_tags)
+        if verbose:
+            print "Found %s tags: %s" % (len(feed_tags), popular_tags)
         
         # TODO: This len() bullshit will be gone when feeds move to mongo
         #       On second thought, it might stay, because we don't want
@@ -886,8 +893,6 @@ class Feed(models.Model):
             self.save_popular_authors(feed_authors=feed_authors[:-1])
             
     def trim_feed(self, verbose=False):
-        from apps.reader.models import MUserStory
-        DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
         trim_cutoff = 500
         if self.active_subscribers <= 1 and self.premium_subscribers < 1:
             trim_cutoff = 100
@@ -901,31 +906,29 @@ class Feed(models.Model):
             trim_cutoff = 400
         elif self.active_subscribers <= 25 and self.premium_subscribers < 5:
             trim_cutoff = 450
+            
         stories = MStory.objects(
             story_feed_id=self.pk,
         ).order_by('-story_date')
+        
         if stories.count() > trim_cutoff:
-            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' % (unicode(self)[:30], stories.count(), trim_cutoff))
+            logging.debug('   ---> [%-30s] ~FBFound %s stories. Trimming to ~SB%s~SN...' %
+                          (unicode(self)[:30], stories.count(), trim_cutoff))
             try:
                 story_trim_date = stories[trim_cutoff].story_date
             except IndexError, e:
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(self)[:30], e))
                 return
-            extra_stories = MStory.objects(story_feed_id=self.pk, story_date__lte=story_trim_date)
+            extra_stories = MStory.objects(story_feed_id=self.pk, 
+                                           story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
             for story in extra_stories:
                 story.delete()
             if verbose:
-                print "Deleted %s stories, %s left." % (extra_stories_count, MStory.objects(story_feed_id=self.pk).count())
-                
-            # Can't use the story_trim_date because some users may have shared stories from
-            # this feed, but the trim date isn't past the two weeks of unreads.
-            userstories = MUserStory.objects(feed_id=self.pk, story_date__lte=DAYS_OF_UNREAD)
-            if userstories.count():
-                logging.debug("   ---> [%-30s] ~FBFound %s user stories. Deleting..." % (unicode(self)[:30], userstories.count()))
-                for userstory in userstories:
-                    userstory.delete()
-        
+                existing_story_count = MStory.objects(story_feed_id=self.pk).count()
+                print "Deleted %s stories, %s left." % (extra_stories_count,
+                                                        existing_story_count)
+                        
     def get_stories(self, offset=0, limit=25, force=False):
         stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
         stories = self.format_stories(stories_db, self.pk)
@@ -1141,12 +1144,12 @@ class Feed(models.Model):
         
         return total, random_factor*2
         
-    def set_next_scheduled_update(self, error_count=0, non_error_count=0):
+    def set_next_scheduled_update(self):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
-        if error_count:
-            total = total * error_count
-            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s/%s errors. Time: %s min' % (unicode(self)[:30], error_count, non_error_count, total))
+        if self.errors_since_good:
+            total = total * self.errors_since_good
+            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors. Time: %s min' % (unicode(self)[:30], self.errors_since_good, total))
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)

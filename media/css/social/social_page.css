@@ -230,6 +230,17 @@ header {
     padding-right: 6px;
     float: left;
 }
+.NB-header .NB-header-following-user {
+    color: #878787;
+}
+.NB-header .NB-header-following-user .NB-follow-user {
+    color: #C06411;
+    font-weight: bold;
+}
+.NB-header .NB-header-following-user .NB-follow-user:hover {
+    color: #AF000F;
+    cursor: pointer;
+}
 .NB-header .NB-header-stat:last-child {
     border-bottom: none;
 }
@@ -596,7 +607,6 @@ header {
     position: absolute;
     left: 28px;
     top: 10px;
-    cursor: pointer;
 }
 .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
     top: 26px;
@@ -786,8 +796,9 @@ header {
     color: #404040;
     font-size: 13px;
     height: 28px;
-    margin: 8px 0 0;
+    margin: 8px 0 4px;
     border: 1px solid #C0C0C0;
+    box-shadow: 2px 2px 0 #E3E8EB;
     z-index: 1;
     position: relative;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -796,15 +807,17 @@ header {
 
 .NB-story-comment-input-form .NB-story-comment-buttons {
     position: absolute;
-    right: 0;
+    left: 0;
     bottom: 0;
+    width: 100%;
     display: none;
 }
 .NB-story-comment-input-form .NB-modal-submit-button {
-    float: right;
+    float: left;
     font-size: 12px;
     line-height: 19px;
     padding: 2px 16px;
+    margin: 4px 12px 4px 0;
     z-index: 0;
     opacity: 0;
     -webkit-transition: opacity .44s ease-out;
@@ -815,6 +828,48 @@ header {
 
 .NB-story-comment-input-form.NB-active .NB-modal-submit-button {
     opacity: 1;
+}
+
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter,
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook {
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 10px 0 0 6px;
+    cursor: pointer;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter:hover,
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook:hover {
+    opacity: .7;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter.NB-active,
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook.NB-active {
+    opacity: 1;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter {
+    background: transparent url('/media/embed/reader/twitter_icon_gray.png') no-repeat 0 0;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook {
+    background: transparent url('/media/embed/reader/facebook_icon_gray.png') no-repeat 0 0;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter.NB-active,
+.NB-story-comment-crossposts .NB-story-comment-crosspost-twitter:hover {
+    background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook.NB-active,
+.NB-story-comment-crossposts .NB-story-comment-crosspost-facebook:hover {
+    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
+}
+.NB-story-comment-crossposts .NB-story-comment-crosspost-text {
+    font-size: 9px;
+    text-transform: uppercase;
+    text-align: left;
+    color: #7483A2;
+    text-shadow: 0 1px 0 #FBFBFB;
+    line-height: 16px;
+    float: left;
+    margin: 10px 0 0 8px;
+    width: 200px;
 }
 
 /* =================== */
@@ -883,6 +938,7 @@ header {
     font-size: 10px;
 /*    padding: 8px 14px 0px;*/
     padding: 8px 28px 0px;
+    position: relative;
     overflow: hidden;
     height: 26px;
     -webkit-transition: all .12s ease-out;
@@ -890,14 +946,14 @@ header {
     -o-transition: all .12s ease-out;
     -ms-transition: all .12s ease-out;
 
-    background-image: -webkit-gradient(
+    background-image: url('/media/embed/reader/background-control-light.png'), -webkit-gradient(
       linear,
       left bottom,
       left top,
       color-stop(0.10, #EBEBEC),
       color-stop(0.84, #F5F5F5)
     );
-    background-image: -moz-linear-gradient(
+    background-image: url('/media/embed/reader/background-control-light.png'), -moz-linear-gradient(
       center bottom,
       #EBEBEC 10%,
       #F5F5F5 84%
@@ -1065,78 +1121,6 @@ header {
 }
 .NB-sideoption-share {
     padding: 4px 12px 6px;
-}
-.NB-sideoption-share .NB-sideoption-share-title {
-    text-transform: uppercase;
-    font-size: 10px;
-    text-align: left;
-    text-shadow: 0 1px 0 #F6F6F6;
-    color: #202020;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost {
-    margin-right: -4px;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-twitter,
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
-    float: right;
-    width: 16px;
-    height: 16px;
-    margin: 0 0 0 6px;
-    opacity: .4;
-    cursor: pointer;
-    -webkit-filter: grayscale(100%);
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-twitter:hover,
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook:hover {
-    opacity: .7;
-    -webkit-filter: none;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-twitter.NB-active,
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook.NB-active {
-    opacity: 1;
-    -webkit-filter: none;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-twitter {
-    background: transparent url('/media/embed/reader/twitter_icon.png') no-repeat 0 0;
-}
-.NB-sideoption-share .NB-sideoption-share-crosspost-facebook {
-    background: transparent url('/media/embed/reader/facebook_icon.png') no-repeat 0 0;
-}
-.NB-sideoption-share .NB-sideoption-share-comments {
-    width: 100%;
-    height: 52px;
-}
-.NB-sideoption-share .NB-sideoption-share-save {
-  font-size: 10px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: white;
-  padding: 2px 6px;
-  margin: 2px 0;
-  width: 92%;
-  background-color: #639510;
-  cursor: pointer;
-  -moz-box-shadow: 2px 2px 0 #95AB76;
-  -webkit-box-shadow: 2px 2px 0 #95AB76;
-  box-shadow: 2px 2px 0 #95AB76;
-  text-shadow: 0 1px 0 #101010;
-}
-.NB-sideoption-share .NB-sideoption-share-save.NB-saving {
-    background-color: #b5b4bB;
-    text-shadow: none;
-}
-.NB-sideoption-share .NB-sideoption-share-unshare {
-    color: #404040;
-    text-shadow: 0 1px 0 #E0E0E0;
-    line-height: 1;
-    font-size: 11px;
-    padding: 2px 6px;
-    margin: 6px 0;
-    width: 92%;
-    font-weight: normal;
-    -moz-box-shadow: 1px 1px 0 #95AB76;
-    -webkit-box-shadow: 1px 1px 0 #95AB76;
-    box-shadow: 1px 1px 0 #95AB76;
 }
 .NB-sideoption-share .NB-error {
     font-size: 10px;

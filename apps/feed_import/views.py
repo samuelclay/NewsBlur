@@ -2,7 +2,7 @@ import datetime
 import pickle
 import base64
 from utils import log as logging
-from oauth2client.client import OAuth2WebServerFlow
+from oauth2client.client import OAuth2WebServerFlow, FlowExchangeError
 import uuid
 from django.contrib.sites.models import Site
 # from django.db import IntegrityError
@@ -83,7 +83,6 @@ def opml_export(request):
 
 
 def reader_authorize(request): 
-    # is_modal = request.GET.get('modal', False)
     domain = Site.objects.get_current().domain
     STEP2_URI = "http://%s%s" % (
         (domain + '.com') if not domain.endswith('.com') else domain,
@@ -96,6 +95,7 @@ def reader_authorize(request):
         scope="http://www.google.com/reader/api",
         redirect_uri=STEP2_URI,
         user_agent='NewsBlur Pro, www.newsblur.com',
+        approval_prompt="force",
         )
     logging.user(request, "~BB~FW~SBAuthorize Google Reader import - %s" % (
         request.META['REMOTE_ADDR'],
@@ -137,9 +137,14 @@ def reader_callback(request):
         user_agent='NewsBlur Pro, www.newsblur.com',
         )
     FLOW.redirect_uri = STEP2_URI
-    is_modal = request.GET.get('modal', False)
-
-    credential = FLOW.step2_exchange(request.REQUEST)
+    
+    try:
+        credential = FLOW.step2_exchange(request.REQUEST)
+    except FlowExchangeError:
+        logging.info(" ***> [%s] Bad token from Google Reader." % (request.user,))
+        return render_to_response('social/social_connect.xhtml', {
+            'error': 'There was an error trying to import from Google Reader. Trying again will probably fix the issue.'
+        }, context_instance=RequestContext(request))
     
     user_token = None
     if request.user.is_authenticated():
@@ -160,19 +165,6 @@ def reader_callback(request):
         user_token.credential = base64.b64encode(pickle.dumps(credential))
         user_token.session_id = request.session.session_key
         user_token.save()
-    
-    # 
-    # try:
-    #     if not user_token.access_token:
-    #         raise IntegrityError
-    #     user_token.save()
-    # except IntegrityError:
-    #     if is_modal:
-    #         return render_to_response('social/social_connect.xhtml', {
-    #             'error': 'There was an error trying to import from Google Reader. Trying again will probably fix the issue.'
-    #         }, context_instance=RequestContext(request))
-    #     logging.info(" ***> [%s] Bad token from Google Reader. Re-authenticating." % (request.user,))
-    #     return HttpResponseRedirect(reverse('google-reader-authorize'))
 
     # Fetch imported feeds on next page load
     request.session['import_from_google_reader'] = True
@@ -180,17 +172,15 @@ def reader_callback(request):
     logging.user(request, "~BB~FW~SBFinishing Google Reader import - %s" % (request.META['REMOTE_ADDR'],))
 
     if request.user.is_authenticated():
-        if is_modal or True:
-            return render_to_response('social/social_connect.xhtml', {}, context_instance=RequestContext(request))
-        else:
-            return HttpResponseRedirect(reverse('index'))
+        return render_to_response('social/social_connect.xhtml', {}, context_instance=RequestContext(request))
 
     return HttpResponseRedirect(reverse('import-signup'))
     
 @json.json_view
 def import_from_google_reader(request):
     code = 0
-
+    feed_count = 0
+    
     if request.user.is_authenticated():
         reader_importer = GoogleReaderImporter(request.user)
         auto_active = bool(request.REQUEST.get('auto_active') or False)
@@ -203,8 +193,10 @@ def import_from_google_reader(request):
             code = 1
         if 'import_from_google_reader' in request.session:
             del request.session['import_from_google_reader']
-
-    return dict(code=code)
+    
+        feed_count = UserSubscription.objects.filter(user=request.user).count()
+        
+    return dict(code=code, feed_count=feed_count)
 
 def import_signup(request):
     if request.method == "POST":
