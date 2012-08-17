@@ -295,7 +295,7 @@ def setup_task():
     enable_celery_supervisor()
     setup_gunicorn(supervisor=False)
     update_gunicorn()
-    config_monit()
+    config_monit_task()
 
 # ==================
 # = Setup - Common =
@@ -410,8 +410,13 @@ def bounce_pgbouncer():
     run('sudo /etc/init.d/pgbouncer start', pty=False)
     run('sleep 2')
     
-def config_monit():
-    put('config/monit.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
+def config_monit_task():
+    put('config/monit_task.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
+    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('/etc/init.d/monit restart')
+    
+def config_monit_db():
+    put('config/monit_db.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
     sudo('echo "startup=1" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
     

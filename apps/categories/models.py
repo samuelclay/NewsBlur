@@ -22,6 +22,10 @@ class MCategory(mongo.Document):
         return "%s: %s sites" % (self.title, len(self.feed_ids))
     
     @classmethod
+    def add(cls, title, description):
+        return cls.objects.create(title=title, description=description)
+        
+    @classmethod
     def serialize(cls, category=None):
         categories = cls.objects.all()
         if category:
