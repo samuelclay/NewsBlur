@@ -9,6 +9,7 @@ import random
 from django.core.cache import cache
 from django.conf import settings
 from django.db import IntegrityError
+from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
