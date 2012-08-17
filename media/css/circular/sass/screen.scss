@@ -108,6 +108,10 @@ a {
     text-align: center;
 }
 
+.NC-blue-button {
+    @include NC-blue-button;  
+}
+
 .NC-header {
     background: image-url('header_background.png') repeat 0 0;
     height: 100px;
@@ -138,12 +142,28 @@ a {
             margin-left: 10px;
         }
         
-        .NC-comment-toggle-button {
+        .NC-login-button {
             float: right;
             @include NC-default-button;
             margin-top: 32px;
             margin-left: 10px;
         }
+    }
+}
+
+.NC-popover {
+    position: absolute;
+    top: 100px;
+    left: 200px;
+    background: white;
+    width: 200px;
+    padding: 20px;
+    height: 100px;
+    @include single-box-shadow(#A7A7A7, 0px, 0px, 5px, false, false);
+    @include border-radius(6px, 6px);
+    
+    input {
+        border: 1px solid $border-color;
     }
 }
 
@@ -214,8 +234,6 @@ a {
         }
 
         img {
-            width: 100% !important;
-            height: auto !important;
             margin: 10px 0;
         }
     }
@@ -270,6 +288,7 @@ body.NC-hide-comments .NB-story-comments-container {
     font-size: $small-font-size;
     width: $comment-width;
     margin: 0 auto;
+    z-index: 10;
 
     .NB-user-avatar img,
     img.NB-user-avatar {
@@ -280,6 +299,14 @@ body.NC-hide-comments .NB-story-comments-container {
         left: 0;
          @include border-radius(3px, 3px);
          /* @include single-box-shadow; gets in the way of transparent PNGs */
+    }
+    
+    .NB-user-avatar.NB-story-comment-reshare img {
+        top: 27px;
+        left: 0px;
+        z-index: 2;
+        width: 24px;
+        height: 24px;
     }
 
     .NB-story-comment {
@@ -301,6 +328,14 @@ body.NC-hide-comments .NB-story-comments-container {
             @include single-text-shadow;
         }
         
+        .NB-story-comment-location {
+            float: left;
+            font-size: $smallest-font-size;
+            color: $light-text-color;
+            @include single-text-shadow;
+            margin-left: 5px;
+        }
+        
         .NB-story-comment-reply-button,
         .NB-story-comment-edit-button {
             display: none;
@@ -311,10 +346,17 @@ body.NC-hide-comments .NB-story-comments-container {
             line-height: 18px;
             clear: both;
         }
+                
+        .NB-story-comment-reshares .NB-user-avatar img {
+            top: 15px;
+            left: 8px;
+            z-index: 1;
+            width: 24px;
+            height: 24px;
+        }
     }
     
     .NB-story-comment-replies {
-        margin-left: -29px;
         margin-top: 15px;
         padding: 15px 0 0px 44px;
         border-top: 1px solid $border-color;

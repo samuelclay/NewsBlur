@@ -34,6 +34,7 @@
         'MEDIA_URL'        : "{{ MEDIA_URL }}",
     };
     NEWSBLUR.user_social_profile = {{ user_social_profile_page|safe }};
+    NEWSBLUR.user_social_services = {{ user_social_services_page|safe }};
     NEWSBLUR.Preferences = {};
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};
@@ -64,9 +65,20 @@
 <header class="NC-header">
     <div class="NC-header-inner">
         <h1 class="NC-logo"><a href="/">Circular</a></h1>
-        <div class="NC-button NC-comment-toggle-button">Toggle Comments</div>
+        <div class="NC-button NC-login-button">Sign In</div>
 
         <div class="NC-button NC-invite-button">Request an Invite</div>
+
+        <div class="NC-login-popover NC-popover">
+            <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
+            <input placeholder="Password" type="password" name="login_password" class="NB-input" />
+            <div class="NC-blue-button">Login</div>
+        </div>
+        <div class="NC-request-popover NC-popover">
+            <input type="text" placeholder="Email Address" name="signup_email" class="NB-input" />
+            <div class="NC-blue-button">Request</div>
+        </div>
+    </div>
     </div>
 </header>
 <div class="NB-page">
@@ -102,6 +114,20 @@
                                 <div class="NB-header-stat"><b>{{ social_profile.shared_stories_count }}</b> shared {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
                                 <div class="NB-header-stat">&middot;</div>
                                 <div class="NB-header-stat"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
+                                {% if user.is_authenticated %}
+                                    <div class="NB-header-stat">&middot;</div>
+                                    <div class="NB-header-stat NB-header-following-user">
+                                        {% if user_following_social_profile %}
+                                            {% if social_profile.user_id == user.pk %}
+                                                This is your blurblog
+                                            {% else %}
+                                                You are following {{ social_profile.username }}
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="NB-follow-user">Follow {{ social_profile.username }}</div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </td>

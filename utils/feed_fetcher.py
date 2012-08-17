@@ -9,7 +9,7 @@ import random
 from django.core.cache import cache
 from django.conf import settings
 from django.db import IntegrityError
-from apps.reader.models import UserSubscription, MUserStory
+from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
@@ -354,7 +354,7 @@ class Dispatcher:
                             feed.known_good = True
                             feed.fetched_once = True
                             feed = feed.save()
-                        MUserStory.delete_old_stories(feed_id=feed.pk)
+                        # MUserStory.delete_old_stories(feed_id=feed.pk)
                         try:
                             self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
@@ -476,26 +476,28 @@ class Dispatcher:
                                                     active=True,
                                                     user__profile__last_seen_on__gte=UNREAD_CUTOFF)\
                                             .order_by('-last_read_date')
-        stories_db = MStory.objects(story_feed_id=feed.pk,
-                                    story_date__gte=UNREAD_CUTOFF)
-                                    
-        logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
-                      feed.title[:30], stories_db.count(), user_subs.count(),
-                      feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))
 
         for sub in user_subs:
             if not sub.needs_unread_recalc:
                 sub.needs_unread_recalc = True
                 sub.save()
-        
-        self.calculate_feed_scores_with_stories(user_subs, stories_db)
+
+        if self.options['compute_scores']:
+            stories_db = MStory.objects(story_feed_id=feed.pk,
+                                        story_date__gte=UNREAD_CUTOFF)
+            logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
+                          feed.title[:30], stories_db.count(), user_subs.count(),
+                          feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))        
+            self.calculate_feed_scores_with_stories(user_subs, stories_db)
+        else:
+            logging.debug(u'   ---> [%-30s] ~BR~FYSkipping computing scores: ~SB%s seconds~SN of mongodb lag' % (
+              feed.title[:30], self.options.get('mongodb_replication_lag')))
     
     @timelimit(10)
     def calculate_feed_scores_with_stories(self, user_subs, stories_db):
-        if self.options['compute_scores']:
-            for sub in user_subs:
-                silent = False if self.options['verbose'] >= 2 else True
-                sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
+        for sub in user_subs:
+            silent = False if self.options['verbose'] >= 2 else True
+            sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
             
     def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool

@@ -9,6 +9,7 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
     },
     
     initialize: function() {
+        console.log('initialized NEWSBLUR.Views.SocialPageLoginView');
     },
     
     template: _.template('\
@@ -37,6 +38,7 @@ NEWSBLUR.Views.SocialPageLoginView = Backbone.View.extend({
     '),
     
     toggle_login_dialog: function(options) {
+        console.log('click login');
         options = options || {};
         var feed_id = this.model.get('story_feed_id');
         var $sideoption = this.$('.NB-sideoption.NB-feed-story-login');

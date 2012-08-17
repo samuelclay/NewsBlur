@@ -1,5 +1,6 @@
 import sys
 from django.db import models
+from django.contrib.auth.models import User
 from apps.rss_feeds.models import DuplicateFeed
 from utils import log as logging
 
@@ -26,6 +27,8 @@ class UserSubscriptionManager(models.Manager):
                 elif 'feed_id' in kwargs:
                     kwargs['feed_id'] = feed.pk
                 user = kwargs.get('user')
+                if isinstance(user, int):
+                    user = User.objects.get(pk=user)
                 logging.debug(" ---> [%s] ~BRFound dupe UserSubscription: ~SB%s (%s)" % (user and user.username, feed, feed_id))
                 return super(UserSubscriptionManager, self).get(*args, **kwargs)
             else:

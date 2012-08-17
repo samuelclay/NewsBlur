@@ -59,14 +59,16 @@
                 {% if story.share_count %}
                     {% render_story_share story %}
                 {% endif %}
-            </div>
+            </div>    
         </div>
     </div><!-- end NB-story-wrapper -->
     <div class="NB-story-comments-container">
-        {% if story.comment_count %}
+        {% if story.comment_count or not story.shared_by_user %}
             {% render_story_comments story %}
         {% endif %}
     </div>
+    
+    <!--    
     <div class="NB-feed-story-sideoptions-container">
         {% if not user.is_authenticated %}
             <div class="NB-sideoption NB-feed-story-login">
@@ -75,4 +77,6 @@
             </div>
         {% endif %}
     </div>
+    -->
+
 </div>
