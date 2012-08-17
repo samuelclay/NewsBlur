@@ -2,12 +2,13 @@ import datetime
 import mongoengine as mongo
 import urllib2
 from django.db.models import Avg, Count
+from django.conf import settings
 from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, MFeedPushHistory
 from apps.rss_feeds.models import FeedLoadtime
 from apps.social.models import MSharedStory
 from apps.profile.models import Profile
 from utils import json_functions as json
-
+from utils import db_functions
 
 class MStatistics(mongo.Document):
     key   = mongo.StringField(unique=True)
@@ -174,6 +175,11 @@ class MStatistics(mongo.Document):
         for key, value in values:
             cls.objects(key=key).update_one(upsert=True, set__key=key, set__value=value)
     
+    @classmethod
+    def collect_statistics_for_db(cls):
+        lag = db_functions.mongo_max_replication_lag(settings.MONGODB)
+        cls.set('mongodb_replication_lag', lag)
+        
     @classmethod
     def delete_old_stats(cls):
         now = datetime.datetime.now()
