@@ -488,14 +488,17 @@ class Dispatcher:
                 sub.needs_unread_recalc = True
                 sub.save()
         
-        self.calculate_feed_scores_with_stories(user_subs, stories_db)
+        self.calculate_feed_scores_with_stories(user_subs, stories_db, feed)
     
     @timelimit(10)
-    def calculate_feed_scores_with_stories(self, user_subs, stories_db):
+    def calculate_feed_scores_with_stories(self, user_subs, stories_db, feed):
         if self.options['compute_scores']:
             for sub in user_subs:
                 silent = False if self.options['verbose'] >= 2 else True
                 sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
+        else:
+            logging.debug(u'   ---> [%-30s] ~FYSkipping computing scores: ~SB~BR~FW%s seconds~SN~FY of mongodb lag' % (
+                          feed.title[:30], self.options.get('mongodb_replication_lag')))
             
     def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool

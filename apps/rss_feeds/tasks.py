@@ -48,9 +48,14 @@ class UpdateFeeds(Task):
         from apps.rss_feeds.models import Feed
         from apps.statistics.models import MStatistics
         
+        mongodb_replication_lag = int(MStatistics.get('mongodb_replication_lag', 0))
+        compute_scores = bool(mongodb_replication_lag < 250)
+        
         options = {
             'fake': bool(MStatistics.get('fake_fetch')),
             'quick': float(MStatistics.get('quick_fetch', 0)),
+            'compute_scores': compute_scores,
+            'mongodb_replication_lag': mongodb_replication_lag,
         }
         
         if not isinstance(feed_pks, list):
@@ -88,9 +93,15 @@ class PushFeeds(Task):
 
     def run(self, feed_id, xml, **kwargs):
         from apps.rss_feeds.models import Feed
+        from apps.statistics.models import MStatistics
+        
+        mongodb_replication_lag = int(MStatistics.get('mongodb_replication_lag', 0))
+        compute_scores = bool(mongodb_replication_lag < 250)
         
         options = {
-            'feed_xml': xml
+            'feed_xml': xml,
+            'compute_scores': compute_scores,
+            'mongodb_replication_lag': mongodb_replication_lag,
         }
         feed = Feed.objects.get(pk=feed_id)
         feed.update(options=options)
