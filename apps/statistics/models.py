@@ -68,6 +68,8 @@ class MStatistics(mongo.Document):
         print "Sites loaded: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_stories_shared(last_day)
         print "Stories shared: %s" % (datetime.datetime.now() - now)
+        cls.collect_statistics_for_db()
+        print "DB Stats: %s" % (datetime.datetime.now() - now)
         
     @classmethod
     def collect_statistics_feeds_fetched(cls, last_day=None):
