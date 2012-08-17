@@ -122,8 +122,7 @@
     
 	[super viewWillAppear:animated];
         
-    if ((appDelegate.isSocialRiverView || appDelegate.isRiverView || appDelegate.isSocialView) || 
-        [appDelegate.activeFolder isEqualToString:@"All Stories"]) {
+    if ((appDelegate.isSocialRiverView || appDelegate.isRiverView || appDelegate.isSocialView)) {
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;

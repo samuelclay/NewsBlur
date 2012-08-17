@@ -241,11 +241,19 @@
     if ([userPreferences integerForKey:@"shareToTwitter"]){
         [request addPostValue:@"twitter" forKey:@"post_to_services"];     
     }
-        
-    if ([appDelegate.activeStory objectForKey:@"social_user_id"] != nil) {
-        NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
-        [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
+    
+    if (appDelegate.isSocialRiverView) {
+        if ([appDelegate.activeStory objectForKey:@"friend_user_ids"] != nil) {
+            NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [[appDelegate.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0]];
+            [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
+        }
+    } else {
+        if ([appDelegate.activeStory objectForKey:@"social_user_id"] != nil) {
+            NSString *sourceUserIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
+            [request setPostValue:sourceUserIdStr forKey:@"source_user_id"]; 
+        }
     }
+
     
     NSString *comments = commentField.text;
     if ([comments length]) {

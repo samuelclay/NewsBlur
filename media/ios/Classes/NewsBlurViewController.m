@@ -31,6 +31,7 @@
 
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
+@property (readwrite) BOOL inPullToRefresh_;
 
 @end
 
@@ -57,6 +58,7 @@
 @synthesize hasNoSites;
 @synthesize updatedDictFeeds_;
 @synthesize updatedDictSocialFeeds_;
+@synthesize inPullToRefresh_;
 
 #pragma mark -
 #pragma mark Globals
@@ -113,7 +115,7 @@
         self.viewShowingAllFeeds = NO;
         [self.intelligenceControl setSelectedSegmentIndex:1];
         [appDelegate setSelectedIntelligence:0];
-    } else { // default state, all stories
+    } else { // default state, ALL BLURBLOG STORIES
         self.viewShowingAllFeeds = YES;
         [self.intelligenceControl setSelectedSegmentIndex:0];
         [appDelegate setSelectedIntelligence:0];
@@ -250,10 +252,18 @@
         HUD.labelText = @"On its way...";
     }
     
-    NSURL *urlFeedList = [NSURL URLWithString:
-                          [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true&update_counts=false",
-                           NEWSBLUR_URL]];
-
+    NSURL *urlFeedList;
+    
+    if (self.inPullToRefresh_) {
+        urlFeedList = [NSURL URLWithString:
+                      [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true",
+                      NEWSBLUR_URL]];
+    } else {
+        urlFeedList = [NSURL URLWithString:
+                       [NSString stringWithFormat:@"http://%@/reader/feeds?flat=true&update_counts=false",
+                        NEWSBLUR_URL]];
+    }
+    
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]
      setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
@@ -274,6 +284,7 @@
     
     // User clicking on another link before the page loads is OK.
     [self informError:[request error]];
+    self.inPullToRefresh_ = NO;
 }
 
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
@@ -468,7 +479,11 @@
         [upgradeConfirm setTag:2];
     }
 
-    [self refreshFeedList];
+    if (!self.inPullToRefresh_) {
+        [self refreshFeedList];
+    } else {
+        self.inPullToRefresh_ = NO;
+    }
     
     // start up the first time user experience
     if ([[results objectForKey:@"social_feeds"] count] == 0 &&
@@ -827,11 +842,11 @@
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (section == 0) {
-        headerLabel.text = @"All Blurblog Stories";
+        headerLabel.text = @"ALL BLURBLOG STORIES";
 //        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
 //                                      colorWithAlphaComponent:0.8];
     } else if (section == 1) {
-        headerLabel.text = @"All Stories";
+        headerLabel.text = @"ALL STORIES";
 //        customView.backgroundColor = [UIColorFromRGB(0xE6DDD7)
 //                                      colorWithAlphaComponent:0.8];
     } else {
@@ -1301,9 +1316,9 @@
 
 // called when the user pulls-to-refresh
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view {
+    self.inPullToRefresh_ = YES;
     [self fetchFeedList:NO];
 }
-
 
 - (void)refreshFeedList {
     // refresh the feed
