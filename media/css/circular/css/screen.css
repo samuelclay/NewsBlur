@@ -65,7 +65,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 
 /* line 88, ../sass/screen.scss */
 body {
-  background: #ebedee url('/media/img/circular/background.png') repeat 0 0;
+  background: #ebedee url('/../../../media/img/circular/background.png?1345246675') repeat 0 0;
   font-family: Helvetica, arial, san-serif;
   color: #333333;
 }
@@ -196,7 +196,7 @@ blockquote {
 
 /* line 162, ../sass/screen.scss */
 .NC-header {
-  background: url('/media/img/circular/header_background.png') repeat 0 0;
+  background: url('/../../../media/img/circular/header_background.png?1345246675') repeat 0 0;
   height: 72px;
   -webkit-box-shadow: 0px 0px 10px #a7a7a7;
   -moz-box-shadow: 0px 0px 10px #a7a7a7;
@@ -354,11 +354,11 @@ blockquote {
 .NC-popover .NC-popover-inner {
   width: 240px;
   padding: 45px 38px 0 30px;
-  background: transparent url('/media/img/circular/popover_top.png') no-repeat 0 0;
+  background: transparent url('/../../../media/img/circular/popover_top.png?1345248505') no-repeat 0 0;
 }
 /* line 233, ../sass/screen.scss */
 .NC-popover .NC-popover-bottom {
-  background: transparent url('/media/img/circular/popover_bottom.png') no-repeat left bottom;
+  background: transparent url('/../../../media/img/circular/popover_bottom.png?1345248525') no-repeat left bottom;
   height: 40px;
 }
 /* line 238, ../sass/screen.scss */
@@ -479,7 +479,7 @@ blockquote {
   width: 100%;
   height: 14px;
   z-index: 0;
-  background: transparent url('/media/img/circular/module_cutoff.png') repeat-x left bottom;
+  background: transparent url('/../../../media/img/circular/module_cutoff.png?1345259189') repeat-x left bottom;
 }
 /* line 359, ../sass/screen.scss */
 .NB-story .NB-story-content-expander {

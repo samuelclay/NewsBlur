@@ -474,11 +474,11 @@ body.NC-hide-comments .NB-story-comments-container {
             color: $light-text-color;
             @include single-text-shadow;
             margin-left: 15px;
-        }
+        } 
         
         .NB-story-comment-reply-button,
         .NB-story-comment-edit-button {
-            display: none;
+            display: none; 
         }
         
         .NB-story-comment-content {
