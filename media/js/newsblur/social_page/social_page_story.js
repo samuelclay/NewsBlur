@@ -87,6 +87,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     
     truncate_story_height: function() {
         var $expander = this.$(".NB-story-content-expander");
+        var $expander_cutoff = this.$(".NC-story-cutoff");
         var $wrapper = this.$(".NB-story-content-wrapper");
         var $content = this.$(".NB-story-content");
         
@@ -99,6 +100,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             $wrapper.addClass('NB-story-content-wrapper-height-fudged');
         } else if (content_height > max_height) {
             $expander.css('display', 'block');
+            $expander_cutoff.css('display', 'block');
             $wrapper.removeClass('NB-story-content-wrapper-height-fudged');
             $wrapper.addClass('NB-story-content-wrapper-height-truncated');
             var pages = Math.round(content_height / max_height, true);

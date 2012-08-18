@@ -124,4 +124,3 @@ stylesheets:
     blurblog:
         - media/css/jquery.tipsy.css
         - media/css/circular/css/screen.css
-        - media/css/modals.css

@@ -30,11 +30,11 @@ $default-box-shadow-blur: 1px;
     border: 1px solid $border-color;
     @include border-radius(3px, 3px);
     @include single-box-shadow(white, 0px, 0px, 2px, false, true);
-    @include background-image(linear-gradient(white, #f6f6f6));
-    @include single-text-shadow(0px, -1px, 1px, false, white);
+    @include box-shadow(rgba(#999, 0.4) 0 0 10px, white 0 2px px inset);
+    //@include background-image(linear-gradient(white, #f6f6f6));
+    //@include single-text-shadow(0px, -1px, 1px, false, white);
     color: $light-text-color;
     height: 20px;
-    text-transform: capitalize;
     line-height: 20px;
     text-align: center;
     cursor: pointer;
@@ -59,10 +59,9 @@ $default-box-shadow-blur: 1px;
     @include border-radius(3px, 3px);
     @include single-box-shadow(#80c5f2, 0px, 0px, 2px, false, true);
     @include background-image(linear-gradient(#6eb4e3, #4d98d2));
-    @include single-text-shadow(0px, -1px, 1px, false, #4388b5);
+    @include box-shadow(rgba(#999, 0.4) 0 0 10px, #70b5e3 0 2px 1px inset);
     color: white;
     height: 20px;
-    text-transform: capitalize;
     line-height: 20px;
     text-align: center;
     cursor: pointer;
@@ -127,12 +126,12 @@ a {
         position: relative;
         
         h1.NC-logo a {
-            width: 217px;
+            width: 208px;
             height: 100px;
             text-indent: -10000em;
             display: block;
             float: left;
-            background: image-url('circular_logo.png') repeat-x 0 0;
+            background: image-url('circular_logo.png') no-repeat left center;
         }
         
         .NC-request-toggle-button {
@@ -217,13 +216,14 @@ a {
             text-decoration: none;
             color: $text-color;
         }
-        
-        span {
-            font-size: $small-font-size;
-            color: $light-text-color;
-            font-weight: normal;
-            display: inline-block; /* to ensure that the author is always on one line */
-        }
+    }
+    
+    .NB-story-metadata {
+        font-size: $smallest-font-size;
+        color: $light-text-color;
+        font-weight: normal;
+        display: block; /* to ensure that the author is always on one line */
+        margin: 5px 0;
     }
     
     .NB-feed {
@@ -266,6 +266,16 @@ a {
         img {
             margin: 10px 0;
         }
+    }
+    
+    .NC-story-cutoff {
+        position: absolute;
+        display: none;
+        bottom: 48px;
+        left: 0;
+        width: 100%;
+        height: 14px;
+        background: transparent image-url('module_cutoff.png') repeat-x left bottom;
     }
     
     .NB-story-content-expander {
@@ -403,7 +413,6 @@ body.NC-hide-comments .NB-story-comments-container {
     .NB-story-comment-input {
         width: 376px;
         height: 16px;
-        margin-top: 2px;
         font-size: 12px;
         padding: 6px 4px;
         border: 1px solid $border-color;

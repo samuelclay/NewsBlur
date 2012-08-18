@@ -4,8 +4,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         "click .NC-login-toggle-button"         : "toggle_login_dialog",
         "click .NC-request-toggle-button"       : "toggle_request_dialog",
         "click .NC-logout-button"               : "logout",
-        "click .NC-login-button"                : "login",
-        "click .NC-request-button"              : "request_invite"
+        "click .NC-login-button"                : "login"
     },
 
     initialize: function() {
@@ -106,6 +105,19 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                 .bind('keydown.invite', 'return', request_invite);
         }
     },
+    
+    hide_popovers: function(){
+        var $popover = this.$('.NC-popover');
+        // Close
+        $popover.animate({
+            'opacity': 0
+        }, {
+            'duration': 300,
+            'easing': 'easeInOutQuint',
+            'queue': false
+        });
+        $popover.removeClass('NC-active'); 
+    },
         
     // ==========
     // = Events =
@@ -154,13 +166,13 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         this.clean();        
         var email    = this.$('input[name=request_email]').val();
         
-        NEWSBLUR.assets.request_invite(email, _.bind(this.post_request_invite, this), _.bind(this.request_invite_error, this));
+        NEWSBLUR.assets.request_invite(email, _.bind(this.post_request_invite, this), _.bind(this.post_request_invite, this));
     },
     
     post_request_invite: function(data) {
-        NEWSBLUR.log(["signup data", data]);
-        this.clean();        
-        console.log("calling post_invite");
+        NEWSBLUR.log(["request data", data]);
+        this.hide_popovers();
+        this.$('.NC-request-toggle-button').html('Invite Requested');
     },
     
     request_invite_error: function(data) {

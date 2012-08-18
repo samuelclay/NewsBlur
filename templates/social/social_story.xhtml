@@ -6,23 +6,23 @@
     <div class="NB-story-wrapper" style="border-color: #{{ story.feed.favicon_color }};">
         <div class="NB-story-header-wrapper">
             <div class="NB-story-header">
-                <!--<div class="NB-story-date">
+                <h2 class="NB-story-title">
+                    <a href="{{ story.story_permalink }}">{{ story.story_title }}</a> 
+
+                    <div class="NB-story-metadata">
+                    {% if story.story_authors %}
+                        <span class="NB-story-author">{{ story.story_authors }}, </span>
+                    {% endif %}
                     {% if story.has_modifications %}
-                        <div class="NB-story-modifications-button" title="Show story changes"></div>
+                        <span class="NB-story-modifications-button" title="Show story changes"></span>
                     {% endif %}
 
                     {{ story.shared_date|date:"D F j<\s\u\p>S</\s\u\p>, Y"|safe }} 
                     <span class="NB-story-date-break"></span>
                     <small>at</small>
                     {{ story.shared_date|date:"g:i A"|safe }} 
-                </div>-->
-                <h2 class="NB-story-title">
-                    <a href="{{ story.story_permalink }}">{{ story.story_title }}</a> 
-                    {% if story.story_authors %}
-                        <span class="NB-story-author">{{ story.story_authors }}</span>
-                    {% endif %}
+                </div>
                 </h2>
-
                 <!--{% if story.story_tags %}
                     <div class="NB-story-tags">
                         {% for story_tag in story.story_tags %}
@@ -50,6 +50,7 @@
                 <div class="NB-story-content">
                     {{ story.story_content|safe }}
                 </div>
+                <div class="NC-story-cutoff"></div>
                 <div class="NB-story-content-expander">
                     <div class="NB-story-content-expander-text">Read the whole story</div>
                     <div class="NB-story-content-expander-pages"></div>

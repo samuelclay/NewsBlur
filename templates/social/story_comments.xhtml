@@ -6,6 +6,17 @@
         {% for comment in story.friend_comments %}
             {% render_story_comment story comment %}
         {% endfor %}
+        {#{% if story.comment_count_public %} #}
+        {#    <div class="NB-story-comments-public-header-wrapper"> #}
+        {#        <div class="NB-story-comments-public-header"> #}
+        {#            {{ story.comment_count_public }} public comment{{ story.comment_count_public|pluralize }} #}
+        {#        </div> #}
+        {#    </div> #}
+        {#{% endif %} #}
+        
+        {% for comment in story.public_comments %}
+            {% render_story_comment story comment %}
+        {% endfor %}
 
         <div class="NB-story-comment-edit NB-story-comment {% if story.shared_by_user %}NB-hidden{% endif %}" data-user-id="{{ user_social_profile.user_id }}">
             {% if user_social_profile.large_photo_url %}
@@ -14,7 +25,7 @@
                 </a>
             {% else %}
                 <div class="NB-user-avatar">
-                    <img src="{{ MEDIA_URL }}img/reader/default_profile_photo.png">
+                    <img src="{{ MEDIA_URL }}img/circular/circular_avatar.png">
                 </div>
             {% endif %}
             <div class="NB-story-comment-input-form">
@@ -32,17 +43,7 @@
         </div>
         
 
-        {% if story.comment_count_public %}
-            <div class="NB-story-comments-public-header-wrapper">
-                <div class="NB-story-comments-public-header">
-                    {{ story.comment_count_public }} public comment{{ story.comment_count_public|pluralize }}
-                </div>
-            </div>
-        {% endif %}
-        
-        {% for comment in story.public_comments %}
-            {% render_story_comment story comment %}
-        {% endfor %}
+
 
     </div>
 
