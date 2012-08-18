@@ -24,13 +24,13 @@
                     {{ story.shared_date|date:"g:i A"|safe }} 
                 </div>
                 </h2>
-                <!--{% if story.story_tags %}
-                    <div class="NB-story-tags">
-                        {% for story_tag in story.story_tags %}
-                            <div class="NB-story-tag">{{ story_tag }}</div>
-                        {% endfor %}
-                    </div>
-                {% endif %}-->
+                {# {% if story.story_tags %} #}
+                {#     <div class="NB-story-tags"> #}
+                {#         {% for story_tag in story.story_tags %} #}
+                {#             <div class="NB-story-tag">{{ story_tag }}</div> #}
+                {#         {% endfor %} #}
+                {#     </div> #}
+                {# {% endif %} #}
             </div>
         
         </div>
@@ -72,15 +72,13 @@
     </div>
     </div><!-- end NB-story-wrapper -->
     
-    <!--    
-    <div class="NB-feed-story-sideoptions-container">
-        {% if not user.is_authenticated %}
-            <div class="NB-sideoption NB-feed-story-login">
-                <div class="NB-sideoption-icon">&nbsp;</div>
-                <div class="NB-sideoption-title">Login to share</div>
-            </div>
-        {% endif %}
-    </div>
-    -->
+    {# <div class="NB-feed-story-sideoptions-container"> #}
+    {#     {% if not user.is_authenticated %} #}
+    {#         <div class="NB-sideoption NB-feed-story-login"> #}
+    {#             <div class="NB-sideoption-icon">&nbsp;</div> #}
+    {#             <div class="NB-sideoption-title">Login to share</div> #}
+    {#         </div> #}
+    {#     {% endif %} #}
+    {# </div> #}
 
 </div>

@@ -361,12 +361,11 @@ blockquote {
         position: absolute;
         bottom: 0;
         left: 0;
-        padding: 18px 25px;
+        padding: 18px 25px 14px 0;
         width: 100%;
         cursor: pointer;
         color: $more-text-color;
         font-size: $smallest-font-size;
-        z-index: 1;
         
         &:hover {
             color: $more-text-color-hover;
@@ -395,17 +394,26 @@ blockquote {
     position: absolute;
     bottom: 12px;
     right: 0;
-    z-index: 0;
     
     .NB-story-share-label {
         display: inline-block;
         vertical-align: top;
         margin-top: 3px;
     }
-    
+    .NB-story-share-profiles,
+    .NB-story-share-profiles-shares-friends,
+    .NB-story-share-profiles-shares-public,
+    .NB-story-share-profiles-comments-friends,
+    .NB-story-share-profiles-comments-public {
+        display: inline-block;
+    }
+    .NB-story-share-profiles-shares-public,
+    .NB-story-share-profiles-comments-public {
+        opacity: .5;
+    }
     .NB-user-avatar {
         display: inline-block;
-        margin: 2px 0 0 2px;
+        margin: 2px 1px 0 2px;
         
         img {
             @include single-box-shadow;
