@@ -391,9 +391,7 @@ blockquote {
     color: $light-text-color;
     font-size: 11px;
     line-height: 16px;
-    position: absolute;
-    bottom: 12px;
-    right: 0;
+    float: right;
     
     .NB-story-share-label {
         display: inline-block;

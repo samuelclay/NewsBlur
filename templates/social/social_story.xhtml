@@ -35,6 +35,12 @@
         
         </div>
     
+        <div class="NB-story-shares-container">
+            {% if story.share_count %}
+                {% render_story_share story %}
+            {% endif %}
+        </div>    
+
         <div class="NB-feed NB-feed-{{ story.feed.favicon_text_color }}" >
             {% if story.feed %}
                 <div class="NB-feed-favicon">
@@ -57,11 +63,6 @@
                     <div class="NB-story-content-expander-pages"></div>
                 </div>
             </div>
-            <div class="NB-story-shares-container">
-                {% if story.share_count %}
-                    {% render_story_share story %}
-                {% endif %}
-            </div>    
         </div>
         
         <div class="NB-story-comments-container">

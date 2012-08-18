@@ -519,17 +519,15 @@ blockquote {
   color: gray;
   font-size: 11px;
   line-height: 16px;
-  position: absolute;
-  bottom: 12px;
-  right: 0;
+  float: right;
 }
-/* line 398, ../sass/screen.scss */
+/* line 396, ../sass/screen.scss */
 .NB-story-shares-container .NB-story-share-label {
   display: inline-block;
   vertical-align: top;
   margin-top: 3px;
 }
-/* line 407, ../sass/screen.scss */
+/* line 405, ../sass/screen.scss */
 .NB-story-shares-container .NB-story-share-profiles,
 .NB-story-shares-container .NB-story-share-profiles-shares-friends,
 .NB-story-shares-container .NB-story-share-profiles-shares-public,
@@ -537,17 +535,17 @@ blockquote {
 .NB-story-shares-container .NB-story-share-profiles-comments-public {
   display: inline-block;
 }
-/* line 411, ../sass/screen.scss */
+/* line 409, ../sass/screen.scss */
 .NB-story-shares-container .NB-story-share-profiles-shares-public,
 .NB-story-shares-container .NB-story-share-profiles-comments-public {
   opacity: .5;
 }
-/* line 414, ../sass/screen.scss */
+/* line 412, ../sass/screen.scss */
 .NB-story-shares-container .NB-user-avatar {
   display: inline-block;
   margin: 2px 1px 0 2px;
 }
-/* line 418, ../sass/screen.scss */
+/* line 416, ../sass/screen.scss */
 .NB-story-shares-container .NB-user-avatar img {
   -webkit-box-shadow: 0px 0px 1px #bdbdbd;
   -moz-box-shadow: 0px 0px 1px #bdbdbd;
@@ -557,17 +555,17 @@ blockquote {
   display: block;
 }
 
-/* line 427, ../sass/screen.scss */
+/* line 425, ../sass/screen.scss */
 body.NC-hide-comments .NB-story-comments-container {
   display: none;
 }
 
-/* line 431, ../sass/screen.scss */
+/* line 429, ../sass/screen.scss */
 .NB-story-comments-container {
   font-size: 14px;
   z-index: 10;
 }
-/* line 436, ../sass/screen.scss */
+/* line 434, ../sass/screen.scss */
 .NB-story-comments-container .NB-user-avatar img,
 .NB-story-comments-container img.NB-user-avatar {
   position: absolute;
@@ -580,7 +578,7 @@ body.NC-hide-comments .NB-story-comments-container {
   border-radius: 3px / 3px;
   /* @include single-box-shadow; gets in the way of transparent PNGs */
 }
-/* line 446, ../sass/screen.scss */
+/* line 444, ../sass/screen.scss */
 .NB-story-comments-container .NB-user-avatar.NB-story-comment-reshare img {
   top: 27px;
   left: 0px;
@@ -588,27 +586,27 @@ body.NC-hide-comments .NB-story-comments-container {
   width: 24px;
   height: 24px;
 }
-/* line 454, ../sass/screen.scss */
+/* line 452, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment {
   padding: 15px 0 18px 44px;
   border-top: 1px solid #bdbdbd;
   position: relative;
   min-height: 32px;
 }
-/* line 460, ../sass/screen.scss */
+/* line 458, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-username {
   float: left;
   font-size: 12px;
   font-weight: bold;
 }
-/* line 466, ../sass/screen.scss */
+/* line 464, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
   float: right;
   font-size: 12px;
   color: gray;
   text-shadow: 0px 1px 1px white;
 }
-/* line 473, ../sass/screen.scss */
+/* line 471, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-location {
   float: left;
   font-size: 12px;
@@ -616,18 +614,18 @@ body.NC-hide-comments .NB-story-comments-container {
   text-shadow: 0px 1px 1px white;
   margin-left: 15px;
 }
-/* line 482, ../sass/screen.scss */
+/* line 480, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reply-button,
 .NB-story-comments-container .NB-story-comment .NB-story-comment-edit-button {
   display: none;
 }
-/* line 486, ../sass/screen.scss */
+/* line 484, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 492, ../sass/screen.scss */
+/* line 490, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
   top: 15px;
   left: 12px;
@@ -635,7 +633,7 @@ body.NC-hide-comments .NB-story-comments-container {
   width: 20px;
   height: 20px;
 }
-/* line 501, ../sass/screen.scss */
+/* line 499, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-replies {
   margin-top: 15px;
   padding: 15px 0 0px 44px;
@@ -643,13 +641,13 @@ body.NC-hide-comments .NB-story-comments-container {
   position: relative;
   min-height: 32px;
 }
-/* line 508, ../sass/screen.scss */
+/* line 506, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-replies .NB-story-comment-reply-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 515, ../sass/screen.scss */
+/* line 513, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-input {
   width: 376px;
   height: 16px;
@@ -657,7 +655,7 @@ body.NC-hide-comments .NB-story-comments-container {
   padding: 6px 4px;
   border: 1px solid #bdbdbd;
 }
-/* line 524, ../sass/screen.scss */
+/* line 522, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save {
   position: absolute;
   top: 15px;
@@ -708,11 +706,11 @@ body.NC-hide-comments .NB-story-comments-container {
   text-shadow: 0px -1px 1px white;
   color: #333333;
 }
-/* line 532, ../sass/screen.scss */
+/* line 530, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-delete {
   display: none;
 }
-/* line 537, ../sass/screen.scss */
+/* line 535, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comments-public-header-wrapper {
   color: gray;
   font-size: 12px;
@@ -720,7 +718,7 @@ body.NC-hide-comments .NB-story-comments-container {
   padding: 3px 0;
 }
 
-/* line 546, ../sass/screen.scss */
+/* line 544, ../sass/screen.scss */
 .NB-page-controls-next,
 .NB-page-controls-end {
   background-color: #6eb4e3;
@@ -775,7 +773,7 @@ body.NC-hide-comments .NB-story-comments-container {
   -moz-box-shadow: inset 0px 0px 10px #1f74b8;
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
-/* line 557, ../sass/screen.scss */
+/* line 555, ../sass/screen.scss */
 .NB-page-controls-next .NB-page-controls-text,
 .NB-page-controls-end .NB-page-controls-text {
   position: absolute;
