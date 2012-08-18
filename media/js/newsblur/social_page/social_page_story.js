@@ -257,15 +257,15 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         $wrapper.animate({
             maxHeight: content_height
         }, {
-            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(240 * height_ratio, 10)),
-            easing: 'easeInOutQuint'
+            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
+            easing: 'easeInOutQuart'
         });
         
         $expander.add($expander_cutoff).animate({
             bottom: -1 * $expander.outerHeight()
         }, {
-            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(240 * height_ratio, 10)),
-            easing: 'easeInOutQuint'
+            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
+            easing: 'easeInOutQuart'
         });
         
     },

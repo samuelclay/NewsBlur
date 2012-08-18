@@ -270,6 +270,16 @@ a {
         img {
             margin: 10px 0;
         }
+        
+        ins {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        del {
+            display: none;
+        }
+
     }
     
     .NC-story-cutoff {
@@ -303,6 +313,12 @@ a {
         .NB-story-content-expander-text,
         .NB-story-content-expander-pages {
             display: inline-block;
+        }
+        
+        .NB-story-content-expander-pages {
+            line-height: 8px;
+            padding: 0 12px;
+            font-size: 24px;
         }
     }
 }
