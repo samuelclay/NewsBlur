@@ -63,13 +63,14 @@
                 {% endif %}
             </div>    
         </div>
+        
+        <div class="NB-story-comments-container">
+            {% if story.comment_count or not story.shared_by_user %}
+                {% render_story_comments story %}
+            {% endif %}
+        </div>
     </div>
     </div><!-- end NB-story-wrapper -->
-    <div class="NB-story-comments-container">
-        {% if story.comment_count or not story.shared_by_user %}
-            {% render_story_comments story %}
-        {% endif %}
-    </div>
     
     <!--    
     <div class="NB-feed-story-sideoptions-container">

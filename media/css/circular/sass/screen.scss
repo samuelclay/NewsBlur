@@ -305,6 +305,9 @@ blockquote {
 .NB-story {
     font-size: $small-font-size;
     line-height: 140%;
+    position: relative;
+    padding-bottom: 48px;
+    overflow: hidden;
     
     .NB-story-content-wrapper {
         max-height: $max-story-height;
@@ -363,6 +366,7 @@ blockquote {
         cursor: pointer;
         color: $more-text-color;
         font-size: $smallest-font-size;
+        z-index: 1;
         
         &:hover {
             color: $more-text-color-hover;
@@ -388,7 +392,10 @@ blockquote {
     color: $light-text-color;
     font-size: 11px;
     line-height: 16px;
-    margin-top: 10px;
+    position: absolute;
+    bottom: 12px;
+    right: 0;
+    z-index: 0;
     
     .NB-story-share-label {
         display: inline-block;
@@ -415,8 +422,6 @@ body.NC-hide-comments .NB-story-comments-container {
 
 .NB-story-comments-container {
     font-size: $small-font-size;
-    width: $comment-width;
-    margin: 0 auto;
     z-index: 10;
 
     .NB-user-avatar img,
@@ -440,7 +445,7 @@ body.NC-hide-comments .NB-story-comments-container {
 
     .NB-story-comment {
         padding: 15px 0 18px 44px;
-        border-bottom: 1px solid $border-color;
+        border-top: 1px solid $border-color;
         position: relative;
         min-height: 32px;
 
