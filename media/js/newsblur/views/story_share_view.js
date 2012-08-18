@@ -165,6 +165,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
         if (this.options.on_social_page) {
             var source_user_id = NEWSBLUR.Globals.blurblog_user_id;
+        } else if (NEWSBLUR.reader.active_feed == 'river:blurblogs') {
+            var friends = this.model.get('friend_user_ids');
+            var source_user_id = friends && friends[0];
         } else {
             var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
             var source_user_id = feed && feed.get('user_id');
