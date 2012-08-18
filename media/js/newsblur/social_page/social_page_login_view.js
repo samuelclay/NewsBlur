@@ -5,17 +5,12 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         "click .NC-request-toggle-button"       : "toggle_request_dialog",
         "click .NC-logout-button"               : "logout",
         "click .NC-login-button"                : "login",
-        "click .NC-request-button"              : "request",
-        "click body:not(.NC-popover)"           : "hide_dialogs"
+        "click .NC-request-button"              : "request_invite"
     },
-    
+
     initialize: function() {
     },
-    
-    hide_dialogs: function(){
 
-    },
-    
     toggle_login_dialog: function(options) {
         options = options || {};
         var $popover = this.$('.NC-login-popover');
@@ -99,16 +94,16 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                 }, this)
             });
         
-            var login = _.bind(function(e) {
+            var request_invite = _.bind(function(e) {
                 e.preventDefault();
-                this.login();
+                this.request_invite();
             }, this);
             
             $request_email
-                .unbind('keydown.request')
-                .bind('keydown.request', 'ctrl+return', request)
-                .bind('keydown.request', 'meta+return', request)
-                .bind('keydown.request', 'return', request);
+                .unbind('keydown.invite')
+                .bind('keydown.invite', 'ctrl+return', request_invite)
+                .bind('keydown.invite', 'meta+return', request_invite)
+                .bind('keydown.invite', 'return', request_invite);
         }
     },
         
@@ -155,21 +150,22 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         alert('There was an error trying to logout, ouch.');
     },
     
-    request: function() {
+    request_invite: function() {
         this.clean();        
         var email    = this.$('input[name=request_email]').val();
         
-        NEWSBLUR.assets.signup(email, _.bind(this.post_signup, this), _.bind(this.signup_error, this));
+        NEWSBLUR.assets.request_invite(email, _.bind(this.post_request_invite, this), _.bind(this.request_invite_error, this));
     },
     
-    post_request: function(data) {
+    post_request_invite: function(data) {
         NEWSBLUR.log(["signup data", data]);
         this.clean();        
-        alert('request all set');
+        console.log("calling post_invite");
     },
     
-    request_error: function(data) {
+    request_invite_error: function(data) {
         this.clean();
-        alert('request error');
+        alert('invite error');
+        console.log("calling invite_error");
     }        
 });

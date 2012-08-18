@@ -137,7 +137,7 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         });
     },
     
-    request: function(email, callback, error_callback) {
+    request_invite: function(email, callback, error_callback) {
         this.make_request('/social/request_invite', {
             email: email
         }, callback, error_callback, {
