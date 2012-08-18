@@ -383,19 +383,22 @@ a {
 }
 /* line 250, ../sass/screen.scss */
 .NB-story .NB-story-content-wrapper {
-  margin: 10px 0;
   max-height: 400px;
   overflow: hidden;
 }
-/* line 261, ../sass/screen.scss */
+/* line 259, ../sass/screen.scss */
+.NB-story .NB-story-content {
+  margin: 10px 0;
+}
+/* line 262, ../sass/screen.scss */
 .NB-story .NB-story-content p {
   margin: 10px 0;
 }
-/* line 265, ../sass/screen.scss */
+/* line 266, ../sass/screen.scss */
 .NB-story .NB-story-content img {
   margin: 10px 0;
 }
-/* line 270, ../sass/screen.scss */
+/* line 271, ../sass/screen.scss */
 .NB-story .NC-story-cutoff {
   position: absolute;
   display: none;
@@ -405,42 +408,43 @@ a {
   height: 14px;
   background: transparent url('/media/img/circular/module_cutoff.png') repeat-x left bottom;
 }
-/* line 280, ../sass/screen.scss */
+/* line 281, ../sass/screen.scss */
 .NB-story .NB-story-content-expander {
   display: none;
   position: absolute;
-  bottom: 15px;
+  bottom: 18px;
   left: 25px;
   width: 100%;
   cursor: pointer;
   color: #1a9fff;
-  font-size: 14px;
+  font-size: 12px;
 }
-/* line 291, ../sass/screen.scss */
+/* line 292, ../sass/screen.scss */
 .NB-story .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story .NB-story-content-expander .NB-story-content-expander-pages {
   display: inline-block;
 }
 
-/* line 297, ../sass/screen.scss */
+/* line 298, ../sass/screen.scss */
 .NB-story-shares-container {
   text-align: right;
   color: gray;
   font-size: 11px;
   line-height: 16px;
+  margin-top: 10px;
 }
-/* line 303, ../sass/screen.scss */
+/* line 305, ../sass/screen.scss */
 .NB-story-shares-container .NB-story-share-label {
   display: inline-block;
   vertical-align: top;
   margin-top: 3px;
 }
-/* line 309, ../sass/screen.scss */
+/* line 311, ../sass/screen.scss */
 .NB-story-shares-container .NB-user-avatar {
   display: inline-block;
   margin: 2px 0 0 2px;
 }
-/* line 313, ../sass/screen.scss */
+/* line 315, ../sass/screen.scss */
 .NB-story-shares-container .NB-user-avatar img {
   -webkit-box-shadow: 0px 0px 1px #bdbdbd;
   -moz-box-shadow: 0px 0px 1px #bdbdbd;
@@ -450,19 +454,19 @@ a {
   display: block;
 }
 
-/* line 322, ../sass/screen.scss */
+/* line 324, ../sass/screen.scss */
 body.NC-hide-comments .NB-story-comments-container {
   display: none;
 }
 
-/* line 326, ../sass/screen.scss */
+/* line 328, ../sass/screen.scss */
 .NB-story-comments-container {
   font-size: 14px;
   width: 586px;
   margin: 0 auto;
   z-index: 10;
 }
-/* line 333, ../sass/screen.scss */
+/* line 335, ../sass/screen.scss */
 .NB-story-comments-container .NB-user-avatar img,
 .NB-story-comments-container img.NB-user-avatar {
   position: absolute;
@@ -475,7 +479,7 @@ body.NC-hide-comments .NB-story-comments-container {
   border-radius: 3px / 3px;
   /* @include single-box-shadow; gets in the way of transparent PNGs */
 }
-/* line 343, ../sass/screen.scss */
+/* line 345, ../sass/screen.scss */
 .NB-story-comments-container .NB-user-avatar.NB-story-comment-reshare img {
   top: 27px;
   left: 0px;
@@ -483,27 +487,27 @@ body.NC-hide-comments .NB-story-comments-container {
   width: 24px;
   height: 24px;
 }
-/* line 351, ../sass/screen.scss */
+/* line 353, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment {
   padding: 15px 0 18px 44px;
   border-bottom: 1px solid #bdbdbd;
   position: relative;
   min-height: 32px;
 }
-/* line 357, ../sass/screen.scss */
+/* line 359, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-username {
   float: left;
   font-size: 12px;
   font-weight: bold;
 }
-/* line 363, ../sass/screen.scss */
+/* line 365, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
   float: right;
   font-size: 12px;
   color: gray;
   text-shadow: 0px 1px 1px white;
 }
-/* line 370, ../sass/screen.scss */
+/* line 372, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-location {
   float: left;
   font-size: 12px;
@@ -511,18 +515,18 @@ body.NC-hide-comments .NB-story-comments-container {
   text-shadow: 0px 1px 1px white;
   margin-left: 5px;
 }
-/* line 379, ../sass/screen.scss */
+/* line 381, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reply-button,
 .NB-story-comments-container .NB-story-comment .NB-story-comment-edit-button {
   display: none;
 }
-/* line 383, ../sass/screen.scss */
+/* line 385, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 389, ../sass/screen.scss */
+/* line 391, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
   top: 15px;
   left: 8px;
@@ -530,7 +534,7 @@ body.NC-hide-comments .NB-story-comments-container {
   width: 24px;
   height: 24px;
 }
-/* line 398, ../sass/screen.scss */
+/* line 400, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-replies {
   margin-top: 15px;
   padding: 15px 0 0px 44px;
@@ -538,13 +542,13 @@ body.NC-hide-comments .NB-story-comments-container {
   position: relative;
   min-height: 32px;
 }
-/* line 405, ../sass/screen.scss */
+/* line 407, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-replies .NB-story-comment-reply-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 412, ../sass/screen.scss */
+/* line 414, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-input {
   width: 376px;
   height: 16px;
@@ -552,7 +556,7 @@ body.NC-hide-comments .NB-story-comments-container {
   padding: 6px 4px;
   border: 1px solid #bdbdbd;
 }
-/* line 421, ../sass/screen.scss */
+/* line 423, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save {
   position: absolute;
   top: 15px;
@@ -603,11 +607,11 @@ body.NC-hide-comments .NB-story-comments-container {
   text-shadow: 0px -1px 1px white;
   color: #333333;
 }
-/* line 429, ../sass/screen.scss */
+/* line 431, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-delete {
   display: none;
 }
-/* line 434, ../sass/screen.scss */
+/* line 436, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comments-public-header-wrapper {
   color: gray;
   font-size: 12px;
@@ -615,7 +619,7 @@ body.NC-hide-comments .NB-story-comments-container {
   padding: 3px 0;
 }
 
-/* line 443, ../sass/screen.scss */
+/* line 445, ../sass/screen.scss */
 .NB-page-controls-next,
 .NB-page-controls-end {
   background-color: #6eb4e3;
@@ -670,7 +674,7 @@ body.NC-hide-comments .NB-story-comments-container {
   -moz-box-shadow: inset 0px 0px 10px #1f74b8;
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
-/* line 454, ../sass/screen.scss */
+/* line 456, ../sass/screen.scss */
 .NB-page-controls-next .NB-page-controls-text,
 .NB-page-controls-end .NB-page-controls-text {
   position: absolute;

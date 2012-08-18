@@ -248,7 +248,6 @@ a {
     line-height: 140%;
     
     .NB-story-content-wrapper {
-        margin: 10px 0;
         max-height: 400px;
         overflow: hidden;
     }
@@ -258,6 +257,8 @@ a {
     
     */
     .NB-story-content {
+        margin: 10px 0;
+        
         p {
             margin: 10px 0;
         }
@@ -280,12 +281,12 @@ a {
     .NB-story-content-expander {
         display: none;
         position: absolute;
-        bottom: 15px;
+        bottom: 18px;
         left: 25px;
         width: 100%;
         cursor: pointer;
         color: $more-text-color;
-        font-size: $small-font-size;
+        font-size: $smallest-font-size;
         
         .NB-story-content-expander-text,
         .NB-story-content-expander-pages {
@@ -299,6 +300,7 @@ a {
     color: $light-text-color;
     font-size: 11px;
     line-height: 16px;
+    margin-top: 10px;
     
     .NB-story-share-label {
         display: inline-block;

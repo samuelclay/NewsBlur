@@ -119,7 +119,11 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     hide_popovers: function(e) {
         var $popover = this.$('.NC-popover');        
-        if (($(e.target).closest(".NC-popover").length) || ($(e.target).closest(".NC-button").length)) return;
+        
+        if (e) { 
+            if (($(e.target).closest(".NC-popover").length) || ($(e.target).closest(".NC-button").length)) return;
+        }
+        
         $(document).unbind('click.loginView');
         // Close
         $popover.animate({
