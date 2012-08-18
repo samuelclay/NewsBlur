@@ -1,17 +1,15 @@
-/* Welcome to Compass.
- * In this file you should write your main styles. (or centralize your imports)
- * Import this file using the following HTML or equivalent:
- * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
-
 @import "compass/reset";
 @import "compass/css3";
 
 $page-width: 700px;
 $comment-width: 586px;
+$max-story-height: 300px;
 
 $text-color: #333333; 
 $light-text-color: #808080;
 $more-text-color: #1a9fff;
+$more-text-color-hover: #306187;
+$more-text-color-active: #722125;
 $border-color: #bdbdbd;
 
 $title-font-size: 21px;
@@ -92,7 +90,7 @@ a {
 .NB-page {
     width: $page-width;
     margin: 0 auto;
-    padding-top: 120px;
+    padding-top: 80px;
 }
 
 .NB-header {
@@ -106,12 +104,12 @@ a {
 }
 
 .NC-blue-button {
-    @include NC-blue-button;  
+    @include NC-blue-button;
 }
 
 .NC-header {
     background: image-url('header_background.png') repeat 0 0;
-    height: 100px;
+    height: 72px;
     @include single-box-shadow(#A7A7A7, 0px, 0px, 10px, false, false);
     position: fixed;
     width: 100%;
@@ -125,18 +123,19 @@ a {
         position: relative;
         
         h1.NC-logo a {
-            width: 208px;
-            height: 100px;
             text-indent: -10000em;
             display: block;
             float: left;
-            background: image-url('circular_logo.png') no-repeat left center;
+            padding-top: 16px;
+        }
+        h1.NC-logo a img {
+            float: left;
         }
         
         .NC-request-toggle-button {
             float: right;
             @include NC-blue-button;
-            margin-top: 32px;
+            margin-top: 20px;
             margin-left: 10px;
         }
         
@@ -144,7 +143,7 @@ a {
         .NC-login-toggle-button {
             float: right;
             @include NC-default-button;
-            margin-top: 32px;
+            margin-top: 20px;
             margin-left: 10px;
         }
     }
@@ -152,11 +151,21 @@ a {
 
 .NC-popover {
     position: absolute;
-    top: 100px;
+    top: 50px;
     left: 200px;
     width: 308px;
     opacity: 0;
     display: none;
+    
+    &.NC-request-popover {
+        top: 50px;
+        left: 329px;
+    }
+    
+    &.NC-login-popover {
+        top: 50px;
+        left: 456px;
+    }
     
     &.NC-active {
         display: block;
@@ -173,16 +182,6 @@ a {
         height: 40px;
     }
 
-    &.NC-request-popover {
-        top: 64px;
-        left: 329px;
-    }
-    
-    &.NC-login-popover {
-        top: 64px;
-        left: 456px;
-    }
-    
     input {
         border: 1px solid $border-color;
         border: 1px solid #BDBDBD;
@@ -248,9 +247,14 @@ a {
     line-height: 140%;
     
     .NB-story-content-wrapper {
-        max-height: 400px;
+        max-height: $max-story-height;
         overflow: hidden;
+        
+        &.NB-story-content-wrapper-height-fudged {
+            max-height: none;
+        }
     }
+    
     
     /* 
         these styles affect all outside content 
@@ -275,19 +279,27 @@ a {
         left: 0;
         width: 100%;
         height: 14px;
+        z-index: 0;
         background: transparent image-url('module_cutoff.png') repeat-x left bottom;
     }
     
     .NB-story-content-expander {
         display: none;
         position: absolute;
-        bottom: 18px;
-        left: 25px;
+        bottom: 0;
+        left: 0;
+        padding: 18px 25px;
         width: 100%;
         cursor: pointer;
         color: $more-text-color;
         font-size: $smallest-font-size;
         
+        &:hover {
+            color: $more-text-color-hover;
+        }
+        &:active {
+            color: $more-text-color-active;
+        }
         .NB-story-content-expander-text,
         .NB-story-content-expander-pages {
             display: inline-block;
@@ -390,10 +402,10 @@ body.NC-hide-comments .NB-story-comments-container {
                 
         .NB-story-comment-reshares .NB-user-avatar img {
             top: 15px;
-            left: 8px;
+            left: 12px;
             z-index: 1;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
         }
     }
     

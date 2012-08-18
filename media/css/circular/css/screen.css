@@ -1,8 +1,4 @@
-/* Welcome to Compass.
- * In this file you should write your main styles. (or centralize your imports)
- * Import this file using the following HTML or equivalent:
- * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
-/* line 17, ../../../../../../.rvm/rubies/ruby-1.9.2-p290/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 17, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -24,82 +20,82 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 
-/* line 22, ../../../../../../.rvm/rubies/ruby-1.9.2-p290/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 22, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html {
   line-height: 1;
 }
 
-/* line 24, ../../../../../../.rvm/rubies/ruby-1.9.2-p290/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 24, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 ol, ul {
   list-style: none;
 }
 
-/* line 26, ../../../../../../.rvm/rubies/ruby-1.9.2-p290/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 26, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* line 28, ../../../../../../.rvm/rubies/ruby-1.9.2-p290/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 28, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 caption, th, td {
   text-align: left;
   font-weight: normal;
   vertical-align: middle;
 }
 
-/* line 30, ../../../../../../.rvm/rubies/ruby-1.9.2-p290/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 30, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q, blockquote {
   quotes: none;
 }
-/* line 103, ../../../../../../.rvm/rubies/ruby-1.9.2-p290/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 103, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q:before, q:after, blockquote:before, blockquote:after {
   content: "";
   content: none;
 }
 
-/* line 32, ../../../../../../.rvm/rubies/ruby-1.9.2-p290/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 32, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 a img {
   border: none;
 }
 
-/* line 116, ../../../../../../.rvm/rubies/ruby-1.9.2-p290/lib/ruby/gems/1.9.1/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
+/* line 116, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
   display: block;
 }
 
-/* line 81, ../sass/screen.scss */
+/* line 79, ../sass/screen.scss */
 body {
   background: #ebedee url('/media/img/circular/background.png') repeat 0 0;
   font-family: Helvetica, arial, san-serif;
   color: #333333;
 }
 
-/* line 87, ../sass/screen.scss */
+/* line 85, ../sass/screen.scss */
 a {
   color: #333333;
   text-decoration: none;
 }
 
-/* line 92, ../sass/screen.scss */
+/* line 90, ../sass/screen.scss */
 .NB-page {
   width: 700px;
   margin: 0 auto;
-  padding-top: 120px;
+  padding-top: 80px;
 }
 
-/* line 98, ../sass/screen.scss */
+/* line 96, ../sass/screen.scss */
 .NB-header {
   display: none;
 }
 
-/* line 102, ../sass/screen.scss */
+/* line 100, ../sass/screen.scss */
 .NB-footer-logo {
   margin: 100px auto;
   width: 700px;
   text-align: center;
 }
 
-/* line 108, ../sass/screen.scss */
+/* line 106, ../sass/screen.scss */
 .NC-blue-button {
   border: 1px solid #4388b5;
   -webkit-border-radius: 4px 4px;
@@ -125,7 +121,7 @@ a {
   font-size: 14px;
   font-weight: normal;
 }
-/* line 71, ../sass/screen.scss */
+/* line 69, ../sass/screen.scss */
 .NC-blue-button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
   background-image: -webkit-linear-gradient(#6bb1e0, #6bb1e0);
@@ -133,7 +129,7 @@ a {
   background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
   background-image: linear-gradient(#6bb1e0, #6bb1e0);
 }
-/* line 75, ../sass/screen.scss */
+/* line 73, ../sass/screen.scss */
 .NC-blue-button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
   background-image: -webkit-linear-gradient(#4d98d2, #4d98d2);
@@ -145,10 +141,10 @@ a {
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
 
-/* line 112, ../sass/screen.scss */
+/* line 110, ../sass/screen.scss */
 .NC-header {
   background: url('/media/img/circular/header_background.png') repeat 0 0;
-  height: 100px;
+  height: 72px;
   -webkit-box-shadow: 0px 0px 10px #a7a7a7;
   -moz-box-shadow: 0px 0px 10px #a7a7a7;
   box-shadow: 0px 0px 10px #a7a7a7;
@@ -158,22 +154,24 @@ a {
   left: 0;
   z-index: 10;
 }
-/* line 122, ../sass/screen.scss */
+/* line 120, ../sass/screen.scss */
 .NC-header .NC-header-inner {
   width: 700px;
   margin: 0 auto;
   position: relative;
 }
-/* line 127, ../sass/screen.scss */
+/* line 125, ../sass/screen.scss */
 .NC-header .NC-header-inner h1.NC-logo a {
-  width: 208px;
-  height: 100px;
   text-indent: -10000em;
   display: block;
   float: left;
-  background: url('/media/img/circular/circular_logo.png') no-repeat left center;
+  padding-top: 16px;
 }
-/* line 136, ../sass/screen.scss */
+/* line 131, ../sass/screen.scss */
+.NC-header .NC-header-inner h1.NC-logo a img {
+  float: left;
+}
+/* line 135, ../sass/screen.scss */
 .NC-header .NC-header-inner .NC-request-toggle-button {
   float: right;
   border: 1px solid #4388b5;
@@ -199,10 +197,10 @@ a {
   padding: 4px 12px;
   font-size: 14px;
   font-weight: normal;
-  margin-top: 32px;
+  margin-top: 20px;
   margin-left: 10px;
 }
-/* line 71, ../sass/screen.scss */
+/* line 69, ../sass/screen.scss */
 .NC-header .NC-header-inner .NC-request-toggle-button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
   background-image: -webkit-linear-gradient(#6bb1e0, #6bb1e0);
@@ -210,7 +208,7 @@ a {
   background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
   background-image: linear-gradient(#6bb1e0, #6bb1e0);
 }
-/* line 75, ../sass/screen.scss */
+/* line 73, ../sass/screen.scss */
 .NC-header .NC-header-inner .NC-request-toggle-button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
   background-image: -webkit-linear-gradient(#4d98d2, #4d98d2);
@@ -221,7 +219,7 @@ a {
   -moz-box-shadow: inset 0px 0px 10px #1f74b8;
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
-/* line 144, ../sass/screen.scss */
+/* line 143, ../sass/screen.scss */
 .NC-header .NC-header-inner .NC-logout-button,
 .NC-header .NC-header-inner .NC-login-toggle-button {
   float: right;
@@ -248,10 +246,10 @@ a {
   padding: 4px 12px;
   font-size: 14px;
   font-weight: normal;
-  margin-top: 32px;
+  margin-top: 20px;
   margin-left: 10px;
 }
-/* line 44, ../sass/screen.scss */
+/* line 42, ../sass/screen.scss */
 .NC-header .NC-header-inner .NC-logout-button:hover,
 .NC-header .NC-header-inner .NC-login-toggle-button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f6f6f6), color-stop(100%, #ffffff));
@@ -260,7 +258,7 @@ a {
   background-image: -o-linear-gradient(#f6f6f6, #ffffff);
   background-image: linear-gradient(#f6f6f6, #ffffff);
 }
-/* line 48, ../sass/screen.scss */
+/* line 46, ../sass/screen.scss */
 .NC-header .NC-header-inner .NC-logout-button:active,
 .NC-header .NC-header-inner .NC-login-toggle-button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e9e9e9), color-stop(100%, #e9e9e9));
@@ -275,41 +273,41 @@ a {
   color: #333333;
 }
 
-/* line 153, ../sass/screen.scss */
+/* line 152, ../sass/screen.scss */
 .NC-popover {
   position: absolute;
-  top: 100px;
+  top: 50px;
   left: 200px;
   width: 308px;
   opacity: 0;
   display: none;
 }
-/* line 161, ../sass/screen.scss */
+/* line 160, ../sass/screen.scss */
+.NC-popover.NC-request-popover {
+  top: 50px;
+  left: 329px;
+}
+/* line 165, ../sass/screen.scss */
+.NC-popover.NC-login-popover {
+  top: 50px;
+  left: 456px;
+}
+/* line 170, ../sass/screen.scss */
 .NC-popover.NC-active {
   display: block;
 }
-/* line 165, ../sass/screen.scss */
+/* line 174, ../sass/screen.scss */
 .NC-popover .NC-popover-inner {
   width: 240px;
   padding: 45px 38px 0 30px;
   background: transparent url('/media/img/circular/popover_top.png') no-repeat 0 0;
 }
-/* line 171, ../sass/screen.scss */
+/* line 180, ../sass/screen.scss */
 .NC-popover .NC-popover-bottom {
   background: transparent url('/media/img/circular/popover_bottom.png') no-repeat left bottom;
   height: 40px;
 }
-/* line 176, ../sass/screen.scss */
-.NC-popover.NC-request-popover {
-  top: 64px;
-  left: 329px;
-}
-/* line 181, ../sass/screen.scss */
-.NC-popover.NC-login-popover {
-  top: 64px;
-  left: 456px;
-}
-/* line 186, ../sass/screen.scss */
+/* line 185, ../sass/screen.scss */
 .NC-popover input {
   border: 1px solid #bdbdbd;
   border: 1px solid #BDBDBD;
@@ -320,12 +318,12 @@ a {
   font-weight: normal;
 }
 
-/* line 198, ../sass/screen.scss */
+/* line 197, ../sass/screen.scss */
 .NB-mark {
   margin: 20px 0 50px 0;
 }
 
-/* line 202, ../sass/screen.scss */
+/* line 201, ../sass/screen.scss */
 .NB-story-wrapper {
   border-left: 5px solid #fff;
   padding: 25px 25px 15px;
@@ -337,7 +335,7 @@ a {
   -moz-box-shadow: 0px 0px 5px #c8c8c8;
   box-shadow: 0px 0px 5px #c8c8c8;
 }
-/* line 211, ../sass/screen.scss */
+/* line 210, ../sass/screen.scss */
 .NB-story-wrapper .NB-story-title a {
   font-size: 21px;
   font-weight: bold;
@@ -345,7 +343,7 @@ a {
   text-decoration: none;
   color: #333333;
 }
-/* line 220, ../sass/screen.scss */
+/* line 219, ../sass/screen.scss */
 .NB-story-wrapper .NB-story-metadata {
   font-size: 14px;
   color: gray;
@@ -354,17 +352,17 @@ a {
   /* to ensure that the author is always on one line */
   margin: 5px 0 8px;
 }
-/* line 228, ../sass/screen.scss */
+/* line 227, ../sass/screen.scss */
 .NB-story-wrapper .NB-feed {
   margin: 2px 0 10px;
   text-transform: capitalize;
 }
-/* line 232, ../sass/screen.scss */
+/* line 231, ../sass/screen.scss */
 .NB-story-wrapper .NB-feed a {
   color: gray;
   font-size: 12px;
 }
-/* line 237, ../sass/screen.scss */
+/* line 236, ../sass/screen.scss */
 .NB-story-wrapper .NB-feed img {
   float: left;
   width: 16px;
@@ -372,7 +370,7 @@ a {
   margin-right: 4px;
 }
 
-/* line 246, ../sass/screen.scss */
+/* line 245, ../sass/screen.scss */
 .NB-story {
   font-size: 14px;
   line-height: 140%;
@@ -381,24 +379,28 @@ a {
   
   */
 }
-/* line 250, ../sass/screen.scss */
+/* line 249, ../sass/screen.scss */
 .NB-story .NB-story-content-wrapper {
-  max-height: 400px;
+  max-height: 300px;
   overflow: hidden;
 }
-/* line 259, ../sass/screen.scss */
+/* line 253, ../sass/screen.scss */
+.NB-story .NB-story-content-wrapper.NB-story-content-wrapper-height-fudged {
+  max-height: none;
+}
+/* line 263, ../sass/screen.scss */
 .NB-story .NB-story-content {
   margin: 10px 0;
 }
-/* line 262, ../sass/screen.scss */
+/* line 266, ../sass/screen.scss */
 .NB-story .NB-story-content p {
   margin: 10px 0;
 }
-/* line 266, ../sass/screen.scss */
+/* line 270, ../sass/screen.scss */
 .NB-story .NB-story-content img {
   margin: 10px 0;
 }
-/* line 271, ../sass/screen.scss */
+/* line 275, ../sass/screen.scss */
 .NB-story .NC-story-cutoff {
   position: absolute;
   display: none;
@@ -406,26 +408,36 @@ a {
   left: 0;
   width: 100%;
   height: 14px;
+  z-index: 0;
   background: transparent url('/media/img/circular/module_cutoff.png') repeat-x left bottom;
 }
-/* line 281, ../sass/screen.scss */
+/* line 286, ../sass/screen.scss */
 .NB-story .NB-story-content-expander {
   display: none;
   position: absolute;
-  bottom: 18px;
-  left: 25px;
+  bottom: 0;
+  left: 0;
+  padding: 18px 25px;
   width: 100%;
   cursor: pointer;
   color: #1a9fff;
   font-size: 12px;
 }
-/* line 292, ../sass/screen.scss */
+/* line 297, ../sass/screen.scss */
+.NB-story .NB-story-content-expander:hover {
+  color: #306187;
+}
+/* line 300, ../sass/screen.scss */
+.NB-story .NB-story-content-expander:active {
+  color: #722125;
+}
+/* line 304, ../sass/screen.scss */
 .NB-story .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story .NB-story-content-expander .NB-story-content-expander-pages {
   display: inline-block;
 }
 
-/* line 298, ../sass/screen.scss */
+/* line 310, ../sass/screen.scss */
 .NB-story-shares-container {
   text-align: right;
   color: gray;
@@ -433,18 +445,18 @@ a {
   line-height: 16px;
   margin-top: 10px;
 }
-/* line 305, ../sass/screen.scss */
+/* line 317, ../sass/screen.scss */
 .NB-story-shares-container .NB-story-share-label {
   display: inline-block;
   vertical-align: top;
   margin-top: 3px;
 }
-/* line 311, ../sass/screen.scss */
+/* line 323, ../sass/screen.scss */
 .NB-story-shares-container .NB-user-avatar {
   display: inline-block;
   margin: 2px 0 0 2px;
 }
-/* line 315, ../sass/screen.scss */
+/* line 327, ../sass/screen.scss */
 .NB-story-shares-container .NB-user-avatar img {
   -webkit-box-shadow: 0px 0px 1px #bdbdbd;
   -moz-box-shadow: 0px 0px 1px #bdbdbd;
@@ -454,19 +466,19 @@ a {
   display: block;
 }
 
-/* line 324, ../sass/screen.scss */
+/* line 336, ../sass/screen.scss */
 body.NC-hide-comments .NB-story-comments-container {
   display: none;
 }
 
-/* line 328, ../sass/screen.scss */
+/* line 340, ../sass/screen.scss */
 .NB-story-comments-container {
   font-size: 14px;
   width: 586px;
   margin: 0 auto;
   z-index: 10;
 }
-/* line 335, ../sass/screen.scss */
+/* line 347, ../sass/screen.scss */
 .NB-story-comments-container .NB-user-avatar img,
 .NB-story-comments-container img.NB-user-avatar {
   position: absolute;
@@ -479,7 +491,7 @@ body.NC-hide-comments .NB-story-comments-container {
   border-radius: 3px / 3px;
   /* @include single-box-shadow; gets in the way of transparent PNGs */
 }
-/* line 345, ../sass/screen.scss */
+/* line 357, ../sass/screen.scss */
 .NB-story-comments-container .NB-user-avatar.NB-story-comment-reshare img {
   top: 27px;
   left: 0px;
@@ -487,27 +499,27 @@ body.NC-hide-comments .NB-story-comments-container {
   width: 24px;
   height: 24px;
 }
-/* line 353, ../sass/screen.scss */
+/* line 365, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment {
   padding: 15px 0 18px 44px;
   border-bottom: 1px solid #bdbdbd;
   position: relative;
   min-height: 32px;
 }
-/* line 359, ../sass/screen.scss */
+/* line 371, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-username {
   float: left;
   font-size: 12px;
   font-weight: bold;
 }
-/* line 365, ../sass/screen.scss */
+/* line 377, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
   float: right;
   font-size: 12px;
   color: gray;
   text-shadow: 0px 1px 1px white;
 }
-/* line 372, ../sass/screen.scss */
+/* line 384, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-location {
   float: left;
   font-size: 12px;
@@ -515,26 +527,26 @@ body.NC-hide-comments .NB-story-comments-container {
   text-shadow: 0px 1px 1px white;
   margin-left: 5px;
 }
-/* line 381, ../sass/screen.scss */
+/* line 393, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reply-button,
 .NB-story-comments-container .NB-story-comment .NB-story-comment-edit-button {
   display: none;
 }
-/* line 385, ../sass/screen.scss */
+/* line 397, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 391, ../sass/screen.scss */
+/* line 403, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
   top: 15px;
-  left: 8px;
+  left: 12px;
   z-index: 1;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
-/* line 400, ../sass/screen.scss */
+/* line 412, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-replies {
   margin-top: 15px;
   padding: 15px 0 0px 44px;
@@ -542,13 +554,13 @@ body.NC-hide-comments .NB-story-comments-container {
   position: relative;
   min-height: 32px;
 }
-/* line 407, ../sass/screen.scss */
+/* line 419, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-replies .NB-story-comment-reply-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 414, ../sass/screen.scss */
+/* line 426, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-input {
   width: 376px;
   height: 16px;
@@ -556,7 +568,7 @@ body.NC-hide-comments .NB-story-comments-container {
   padding: 6px 4px;
   border: 1px solid #bdbdbd;
 }
-/* line 423, ../sass/screen.scss */
+/* line 435, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save {
   position: absolute;
   top: 15px;
@@ -586,7 +598,7 @@ body.NC-hide-comments .NB-story-comments-container {
   font-size: 14px;
   font-weight: normal;
 }
-/* line 44, ../sass/screen.scss */
+/* line 42, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f6f6f6), color-stop(100%, #ffffff));
   background-image: -webkit-linear-gradient(#f6f6f6, #ffffff);
@@ -594,7 +606,7 @@ body.NC-hide-comments .NB-story-comments-container {
   background-image: -o-linear-gradient(#f6f6f6, #ffffff);
   background-image: linear-gradient(#f6f6f6, #ffffff);
 }
-/* line 48, ../sass/screen.scss */
+/* line 46, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e9e9e9), color-stop(100%, #e9e9e9));
   background-image: -webkit-linear-gradient(#e9e9e9, #e9e9e9);
@@ -607,11 +619,11 @@ body.NC-hide-comments .NB-story-comments-container {
   text-shadow: 0px -1px 1px white;
   color: #333333;
 }
-/* line 431, ../sass/screen.scss */
+/* line 443, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-delete {
   display: none;
 }
-/* line 436, ../sass/screen.scss */
+/* line 448, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comments-public-header-wrapper {
   color: gray;
   font-size: 12px;
@@ -619,7 +631,7 @@ body.NC-hide-comments .NB-story-comments-container {
   padding: 3px 0;
 }
 
-/* line 445, ../sass/screen.scss */
+/* line 457, ../sass/screen.scss */
 .NB-page-controls-next,
 .NB-page-controls-end {
   background-color: #6eb4e3;
@@ -653,7 +665,7 @@ body.NC-hide-comments .NB-story-comments-container {
   -o-transition: all .12s ease-out;
   -ms-transition: all .12s ease-out;
 }
-/* line 71, ../sass/screen.scss */
+/* line 69, ../sass/screen.scss */
 .NB-page-controls-next:hover,
 .NB-page-controls-end:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
@@ -662,7 +674,7 @@ body.NC-hide-comments .NB-story-comments-container {
   background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
   background-image: linear-gradient(#6bb1e0, #6bb1e0);
 }
-/* line 75, ../sass/screen.scss */
+/* line 73, ../sass/screen.scss */
 .NB-page-controls-next:active,
 .NB-page-controls-end:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
@@ -674,7 +686,7 @@ body.NC-hide-comments .NB-story-comments-container {
   -moz-box-shadow: inset 0px 0px 10px #1f74b8;
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
-/* line 456, ../sass/screen.scss */
+/* line 468, ../sass/screen.scss */
 .NB-page-controls-next .NB-page-controls-text,
 .NB-page-controls-end .NB-page-controls-text {
   position: absolute;

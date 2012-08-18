@@ -49,7 +49,6 @@ from vendor.timezones.utilities import localtime_for_timezone
 
 
 @never_cache
-@render_to('reader/feeds.xhtml')
 def index(request, **kwargs):
     if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app02', 'app01', 'www']:
         username = request.subdomain
@@ -66,7 +65,18 @@ def index(request, **kwargs):
     # XXX TODO: Remove me on launch.
     # if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
     #     return {}, 'reader/social_signup.xhtml'
-        
+    
+    host = request.META['HTTP_HOST']
+    if 'newsblur' in host or 'nb.local' in host:
+        return newsblur(request, **kwargs)
+
+    user = User.objects.get(username__iexact=settings.HOMEPAGE_USERNAME)
+    return load_social_page(request, user_id=user.pk, username=user.username, **kwargs)
+    
+
+@never_cache
+@render_to('reader/feeds.xhtml')
+def newsblur(request, **kwargs):        
     if request.method == "POST":
         if request.POST.get('submit') == 'login':
             login_form  = LoginForm(request.POST, prefix='login')

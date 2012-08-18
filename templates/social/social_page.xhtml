@@ -64,7 +64,7 @@
 <body class="{% if user.is_authenticated %}NB-authenticated{% else %}NB-unauthenticated{% endif %}">
 <header class="NC-header">
     <div class="NC-header-inner">
-        <h1 class="NC-logo"><a href="/">Circular</a></h1>
+        <h1 class="NC-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}img/circular/circular_logo.png" width="180" height="45"></a></h1>
         
         {% if user.is_authenticated %}
             <div class="NC-button NC-logout-button">Log Out</div>

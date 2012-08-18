@@ -2,7 +2,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     
     FUDGE_CONTENT_HEIGHT_OVERAGE: 250,
     
-    STORY_CONTENT_MAX_HEIGHT: 500, // ALSO CHANGE IN social_page.css
+    STORY_CONTENT_MAX_HEIGHT: 300, // ALSO CHANGE IN social_page.css
     
     flags: {},
     
@@ -92,7 +92,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         var $content = this.$(".NB-story-content");
         
         var max_height = parseInt($wrapper.css('maxHeight'), 10) || this.STORY_CONTENT_MAX_HEIGHT;
-        var content_height = this.$(".NB-story-content").outerHeight();
+        var content_height = this.$(".NB-story-content").outerHeight(true);
         
         if (content_height > max_height && 
             content_height < max_height + this.FUDGE_CONTENT_HEIGHT_OVERAGE) {
@@ -257,18 +257,17 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         $wrapper.animate({
             maxHeight: content_height
         }, {
-            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(350 * height_ratio, 10)),
-            easing: 'easeOutQuart'
+            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(240 * height_ratio, 10)),
+            easing: 'easeInOutQuint'
         });
         
-        $expander.animate({
+        $expander.add($expander_cutoff).animate({
             bottom: -1 * $expander.outerHeight()
         }, {
-            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(350 * height_ratio, 10)),
-            easing: 'easeOutQuart'
+            duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(240 * height_ratio, 10)),
+            easing: 'easeInOutQuint'
         });
         
-        $expander_cutoff.hide();
     },
     
     focus_comment_input: function() {
