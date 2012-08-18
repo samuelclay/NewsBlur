@@ -269,15 +269,42 @@
         // =========================
         
         get_page_content: function() {
+            var selected = this.get_selected_html();
             var $title = $('.NB-bookmarklet-page-title', this.$modal);
             var $content = $('.NB-bookmarklet-page-content', this.$modal);
-            var $readability = $(window.readability.init());
+
+            if (selected) {
+                var title = document.title;
+                var content = selected;
+                console.log(["content selected", title, content]);
+            } else {
+                var $readability = $(window.readability.init());
             
-            var title = $readability.children("h1").text();
+                var title = $readability.children("h1").text();
+                var content = $("#readability-content", $readability).html();
+            }
+
             $title.html(title);
-            
-            var content = $("#readability-content", $readability).html();
             $content.html(content);
+        },
+        
+        get_selected_html: function() {
+            var html = "";
+            if (typeof window.getSelection != "undefined") {
+                var sel = window.getSelection();
+                if (sel.rangeCount) {
+                    var container = document.createElement("div");
+                    for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+                        container.appendChild(sel.getRangeAt(i).cloneContents());
+                    }
+                    html = container.innerHTML;
+                }
+            } else if (typeof document.selection != "undefined") {
+                if (document.selection.type == "Text") {
+                    html = document.selection.createRange().htmlText;
+                }
+            }
+            return html;
         },
         
         // ===========

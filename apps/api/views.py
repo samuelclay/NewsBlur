@@ -71,7 +71,6 @@ def add_site_load_script(request, token):
     error_image      = image_base64('error.png')
     new_folder_image = image_base64('arrow_down_right.png')
     add_image        = image_base64('add.png')
-    side_background  = image_base64('subtle-pattern-11.jpg', path='reader/')
 
     try:
         profiles = Profile.objects.filter(secret_token=token)
@@ -97,7 +96,6 @@ def add_site_load_script(request, token):
         'accept_image': accept_image,
         'error_image': error_image,
         'add_image': add_image,
-        'side_background': side_background,
         'new_folder_image': new_folder_image,
     }, 
     context_instance=RequestContext(request),
