@@ -17,7 +17,6 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     },
     
     initialize: function() {
-        console.log("this.el", this.el);
         var story_id = this.$el.data("storyId");
         var feed_id = this.$el.data("feedId");
         var story_guid = this.$el.data("guid");

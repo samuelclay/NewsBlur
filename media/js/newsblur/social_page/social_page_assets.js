@@ -121,10 +121,24 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         });
     },
     
+    logout: function(callback, error_callback) {
+        this.make_request('/api/logout', {}, callback, error_callback, {
+            request_type: 'POST'
+        });
+    },
+    
     signup: function(username, password, email, callback, error_callback) {
         this.make_request('/api/signup', {
             username: username,
             password: password,
+            email: email
+        }, callback, error_callback, {
+            request_type: 'POST'
+        });
+    },
+    
+    request: function(email, callback, error_callback) {
+        this.make_request('/social/request_invite', {
             email: email
         }, callback, error_callback, {
             request_type: 'POST'

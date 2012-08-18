@@ -65,19 +65,30 @@
 <header class="NC-header">
     <div class="NC-header-inner">
         <h1 class="NC-logo"><a href="/">Circular</a></h1>
-        <div class="NC-button NC-login-button">Sign In</div>
+        
+        {% if user.is_authenticated %}
+            <div class="NC-button NC-logout-button">Log Out</div>
+        {% else %}
+            <div class="NC-button NC-login-toggle-button">Sign In</div>
 
-        <div class="NC-button NC-invite-button">Request an Invite</div>
+            <div class="NC-button NC-request-toggle-button">Request an Invite</div>
 
-        <div class="NC-login-popover NC-popover">
-            <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
-            <input placeholder="Password" type="password" name="login_password" class="NB-input" />
-            <div class="NC-blue-button">Login</div>
-        </div>
-        <div class="NC-request-popover NC-popover">
-            <input type="text" placeholder="Email Address" name="signup_email" class="NB-input" />
-            <div class="NC-blue-button">Request</div>
-        </div>
+            <div class="NC-login-popover NC-popover">
+                <div class="NC-popover-inner">
+                    <input type="text" placeholder="Username or email" name="login_username" class="NC-input" />
+                    <input placeholder="Password" type="password" name="login_password" class="NC-input" />
+                    <div class="NC-login-button NC-blue-button">Login</div>
+                </div>
+                <div class="NC-popover-bottom"></div>
+            </div>
+            <div class="NC-request-popover NC-popover">
+                <div class="NC-popover-inner">
+                    <input type="text" placeholder="Email Address" name="request_email" class="NC-input" />
+                    <div class="NC-request-button NC-blue-button">Request</div>
+                </div>
+                <div class="NC-popover-bottom"></div>
+            </div>
+        {% endif %}
     </div>
     </div>
 </header>
