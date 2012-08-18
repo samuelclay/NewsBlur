@@ -90,14 +90,14 @@
   overflow: hidden;
 }
 .NB-bookmarklet .NB-bookmarklet-main {
-    width: 60%;
+    width: 70%;
     overflow: hidden;
     float: right;
     border-left: 6px solid #74B3B7;
     margin: 24px 0 0;
 }
 .NB-bookmarklet .NB-bookmarklet-side {
-    width: 36%;
+    width: 26%;
     float: left;
     height: 100%;
     padding: 12px;
@@ -224,6 +224,7 @@
 /*    border-top: 1px solid #F0F0F0;*/
     padding: 12px 0 0 88px;
     position: relative;
+    overflow: hidden;
 }
 .NB-bookmarklet .NB-bookmarklet-comment-photo {
     position: absolute;
@@ -235,8 +236,12 @@
     width: 48px;
     height: 48px;
 }
+.NB-bookmarklet .NB-bookmarklet-comment-input {
+    float: left;
+}
 .NB-bookmarklet .NB-bookmarklet-comment-input textarea {
-    width: 364px;
+    width: 316px;
+    float: left;
     border: 1px solid #E0E0E0;
     padding: 6px;
     margin: 0;
@@ -245,4 +250,14 @@
     font-size: 13px;
     height: 34px;
     background-color: white;
+    display: block;
+}
+.NB-bookmarklet .NB-bookmarklet-comment-submit {
+    float: left;
+    clear: none;
+    width: 100px;
+    margin: 0 0 4px 12px;
+    padding: 8px 0;
+    line-height: 16px;
+    font-weight: bold;
 }

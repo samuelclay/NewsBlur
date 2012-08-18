@@ -262,6 +262,7 @@ class MSocialProfile(mongo.Document):
         }
         if not compact:
             params.update({
+                'large_photo_url': self.large_photo_url,
                 'bio': self.bio,
                 'website': self.website,
                 'shared_stories_count': self.shared_stories_count,

@@ -2,7 +2,7 @@
 /*global window: false, readConvertLinksToFootnotes: false, readStyle: false, readSize: false, readMargin: false, Typekit: false, ActiveXObject: false */
 
 var dbg = (typeof console !== 'undefined') ? function(s) {
-    console.log("Readability: " + s);
+    // console.log("Readability: " + s);
 } : function() {};
 
 /*
@@ -87,7 +87,7 @@ window.readability = {
         readability.parsedPages[window.location.href.replace(/\/$/, '')] = true;
 
         /* Pull out any possible next page link first */
-        var nextPageLink = readability.findNextPageLink(document.body);
+        var nextPageLink = null; // readability.findNextPageLink(document.body);
         
         // readability.prepDocument();
 

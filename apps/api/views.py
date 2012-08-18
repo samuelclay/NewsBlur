@@ -136,3 +136,50 @@ def add_site(request, token):
         'message': message,
         'usersub': us and us.feed_id,
     }) + ')', mimetype='text/plain')
+    
+def check_share_on_site(request, token):
+    code       = 0
+    story_url  = request.GET['story_url']
+    rss_url    = request.GET['rss_url']
+    callback   = request.GET['callback']
+    message    = None
+    
+    
+    if not story_url:
+        code = -1
+    else:
+        try:
+            profile = Profile.objects.get(secret_token=token)
+        except Profile.DoesNotExist:
+            code = -1
+            
+    logging.user(profile.user, "~BY~FRChecking share from site: ~SB%s" % (story_url))
+    
+    return HttpResponse(callback + '(' + json.encode({
+        'code':     code,
+        'message':  message,
+        'feed':     None,
+    }) + ')', mimetype='text/plain')
+
+def share_story(request, token):
+    code       = 0
+    story_url  = request.GET['story_url']
+    comments   = request.GET['comments']
+    callback   = request.GET['callback']
+    message    = None
+    
+    if not story_url:
+        code = -1
+    else:
+        try:
+            profile = Profile.objects.get(secret_token=token)
+        except Profile.DoesNotExist:
+            code = -1
+            
+    logging.user(profile.user, "~BY~FRSharing story from site: ~SB%s: %s" % (story_url, comments))
+    
+    return HttpResponse(callback + '(' + json.encode({
+        'code':     code,
+        'message':  message,
+        'story':    None,
+    }) + ')', mimetype='text/plain')
