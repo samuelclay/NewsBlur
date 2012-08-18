@@ -24,6 +24,11 @@ $default-box-shadow-color: $border-color;
 $default-box-shadow-v-offset: 0px;
 $default-box-shadow-blur: 1px;
 
+
+// ==========
+// = Mixins =
+// ==========
+
 @mixin NC-default-button {
     border: 1px solid $border-color;
     @include border-radius(4px, 4px);
@@ -76,6 +81,10 @@ $default-box-shadow-blur: 1px;
     }
 }
 
+// ===========
+// = Globals =
+// ===========
+
 body {
     background: #ebedee image-url('background.png') repeat 0 0;
     font-family: Helvetica, arial, san-serif;
@@ -86,6 +95,49 @@ a {
     color: $text-color;
     text-decoration: none;
 }
+
+.NB-hidden {
+  display: none;
+}
+
+.NB-left {
+  float: left;
+}
+.NB-right {
+  float: right;
+}
+.NB-raquo {
+  font-size: 18px;
+  vertical-align: baseline;
+  line-height: 12px;
+}
+
+.tipsy {
+    font-size: 11px;
+}
+.tipsy-inner {
+    padding: 2px 9px 2px;
+}
+
+blockquote {
+    background-color: #F0F0F0;
+    border-left: 1px solid #9B9B9B;
+    padding: .5em 2em;
+    margin: 0px;
+}
+.NB-spinner {
+    width: 16px;
+    height: 16px;
+    background: url('/media/embed/reader/recycle_spinner.gif') no-repeat 0 0;
+    display: none;
+}
+.NB-spinner.NB-active {
+    display: block;
+}
+
+// ==========
+// = Header =
+// ==========
 
 .NB-page {
     width: $page-width;
@@ -116,6 +168,7 @@ a {
     top: 0;
     left: 0;
     z-index: 10;
+    opacity: .9;
     
     .NC-header-inner {
         width: $page-width;
@@ -194,18 +247,25 @@ a {
 }    
 
 
+// =========
+// = Story =
+// =========
+
 .NB-mark {
     margin: 20px 0 50px 0;
 }
 
 .NB-story-wrapper {
-    border-left: 5px solid #fff;
-    padding: 25px 25px 15px;
+    border-left: 1px solid #fff;
     background: #fff;
-    position: relative; /* contains all children */
-    overflow: hidden;
     @include single-box-shadow(#c8c8c8, 0px, 0px, 5px, false, false);
-
+    
+    .NB-story-inner {
+        border-left: 4px solid #fff;
+        padding: 25px 25px 15px;
+        overflow: hidden;
+        position: relative; /* contains all children */
+    }
     .NB-story-title {
         a {
             font-size: $title-font-size;
@@ -402,7 +462,7 @@ body.NC-hide-comments .NB-story-comments-container {
             font-size: $smallest-font-size;
             color: $light-text-color;
             @include single-text-shadow;
-            margin-left: 5px;
+            margin-left: 15px;
         }
         
         .NB-story-comment-reply-button,

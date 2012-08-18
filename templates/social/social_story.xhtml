@@ -3,7 +3,8 @@
 <div class="NB-mark">
     <div class="NB-divider"></div>
     
-    <div class="NB-story-wrapper" style="border-color: #{{ story.feed.favicon_color }};">
+    <div class="NB-story-wrapper" style="border-color: #{{ story.feed.favicon_border }};">
+    <div class="NB-story-inner" style="border-color: #{{ story.feed.favicon_color }};">
         <div class="NB-story-header-wrapper">
             <div class="NB-story-header">
                 <h2 class="NB-story-title">
@@ -62,6 +63,7 @@
                 {% endif %}
             </div>    
         </div>
+    </div>
     </div><!-- end NB-story-wrapper -->
     <div class="NB-story-comments-container">
         {% if story.comment_count or not story.shared_by_user %}
