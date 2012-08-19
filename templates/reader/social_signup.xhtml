@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags recommendations_tags utils_tags statistics_tags %}
+
+{% block content %}
+
+
+    <style>
+        body {
+            font-size: 16px;
+            font-weight: bold;
+            color: #A0A0A0;
+        }
+        .NB-loader {
+            margin: 122px auto;
+            width: 512px;
+            height: 512px;
+            display: block;
+            -webkit-animation: -webkit-slow-spin 120s infinite linear;    
+            -moz-animation-duration: 120s;  
+            -moz-animation-name: -moz-slow-spin;  
+            -moz-animation-iteration-count: infinite;  
+            -moz-animation-timing-function: linear;  
+        }
+        @-webkit-keyframes -webkit-slow-spin {
+            from {-webkit-transform: rotate(0deg)}
+            to  {-webkit-transform: rotate(360deg)}
+        }
+        @-moz-keyframes -moz-slow-spin {  
+            from {-moz-transform: rotate(0deg)}
+            to  {-moz-transform: rotate(360deg)}
+        } 
+        .NB-demo {
+            position: absolute;
+            top: 200px;
+            margin: 0 auto;
+            width: 100%;
+            text-align: center;
+        }
+        .NB-demo-label {
+            text-shadow: 0 1px 0 #FFF;
+            text-transform: uppercase;
+            font-size: 14px;
+            color: #195200;
+            display: block;
+        }
+        .NB-demo .NB-input {
+            width: 140px;
+            margin: 10px auto 12px;
+            padding: 2px;
+            box-shadow: 2px 2px 0 #D8C45D;
+        }
+        .NB-modal-submit-button {
+            box-shadow: 2px 2px 0 #D8C45D;
+            width: 146px;
+            margin: 0 auto;
+            padding: 4px 0;
+            display: block;
+        }
+        .NB-thanks {
+            position: absolute;
+            top: 230px;
+            margin: 0 auto;
+            width: 100%;
+            text-align: center;
+        }
+        .NB-thanks div {
+            margin: 0 0 12px 0;
+            text-shadow: 0 1px 0 #FFF;
+        }
+    </style>
+    
+    <div style="text-align: center;position: relative;">
+
+        <img class="NB-loader" src="{{ MEDIA_URL }}img/logo_512.png">
+        
+        <form class="NB-demo" method="post" action="">
+            <label class="NB-demo-label" for="username">Put your Email<br>in the box</label>
+            <input class="NB-input" name="username" type="text" id="username">
+            <input type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="Request an invite">
+        </form>
+        
+        <div class="NB-thanks" style="display: none">
+            <div style="color: #175700"><b><em>Thanks!</em></b></div>
+            <div>Stay tuned...</div>
+        </div>
+
+    </div>
+
+
+{% endblock %}
+
+{% block extra_head_js %}
+
+    <script>
+    $(document).ready(function() {
+        $('form').on('submit', function(e) {
+            e.preventDefault();
+            $.post('/social/request_invite', {
+                'username': $('input[name=username]').val()
+            }, function() {
+                $('.NB-demo').hide();
+                $('.NB-thanks').show();
+            });
+            return false;
+        });
+    });
+    </script>
+    
+{% endblock %}

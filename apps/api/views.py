@@ -71,10 +71,14 @@ def add_site_load_script(request, token):
     add_image        = image_base64('add')
 
     try:
-        profile = Profile.objects.get(secret_token=token)
-        usf = UserSubscriptionFolders.objects.get(
-            user=profile.user
-        )
+        profiles = Profile.objects.filter(secret_token=token)
+        if profiles:
+            profile = profiles[0]
+            usf = UserSubscriptionFolders.objects.get(
+                user=profile.user
+            )
+        else:
+            code = -1
     except Profile.DoesNotExist:
         code = -1
     except UserSubscriptionFolders.DoesNotExist:
@@ -125,5 +129,5 @@ def add_site(request, token):
     return HttpResponse(callback + '(' + json.encode({
         'code':    code,
         'message': message,
-        'usersub': us and us.feed.pk,
+        'usersub': us and us.feed_id,
     }) + ')', mimetype='text/plain')

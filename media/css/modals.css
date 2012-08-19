@@ -16,6 +16,20 @@
     border: 1px solid #303030;
 }
 
+/* =================== */
+/* = Common Elements = */
+/* =================== */
+
+.NB-input {
+    font-size: 14px;
+    padding: 2px;
+    margin: 2px 4px 2px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
+}
+
 /* ========== */
 /* = Modals = */
 /* ========== */
@@ -70,21 +84,13 @@
 .NB-module h5 {
     margin: 0;
     padding: 8px 12px 6px;
-    background-color: #D1E1FA;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #C5D7FB),
-        color-stop(0.84, #D8E1FF)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #C5D7FB 16%,
-        #D8E1FF 84%
-    );
 
-    text-shadow: 1px 1px 0 #E9E9E9;
+    background-color: #E3ECF8;
+    background-image: -moz-linear-gradient(top, #E3ECF8, #CBDBF5); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#E3ECF8), to(#CBDBF5)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #E3ECF8, #CBDBF5);
+
+    text-shadow: 0 1px 0 #F2F6FE;
     border-top: 1px solid #D1DAF7;
     border-bottom: 1px solid #A1A9CF;
     color:#505050;
@@ -208,27 +214,200 @@
     text-decoration: none;
 }
 
-.NB-modal-submit-back,
-.NB-modal-submit-reset {
-    background-color: #d5d4dB;
-    color: #909090;
-    
-}
-.NB-modal-submit-close {
-    background-color: #d5d4dB;
-    color: #909090;
-    font-weight: bold;
-}
 .NB-modal-submit-green {
     background-color: #217412;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #216200),
+        color-stop(0.84, #217412)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #216200 16%,
+        #217412 84%
+    );
     font-weight: bold;
     color: #FCFCFC;
 }
+.NB-modal-submit-green:hover {
+    background-color: #216200;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #1E5000),
+        color-stop(0.84, #216200)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #1E5000 16%,
+        #216200 84%
+    );
+    font-weight: bold;
+    color: #FCFCFC;
+}
+.NB-modal-submit-green:active {
+    background-color: #1E5000;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #1B3F00),
+        color-stop(0.84, #1E5000)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #1B3F00 16%,
+        #1E5000 84%
+    );
+    font-weight: bold;
+    color: #FCFCFC;
+}
+.NB-modal-submit-save.NB-disabled,
+.NB-modal-submit-green.NB-disabled,
+.NB-modal-submit-button.NB-disabled,
+.NB-modal-submit-back,
+.NB-modal-submit-reset,
+.NB-modal-submit-close,
+.NB-modal-submit-grey {
+    background-color: #d5d4dB;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #CBCAD3),
+        color-stop(0.84, #d5d4dB)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #CBCAD3 16%,
+        #d5d4dB 84%
+    );
+    color: #909090;
+}
+.NB-modal-submit-save.NB-disabled:hover,
+.NB-modal-submit-green.NB-disabled:hover,
+.NB-modal-submit-button.NB-disabled:hover {
+    background-color: #d5d4dB;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #CBCAD3),
+        color-stop(0.84, #d5d4dB)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #CBCAD3 16%,
+        #d5d4dB 84%
+    );
+}
+.NB-modal-submit-back:hover,
+.NB-modal-submit-reset:hover,
+.NB-modal-submit-close:hover,
+.NB-modal-submit-grey:hover {
+    background-color: #CBCAD3;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #BDBCC7),
+        color-stop(0.84, #CBCAD3)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #BDBCC7 16%,
+        #CBCAD3 84%
+    );
+}
+.NB-modal-submit-back:active,
+.NB-modal-submit-reset:active,
+.NB-modal-submit-close:active,
+.NB-modal-submit-grey:active {
+    background-color: #BDBCC7;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #ADACBB),
+        color-stop(0.84, #BDBCC7)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #ADACBB 16%,
+        #BDBCC7 84%
+    );
+}
 
+.NB-modal-submit-close {
+    background-color: #525255;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #192716),
+        color-stop(0.84, #2E432B)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #192716 16%,
+        #2E432B 84%
+    );
+    color: white;
+}
+.NB-modal-submit-close:hover {
+    background-color: #CBCAD3;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #131D10),
+        color-stop(0.84, #192716)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #131D10 16%,
+        #192716 84%
+    );
+}
+.NB-modal-submit-close:active {
+    background-color: #BDBCC7;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #0A0D09),
+        color-stop(0.84, #131D10)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #0A0D09 16%,
+        #131D10 84%
+    );
+}
+.NB-modal-submit-close,
+.NB-modal-submit-grey {
+    font-weight: bold;
+}
+.NB-modal-submit-red {
+    background-color: #911C31;
+    color: #E4E4E4;
+    font-weight: bold;
+}
 .NB-modal-submit-delete {
     background-color: #7E020D;
     font-weight: bold;
     color: #FCFCFC;
+}
+.NB-modal-submit-red:hover,
+.NB-modal-submit-delete:hover {
+    background-color: #4D000A;
+}
+.NB-modal-submit-red:active,
+.NB-modal-submit-delete:active {
+    background-color: #1E0007;
 }
 .NB-modal-submit .NB-disabled {
     background-color: #d5d4dB;
@@ -272,6 +451,56 @@
 .NB-modal .NB-modal-feed-chooser-container .NB-modal-feed-chooser {
     width: 250px;
     margin: 0 0 12px;
+}
+
+.NB-modal .NB-modal-tabs {
+    float: right;
+    position: relative;
+    bottom: -1px;
+    margin-right: 16px;
+}
+
+.NB-modal .NB-modal-tab {
+    float: left;
+    padding: 8px 12px 10px;
+    background-color: #E0E0E0;
+    border-top: 1px solid #A0A0A0;
+    border-left: 1px solid #A0A0A0;
+    border-bottom: 1px solid #A0A0A0;
+    cursor: pointer;
+    text-shadow: 0 1px 0 white;
+    margin-top: -4px;
+}
+
+.NB-modal .NB-modal-tab:hover {
+    background-color: #F2F2F9;
+}
+.NB-modal .NB-modal-tab:last-child {
+    border-right: 1px solid #A0A0A0;
+}
+
+.NB-modal .NB-modal-tab.NB-active {
+    background-color: white;
+    border-bottom: 1px solid white;
+    cursor: default;
+}
+
+.NB-modal .NB-tab {
+    display: none;
+    margin-top: 0;
+    clear: both;
+    border-top: 1px solid #A0A0A0;
+    overflow: auto;
+    height: 400px;
+    width: 100%;
+    padding-right: 12px;
+}
+.NB-modal .NB-tab.NB-active {
+    display: block;
+}
+
+.NB-modal .NB-modal-section {
+    padding: 12px 0;
 }
 
 /* ===================== */

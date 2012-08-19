@@ -42,6 +42,7 @@ class PageImporter(object):
     
     @timelimit(15)
     def fetch_page(self, urllib_fallback=False, requests_exception=None):
+        html = None
         feed_link = self.feed.feed_link
         if not feed_link:
             self.save_no_page()
@@ -57,10 +58,13 @@ class PageImporter(object):
                     time.sleep(0.01) # Grrr, GIL.
                     data = response.read()
                 else:
-                    response = requests.get(feed_link, headers=self.headers)
+                    try:
+                        response = requests.get(feed_link, headers=self.headers)
+                    except requests.exceptions.TooManyRedirects:
+                        response = requests.get(feed_link)
                     try:
                         data = response.text
-                    except LookupError:
+                    except (LookupError, TypeError):
                         data = response.content
             elif any(feed_link.startswith(s) for s in BROKEN_PAGES):
                 self.save_no_page()
@@ -91,7 +95,7 @@ class PageImporter(object):
         except (requests.exceptions.RequestException, 
                 requests.packages.urllib3.exceptions.HTTPError), e:
             logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
-            mail_feed_error_to_admin(self.feed, e, local_vars=locals())
+            # mail_feed_error_to_admin(self.feed, e, local_vars=locals())
             return self.fetch_page(urllib_fallback=True, requests_exception=e)
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
@@ -104,7 +108,9 @@ class PageImporter(object):
                 self.fetch_page(urllib_fallback=True)
         else:
             self.feed.save_page_history(200, "OK")
-
+        
+        return html
+        
     def save_no_page(self):
         self.feed.has_page = False
         self.feed.save()

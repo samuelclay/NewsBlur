@@ -1,8 +1,19 @@
 {% extends "mail/email_base.xhtml" %}
 
+{% load utils_tags %}
+
 {% block body %}
     <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Welcome to NewsBlur, {{ user.username }}.</p>
-    <p style="line-height: 20px;">OK, firstly, thank you for trying out new software. It's not quite what you're used to, but you might find NewsBlur to be a perfect fit. There's a lot packed into a minimal interface.</p>
-    <p style="line-height: 20px;">Spend a few days trying out NewsBlur. I hope you end up loving it.</p>
-    <p style="line-height: 20px;">If you really do love using NewsBlur you should purchase a fancy <b>premium account</b> for only $12/year (nights and weekends and all major public holidays included). You get to support an independent developer, help feed his dog, and contribute to the long-term health of NewsBlur.</p>
+    <p style="line-height: 20px;">OK, firstly, thank you for trying out NewsBlur. We've worked hard to make a great app, so congratulations on discovering a handcrafted experience.</p>
+    <p style="line-height: 20px;">Here are some easy ways to have a great time on NewsBlur:</p>
+    <p style="line-height: 20px;">
+        <ul style="list-style: none;">
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/icons/silk/rainbow.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=friends" style="text-decoration:none">Follow friends from Twitter, Facebook, and NewsBlur</a>.</li>
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/reader/popular_thumb.jpg?1" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Visit the popular blurblog: <a href="http://popular.newsblur.com" style="text-decoration:none">The People Have Spoken</a>.</li>
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/reader/hamburger_l.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser" style="text-decoration:none">Upgrade to a premium account for only $12/year</a>.</li>
+        </ul>
+    </p>
+    <p style="line-height: 20px;">Spend a few days trying out NewsBlur. We hope you love it.</p>
 {% endblock %}
+
+{% block resources_header %}There are a couple resources you can use if you end up loving NewsBlur:{% endblock resources_header %}

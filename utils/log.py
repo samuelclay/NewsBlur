@@ -1,6 +1,7 @@
 import logging
 import re
 import string
+import time
 from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
 
@@ -14,16 +15,27 @@ def getlogger():
 
 def user(u, msg):
     platform = '------'
+    time_elapsed = ""
     if isinstance(u, WSGIRequest):
         request = u
         u = request.user
         user_agent = request.environ.get('HTTP_USER_AGENT', '')
-        if 'iPhone App' in user_agent:
+        if 'iPad App' in user_agent:
+            platform = 'iPad'
+        elif 'iPhone App' in user_agent:
             platform = 'iPhone'
         elif 'Blar' in user_agent:
             platform = 'Blar'
+        elif 'Android' in user_agent:
+            platform = 'Androd'
         elif 'MSIE' in user_agent:
             platform = 'IE'
+            if 'MSIE 9' in user_agent:
+                platform += '9'
+            elif 'MSIE 10' in user_agent:
+                platform += '10'
+            elif 'MSIE 8' in user_agent:
+                platform += '8'
         elif 'Chrome' in user_agent:
             platform = 'Chrome'
         elif 'Safari' in user_agent:
@@ -36,9 +48,16 @@ def user(u, msg):
             platform = 'Opera'
         elif 'WP7' in user_agent:
             platform = 'WP7'
+
+        if hasattr(request, 'start_time'):
+            seconds = time.time() - request.start_time
+            time_elapsed = "[%s%.4ss] " % (
+                '~FB' if seconds < .5 else '~FR',
+                seconds,
+            )
     premium = '*' if u.is_authenticated() and u.profile.is_premium else ''
     username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else u
-    info(' ---> [~FB~SN%-6s~SB] [%s%s] %s' % (platform, username, premium, msg))
+    info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
 
 def cipher(msg):
     shift = len(msg)
@@ -97,11 +116,9 @@ def colorize(msg):
     for k, v in params.items():
         msg = re.sub(k, v, msg)
     msg = msg + '~ST~FW~BT'
-    msg = re.sub(r'(~[A-Z]{2})', r'%(\1)s', msg)
-    try:
-        msg = msg % colors
-    except (TypeError, ValueError, KeyError):
-        pass
+    # msg = re.sub(r'(~[A-Z]{2})', r'%(\1)s', msg)
+    for k, v in colors.items():
+        msg = msg.replace(k, v)
     return msg
     
 '''

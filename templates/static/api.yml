@@ -39,7 +39,7 @@
         - key: email
           desc: "Email address"
           optional: true
-          example: "samuel@ofbrooklyn.com"
+          example: "samuel@newsblur.com"
         
 - feeds:
     - url: /rss_feeds/search_feed
@@ -108,7 +108,7 @@
           To use inline data images, you can use this syntax:
           <pre><code>&lt;img src="data:image/png;base64,[IMAGE_DATA_STRING]" /&gt;</code></pre>
       params:
-        - key: feeds
+        - key: feed_ids
           desc: " Array of feed ids. Leave empty to retrieve all active (enabled) feeds."
           optional: true
           example: "[1, 2, 3]"
@@ -231,7 +231,9 @@
         - key: story_id
           desc: "List of story ids to mark as read."
           required: true
-          example: "[12, 24, 36]"
+          example: >
+            ["http://blog.newsblur.com/post/1",
+             "http://blog.newsblur.com/post/2"]
         - key: feed_id
           desc: "Feed id that each story is from."
           required: true
@@ -252,6 +254,22 @@
           desc: "JSON serialized dictionary of feed_ids to an array of story_ids."
           required: true
           example: "{<br>12: ['story_id_1', 'story_id_2'],<br>24: ['story_id_3']<br>}"
+    
+    - url: /reader/mark_social_stories_as_read
+      method: POST
+      short_desc: "Mark stories from a blurblog as read."
+      long_desc: 
+        - "Marks multiple stories as read."
+        - "Multiple story ids can be sent at once."
+        - "Multiple feeds can be sent."
+      tips:
+        - "Throttle requests to this endpoint. You don't need to send one request per story."
+        - "Queue up to 5 stories or once every 10 seconds before firing, whichever comes first."
+      params:
+        - key: users_feeds_stories
+          desc: "JSON serialized dictionary of user_ids to feed_ids to an array of story_ids."
+          required: true
+          example: "{<br>user_id: <br>{feed_id: ['story_id_1', 'story_id_2'],<br>24: ['story_id_3']<br>}<br>}"
     
     - url: /reader/mark_story_as_unread
       method: POST
@@ -309,7 +327,369 @@
           optional: true
           default: "0"
           example: "7"
-  
+
+- social:
+    - url: /social/share_story
+      method: POST
+      short_desc: "Share a story with optional comments."
+      long_desc: 
+        - "Share a story with optional comments. The story is shared on the user's blurblog."
+      params:
+        - key: feed_id
+          desc: "Feed id that the story is from."
+          required: true
+          example: "42"
+        - key: story_id
+          desc: "Story id to share."
+          required: true
+          example: "http://blog.newsblur.com/post/1"
+        - key: comments
+          desc: "The meat of the share."
+          optional: true
+          example: "42"
+        - key: source_user_id
+          desc: >
+            If the story is being re-shared from another blurblog, note the 
+            user_id of the original sharer.
+          optional: true
+          example: "128"
+        - key: post_to_services
+          desc: "List of services to cross-post to. Can be 'twitter' and/or 'facebook'."
+          optional: true
+          example: "['twitter', 'facebook']"
+        - key: format
+          desc: "Return JSON or a HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/unshare_story
+      method: POST
+      short_desc: "Remove a shared story from user's blurblog."
+      long_desc: 
+        - >
+          Removes a shared story from a user's blurblog. Unshares the story and
+          removes the comments. Any replies will also be deleted. This may change.
+      params:
+        - key: feed_id
+          desc: "Feed id that the story is from."
+          required: true
+          example: "42"
+        - key: story_id
+          desc: "Story id to remove the existing share."
+          required: true
+          example: "http://blog.newsblur.com/post/1"
+        - key: format
+          desc: "Return JSON or a HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/load_user_friends
+      method: GET
+      short_desc: "Lists of user profiles: followers, followings, etc."
+      long_desc: 
+        - This lists the user profiles of followers and followings of a user. 
+        - Also returns information related to which sharing services a user is using.
+    - url: /social/profile
+      method: GET
+      short_desc: "Public profile of a user."
+      long_desc: 
+        - "Public profile of a user. Includes common followers and common followings."
+      params:
+        - key: user_id
+          desc: "User id of user"
+          required: true
+          example: "42"
+    - url: /social/load_user_profile
+      method: GET
+      short_desc: "Private details of the current user's profile and connected services."
+      long_desc: 
+        - "Private details of the current user's profile and connected services."
+    - url: /social/save_user_profile
+      method: POST
+      short_desc: "Saves a user's profile details."
+      long_desc: 
+        - "Saves a user's profile details."
+      params:
+        - key: location
+          desc: "Hometown"
+          optional: true
+          example: "New York City"
+        - key: bio
+          desc: "160 character bio."
+          optional: true
+          example: "Developer. API Designer."
+        - key: website
+          desc: "Website address"
+          optional: true
+          example: "http://www.samuelclay.com"
+        - key: photo_service
+          desc: "Which photo service to use: twitter, facebook, gravatar."
+          optional: true
+          example: "twitter"
+    - url: /social/interactions
+      method: GET
+      short_desc: "Interactions between a user and other users."
+      long_desc: 
+        - "Interactions between a user and other users."
+      params:
+        - key: user_id
+          desc: "ID of user. Defaults to current logged in user."
+          optional: true
+          example: "42"
+        - key: page
+          desc: "4 interactions per page."
+          optional: true
+          example: "2"
+        - key: format
+          desc: "JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/activities
+      method: GET
+      short_desc: "A user's activities."
+      long_desc: 
+        - "A user's activities: follows, shared stories, and replies to comments."
+        - > 
+          Also includes starred stories and new site subscriptions if fetching the
+          currently logged in user's activities.
+      params:
+        - key: user_id
+          desc: "ID of user. Defaults to current logged in user."
+          optional: true
+          example: "42"
+        - key: page
+          desc: "4 activities per page."
+          optional: true
+          example: "2"
+        - key: format
+          desc: "JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/follow
+      method: POST
+      short_desc: "Follow a user and subscribe to their blurblog."
+      long_desc: 
+        - "Follow a user and subscribe to their blurblog."
+      params:
+        - key: user_id
+          desc: "ID of user to follow."
+          required: true
+          example: "42"
+    - url: /social/unfollow
+      method: POST
+      short_desc: "Unfollow a user and unsubscribe from their blurblog."
+      long_desc: 
+        - "Unfollow a user and unsubscribe from their blurblog."
+      params:
+        - key: user_id
+          desc: "ID of user to unfollow."
+          required: true
+          example: "42"
+    - url: /social/feed_trainer
+      method: GET
+      short_desc: "Get the intelligence classifiers for a blurblog."
+      long_desc: 
+        - "Get the intelligence classifiers for a blurblog."
+      params:
+        - key: user_id
+          desc: "ID of blurblog's user."
+          required: true
+          example: "42"
+    - url: /social/public_comments
+      method: GET
+      short_desc: "Get all public comments on a shared story."
+      long_desc: 
+        - "Get all public comments on a shared story."
+        - >
+          If you want comments from friends, they are already attached to the 
+          story from either <code>reader/feed/:id</code> or 
+          <code>/social/stories/:user_id</code>.
+      params:
+        - key: story_id
+          desc: "ID of shared story."
+          required: true
+          example: "http://blog.newsblur.com/post/1"
+        - key: feed_id
+          desc: "ID of feed for the shared story."
+          required: true
+          example: "42"
+        - key: format
+          desc: "JSON or HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/save_comment_reply
+      method: POST
+      short_desc: "Saves a reply to a comment."
+      long_desc: 
+        - "Saves a reply to a comment."
+        - "Comments can have a number of replies, but they are all one-level deep."
+        - >
+          Replying to a comment sends notifications to both original commenter and to 
+          every other replier to the comment.
+      params:
+        - key: story_feed_id
+          desc: "ID of feed the story belongs to."
+          required: true
+          example: "42"
+        - key: story_id
+          desc: "ID of story being commented on."
+          required: true
+          example: "http://blog.newsblur.com/post/1"
+        - key: comment_user_id
+          desc: "ID of user who left the original comment that is now being replied to."
+          required: true
+          example: "64"
+        - key: reply_comments
+          desc: "The content of the reply."
+          required: true
+          example: "Brilliant analysis."
+        - key: reply_id
+          desc: >
+            If editing an existing reply, provide the original reply id so the correct 
+            reply can be overwritten.
+          optional: true
+          example: "5000...0042"
+        - key: format
+          desc: "Return JSON or a HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/remove_comment_reply
+      method: POST
+      short_desc: "Deletes a reply."
+      long_desc: 
+        - "Deletes a reply from a comment."
+        - "Also deletes the interactions and activities associated with the reply."
+      params:
+        - key: story_feed_id
+          desc: "ID of feed the story belongs to."
+          required: true
+          example: "42"
+        - key: story_id
+          desc: "ID of story being commented on."
+          required: true
+          example: "http://blog.newsblur.com/post/1"
+        - key: comment_user_id
+          desc: "ID of user who left the original comment that is now being replied to."
+          required: true
+          example: "64"
+        - key: reply_id
+          desc: The reply's id
+          optional: true
+          example: "5000...0042"
+        - key: format
+          desc: "Return JSON or a HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/like_comment
+      method: POST
+      short_desc: "Favorites a comment."
+      long_desc: 
+        - "Favorites a comment."
+        - "Does not send an email to the recipient user, but they do see an interaction."
+      params:
+        - key: story_feed_id
+          desc: "ID of feed the story belongs to."
+          required: true
+          example: "42"
+        - key: story_id
+          desc: "ID of story being commented on."
+          required: true
+          example: "http://blog.newsblur.com/post/1"
+        - key: comment_user_id
+          desc: "ID of user who left the original comment that is now being replied to."
+          required: true
+          example: "64"
+        - key: format
+          desc: "Return JSON or a HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/remove_like_comment
+      method: POST
+      short_desc: "Un-favorites a comment."
+      long_desc: 
+        - "Un-favorites a comment."
+      params:
+        - key: story_feed_id
+          desc: "ID of feed the story belongs to."
+          required: true
+          example: "42"
+        - key: story_id
+          desc: "ID of story being commented on."
+          required: true
+          example: "http://blog.newsblur.com/post/1"
+        - key: comment_user_id
+          desc: "ID of user who left the original comment that is now being replied to."
+          required: true
+          example: "64"
+        - key: format
+          desc: "Return JSON or a HTML template"
+          optional: true
+          default: "json"
+          example: "html"
+    - url: /social/find_friends
+      method: GET
+      short_desc: "Search for a user by username, email, or blurblog title."
+      long_desc: 
+        - "Search for a user by username, email, or blurblog title."
+      params:
+        - key: query
+          desc: "Username, email, or part of a blurblog title."
+          required: true
+          example: "samuel"
+    - url: /social/rss/:user_id/:username
+      method: GET
+      short_desc: "RSS feed for a blurblog."
+      long_desc: 
+        - "RSS feed for a blurblog."
+      tips:
+        - >
+          The <code>username</code> url parameter is optional. It's just recommended 
+          if you have it.
+    - url: /social/stories/:user_id/:username
+      method: GET
+      short_desc: "Shared stories from a user's blurblog."
+      long_desc: 
+        - "Shared stories from a user's blurblog."
+        - "Comments, replies, and profiles from followed users are automatically included."
+      tips:
+        - >
+          The <code>username</code> url parameter is optional. It's just recommended 
+          if you have it.
+    - url: /social/page/:user_id/:username
+      method: GET
+      short_desc: "A user's shared stories blurblog in HTML."
+      long_desc: 
+        - "A user's shared stories blurblog in HTML."
+        - "This may also live at a custom URL, which is specified in the user's full profile."
+      tips:
+        - >
+          The <code>username</code> url parameter is optional. It's just recommended 
+          if you have it.
+    - url: /social/settings/:user_id/:username
+      method: GET
+      short_desc: "A user's full profile."
+      long_desc: 
+        - "A user's full profile."
+      tips:
+        - >
+          The <code>username</code> url parameter is optional. It's just recommended 
+          if you have it.
+    - url: /social/statistics/:user_id/:name
+      method: GET
+      short_desc: "Get statistics and history for a blurblog."
+      long_desc: 
+        - "Get statistics and history for a blurblog."
+      tips:
+        - >
+          The <code>username</code> url parameter is optional. It's just recommended 
+          if you have it.
+    
 - "feed management":
     - url: /reader/add_url
       method: POST
@@ -326,6 +706,10 @@
           optional: true
           default: "[Top Level]"
           example: "Blogs"
+      tips:
+        - >
+          If you want to just show the Add Site dialog on the site, you can use this URL:
+          <code>http://www.newsblur.com/?url=%u</code>
   
     - url: /reader/add_folder
       method: POST

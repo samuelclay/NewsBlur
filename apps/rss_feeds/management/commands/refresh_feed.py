@@ -19,8 +19,4 @@ class Command(BaseCommand):
             feed = Feed.objects.get(feed_title__icontains=options['title'])
         else:
             feed = Feed.objects.get(pk=options['feed'])
-        self._refresh_feeds([feed], force=options['force'])
-        
-    def _refresh_feeds(self, feeds, force=False):
-        for feed in feeds:
-            feed.update(force=force, single_threaded=True)
+        feed.update(force=options['force'], single_threaded=True, verbose=2)

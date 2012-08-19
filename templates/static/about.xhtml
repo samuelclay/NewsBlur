@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 
-{% block bodyclass %}NB-static{% endblock %}
+{% block bodyclass %}NB-static NB-static-about{% endblock %}
 
 {% block title %}About NewsBlur{% endblock %}
+
+{% block head %}
+    
+{% endblock %}
 
 {% block content %}
 
@@ -11,13 +15,51 @@
   </div>
 
   <div class="NB-module">
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">What:</span>The story behind NewsBlur</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-what">
+        <li>NewsBlur is a social news reader built for people who want to enjoy reading the news. NewsBlur is a great place to read the best stories from your friends and favorite blogs.</li>
+        <li>In New York City during the Summer of 2009, Samuel Clay wanted a better way to read the news. So he built the first version of NewsBlur almost entirely underground on the A train.</li>
+        <li>In mid-2010, NewsBlur launched to the public and to favorable reviews. In October 2010 premium accounts launched, paying for NewsBlur's increasing server costs.</li>
+        <li>After entering Y Combinator during the Summer of 2012, Blurblogs are launched as a new way to share and talk about the news between friends. Samuel, Roy, and Shiloh celebrate with champagne and biscuits.
+      </ul>
+    </div>
+  </div>
+  
+  <div class="NB-module">
     <h5 class="NB-module-title"><span class="NB-module-title-prefix">Who:</span>A Labor of Love</h5>
     <div class="NB-module-content">
       <ul class="NB-about-who">
-        <li>Hand-crafted by: <a href="http://www.samuelclay.com">Samuel Clay</a></li>
-        <li>Talk to him on Twitter: <a href="http://twitter.com/samuelclay">@samuelclay</a></li>
-        <li>E-mail: <a href="mailto:samuel@ofbrooklyn.com">samuel@ofbrooklyn.com</a></li>
-        <li class="last">Created in: <a href="http://www.newyorkfieldguide.com">New York City</a> (mostly on the A train)</li>
+        <li>
+            <img src="{{ MEDIA_URL }}img/static/Samuel Clay.jpg">
+            <div class="NB-about-who-name">Samuel Clay</div>
+            <div class="NB-acount-who-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></div>
+            <div class="NB-about-who-website"><a href="http://www.samuelclay.com">www.samuelclay.com</a></div>
+            <div class="NB-about-who-email"><a href="mailto:samuel@newsblur.com">samuel@newsblur.com</a></div>
+        </li>
+        <li>
+            <img src="{{ MEDIA_URL }}img/static/Roy Yang.jpg">
+            <div class="NB-about-who-name">Roy Yang</div>
+            <div class="NB-acount-who-twitter"><a href="http://twitter.com/roycyang">@roycyang</a></div>
+            <div class="NB-about-who-email"><a href="mailto:roy@newsblur.com">roy@newsblur.com</a></div>
+        </li>
+        <li>
+            <img src="{{ MEDIA_URL }}img/static/Shiloh.jpg">
+            <div class="NB-about-who-name">Shiloh</div>
+            <div class="NB-acount-who-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></div>
+            <div class="NB-about-who-email"><a href="mailto:shiloh@newsblur.com">shiloh@newsblur.com</a></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="NB-module">
+    <h5 class="NB-module-title"><span class="NB-module-title-prefix">Why:</span>What makes NewsBlur better</h5>
+    <div class="NB-module-content">
+      <ul class="NB-about-why">
+        <li><b>News reading</b>: With first-class iOS, Android, and web apps, NewsBlur is an easy and organized way to read the news wherever you are. </li>
+        <li><b>Training</b>: By using NewsBlur's training filters, you can hide stories you don't want to see while highlighting the stories you want to focus on.</li>
+        <li><b>Social</b>: Sharing and talking about the news is not only fun, but allows you to break out of your filter bubble and embrace the serendipity of your friend's tastes.</li>
       </ul>
     </div>
   </div>
@@ -29,7 +71,8 @@
         <li><a href="http://www.djangoproject.com">Django</a>: Web framework written in Python, used to serve all pages.</li>
         <li><a href="http://ask.github.com/celery">Celery</a> &amp; <a href="http://www.rabbitmq.com">RabbitMQ</a>: Asynchronous queueing server, used to fetch and parse RSS feeds.</li>
         <li><a href="http://www.mongodb.com">MongoDB</a>, <a href="http://www.mongodb.com/pymongo">Pymongo</a>, &amp; <a href="http://www.github.com/hmarr/mongoengine">Mongoengine</a>: Non-relational database, used to store stories, read stories, feed/page fetch histories, and proxied sites.</li>
-        <li class="last"><a href="http://www.postgresql.com">PostgreSQL</a>: Relational database, used to store feeds, subscriptions, and user accounts.</li>
+        <li class=""><a href="http://www.postgresql.com">PostgreSQL</a>: Relational database, used to store feeds, subscriptions, and user accounts.</li>
+        <li class="last"><a href="http://www.redis.io">Redis</a>: Non-relational database, used to calculate unread stories, and used to store friendships and unread story lists. Also used for pub/sub for real-time story updates. Also used as celery's queue backend. Fantastic database technology that changed the game for NewsBlur.</li>
       </ul>
     </div>
   </div>
@@ -39,19 +82,9 @@
     <div class="NB-module-content">
       <ul class="NB-about-client">
         <li><a href="http://www.jquery.com">jQuery</a>: Cross-browser compliant JavaScript code. IE works without effort.</li>
+        <li><a href="http://documentcloud.github.com/backbone/">Backbone.js</a>: Models and views make for easy maintenance.</li>
         <li><a href="http://documentcloud.github.com/underscore/">Underscore.js</a>: Functional programming for JavaScript. Indispensible.</li>
-        <li><b>Miscellaneous jQuery Plugins:</b> Everything from resizable layouts, to progress bars, sortables, date handling, colors, corners, JSON, animations. See the complete list on <a href="http://github.com/samuelclay/NewsBlur/">NewsBlur's GitHub repository</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="NB-module">
-    <h5 class="NB-module-title"><span class="NB-module-title-prefix">Why:</span>What's the point of another RSS feed reader?</h5>
-    <div class="NB-module-content">
-      <ul class="NB-about-why">
-        <li>To prove that I could do it.</li>
-        <li>I wanted something better.</li>
-        <li>Where there's a will, there's an empty git repository.</li>
+        <li><b>Miscellaneous jQuery Plugins:</b> Everything from resizable layouts, to progress bars, sortables, date handling, colors, corners, JSON, animations. See the complete list on <a href="http://github.com/samuelclay/">NewsBlur's GitHub repository</a></li>
       </ul>
     </div>
   </div>

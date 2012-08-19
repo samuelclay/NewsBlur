@@ -1,0 +1,56 @@
+{% load social_tags %}
+
+<div class="NB-story-comments">
+
+    <div class="NB-comments-body">
+        {% for comment in story.friend_comments %}
+            {% render_story_comment story comment %}
+        {% endfor %}
+
+        <div class="NB-story-comment-edit NB-story-comment {% if story.shared_by_user %}NB-hidden{% endif %}" data-user-id="{{ user_social_profile.user_id }}">
+            {% if user_social_profile.large_photo_url %}
+                <a href="{{ user_social_profile.blurblog_url }}" class="NB-user-avatar">
+                    <img src="{{ user_social_profile.large_photo_url }}">
+                </a>
+            {% else %}
+                <div class="NB-user-avatar">
+                    <img src="{{ MEDIA_URL }}img/reader/default_profile_photo.png">
+                </div>
+            {% endif %}
+            <div class="NB-story-comment-input-form">
+                <textarea class="NB-story-comment-input" placeholder="Comment on this story..."></textarea>
+                <div class="NB-story-comment-buttons">
+                    <div class="NB-modal-submit-button NB-modal-submit-green NB-story-comment-save">Share this story</div>
+                    <div class="NB-modal-submit-button NB-modal-submit-red NB-story-comment-delete NB-hidden">Delete</div>
+                    <div class="NB-story-comment-crossposts">
+                        <div class="NB-story-comment-crosspost-twitter NB-hidden"></div>
+                        <div class="NB-story-comment-crosspost-facebook NB-hidden"></div>
+                        <div class="NB-story-comment-crosspost-text"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if story.comment_count_public %}
+            <div class="NB-story-comments-public-header-wrapper">
+                <div class="NB-story-comments-public-header">
+                    {{ story.comment_count_public }} public comment{{ story.comment_count_public|pluralize }}
+                </div>
+            </div>
+        {% endif %}
+        
+        {% for comment in story.public_comments %}
+            {% render_story_comment story comment %}
+        {% endfor %}
+    
+    </div>
+
+    {# {% if story.comment_count_public %} #}
+    {# <div class="NB-story-comments-public-teaser-wrapper"> #}
+    {#     <div class="NB-story-comments-public-teaser"> #}
+    {#         There {{ story.comment_count_public|pluralize:"is,are" }} {{ story.comment_count_public}} public comment{{ story.comment_count_public|pluralize }} #}
+    {#     </div> #}
+    {# </div> #}
+    {# {% endif %} #}
+    
+</div>
