@@ -46,7 +46,7 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
             e.preventDefault();
             e.stopPropagation();
             console.log(this.page_view);
-            this.page_view.toggle_login_dialog();
+            this.page_view.toggle_login_dialog({});
             return false;
         }
     },
@@ -55,7 +55,9 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         if (!NEWSBLUR.Globals.is_authenticated) {
             e.preventDefault();
             e.stopPropagation();
-            this.page_view.login_view.toggle_login_dialog();
+            this.page_view.login_view.toggle_login_dialog({
+                open: true
+            });
             return false;
         }
     },

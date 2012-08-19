@@ -18,8 +18,9 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         var $login_username = this.$('input[name=login_username]');
         var $login_password = this.$('input[name=login_password]');
         
-        if (options.close ||
-            ($popover.hasClass('NC-active'))) {
+        if (options.open != true &&
+            (options.close ||
+            ($popover.hasClass('NC-active')))) {
             // Close
             $popover.animate({
                 'opacity': 0

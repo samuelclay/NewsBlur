@@ -35,7 +35,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     initialize_stories: function($stories) {
         var self = this;
         $stories = $stories || this.$el;
-        $('.NB-story', $stories).each(function() {
+        $('.NB-story-wrapper', $stories).each(function() {
             var $story = $(this);
             var guid = $story.data('guid');
             if (!self.stories[guid]) {
