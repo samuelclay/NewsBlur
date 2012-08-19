@@ -63,13 +63,15 @@
                     <div class="NB-story-content-expander-pages"></div>
                 </div>
             </div>
+            
+            <div class="NB-story-comments-container">
+                {% if story.comment_count or not story.shared_by_user %}
+                    {% render_story_comments story %}
+                {% endif %}
+            </div>
         </div>
         
-        <div class="NB-story-comments-container">
-            {% if story.comment_count or not story.shared_by_user %}
-                {% render_story_comments story %}
-            {% endif %}
-        </div>
+
     </div>
     </div><!-- end NB-story-wrapper -->
     

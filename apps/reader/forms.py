@@ -53,7 +53,7 @@ class LoginForm(forms.Form):
             if not self.user_cache.is_active:
                 raise forms.ValidationError(_("This account is inactive."))
         elif username and not user:
-            raise forms.ValidationError(_("That username is not registered. Create an account with it instead."))
+            raise forms.ValidationError(_("That username is not registered. Please try again."))
             
         return self.cleaned_data
 

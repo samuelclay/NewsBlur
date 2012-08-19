@@ -9,6 +9,7 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
     initialize: function() {
         this.comment_views = [];
         this.story_view = this.options.story_view;
+        this.page_view = this.options.page_view;
         
         if (NEWSBLUR.Globals.is_authenticated) {
             this.attach_comments();
@@ -44,10 +45,8 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         if (!NEWSBLUR.Globals.is_authenticated) {
             e.preventDefault();
             e.stopPropagation();
-            this.story_view.login_view.toggle_login_dialog({
-                resize_open: true,
-                scroll: true
-            });
+            console.log(this.page_view);
+            this.page_view.toggle_login_dialog();
             return false;
         }
     },
@@ -56,11 +55,7 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         if (!NEWSBLUR.Globals.is_authenticated) {
             e.preventDefault();
             e.stopPropagation();
-            this.story_view.expand_story({instant: true});
-            this.story_view.login_view.toggle_login_dialog({
-                resize_open: true,
-                scroll: true
-            });
+            this.page_view.login_view.toggle_login_dialog();
             return false;
         }
     },

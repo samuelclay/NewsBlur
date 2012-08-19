@@ -24,25 +24,25 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         NEWSBLUR.assets = new NEWSBLUR.SocialPageAssets();
         NEWSBLUR.router = new NEWSBLUR.Router;
         Backbone.history.start({pushState: true});
-        
-        
+
         this.login_view = new NEWSBLUR.Views.SocialPageLoginSignupView({
             el: this.el
         });
-        
-        
+
         this.initialize_stories();
     },
     
     initialize_stories: function($stories) {
         var self = this;
         $stories = $stories || this.$el;
-        
         $('.NB-story', $stories).each(function() {
             var $story = $(this);
             var guid = $story.data('guid');
             if (!self.stories[guid]) {
-                var story_view = new NEWSBLUR.Views.SocialPageStory({el: $(this)});
+                var story_view = new NEWSBLUR.Views.SocialPageStory({
+                    el: $(this),
+                    page_view: self
+                });
                 self.stories[story_view.story_guid] = story_view;
             }
         });

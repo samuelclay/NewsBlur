@@ -160,7 +160,7 @@ blockquote {
 }
 
 .NC-header {
-    background: image-url('header_background.png') repeat 0 0;
+    background: image-url('header_background_transparent.png') repeat 0 0;
     height: 72px;
     @include single-box-shadow(#A7A7A7, 0px, 0px, 10px, false, false);
     position: fixed;
@@ -168,8 +168,7 @@ blockquote {
     top: 0;
     left: 0;
     z-index: 10;
-    opacity: .9;
-    
+
     .NC-header-inner {
         width: $page-width;
         margin: 0 auto;
@@ -243,6 +242,16 @@ blockquote {
         margin-bottom: 15px;
         font-size: $small-font-size;
         font-weight: normal;
+    }
+    
+    .NB-error {
+        font-size: $smallest-font-size;
+        color: #6A1000;
+        padding: 15px 0 0;
+        font-weight: bold;
+        line-height: 140%;
+        text-align: center;
+        margin: 0 10px;
     }
 }    
 
@@ -511,7 +520,7 @@ body.NC-hide-comments .NB-story-comments-container {
     }
     
     .NB-story-comment-input {
-        width: 376px;
+        width: 431px;
         height: 16px;
         font-size: 12px;
         padding: 6px 4px;

@@ -11,6 +11,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     },
 
     toggle_login_dialog: function(options) {
+        console.log('open');
         options = options || {};
         var $popover = this.$('.NC-login-popover');
         var $other_popover = this.$('.NC-request-popover');
@@ -59,9 +60,9 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                  .bind('keydown.login', 'meta+return', login)
                  .bind('keydown.login', 'return', login);
                  
-            _.defer(_.bind(function() {
-                $(document).bind('click.loginView', _.bind(this.hide_popovers, this));
-            }, this));
+            // _.defer(_.bind(function() {
+            //     $(document).bind('click.loginView', _.bind(this.hide_popovers, this));
+            // }, this));
         }
     },
     
@@ -111,9 +112,9 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                 .bind('keydown.invite', 'meta+return', request_invite)
                 .bind('keydown.invite', 'return', request_invite);
             
-            _.defer(_.bind(function() {
-                $(document).bind('click.loginView', _.bind(this.hide_popovers, this));
-            }, this));
+            // _.defer(_.bind(function() {
+            //     $(document).bind('click.loginView', _.bind(this.hide_popovers, this));
+            // }, this));
         }
     },
     
@@ -162,9 +163,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         this.clean();
         
         var error = _.first(_.values(data.errors))[0];
-        this.$('.NB-sideoption-login').append($.make('div', { className: 'NB-error' }, error));
-        
-        this.toggle_login_dialog({resize_open: true});
+        this.$('.NC-login-popover .NC-popover-inner').append($.make('div', { className: 'NB-error' }, error));
     },
      
     logout: function() {
