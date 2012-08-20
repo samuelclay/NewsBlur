@@ -437,12 +437,15 @@ blockquote {
     .NB-feed {
         margin: 2px 0 10px;
         text-transform: capitalize;
+        float: left;
+        white-space: nowrap;
         
         @media screen and ( max-width: 480px)    {
             clear: both;
         }
 
         a {
+            display: inline-block;
             color: $light-text-color;
             font-size: $smallest-font-size;
             
@@ -771,10 +774,6 @@ blockquote {
 .NB-page-controls-next,
 .NB-page-controls-end {
     
-    &.NB-loaded {
-        display: none;
-    }
-    
     background-color: #6eb4e3;
     @include NC-blue-button;
     position: relative;
@@ -796,4 +795,10 @@ blockquote {
 
 .NB-page-controls-end {
     @include NC-default-button;
+}
+
+.tipsy {
+    .tipsy-arrow {
+        display: none;
+    }
 }
