@@ -666,7 +666,7 @@ blockquote {
   font-size: 14px;
   z-index: 10;
   margin: 0 30px;
-  background: #EAEAEA;
+  background: #f6f6f6;
   border: 1px solid #CCC;
   padding: 0 20px;
   border-top: 0;
@@ -693,30 +693,30 @@ blockquote {
   height: 24px;
 }
 /* line 562, ../sass/screen.scss */
+.NB-story-comments-container .NB-story-comment:last-child {
+  border: 0;
+}
+/* line 566, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment {
   padding: 15px 0 18px 44px;
   border-bottom: 1px solid #bdbdbd;
   position: relative;
   min-height: 32px;
 }
-/* line 568, ../sass/screen.scss */
-.NB-story-comments-container .NB-story-comment:last-child {
-  border: 0;
-}
-/* line 572, ../sass/screen.scss */
+/* line 576, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-username {
   float: left;
   font-size: 12px;
   font-weight: bold;
 }
-/* line 578, ../sass/screen.scss */
+/* line 582, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
   float: right;
   font-size: 12px;
   color: gray;
   text-shadow: 0px 1px 1px white;
 }
-/* line 585, ../sass/screen.scss */
+/* line 589, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-location {
   float: left;
   font-size: 12px;
@@ -724,18 +724,18 @@ blockquote {
   text-shadow: 0px 1px 1px white;
   margin-left: 15px;
 }
-/* line 594, ../sass/screen.scss */
+/* line 598, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reply-button,
 .NB-story-comments-container .NB-story-comment .NB-story-comment-edit-button {
   display: none;
 }
-/* line 598, ../sass/screen.scss */
+/* line 602, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 604, ../sass/screen.scss */
+/* line 608, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
   top: 15px;
   left: 12px;
@@ -743,7 +743,7 @@ blockquote {
   width: 20px;
   height: 20px;
 }
-/* line 613, ../sass/screen.scss */
+/* line 617, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-reply {
   margin-top: 15px;
   padding: 15px 0 0px 44px;
@@ -751,13 +751,13 @@ blockquote {
   position: relative;
   min-height: 32px;
 }
-/* line 620, ../sass/screen.scss */
+/* line 624, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-reply .NB-story-comment-reply-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 627, ../sass/screen.scss */
+/* line 631, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-input {
   width: 371px;
   height: 16px;
@@ -766,7 +766,7 @@ blockquote {
   margin-top: 1px;
   border: 1px solid #bdbdbd;
 }
-/* line 637, ../sass/screen.scss */
+/* line 641, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save {
   position: absolute;
   top: 16px;
@@ -817,11 +817,11 @@ blockquote {
   text-shadow: 0px -1px 1px white;
   color: #333333;
 }
-/* line 645, ../sass/screen.scss */
+/* line 649, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-delete {
   display: none;
 }
-/* line 650, ../sass/screen.scss */
+/* line 654, ../sass/screen.scss */
 .NB-story-comments-container .NB-story-comments-public-header-wrapper {
   color: gray;
   font-size: 12px;
@@ -829,7 +829,7 @@ blockquote {
   padding: 3px 0;
 }
 
-/* line 659, ../sass/screen.scss */
+/* line 663, ../sass/screen.scss */
 .NB-page-controls-next,
 .NB-page-controls-end {
   background-color: #6eb4e3;
@@ -863,7 +863,7 @@ blockquote {
   -o-transition: all .12s ease-out;
   -ms-transition: all .12s ease-out;
 }
-/* line 661, ../sass/screen.scss */
+/* line 665, ../sass/screen.scss */
 .NB-page-controls-next.NB-loaded,
 .NB-page-controls-end.NB-loaded {
   display: none;
@@ -889,7 +889,7 @@ blockquote {
   -moz-box-shadow: inset 0px 0px 10px #1f74b8;
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
-/* line 675, ../sass/screen.scss */
+/* line 679, ../sass/screen.scss */
 .NB-page-controls-next .NB-page-controls-text,
 .NB-page-controls-end .NB-page-controls-text {
   position: absolute;
@@ -899,7 +899,7 @@ blockquote {
   bottom: 20px;
 }
 
-/* line 684, ../sass/screen.scss */
+/* line 688, ../sass/screen.scss */
 .NB-page-controls-end {
   border: 1px solid #bdbdbd;
   -webkit-border-radius: 4px 4px;

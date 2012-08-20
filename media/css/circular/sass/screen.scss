@@ -535,7 +535,7 @@ blockquote {
     font-size: $small-font-size;
     z-index: 10;
     margin: 0 30px;
-    background: #EAEAEA;
+    background: #f6f6f6;
     border: 1px solid #CCC;
     padding: 0 20px;
     border-top: 0;
@@ -559,6 +559,10 @@ blockquote {
         height: 24px;
     }
 
+    .NB-story-comment:last-child {
+        border: 0; 
+    }
+    
     .NB-story-comment {
         padding: 15px 0 18px 44px;
         border-bottom: 1px solid $border-color;
@@ -566,7 +570,7 @@ blockquote {
         min-height: 32px;
         
         &:last-child {
-            border: 0;
+
         }
 
         .NB-story-comment-username {
