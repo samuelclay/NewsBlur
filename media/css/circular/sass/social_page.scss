@@ -402,6 +402,10 @@ blockquote {
         padding: 25px 25px 15px;
         overflow: hidden;
         position: relative; /* contains all children */
+        
+        @media screen and ( max-width: 480px) {
+            padding: 12px 12px 15px;
+        }
     }
     
     .NB-story-title {
@@ -567,17 +571,20 @@ blockquote {
         vertical-align: top;
         margin-top: 3px;
     }
+    
     .NB-story-share-profiles,
     .NB-story-share-profiles-shares-friends,
     .NB-story-share-profiles-shares-public,
     .NB-story-share-profiles-comments-friends,
     .NB-story-share-profiles-comments-public {
-        display: inline-block;
+        display: inline;
     }
+    
     .NB-story-share-profiles-shares-public,
     .NB-story-share-profiles-comments-public {
         opacity: .5;
     }
+    
     .NB-user-avatar {
         display: inline-block;
         margin: 2px 1px 0 2px;
@@ -625,6 +632,12 @@ blockquote {
         left: 0;
          @include border-radius(3px, 3px);
          /* @include single-box-shadow; gets in the way of transparent PNGs */
+         
+        @media screen and ( max-width: 480px)    {
+            height: 24px;
+            width: 24px;
+            top: 8px;
+        }
     }
     
     
@@ -634,6 +647,12 @@ blockquote {
         z-index: 2;
         width: 24px;
         height: 24px;
+        
+        @media screen and ( max-width: 480px)    {
+            height: 24px;
+            width: 24px;
+            top: 8px;
+        }
     }
 
     .NB-story-comment {
@@ -642,6 +661,9 @@ blockquote {
         border-top: 1px solid $border-color;
         position: relative;
         min-height: 32px;
+        @media screen and ( max-width: 480px)    {
+            padding: 8px 0 8px 34px;
+        }
         
         .NB-story-comment-username {
             float: left;
@@ -690,6 +712,10 @@ blockquote {
             z-index: 1;
             width: 20px;
             height: 20px;
+            
+            @media screen and ( max-width: 480px)    {
+                display: none;
+            }
         }
     }
     
@@ -699,6 +725,10 @@ blockquote {
         border-top: 1px solid $border-color;
         position: relative;
         min-height: 32px;
+        
+        @media screen and ( max-width: 480px)    {
+            padding: 8px 0 0px 32px
+        }
         
         .NB-story-comment-reply-content {
             padding-top: 4px;
