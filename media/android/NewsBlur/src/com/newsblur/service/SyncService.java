@@ -13,6 +13,7 @@ import android.util.Log;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.OfflineUpdate;
+import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIClient;
 import com.newsblur.network.APIManager;
 
@@ -30,27 +31,31 @@ public class SyncService extends IntentService {
 	public static final String EXTRA_STATUS_RECEIVER = "resultReceiverExtra";
 	public static final String EXTRA_TASK_FEED_ID = "taskFeedId";
 	public static final String EXTRA_TASK_STORY_ID = "taskStoryId";
+	public static final String EXTRA_TASK_STORIES = "stories";
 	public static final String EXTRA_TASK_SOCIALFEED_ID = "userId";
 	public static final String EXTRA_TASK_SOCIALFEED_USERNAME = "username";
 	public static final String EXTRA_TASK_MARK_SOCIAL_JSON = "socialJson";
 	public static final String EXTRA_TASK_PAGE_NUMBER = "page";
-	
+	public static final String EXTRA_TASK_MULTIFEED_IDS = "multi_feedids";
+
 	public final static int STATUS_RUNNING = 0x02;
 	public final static int STATUS_FINISHED = 0x03;
 	public final static int STATUS_ERROR = 0x04;
 	public static final int NOT_RUNNING = 0x01;
-	
+
 	public static final int EXTRA_TASK_FOLDER_UPDATE = 30;
 	public static final int EXTRA_TASK_FEED_UPDATE = 31;
 	public static final int EXTRA_TASK_REFRESH_COUNTS = 32;
 	public static final int EXTRA_TASK_MARK_STORY_READ = 33;
 	public static final int EXTRA_TASK_SOCIALFEED_UPDATE = 34;
 	public static final int EXTRA_TASK_MARK_SOCIALSTORY_READ = 35;
-	
+	public static final int EXTRA_TASK_MULTIFEED_UPDATE = 36;
+	public static final int EXTRA_TASK_MARK_MULTIPLE_STORIES_READ = 37;
+
 	public APIClient apiClient;
 	private APIManager apiManager;
 	public static final String SYNCSERVICE_TASK = "syncservice_task";
-	
+
 	public SyncService() {
 		super(TAG);
 	}
@@ -69,12 +74,12 @@ public class SyncService extends IntentService {
 			if (receiver != null) {
 				receiver.send(STATUS_RUNNING, Bundle.EMPTY);
 			}
-			
+
 			switch (intent.getIntExtra(SYNCSERVICE_TASK , -1)) {
 			case EXTRA_TASK_FOLDER_UPDATE:
 				apiManager.getFolderFeedMapping();
 				break;
-				
+
 				// For the moment, we only retry offline updates when we refresh counts. We also assume here that every update is to mark a story as read.
 			case EXTRA_TASK_REFRESH_COUNTS:
 				Cursor cursor = getContentResolver().query(FeedProvider.OFFLINE_URI, null, null, null, null);
@@ -88,7 +93,7 @@ public class SyncService extends IntentService {
 				}
 				apiManager.refreshFeedCounts();
 				break;	
-				
+
 			case EXTRA_TASK_MARK_STORY_READ:
 				final String feedId = intent.getStringExtra(EXTRA_TASK_FEED_ID);
 				final ArrayList<String> storyIds = intent.getStringArrayListExtra(EXTRA_TASK_STORY_ID);
@@ -106,6 +111,22 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
+			case EXTRA_TASK_MARK_MULTIPLE_STORIES_READ:
+				final ValueMultimap stories = (ValueMultimap) intent.getSerializableExtra(EXTRA_TASK_STORIES);
+				if (!apiManager.markMultipleStoriesAsRead(stories)) {
+					for (String key : stories.getKeys()) {
+						for (String value : stories.getValues(key)) {
+							OfflineUpdate update = new OfflineUpdate();
+							update.arguments = new String[] { key, value };
+							update.type = OfflineUpdate.UpdateType.MARK_FEED_AS_READ;
+							getContentResolver().insert(FeedProvider.OFFLINE_URI, update.getContentValues());
+						}
+					}
+				} else {
+					Log.e(TAG, "No feed/stories to mark as read included in SyncRequest");
+					receiver.send(STATUS_ERROR, Bundle.EMPTY);
+				}
+				break;	
 			case EXTRA_TASK_MARK_SOCIALSTORY_READ:
 				final String markSocialJson = intent.getStringExtra(EXTRA_TASK_MARK_SOCIAL_JSON);
 				if (!TextUtils.isEmpty(markSocialJson)) {
@@ -123,6 +144,14 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
+			case EXTRA_TASK_MULTIFEED_UPDATE:
+				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
+					apiManager.getStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
+				} else {
+					Log.e(TAG, "No feed ids to refresh included in SyncRequest");
+					receiver.send(STATUS_ERROR, Bundle.EMPTY);
+				}
+				break;	
 			case EXTRA_TASK_SOCIALFEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME))) {
 					apiManager.getStoriesForSocialFeed(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID), intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
@@ -144,7 +173,7 @@ public class SyncService extends IntentService {
 				receiver.send(STATUS_ERROR, bundle);
 			}
 		}
-	
+
 		if (receiver != null) {
 			receiver.send(STATUS_FINISHED, Bundle.EMPTY);
 		} else {

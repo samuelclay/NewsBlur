@@ -3,14 +3,14 @@
     
         
     <item android:id="@+id/menu_reading_sharenewsblur"
-          android:icon="@drawable/save"
+          android:icon="@drawable/newsblur_share"
           android:title="@string/menu_sharenewsblur"
           android:showAsAction="ifRoom" />
     
     <item android:id="@+id/menu_reading_original"
           android:icon="@drawable/website"
           android:title="@string/menu_original"
-          android:showAsAction="ifRoom" />
+          android:showAsAction="never" />
         
     <item android:id="@+id/menu_shared"
           android:icon="@drawable/share"

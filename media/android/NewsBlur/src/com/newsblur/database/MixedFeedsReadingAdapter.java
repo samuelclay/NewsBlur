@@ -9,12 +9,12 @@ import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
 import com.newsblur.fragment.ReadingItemFragment;
 
-public class SocialFeedReadingAdapter extends ReadingAdapter {
+public class MixedFeedsReadingAdapter extends ReadingAdapter {
 
 	private String TAG = "FeedReadingAdapter";
 	private LoadingFragment loadingFragment; 
 
-	public SocialFeedReadingAdapter(final FragmentManager fragmentManager, final Cursor cursor) {
+	public MixedFeedsReadingAdapter(final FragmentManager fragmentManager, final Cursor cursor) {
 		super(fragmentManager, cursor);
 	}
 

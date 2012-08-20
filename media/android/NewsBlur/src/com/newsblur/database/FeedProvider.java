@@ -25,6 +25,7 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri MODIFY_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
 	public static final Uri MODIFY_SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
+	public static final Uri MULTIFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feeds/");
 	public static final Uri SOCIALFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/socialfeed/");
 	public static final Uri STORY_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/story/");
 	public static final Uri COMMENTS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/comments/");
@@ -48,6 +49,7 @@ public class FeedProvider extends ContentProvider {
 	private static final int DECREMENT_SOCIALFEED_COUNT = 13;
 	private static final int INDIVIDUAL_SOCIAL_FEED = 14;
 	private static final int REPLIES = 15;
+	private static final int MULTIFEED_STORIES = 16;
 	
 	
 	private BlurDatabase databaseHelper;
@@ -65,6 +67,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/socialfeed/#/", SOCIALFEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feed/#/", FEED_STORIES);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feeds/", MULTIFEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/story/*/", INDIVIDUAL_STORY);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/comments/", STORY_COMMENTS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/replies/", REPLIES);
@@ -199,7 +202,7 @@ public class FeedProvider extends ContentProvider {
 		final SQLiteDatabase db = databaseHelper.getReadableDatabase();
 		switch (uriMatcher.match(uri)) {
 
-		// Query for all feeds (by default only return those that have unread items in them)
+			// Query for all feeds (by default only return those that have unread items in them)
 		case ALL_FEEDS:
 			return db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
 					" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
@@ -222,6 +225,23 @@ public class FeedProvider extends ContentProvider {
 			selectionArgs = new String[] { uri.getLastPathSegment() };
 			return db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, DatabaseConstants.STORY_DATE + " DESC");
 
+			// Querying for a stories from a selection of feeds
+		case MULTIFEED_STORIES:
+			if (!TextUtils.isEmpty(selection)) {
+				selection = selection + " AND " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( " + TextUtils.join(",", selectionArgs) + ")";
+			} else {
+				selection = DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " IN ( " + TextUtils.join(",", selectionArgs) + ")";
+			}
+			String userQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
+			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
+			DatabaseConstants.FEED_FAVICON_FADE +  
+			" FROM " + DatabaseConstants.STORY_TABLE +
+			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
+			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + 
+			" WHERE " + selection + " ORDER BY " + DatabaseConstants.STORY_DATE + " DESC";
+			
+			return db.rawQuery(userQuery, null);
+			
 			// Querying for a stories from a feed
 		case STORY_COMMENTS:
 			selection = DatabaseConstants.COMMENT_STORYID + " = ?";
@@ -252,7 +272,8 @@ public class FeedProvider extends ContentProvider {
 		case SPECIFIC_FEED_FOLDER_MAP:
 			String[] folderArguments = new String[] { uri.getLastPathSegment() };
 
-			String query = "SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
+			String query = "SELECT " + 
+			TextUtils.join(",", (projection == null ? DatabaseConstants.FEED_COLUMNS : projection)) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
 			" WHERE " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = ? " +
@@ -292,7 +313,7 @@ public class FeedProvider extends ContentProvider {
 		case SOCIALFEED_STORIES:
 			String[] userArgument = new String[] { uri.getLastPathSegment() };
 
-			String userQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
+			String socialQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
 			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
 			DatabaseConstants.FEED_FAVICON_FADE +  
 			" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + 
@@ -303,7 +324,7 @@ public class FeedProvider extends ContentProvider {
 			" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ?";
 			
 			StringBuilder storyBuilder = new StringBuilder();
-			storyBuilder.append(userQuery);
+			storyBuilder.append(socialQuery);
 			if (!TextUtils.isEmpty(selection)) {
 				storyBuilder.append("AND ");
 				storyBuilder.append(selection);

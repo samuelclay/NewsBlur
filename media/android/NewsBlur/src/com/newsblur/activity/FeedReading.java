@@ -19,6 +19,7 @@ public class FeedReading extends Reading {
 
 	private Cursor stories;
 	protected Set<String> storiesToMarkAsRead;
+	String feedId;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {

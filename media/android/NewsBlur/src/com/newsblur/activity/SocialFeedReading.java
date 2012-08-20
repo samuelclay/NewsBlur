@@ -10,7 +10,7 @@ import android.os.Bundle;
 
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MarkStoryAsReadIntenallyTask;
-import com.newsblur.database.SocialFeedReadingAdapter;
+import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.network.MarkSocialStoryAsReadTask;
 
@@ -30,7 +30,7 @@ public class SocialFeedReading extends Reading {
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 
-		readingAdapter = new SocialFeedReadingAdapter(getSupportFragmentManager(), stories);
+		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), stories);
 
 		setupPager();
 

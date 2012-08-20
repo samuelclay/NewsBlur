@@ -28,10 +28,11 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	public static final String EXTRA_POSITION = "feed_position";
 	public static final String EXTRA_USERID = "user_id";
 	public static final String EXTRA_USERNAME = "username";
+	public static final String EXTRA_FOLDERNAME = "foldername";
+	public static final String EXTRA_FEED_IDS = "feed_ids";
 
 	protected int passedPosition;
 	protected int currentState;
-	protected String feedId;
 	
 	private ViewPager pager;
 	private FragmentManager fragmentManager;
@@ -99,7 +100,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			return true;
 		case R.id.menu_reading_sharenewsblur:
 			if (story != null) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(story.id, story.title, feedId, null);
+				DialogFragment newFragment = ShareDialogFragment.newInstance(story.id, story.title, story.feedId, null);
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 			return true;

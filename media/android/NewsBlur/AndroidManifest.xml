@@ -40,10 +40,16 @@
             android:name=".activity.FeedItemsList" />
         
         <activity
+            android:name=".activity.FolderItemsList" />
+        
+        <activity
             android:name=".activity.SocialFeedItemsList" />
         
         <activity
             android:name=".activity.FeedReading"/>
+        
+        <activity
+            android:name=".activity.FolderReading"/>
         
         <activity
             android:name=".activity.SocialFeedReading"/>

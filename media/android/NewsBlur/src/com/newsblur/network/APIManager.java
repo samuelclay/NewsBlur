@@ -148,15 +148,28 @@ public class APIManager {
 			Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 			for (Story story : storiesResponse.stories) {
 				contentResolver.insert(storyUri, story.getValues());
-				for (Comment comment : story.publicComments) {
-					StringBuilder builder = new StringBuilder();
-					builder.append(story.id);
-					builder.append(story.feedId);
-					builder.append(comment.userId);
-					comment.storyId = story.id;
-					comment.id = (builder.toString());
-					contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
-				}
+				insertComments(story);
+			}
+			return storiesResponse;
+		} else {
+			return null;
+		}
+	}
+	
+	public StoriesResponse getStoriesForFeeds(String[] feedIds, String pageNumber) {
+		final APIClient client = new APIClient(context);
+		final ValueMultimap values = new ValueMultimap();
+		for (String feedId : feedIds) {
+			values.put(APIConstants.PARAMETER_FEEDS, feedId);
+		}
+		final APIResponse response = client.post(APIConstants.URL_RIVER_STORIES, values);
+		
+		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			for (Story story : storiesResponse.stories) {
+				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
+				contentResolver.insert(storyUri, story.getValues());
+				insertComments(story);
 			}
 			return storiesResponse;
 		} else {
@@ -180,35 +193,7 @@ public class APIManager {
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
 
-				for (Comment comment : story.publicComments) {
-					StringBuilder builder = new StringBuilder();
-					builder.append(story.id);
-					builder.append(story.feedId);
-					builder.append(comment.userId);
-					comment.storyId = story.id;
-					comment.id = (builder.toString());
-					contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
-					
-					for (Reply reply : comment.replies) {
-						reply.commentId = comment.id;
-						contentResolver.insert(FeedProvider.REPLIES_URI, reply.getValues());
-					}
-				}
-				
-				for (Comment comment : story.friendsComments) {
-					StringBuilder builder = new StringBuilder();
-					builder.append(story.id);
-					builder.append(story.feedId);
-					builder.append(comment.userId);
-					comment.storyId = story.id;
-					comment.id = (builder.toString());
-					contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
-					
-					for (Reply reply : comment.replies) {
-						reply.commentId = comment.id;
-						contentResolver.insert(FeedProvider.REPLIES_URI, reply.getValues());
-					}
-				}
+				insertComments(story);
 				
 				Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storySocialUri, story.getValues());
@@ -221,6 +206,38 @@ public class APIManager {
 			return socialFeedResponse;
 		} else {
 			return null;
+		}
+	}
+
+	private void insertComments(Story story) {
+		for (Comment comment : story.publicComments) {
+			StringBuilder builder = new StringBuilder();
+			builder.append(story.id);
+			builder.append(story.feedId);
+			builder.append(comment.userId);
+			comment.storyId = story.id;
+			comment.id = (builder.toString());
+			contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
+			
+			for (Reply reply : comment.replies) {
+				reply.commentId = comment.id;
+				contentResolver.insert(FeedProvider.REPLIES_URI, reply.getValues());
+			}
+		}
+		
+		for (Comment comment : story.friendsComments) {
+			StringBuilder builder = new StringBuilder();
+			builder.append(story.id);
+			builder.append(story.feedId);
+			builder.append(comment.userId);
+			comment.storyId = story.id;
+			comment.id = (builder.toString());
+			contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
+			
+			for (Reply reply : comment.replies) {
+				reply.commentId = comment.id;
+				contentResolver.insert(FeedProvider.REPLIES_URI, reply.getValues());
+			}
 		}
 	}
 
@@ -359,6 +376,16 @@ public class APIManager {
 		values.put(APIConstants.PARAMETER_REPLY_TEXT, reply);
 		final APIResponse response = client.post(APIConstants.URL_REPLY_TO, values);
 		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+	}
+
+	public boolean markMultipleStoriesAsRead(ValueMultimap stories) {
+		final APIClient client = new APIClient(context);
+		final APIResponse response = client.post(APIConstants.URL_MARK_FEED_STORIES_AS_READ, stories);
+		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
