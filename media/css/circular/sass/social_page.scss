@@ -459,6 +459,7 @@ blockquote {
 .NB-story-content-wrapper {
     max-height: $max-story-height;
     position: relative;
+    clear: both;
 
     &.NB-story-content-wrapper-height-fudged {
         max-height: none;
@@ -571,7 +572,7 @@ blockquote {
     .NB-story-share-profiles-shares-public,
     .NB-story-share-profiles-comments-friends,
     .NB-story-share-profiles-comments-public {
-        float: left;
+        display: inline-block;
     }
     .NB-story-share-profiles-shares-public,
     .NB-story-share-profiles-comments-public {

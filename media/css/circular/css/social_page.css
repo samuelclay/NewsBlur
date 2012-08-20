@@ -594,12 +594,13 @@ blockquote {
 .NB-story-content-wrapper {
   max-height: 300px;
   position: relative;
+  clear: both;
 }
-/* line 463, ../sass/social_page.scss */
+/* line 464, ../sass/social_page.scss */
 .NB-story-content-wrapper.NB-story-content-wrapper-height-fudged {
   max-height: none;
 }
-/* line 467, ../sass/social_page.scss */
+/* line 468, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander {
   display: none;
   position: absolute;
@@ -611,20 +612,20 @@ blockquote {
   font-size: 12px;
   background: #fff;
 }
-/* line 478, ../sass/social_page.scss */
+/* line 479, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-inner {
   position: relative;
   padding: 18px 25px 14px 0;
 }
-/* line 483, ../sass/social_page.scss */
+/* line 484, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander:hover {
   color: #306187;
 }
-/* line 486, ../sass/social_page.scss */
+/* line 487, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander:active {
   color: #722125;
 }
-/* line 490, ../sass/social_page.scss */
+/* line 491, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NC-story-cutoff {
   position: absolute;
   top: -14px;
@@ -634,25 +635,25 @@ blockquote {
   z-index: 0;
   background: transparent url('/../../../media/img/circular/module_cutoff.png?1345259189') repeat-x left bottom;
 }
-/* line 501, ../sass/social_page.scss */
+/* line 502, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
   display: inline-block;
 }
-/* line 505, ../sass/social_page.scss */
+/* line 506, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
   line-height: 8px;
   padding: 0 12px;
   font-size: 24px;
 }
 @media screen and (max-width: 480px) {
-  /* line 505, ../sass/social_page.scss */
+  /* line 506, ../sass/social_page.scss */
   .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
     display: none;
   }
 }
 
-/* line 517, ../sass/social_page.scss */
+/* line 518, ../sass/social_page.scss */
 .NB-story-content {
   font-size: 14px;
   line-height: 140%;
@@ -661,33 +662,33 @@ blockquote {
   margin: 10px 0;
 }
 @media screen and (max-width: 480px) {
-  /* line 517, ../sass/social_page.scss */
+  /* line 518, ../sass/social_page.scss */
   .NB-story-content {
     font-size: 12px;
     line-height: 160%;
   }
 }
-/* line 529, ../sass/social_page.scss */
+/* line 530, ../sass/social_page.scss */
 .NB-story-content p {
   margin: 10px 0;
 }
-/* line 533, ../sass/social_page.scss */
+/* line 534, ../sass/social_page.scss */
 .NB-story-content img {
   margin: 10px 0;
   max-width: 100% !important;
   height: auto !important;
 }
-/* line 539, ../sass/social_page.scss */
+/* line 540, ../sass/social_page.scss */
 .NB-story-content ins {
   text-decoration: none;
   color: inherit;
 }
-/* line 544, ../sass/social_page.scss */
+/* line 545, ../sass/social_page.scss */
 .NB-story-content del {
   display: none;
 }
 
-/* line 551, ../sass/social_page.scss */
+/* line 552, ../sass/social_page.scss */
 .NB-story-shares-container {
   text-align: right;
   color: gray;
@@ -696,44 +697,44 @@ blockquote {
   float: right;
 }
 @media screen and (max-width: 480px) {
-  /* line 551, ../sass/social_page.scss */
+  /* line 552, ../sass/social_page.scss */
   .NB-story-shares-container {
     float: none;
     text-align: left;
     font-size: 11px;
   }
 }
-/* line 564, ../sass/social_page.scss */
+/* line 565, ../sass/social_page.scss */
 .NB-story-shares-container .NB-story-share-label {
   display: inline-block;
   vertical-align: top;
   margin-top: 3px;
 }
-/* line 573, ../sass/social_page.scss */
+/* line 574, ../sass/social_page.scss */
 .NB-story-shares-container .NB-story-share-profiles,
 .NB-story-shares-container .NB-story-share-profiles-shares-friends,
 .NB-story-shares-container .NB-story-share-profiles-shares-public,
 .NB-story-shares-container .NB-story-share-profiles-comments-friends,
 .NB-story-shares-container .NB-story-share-profiles-comments-public {
-  float: left;
+  display: inline-block;
 }
-/* line 577, ../sass/social_page.scss */
+/* line 578, ../sass/social_page.scss */
 .NB-story-shares-container .NB-story-share-profiles-shares-public,
 .NB-story-shares-container .NB-story-share-profiles-comments-public {
   opacity: .5;
 }
-/* line 580, ../sass/social_page.scss */
+/* line 581, ../sass/social_page.scss */
 .NB-story-shares-container .NB-user-avatar {
   display: inline-block;
   margin: 2px 1px 0 2px;
 }
 @media screen and (max-width: 480px) {
-  /* line 580, ../sass/social_page.scss */
+  /* line 581, ../sass/social_page.scss */
   .NB-story-shares-container .NB-user-avatar {
     margin: 2px 3px 0 0px;
   }
 }
-/* line 588, ../sass/social_page.scss */
+/* line 589, ../sass/social_page.scss */
 .NB-story-shares-container .NB-user-avatar img {
   -webkit-box-shadow: 0px 0px 1px #bdbdbd;
   -moz-box-shadow: 0px 0px 1px #bdbdbd;
@@ -743,7 +744,7 @@ blockquote {
   display: block;
 }
 
-/* line 599, ../sass/social_page.scss */
+/* line 600, ../sass/social_page.scss */
 .NB-story-comments-container {
   font-size: 14px;
   z-index: 10;
@@ -754,18 +755,18 @@ blockquote {
   border-top: 0;
 }
 @media screen and (max-width: 480px) {
-  /* line 599, ../sass/social_page.scss */
+  /* line 600, ../sass/social_page.scss */
   .NB-story-comments-container {
     margin: 0 10px;
     padding: 0 10px;
     font-size: 11px;
   }
-  /* line 613, ../sass/social_page.scss */
+  /* line 614, ../sass/social_page.scss */
   .NB-story-comments-container .NB-story-comment-edit {
     display: none;
   }
 }
-/* line 619, ../sass/social_page.scss */
+/* line 620, ../sass/social_page.scss */
 .NB-story-comments-container .NB-user-avatar img,
 .NB-story-comments-container img.NB-user-avatar {
   position: absolute;
@@ -778,7 +779,7 @@ blockquote {
   border-radius: 3px / 3px;
   /* @include single-box-shadow; gets in the way of transparent PNGs */
 }
-/* line 630, ../sass/social_page.scss */
+/* line 631, ../sass/social_page.scss */
 .NB-story-comments-container .NB-user-avatar.NB-story-comment-reshare img {
   top: 27px;
   left: 0px;
@@ -786,7 +787,7 @@ blockquote {
   width: 24px;
   height: 24px;
 }
-/* line 638, ../sass/social_page.scss */
+/* line 639, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment {
   margin-top: -1px;
   padding: 15px 0 18px 44px;
@@ -794,13 +795,13 @@ blockquote {
   position: relative;
   min-height: 32px;
 }
-/* line 645, ../sass/social_page.scss */
+/* line 646, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-username {
   float: left;
   font-size: 12px;
   font-weight: bold;
 }
-/* line 651, ../sass/social_page.scss */
+/* line 652, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
   float: right;
   font-size: 12px;
@@ -808,14 +809,14 @@ blockquote {
   text-shadow: 0px 1px 1px white;
 }
 @media screen and (max-width: 480px) {
-  /* line 651, ../sass/social_page.scss */
+  /* line 652, ../sass/social_page.scss */
   .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
     float: left;
     clear: both;
     margin-top: 4px;
   }
 }
-/* line 663, ../sass/social_page.scss */
+/* line 664, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-location {
   float: left;
   font-size: 12px;
@@ -824,23 +825,23 @@ blockquote {
   margin-left: 15px;
 }
 @media screen and (max-width: 480px) {
-  /* line 663, ../sass/social_page.scss */
+  /* line 664, ../sass/social_page.scss */
   .NB-story-comments-container .NB-story-comment .NB-story-comment-location {
     display: none;
   }
 }
-/* line 676, ../sass/social_page.scss */
+/* line 677, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reply-button,
 .NB-story-comments-container .NB-story-comment .NB-story-comment-edit-button {
   display: none;
 }
-/* line 680, ../sass/social_page.scss */
+/* line 681, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 686, ../sass/social_page.scss */
+/* line 687, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
   top: 15px;
   left: 12px;
@@ -848,7 +849,7 @@ blockquote {
   width: 20px;
   height: 20px;
 }
-/* line 695, ../sass/social_page.scss */
+/* line 696, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply {
   margin-top: 15px;
   padding: 15px 0 0px 44px;
@@ -856,13 +857,13 @@ blockquote {
   position: relative;
   min-height: 32px;
 }
-/* line 702, ../sass/social_page.scss */
+/* line 703, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply .NB-story-comment-reply-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 709, ../sass/social_page.scss */
+/* line 710, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-input {
   width: 371px;
   height: 16px;
@@ -871,7 +872,7 @@ blockquote {
   margin-top: 1px;
   border: 1px solid #bdbdbd;
 }
-/* line 719, ../sass/social_page.scss */
+/* line 720, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save {
   position: absolute;
   top: 16px;
@@ -922,11 +923,11 @@ blockquote {
   text-shadow: 0px -1px 1px white;
   color: #333333;
 }
-/* line 727, ../sass/social_page.scss */
+/* line 728, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-delete {
   display: none;
 }
-/* line 732, ../sass/social_page.scss */
+/* line 733, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comments-public-header-wrapper {
   color: gray;
   font-size: 12px;
@@ -934,7 +935,7 @@ blockquote {
   padding: 3px 0;
 }
 
-/* line 741, ../sass/social_page.scss */
+/* line 742, ../sass/social_page.scss */
 .NB-page-controls-next,
 .NB-page-controls-end {
   background-color: #6eb4e3;
@@ -968,7 +969,7 @@ blockquote {
   -o-transition: all .12s ease-out;
   -ms-transition: all .12s ease-out;
 }
-/* line 743, ../sass/social_page.scss */
+/* line 744, ../sass/social_page.scss */
 .NB-page-controls-next.NB-loaded,
 .NB-page-controls-end.NB-loaded {
   display: none;
@@ -994,7 +995,7 @@ blockquote {
   -moz-box-shadow: inset 0px 0px 10px #1f74b8;
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
-/* line 757, ../sass/social_page.scss */
+/* line 758, ../sass/social_page.scss */
 .NB-page-controls-next .NB-page-controls-text,
 .NB-page-controls-end .NB-page-controls-text {
   position: absolute;
@@ -1004,7 +1005,7 @@ blockquote {
   bottom: 20px;
 }
 
-/* line 766, ../sass/social_page.scss */
+/* line 767, ../sass/social_page.scss */
 .NB-page-controls-end {
   border: 1px solid #bdbdbd;
   -webkit-border-radius: 4px 4px;
