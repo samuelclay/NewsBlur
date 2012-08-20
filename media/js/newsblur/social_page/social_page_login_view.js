@@ -1,10 +1,11 @@
 NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     events: {
-        "click .NC-login-toggle-button"         : "toggle_login_dialog",
-        "click .NC-request-toggle-button"       : "toggle_request_dialog",
-        "click .NC-logout-button"               : "logout",
-        "click .NC-login-button"                : "login"
+        "click .NC-login-toggle-button"     : "toggle_login_dialog",
+        "click .NC-request-toggle-button"   : "toggle_request_dialog",
+        "click .NC-logout-button"           : "logout",
+        "click .NC-login-button"            : "login",
+        "click .NC-request-button"          : "request_invite"
     },
 
     initialize: function() {

@@ -30,7 +30,66 @@ from utils.story_functions import truncate_chars, strip_tags, linkify
 from utils import json_functions as json
 
 RECOMMENDATIONS_LIMIT = 5
+
+class MRequestInvite(mongo.Document):
+    email            = mongo.EmailField()
+    request_date     = mongo.DateTimeField(default=datetime.datetime.now)
+    invite_sent      = mongo.BooleanField(default=False)
+    invite_sent_date = mongo.DateTimeField()
+
+    meta = {
+        'collection': 'social_invites',
+        'allow_inheritance': False,
+    }
     
+    def __unicode__(self):
+        return "%s%s" % (self.username, '*' if self.email_sent else '')
+    
+    @classmethod
+    def blast(cls):
+        invites = cls.objects.filter(email_sent=None)
+        print ' ---> Found %s invites...' % invites.count()
+        
+        for invite in invites:
+            try:
+                invite.send_email()
+            except:
+                print ' ***> Could not send invite to: %s. Deleting.' % invite.username
+                invite.delete()
+        
+    def send_email(self):
+        user = User.objects.filter(username__iexact=self.username)
+        if not user:
+            user = User.objects.filter(email__iexact=self.username)
+        if user:
+            user = user[0]
+            email = user.email or self.username
+        else:
+            user = {
+                'username': self.username,
+                'profile': {
+                    'autologin_url': '/',
+                }
+            }
+            email = self.username
+        params = {
+            'user': user,
+        }
+        text    = render_to_string('mail/email_social_beta.txt', params)
+        html    = render_to_string('mail/email_social_beta.xhtml', params)
+        subject = "Psst, you're in..."
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['<%s>' % (email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+        
+        self.email_sent = True
+        self.save()
+                
+        logging.debug(" ---> ~BB~FM~SBSending email for social beta: %s" % self.username)
+
+
 class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField(unique=True)
     username             = mongo.StringField(max_length=30, unique=True)

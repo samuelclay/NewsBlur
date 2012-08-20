@@ -12,7 +12,7 @@ from django.conf import settings
 from django.template import RequestContext
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
-from apps.social.models import MInteraction, MActivity
+from apps.social.models import MInteraction, MActivity, MRequestInvite
 from apps.social.tasks import PostToService, EmailCommentReplies, EmailStoryReshares
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -30,7 +30,15 @@ from utils.story_functions import strip_tags
 from utils import jennyholzer
 from vendor.timezones.utilities import localtime_for_timezone
 
-    
+@json.json_view
+def request_invite(request):
+    if not request.POST.get('email'):
+        return {}
+        
+    MRequestInvite.objects.create(email=request.POST['email'])
+    logging.user(request, " ---> ~BG~FB~SB~SKInvite requested: %s" % request.POST['email'])
+    return {}
+
 @json.json_view
 def load_social_stories(request, user_id, username=None):
     start          = time.time()
