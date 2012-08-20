@@ -153,7 +153,7 @@ def check_share_on_site(request, token):
         except Profile.DoesNotExist:
             code = -1
             
-    logging.user(profile.user, "~BY~FRChecking share from site: ~SB%s" % (story_url))
+    logging.user(profile.user, "~BM~FCChecking share from site: ~SB%s" % (story_url))
     
     return HttpResponse(callback + '(' + json.encode({
         'code':     code,
@@ -176,7 +176,7 @@ def share_story(request, token):
         except Profile.DoesNotExist:
             code = -1
             
-    logging.user(profile.user, "~BY~FRSharing story from site: ~SB%s: %s" % (story_url, comments))
+    logging.user(profile.user, "~BM~FYSharing story from site: ~SB%s: %s" % (story_url, comments))
     
     return HttpResponse(callback + '(' + json.encode({
         'code':     code,

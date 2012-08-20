@@ -150,19 +150,25 @@
   float: left;
 }
 .NB-bookmarklet .NB-folders {
-  width: 200px;
+  width: 150px;
 }
 .NB-bookmarklet .NB-modal-submit {
   margin: 24px 0 8px;
   padding: 0 0 6px;
+  clear: both;
+  overflow: hidden;
 }
 .NB-bookmarklet .NB-modal-submit-button {
   clear: both;
   padding: 0 16px;
   line-height: 24px;
-  width: 200px;
+  width: 160px;
   text-align: center;
   text-shadow: none;
+}
+.NB-bookmarklet .NB-modal-submit-button:hover,
+.NB-bookmarklet .NB-modal-submit-button:active {
+    font-weight: normal;
 }
 .NB-bookmarklet .NB-modal-submit-button img {
   margin: 5px 6px 0 0;

@@ -76,7 +76,7 @@
                     'Signed in as ',
                     $.make('b', { style: 'color: #505050' }, this.username)
                 ]),
-                $.make('div', { className: 'NB-modal-title' }, 'Sharing \"'+this.get_page_title()+'\"'),
+                $.make('div', { className: 'NB-modal-title' }, 'Share this story on NewsBlur'),
                 $.make('div', { className: 'NB-bookmarklet-main'}, [
                     $.make('div', { className: 'NB-bookmarklet-page' }, [
                         $.make('div', { className: 'NB-bookmarklet-page-title' }),
@@ -93,6 +93,9 @@
                     ])
                 ]),
                 $.make('div', { className: 'NB-bookmarklet-side' }, [
+                    $.make('div', { className: 'NB-modal-submit' }, [
+                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, 'Subscribe to this site')
+                    ]),
                     $.make('div', { className: 'NB-bookmarklet-folder-container' }, [
                         $.make('img', { className: 'NB-bookmarklet-folder-add-button', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: 'Add New Folder' }),
                         this.make_folders(),
@@ -100,9 +103,6 @@
                             $.make('img', { className: 'NB-bookmarklet-folder-new-label', src: 'data:image/png;charset=utf-8;base64,{{ new_folder_image }}' }),
                             $.make('input', { type: 'text', name: 'new_folder_name', className: 'NB-bookmarklet-folder-new' })
                         ])
-                    ]),
-                    $.make('div', { className: 'NB-modal-submit' }, [
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, 'Add this site')
                     ])
                 ])
             ]);
