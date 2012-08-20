@@ -7,25 +7,29 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.newsblur.R;
+import com.newsblur.activity.NewsBlurApplication;
+import com.newsblur.util.AppConstants;
+import com.newsblur.util.ImageLoader;
 
 public class SocialFeedItemsAdapter extends SimpleCursorAdapter {
 
 	private Cursor cursor;
-	private Context context;
+	private ImageLoader imageLoader;
 
 	public SocialFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
 		super(context, layout, c, from, to, flags);
-		this.context = context;
+		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.cursor = c;
 	}
-	
+
 	@Override
 	public int getCount() {
 		return cursor.getCount();
 	}
-	
+
 	@Override
 	public Cursor swapCursor(Cursor c) {
 		this.cursor = c;
@@ -37,10 +41,13 @@ public class SocialFeedItemsAdapter extends SimpleCursorAdapter {
 		View v = super.getView(position, view, viewGroup);
 		View borderOne = v.findViewById(R.id.row_item_favicon_borderbar_1);
 		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
-		
+
 		cursor.moveToPosition(position);
 		String feedColour = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
 		String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
+
+		String faviconUrl = AppConstants.NEWSBLUR_URL + cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
+		imageLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)));
 
 		if (!TextUtils.equals(feedColour, "#null") && !TextUtils.equals(feedFade, "#null")) {
 			borderOne.setBackgroundColor(Color.parseColor(feedColour));
@@ -49,7 +56,7 @@ public class SocialFeedItemsAdapter extends SimpleCursorAdapter {
 			borderOne.setBackgroundColor(Color.GRAY);
 			borderTwo.setBackgroundColor(Color.LTGRAY);
 		}
-		
+
 		return v;
 	}
 

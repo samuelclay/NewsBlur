@@ -41,7 +41,7 @@ public class SocialItemViewBinder implements ViewBinder {
 			} else {
 				view.setVisibility(View.VISIBLE);
 			}
-		} else	if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
+		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
 			String faviconUrl = AppConstants.NEWSBLUR_URL + cursor.getString(columnIndex);
 			imageLoader.displayImage(faviconUrl, ((ImageView) view));
 			return true;
