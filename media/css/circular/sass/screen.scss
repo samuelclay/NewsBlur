@@ -143,6 +143,7 @@ blockquote {
 .NB-page {
     width: $page-width;
     margin: 10px auto;
+    margin-bottom: 100px;
 }
 
 .NB-header {
@@ -365,6 +366,8 @@ blockquote {
     border-left: 1px solid #fff;
     background: #fff;
     @include single-box-shadow(#c8c8c8, 0px, 0px, 5px, false, false);
+    position: relative;
+    z-index: 1;
     
     .NB-story-inner {
         border-left: 4px solid #fff;
@@ -528,13 +531,14 @@ blockquote {
     }
 }
 
-body.NC-hide-comments .NB-story-comments-container {
-    display: none;
-}
-
 .NB-story-comments-container {
     font-size: $small-font-size;
     z-index: 10;
+    margin: 0 30px;
+    background: #EAEAEA;
+    border: 1px solid #CCC;
+    padding: 0 20px;
+    border-top: 0;
 
     .NB-user-avatar img,
     img.NB-user-avatar {
@@ -557,9 +561,13 @@ body.NC-hide-comments .NB-story-comments-container {
 
     .NB-story-comment {
         padding: 15px 0 18px 44px;
-        border-top: 1px solid $border-color;
+        border-bottom: 1px solid $border-color;
         position: relative;
         min-height: 32px;
+        
+        &:last-child {
+            border: 0;
+        }
 
         .NB-story-comment-username {
             float: left;
@@ -617,19 +625,20 @@ body.NC-hide-comments .NB-story-comments-container {
     }
     
     .NB-story-comment-input {
-        width: 431px;
+        width: 371px;
         height: 16px;
         font-size: 12px;
         padding: 6px 4px;
+        margin-top: 1px;
         border: 1px solid $border-color;
     }
     
     .NB-story-comment-buttons {
         .NB-story-comment-save {
             position: absolute;
-            top: 15px;
+            top: 16px;
             right: 0;
-            width: 120px;
+            width: 140px;
             @include NC-default-button;
         }
         
@@ -646,8 +655,13 @@ body.NC-hide-comments .NB-story-comments-container {
     }
 }
 
-.NB-page-controls-next, 
+.NB-page-controls-next,
 .NB-page-controls-end {
+    
+    &.NB-loaded {
+        display: none;
+    }
+    
     background-color: #6eb4e3;
     @include NC-blue-button;
     position: relative;
@@ -665,4 +679,8 @@ body.NC-hide-comments .NB-story-comments-container {
         margin-bottom: -15px;
         bottom: 20px;
     }
+}
+
+.NB-page-controls-end {
+    @include NC-default-button;
 }
