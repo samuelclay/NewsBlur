@@ -63,60 +63,60 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
 }
 
-/* line 89, ../sass/screen.scss */
+/* line 91, ../sass/social_page.scss */
 body {
   background: #ebedee url('/../../../media/img/circular/background.png?1345246675') repeat 0 0;
   font-family: Helvetica, arial, sans-serif;
   color: #333333;
 }
 
-/* line 95, ../sass/screen.scss */
+/* line 97, ../sass/social_page.scss */
 a {
   color: #333333;
   text-decoration: none;
 }
 
-/* line 100, ../sass/screen.scss */
+/* line 102, ../sass/social_page.scss */
 .NB-hidden {
   display: none;
 }
 
-/* line 104, ../sass/screen.scss */
+/* line 106, ../sass/social_page.scss */
 .NB-left {
   float: left;
 }
 
-/* line 107, ../sass/screen.scss */
+/* line 109, ../sass/social_page.scss */
 .NB-right {
   float: right;
 }
 
-/* line 110, ../sass/screen.scss */
+/* line 112, ../sass/social_page.scss */
 .NB-raquo {
   font-size: 18px;
   vertical-align: baseline;
   line-height: 12px;
 }
 
-/* line 116, ../sass/screen.scss */
+/* line 118, ../sass/social_page.scss */
 .tipsy {
   font-size: 11px;
 }
 
-/* line 119, ../sass/screen.scss */
+/* line 121, ../sass/social_page.scss */
 .tipsy-inner {
   padding: 2px 9px 2px;
 }
 
-/* line 123, ../sass/screen.scss */
+/* line 125, ../sass/social_page.scss */
 blockquote {
   background-color: #F0F0F0;
   border-left: 1px solid #9B9B9B;
   padding: .5em 2em;
-  margin: 0px;
+  margin: 10px;
 }
 
-/* line 129, ../sass/screen.scss */
+/* line 131, ../sass/social_page.scss */
 .NB-spinner {
   width: 16px;
   height: 16px;
@@ -124,37 +124,47 @@ blockquote {
   display: none;
 }
 
-/* line 135, ../sass/screen.scss */
+/* line 137, ../sass/social_page.scss */
 .NB-spinner.NB-active {
   display: block;
 }
 
-/* line 143, ../sass/screen.scss */
+/* line 145, ../sass/social_page.scss */
 .NB-page {
-  width: 700px;
+  max-width: 700px;
+  min-width: 300px;
   margin: 10px auto;
   margin-bottom: 100px;
+  padding: 0 10px;
 }
 
-/* line 149, ../sass/screen.scss */
+/* line 153, ../sass/social_page.scss */
 .NB-header {
   display: none;
 }
 
-/* line 153, ../sass/screen.scss */
+/* line 157, ../sass/social_page.scss */
 .NC-watermark-logo {
   margin: 20px auto;
-  width: 700px;
+  max-width: 700px;
+  min-width: 300px;
   text-align: center;
   opacity: 0.0;
   height: 60px;
 }
-/* line 160, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 157, ../sass/social_page.scss */
+  .NC-watermark-logo {
+    height: 40px;
+    margin: 10px auto;
+  }
+}
+/* line 170, ../sass/social_page.scss */
 .NB-authenticated .NC-watermark-logo {
   opacity: 0.4;
 }
 
-/* line 165, ../sass/screen.scss */
+/* line 175, ../sass/social_page.scss */
 .NC-blue-button {
   border: 1px solid #4388b5;
   -webkit-border-radius: 4px 4px;
@@ -180,7 +190,7 @@ blockquote {
   font-size: 14px;
   font-weight: normal;
 }
-/* line 75, ../sass/screen.scss */
+/* line 77, ../sass/social_page.scss */
 .NC-blue-button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
   background-image: -webkit-linear-gradient(#6bb1e0, #6bb1e0);
@@ -188,7 +198,7 @@ blockquote {
   background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
   background-image: linear-gradient(#6bb1e0, #6bb1e0);
 }
-/* line 79, ../sass/screen.scss */
+/* line 81, ../sass/social_page.scss */
 .NC-blue-button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
   background-image: -webkit-linear-gradient(#4d98d2, #4d98d2);
@@ -200,7 +210,7 @@ blockquote {
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
 
-/* line 170, ../sass/screen.scss */
+/* line 180, ../sass/social_page.scss */
 .NC-header {
   -webkit-box-shadow: 0px 0px 10px #7d7d7d;
   -moz-box-shadow: 0px 0px 10px #7d7d7d;
@@ -210,24 +220,26 @@ blockquote {
   left: 0;
   z-index: 10;
 }
-/* line 177, ../sass/screen.scss */
+/* line 187, ../sass/social_page.scss */
 .NC-header .NC-header-inner {
-  width: 700px;
+  padding: 0 10px;
+  max-width: 700px;
+  min-width: 300px;
   margin: 0 auto;
   position: relative;
 }
 
-/* line 184, ../sass/screen.scss */
+/* line 196, ../sass/social_page.scss */
 .NB-authenticated .NC-header {
   background: #f2f2f2 url('/../../../media/img/circular/header_background_logged_in.png?1345414060') repeat 0 0;
   height: 44px;
   bottom: 0;
 }
-/* line 189, ../sass/screen.scss */
+/* line 201, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul {
   margin: 0 70px;
 }
-/* line 192, ../sass/screen.scss */
+/* line 204, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li {
   height: 44px;
   float: left;
@@ -244,29 +256,29 @@ blockquote {
   text-shadow: 0px 1px 1px white;
   cursor: pointer;
 }
-/* line 207, ../sass/screen.scss */
+/* line 219, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li.NC-active {
   cursor: default;
   background: url('/../../../media/img/circular/header_highlight_border.png?1345415330') no-repeat center bottom;
 }
-/* line 211, ../sass/screen.scss */
+/* line 223, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li.NC-active div.NC-tab-inner {
   color: #62a4d3;
 }
-/* line 217, ../sass/screen.scss */
+/* line 229, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li:hover div.NC-tab-inner {
   color: #62a4d3;
 }
-/* line 222, ../sass/screen.scss */
+/* line 234, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li div.NC-tab-inner {
   display: inline-block;
   line-height: 44px;
 }
-/* line 227, ../sass/screen.scss */
+/* line 239, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li:first-child {
   border-left: 1px solid #cdcdcd;
 }
-/* line 231, ../sass/screen.scss */
+/* line 243, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li.NC-user-tab img {
   height: 16px;
   width: 16px;
@@ -274,52 +286,66 @@ blockquote {
   -moz-border-radius: 3px / 3px;
   border-radius: 3px / 3px;
 }
-/* line 238, ../sass/screen.scss */
+/* line 250, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li img,
 .NB-authenticated .NC-header ul li .NC-icon {
   float: left;
   margin-top: 13px;
   margin-right: 7px;
 }
-/* line 245, ../sass/screen.scss */
+/* line 257, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li.NC-trending-tab .NC-icon {
   width: 17px;
   height: 17px;
   background: url('/../../../media/img/circular/header/icon_trending.png?1345422274') no-repeat center bottom;
 }
-/* line 252, ../sass/screen.scss */
+/* line 264, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li.NC-active.NC-trending-tab .NC-icon, .NB-authenticated .NC-header ul li.NC-trending-tab:hover .NC-icon {
   background: url('/../../../media/img/circular/header/icon_trending_active.png?1345422192') no-repeat center bottom;
 }
-/* line 256, ../sass/screen.scss */
+/* line 268, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li.NC-following-tab .NC-icon {
   width: 17px;
   height: 17px;
   background: url('/../../../media/img/circular/header/icon_follow.png?1345422166') no-repeat center bottom;
 }
-/* line 263, ../sass/screen.scss */
+/* line 275, ../sass/social_page.scss */
 .NB-authenticated .NC-header ul li.NC-active.NC-following-tab .NC-icon, .NB-authenticated .NC-header ul li.NC-following-tab:hover .NC-icon {
   background: url('/../../../media/img/circular/header/icon_follow_active.png?1345422230') no-repeat center bottom;
 }
 
-/* line 270, ../sass/screen.scss */
+/* line 282, ../sass/social_page.scss */
 .NB-unauthenticated .NC-header {
   background: url('/../../../media/img/circular/header_background_transparent.png?1345407031') repeat 0 0;
   height: 72px;
   top: 0;
 }
-/* line 275, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 282, ../sass/social_page.scss */
+  .NB-unauthenticated .NC-header {
+    height: 40px;
+  }
+}
+/* line 291, ../sass/social_page.scss */
 .NB-unauthenticated .NC-header h1.NC-logo a {
-  text-indent: -10000em;
   display: block;
   float: left;
   padding-top: 16px;
 }
-/* line 281, ../sass/screen.scss */
-.NB-unauthenticated .NC-header h1.NC-logo a img {
-  float: left;
+@media screen and (max-width: 480px) {
+  /* line 291, ../sass/social_page.scss */
+  .NB-unauthenticated .NC-header h1.NC-logo a {
+    float: none;
+    text-align: center;
+    padding-top: 6px;
+  }
+  /* line 301, ../sass/social_page.scss */
+  .NB-unauthenticated .NC-header h1.NC-logo a img {
+    height: 30px;
+    width: 120px;
+  }
 }
-/* line 285, ../sass/screen.scss */
+/* line 308, ../sass/social_page.scss */
 .NB-unauthenticated .NC-header .NC-request-toggle-button {
   float: right;
   border: 1px solid #4388b5;
@@ -348,7 +374,7 @@ blockquote {
   margin-top: 20px;
   margin-left: 10px;
 }
-/* line 75, ../sass/screen.scss */
+/* line 77, ../sass/social_page.scss */
 .NB-unauthenticated .NC-header .NC-request-toggle-button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
   background-image: -webkit-linear-gradient(#6bb1e0, #6bb1e0);
@@ -356,7 +382,7 @@ blockquote {
   background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
   background-image: linear-gradient(#6bb1e0, #6bb1e0);
 }
-/* line 79, ../sass/screen.scss */
+/* line 81, ../sass/social_page.scss */
 .NB-unauthenticated .NC-header .NC-request-toggle-button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
   background-image: -webkit-linear-gradient(#4d98d2, #4d98d2);
@@ -367,7 +393,7 @@ blockquote {
   -moz-box-shadow: inset 0px 0px 10px #1f74b8;
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
-/* line 293, ../sass/screen.scss */
+/* line 316, ../sass/social_page.scss */
 .NB-unauthenticated .NC-header .NC-logout-button,
 .NB-unauthenticated .NC-header .NC-login-toggle-button {
   float: right;
@@ -397,7 +423,7 @@ blockquote {
   margin-top: 20px;
   margin-left: 10px;
 }
-/* line 48, ../sass/screen.scss */
+/* line 50, ../sass/social_page.scss */
 .NB-unauthenticated .NC-header .NC-logout-button:hover,
 .NB-unauthenticated .NC-header .NC-login-toggle-button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f6f6f6), color-stop(100%, #ffffff));
@@ -406,7 +432,7 @@ blockquote {
   background-image: -o-linear-gradient(#f6f6f6, #ffffff);
   background-image: linear-gradient(#f6f6f6, #ffffff);
 }
-/* line 52, ../sass/screen.scss */
+/* line 54, ../sass/social_page.scss */
 .NB-unauthenticated .NC-header .NC-logout-button:active,
 .NB-unauthenticated .NC-header .NC-login-toggle-button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e9e9e9), color-stop(100%, #e9e9e9));
@@ -420,8 +446,14 @@ blockquote {
   text-shadow: 0px -1px 1px white;
   color: #333333;
 }
+@media screen and (max-width: 480px) {
+  /* line 323, ../sass/social_page.scss */
+  .NB-unauthenticated .NC-header .NC-button {
+    display: none;
+  }
+}
 
-/* line 301, ../sass/screen.scss */
+/* line 330, ../sass/social_page.scss */
 .NC-popover {
   position: absolute;
   top: 50px;
@@ -430,32 +462,32 @@ blockquote {
   opacity: 0;
   display: none;
 }
-/* line 309, ../sass/screen.scss */
+/* line 338, ../sass/social_page.scss */
 .NC-popover.NC-request-popover {
   top: 50px;
   left: 329px;
 }
-/* line 314, ../sass/screen.scss */
+/* line 343, ../sass/social_page.scss */
 .NC-popover.NC-login-popover {
   top: 50px;
   left: 456px;
 }
-/* line 319, ../sass/screen.scss */
+/* line 348, ../sass/social_page.scss */
 .NC-popover.NC-active {
   display: block;
 }
-/* line 323, ../sass/screen.scss */
+/* line 352, ../sass/social_page.scss */
 .NC-popover .NC-popover-inner {
   width: 240px;
   padding: 45px 38px 0 30px;
   background: transparent url('/../../../media/img/circular/popover_top.png?1345248505') no-repeat 0 0;
 }
-/* line 329, ../sass/screen.scss */
+/* line 358, ../sass/social_page.scss */
 .NC-popover .NC-popover-bottom {
   background: transparent url('/../../../media/img/circular/popover_bottom.png?1345248525') no-repeat left bottom;
   height: 40px;
 }
-/* line 334, ../sass/screen.scss */
+/* line 363, ../sass/social_page.scss */
 .NC-popover input {
   border: 1px solid #bdbdbd;
   border: 1px solid #BDBDBD;
@@ -465,7 +497,7 @@ blockquote {
   font-size: 14px;
   font-weight: normal;
 }
-/* line 344, ../sass/screen.scss */
+/* line 373, ../sass/social_page.scss */
 .NC-popover .NB-error {
   font-size: 12px;
   color: #6A1000;
@@ -476,12 +508,12 @@ blockquote {
   margin: 0 10px;
 }
 
-/* line 361, ../sass/screen.scss */
+/* line 389, ../sass/social_page.scss */
 .NB-shared-story {
   margin: 20px 0 50px 0;
 }
 
-/* line 365, ../sass/screen.scss */
+/* line 393, ../sass/social_page.scss */
 .NB-story {
   border-left: 1px solid #fff;
   background: #fff;
@@ -491,7 +523,7 @@ blockquote {
   position: relative;
   z-index: 1;
 }
-/* line 372, ../sass/screen.scss */
+/* line 400, ../sass/social_page.scss */
 .NB-story .NB-story-inner {
   border-left: 4px solid #fff;
   padding: 25px 25px 15px;
@@ -499,7 +531,7 @@ blockquote {
   position: relative;
   /* contains all children */
 }
-/* line 380, ../sass/screen.scss */
+/* line 408, ../sass/social_page.scss */
 .NB-story .NB-story-title a {
   font-size: 21px;
   font-weight: bold;
@@ -507,7 +539,13 @@ blockquote {
   text-decoration: none;
   color: #333333;
 }
-/* line 389, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 408, ../sass/social_page.scss */
+  .NB-story .NB-story-title a {
+    font-size: 16px;
+  }
+}
+/* line 421, ../sass/social_page.scss */
 .NB-story .NB-story-metadata {
   font-size: 14px;
   color: gray;
@@ -516,17 +554,35 @@ blockquote {
   /* to ensure that the author is always on one line */
   margin: 5px 0 8px;
 }
-/* line 397, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 421, ../sass/social_page.scss */
+  .NB-story .NB-story-metadata {
+    font-size: 12px;
+  }
+}
+/* line 433, ../sass/social_page.scss */
 .NB-story .NB-feed {
   margin: 2px 0 10px;
   text-transform: capitalize;
 }
-/* line 401, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 433, ../sass/social_page.scss */
+  .NB-story .NB-feed {
+    clear: both;
+  }
+}
+/* line 441, ../sass/social_page.scss */
 .NB-story .NB-feed a {
   color: gray;
   font-size: 12px;
 }
-/* line 406, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 441, ../sass/social_page.scss */
+  .NB-story .NB-feed a {
+    font-size: 11px;
+  }
+}
+/* line 450, ../sass/social_page.scss */
 .NB-story .NB-feed img {
   float: left;
   width: 16px;
@@ -534,16 +590,16 @@ blockquote {
   margin-right: 4px;
 }
 
-/* line 415, ../sass/screen.scss */
+/* line 459, ../sass/social_page.scss */
 .NB-story-content-wrapper {
   max-height: 300px;
   position: relative;
 }
-/* line 419, ../sass/screen.scss */
+/* line 463, ../sass/social_page.scss */
 .NB-story-content-wrapper.NB-story-content-wrapper-height-fudged {
   max-height: none;
 }
-/* line 423, ../sass/screen.scss */
+/* line 467, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander {
   display: none;
   position: absolute;
@@ -555,20 +611,20 @@ blockquote {
   font-size: 12px;
   background: #fff;
 }
-/* line 434, ../sass/screen.scss */
+/* line 478, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-inner {
   position: relative;
   padding: 18px 25px 14px 0;
 }
-/* line 439, ../sass/screen.scss */
+/* line 483, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander:hover {
   color: #306187;
 }
-/* line 442, ../sass/screen.scss */
+/* line 486, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander:active {
   color: #722125;
 }
-/* line 446, ../sass/screen.scss */
+/* line 490, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NC-story-cutoff {
   position: absolute;
   top: -14px;
@@ -578,19 +634,25 @@ blockquote {
   z-index: 0;
   background: transparent url('/../../../media/img/circular/module_cutoff.png?1345259189') repeat-x left bottom;
 }
-/* line 457, ../sass/screen.scss */
+/* line 501, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
   display: inline-block;
 }
-/* line 461, ../sass/screen.scss */
+/* line 505, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
   line-height: 8px;
   padding: 0 12px;
   font-size: 24px;
 }
+@media screen and (max-width: 480px) {
+  /* line 505, ../sass/social_page.scss */
+  .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
+    display: none;
+  }
+}
 
-/* line 469, ../sass/screen.scss */
+/* line 517, ../sass/social_page.scss */
 .NB-story-content {
   font-size: 14px;
   line-height: 140%;
@@ -598,57 +660,80 @@ blockquote {
   overflow: hidden;
   margin: 10px 0;
 }
-/* line 476, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 517, ../sass/social_page.scss */
+  .NB-story-content {
+    font-size: 12px;
+    line-height: 160%;
+  }
+}
+/* line 529, ../sass/social_page.scss */
 .NB-story-content p {
   margin: 10px 0;
 }
-/* line 480, ../sass/screen.scss */
+/* line 533, ../sass/social_page.scss */
 .NB-story-content img {
   margin: 10px 0;
+  max-width: 100% !important;
+  height: auto !important;
 }
-/* line 484, ../sass/screen.scss */
+/* line 539, ../sass/social_page.scss */
 .NB-story-content ins {
   text-decoration: none;
   color: inherit;
 }
-/* line 489, ../sass/screen.scss */
+/* line 544, ../sass/social_page.scss */
 .NB-story-content del {
   display: none;
 }
 
-/* line 496, ../sass/screen.scss */
+/* line 551, ../sass/social_page.scss */
 .NB-story-shares-container {
   text-align: right;
   color: gray;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 16px;
   float: right;
 }
-/* line 503, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 551, ../sass/social_page.scss */
+  .NB-story-shares-container {
+    float: none;
+    text-align: left;
+    font-size: 11px;
+  }
+}
+/* line 564, ../sass/social_page.scss */
 .NB-story-shares-container .NB-story-share-label {
   display: inline-block;
   vertical-align: top;
   margin-top: 3px;
 }
-/* line 512, ../sass/screen.scss */
+/* line 573, ../sass/social_page.scss */
 .NB-story-shares-container .NB-story-share-profiles,
 .NB-story-shares-container .NB-story-share-profiles-shares-friends,
 .NB-story-shares-container .NB-story-share-profiles-shares-public,
 .NB-story-shares-container .NB-story-share-profiles-comments-friends,
 .NB-story-shares-container .NB-story-share-profiles-comments-public {
-  display: inline-block;
+  float: left;
 }
-/* line 516, ../sass/screen.scss */
+/* line 577, ../sass/social_page.scss */
 .NB-story-shares-container .NB-story-share-profiles-shares-public,
 .NB-story-shares-container .NB-story-share-profiles-comments-public {
   opacity: .5;
 }
-/* line 519, ../sass/screen.scss */
+/* line 580, ../sass/social_page.scss */
 .NB-story-shares-container .NB-user-avatar {
   display: inline-block;
   margin: 2px 1px 0 2px;
 }
-/* line 523, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 580, ../sass/social_page.scss */
+  .NB-story-shares-container .NB-user-avatar {
+    margin: 2px 3px 0 0px;
+  }
+}
+/* line 588, ../sass/social_page.scss */
 .NB-story-shares-container .NB-user-avatar img {
   -webkit-box-shadow: 0px 0px 1px #bdbdbd;
   -moz-box-shadow: 0px 0px 1px #bdbdbd;
@@ -658,7 +743,7 @@ blockquote {
   display: block;
 }
 
-/* line 532, ../sass/screen.scss */
+/* line 599, ../sass/social_page.scss */
 .NB-story-comments-container {
   font-size: 14px;
   z-index: 10;
@@ -668,7 +753,19 @@ blockquote {
   padding: 0 20px;
   border-top: 0;
 }
-/* line 542, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 599, ../sass/social_page.scss */
+  .NB-story-comments-container {
+    margin: 0 10px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+  /* line 613, ../sass/social_page.scss */
+  .NB-story-comments-container .NB-story-comment-edit {
+    display: none;
+  }
+}
+/* line 619, ../sass/social_page.scss */
 .NB-story-comments-container .NB-user-avatar img,
 .NB-story-comments-container img.NB-user-avatar {
   position: absolute;
@@ -681,7 +778,7 @@ blockquote {
   border-radius: 3px / 3px;
   /* @include single-box-shadow; gets in the way of transparent PNGs */
 }
-/* line 552, ../sass/screen.scss */
+/* line 630, ../sass/social_page.scss */
 .NB-story-comments-container .NB-user-avatar.NB-story-comment-reshare img {
   top: 27px;
   left: 0px;
@@ -689,31 +786,36 @@ blockquote {
   width: 24px;
   height: 24px;
 }
-/* line 560, ../sass/screen.scss */
-.NB-story-comments-container .NB-story-comment:last-child {
-  border: 0;
-}
-/* line 564, ../sass/screen.scss */
+/* line 638, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment {
+  margin-top: -1px;
   padding: 15px 0 18px 44px;
-  border-bottom: 1px solid #bdbdbd;
+  border-top: 1px solid #bdbdbd;
   position: relative;
   min-height: 32px;
 }
-/* line 574, ../sass/screen.scss */
+/* line 645, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-username {
   float: left;
   font-size: 12px;
   font-weight: bold;
 }
-/* line 580, ../sass/screen.scss */
+/* line 651, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
   float: right;
   font-size: 12px;
   color: gray;
   text-shadow: 0px 1px 1px white;
 }
-/* line 587, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 651, ../sass/social_page.scss */
+  .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
+    float: left;
+    clear: both;
+    margin-top: 4px;
+  }
+}
+/* line 663, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-location {
   float: left;
   font-size: 12px;
@@ -721,18 +823,24 @@ blockquote {
   text-shadow: 0px 1px 1px white;
   margin-left: 15px;
 }
-/* line 596, ../sass/screen.scss */
+@media screen and (max-width: 480px) {
+  /* line 663, ../sass/social_page.scss */
+  .NB-story-comments-container .NB-story-comment .NB-story-comment-location {
+    display: none;
+  }
+}
+/* line 676, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reply-button,
 .NB-story-comments-container .NB-story-comment .NB-story-comment-edit-button {
   display: none;
 }
-/* line 600, ../sass/screen.scss */
+/* line 680, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 606, ../sass/screen.scss */
+/* line 686, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
   top: 15px;
   left: 12px;
@@ -740,7 +848,7 @@ blockquote {
   width: 20px;
   height: 20px;
 }
-/* line 615, ../sass/screen.scss */
+/* line 695, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply {
   margin-top: 15px;
   padding: 15px 0 0px 44px;
@@ -748,13 +856,13 @@ blockquote {
   position: relative;
   min-height: 32px;
 }
-/* line 622, ../sass/screen.scss */
+/* line 702, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply .NB-story-comment-reply-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 629, ../sass/screen.scss */
+/* line 709, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-input {
   width: 371px;
   height: 16px;
@@ -763,7 +871,7 @@ blockquote {
   margin-top: 1px;
   border: 1px solid #bdbdbd;
 }
-/* line 639, ../sass/screen.scss */
+/* line 719, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save {
   position: absolute;
   top: 16px;
@@ -793,7 +901,7 @@ blockquote {
   font-size: 14px;
   font-weight: normal;
 }
-/* line 48, ../sass/screen.scss */
+/* line 50, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f6f6f6), color-stop(100%, #ffffff));
   background-image: -webkit-linear-gradient(#f6f6f6, #ffffff);
@@ -801,7 +909,7 @@ blockquote {
   background-image: -o-linear-gradient(#f6f6f6, #ffffff);
   background-image: linear-gradient(#f6f6f6, #ffffff);
 }
-/* line 52, ../sass/screen.scss */
+/* line 54, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e9e9e9), color-stop(100%, #e9e9e9));
   background-image: -webkit-linear-gradient(#e9e9e9, #e9e9e9);
@@ -814,11 +922,11 @@ blockquote {
   text-shadow: 0px -1px 1px white;
   color: #333333;
 }
-/* line 647, ../sass/screen.scss */
+/* line 727, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-delete {
   display: none;
 }
-/* line 652, ../sass/screen.scss */
+/* line 732, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comments-public-header-wrapper {
   color: gray;
   font-size: 12px;
@@ -826,7 +934,7 @@ blockquote {
   padding: 3px 0;
 }
 
-/* line 661, ../sass/screen.scss */
+/* line 741, ../sass/social_page.scss */
 .NB-page-controls-next,
 .NB-page-controls-end {
   background-color: #6eb4e3;
@@ -860,12 +968,12 @@ blockquote {
   -o-transition: all .12s ease-out;
   -ms-transition: all .12s ease-out;
 }
-/* line 663, ../sass/screen.scss */
+/* line 743, ../sass/social_page.scss */
 .NB-page-controls-next.NB-loaded,
 .NB-page-controls-end.NB-loaded {
   display: none;
 }
-/* line 75, ../sass/screen.scss */
+/* line 77, ../sass/social_page.scss */
 .NB-page-controls-next:hover,
 .NB-page-controls-end:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
@@ -874,7 +982,7 @@ blockquote {
   background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
   background-image: linear-gradient(#6bb1e0, #6bb1e0);
 }
-/* line 79, ../sass/screen.scss */
+/* line 81, ../sass/social_page.scss */
 .NB-page-controls-next:active,
 .NB-page-controls-end:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
@@ -886,7 +994,7 @@ blockquote {
   -moz-box-shadow: inset 0px 0px 10px #1f74b8;
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
-/* line 677, ../sass/screen.scss */
+/* line 757, ../sass/social_page.scss */
 .NB-page-controls-next .NB-page-controls-text,
 .NB-page-controls-end .NB-page-controls-text {
   position: absolute;
@@ -896,7 +1004,7 @@ blockquote {
   bottom: 20px;
 }
 
-/* line 686, ../sass/screen.scss */
+/* line 766, ../sass/social_page.scss */
 .NB-page-controls-end {
   border: 1px solid #bdbdbd;
   -webkit-border-radius: 4px 4px;
@@ -922,7 +1030,7 @@ blockquote {
   font-size: 14px;
   font-weight: normal;
 }
-/* line 48, ../sass/screen.scss */
+/* line 50, ../sass/social_page.scss */
 .NB-page-controls-end:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f6f6f6), color-stop(100%, #ffffff));
   background-image: -webkit-linear-gradient(#f6f6f6, #ffffff);
@@ -930,7 +1038,7 @@ blockquote {
   background-image: -o-linear-gradient(#f6f6f6, #ffffff);
   background-image: linear-gradient(#f6f6f6, #ffffff);
 }
-/* line 52, ../sass/screen.scss */
+/* line 54, ../sass/social_page.scss */
 .NB-page-controls-end:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e9e9e9), color-stop(100%, #e9e9e9));
   background-image: -webkit-linear-gradient(#e9e9e9, #e9e9e9);

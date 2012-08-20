@@ -123,4 +123,4 @@ stylesheets:
         - media/css/modals.css
     blurblog:
         - media/css/jquery.tipsy.css
-        - media/css/circular/css/screen.css
+        - media/css/circular/css/social_page.css

@@ -14,8 +14,10 @@ $more-text-color-active: #722125;
 $border-color: #bdbdbd;
 
 $title-font-size: 21px;
+$small-title-font-size: 16px;
 $small-font-size: 14px;
 $smallest-font-size: 12px;
+$smallest-iphone-font-size: 11px;
 
 $default-text-shadow-color: white;
 $default-text-shadow-blur: 1px;
@@ -124,7 +126,7 @@ blockquote {
     background-color: #F0F0F0;
     border-left: 1px solid #9B9B9B;
     padding: .5em 2em;
-    margin: 0px;
+    margin: 10px;
 }
 .NB-spinner {
     width: 16px;
@@ -141,9 +143,11 @@ blockquote {
 // ==========
 
 .NB-page {
-    width: $page-width;
+    max-width: $page-width;
+    min-width: 300px;
     margin: 10px auto;
     margin-bottom: 100px;
+    padding: 0 10px;
 }
 
 .NB-header {
@@ -152,10 +156,16 @@ blockquote {
 
 .NC-watermark-logo {
     margin: 20px auto;
-    width: $page-width;
+    max-width: $page-width;
+    min-width: 300px;
     text-align: center;
     opacity: 0.0;
     height: 60px;
+    
+    @media screen and ( max-width: 480px) {
+        height: 40px;
+        margin: 10px auto;
+    }
     
     .NB-authenticated & {
         opacity: 0.4;
@@ -175,7 +185,9 @@ blockquote {
     z-index: 10;
     
     .NC-header-inner {
-        width: $page-width;
+        padding: 0 10px;
+        max-width: $page-width;
+        min-width: 300px;
         margin: 0 auto;
         position: relative;
     }
@@ -271,17 +283,28 @@ blockquote {
     background: image-url('header_background_transparent.png') repeat 0 0;
     height: 72px;
     top: 0;
+    
+    @media screen and ( max-width: 480px) {
+        height: 40px;
+    }
 
     h1.NC-logo a {
-        text-indent: -10000em;
         display: block;
         float: left;
         padding-top: 16px;
+        
+        @media screen and ( max-width: 480px) {
+            float: none;
+            text-align: center;
+            padding-top: 6px;
+            
+            img {
+                height: 30px;
+                width: 120px;
+            }
+        }
     }
-    h1.NC-logo a img {
-        float: left;
-    }
-    
+        
     .NC-request-toggle-button {
         float: right;
         @include NC-blue-button;
@@ -295,6 +318,12 @@ blockquote {
         @include NC-default-button;
         margin-top: 20px;
         margin-left: 10px;
+    }
+    
+    .NC-button {
+        @media screen and ( max-width: 480px)    {
+            display: none;
+        }
     }
 }
 
@@ -342,7 +371,6 @@ blockquote {
     }
     
     .NB-error {
-
         font-size: $smallest-font-size;
         color: #6A1000;
         padding: 15px 0 0;
@@ -383,6 +411,10 @@ blockquote {
             line-height: 120%;
             text-decoration: none;
             color: $text-color;
+            
+            @media screen and ( max-width: 480px) {
+                font-size: $small-title-font-size;
+            }
         }
     }
     
@@ -392,17 +424,29 @@ blockquote {
         font-weight: normal;
         display: block; /* to ensure that the author is always on one line */
         margin: 5px 0 8px;
+        
+        @media screen and ( max-width: 480px) {
+            font-size: $smallest-font-size;
+        }
     }
     
     .NB-feed {
         margin: 2px 0 10px;
         text-transform: capitalize;
         
+        @media screen and ( max-width: 480px)    {
+            clear: both;
+        }
+
         a {
             color: $light-text-color;
             font-size: $smallest-font-size;
+            
+            @media screen and ( max-width: 480px) {
+                font-size: $smallest-iphone-font-size;
+            }
         }
-    
+
         img {
             float: left;
             width: 16px;
@@ -462,6 +506,10 @@ blockquote {
             line-height: 8px;
             padding: 0 12px;
             font-size: 24px;
+            
+            @media screen and ( max-width: 480px)    {
+                display: none;
+            }
         }
     }
 }
@@ -472,6 +520,11 @@ blockquote {
     position: relative;
     overflow: hidden;
     margin: 10px 0;
+    
+    @media screen and ( max-width: 480px)    {
+        font-size: $smallest-font-size;
+        line-height: 160%;
+    }
         
     p {
         margin: 10px 0;
@@ -479,6 +532,8 @@ blockquote {
     
     img {
         margin: 10px 0;
+        max-width: 100% !important;
+        height: auto !important;
     }
     
     ins {
@@ -496,9 +551,15 @@ blockquote {
 .NB-story-shares-container {
     text-align: right;
     color: $light-text-color;
-    font-size: 11px;
+    font-size: $smallest-font-size;
     line-height: 16px;
     float: right;
+    
+    @media screen and ( max-width: 480px)    {
+        float: none;
+        text-align: left;
+        font-size: $smallest-iphone-font-size;
+    }
     
     .NB-story-share-label {
         display: inline-block;
@@ -510,7 +571,7 @@ blockquote {
     .NB-story-share-profiles-shares-public,
     .NB-story-share-profiles-comments-friends,
     .NB-story-share-profiles-comments-public {
-        display: inline-block;
+        float: left;
     }
     .NB-story-share-profiles-shares-public,
     .NB-story-share-profiles-comments-public {
@@ -520,6 +581,10 @@ blockquote {
         display: inline-block;
         margin: 2px 1px 0 2px;
         
+        @media screen and ( max-width: 480px)    {
+            margin: 2px 3px 0 0px;
+        }
+    
         img {
             @include single-box-shadow;
             width: 16px;
@@ -527,6 +592,8 @@ blockquote {
             display: block;
         }
     }
+    
+
 }
 
 .NB-story-comments-container {
@@ -537,6 +604,16 @@ blockquote {
     border: 1px solid #CCC;
     padding: 0 20px;
     border-top: 0;
+
+    @media screen and ( max-width: 480px)    {
+       margin: 0 10px;
+       padding: 0 10px;
+       font-size: $smallest-iphone-font-size;
+       
+       .NB-story-comment-edit {
+           display: none;
+       }
+    }
 
     .NB-user-avatar img,
     img.NB-user-avatar {
@@ -549,6 +626,7 @@ blockquote {
          /* @include single-box-shadow; gets in the way of transparent PNGs */
     }
     
+    
     .NB-user-avatar.NB-story-comment-reshare img {
         top: 27px;
         left: 0px;
@@ -557,20 +635,13 @@ blockquote {
         height: 24px;
     }
 
-    .NB-story-comment:last-child {
-        border: 0; 
-    }
-    
     .NB-story-comment {
+        margin-top: -1px;
         padding: 15px 0 18px 44px;
-        border-bottom: 1px solid $border-color;
+        border-top: 1px solid $border-color;
         position: relative;
         min-height: 32px;
         
-        &:last-child {
-
-        }
-
         .NB-story-comment-username {
             float: left;
             font-size: $smallest-font-size;
@@ -582,6 +653,11 @@ blockquote {
             font-size: $smallest-font-size;
             color: $light-text-color;
             @include single-text-shadow;
+            @media screen and ( max-width: 480px)    {
+                float: left;
+                clear: both;
+                margin-top: 4px;
+            }
         }
         
         .NB-story-comment-location {
@@ -590,6 +666,10 @@ blockquote {
             color: $light-text-color;
             @include single-text-shadow;
             margin-left: 15px;
+            
+            @media screen and ( max-width: 480px)    {
+                display: none;
+            }
         } 
         
         .NB-story-comment-reply-button,
