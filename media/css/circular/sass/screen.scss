@@ -88,7 +88,7 @@ $default-box-shadow-blur: 1px;
 
 body {
     background: #ebedee image-url('background.png') repeat 0 0;
-    font-family: Helvetica, arial, san-serif;
+    font-family: Helvetica, arial, sans-serif;
     color: $text-color;
 }
 
@@ -245,23 +245,23 @@ blockquote {
             &.NC-trending-tab .NC-icon {
                 width: 17px;
                 height: 17px; 
-                background: inline-image('header/icon_trending.png') no-repeat center bottom;
+                background: image-url('header/icon_trending.png') no-repeat center bottom;
             }
             
             &.NC-active.NC-trending-tab .NC-icon,
             &.NC-trending-tab:hover .NC-icon {
-                background: inline-image('header/icon_trending_active.png') no-repeat center bottom;
+                background: image-url('header/icon_trending_active.png') no-repeat center bottom;
             }
             
             &.NC-following-tab .NC-icon {
                 width: 17px;
                 height: 17px; 
-                background: inline-image('header/icon_follow.png') no-repeat center bottom;
+                background: image-url('header/icon_follow.png') no-repeat center bottom;
             }
             
             &.NC-active.NC-following-tab .NC-icon,
             &.NC-following-tab:hover .NC-icon {
-                background: inline-image('header/icon_follow_active.png') no-repeat center bottom;
+                background: image-url('header/icon_follow_active.png') no-repeat center bottom;
             }
         }
     }
@@ -415,7 +415,7 @@ blockquote {
 .NB-story-content-wrapper {
     max-height: $max-story-height;
     position: relative;
-    
+
     &.NB-story-content-wrapper-height-fudged {
         max-height: none;
     }

@@ -241,7 +241,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     // ==========
     // = Events =
     // ==========
-    
+     
     expand_story: function(options) {
         options = options || {};
         var $expander = this.$(".NB-story-content-expander");
