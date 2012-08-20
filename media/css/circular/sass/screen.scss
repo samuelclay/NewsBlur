@@ -5,7 +5,8 @@ $page-width: 700px;
 $comment-width: 586px;
 $max-story-height: 300px;
 
-$text-color: #333333; 
+$text-color: #333333;
+$highlight-text-color: #62a4d3;
 $light-text-color: #808080;
 $more-text-color: #1a9fff;
 $more-text-color-hover: #306187;
@@ -141,63 +142,158 @@ blockquote {
 
 .NB-page {
     width: $page-width;
-    margin: 0 auto;
-    padding-top: 80px;
+    margin: 10px auto;
 }
 
 .NB-header {
     display: none;
 }
 
-.NB-footer-logo {
-    margin: 100px auto;
+.NC-watermark-logo {
+    margin: 20px auto;
     width: $page-width;
     text-align: center;
+    opacity: 0.0;
+    height: 60px;
+    
+    .NB-authenticated & {
+        opacity: 0.4;
+    }
 }
 
 .NC-blue-button {
     @include NC-blue-button;
 }
 
+
 .NC-header {
-    background: image-url('header_background_transparent.png') repeat 0 0;
-    height: 72px;
-    @include single-box-shadow(#A7A7A7, 0px, 0px, 10px, false, false);
+    @include single-box-shadow(#7d7d7d, 0px, 0px, 10px, false, false);
     position: fixed;
     width: 100%;
-    top: 0;
     left: 0;
     z-index: 10;
-
+    
     .NC-header-inner {
         width: $page-width;
         margin: 0 auto;
         position: relative;
+    }
+
+}
+.NB-authenticated .NC-header {
+    background: #f2f2f2 image-url('header_background_logged_in.png') repeat 0 0;
+    height: 44px;
+    bottom: 0;
+    
+    ul {
+        margin: 0 70px;
         
-        h1.NC-logo a {
-            text-indent: -10000em;
-            display: block;
+        li {
+            height: 44px;
             float: left;
-            padding-top: 16px;
+            vertical-align: top;
+            width: 24%;
+            text-transform: uppercase;
+            font-size: $smallest-font-size;
+            border-right: 1px solid #cdcdcd;
+            @include box-sizing(border-box);
+            text-align: center;
+            font-weight: bold;
+            @include single-text-shadow;
+
+            cursor: pointer;
+            
+            &.NC-active {
+                cursor: default;
+                background: image-url('header_highlight_border.png') no-repeat center bottom;
+                
+                div.NC-tab-inner {
+                    color: $highlight-text-color;
+                }
+            }
+            
+            &:hover {
+                div.NC-tab-inner {
+                    color: $highlight-text-color;
+                }                    
+            }
+            
+            div.NC-tab-inner {
+                display: inline-block;
+                line-height: 44px;
+            }
+            
+            &:first-child{
+                border-left: 1px solid #cdcdcd;
+            }
+            
+            &.NC-user-tab img {
+                height: 16px;
+                width: 16px;
+                @include border-radius(3px, 3px);
+            }
+            
+            img,
+            .NC-icon {
+                float: left;
+                margin-top: 13px;
+                margin-right: 7px;
+                
+            }
+            
+            &.NC-trending-tab .NC-icon {
+                width: 17px;
+                height: 17px; 
+                background: inline-image('header/icon_trending.png') no-repeat center bottom;
+            }
+            
+            &.NC-active.NC-trending-tab .NC-icon,
+            &.NC-trending-tab:hover .NC-icon {
+                background: inline-image('header/icon_trending_active.png') no-repeat center bottom;
+            }
+            
+            &.NC-following-tab .NC-icon {
+                width: 17px;
+                height: 17px; 
+                background: inline-image('header/icon_follow.png') no-repeat center bottom;
+            }
+            
+            &.NC-active.NC-following-tab .NC-icon,
+            &.NC-following-tab:hover .NC-icon {
+                background: inline-image('header/icon_follow_active.png') no-repeat center bottom;
+            }
         }
-        h1.NC-logo a img {
-            float: left;
-        }
-        
-        .NC-request-toggle-button {
-            float: right;
-            @include NC-blue-button;
-            margin-top: 20px;
-            margin-left: 10px;
-        }
-        
-        .NC-logout-button,
-        .NC-login-toggle-button {
-            float: right;
-            @include NC-default-button;
-            margin-top: 20px;
-            margin-left: 10px;
-        }
+    }
+}
+
+.NB-unauthenticated .NC-header {
+    background: image-url('header_background_transparent.png') repeat 0 0;
+    height: 72px;
+    top: 0;
+
+    h1.NC-logo a {
+        text-indent: -10000em;
+        display: block;
+        float: left;
+        padding-top: 16px;
+    }
+    h1.NC-logo a img {
+        float: left;
+    }
+    
+    .NC-request-toggle-button {
+        float: right;
+        @include NC-blue-button;
+        margin-top: 20px;
+        margin-left: 10px;
+    }
+    
+    .NC-logout-button,
+    .NC-login-toggle-button {
+        float: right;
+        @include NC-default-button;
+        margin-top: 20px;
+        margin-left: 10px;
     }
 }
 
@@ -316,7 +412,6 @@ blockquote {
     font-size: $small-font-size;
     line-height: 140%;
     position: relative;
-    padding-bottom: 48px;
     overflow: hidden;
     
     .NB-story-content-wrapper {
@@ -376,6 +471,7 @@ blockquote {
         cursor: pointer;
         color: $more-text-color;
         font-size: $smallest-font-size;
+        background: #fff;
         
         &:hover {
             color: $more-text-color-hover;

@@ -64,100 +64,64 @@
 <body class="{% if user.is_authenticated %}NB-authenticated{% else %}NB-unauthenticated{% endif %}">
 <header class="NC-header">
     <div class="NC-header-inner">
-        <h1 class="NC-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}img/circular/circular_logo.png" width="180" height="45"></a></h1>
-        
         {% if user.is_authenticated %}
-            <div class="NC-button NC-logout-button">Log Out</div>
+        <ul>
+            <li class="NC-user-tab NC-active">
+                <div class="NC-tab-inner">
+                    <span><img src="{{ social_profile.large_photo_url }}" /></span>
+                    {{ social_profile.username }}
+                </div>
+            </li>
+            <li class="NC-trending-tab">
+                <div class="NC-tab-inner">
+                    <span class="NC-icon"></span>
+                    Trending
+                </div>
+            </li>
+            <li class="NC-following-tab">
+                <div class="NC-tab-inner">
+                    <span class="NC-icon"></span>
+                    Following
+                </div>
+            </li>
+            <li class="NC-activity-tab NC-logout-button">
+                <div class="NC-tab-inner">
+                    Logout
+                </div>
+            </li>
+        </ul>
         {% else %}
-            <div class="NC-button NC-login-toggle-button">Sign In</div>
+            <h1 class="NC-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}img/circular/circular_logo.png" width="180" height="45"></a></h1>
+                <div class="NC-button NC-login-toggle-button">Sign In</div>
 
-            <div class="NC-button NC-request-toggle-button">Request an Invite</div>
+                <div class="NC-button NC-request-toggle-button">Request an Invite</div>
 
-            <div class="NC-login-popover NC-popover">
-                <div class="NC-popover-inner">
-                    <input type="text" placeholder="Username or email" name="login_username" class="NC-input" />
-                    <input placeholder="Password" type="password" name="login_password" class="NC-input" />
-                    <div class="NC-login-button NC-blue-button">Login</div>
+                <div class="NC-login-popover NC-popover">
+                    <div class="NC-popover-inner">
+                        <input type="text" placeholder="Username or email" name="login_username" class="NC-input" />
+                        <input placeholder="Password" type="password" name="login_password" class="NC-input" />
+                        <div class="NC-login-button NC-blue-button">Login</div>
+                    </div>
+                    <div class="NC-popover-bottom"></div>
                 </div>
-                <div class="NC-popover-bottom"></div>
-            </div>
-            <div class="NC-request-popover NC-popover">
-                <div class="NC-popover-inner">
-                    <input type="text" placeholder="Email Address" name="request_email" class="NC-input" />
-                    <div class="NC-request-button NC-blue-button">Request</div>
+                <div class="NC-request-popover NC-popover">
+                    <div class="NC-popover-inner">
+                        <input type="text" placeholder="Email Address" name="request_email" class="NC-input" />
+                        <div class="NC-request-button NC-blue-button">Request</div>
+                    </div>
+                    <div class="NC-popover-bottom"></div>
                 </div>
-                <div class="NC-popover-bottom"></div>
             </div>
         {% endif %}
     </div>
-    </div>
 </header>
+
 <div class="NB-page">
-
-    <header class="NB-header">
-        <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
-
-            <div class="NB-title-background"></div>
-            
-            <table class="NB-header-table">
-                <tr>
-                    <td class="NB-title-photo">
-                        <a href="/">
-                            <img src="{{ social_profile.large_photo_url }}" />
-                        </a>
-                    </td>
-                    <td class="NB-title">
-                        <div class="NB-title-content">
-                            <div class="NB-title-name">
-                                <a href="/">{{ social_profile.title }}</a>
-                            </div>
-                            {% if social_profile.location %}
-                                <div class="NB-title-location">
-                                    {{ social_profile.location }}
-                                </div>
-                            {% endif %}
-                            {% if social_profile.bio %}
-                                <div class="NB-title-bio">
-                                    {{ social_profile.bio }}
-                                </div>
-                            {% endif %}
-                            <div class="NB-header-stats">
-                                <div class="NB-header-stat"><b>{{ social_profile.shared_stories_count }}</b> shared {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
-                                <div class="NB-header-stat">&middot;</div>
-                                <div class="NB-header-stat"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
-                                {% if user.is_authenticated %}
-                                    <div class="NB-header-stat">&middot;</div>
-                                    <div class="NB-header-stat NB-header-following-user">
-                                        {% if user_following_social_profile %}
-                                            {% if social_profile.user_id == user.pk %}
-                                                This is your blurblog
-                                            {% else %}
-                                                You are following {{ social_profile.username }}
-                                            {% endif %}
-                                        {% else %}
-                                            <div class="NB-follow-user">Follow {{ social_profile.username }}</div>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </td>
-                    <td class="NB-header-right">
-                        <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-title-logo">
-                            <img src="{{ MEDIA_URL }}img/logo_128.png" class="NB-hover-off" />
-                            <img src="{{ MEDIA_URL }}img/logo_newsblur_512.png" class="NB-hover-on" />
-                        </a>
-                    </td>
-                </tr>
-            </table>
-            
-            
-        </h1>
-        <div class="NB-header-feed">
-            {# <a type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}">RSS feed for this page</a> #}
+    <div class="NC-watermark">
+        <div class="NC-watermark-logo">
+            <a href="//{% current_domain %}"><img src="{{ MEDIA_URL }}img/circular/circular_footer.png" />
         </div>
-    </header>
-
+    </div>
     {% for story in stories %}
         {% render_social_story story %}
     {% endfor %}
@@ -177,12 +141,6 @@
     
 </div>
     
-<footer>
-    <div class="NB-footer-logo">
-        <a href="//{% current_domain %}"><img src="{{ MEDIA_URL }}img/circular/circular_footer.png" />
-    </div>
-</footer>
-
 {% include_javascripts "blurblog" %}
 
 <script type="text/javascript" charset="utf-8">
