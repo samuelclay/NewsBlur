@@ -20,19 +20,20 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         'queue': false
     },
     
+    flags: {
+        loading_page: false
+    },
+    
     initialize: function() {
         NEWSBLUR.assets = new NEWSBLUR.SocialPageAssets();
         NEWSBLUR.router = new NEWSBLUR.Router;
-        this.loading_page = false;
         this.cached_page_control_y = 0;
         
         Backbone.history.start({pushState: true});
 
-        // bind scroll to window
         _.bindAll(this, 'detect_scroll');
         $(window).scroll(this.detect_scroll);
         
-        // bind login events
         this.login_view = new NEWSBLUR.Views.SocialPageLoginSignupView({
             el: this.el
         });
@@ -43,7 +44,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     initialize_stories: function($stories) {
         var self = this;
         $stories = $stories || this.$el;
-        $('.NB-story-wrapper', $stories).each(function() {
+        $('.NB-shared-story', $stories).each(function() {
             var $story = $(this);
             var guid = $story.data('guid');
             if (!self.stories[guid]) {
@@ -59,22 +60,21 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     },
     
     detect_scroll: function(){
-        if(this.loading_page) {
+        if (this.flags.loading_page) {
             return;
         }
         
-        var self = this;
         var viewport_y = $(window).height() + $(window).scrollTop();
 
         // this prevents calculating when we are scrolling in previously loaded content        
-        if (viewport_y < self.cached_page_control_y) {
+        if (viewport_y < this.cached_page_control_y) {
             return;
         }
         
-        var page_control_y = $('.NB-page-controls').last().offset().top - 500;
+        var page_control_y = this.$('.NB-page-controls').last().offset().top - 500;
         if (viewport_y > page_control_y) {
-            self.cached_page_control_y = page_control_y
-            self.loading_page = true;
+            this.cached_page_control_y = page_control_y;
+            this.flags.loading_page = true;
             this.next_page();
         }
     },
@@ -154,7 +154,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         var $loaded = $('.NB-page-controls-text-loaded', $controls);
         var height = $controls.height();
         var innerheight = $button.height();
-        this.loading_page = false;
+        this.flags.loading_page = false;
         
         $button.removeClass('NB-loading').addClass('NB-loaded');
         $button.stop(true).animate({'backgroundColor': '#86B86B'}, {'duration': 750, 'easing': 'easeOutExpo', 'queue': false});
@@ -185,7 +185,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         });
         
         this.page -= 1;
-        this.loading_page = false;
+        this.flags.loading_page = false;
         
         $next.text('Whoops! Something went wrong. Try again.')
              .animate({'bottom': innerheight}, this.next_animation_options);

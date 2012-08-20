@@ -33,7 +33,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                     $popover.removeClass('NC-active');
                 }, this)
             });
-            $(document).unbind('click.loginView');
+            $(document).unbind('mousedown.loginView');
         } else {
             // Open/resize
             this.$('.NB-error').remove();
@@ -61,9 +61,9 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                  .bind('keydown.login', 'meta+return', login)
                  .bind('keydown.login', 'return', login);
                  
-            // _.defer(_.bind(function() {
-            //     $(document).bind('click.loginView', _.bind(this.hide_popovers, this));
-            // }, this));
+            _.defer(_.bind(function() {
+                $(document).bind('mousedown.loginView', _.bind(this.hide_popovers, this));
+            }, this));
         }
     },
     
@@ -87,7 +87,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                 }, this)
             });
 
-            $(document).unbind('click.loginView');
+            $(document).unbind('mousedown.loginView');
         } else {
             $other_popover.removeClass('NC-active');
             $popover.addClass('NC-active');
@@ -113,9 +113,9 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                 .bind('keydown.invite', 'meta+return', request_invite)
                 .bind('keydown.invite', 'return', request_invite);
             
-            // _.defer(_.bind(function() {
-            //     $(document).bind('click.loginView', _.bind(this.hide_popovers, this));
-            // }, this));
+            _.defer(_.bind(function() {
+                $(document).bind('mousedown.loginView', _.bind(this.hide_popovers, this));
+            }, this));
         }
     },
     
@@ -126,7 +126,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
             if (($(e.target).closest(".NC-popover").length) || ($(e.target).closest(".NC-button").length)) return;
         }
         
-        $(document).unbind('click.loginView');
+        $(document).unbind('mousedown.loginView');
         // Close
         $popover.animate({
             'opacity': 0
@@ -157,7 +157,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     post_login: function(data) {
         NEWSBLUR.log(["login data", data]);
-        window.location.reload()
+        window.location.reload();
     },
     
     login_error: function(data) {
@@ -172,7 +172,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     },
     
     post_logout: function(data) {
-        window.location.reload()
+        window.location.reload();
     },
     
     logout_error: function(data) {

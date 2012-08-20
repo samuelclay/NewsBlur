@@ -358,11 +358,11 @@ blockquote {
 // = Story =
 // =========
 
-.NB-mark {
+.NB-shared-story {
     margin: 20px 0 50px 0;
 }
 
-.NB-story-wrapper {
+.NB-story {
     border-left: 1px solid #fff;
     background: #fff;
     @include single-box-shadow(#c8c8c8, 0px, 0px, 5px, false, false);
@@ -375,6 +375,7 @@ blockquote {
         overflow: hidden;
         position: relative; /* contains all children */
     }
+    
     .NB-story-title {
         a {
             font-size: $title-font-size;
@@ -411,70 +412,29 @@ blockquote {
     }
 }
 
-.NB-story {
-    font-size: $small-font-size;
-    line-height: 140%;
+.NB-story-content-wrapper {
+    max-height: $max-story-height;
     position: relative;
-    overflow: hidden;
     
-    .NB-story-content-wrapper {
-        max-height: $max-story-height;
-        overflow: hidden;
-        
-        &.NB-story-content-wrapper-height-fudged {
-            max-height: none;
-        }
-    }
-    
-    
-    /* 
-        these styles affect all outside content 
-    
-    */
-    .NB-story-content {
-        margin: 10px 0;
-        
-        p {
-            margin: 10px 0;
-        }
-
-        img {
-            margin: 10px 0;
-        }
-        
-        ins {
-            text-decoration: none;
-            color: inherit;
-        }
-        
-        del {
-            display: none;
-        }
-
-    }
-    
-    .NC-story-cutoff {
-        position: absolute;
-        display: none;
-        bottom: 48px;
-        left: 0;
-        width: 100%;
-        height: 14px;
-        z-index: 0;
-        background: transparent image-url('module_cutoff.png') repeat-x left bottom;
+    &.NB-story-content-wrapper-height-fudged {
+        max-height: none;
     }
     
     .NB-story-content-expander {
         display: none;
         position: absolute;
-        bottom: 0;
+        bottom: -25px;
         left: 0;
-        padding: 18px 25px 14px 0;
         width: 100%;
         cursor: pointer;
         color: $more-text-color;
         font-size: $smallest-font-size;
         background: #fff;
+        
+        .NB-story-content-expander-inner {
+            position: relative;
+            padding: 18px 25px 14px 0;
+        }
         
         &:hover {
             color: $more-text-color-hover;
@@ -482,6 +442,17 @@ blockquote {
         &:active {
             color: $more-text-color-active;
         }
+        
+        .NC-story-cutoff {
+            position: absolute;
+            top: -14px;
+            left: 0;
+            width: 100%;
+            height: 14px;
+            z-index: 0;
+            background: transparent image-url('module_cutoff.png') repeat-x left bottom;
+        }
+        
         .NB-story-content-expander-text,
         .NB-story-content-expander-pages {
             display: inline-block;
@@ -494,6 +465,33 @@ blockquote {
         }
     }
 }
+
+.NB-story-content {
+    font-size: $small-font-size;
+    line-height: 140%;
+    position: relative;
+    overflow: hidden;
+    margin: 10px 0;
+        
+    p {
+        margin: 10px 0;
+    }
+    
+    img {
+        margin: 10px 0;
+    }
+    
+    ins {
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    del {
+        display: none;
+    }
+    
+}
+
 
 .NB-story-shares-container {
     text-align: right;

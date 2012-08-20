@@ -30,15 +30,13 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
             shared: shared
         });
         
-        this.page_view = this.options.page_view;
-        
         this.story_guid = story_guid;
 
         this.comments_view = new NEWSBLUR.Views.SocialPageComments({
             el: this.$('.NB-story-comments-container'),
             model: this.model,
             story_view: this,
-            page_view: this.page_view,
+            page_view: this.options.page_view
         });
         this.model.social_page_comments = this.comments_view;
 
@@ -265,7 +263,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
         });
         
         $expander.add($expander_cutoff).animate({
-            bottom: -1 * $expander.outerHeight()
+            bottom: -1 * $expander.outerHeight() - 25
         }, {
             duration: options.instant ? 0 : Math.min(2 * 1000, parseInt(200 * height_ratio, 10)),
             easing: 'easeInOutQuart'

@@ -45,13 +45,13 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         if (!NEWSBLUR.Globals.is_authenticated) {
             e.preventDefault();
             e.stopPropagation();
-            console.log(this.page_view);
-            this.page_view.toggle_login_dialog({});
+            this.page_view.login_view.toggle_login_dialog({});
             return false;
         }
     },
     
     check_comment_or_login: function(e) {
+        console.log(['check_comment_or_login', e, NEWSBLUR.Globals.is_authenticated, this.page_view.login_view]);
         if (!NEWSBLUR.Globals.is_authenticated) {
             e.preventDefault();
             e.stopPropagation();
