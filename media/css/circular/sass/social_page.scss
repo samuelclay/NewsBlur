@@ -92,6 +92,11 @@ body {
     background: #ebedee image-url('background.png') repeat 0 0;
     font-family: Helvetica, arial, sans-serif;
     color: $text-color;
+    
+    @media screen and ( max-width: 480px) {
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
 }
 
 a {
@@ -435,10 +440,16 @@ blockquote {
     }
     
     .NB-feed {
-        margin: 2px 0 10px;
+        margin: 2px 10px 10px 0;
         text-transform: capitalize;
         float: left;
         white-space: nowrap;
+        
+        .NB-feed-favicon,
+        .NB-feed-title {
+            float: left;
+        }
+        
         
         @media screen and ( max-width: 480px)    {
             clear: both;
