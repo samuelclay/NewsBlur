@@ -43,7 +43,7 @@ class MRequestInvite(mongo.Document):
     }
     
     def __unicode__(self):
-        return "%s%s" % (self.username, '*' if self.email_sent else '')
+        return "%s%s" % (self.email, '*' if self.invite_sent else '')
     
     @classmethod
     def blast(cls):
