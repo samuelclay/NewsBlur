@@ -57,6 +57,7 @@ def ios_plist(request):
     filename = settings.MEDIA_ROOT + '/ios/NewsBlur.plist'
     manifest = open(filename).read()
     
+    logging.user(request, "~SK~FR~BBDownloading NewsBlur.plist...")
     return HttpResponse(manifest, content_type='text/xml')
     
 def ios_ipa(request):
