@@ -1210,7 +1210,6 @@ class MSharedStory(mongo.Document):
             story_values = {
                 'user_id': popular_profile.user_id,
                 'story_guid': story_db['story_guid'],
-                'story_feed_id': story_db['story_feed_id'],
                 'defaults': story_db,
             }
             shared_story, created = MSharedStory.objects.get_or_create(**story_values)
