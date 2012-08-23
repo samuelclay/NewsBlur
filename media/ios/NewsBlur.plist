@@ -11,7 +11,7 @@
 					<key>kind</key>
 					<string>software-package</string>
 					<key>url</key>
-					<string>http://newsblur.com/media/ios/NewsBlur.ipa</string>
+					<string>http://www.newsblur.com/media/ios/NewsBlur.ipa</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -19,7 +19,7 @@
 					<key>needs-shine</key>
 					<false/>
 					<key>url</key>
-					<string>http://newsblur.com/media/ios/Resources/logo_512.png</string>
+					<string>http://www.newsblur.com/media/ios/Resources/logo_512.png</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -27,7 +27,7 @@
 					<key>needs-shine</key>
 					<false/>
 					<key>url</key>
-					<string>http://newsblur.com/media/ios/Resources/logo_57.png</string>
+					<string>http://www.newsblur.com/media/ios/Resources/logo_57.png</string>
 				</dict>
 			</array>
 			<key>metadata</key>
