@@ -52,3 +52,17 @@ def ios(request):
 def ios_download(request):
     return render_to_response('static/ios_download.xhtml', {},
                               context_instance=RequestContext(request))
+                              
+def ios_plist(request):
+    filename = settings.MEDIA_ROOT + '/ios/NewsBlur.plist'
+    manifest = open(filename).read()
+    
+    return HttpResponse(manifest, content_type='text/xml')
+    
+def ios_ipa(request):
+    filename = settings.MEDIA_ROOT + '/ios/NewsBlur.ipa'
+    manifest = open(filename).read()
+    
+    logging.user(request, "~SK~FR~BBDownloading NewsBlur.ipa...")
+    return HttpResponse(manifest, content_type='application/octet-stream')
+    
