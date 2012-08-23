@@ -26,7 +26,7 @@ import com.newsblur.activity.Reading;
 import com.newsblur.activity.SocialFeedReading;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
-import com.newsblur.database.SocialFeedItemsAdapter;
+import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.util.AppConstants;
 import com.newsblur.view.SocialItemViewBinder;
@@ -72,7 +72,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 				
-		adapter = new SocialFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		
 		adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
 	}

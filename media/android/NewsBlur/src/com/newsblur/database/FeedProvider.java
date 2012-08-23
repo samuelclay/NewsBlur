@@ -22,12 +22,13 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri OFFLINE_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/offline_updates/");
 	public static final Uri SOCIAL_FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/social_feeds/");
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
-	public static final Uri MODIFY_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
+	public static final Uri FEED_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
 	public static final Uri MODIFY_SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
 	public static final Uri MULTIFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feeds/");
 	public static final Uri SOCIALFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/socialfeed/");
 	public static final Uri STORY_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/story/");
+	public static final Uri ALL_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
 	public static final Uri COMMENTS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/comments/");
 	public static final Uri REPLIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/replies/");
 	public static final Uri FEED_FOLDER_MAP_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedfoldermap/");
@@ -44,12 +45,13 @@ public class FeedProvider extends ContentProvider {
 	private static final int INDIVIDUAL_FEED = 8;
 	private static final int STORY_COMMENTS = 9;
 	private static final int INDIVIDUAL_STORY = 10;
-	private static final int DECREMENT_FEED_COUNT = 11;
+	private static final int FEED_COUNT = 11;
 	private static final int OFFLINE_UPDATES = 12;
 	private static final int DECREMENT_SOCIALFEED_COUNT = 13;
 	private static final int INDIVIDUAL_SOCIAL_FEED = 14;
 	private static final int REPLIES = 15;
 	private static final int MULTIFEED_STORIES = 16;
+	private static final int ALL_STORIES = 17;
 	
 	
 	private BlurDatabase databaseHelper;
@@ -62,11 +64,12 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/", ALL_SOCIAL_FEEDS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/#/", INDIVIDUAL_SOCIAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", INDIVIDUAL_FEED);
-		uriMatcher.addURI(AUTHORITY, VERSION + "/feedcount/", DECREMENT_FEED_COUNT);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/feedcount/", FEED_COUNT);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/socialfeedcount/", DECREMENT_SOCIALFEED_COUNT);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/socialfeed/#/", SOCIALFEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feed/#/", FEED_STORIES);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/", ALL_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feeds/", MULTIFEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/story/*/", INDIVIDUAL_STORY);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/comments/", STORY_COMMENTS);
@@ -215,6 +218,13 @@ public class FeedProvider extends ContentProvider {
 			return db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE +
 					" WHERE " +  DatabaseConstants.FEED_ID + "= '" + uri.getLastPathSegment() + "'", selectionArgs);	
 			
+			// Query for total feed counts
+		case FEED_COUNT:
+			String sumQuery = "SELECT SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") AS " + DatabaseConstants.SUM_POS + ", " +
+			"SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + ") AS " + DatabaseConstants.SUM_NEUT + ", " + 
+			"SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + ") AS " + DatabaseConstants.SUM_NEG + " FROM " + DatabaseConstants.FEED_TABLE;
+			return db.rawQuery(sumQuery, selectionArgs);	
+			
 			// Querying for a stories from a feed
 		case FEED_STORIES:
 			if (!TextUtils.isEmpty(selection)) {
@@ -224,7 +234,18 @@ public class FeedProvider extends ContentProvider {
 			}
 			selectionArgs = new String[] { uri.getLastPathSegment() };
 			return db.query(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_COLUMNS, selection, selectionArgs, null, null, DatabaseConstants.STORY_DATE + " DESC");
-
+			
+			// Querying for all stories
+		case ALL_STORIES:
+			String allStoriesQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
+			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
+			DatabaseConstants.FEED_FAVICON_FADE +  
+			" FROM " + DatabaseConstants.STORY_TABLE +
+			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
+			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + 
+			" WHERE " + selection + " ORDER BY " + DatabaseConstants.STORY_DATE + " DESC";
+			return db.rawQuery(allStoriesQuery, null);
+			
 			// Querying for a stories from a selection of feeds
 		case MULTIFEED_STORIES:
 			if (!TextUtils.isEmpty(selection)) {
@@ -350,7 +371,7 @@ public class FeedProvider extends ContentProvider {
 		case INDIVIDUAL_STORY:
 			return db.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_ID + " = ?", new String[] { uri.getLastPathSegment() });
 			// In order to run a raw SQL query whereby we make decrement the column we need to a dynamic reference - something the usual content provider can't easily handle. Hence this circuitous hack. 
-		case DECREMENT_FEED_COUNT: 
+		case FEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.FEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.FEED_ID + " = " + selectionArgs[1]);
 			return 0;
 		case DECREMENT_SOCIALFEED_COUNT: 

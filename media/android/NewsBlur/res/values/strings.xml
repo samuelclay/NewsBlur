@@ -34,6 +34,7 @@
 	
 	<string name="reading_sharedby">SHARED BY: </string>
 	
+	<string name="everything">Everything</string>
 	
 	<string name="replied">Reply posted</string>
 	<string name="error_replying">There was an error replying</string>

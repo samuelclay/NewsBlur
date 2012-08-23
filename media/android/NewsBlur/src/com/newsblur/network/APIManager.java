@@ -162,6 +162,9 @@ public class APIManager {
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDS, feedId);
 		}
+		if (!TextUtils.isEmpty(pageNumber)) {
+			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
+		}
 		final APIResponse response = client.post(APIConstants.URL_RIVER_STORIES, values);
 		
 		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);

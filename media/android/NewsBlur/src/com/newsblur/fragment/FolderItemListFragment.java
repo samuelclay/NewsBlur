@@ -28,7 +28,7 @@ import com.newsblur.activity.FolderReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
-import com.newsblur.database.SocialFeedItemsAdapter;
+import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.view.FeedItemViewBinder;
 
@@ -93,7 +93,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
-		adapter = new SocialFeedItemsAdapter(getActivity(), R.layout.row_folderitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_folderitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 		itemList.setOnScrollListener(this);
 		
@@ -143,7 +143,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	public void changeState(int state) {
 		currentState = state;
 		final String selection = FeedProvider.getSelectionFromState(state);
-		Cursor cursor = contentResolver.query(storiesUri, null, selection, null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(storiesUri, null, selection, feedIds, DatabaseConstants.STORY_DATE + " DESC");
 		adapter.swapCursor(cursor);
 	}
 

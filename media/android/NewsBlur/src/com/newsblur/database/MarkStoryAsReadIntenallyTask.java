@@ -28,7 +28,7 @@ public class MarkStoryAsReadIntenallyTask extends AsyncTask<Story, Void, Void>{
 			} else {
 				selectionArgs = new String[] { DatabaseConstants.FEED_NEGATIVE_COUNT, story.feedId } ;
 			}
-			contentResolver.update(FeedProvider.MODIFY_COUNT_URI, null, null, selectionArgs);
+			contentResolver.update(FeedProvider.FEED_COUNT_URI, null, null, selectionArgs);
 
 			if (!TextUtils.isEmpty(story.socialUserId)) {
 				String[] socialSelectionArgs; 

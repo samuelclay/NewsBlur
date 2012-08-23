@@ -14,12 +14,12 @@ import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
 
-public class SocialFeedItemsAdapter extends SimpleCursorAdapter {
+public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
 
 	private Cursor cursor;
 	private ImageLoader imageLoader;
 
-	public SocialFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
+	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
 		super(context, layout, c, from, to, flags);
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.cursor = c;

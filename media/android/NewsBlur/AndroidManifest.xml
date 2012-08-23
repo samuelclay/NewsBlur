@@ -40,6 +40,9 @@
             android:name=".activity.FeedItemsList" />
         
         <activity
+            android:name=".activity.EverythingItemsList" />
+        
+        <activity
             android:name=".activity.FolderItemsList" />
         
         <activity

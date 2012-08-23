@@ -37,7 +37,7 @@ public class SyncService extends IntentService {
 	public static final String EXTRA_TASK_MARK_SOCIAL_JSON = "socialJson";
 	public static final String EXTRA_TASK_PAGE_NUMBER = "page";
 	public static final String EXTRA_TASK_MULTIFEED_IDS = "multi_feedids";
-
+	
 	public final static int STATUS_RUNNING = 0x02;
 	public final static int STATUS_FINISHED = 0x03;
 	public final static int STATUS_ERROR = 0x04;
@@ -51,10 +51,12 @@ public class SyncService extends IntentService {
 	public static final int EXTRA_TASK_MARK_SOCIALSTORY_READ = 35;
 	public static final int EXTRA_TASK_MULTIFEED_UPDATE = 36;
 	public static final int EXTRA_TASK_MARK_MULTIPLE_STORIES_READ = 37;
+	public static final int EXTRA_TASK_ALL_STORIES = 38;
 
 	public APIClient apiClient;
 	private APIManager apiManager;
 	public static final String SYNCSERVICE_TASK = "syncservice_task";
+	
 
 	public SyncService() {
 		super(TAG);
@@ -111,6 +113,7 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
+				
 			case EXTRA_TASK_MARK_MULTIPLE_STORIES_READ:
 				final ValueMultimap stories = (ValueMultimap) intent.getSerializableExtra(EXTRA_TASK_STORIES);
 				if (!apiManager.markMultipleStoriesAsRead(stories)) {
@@ -127,6 +130,7 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;	
+				
 			case EXTRA_TASK_MARK_SOCIALSTORY_READ:
 				final String markSocialJson = intent.getStringExtra(EXTRA_TASK_MARK_SOCIAL_JSON);
 				if (!TextUtils.isEmpty(markSocialJson)) {
@@ -136,6 +140,7 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
+				
 			case EXTRA_TASK_FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
 					apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
@@ -144,6 +149,7 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
+				
 			case EXTRA_TASK_MULTIFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
 					apiManager.getStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
@@ -152,6 +158,7 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;	
+				
 			case EXTRA_TASK_SOCIALFEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME))) {
 					apiManager.getStoriesForSocialFeed(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID), intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
@@ -159,7 +166,8 @@ public class SyncService extends IntentService {
 					Log.e(TAG, "Missing parameters forsocialfeed SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
-				break;		
+				break;
+				
 			default:
 				Log.e(TAG, "SyncService called without relevant task assignment");
 				break;
