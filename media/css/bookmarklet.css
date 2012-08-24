@@ -198,12 +198,17 @@
   vertical-align: top;
 }
 .NB-bookmarklet .NB-bookmarklet-error {
-  margin: 12px 0 0 0;
+  margin: 0;
+  padding: 0 12px 0 24px;
+  line-height: 16px;
   font-weight: bold;
   color: #701040;
+  position: relative;
 }
 .NB-bookmarklet .NB-bookmarklet-error img {
-  float: left;
+  position: absolute;
+  left: 0;
+  top: 0;
   width: 16px;
   height: 16px;
   vertical-align: top;

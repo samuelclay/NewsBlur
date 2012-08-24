@@ -244,7 +244,7 @@
             } else {
                 var $error = $.make('div', { className: 'NB-bookmarklet-error' }, [
                     $.make('img', { className: 'NB-bookmarklet-folder-label', src: 'data:image/png;charset=utf-8;base64,{{ error_image }}' }),
-                    $.make('div', resp.message)
+                    $.make('div', message)
                 ]);
                 $('.NB-bookmarklet-folder-container').hide();
                 $submit.replaceWith($error);
@@ -338,6 +338,8 @@
         },
         
         error_share_story: function(data) {
+            var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
+            
             $share.removeClass('NB-disabled');
             console.log(["error sharing", data]);
             this.update_share_button_title();

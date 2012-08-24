@@ -8,7 +8,7 @@ from django.contrib.auth import login as login_user
 from django.contrib.auth import logout as logout_user
 from apps.reader.forms import SignupForm, LoginForm
 from apps.profile.models import Profile
-from apps.social.models import MSocialProfile, MSharedStory
+from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
 from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
@@ -185,10 +185,14 @@ def check_share_on_site(request, token):
     return response
 
 def share_story(request, token):
-    code       = 0
-    story_url  = request.POST['story_url']
-    comments   = request.POST['comments']
-    message    = None
+    code      = 0
+    story_url = request.POST['story_url']
+    comments  = request.POST['comments']
+    title     = request.POST['title']
+    content   = request.POST['content']
+    rss_url   = request.POST.get('rss_url')
+    feed_id   = request.POST.get('feed_id')
+    message   = None
     
     if not story_url:
         code = -1
@@ -197,8 +201,43 @@ def share_story(request, token):
             profile = Profile.objects.get(secret_token=token)
         except Profile.DoesNotExist:
             code = -1
+    
+    if feed_id:
+        feed = Feed.objects.get(pk=feed_id)
+    else:
+        feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)
+        if not feed:
+            feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
+        if feed:
+            feed_id = feed.pk
+    
+    shared_story = MSharedStory.objects.filter(user_id=profile.user.pk,
+                                               story_feed_id=feed_id, 
+                                               story_guid=story_url).limit(1).first()
+    if not shared_story:
+        story_db = {
+            "story_guid": story_url,
+            "story_title": title,
+            "story_feed_id": feed_id,
+            "story_content": content,
             
-    logging.user(profile.user, "~BM~FYSharing story from site: ~SB%s: %s" % (story_url, comments))
+            "user_id": profile.user.pk,
+            "comments": comments,
+            "has_comments": bool(comments),
+        }
+        shared_story = MSharedStory.objects.create(**story_db)
+        socialsubs = MSocialSubscription.objects.filter(subscription_user_id=profile.user.pk)
+        for socialsub in socialsubs:
+            socialsub.needs_unread_recalc = True
+            socialsub.save()
+        logging.user(profile.user, "~BM~FYSharing story from site: ~SB%s: %s" % (story_url, comments))
+    else:
+        shared_story.comments = comments
+        shared_story.has_comments = bool(comments)
+        shared_story.save()
+        logging.user(profile.user, "~BM~FY~SBUpdating~SN shared story from site: ~SB%s: %s" % (story_url, comments))
+    
+    shared_story.publish_update_to_subscribers()
     
     response = HttpResponse(json.encode({
         'code':     code,
