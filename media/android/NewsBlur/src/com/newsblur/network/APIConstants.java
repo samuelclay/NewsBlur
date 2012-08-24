@@ -31,6 +31,7 @@ public class APIConstants {
 	public static final String PARAMETER_USERNAME = "username";
 	public static final String PARAMETER_USERID = "user_id";
 	public static final String PARAMETER_STORYID = "story_id";
+	public static final String PARAMETER_FEEDS_STORIES = "feeds_stories";
 	public static final String PARAMETER_COMMENT_USERID = "comment_user_id";
 	public static final String PARAMETER_FEEDID = "feed_id";
 	public static final String PARAMETER_REPLY_TEXT = "reply_comments";

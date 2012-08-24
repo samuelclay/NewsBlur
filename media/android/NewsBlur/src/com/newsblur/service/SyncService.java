@@ -3,6 +3,7 @@ package com.newsblur.service;
 import java.util.ArrayList;
 
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.OfflineUpdate;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIClient;
+import com.newsblur.network.APIConstants;
 import com.newsblur.network.APIManager;
 
 /**
@@ -116,7 +118,9 @@ public class SyncService extends IntentService {
 				
 			case EXTRA_TASK_MARK_MULTIPLE_STORIES_READ:
 				final ValueMultimap stories = (ValueMultimap) intent.getSerializableExtra(EXTRA_TASK_STORIES);
-				if (!apiManager.markMultipleStoriesAsRead(stories)) {
+				ContentValues values = new ContentValues();
+				values.put(APIConstants.PARAMETER_FEEDS_STORIES, stories.getJsonString());
+				if (!apiManager.markMultipleStoriesAsRead(values)) {
 					for (String key : stories.getKeys()) {
 						for (String value : stories.getValues(key)) {
 							OfflineUpdate update = new OfflineUpdate();
@@ -125,9 +129,6 @@ public class SyncService extends IntentService {
 							getContentResolver().insert(FeedProvider.OFFLINE_URI, update.getContentValues());
 						}
 					}
-				} else {
-					Log.e(TAG, "No feed/stories to mark as read included in SyncRequest");
-					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;	
 				

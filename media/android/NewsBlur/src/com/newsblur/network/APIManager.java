@@ -139,7 +139,7 @@ public class APIManager {
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEEDS, feedId);
 		if (!TextUtils.isEmpty(pageNumber)) {
-			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
+			values.put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber);
 		}
 		Uri feedUri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(feedId).build();
 		final APIResponse response = client.get(feedUri.toString(), values);
@@ -165,7 +165,7 @@ public class APIManager {
 		if (!TextUtils.isEmpty(pageNumber)) {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
-		final APIResponse response = client.post(APIConstants.URL_RIVER_STORIES, values);
+		final APIResponse response = client.get(APIConstants.URL_RIVER_STORIES, values);
 		
 		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
@@ -381,9 +381,9 @@ public class APIManager {
 		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
 
-	public boolean markMultipleStoriesAsRead(ValueMultimap stories) {
+	public boolean markMultipleStoriesAsRead(ContentValues values) {
 		final APIClient client = new APIClient(context);
-		final APIResponse response = client.post(APIConstants.URL_MARK_FEED_STORIES_AS_READ, stories);
+		final APIResponse response = client.post(APIConstants.URL_MARK_FEED_STORIES_AS_READ, values);
 		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			return true;
 		} else {

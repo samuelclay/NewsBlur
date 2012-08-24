@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.gson.Gson;
+
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -49,17 +51,29 @@ public class ValueMultimap implements Serializable {
 				final StringBuilder builder = new StringBuilder();
 				builder.append(key);
 				builder.append("=");
-				try {
-					builder.append(URLEncoder.encode(value, "UTF-8"));
-				} catch (UnsupportedEncodingException e) {
-					Log.d(TAG, "Unable to URLEncode a parameter in a POST");
-					builder.append(value);
-				}
+				builder.append(value);
 				parameters.add(builder.toString());
 			}
 		}
 		
 		return TextUtils.join("&", parameters);
+	}
+	
+	public String getJsonString() {
+		ArrayList<String> parameters = new ArrayList<String>();
+		Gson gson = new Gson();
+		for (String key : multimap.keySet()) {
+			StringBuilder builder = new StringBuilder();
+			builder.append("\"" + key + "\"");
+			builder.append(": ");
+			builder.append(gson.toJson(multimap.get(key)));
+			parameters.add(builder.toString());
+		}
+		final StringBuilder builder = new StringBuilder();
+		builder.append("{");
+		builder.append(TextUtils.join(",", parameters));
+		builder.append("}");
+		return builder.toString();
 	}
 
 }

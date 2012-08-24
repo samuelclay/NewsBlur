@@ -1,6 +1,7 @@
 package com.newsblur.fragment;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -19,6 +20,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.newsblur.R;
+import com.newsblur.activity.EverythingReading;
+import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -60,12 +63,7 @@ public class EverythingItemListFragment extends ItemListFragment implements Load
 		
 		contentResolver = getActivity().getContentResolver();
 		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
-		countCursor = contentResolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
-		
-		countCursor.moveToFirst();
-		positiveCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEG));
-		neutralCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
-		negativeCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_POS));
+		calculateTotals();
 		
 		
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
@@ -82,6 +80,15 @@ public class EverythingItemListFragment extends ItemListFragment implements Load
 		itemList.setOnItemClickListener(this);
 
 		return v;
+	}
+
+	private void calculateTotals() {
+		countCursor = contentResolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
+		
+		countCursor.moveToFirst();
+		positiveCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEG));
+		neutralCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
+		negativeCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_POS));
 	}
 	
 	@Override
@@ -104,6 +111,7 @@ public class EverythingItemListFragment extends ItemListFragment implements Load
 	@Override
 	public void changeState(int state) {
 		currentState = state;
+		calculateTotals();
 		final String selection = FeedProvider.getSelectionFromState(state);
 		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, selection, null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
 		adapter.swapCursor(cursor);
@@ -152,9 +160,11 @@ public class EverythingItemListFragment extends ItemListFragment implements Load
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		// TODO Auto-generated method stub
-		
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Intent i = new Intent(getActivity(), EverythingReading.class);
+		i.putExtra(FeedReading.EXTRA_POSITION, position);
+		i.putExtra(ItemsList.EXTRA_STATE, currentState);
+		startActivityForResult(i, READING_RETURNED );
 	}
 
 	@Override

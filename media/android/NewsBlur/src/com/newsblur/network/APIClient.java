@@ -89,6 +89,33 @@ public class APIClient {
 			connection.disconnect();
 		}
 	}
+	
+	public APIResponse get(final String urlString, final ValueMultimap valueMap) {
+		HttpURLConnection connection = null;
+		if (!NetworkUtils.isOnline(context)) {
+			APIResponse response = new APIResponse();
+			response.isOffline = true;
+			return response;
+		}
+		try {
+			String parameterString = valueMap.getParameterString();
+
+			final URL urlFeeds = new URL(urlString + "?" + parameterString);
+			connection = (HttpURLConnection) urlFeeds.openConnection();
+			
+			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
+			if (cookie != null) {
+				connection.setRequestProperty("Cookie", cookie);
+			}
+			return extractResponse(urlFeeds, connection);
+		} catch (IOException e) {
+			Log.d(TAG, "Error opening GET connection to " + urlString, e.getCause());
+			return new APIResponse();
+		} finally {
+			connection.disconnect();
+		}
+	}
 
 	private APIResponse extractResponse(final URL url, HttpURLConnection connection) throws IOException {
 		StringBuilder builder = new StringBuilder();
@@ -116,14 +143,10 @@ public class APIClient {
 		List<String> parameters = new ArrayList<String>();
 		for (Entry<String, Object> entry : values.valueSet()) {
 			final StringBuilder builder = new StringBuilder();
+			
 			builder.append((String) entry.getKey());
 			builder.append("=");
-			try {
-				builder.append(URLEncoder.encode((String) entry.getValue(), "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				Log.d(TAG, "Unable to URLEncode a parameter in a POST");
-				builder.append((String) entry.getValue());
-			}
+			builder.append((String) entry.getValue());
 			parameters.add(builder.toString());
 		}
 		final String parameterString = TextUtils.join("&", parameters);
@@ -171,7 +194,7 @@ public class APIClient {
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setDoOutput(true);
 			connection.setRequestMethod("POST");
-			String parameterString = valueMap.getParameterString();
+			String parameterString = valueMap.getJsonString();
 			
 			connection.setFixedLengthStreamingMode(parameterString.getBytes().length);
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");

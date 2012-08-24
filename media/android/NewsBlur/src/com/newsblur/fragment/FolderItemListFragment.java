@@ -47,7 +47,6 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	private boolean doRequest = true;
 
 	public static int ITEMLIST_LOADER = 0x01;
-	private int READING_RETURNED = 0x02;
 	
 
 	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState) {

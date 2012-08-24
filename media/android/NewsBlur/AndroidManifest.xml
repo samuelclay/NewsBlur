@@ -52,6 +52,9 @@
             android:name=".activity.FeedReading"/>
         
         <activity
+            android:name=".activity.EverythingReading"/>
+        
+        <activity
             android:name=".activity.FolderReading"/>
         
         <activity
