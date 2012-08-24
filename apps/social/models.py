@@ -1099,6 +1099,16 @@ class MSharedStory(mongo.Document):
 
         super(MSharedStory, self).delete(*args, **kwargs)
     
+    @classmethod
+    def get_shared_stories(cls, feed_id, story_url=None, limit=3):
+        same_stories = None
+        if story_url:
+            same_stories = cls.objects.filter(story_feed_id=feed_id, story_permalink=story_url).order_by('-shared_date')
+        
+        other_stories = cls.objects.filter(story_feed_id=feed_id, story_permalink__ne=story_url).order_by('-shared_date')
+        
+        return same_stories, other_stories
+        
     def ensure_story_db_id(self, save=True):
         if not self.story_db_id:
             story, _ = MStory.find_story(self.story_feed_id, self.story_guid)

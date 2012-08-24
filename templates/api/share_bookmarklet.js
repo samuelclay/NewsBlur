@@ -17,6 +17,9 @@
         this.flags    = {
             'new_folder': false
         };
+        this.images   = {
+            'accept_image': "{{ accept_image }}"
+        };
         
         this.options  = $.extend({}, defaults, options);
         this.runner();
@@ -57,7 +60,9 @@
             this.make_modal();
             this.open_modal();
             this.get_page_content();
-            this.pre_share_check_story();
+            _.delay(_.bind(function() {
+                this.pre_share_check_story();
+            }, this), 0);
         
             this.$modal.bind('click', $.rescope(this.handle_clicks, this));
 
@@ -80,8 +85,10 @@
                 $.make('div', { className: 'NB-bookmarklet-main'}, [
                     $.make('div', { className: 'NB-bookmarklet-page' }, [
                         $.make('div', { className: 'NB-bookmarklet-page-title' }),
-                        $.make('div', { className: 'NB-bookmarklet-page-content' }),
-                        $.make('div', { className: 'NB-bookmarklet-page-comment' }, [
+                        $.make('div', { className: 'NB-bookmarklet-page-content-wrapper' }, [
+                            $.make('div', { className: 'NB-bookmarklet-page-content' })
+                        ]),
+                        $.make('div', { className: 'NB-bookmarklet-page-comment NB-modal-submit' }, [
                             $.make('div', { className: 'NB-bookmarklet-comment-photo' }, [
                                 $.make('img', { src: this.profile.photo_url })
                             ]),
@@ -93,16 +100,23 @@
                     ])
                 ]),
                 $.make('div', { className: 'NB-bookmarklet-side' }, [
-                    $.make('div', { className: 'NB-modal-submit' }, [
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, 'Subscribe to this site')
-                    ]),
-                    $.make('div', { className: 'NB-bookmarklet-folder-container' }, [
-                        $.make('img', { className: 'NB-bookmarklet-folder-add-button', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: 'Add New Folder' }),
-                        this.make_folders(),
-                        $.make('div', { className: 'NB-bookmarklet-new-folder-container' }, [
-                            $.make('img', { className: 'NB-bookmarklet-folder-new-label', src: 'data:image/png;charset=utf-8;base64,{{ new_folder_image }}' }),
-                            $.make('input', { type: 'text', name: 'new_folder_name', className: 'NB-bookmarklet-folder-new' })
+                    $.make('div', { className: 'NB-bookmarklet-side-half NB-bookmarklet-side-subscribe' }, [
+                        $.make('div', { className: 'NB-subscribe-feed' }),
+                        $.make('div', { className: 'NB-bookmarklet-folder-container' }, [
+                            $.make('img', { className: 'NB-bookmarklet-folder-add-button', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: 'Add New Folder' }),
+                            this.make_folders(),
+                            $.make('div', { className: 'NB-bookmarklet-new-folder-container' }, [
+                                $.make('img', { className: 'NB-bookmarklet-folder-new-label', src: 'data:image/png;charset=utf-8;base64,{{ new_folder_image }}' }),
+                                $.make('input', { type: 'text', name: 'new_folder_name', className: 'NB-bookmarklet-folder-new' })
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-modal-submit' }, [
+                            $.make('div', { className: 'NB-bookmarklet-button-subscribe NB-modal-submit-button NB-modal-submit-green' }, 'Subscribe to this site')
                         ])
+                    ]),
+                    $.make('div', { className: 'NB-bookmarklet-side-half NB-bookmarklet-side-loading' }, [
+                        $.make('img', { className: 'NB-subscribe-loader', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: 'Loading...' }),
+                        $.make('div', { className: 'NB-subscribe-load-text' }, 'Shared stories are on their way...')
                     ])
                 ])
             ]);
@@ -191,7 +205,7 @@
 
         save: function() {
             var self = this;
-            var $submit = $('.NB-modal-submit-button');
+            var $submit = $('.NB-bookmarklet-button-subscribe', this.$modal);
             var folder = $('.NB-folders').val();
             var add_site_url = "http://"+this.domain+"{% url api-add-site token %}?callback=?";
             
@@ -210,23 +224,23 @@
             }
             
             $.getJSON(add_site_url, data, function(resp) {
-                self.post_save(resp);
+                self.confirm_subscription(resp.code > 0, resp.message);
             });
         },
         
-        post_save: function(resp) {
-            var $submit = $('.NB-modal-submit-button');
+        confirm_subscription: function(subscribed, message) {
+            var $submit = $('.NB-bookmarklet-button-subscribe', this.$modal);
             
-            $submit.addClass('NB-close');
+            $submit.addClass('NB-disabled');
             
-            if (resp.code == 1) {
+            if (subscribed) {
                 $submit.html($.make('div', { className: 'NB-bookmarklet-accept' }, [
-                    $.make('img', { src: 'data:image/png;charset=utf-8;base64,{{ accept_image }}' }),
-                    'Added!'
+                    $.make('img', { src: 'data:image/png;charset=utf-8;base64,' + this.images['accept_image'] }),
+                    'Subscribed'
                 ]));
-                setTimeout(function() {
-                    $.modal.close();
-                }, 2000);
+                // setTimeout(function() {
+                //     $.modal.close();
+                // }, 2000);
             } else {
                 var $error = $.make('div', { className: 'NB-bookmarklet-error' }, [
                     $.make('img', { className: 'NB-bookmarklet-folder-label', src: 'data:image/png;charset=utf-8;base64,{{ error_image }}' }),
@@ -242,15 +256,43 @@
         // =============
         
         pre_share_check_story: function() {
+            var $side = $('.NB-bookmarklet-side', this.$modal);
+            var $side_loading = $('.NB-bookmarklet-side-loading', this.$modal);
+            var $side_subscribe = $('.NB-bookmarklet-side-subscribe', this.$modal);
             var check_story_url = "http://"+this.domain+"{% url api-check-share-on-site token %}?callback=?";
             var data = {
                 story_url: window.location.href,
-                rss_url: $('link[type="application/rss+xml"]').attr('href')
+                rss_url: this.get_page_rss_url()
             };
             
-            $.getJSON(check_story_url, data, function(resp) {
-                
-            });
+            $.getJSON(check_story_url, data, _.bind(function(data) {
+                $side_loading.animate({'left': '-100%'}, {
+                    'easing': 'easeInOutQuint',
+                    'duration': 1650,
+                    'queue': false
+                });
+                $side_subscribe.css('left', $side.outerWidth(true)+4).animate({'left': 0}, {
+                    'easing': 'easeInOutQuint',
+                    'duration': 1650,
+                    'queue': false
+                });
+                this.feed = data.feed;
+                this.make_feed_subscribe(data.feed);
+                if (data.subscribed) {
+                    $('.NB-bookmarklet-folder-container', this.$modal).hide();
+                    this.confirm_subscription(data.subscribed);
+                }
+            }, this));
+        },
+        
+        make_feed_subscribe: function(feed) {
+            if (feed) {
+                var $feed = $.make('div', { className: 'NB-subscribe-feed' }, [
+                    $.make('img', { src:  'data:image/png;charset=utf-8;base64,' + feed.favicon }),
+                    $.make('div', { className: 'NB-subscribe-feed-title' }, feed.feed_title)
+                ]);
+                $('.NB-subscribe-feed', this.$modal).replaceWith($feed);
+            }
         },
         
         // ===============
@@ -258,14 +300,47 @@
         // ===============
         
         share_story: function() {
+            var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
+            
+            $share.addClass('NB-disabled').text('Sharing...');
+            
             $.ajax({
-                url: 'http://'+this.domain+"{% url api-share-story token %}?callback=?",
-                
-            })
+                url: '//'+this.domain+"{% url api-share-story token %}",
+                type: 'POST',
+                data: {
+                    title: this.story_title,
+                    content: this.story_content,
+                    comments: $('textarea[name=newsblur_comment]', this.$modal).val(),
+                    feed_id: this.feed && this.feed.id,
+                    story_url: window.location.href,
+                    rss_url: this.get_page_rss_url()
+                },
+                success: _.bind(this.post_share_story, this),
+                error: _.bind(this.error_share_story, this)
+            });
         },
         
         post_share_story: function(data) {
+            var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
             
+            if (data.code < 0) {
+                return this.error_share_story(data);
+            }
+            
+            $share.html($.make('div', { className: 'NB-bookmarklet-accept' }, [
+                $.make('img', { src: 'data:image/png;charset=utf-8;base64,' + this.images['accept_image'] }),
+                'Shared'
+            ]));
+            // setTimeout(function() {
+            //     $.modal.close();
+            // }, 2000);
+
+        },
+        
+        error_share_story: function(data) {
+            $share.removeClass('NB-disabled');
+            console.log(["error sharing", data]);
+            this.update_share_button_title();
         },
         
         open_add_folder: function() {
@@ -296,12 +371,12 @@
             } else {
                 var $readability = $(window.readability.init());
             
-                var title = $readability.children("h1").text();
-                var content = $("#readability-content", $readability).html();
+                this.story_title = $readability.children("h1").text();
+                this.story_content = $("#readability-content", $readability).html();
             }
 
-            $title.html(title);
-            $content.html(content);
+            $title.html(this.story_title);
+            $content.html(this.story_content);
         },
         
         get_selected_html: function() {
@@ -355,6 +430,10 @@
             return title;
         },
         
+        get_page_rss_url: function() {
+            return $('link[type="application/rss+xml"]').attr('href');
+        },
+        
         // ===========
         // = Actions =
         // ===========
@@ -362,7 +441,7 @@
         handle_clicks: function(elem, e) {
             var self = this;
                     
-            $.targetIs(e, { tagSelector: '.NB-modal-submit-button' }, function($t, $p) {
+            $.targetIs(e, { tagSelector: '.NB-bookmarklet-button-subscribe' }, function($t, $p) {
                 e.preventDefault();
                 
                 if (!$t.hasClass('NB-disabled')) {
@@ -379,6 +458,14 @@
                     self.open_add_folder();
                 }
                 $t.toggleClass('NB-active');
+            });
+
+            $.targetIs(e, { tagSelector: '.NB-bookmarklet-comment-submit' }, function($t, $p) {
+                e.preventDefault();
+                
+                if (!$t.hasClass('NB-disabled')) {
+                    self.share_story();
+                }
             });
 
             $.targetIs(e, { tagSelector: '.NB-close' }, function($t, $p) {

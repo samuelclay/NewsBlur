@@ -8,7 +8,8 @@ from django.contrib.auth import login as login_user
 from django.contrib.auth import logout as logout_user
 from apps.reader.forms import SignupForm, LoginForm
 from apps.profile.models import Profile
-from apps.social.models import MSocialProfile
+from apps.social.models import MSocialProfile, MSharedStory
+from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 from utils import log as logging
@@ -129,7 +130,8 @@ def add_site(request, token):
     if code > 0:
         message = 'OK'
         
-    logging.user(profile.user, "~FRAdding URL from site: ~SB%s (in %s)" % (url, folder))
+    logging.user(profile.user, "~FRAdding URL from site: ~SB%s (in %s)" % (url, folder),
+                 request=request)
     
     return HttpResponse(callback + '(' + json.encode({
         'code':    code,
@@ -140,9 +142,13 @@ def add_site(request, token):
 def check_share_on_site(request, token):
     code       = 0
     story_url  = request.GET['story_url']
-    rss_url    = request.GET['rss_url']
+    rss_url    = request.GET.get('rss_url')
     callback   = request.GET['callback']
+    other_stories = None
+    same_stories = None
+    usersub    = None
     message    = None
+    user       = None
     
     
     if not story_url:
@@ -150,22 +156,38 @@ def check_share_on_site(request, token):
     else:
         try:
             profile = Profile.objects.get(secret_token=token)
+            user = profile.user
         except Profile.DoesNotExist:
             code = -1
-            
-    logging.user(profile.user, "~BM~FCChecking share from site: ~SB%s" % (story_url))
     
-    return HttpResponse(callback + '(' + json.encode({
-        'code':     code,
-        'message':  message,
-        'feed':     None,
+    feed = Feed.get_feed_from_url(rss_url, create=False, fetch=False)
+    if not feed:
+        feed = Feed.get_feed_from_url(story_url, create=False, fetch=True)
+    
+    if feed and user:
+        usersub = UserSubscription.objects.filter(user=user, feed=feed)
+        same_stories, other_stories = MSharedStory.get_shared_stories(feed.pk, story_url)
+        
+    logging.user(profile.user, "~BM~FCChecking share from site: ~SB%s" % (story_url),
+                 request=request)
+    
+    response = HttpResponse(callback + '(' + json.encode({
+        'code'          : code,
+        'message'       : message,
+        'feed'          : feed,
+        'subscribed'    : usersub and usersub.count() > 0,
+        'same_stories'  : same_stories,
+        'other_stories' : other_stories,
     }) + ')', mimetype='text/plain')
+    response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Methods'] = 'GET'
+    
+    return response
 
 def share_story(request, token):
     code       = 0
-    story_url  = request.GET['story_url']
-    comments   = request.GET['comments']
-    callback   = request.GET['callback']
+    story_url  = request.POST['story_url']
+    comments   = request.POST['comments']
     message    = None
     
     if not story_url:
@@ -178,8 +200,12 @@ def share_story(request, token):
             
     logging.user(profile.user, "~BM~FYSharing story from site: ~SB%s: %s" % (story_url, comments))
     
-    return HttpResponse(callback + '(' + json.encode({
+    response = HttpResponse(json.encode({
         'code':     code,
         'message':  message,
         'story':    None,
-    }) + ')', mimetype='text/plain')
+    }), mimetype='text/plain')
+    response['Access-Control-Allow-Origin'] = '*'
+    response['Access-Control-Allow-Methods'] = 'POST'
+    
+    return response
