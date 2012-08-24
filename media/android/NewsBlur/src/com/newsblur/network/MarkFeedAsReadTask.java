@@ -34,7 +34,7 @@ public class MarkFeedAsReadTask extends AsyncTask<String, Void, Boolean> {
 
 	@Override
 	protected void onPostExecute(Boolean result) {
-		if (result) {
+		if (result.booleanValue()) {
 			ContentValues values = new ContentValues();
 			values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
 			values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
@@ -47,4 +47,5 @@ public class MarkFeedAsReadTask extends AsyncTask<String, Void, Boolean> {
 			Toast.makeText(context, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
 		}
 	}
+	
 }

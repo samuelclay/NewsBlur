@@ -182,6 +182,10 @@ public class APIClient {
 	}
 	
 	public APIResponse post(final String urlString, final ValueMultimap valueMap) {
+		return post(urlString, valueMap, true);
+	}
+	
+	public APIResponse post(final String urlString, final ValueMultimap valueMap, boolean jsonIfy) {
 		HttpURLConnection connection = null;
 		if (!NetworkUtils.isOnline(context)) {
 			APIResponse response = new APIResponse();
@@ -194,7 +198,7 @@ public class APIClient {
 			connection = (HttpURLConnection) url.openConnection();
 			connection.setDoOutput(true);
 			connection.setRequestMethod("POST");
-			String parameterString = valueMap.getJsonString();
+			String parameterString = jsonIfy ? valueMap.getJsonString() : valueMap.getParameterString();
 			
 			connection.setFixedLengthStreamingMode(parameterString.getBytes().length);
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");

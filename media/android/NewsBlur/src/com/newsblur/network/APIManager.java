@@ -72,7 +72,7 @@ public class APIManager {
 		for (String feedId : feedIds) {
 			values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		}
-		final APIResponse response = client.post(APIConstants.URL_MARK_FEED_AS_READ, values);
+		final APIResponse response = client.post(APIConstants.URL_MARK_FEED_AS_READ, values, false);
 		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			return true;
 		} else {
