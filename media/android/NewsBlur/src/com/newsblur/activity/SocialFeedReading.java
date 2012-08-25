@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.newsblur.database.FeedProvider;
-import com.newsblur.database.MarkStoryAsReadIntenallyTask;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.network.MarkSocialStoryAsReadTask;
@@ -37,7 +36,7 @@ public class SocialFeedReading extends Reading {
 		Story story = readingAdapter.getStory(passedPosition);
 		markSocialAsReadList.add(story.feedId, story.id);
 		
-		new MarkStoryAsReadIntenallyTask(contentResolver).execute(story);
+		
 	}
 	
 	@Override
@@ -80,6 +79,25 @@ public class SocialFeedReading extends Reading {
 			jsonMap.put(userId, feedStoryMap);
 			return jsonMap;
 		}
+	}
+
+
+	@Override
+	public void triggerRefresh() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void triggerRefresh(int page) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateAfterSync() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

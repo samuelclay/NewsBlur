@@ -1,6 +1,5 @@
 package com.newsblur.activity;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -42,7 +41,7 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 	}
 
 	public Story getStory(int position) {
-		if (stories == null || position > stories.getCount()) {
+		if (stories == null || position >= stories.getCount()) {
 			return null;
 		} else {
 			stories.moveToPosition(position);

@@ -1,6 +1,9 @@
 package com.newsblur.activity;
 
+import java.util.List;
+
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +11,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -15,7 +20,8 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
-import com.newsblur.database.MarkStoryAsReadIntenallyTask;
+import com.newsblur.database.DatabaseConstants;
+import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
@@ -33,9 +39,9 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 
 	protected int passedPosition;
 	protected int currentState;
-	
-	private ViewPager pager;
-	private FragmentManager fragmentManager;
+
+	protected ViewPager pager;
+	protected FragmentManager fragmentManager;
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
 	protected SyncUpdateFragment syncFragment;
@@ -48,17 +54,16 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 		setContentView(R.layout.activity_reading);
 
 		fragmentManager = getSupportFragmentManager();
-		
+
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		contentResolver = getContentResolver();
-		
-		setResult(RESULT_OK);
+
 	}
 
 	protected void setupPager() {
-		
+
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
@@ -81,7 +86,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 		inflater.inflate(R.menu.reading, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int currentItem = pager.getCurrentItem();
@@ -128,17 +133,20 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 
 	@Override
 	public void onPageSelected(final int position) {
-		new MarkStoryAsReadIntenallyTask(contentResolver).execute(readingAdapter.getStory(position));
+		//new MarkStoryAsReadIntenallyTask(contentResolver).execute(readingAdapter.getStory(position));
 	}
 
 	@Override
-	public void updateAfterSync() {
-		setSupportProgressBarIndeterminateVisibility(false);
-	}
+	public abstract void updateAfterSync();
 
 	@Override
 	public void updateSyncStatus(boolean syncRunning) {
 		setSupportProgressBarIndeterminateVisibility(syncRunning);
 	}
+
+	public abstract void triggerRefresh();
+	public abstract void triggerRefresh(int page);
+
+	
 
 }

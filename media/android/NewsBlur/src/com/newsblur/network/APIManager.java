@@ -87,7 +87,7 @@ public class APIManager {
 		for (String storyId : storyIds) {
 			values.put(APIConstants.PARAMETER_STORYID, storyId);
 		}
-		final APIResponse response = client.post(APIConstants.URL_MARK_STORY_AS_READ, values);
+		final APIResponse response = client.post(APIConstants.URL_MARK_STORY_AS_READ, values, false);
 		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			return true;
 		} else {

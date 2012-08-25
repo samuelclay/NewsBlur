@@ -52,6 +52,7 @@ public class FeedProvider extends ContentProvider {
 	private static final int REPLIES = 15;
 	private static final int MULTIFEED_STORIES = 16;
 	private static final int ALL_STORIES = 17;
+	private static final int FEED_STORIES_NO_UPDATE = 18;
 	
 	
 	private BlurDatabase databaseHelper;
@@ -69,6 +70,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/socialfeed/#/", SOCIALFEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feed/#/", FEED_STORIES);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feed/#/noupdate", FEED_STORIES_NO_UPDATE);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/", ALL_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feeds/", MULTIFEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/story/*/", INDIVIDUAL_STORY);
@@ -177,6 +179,14 @@ public class FeedProvider extends ContentProvider {
 			db.setTransactionSuccessful();
 			db.endTransaction();
 			break;	
+			
+			// Inserting a story assuming it's not already in the DB
+		case FEED_STORIES_NO_UPDATE:
+			db.beginTransaction();
+			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+			db.setTransactionSuccessful();
+			db.endTransaction();
+			break;		
 			
 			// Inserting a story	
 		case OFFLINE_UPDATES:

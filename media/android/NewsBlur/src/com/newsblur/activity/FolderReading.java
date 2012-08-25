@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.newsblur.database.FeedProvider;
-import com.newsblur.database.MarkStoryAsReadIntenallyTask;
 import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
@@ -34,7 +33,7 @@ public class FolderReading extends Reading {
 		Story story = readingAdapter.getStory(passedPosition);
 		
 		storiesToMarkAsRead.put(readingAdapter.getStory(passedPosition).feedId, readingAdapter.getStory(passedPosition).id);
-		new MarkStoryAsReadIntenallyTask(contentResolver).execute(story);
+		
 	}
 	
 	@Override
@@ -47,6 +46,24 @@ public class FolderReading extends Reading {
 	protected void onDestroy() {
 		new MarkMixedStoriesAsReadTask(this, syncFragment, storiesToMarkAsRead).execute();
 		super.onDestroy();
+	}
+
+	@Override
+	public void triggerRefresh() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void triggerRefresh(int page) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateAfterSync() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

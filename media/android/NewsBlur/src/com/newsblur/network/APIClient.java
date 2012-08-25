@@ -3,7 +3,6 @@ package com.newsblur.network;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -225,6 +224,7 @@ public class APIClient {
 		}
 	}
 
+	
 	/*
 	 * This method enables HTTP Response cache should the device support it.
 	 * See Android Developer's Blog for more detail: http://android-developers.blogspot.ca/2011/09/androids-http-clients.html

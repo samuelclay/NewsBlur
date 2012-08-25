@@ -150,6 +150,7 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
+		
 				
 			case EXTRA_TASK_MULTIFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
