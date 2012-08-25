@@ -79,6 +79,13 @@
     margin: 12px 0 12px !important;
 }
 
+.NB-modal .NB-bookmarklet-page-content img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+
 /* ====================== */
 /* = Bookmarklet Layout = */
 /* ====================== */

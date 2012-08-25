@@ -1,5 +1,6 @@
 import os
 import base64
+import urlparse
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -13,6 +14,7 @@ from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 from utils import log as logging
+from utils.scrubber import Scrubber
 
 @json.json_view
 def login(request):
@@ -166,7 +168,8 @@ def check_share_on_site(request, token):
     
     if feed and user:
         usersub = UserSubscription.objects.filter(user=user, feed=feed)
-        same_stories, other_stories = MSharedStory.get_shared_stories(feed.pk, story_url)
+    your_story, same_stories, other_stories = MSharedStory.get_shared_stories(feed and feed.pk,
+                                              story_url, user_id=profile.user.pk)
         
     logging.user(profile.user, "~BM~FCChecking share from site: ~SB%s" % (story_url),
                  request=request)
@@ -176,6 +179,7 @@ def check_share_on_site(request, token):
         'message'       : message,
         'feed'          : feed,
         'subscribed'    : usersub and usersub.count() > 0,
+        'your_story'    : your_story,
         'same_stories'  : same_stories,
         'other_stories' : other_stories,
     }) + ')', mimetype='text/plain')
@@ -192,6 +196,7 @@ def share_story(request, token):
     content   = request.POST['content']
     rss_url   = request.POST.get('rss_url')
     feed_id   = request.POST.get('feed_id')
+    feed      = None
     message   = None
     
     if not story_url:
@@ -205,11 +210,18 @@ def share_story(request, token):
     if feed_id:
         feed = Feed.objects.get(pk=feed_id)
     else:
-        feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)
+        if rss_url:
+            feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)
         if not feed:
             feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
         if feed:
             feed_id = feed.pk
+    
+    parsed_url = urlparse.urlparse(story_url)
+    base_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.hostname, parsed_url.path)
+    scrubber = Scrubber(base_url=base_url)
+    content = scrubber.scrub(content)
+    title = scrubber.scrub(title)
     
     shared_story = MSharedStory.objects.filter(user_id=profile.user.pk,
                                                story_feed_id=feed_id, 
@@ -217,6 +229,7 @@ def share_story(request, token):
     if not shared_story:
         story_db = {
             "story_guid": story_url,
+            "story_permalink": story_url,
             "story_title": title,
             "story_feed_id": feed_id,
             "story_content": content,
@@ -232,7 +245,11 @@ def share_story(request, token):
             socialsub.save()
         logging.user(profile.user, "~BM~FYSharing story from site: ~SB%s: %s" % (story_url, comments))
     else:
+        shared_story.story_content = content
+        shared_story.story_title = title
         shared_story.comments = comments
+        shared_story.story_permalink = story_url
+        shared_story.story_guid = story_url
         shared_story.has_comments = bool(comments)
         shared_story.save()
         logging.user(profile.user, "~BM~FY~SBUpdating~SN shared story from site: ~SB%s: %s" % (story_url, comments))

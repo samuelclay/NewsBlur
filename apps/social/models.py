@@ -935,6 +935,8 @@ class MSocialSubscription(mongo.Document):
                                                                                feed_id__in=story_feed_ids))
 
         for story in stories:
+            if not story.story_feed_id:
+                continue
             scores = {
                 'feed'   : apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
                                                   social_user_id=self.subscription_user_id),
@@ -1063,6 +1065,15 @@ class MSharedStory(mongo.Document):
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()
+    
+    def to_json(self):
+        return {
+            "user_id": self.user_id,
+            "shared_date": self.shared_date,
+            "story_title": self.story_title,
+            "story_content": self.story_content_z and zlib.decompress(self.story_content_z),
+            "comments": self.comments,
+        }
         
     def save(self, *args, **kwargs):
         if self.story_content:
@@ -1100,14 +1111,23 @@ class MSharedStory(mongo.Document):
         super(MSharedStory, self).delete(*args, **kwargs)
     
     @classmethod
-    def get_shared_stories(cls, feed_id, story_url=None, limit=3):
+    def get_shared_stories(cls, feed_id, story_url=None, user_id=None, limit=3):
+        your_story = None
+        if user_id:
+            your_story = cls.objects.filter(story_feed_id=feed_id,
+                                            story_permalink=story_url,
+                                            user_id=user_id).limit(1).first()
+            
         same_stories = None
         if story_url:
-            same_stories = cls.objects.filter(story_feed_id=feed_id, story_permalink=story_url).order_by('-shared_date')
+            same_stories = cls.objects.filter(story_feed_id=feed_id,
+                                              story_permalink=story_url,
+                                              user_id__ne=user_id).order_by('-shared_date')
         
-        other_stories = cls.objects.filter(story_feed_id=feed_id, story_permalink__ne=story_url).order_by('-shared_date')
+        other_stories = cls.objects.filter(story_feed_id=feed_id,
+                                           story_permalink__ne=story_url).order_by('-shared_date')
         
-        return same_stories, other_stories
+        return your_story, same_stories, other_stories
         
     def ensure_story_db_id(self, save=True):
         if not self.story_db_id:

@@ -67,8 +67,12 @@
             this.$modal.bind('click', $.rescope(this.handle_clicks, this));
 
             var $comment = $('textarea[name=newsblur_comment]', this.$modal);
+            var $title = $('.NB-bookmarklet-page-title', this.$modal);
+            var $content = $('.NB-bookmarklet-page-content', this.$modal);
             $comment.bind('keydown', $.rescope(this.update_share_button_title, this));
             $comment.bind('keyup', $.rescope(this.update_share_button_title, this));
+            $title.bind('keyup', $.rescope(this.update_share_button_title, this));
+            $content.bind('keyup', $.rescope(this.update_share_button_title, this));
             $comment.bind('keydown', 'ctrl+return', $.rescope(this.share_story, this));
             $comment.bind('keydown', 'meta+return', $.rescope(this.share_story, this));
         },
@@ -84,9 +88,9 @@
                 $.make('div', { className: 'NB-modal-title' }, 'Share this story on NewsBlur'),
                 $.make('div', { className: 'NB-bookmarklet-main'}, [
                     $.make('div', { className: 'NB-bookmarklet-page' }, [
-                        $.make('div', { className: 'NB-bookmarklet-page-title' }),
+                        $.make('div', { className: 'NB-bookmarklet-page-title', contenteditable: true }),
                         $.make('div', { className: 'NB-bookmarklet-page-content-wrapper' }, [
-                            $.make('div', { className: 'NB-bookmarklet-page-content' })
+                            $.make('div', { className: 'NB-bookmarklet-page-content', contenteditable: true })
                         ]),
                         $.make('div', { className: 'NB-bookmarklet-page-comment NB-modal-submit' }, [
                             $.make('div', { className: 'NB-bookmarklet-comment-photo' }, [
@@ -95,7 +99,8 @@
                             $.make('div', { className: 'NB-bookmarklet-comment-input' }, [
                                 $.make('textarea', { name: 'newsblur_comment', placeholder: "Comments..." })
                             ]),
-                            $.make('div', { className: 'NB-bookmarklet-comment-submit NB-modal-submit-button NB-modal-submit-green' }, 'Share this story')
+                            $.make('div', { className: 'NB-bookmarklet-comment-submit NB-modal-submit-button NB-modal-submit-green' }, 'Share this story'),
+                            $.make('div', { className: 'NB-bookmarklet-comment-error NB-error' })
                         ])
                     ])
                 ]),
@@ -259,6 +264,8 @@
             var $side = $('.NB-bookmarklet-side', this.$modal);
             var $side_loading = $('.NB-bookmarklet-side-loading', this.$modal);
             var $side_subscribe = $('.NB-bookmarklet-side-subscribe', this.$modal);
+            var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
+            var $comments = $('textarea[name=newsblur_comment]', this.$modal);
             var check_story_url = "http://"+this.domain+"{% url api-check-share-on-site token %}?callback=?";
             var data = {
                 story_url: window.location.href,
@@ -282,6 +289,15 @@
                     $('.NB-bookmarklet-folder-container', this.$modal).hide();
                     this.confirm_subscription(data.subscribed);
                 }
+                if (data.your_story) {
+                    $(".NB-bookmarklet-page-title", this.$modal).html(data.your_story['story_title']);
+                    $(".NB-bookmarklet-page-content", this.$modal).html(data.your_story['story_content']);
+                    $share.addClass('NB-disabled').html($.make('div', { className: 'NB-bookmarklet-accept' }, [
+                        $.make('img', { src: 'data:image/png;charset=utf-8;base64,' + this.images['accept_image'] }),
+                        'Shared'
+                    ]));
+                    $comments.val(data.your_story['comments']);
+                }
             }, this));
         },
         
@@ -301,17 +317,20 @@
         
         share_story: function() {
             var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
+            var $error = $(".NB-bookmarklet-comment-error", this.$modal);
             
+            $error.html('');
             $share.addClass('NB-disabled').text('Sharing...');
+            this.feed = this.feed || {};
             
             $.ajax({
                 url: '//'+this.domain+"{% url api-share-story token %}",
                 type: 'POST',
                 data: {
-                    title: this.story_title,
-                    content: this.story_content,
+                    title: $(".NB-bookmarklet-page-title", this.$modal).html() || this.story_title,
+                    content: $(".NB-bookmarklet-page-content", this.$modal).html() || this.story_content,
                     comments: $('textarea[name=newsblur_comment]', this.$modal).val(),
-                    feed_id: this.feed && this.feed.id,
+                    feed_id: this.feed.id,
                     story_url: window.location.href,
                     rss_url: this.get_page_rss_url()
                 },
@@ -331,18 +350,23 @@
                 $.make('img', { src: 'data:image/png;charset=utf-8;base64,' + this.images['accept_image'] }),
                 'Shared'
             ]));
-            // setTimeout(function() {
-            //     $.modal.close();
-            // }, 2000);
+            setTimeout(function() {
+                $.modal.close();
+            }, 2000);
 
         },
         
         error_share_story: function(data) {
             var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
+            var $error = $(".NB-bookmarklet-comment-error", this.$modal);
             
             $share.removeClass('NB-disabled');
+            $error.show();
             console.log(["error sharing", data]);
+            
             this.update_share_button_title();
+
+            $error.text(data.message || "Sorry, but there was an error trying to share this story.")
         },
         
         open_add_folder: function() {
@@ -367,9 +391,9 @@
             var $content = $('.NB-bookmarklet-page-content', this.$modal);
 
             if (selected) {
-                var title = document.title;
-                var content = selected;
-                console.log(["content selected", title, content]);
+                this.story_title = document.title;
+                this.story_content = selected;
+                console.log(["content selected", this.story_title, this.story_content]);
             } else {
                 var $readability = $(window.readability.init());
             
@@ -480,7 +504,10 @@
         update_share_button_title: function() {
             var $comment = $('textarea[name=newsblur_comment]', this.$modal);
             var $submit = $('.NB-bookmarklet-comment-submit', this.$modal);
-
+            var $error = $(".NB-bookmarklet-comment-error", this.$modal);
+            
+            $error.html('');
+            $submit.removeClass('NB-disabled');
             if ($comment.val().length) {
                 $submit.text('Share with comments');
             } else {
