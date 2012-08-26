@@ -226,7 +226,7 @@ def share_story(request, token):
     title     = request.POST['title']
     content   = request.POST['content']
     rss_url   = request.POST.get('rss_url')
-    feed_id   = request.POST.get('feed_id')
+    feed_id   = request.POST.get('feed_id') or 0
     feed      = None
     message   = None
     
@@ -283,6 +283,7 @@ def share_story(request, token):
         shared_story.story_permalink = story_url
         shared_story.story_guid = story_url
         shared_story.has_comments = bool(comments)
+        shared_story.story_feed_id = feed_id
         shared_story.save()
         logging.user(profile.user, "~BM~FY~SBUpdating~SN shared story from site: ~SB%s: %s" % (story_url, comments))
     

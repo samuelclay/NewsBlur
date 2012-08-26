@@ -8,5 +8,6 @@ class ConsoleExceptionMiddleware:
         print "######################## Exception #############################"
         print '\n'.join(traceback.format_exception(*(exc_info or sys.exc_info())))
         print "################################################################"
+        
         #pprint(request)
         #print "################################################################"

@@ -796,14 +796,15 @@ def mark_social_stories_as_read(request):
 @json.json_view
 def mark_story_as_unread(request):
     story_id = request.POST['story_id']
-    feed_id = int(request.POST['feed_id'])
+    feed_id = request.POST['feed_id']
+    feed_id = int(feed_id)
     
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
         feed = usersub.feed
     except UserSubscription.DoesNotExist:
         usersub = None
-        feed = Feed.objects.get(pk=feed_id)
+        feed = Feed.get_by_id(feed_id)
         
     if usersub and not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
