@@ -100,14 +100,19 @@
     width: 530px;
     overflow: hidden;
     float: right;
-    border-left: 6px solid #74B3B7;
+    border-left: 6px solid #38457E;
     margin: 24px 0 0;
 }
 .NB-bookmarklet .NB-bookmarklet-side {
-    width: 26%;
-    float: left;
-    height: 100%;
-    padding: 12px;
+    padding: 0 12px;
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 216px;
+    height: 450px;
+    margin: 24px 0 0;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* ======================== */
@@ -314,13 +319,6 @@
 /* = Side Layout = */
 /* =============== */
 
-.NB-bookmarklet .NB-bookmarklet-side {
-    position: relative;
-    width: 200px;
-    height: 400px;
-    margin: 24px 0 0;
-    overflow: hidden;
-}
 .NB-bookmarklet .NB-bookmarklet-side-half {
     position: absolute;
     top: 0;
@@ -362,3 +360,91 @@
     padding: 24px 24px;
 }
 
+/* ================== */
+/* = Shared Stories = */
+/* ================== */
+
+.NB-bookmarklet .NB-bookmarklet-stories-title {
+    font-weight: bold;
+    font-size: 10px;
+    text-transform: uppercase;
+    margin: 18px 6px 12px 0;
+    border-top: 1px solid #E2E2E2;
+    padding: 6px 6px 8px;
+    background-color: #F5F5F5;
+}
+.NB-bookmarklet .NB-bookmarklet-stories-title img {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin: 0 6px -2px 0;
+    vertical-align: bottom;
+}
+.NB-bookmarklet .NB-bookmarklet-user {
+    position: relative;
+    padding: 1px 12px 1px 26px;
+    min-height: 16px;
+    margin: 0 6px 0 0;
+    border-radius: 4px;
+    display: block;
+    color: #303030;
+    text-decoration: none;
+    background-color: white;
+}
+.NB-bookmarklet .NB-bookmarklet-user img {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    position: absolute;
+    top: 1px;
+    left: 4px;
+}
+.NB-bookmarklet .NB-story {
+    margin: 2px 6px 0 0px;
+    padding: 6px 12px 4px 26px;
+    line-height: 14px;
+    position: relative;
+    border-radius: 4px;
+    display: block;
+    color: #303030;
+    text-decoration: none;
+    background-color: white;
+}
+.NB-bookmarklet .NB-story:hover,
+.NB-bookmarklet .NB-bookmarklet-user:hover {
+    cursor: pointer;
+    background-color: #F2F5FE;
+}
+.NB-bookmarklet .NB-story:active,
+.NB-bookmarklet .NB-bookmarklet-user:active {
+    cursor: pointer;
+    background-color: #FEE5D6;
+}
+.NB-bookmarklet .NB-story img {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    position: absolute;
+    top: 6px;
+    left: 4px;
+}
+.NB-bookmarklet .NB-story-username {
+    display: inline;
+    font-weight: bold;
+}
+.NB-bookmarklet .NB-story-title {
+    display: inline;
+    color: #405BA8;
+}
+.NB-bookmarklet .NB-story-date {
+    color: #A0A0A0;
+    font-size: 10px;
+    text-transform: uppercase;
+    margin: 4px 0 0;
+}
+.NB-bookmarklet .NB-story-comments {
+    margin: 4px 0 0;
+    font-size: 10px;
+    line-height: 12px;
+    color: #505050;
+}

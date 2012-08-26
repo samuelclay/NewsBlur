@@ -15,6 +15,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 from utils import log as logging
 from utils.scrubber import Scrubber
+from utils.feed_functions import relative_timesince
 
 @json.json_view
 def login(request):
@@ -152,13 +153,12 @@ def check_share_on_site(request, token):
     message    = None
     user       = None
     
-    
     if not story_url:
         code = -1
     else:
         try:
-            profile = Profile.objects.get(secret_token=token)
-            user = profile.user
+            user_profile = Profile.objects.get(secret_token=token)
+            user = user_profile.user
         except Profile.DoesNotExist:
             code = -1
     
@@ -167,21 +167,50 @@ def check_share_on_site(request, token):
         feed = Feed.get_feed_from_url(story_url, create=False, fetch=True)
     
     if feed and user:
-        usersub = UserSubscription.objects.filter(user=user, feed=feed)
-    your_story, same_stories, other_stories = MSharedStory.get_shared_stories(feed and feed.pk,
-                                              story_url, user_id=profile.user.pk)
+        try:
+            usersub = UserSubscription.objects.filter(user=user, feed=feed)
+        except UserSubscription.DoesNotExist:
+            usersub = None
+    feed_id = feed and feed.pk
+    your_story, same_stories, other_stories = MSharedStory.get_shared_stories_from_site(feed_id,
+                                              user_id=user_profile.user.pk, story_url=story_url)
+    previous_stories = MSharedStory.objects.filter(user_id=user_profile.user.pk).order_by('-shared_date').limit(3)
+    previous_stories = [{
+        "user_id": story.user_id,
+        "story_title": story.story_title,
+        "comments": story.comments,
+        "shared_date": story.shared_date,
+        "relative_date": relative_timesince(story.shared_date),
+        "blurblog_permalink": story.blurblog_permalink(),
+    } for story in previous_stories]
+    
+    user_ids = set([user_profile.user.pk])
+    for story in same_stories:
+        user_ids.add(story['user_id'])
+    for story in other_stories:
+        user_ids.add(story['user_id'])
+    
+    users = {}
+    profiles = MSocialProfile.profiles(user_ids)
+    for profile in profiles:
+        users[profile.user_id] = {
+            "username": profile.username,
+            "photo_url": profile.photo_url,
+        }
         
-    logging.user(profile.user, "~BM~FCChecking share from site: ~SB%s" % (story_url),
+    logging.user(user_profile.user, "~BM~FCChecking share from site: ~SB%s" % (story_url),
                  request=request)
     
     response = HttpResponse(callback + '(' + json.encode({
-        'code'          : code,
-        'message'       : message,
-        'feed'          : feed,
-        'subscribed'    : usersub and usersub.count() > 0,
-        'your_story'    : your_story,
-        'same_stories'  : same_stories,
-        'other_stories' : other_stories,
+        'code'              : code,
+        'message'           : message,
+        'feed'              : feed,
+        'subscribed'        : bool(usersub),
+        'your_story'        : your_story,
+        'same_stories'      : same_stories,
+        'other_stories'     : other_stories,
+        'previous_stories'  : previous_stories,
+        'users'             : users,
     }) + ')', mimetype='text/plain')
     response['Access-Control-Allow-Origin'] = '*'
     response['Access-Control-Allow-Methods'] = 'GET'

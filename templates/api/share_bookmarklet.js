@@ -10,6 +10,7 @@
         
         this.token    = "{{ token }}";
         this.active   = true;
+        this.user_id  = '{{ user.pk }}';
         this.username = '{{ user.username }}';
         this.profile  = {{ user_profile|safe }};
         this.folders  = {{ folders|safe }};
@@ -60,9 +61,6 @@
             this.make_modal();
             this.open_modal();
             this.get_page_content();
-            _.delay(_.bind(function() {
-                this.pre_share_check_story();
-            }, this), 0);
         
             this.$modal.bind('click', $.rescope(this.handle_clicks, this));
 
@@ -117,7 +115,10 @@
                         ]),
                         $.make('div', { className: 'NB-modal-submit' }, [
                             $.make('div', { className: 'NB-bookmarklet-button-subscribe NB-modal-submit-button NB-modal-submit-green' }, 'Subscribe to this site')
-                        ])
+                        ]),
+                        $.make('div', { className: 'NB-bookmarklet-stories-same NB-empty'}),
+                        $.make('div', { className: 'NB-bookmarklet-stories-other NB-empty'}),
+                        $.make('div', { className: 'NB-bookmarklet-stories-previous NB-empty'})
                     ]),
                     $.make('div', { className: 'NB-bookmarklet-side-half NB-bookmarklet-side-loading' }, [
                         $.make('img', { className: 'NB-subscribe-loader', src: 'data:image/png;charset=utf-8;base64,{{ add_image }}', title: 'Loading...' }),
@@ -173,6 +174,7 @@
                         dialog.container.fadeIn(200);
                         dialog.data.fadeIn(200);
                         setTimeout(function() {
+                            self.pre_share_check_story();
                             $(window).resize();
                         }, 10);
                     });
@@ -261,11 +263,14 @@
         // =============
         
         pre_share_check_story: function() {
+            var $main = $('.NB-bookmarklet-main', this.$modal);
             var $side = $('.NB-bookmarklet-side', this.$modal);
             var $side_loading = $('.NB-bookmarklet-side-loading', this.$modal);
             var $side_subscribe = $('.NB-bookmarklet-side-subscribe', this.$modal);
             var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
             var $comments = $('textarea[name=newsblur_comment]', this.$modal);
+            var $content_wrapper = $('.NB-bookmarklet-page-content-wrapper', this.$modal);
+            var $content = $('.NB-bookmarklet-page-content', this.$modal);
             var check_story_url = "http://"+this.domain+"{% url api-check-share-on-site token %}?callback=?";
             var data = {
                 story_url: window.location.href,
@@ -298,6 +303,25 @@
                     ]));
                     $comments.val(data.your_story['comments']);
                 }
+                this.users = data.users;
+                if (data.same_stories && data.same_stories.length) {
+                    this.make_shared_stories_same(data.same_stories);
+                }
+                if (data.other_stories && data.other_stories.length) {
+                    this.make_shared_stories_other(data.other_stories);
+                }
+                if (data.previous_stories && data.previous_stories.length) {
+                    this.make_shared_stories_previous(data.previous_stories);
+                }
+                
+                var modal_height = $(".NB-bookmarklet").parent().height();
+                var total_height = $(".NB-bookmarklet").height();
+                if (modal_height < total_height) {
+                    var diff = total_height - modal_height;
+                    $content_wrapper.css('max-height', parseInt($content_wrapper.css('max-height'), 10) - (diff + 24));
+                    console.log(["heights", $main.height(), modal_height, total_height, diff, $content_wrapper.css('max-height'), $side.height()]);
+                }
+                $side.height($main.height());
             }, this));
         },
         
@@ -310,6 +334,70 @@
                 $('.NB-subscribe-feed', this.$modal).replaceWith($feed);
             }
         },
+        
+        make_shared_stories_same: function(stories) {
+            var $stories = $(".NB-bookmarklet-stories-same", this.$modal);
+
+            $stories.removeClass('NB-empty');
+            $stories.empty().append($.make('div', { className: 'NB-bookmarklet-stories-title' }, [
+                'Everybody sharing this story'
+            ]));
+            
+            _.each(stories, _.bind(function(story) {
+                var $story = this.make_shared_story(story);
+                $stories.append($story);
+            }, this));
+        },
+        
+        make_shared_stories_other: function(stories) {
+            var $stories = $(".NB-bookmarklet-stories-other", this.$modal);
+
+            $stories.removeClass('NB-empty');
+            $stories.empty().append($.make('div', { className: 'NB-bookmarklet-stories-title' }, [
+                $.make('img', { src:  'data:image/png;charset=utf-8;base64,' + this.feed.favicon }),
+                'Other stories from this site'
+            ]));
+            
+            _.each(stories, _.bind(function(story) {
+                var $story = this.make_shared_story(story);
+                $stories.append($story);
+            }, this));
+        },
+        
+        make_shared_stories_previous: function(stories) {
+            var $stories = $(".NB-bookmarklet-stories-previous", this.$modal);
+            var user = this.users[this.user_id];
+            
+            $stories.removeClass('NB-empty');
+            $stories.empty().append($.make('div', { className: 'NB-bookmarklet-stories-title' }, [
+                $.make('img', { src: user.photo_url }),
+                'Previously you shared'
+            ]));
+            
+            _.each(stories, _.bind(function(story) {
+                var $story = this.make_shared_story(story);
+                $stories.append($story);
+            }, this));
+        },
+        
+        make_shared_story: function(story) {
+            var user = this.users[story.user_id];
+            var $story = $.make('a', { 
+                className: 'NB-bookmarklet-shared-story NB-story',
+                href: story.blurblog_permalink,
+                target: '_blank'
+            }, [
+                $.make('img', { src: user.photo_url }),
+                $.make('div', { className: 'NB-story-username' }, user.username),
+                (story.story_title && story.story_title.length && ' shared '),
+                (story.story_title && story.story_title.length && $.make('div', { className: 'NB-story-title' }, story.story_title)),
+                (story.comments && story.comments.length && $.make('div', { className: 'NB-story-comments' }, story.comments)),
+                $.make('div', { className: 'NB-story-date' }, story.relative_date + ' ago')
+            ]);
+            
+            return $story;
+        },
+        
         
         // ===============
         // = Share story =

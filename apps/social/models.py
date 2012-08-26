@@ -935,8 +935,11 @@ class MSocialSubscription(mongo.Document):
                                                                                feed_id__in=story_feed_ids))
 
         for story in stories:
-            if not story.story_feed_id:
+            if isinstance(story, dict) and not story['story_feed_id']:
                 continue
+            elif hasattr(story, 'story_feed_id') and not story.story_feed_id:
+                continue
+                
             scores = {
                 'feed'   : apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
                                                   social_user_id=self.subscription_user_id),
@@ -1111,21 +1114,35 @@ class MSharedStory(mongo.Document):
         super(MSharedStory, self).delete(*args, **kwargs)
     
     @classmethod
-    def get_shared_stories(cls, feed_id, story_url=None, user_id=None, limit=3):
-        your_story = None
-        if user_id:
-            your_story = cls.objects.filter(story_feed_id=feed_id,
-                                            story_permalink=story_url,
-                                            user_id=user_id).limit(1).first()
-            
-        same_stories = None
-        if story_url:
-            same_stories = cls.objects.filter(story_feed_id=feed_id,
-                                              story_permalink=story_url,
-                                              user_id__ne=user_id).order_by('-shared_date')
+    def get_shared_stories_from_site(cls, feed_id, user_id, story_url, limit=3):
+        your_story = cls.objects.filter(story_feed_id=feed_id,
+                                        story_permalink=story_url,
+                                        user_id=user_id).limit(1).first()
+        same_stories = cls.objects.filter(story_feed_id=feed_id,
+                                          story_permalink=story_url,
+                                          user_id__ne=user_id
+                                          ).order_by('-shared_date')
+
+        same_stories = [{
+            "user_id": story.user_id,
+            "comments": story.comments,
+            "relative_date": relative_timesince(story.shared_date),
+            "blurblog_permalink": story.blurblog_permalink(),
+        } for story in same_stories]
         
-        other_stories = cls.objects.filter(story_feed_id=feed_id,
-                                           story_permalink__ne=story_url).order_by('-shared_date')
+        other_stories = []
+        if feed_id:
+            other_stories = cls.objects.filter(story_feed_id=feed_id,
+                                               story_permalink__ne=story_url
+                                               ).order_by('-shared_date').limit(limit)
+            other_stories = [{
+                "user_id": story.user_id,
+                "story_title": story.story_title,
+                "story_permalink": story.story_permalink,
+                "comments": story.comments,
+                "relative_date": relative_timesince(story.shared_date),
+                "blurblog_permalink": story.blurblog_permalink(),
+            } for story in other_stories]
         
         return your_story, same_stories, other_stories
         
