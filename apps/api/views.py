@@ -1,6 +1,7 @@
 import os
 import base64
 import urlparse
+import datetime
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -263,6 +264,7 @@ def share_story(request, token):
             "story_title": title,
             "story_feed_id": feed_id,
             "story_content": content,
+            "story_date": datetime.datetime.now(),
             
             "user_id": profile.user.pk,
             "comments": comments,
