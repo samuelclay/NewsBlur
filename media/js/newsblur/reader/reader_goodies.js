@@ -22,7 +22,7 @@ NEWSBLUR.ReaderGoodies.prototype = {
             $.make('h2', { className: 'NB-modal-title' }, 'Goodies &amp; Extras'),
             $.make('div', { className: 'NB-goodies-group' }, [
               NEWSBLUR.generate_bookmarklet(),
-              $.make('div', { className: 'NB-goodies-title' }, 'Add Site Bookmarklet')
+              $.make('div', { className: 'NB-goodies-title' }, 'Add Site &amp; Share Story Bookmarklet')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {

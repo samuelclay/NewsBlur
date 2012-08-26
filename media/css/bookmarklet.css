@@ -380,25 +380,6 @@
     margin: 0 6px -2px 0;
     vertical-align: bottom;
 }
-.NB-bookmarklet .NB-bookmarklet-user {
-    position: relative;
-    padding: 1px 12px 1px 26px;
-    min-height: 16px;
-    margin: 0 6px 0 0;
-    border-radius: 4px;
-    display: block;
-    color: #303030;
-    text-decoration: none;
-    background-color: white;
-}
-.NB-bookmarklet .NB-bookmarklet-user img {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    position: absolute;
-    top: 1px;
-    left: 4px;
-}
 .NB-bookmarklet .NB-story {
     margin: 2px 6px 0 0px;
     padding: 6px 12px 4px 26px;
@@ -408,15 +389,14 @@
     display: block;
     color: #303030;
     text-decoration: none;
+    text-transform: none;
     background-color: white;
 }
-.NB-bookmarklet .NB-story:hover,
-.NB-bookmarklet .NB-bookmarklet-user:hover {
+.NB-bookmarklet .NB-story:hover {
     cursor: pointer;
     background-color: #F2F5FE;
 }
-.NB-bookmarklet .NB-story:active,
-.NB-bookmarklet .NB-bookmarklet-user:active {
+.NB-bookmarklet .NB-story:active {
     cursor: pointer;
     background-color: #FEE5D6;
 }
