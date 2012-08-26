@@ -262,6 +262,7 @@ class MSocialProfile(mongo.Document):
         }
         if not compact:
             params.update({
+                'large_photo_url': self.large_photo_url,
                 'bio': self.bio,
                 'website': self.website,
                 'shared_stories_count': self.shared_stories_count,
@@ -432,16 +433,16 @@ class MSocialProfile(mongo.Document):
     def send_email_for_new_follower(self, follower_user_id):
         user = User.objects.get(pk=self.user_id)
         if follower_user_id not in self.follower_user_ids:
-            logging.user(user, "~BB~FMNo longer being followed by %s" % follower_user_id)
+            logging.user(user, "~FMNo longer being followed by %s" % follower_user_id)
             return
         if not user.email:
-            logging.user(user, "~BB~FMNo email to send to, skipping.")
+            logging.user(user, "~FMNo email to send to, skipping.")
             return
         elif not user.profile.send_emails:
-            logging.user(user, "~BB~FMDisabled emails, skipping.")
+            logging.user(user, "~FMDisabled emails, skipping.")
             return
         if self.user_id == follower_user_id:
-            logging.user(user, "~BB~FMDisabled emails, skipping.")
+            logging.user(user, "~FMDisabled emails, skipping.")
             return
         
         emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,
@@ -450,7 +451,7 @@ class MSocialProfile(mongo.Document):
         day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
         for email in emails_sent:
             if email.date_sent > day_ago:
-                logging.user(user, "~BB~SK~FMNot sending new follower email, already sent before. NBD.")
+                logging.user(user, "~SK~FMNot sending new follower email, already sent before. NBD.")
                 return
         
         follower_profile = MSocialProfile.get_user(follower_user_id)
@@ -482,7 +483,7 @@ class MSocialProfile(mongo.Document):
         MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
                           email_type='new_follower')
                 
-        logging.user(user, "~BB~FM~SBSending email for new follower: %s" % follower_profile.username)
+        logging.user(user, "~BB~FR~SBSending email for new follower: %s" % follower_profile.username)
             
     def save_feed_story_history_statistics(self):
         """
@@ -934,6 +935,11 @@ class MSocialSubscription(mongo.Document):
                                                                                feed_id__in=story_feed_ids))
 
         for story in stories:
+            if isinstance(story, dict) and not story['story_feed_id']:
+                continue
+            elif hasattr(story, 'story_feed_id') and not story.story_feed_id:
+                continue
+                
             scores = {
                 'feed'   : apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
                                                   social_user_id=self.subscription_user_id),
@@ -1062,6 +1068,15 @@ class MSharedStory(mongo.Document):
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()
+    
+    def to_json(self):
+        return {
+            "user_id": self.user_id,
+            "shared_date": self.shared_date,
+            "story_title": self.story_title,
+            "story_content": self.story_content_z and zlib.decompress(self.story_content_z),
+            "comments": self.comments,
+        }
         
     def save(self, *args, **kwargs):
         if self.story_content:
@@ -1098,6 +1113,39 @@ class MSharedStory(mongo.Document):
 
         super(MSharedStory, self).delete(*args, **kwargs)
     
+    @classmethod
+    def get_shared_stories_from_site(cls, feed_id, user_id, story_url, limit=3):
+        your_story = cls.objects.filter(story_feed_id=feed_id,
+                                        story_permalink=story_url,
+                                        user_id=user_id).limit(1).first()
+        same_stories = cls.objects.filter(story_feed_id=feed_id,
+                                          story_permalink=story_url,
+                                          user_id__ne=user_id
+                                          ).order_by('-shared_date')
+
+        same_stories = [{
+            "user_id": story.user_id,
+            "comments": story.comments,
+            "relative_date": relative_timesince(story.shared_date),
+            "blurblog_permalink": story.blurblog_permalink(),
+        } for story in same_stories]
+        
+        other_stories = []
+        if feed_id:
+            other_stories = cls.objects.filter(story_feed_id=feed_id,
+                                               story_permalink__ne=story_url
+                                               ).order_by('-shared_date').limit(limit)
+            other_stories = [{
+                "user_id": story.user_id,
+                "story_title": story.story_title,
+                "story_permalink": story.story_permalink,
+                "comments": story.comments,
+                "relative_date": relative_timesince(story.shared_date),
+                "blurblog_permalink": story.blurblog_permalink(),
+            } for story in other_stories]
+        
+        return your_story, same_stories, other_stories
+        
     def ensure_story_db_id(self, save=True):
         if not self.story_db_id:
             story, _ = MStory.find_story(self.story_feed_id, self.story_guid)
@@ -1507,9 +1555,9 @@ class MSharedStory(mongo.Document):
 
             if not user.email or not user.profile.send_emails:
                 if not user.email:
-                    logging.user(user, "~BB~FMNo email to send to, skipping.")
+                    logging.user(user, "~FMNo email to send to, skipping.")
                 elif not user.profile.send_emails:
-                    logging.user(user, "~BB~FMDisabled emails, skipping.")
+                    logging.user(user, "~FMDisabled emails, skipping.")
                 continue
             
             mute_url = "http://%s%s" % (
@@ -1558,9 +1606,9 @@ class MSharedStory(mongo.Document):
                                                          
         if not original_user.email or not original_user.profile.send_emails:
             if not original_user.email:
-                logging.user(original_user, "~BB~FMNo email to send to, skipping.")
+                logging.user(original_user, "~FMNo email to send to, skipping.")
             elif not original_user.profile.send_emails:
-                logging.user(original_user, "~BB~FMDisabled emails, skipping.")
+                logging.user(original_user, "~FMDisabled emails, skipping.")
             return
             
         story_feed = Feed.objects.get(pk=self.story_feed_id)
@@ -1747,7 +1795,7 @@ class MSocialServices(mongo.Document):
                 followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
+        logging.user(user, "~BM~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
         
         return following
         
