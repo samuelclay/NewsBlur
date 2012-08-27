@@ -17,6 +17,7 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.scrubber import Scrubber
 from utils.feed_functions import relative_timesince
+from utils.story_functions import strip_tags
 
 @json.json_view
 def login(request):
@@ -258,7 +259,7 @@ def share_story(request, token):
     base_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.hostname, parsed_url.path)
     scrubber = Scrubber(base_url=base_url)
     content = scrubber.scrub(content)
-    title = scrubber.scrub(title)
+    title = strip_tags(title)
     
     shared_story = MSharedStory.objects.filter(user_id=profile.user.pk,
                                                story_feed_id=feed_id, 
