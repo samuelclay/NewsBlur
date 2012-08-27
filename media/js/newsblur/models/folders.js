@@ -4,7 +4,7 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         if (_.isNumber(model)) {
             this.feed = NEWSBLUR.assets.feeds.get(model);
 
-            // The feed needs to exists as a model as well. Otherwise, chuck it.
+            // The feed needs to exists as a model as well. Otherwise, toss it.
             if (this.feed) {
                 this.set('is_feed', true);
             }
@@ -14,7 +14,10 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
             this.set('is_folder', true);
             this.set('folder_title', title);
             this.folder_views = [];
-            this.folders = new NEWSBLUR.Collections.Folders([], {title: title});
+            this.folders = new NEWSBLUR.Collections.Folders([], {
+                title: title,
+                parent_folder: this.collection
+            });
             this.folders.reset(_.compact(children));
         }
     },
@@ -93,6 +96,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
     
     initialize: function(models, options) {
         this.options = options || {};
+        this.parent_folder = options && options.parent_folder;
         this.comparator = NEWSBLUR.Collections.Folders.comparator;
     },
     

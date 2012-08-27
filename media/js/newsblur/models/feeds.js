@@ -19,6 +19,9 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     update_folder_counts: function() {
         _.each(this.folders, function(folder) {
             folder.trigger('change:counts');
+            if (folder.parent_folder) {
+                folder.parent_folder.trigger('change:counts');
+            }
         });
     },
     
