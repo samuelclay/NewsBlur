@@ -142,13 +142,13 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public Cursor getChild(int groupPosition, int childPosition) {
-		groupPosition = groupPosition - blogCursorHelper.getCount();
+		groupPosition = groupPosition - blogCursorHelper.getCount() - 1;
 		return getChildrenCursorHelper(groupPosition, true).moveTo(childPosition);
 	}
 
 	@Override
 	public long getChildId(int groupPosition, int childPosition) {
-		groupPosition = groupPosition - blogCursorHelper.getCount();
+		groupPosition = groupPosition - blogCursorHelper.getCount()  - 1;
 		return getChildrenCursorHelper(groupPosition, true).getId(childPosition);
 	}
 
