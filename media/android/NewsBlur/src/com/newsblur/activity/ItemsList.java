@@ -30,7 +30,7 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 	public static final String EXTRA_BLURBLOG_USERID = "blurblogId";
 	public static final String EXTRA_BLURBLOG_USER_ICON = "userIcon";
 	public static final String RESULT_EXTRA_READ_STORIES = "storiesToMarkAsRead";
-	
+
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;
 	protected SyncUpdateFragment syncFragment;
@@ -45,15 +45,15 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(bundle);
 		setResult(RESULT_OK);
-		
+
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getSupportFragmentManager();
 
 		contentResolver = getContentResolver();
-		
+
 		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
+
 		intelligenceSelectorFragment = (FeedIntelligenceSelectorFragment) fragmentManager.findFragmentByTag(FeedIntelligenceSelectorFragment.FRAGMENT_TAG);
 		intelligenceSelectorFragment.setState(currentState);
 	}
@@ -61,12 +61,8 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "Returned okay.");
-		if (resultCode == RESULT_OK && data != null) {
-			if (data.hasExtra(RESULT_EXTRA_READ_STORIES)) {
-				List<Story> stories = (List<Story>) data.getSerializableExtra(RESULT_EXTRA_READ_STORIES);
-				markStoriesAsRead(stories);
-				itemListFragment.hasUpdated();
-			}
+		if (resultCode == RESULT_OK) {
+			itemListFragment.hasUpdated();
 		}
 	}
 
@@ -106,37 +102,7 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 		Log.d(TAG, "Changed state.");
 		itemListFragment.changeState(state);
 	}
-	
-	protected void markStoriesAsRead(List<Story> stories) {
-		for (Story story : stories) {
-			String[] selectionArgs; 
-			if (story.getIntelligenceTotal() > 0) {
-				selectionArgs = new String[] { DatabaseConstants.FEED_POSITIVE_COUNT, story.feedId } ; 
-			} else if (story.getIntelligenceTotal() == 0) {
-				selectionArgs = new String[] { DatabaseConstants.FEED_NEUTRAL_COUNT, story.feedId } ;
-			} else {
-				selectionArgs = new String[] { DatabaseConstants.FEED_NEGATIVE_COUNT, story.feedId } ;
-			}
-			contentResolver.update(FeedProvider.FEED_COUNT_URI, null, null, selectionArgs);
 
-			if (!TextUtils.isEmpty(story.socialUserId)) {
-				String[] socialSelectionArgs; 
-				if (story.getIntelligenceTotal() > 0) {
-					socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, story.socialUserId } ; 
-				} else if (story.getIntelligenceTotal() == 0) {
-					socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, story.socialUserId } ;
-				} else {
-					socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, story.socialUserId } ;
-				}
-				contentResolver.update(FeedProvider.MODIFY_SOCIALCOUNT_URI, null, null, socialSelectionArgs);
-			}
 
-			Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
-			ContentValues values = new ContentValues();
-			values.put(DatabaseConstants.STORY_READ, true);
-			int updated = contentResolver.update(storyUri, values, null, null);
-			Log.d("TAG", "Updated: " + updated + " stories");
-		}
-	}
 
 }

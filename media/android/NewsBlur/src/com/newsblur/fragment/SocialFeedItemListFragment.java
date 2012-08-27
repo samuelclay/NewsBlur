@@ -150,7 +150,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 				Log.d(TAG, "No need");
 			}
 		}
-		
 	}
 
 	@Override

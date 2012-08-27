@@ -22,18 +22,16 @@ import com.newsblur.util.AppConstants;
 
 public class FeedReading extends Reading {
 
-	private Cursor stories;
 	protected Set<String> storiesToMarkAsRead;
 	String feedId;
 	private Feed feed;
 	private int currentPage;
-	private boolean requestedPage;
-	private ArrayList<Story> storiesToMarkAsReadInternally = new ArrayList<Story>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		super.onCreate(savedInstanceBundle);
 
+		setResult(RESULT_OK);
 		feedId = getIntent().getStringExtra(Reading.EXTRA_FEED);
 
 		Uri storiesURI = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
@@ -66,11 +64,7 @@ public class FeedReading extends Reading {
 
 	private void updateReadStories(Story story) {
 		storiesToMarkAsRead.add(readingAdapter.getStory(passedPosition).id);
-		storiesToMarkAsReadInternally.add(story);
-
-		Intent intent = new Intent();
-		intent.putExtra(ItemsList.RESULT_EXTRA_READ_STORIES, storiesToMarkAsReadInternally);
-		setResult(RESULT_OK, intent);
+		addStoryToMarkAsRead(story);
 	}
 
 	@Override
@@ -78,13 +72,12 @@ public class FeedReading extends Reading {
 		super.onPageSelected(position);
 		if (readingAdapter.getStory(position) != null) {
 			updateReadStories(readingAdapter.getStory(position));
-			
 			checkStoryCount(position);
 		}
-
 	}
-
-	private void checkStoryCount(int position) {
+	
+	@Override
+	public void checkStoryCount(int position) {
 		if (position == stories.getCount() - 1) {
 			boolean loadMore = false;
 
@@ -102,7 +95,6 @@ public class FeedReading extends Reading {
 
 			if (loadMore) {
 				currentPage += 1;
-				requestedPage = true;
 				triggerRefresh(currentPage);
 			} else {
 				Log.d(TAG, "No need");
@@ -136,12 +128,6 @@ public class FeedReading extends Reading {
 		startService(intent);
 	}
 
-	@Override
-	public void updateAfterSync() {
-		setSupportProgressBarIndeterminateVisibility(false);
-		stories.requery();
-		readingAdapter.notifyDataSetChanged();
-		checkStoryCount(pager.getCurrentItem());
-	}
+	
 
 }

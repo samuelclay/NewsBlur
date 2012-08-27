@@ -1,12 +1,16 @@
 package com.newsblur.activity;
 
-import java.util.List;
+import java.util.ArrayList;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -45,7 +49,9 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	protected ReadingAdapter readingAdapter;
 	protected ContentResolver contentResolver;
 	protected SyncUpdateFragment syncFragment;
-
+	private ArrayList<ContentProviderOperation> operations;
+	protected Cursor stories;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -53,6 +59,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 		super.onCreate(savedInstanceBundle);
 		setContentView(R.layout.activity_reading);
 
+		operations = new ArrayList<ContentProviderOperation>();
 		fragmentManager = getSupportFragmentManager();
 
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
@@ -137,7 +144,14 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	}
 
 	@Override
-	public abstract void updateAfterSync();
+	public void updateAfterSync() {
+		setSupportProgressBarIndeterminateVisibility(false);
+		stories.requery();
+		readingAdapter.notifyDataSetChanged();
+		checkStoryCount(pager.getCurrentItem());
+	}
+	
+	public abstract void checkStoryCount(int position);
 
 	@Override
 	public void updateSyncStatus(boolean syncRunning) {
@@ -146,7 +160,55 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 
 	public abstract void triggerRefresh();
 	public abstract void triggerRefresh(int page);
-
 	
+	@Override
+	protected void onPause() {
+		if (isFinishing()) {
+			try {
+				contentResolver.applyBatch(FeedProvider.AUTHORITY, operations);
+			} catch (RemoteException e) {
+				Log.e(TAG, "Failed to do any updating.");
+				e.printStackTrace();
+			} catch (OperationApplicationException e) {
+				Log.e(TAG, "Failed to do any updating.");
+				e.printStackTrace();
+			}
+		}
+		super.onPause();
+	}
+
+	protected void addStoryToMarkAsRead(Story story) {
+			String[] selectionArgs; 
+			ContentValues emptyValues = new ContentValues();
+			emptyValues.put(DatabaseConstants.FEED_ID, story.feedId);
+			
+			if (story.getIntelligenceTotal() > 0) {
+				selectionArgs = new String[] { DatabaseConstants.FEED_POSITIVE_COUNT, story.feedId } ; 
+			} else if (story.getIntelligenceTotal() == 0) {
+				selectionArgs = new String[] { DatabaseConstants.FEED_NEUTRAL_COUNT, story.feedId } ;
+			} else {
+				selectionArgs = new String[] { DatabaseConstants.FEED_NEGATIVE_COUNT, story.feedId } ;
+			}
+			operations.add(ContentProviderOperation.newUpdate(FeedProvider.FEED_COUNT_URI).withValues(emptyValues).withSelection("", selectionArgs).build());
+			
+			
+			if (!TextUtils.isEmpty(story.socialUserId)) {
+				String[] socialSelectionArgs; 
+				if (story.getIntelligenceTotal() > 0) {
+					socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT, story.socialUserId } ; 
+				} else if (story.getIntelligenceTotal() == 0) {
+					socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, story.socialUserId } ;
+				} else {
+					socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, story.socialUserId } ;
+				}
+				operations.add(ContentProviderOperation.newUpdate(FeedProvider.MODIFY_SOCIALCOUNT_URI).withValues(emptyValues).withSelection("", socialSelectionArgs).build());
+			}
+
+			Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
+			ContentValues values = new ContentValues();
+			values.put(DatabaseConstants.STORY_READ, true);
+			
+			operations.add(ContentProviderOperation.newUpdate(storyUri).withValues(values).build());
+	}
 
 }

@@ -4,26 +4,40 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.database.Cursor;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
+import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.MarkSocialStoryAsReadTask;
+import com.newsblur.service.SyncService;
+import com.newsblur.util.AppConstants;
 
 public class SocialFeedReading extends Reading {
 	
-	private Cursor stories;
 	MarkSocialAsReadUpdate markSocialAsReadList;
+	private String userId;
+	private String username;
+	private SocialFeed socialFeed;
+	private boolean requestedPage;
+	private int currentPage;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		super.onCreate(savedInstanceBundle);
 		
-		String userId = getIntent().getStringExtra(Reading.EXTRA_USERID);
+		setResult(RESULT_OK);
+		
+		userId = getIntent().getStringExtra(Reading.EXTRA_USERID);
+		username = getIntent().getStringExtra(Reading.EXTRA_USERNAME);
 		markSocialAsReadList = new MarkSocialAsReadUpdate(userId);
+		
+		Uri socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
+		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
 		
 		Uri storiesURI = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
@@ -35,7 +49,7 @@ public class SocialFeedReading extends Reading {
 
 		Story story = readingAdapter.getStory(passedPosition);
 		markSocialAsReadList.add(story.feedId, story.id);
-		
+		addStoryToMarkAsRead(story);
 		
 	}
 	
@@ -45,7 +59,9 @@ public class SocialFeedReading extends Reading {
 		Story story = readingAdapter.getStory(position);
 		if (story != null) {
 			markSocialAsReadList.add(story.feedId, story.id);
+			addStoryToMarkAsRead(story);
 		}
+		checkStoryCount(position);
 	}
 
 	@Override
@@ -53,7 +69,6 @@ public class SocialFeedReading extends Reading {
 		super.onDestroy();
 		new MarkSocialStoryAsReadTask(this, syncFragment, markSocialAsReadList).execute();
 	}
-	
 	
 	public class MarkSocialAsReadUpdate {
 		public String userId;
@@ -84,20 +99,49 @@ public class SocialFeedReading extends Reading {
 
 	@Override
 	public void triggerRefresh() {
-		// TODO Auto-generated method stub
-		
+		triggerRefresh(0);
 	}
 
 	@Override
 	public void triggerRefresh(int page) {
-		// TODO Auto-generated method stub
-		
+		setSupportProgressBarIndeterminateVisibility(true);
+		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
+		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
+		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_SOCIALFEED_UPDATE);
+		intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_ID, userId);
+		if (page > 1) {
+			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+		}
+		intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_USERNAME, username);
+		startService(intent);
 	}
 
+
 	@Override
-	public void updateAfterSync() {
-		// TODO Auto-generated method stub
-		
+	public void checkStoryCount(int position) {
+		if (position == stories.getCount() - 1) {
+			boolean loadMore = false;
+			
+			switch (currentState) {
+			case AppConstants.STATE_ALL:
+				loadMore = socialFeed.positiveCount + socialFeed.neutralCount + socialFeed.negativeCount > stories.getCount();
+				break;
+			case AppConstants.STATE_BEST:
+				loadMore = socialFeed.positiveCount > stories.getCount();
+				break;
+			case AppConstants.STATE_SOME:
+				loadMore = socialFeed.positiveCount + socialFeed.neutralCount > stories.getCount();
+				break;	
+			}
+	
+			if (loadMore && !requestedPage) {
+				currentPage += 1;
+				requestedPage = true;
+				triggerRefresh(currentPage);
+			} else {
+				Log.d(TAG, "No need");
+			}
+		}
 	}
 	
 }

@@ -183,7 +183,7 @@ public class FeedProvider extends ContentProvider {
 			// Inserting a story assuming it's not already in the DB
 		case FEED_STORIES_NO_UPDATE:
 			db.beginTransaction();
-			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			db.setTransactionSuccessful();
 			db.endTransaction();
 			break;		
@@ -227,6 +227,21 @@ public class FeedProvider extends ContentProvider {
 		case INDIVIDUAL_FEED:
 			return db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE +
 					" WHERE " +  DatabaseConstants.FEED_ID + "= '" + uri.getLastPathSegment() + "'", selectionArgs);	
+			
+			// Query for a specific folder	
+		case INDIVIDUAL_FOLDER:
+			String individualFolderQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
+			" LEFT JOIN " + DatabaseConstants.FOLDER_TABLE + 
+			" ON " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME +
+			" LEFT JOIN " + DatabaseConstants.FEED_TABLE + 
+			" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID + 
+			" WHERE " + DatabaseConstants.FOLDER_NAME + " = ?";
+
+			StringBuilder individualFolderbuilder = new StringBuilder();
+			individualFolderbuilder.append(individualFolderQuery);
+			selectionArgs = new String[] { uri.getLastPathSegment() };
+			
+			return db.rawQuery(individualFolderbuilder.toString(), selectionArgs);
 			
 			// Query for total feed counts
 		case FEED_COUNT:

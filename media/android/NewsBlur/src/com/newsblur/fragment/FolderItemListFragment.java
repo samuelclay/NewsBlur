@@ -29,6 +29,8 @@ import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
+import com.newsblur.domain.Folder;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.view.FeedItemViewBinder;
 
@@ -45,13 +47,17 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	private String folderName;
 	private boolean requestedPage = false;
 	private boolean doRequest = true;
+	private Folder folder;
+	private int positiveCount;
+	private int negativeCount;
+	private int neutralCount;
 
 	public static int ITEMLIST_LOADER = 0x01;
-	
+
 
 	public static FolderItemListFragment newInstance(ArrayList<String> feedIds, String folderName, int currentState) {
 		FolderItemListFragment feedItemFragment = new FolderItemListFragment();
-		
+
 		Bundle args = new Bundle();
 		args.putInt("currentState", currentState);
 		args.putStringArrayList("feedIds", feedIds);
@@ -69,10 +75,23 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 		ArrayList<String> feedIdArrayList = getArguments().getStringArrayList("feedIds");
 		feedIds = new String[feedIdArrayList.size()];
 		feedIdArrayList.toArray(feedIds);
-		
+
+		setupFolderCount();
+
 		if (!NetworkUtils.isOnline(getActivity())) {
 			doRequest = false;
 		}
+	}
+
+	private void setupFolderCount() {
+		contentResolver = getActivity().getContentResolver();
+		
+		Uri individualFolderUri = FeedProvider.FOLDERS_URI.buildUpon().appendPath(folderName).build();
+		Cursor folderCursor = contentResolver.query(individualFolderUri, null, null, null, null);
+		folderCursor.moveToFirst();
+		positiveCount = folderCursor.getInt(folderCursor.getColumnIndex(DatabaseConstants.SUM_POS));
+		negativeCount = folderCursor.getInt(folderCursor.getColumnIndex(DatabaseConstants.SUM_NEG));
+		neutralCount = folderCursor.getInt(folderCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
 	}
 
 	@Override
@@ -81,12 +100,12 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-		
+
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.MULTIFEED_STORIES_URI;
-		
+
 		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), feedIds, null);
-		
+
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_feedtitle, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
 
@@ -95,7 +114,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 		adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_folderitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 		itemList.setOnScrollListener(this);
-		
+
 		adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
@@ -150,8 +169,20 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
 		if (firstVisible + visibleCount == totalCount) {
 			boolean loadMore = false;
-			loadMore = adapter.getCount() > totalCount;
-			if (loadMore && !requestedPage && doRequest) {
+
+			switch (currentState) {
+			case AppConstants.STATE_ALL:
+				loadMore = positiveCount + neutralCount + negativeCount > totalCount;
+				break;
+			case AppConstants.STATE_BEST:
+				loadMore = positiveCount > totalCount;
+				break;
+			case AppConstants.STATE_SOME:
+				loadMore = positiveCount + neutralCount > totalCount;
+				break;	
+			}
+
+			if (loadMore && !requestedPage) {
 				currentPage += 1;
 				requestedPage = true;
 				((ItemsList) getActivity()).triggerRefresh(currentPage);
@@ -163,7 +194,5 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) { }
-
-
 
 }

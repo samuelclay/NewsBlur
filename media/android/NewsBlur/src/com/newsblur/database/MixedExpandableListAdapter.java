@@ -155,7 +155,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	@Override
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 		
-		groupPosition = groupPosition - blogCursorHelper.getCount();
+		groupPosition = groupPosition - blogCursorHelper.getCount() - 1;
 		
 		MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition, true);
 
@@ -180,7 +180,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			return 0;
 		}
 		
-		groupPosition = groupPosition - blogCursorHelper.getCount();
+		groupPosition = groupPosition - blogCursorHelper.getCount() - 1;
 		MyCursorHelper helper = getChildrenCursorHelper(groupPosition, true);
 		return (folderCursorHelper.isValid() && helper != null) ? helper.getCount() : 0;
 	}
@@ -250,7 +250,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
 			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 		} else {
-			cursor = folderCursorHelper.moveTo(groupPosition - blogCursorHelper.getCount());
+			cursor = folderCursorHelper.moveTo(groupPosition - blogCursorHelper.getCount() - 1);
 			if (convertView == null) {
 				v = newGroupView(context, cursor, isExpanded, parent);
 			} else {
