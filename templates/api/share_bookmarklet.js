@@ -434,6 +434,7 @@
                 return this.error_share_story(data);
             }
             
+            $share.addClass('NB-disabled');
             $share.html($.make('div', { className: 'NB-bookmarklet-accept' }, [
                 $.make('img', { src: 'data:image/png;charset=utf-8;base64,' + this.images['accept_image'] }),
                 'Shared'

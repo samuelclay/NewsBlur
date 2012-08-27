@@ -166,7 +166,13 @@ def check_share_on_site(request, token):
     
     feed = Feed.get_feed_from_url(rss_url, create=False, fetch=False)
     if not feed:
-        feed = Feed.get_feed_from_url(story_url, create=False, fetch=True)
+        feed = Feed.get_feed_from_url(story_url, create=False, fetch=False)
+    if not feed:
+        parsed_url = urlparse.urlparse(story_url)
+        base_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.hostname, parsed_url.path)
+        feed = Feed.get_feed_from_url(base_url, create=False, fetch=False)
+    if not feed:
+        feed = Feed.get_feed_from_url(base_url+'/', create=False, fetch=False)
     
     if feed and user:
         try:
