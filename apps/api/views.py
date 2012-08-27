@@ -15,7 +15,7 @@ from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 from utils import log as logging
-from utils.scrubber import Scrubber
+from utils.scrubber import SelectiveScriptScrubber
 from utils.feed_functions import relative_timesince
 from utils.story_functions import strip_tags
 
@@ -257,7 +257,7 @@ def share_story(request, token):
     
     parsed_url = urlparse.urlparse(story_url)
     base_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.hostname, parsed_url.path)
-    scrubber = Scrubber(base_url=base_url)
+    scrubber = SelectiveScriptScrubber(base_url=base_url)
     content = scrubber.scrub(content)
     title = strip_tags(title)
     

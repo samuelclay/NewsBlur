@@ -283,8 +283,8 @@ class SelectiveScriptScrubber(Scrubber):
     allowed_tags = Scrubber.allowed_tags | set(('script', 'noscript', 'iframe'))
     allowed_attributes = Scrubber.allowed_attributes | set(('scrolling', 'frameborder'))
 
-    def __init__(self):
-        super(SelectiveScriptScrubber, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(SelectiveScriptScrubber, self).__init__(*args, **kwargs)
 
         self.allowed_script_srcs = set((
             'http://www.statcounter.com/counter/counter_xhtml.js',
@@ -311,6 +311,8 @@ class SelectiveScriptScrubber(Scrubber):
 
         self.allowed_iframe_srcs = set(re.compile(text) for text in (
             r'^http://www\.google\.com/calendar/embed\?[\w&;=\%]+$', # Google Calendar
+            r'^https?://www\.youtube\.com/', # YouTube
+            r'^http://player\.vimeo\.com/', # Vimeo
         ))
 
     def _scrub_tag_script(self, script):

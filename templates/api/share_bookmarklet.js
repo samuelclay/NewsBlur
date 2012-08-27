@@ -16,7 +16,8 @@
         this.folders  = {{ folders|safe }};
         this.domain   = "{% current_domain %}";
         this.flags    = {
-            'new_folder': false
+            'new_folder': false,
+            'in_transit': false
         };
         this.images   = {
             'accept_image': "{{ accept_image }}"
@@ -407,9 +408,12 @@
             var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
             var $error = $(".NB-bookmarklet-comment-error", this.$modal);
             
+            this.flags.in_transit = true;
+            
             $error.html('');
             $share.addClass('NB-disabled').text('Sharing...');
             this.feed = this.feed || {};
+            
             
             $.ajax({
                 url: '//'+this.domain+"{% url api-share-story token %}",
@@ -429,6 +433,7 @@
         
         post_share_story: function(data) {
             var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
+            this.flags.in_transit = false;
             
             if (data.code < 0) {
                 return this.error_share_story(data);
@@ -448,6 +453,7 @@
         error_share_story: function(data) {
             var $share = $(".NB-bookmarklet-comment-submit", this.$modal);
             var $error = $(".NB-bookmarklet-comment-error", this.$modal);
+            this.flags.in_transit = false;
             
             $share.removeClass('NB-disabled');
             $error.show();
@@ -610,6 +616,8 @@
         },
         
         update_share_button_title: function() {
+            if (this.flags.in_transit) return;
+            
             var $comment = $('textarea[name=newsblur_comment]', this.$modal);
             var $submit = $('.NB-bookmarklet-comment-submit', this.$modal);
             var $error = $(".NB-bookmarklet-comment-error", this.$modal);
