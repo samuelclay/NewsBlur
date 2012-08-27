@@ -2266,6 +2266,7 @@ class MActivity(mongo.Document):
     @classmethod
     def new_shared_story(cls, user_id, source_user_id, story_title, comments, story_feed_id, story_id, share_date=None):
         a, _ = cls.objects.get_or_create(user_id=user_id,
+                                         with_user_id=user_id,
                                          category='sharedstory',
                                          feed_id="social:%s" % user_id,
                                          story_feed_id=story_feed_id,

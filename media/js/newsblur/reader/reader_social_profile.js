@@ -215,15 +215,7 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             $t.tipsy('hide').tipsy('disable');
             self.fetch_profile(user_id);
         });
-        
-        $.targetIs(e, { tagSelector: '.NB-interaction-username, .NB-interaction-follow .NB-interaction-photo' }, function($t, $p){
-            e.preventDefault();
-            e.stopPropagation();    
-            var user_id = $t.data('userId');
-            var username = $t.closest('.NB-interaction').find('.NB-interaction-username').text();
-            self.model.add_user_profiles([{user_id: user_id, username: username}]);
-            self.fetch_profile(user_id);
-        }); 
+
     }
     
 });
