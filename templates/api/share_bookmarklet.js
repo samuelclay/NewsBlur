@@ -489,9 +489,28 @@
                 this.story_title = $readability.children("h1").text();
                 this.story_content = $("#readability-content", $readability).html();
             }
+            
+            this.find_video_embeds();
 
             $title.html(this.story_title);
             $content.html(this.story_content);
+        },
+        
+        find_video_embeds: function() {
+            var video_id, video_html;
+            
+            if (window.location.href.indexOf('youtube.com') != -1) {
+                video_id = jQuery.url.param('v');
+                video_html = '<iframe title="YouTube video player" class="youtube-player" type="text/html" width="640" height="390" src="http://www.youtube.com/embed/' + video_id + '" frameborder="0" allowFullScreen></iframe>';
+            } else if (window.location.href.indexOf('vimeo.com') != -1) {
+                video_id = jQuery.url.segment(0);
+                video_html = '<iframe src="http://player.vimeo.com/video/'+ video_id +'" width="640" height="390" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+                console.log(["vimeo", video_id, jQuery.url]);
+            }
+
+            if (video_id && video_id.length) {
+                this.story_content = video_html + this.story_content;
+            }
         },
         
         get_selected_html: function() {

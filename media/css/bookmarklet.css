@@ -97,7 +97,7 @@
   overflow: hidden;
 }
 .NB-bookmarklet .NB-bookmarklet-main {
-    width: 530px;
+    width: 514px;
     overflow: hidden;
     float: right;
     border-left: 6px solid #38457E;
@@ -284,7 +284,7 @@
     float: left;
 }
 .NB-bookmarklet .NB-bookmarklet-comment-input textarea {
-    width: 316px;
+    width: 300px;
     float: left;
     border: 1px solid #E0E0E0;
     padding: 6px;
