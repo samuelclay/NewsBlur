@@ -236,7 +236,11 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
         $submit.removeClass('NB-disabled');
         
         if (data.code > 0) {
-            NEWSBLUR.assets.load_feeds();
+            NEWSBLUR.assets.load_feeds(function() {
+                if (data.feed) {
+                    NEWSBLUR.reader.open_feed(data.feed.id);
+                }
+            });
             NEWSBLUR.reader.load_recommended_feed();
             NEWSBLUR.reader.handle_mouse_indicator_hover();
             $.modal.close();

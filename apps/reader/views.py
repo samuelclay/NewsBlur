@@ -903,11 +903,11 @@ def add_url(request):
         message = 'Enter in the website address or the feed URL.'
     else:
         folder = request.POST.get('folder', '')
-        code, message, _ = UserSubscription.add_subscription(user=request.user, feed_address=url, 
+        code, message, us = UserSubscription.add_subscription(user=request.user, feed_address=url, 
                                                              folder=folder, auto_active=auto_active,
                                                              skip_fetch=skip_fetch)
     
-    return dict(code=code, message=message)
+    return dict(code=code, message=message, feed=us.feed)
 
 @ajax_login_required
 @json.json_view
