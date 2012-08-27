@@ -126,7 +126,7 @@ stylesheets:
     bookmarklet:
         - media/css/bookmarklet/reset.css
         - media/css/modals.css
-        - media/css/bookmarklet.css
+        - media/css/bookmarklet/bookmarklet.css
     blurblog:
         - media/css/jquery.tipsy.css
         - media/css/social/social_page.css
