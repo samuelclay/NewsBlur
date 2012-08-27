@@ -210,8 +210,10 @@ def exception_retry(request):
         logging.user(request, "~FRForcing refreshing feed: ~SB%s" % (feed))
         feed.fetched_once = True
     feed.save()
-    
+
     feed = feed.update(force=True, compute_scores=False, verbose=True)
+    feed = Feed.get_by_id(feed.pk)
+
     try:
         usersub = UserSubscription.objects.get(user=user, feed=feed)
     except UserSubscription.DoesNotExist:
@@ -223,7 +225,7 @@ def exception_retry(request):
             return {'code': -1}
     usersub.calculate_feed_scores(silent=False)
     
-    feeds = {feed.pk: usersub.canonical(full=True), feed_id: usersub.canonical(full=True)}
+    feeds = {feed.pk: usersub and usersub.canonical(full=True), feed_id: usersub.canonical(full=True)}
     return {'code': 1, 'feeds': feeds}
     
     
@@ -268,19 +270,24 @@ def exception_change_feed_address(request):
             code = 1
 
     feed = feed.update()
-    feed = Feed.objects.get(pk=feed.pk)
-    usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
-    if usersub:
-        usersub.switch_feed(feed, original_feed)
-    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
-        
+    feed = Feed.get_by_id(feed.pk)
+    try:
+        usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        usersubs = UserSubscription.objects.filter(user=request.user, feed=original_feed)
+        if usersubs:
+            usersub = usersubs[0]
+            usersub.switch_feed(feed, original_feed)
+        else:
+            return {'code': -1}
+
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
     classifiers = get_classifiers_for_user(usersub.user, feed_id=usersub.feed_id)
     
     feeds = {
-        original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
+        original_feed.pk: usersub and usersub.canonical(full=True, classifiers=classifiers), 
     }
     
     if feed and feed.has_feed_exception:
@@ -335,12 +342,17 @@ def exception_change_feed_link(request):
             code = 1
 
     feed = feed.update()
-    feed = Feed.objects.get(pk=feed.pk)
+    feed = Feed.get_by_id(feed.pk)
 
-    usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
-    if usersub:
-        usersub.switch_feed(feed, original_feed)
-    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    try:
+        usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        usersubs = UserSubscription.objects.filter(user=request.user, feed=original_feed)
+        if usersubs:
+            usersub = usersubs[0]
+            usersub.switch_feed(feed, original_feed)
+        else:
+            return {'code': -1}
         
     usersub.calculate_feed_scores(silent=False)
     

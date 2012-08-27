@@ -270,12 +270,17 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             }, function(data) {
                 if (data.new_feed_id) {
                     NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
-                    $.modal.close();
-                } else {
-                    $error.show().html((data && data.message) || "There was a problem fetching the feed from this URL.");
-                    $loading.removeClass('NB-active');
-                    $submit.removeClass('NB-disabled').attr('value', 'Parse this RSS/XML Feed');
                 }
+                
+                var feed = NEWSBLUR.assets.get_feed(data.new_feed_id);
+                console.log(["feed address", feed, NEWSBLUR.assets.get_feed(feed_id)]);
+                var error = "There was a problem fetching the feed from this URL.";
+                if (parseInt(feed.get('exception_code'), 10) == 404) {
+                    error = "URL gives a 404 - page not found.";
+                }
+                $error.show().html((data && data.message) || error);
+                $loading.removeClass('NB-active');
+                $submit.removeClass('NB-disabled').attr('value', 'Parse this RSS/XML Feed');
             });
         }
     },
@@ -299,12 +304,16 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
             }, function(data) {
                 if (data.new_feed_id) {
                     NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
-                    $.modal.close();
-                } else {
-                    $error.show().html((data && data.message) || "There was a problem fetching the feed from this URL.");
-                    $loading.removeClass('NB-active');
-                    $submit.removeClass('NB-disabled').attr('value', 'Fetch Feed from Website');
                 }
+
+                var feed = NEWSBLUR.assets.get_feed(data.new_feed_id);
+                var error = "There was a problem fetching the feed from this URL.";
+                if (feed.get('exception_code') == '404') {
+                    error = "URL gives a 404 - page not found.";
+                }
+                $error.show().html((data && data.message) || error);
+                $loading.removeClass('NB-active');
+                $submit.removeClass('NB-disabled').attr('value', 'Fetch Feed from Website');
             });
         }
     },
