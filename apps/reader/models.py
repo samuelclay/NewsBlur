@@ -551,7 +551,7 @@ class MUserStory(mongo.Document):
     Stories read by the user. These are deleted as the mark_read_date for the
     UserSubscription passes the UserStory date.
     """
-    user_id = mongo.IntField(unique_with=('feed_id', 'story_id'))
+    user_id = mongo.IntField()
     feed_id = mongo.IntField()
     read_date = mongo.DateTimeField()
     story_id = mongo.StringField(unique_with=('user_id', 'feed_id'))
@@ -562,6 +562,7 @@ class MUserStory(mongo.Document):
     meta = {
         'collection': 'userstories',
         'indexes': [
+            {'fields': ('user_id', 'feed_id', 'story_id'), 'unique': True},
             ('feed_id', 'story_id'),   # Updating stories with new guids
             ('feed_id', 'story_date'), # Trimming feeds
         ],

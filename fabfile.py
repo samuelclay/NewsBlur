@@ -689,12 +689,12 @@ def copy_task_settings():
 # = Tasks - DB =
 # ==============
 
-def restore_postgres():
-    backup_date = '2012-07-21-08-00'
-    run('PYTHONPATH=/home/sclay/newsblur python s3.py get backup_postgresql_%s.sql.gz' % backup_date)
-    sudo('su postgres -c "createuser -U newsblur"')
-    sudo('su postgres -c "createdb newsblur -O newsblur"')
-    sudo('su postgres -c "pg_restore --role=newsblur --dbname=newsblur backup_postgresql_%s.sql.gz"' % backup_date)
+def restore_postgres(port=5432):
+    backup_date = '2012-08-17-08-00'
+    # run('PYTHONPATH=%s python utils/backups/s3.py get backup_postgresql_%s.sql.gz' % (env.NEWSBLUR_PATH, backup_date))
+    # sudo('su postgres -c "createuser -p %s -U newsblur"' % (port,))
+    sudo('su postgres -c "createdb newsblur -p %s -O newsblur"' % (port,))
+    sudo('su postgres -c "pg_restore -p %s --role=newsblur --dbname=newsblur backup_postgresql_%s.sql.gz"' % (port, backup_date))
     
 def restore_mongo():
     backup_date = '2012-07-24-09-00'

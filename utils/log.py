@@ -13,12 +13,13 @@ def getlogger():
     logger = logging.getLogger('newsblur')
     return logger
 
-def user(u, msg):
+def user(u, msg, request=None):
     platform = '------'
     time_elapsed = ""
-    if isinstance(u, WSGIRequest):
-        request = u
-        u = request.user
+    if isinstance(u, WSGIRequest) or request:
+        if not request:
+            request = u
+            u = request.user
         user_agent = request.environ.get('HTTP_USER_AGENT', '')
         if 'iPad App' in user_agent:
             platform = 'iPad'
