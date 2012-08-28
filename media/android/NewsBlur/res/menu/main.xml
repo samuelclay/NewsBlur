@@ -11,5 +11,10 @@
           android:icon="@drawable/person"
           android:title="@string/menu_profile"
           android:showAsAction="ifRoom" />
+    
+    <item android:id="@+id/menu_add_feed"
+          android:icon="@drawable/plus"
+          android:title="@string/menu_add_feed"
+          android:showAsAction="never" />
 
 </menu>

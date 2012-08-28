@@ -95,6 +95,10 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 		case R.id.menu_refresh:
 			triggerRecount();
 			return true;
+		case R.id.menu_add_feed:
+			Intent intent = new Intent(this, SearchForFeeds.class);
+			startActivityForResult(intent, 0);
+			return true;	
 		}
 		return super.onOptionsItemSelected(item);
 	}

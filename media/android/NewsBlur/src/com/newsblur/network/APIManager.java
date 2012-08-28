@@ -1,5 +1,6 @@
 package com.newsblur.network;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,11 +16,13 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
+import com.newsblur.domain.FeedResult;
 import com.newsblur.domain.FolderStructure;
 import com.newsblur.domain.Reply;
 import com.newsblur.domain.SocialFeed;
@@ -388,6 +391,30 @@ public class APIManager {
 			return true;
 		} else {
 			return false;
+		}
+	}
+	
+	public boolean addFeed(String feedUrl, String folderName) {
+		final APIClient client = new APIClient(context);
+		ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_URL, feedUrl);
+		if (!TextUtils.isEmpty(folderName)) {
+			values.put(APIConstants.PARAMETER_FOLDER, folderName);
+		}
+		final APIResponse response = client.post(APIConstants.URL_ADD_FEED, values);
+		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+	}
+	
+	public FeedResult[] searchForFeed(String searchTerm) {
+		final APIClient client = new APIClient(context);
+		ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm);
+		final APIResponse response = client.get(APIConstants.URL_FEED_AUTOCOMPLETE, values);
+		
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return gson.fromJson(response.responseString, FeedResult[].class);
+		} else {
+			return null;
 		}
 	}
 

@@ -16,6 +16,9 @@
     
     <string name="hello">Hello World!</string>
     
+    <string name="title_feed_search">Search for feeds</string>
+    <string name="add_feed_message">Add \"%s\" to your feeds?</string>
+    
     <string name="dialog_title">Alert</string>
     <string name="loading">Loading…</string>
     
@@ -82,5 +85,9 @@
     <string name="unsorted_folder_name">Unsorted</string>
     
     <string name="empty_list_notice">There aren\'t any stories to display here right now.</string>
+    <string name="feed_search_hint">Search for new feeds</string>
+    <string name="menu_add_feed">Add new feed</string>
+    <string name="menu_search">Search</string>
+    <string name="empty_search_notice">Type a search term to begin</string>
     
 </resources>
