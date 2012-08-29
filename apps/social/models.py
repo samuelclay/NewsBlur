@@ -2186,16 +2186,16 @@ class MActivity(mongo.Document):
     def new_starred_story(cls, user_id, story_title, story_feed_id, story_id):
         cls.objects.get_or_create(user_id=user_id,
                                   category='star',
-                                  content=story_title,
                                   story_feed_id=story_feed_id,
-                                  content_id=story_id)
+                                  content_id=story_id,
+                                  defaults=dict(content=story_title))
                            
     @classmethod
     def new_feed_subscription(cls, user_id, feed_id, feed_title):
-        cls.objects.create(user_id=user_id,
-                           category='feedsub',
-                           content=feed_title,
-                           feed_id=feed_id)
+        cls.objects.get_or_create(user_id=user_id,
+                                  category='feedsub',
+                                  feed_id=feed_id,
+                                  defaults=dict(content=feed_title))
                            
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
@@ -2266,7 +2266,7 @@ class MActivity(mongo.Document):
     @classmethod
     def new_shared_story(cls, user_id, source_user_id, story_title, comments, story_feed_id, story_id, share_date=None):
         a, _ = cls.objects.get_or_create(user_id=user_id,
-                                         with_user_id=user_id,
+                                         with_user_id=source_user_id,
                                          category='sharedstory',
                                          feed_id="social:%s" % user_id,
                                          story_feed_id=story_feed_id,
