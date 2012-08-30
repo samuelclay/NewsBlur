@@ -5,7 +5,6 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
     },
     
     events: {
-        'click .NB-feeds-header-sites'     : 'switch_preferences_hide_read_feeds',
         'click .NB-feeds-header-dashboard' : 'show_splash_page'
     },
     
@@ -31,7 +30,7 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
         var $header = _.template('\
             <div class="NB-feeds-header-dashboard">\
                 <div class="NB-feeds-header-right">\
-                    <div class="NB-feeds-header-sites <%= hide_read_feeds ? "NB-feedlist-hide-read-feeds" : "" %>" title="<%= hide_read_feeds ? "Show all sites" : "Show only unread stories" %>"><%= feeds_count %></div>\
+                    <div class="NB-feeds-header-sites <%= hide_read_feeds ? "NB-feedlist-hide-read-feeds" : "" %>"><%= feeds_count %></div>\
                 </div>\
                 <div class="NB-feeds-header-left">\
                     <span class="NB-feeds-header-count NB-feeds-header-negative <% if (!negative_count) { %>NB-empty<% } %>"><%= negative_count %></span>\
@@ -49,13 +48,6 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
         });
             
         $(this.el).html($header);
-        
-        if (NEWSBLUR.assets.preference('show_tooltips')) {
-            this.$('.NB-feeds-header-sites').tipsy({
-                gravity: 'n',
-                delayIn: 375
-            });
-        }
         
         this.toggle_hide_read_preference();
         
@@ -113,26 +105,6 @@ NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
     // ==========
     // = Events =
     // ==========
-    
-    switch_preferences_hide_read_feeds: function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var hide_read_feeds = NEWSBLUR.assets.preference('hide_read_feeds');
-        NEWSBLUR.assets.preference('hide_read_feeds', hide_read_feeds ? 0 : 1);
-
-        if (NEWSBLUR.assets.preference('show_tooltips')) {
-            var $button = this.$('.NB-feeds-header-sites');
-            $button.tipsy('hide');
-            $button.tipsy('disable');
-        }
-
-        this.render();
-
-        if (NEWSBLUR.assets.preference('show_tooltips')) {
-            var $button = this.$('.NB-feeds-header-sites');
-            $button.tipsy('show');
-        }
-    },
     
     show_splash_page: function() {
         NEWSBLUR.reader.show_splash_page();
