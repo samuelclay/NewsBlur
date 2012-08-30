@@ -334,6 +334,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     click_link_in_story: function(e) {
         e.preventDefault();
+        e.stopPropagation();
+        if (e.which >= 2) return;
+        if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
+
         var href = $(e.currentTarget).attr('href');
         
         if (NEWSBLUR.assets.preference('new_window') == 1) {

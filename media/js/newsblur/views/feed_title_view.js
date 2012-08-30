@@ -225,6 +225,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     open: function(e) {
         if (this.options.feed_chooser) return;
         if (this.options.type != 'feed') return;
+        if (e.which >= 2) return;
+        if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
         
         if (this.model.get('has_exception') && this.model.get('exception_type') == 'feed') {
             NEWSBLUR.reader.open_feed_exception_modal(this.model.id);

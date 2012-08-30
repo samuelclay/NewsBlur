@@ -2985,8 +2985,14 @@
             
             // Hide menu on click outside menu.
             _.defer(function() {
-                $(document).bind('click.menu', function(e) {
-                    if (e.button == 2) return; // Ignore right-clicks
+                $(document).bind('mousedown.menu', function(e) {
+                    console.log(["Click outside, hide menu", e.which, e]);
+                    if (e.which >= 2) {
+                        // Ignore right-clicks
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
                     self.hide_manage_menu(type, $item, false);
                 });
             });
@@ -3044,7 +3050,7 @@
             
             clearTimeout(this.flags.closed_manage_menu);
             this.flags['feed_list_showing_manage_menu'] = false;
-            $(document).unbind('click.menu');
+            $(document).unbind('mousedown.menu');
             $manage_menu_container.uncorner();
             if (this.model.preference('show_tooltips')) {
                 $('.NB-task-manage').tipsy('enable');

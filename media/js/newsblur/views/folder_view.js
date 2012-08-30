@@ -187,7 +187,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var $folder = $(e.currentTarget).closest('li.folder');
         if ($folder[0] != this.el) return;
         if ($(e.currentTarget)[0] != this.$('.folder_title')[0]) return;
-        
+        if (e.which >= 2) return;
+        if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
+
         NEWSBLUR.reader.open_river_stories(this.$el, this.model);
     },
     
