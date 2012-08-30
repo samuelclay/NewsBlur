@@ -504,7 +504,7 @@
             var unread_count = !force_next_feed && this.active_feed && this.get_unread_count(true);
             
             if (!unread_count) {
-                if (this.flags.river_view) {
+                if (this.flags.river_view && !this.flags.social_view) {
                     var $next_folder = this.get_next_unread_folder(1);
                     var folder = NEWSBLUR.assets.folders.get_view($next_folder);
                     this.open_river_stories($next_folder, folder && folder.model);
