@@ -19,6 +19,8 @@
     <string name="title_feed_search">Search for feeds</string>
     <string name="add_feed_message">Add \"%s\" to your feeds?</string>
     
+    <string name="train_on">Train on \"%s\"</string>
+    
     <string name="dialog_title">Alert</string>
     <string name="loading">Loading…</string>
     

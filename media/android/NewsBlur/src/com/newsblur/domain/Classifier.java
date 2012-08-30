@@ -1,5 +1,6 @@
 package com.newsblur.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,9 +11,11 @@ import android.database.Cursor;
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
 
-public class Classifier {
+public class Classifier implements Serializable {
 	
+	private static final long serialVersionUID = 8958319817246110753L;
 	public static final int AUTHOR = 0, FEED = 1, TITLE = 2, TAG = 3;
+	public static final int LIKE = 1, DISLIKE = -1, CLEAR_DISLIKE = 3, CLEAR_LIKE = 4;
 	
 	@SerializedName("authors")
 	public HashMap<String, Integer> authors = new HashMap<String, Integer>();

@@ -50,7 +50,7 @@ public class FeedReading extends Reading {
 		feed = Feed.fromCursor(feedCursor);
 		setTitle(feed.title);
 
-		readingAdapter = new FeedReadingAdapter(getSupportFragmentManager(), feed, stories);
+		readingAdapter = new FeedReadingAdapter(getSupportFragmentManager(), feed, stories, classifier);
 
 		setupPager();
 

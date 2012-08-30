@@ -192,7 +192,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	@Override
 	public Cursor getGroup(int groupPosition) {
 		if (groupPosition >= blogCursorHelper.getCount()) {
-			return folderCursorHelper.moveTo(groupPosition - blogCursorHelper.getCount());
+			return folderCursorHelper.moveTo(groupPosition - blogCursorHelper.getCount() - 1);
 		} else {
 			return blogCursorHelper.moveTo(groupPosition);
 		}

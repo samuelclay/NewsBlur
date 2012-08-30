@@ -28,6 +28,8 @@ public class APIConstants {
 	public static final String URL_REPLY_TO = "http://www.newsblur.com/social/save_comment_reply";
 	public static final String URL_ADD_FEED = "http://www.newsblur.com/reader/add_url";
 	
+	public static final String URL_CLASSIFIER_SAVE = "http://www.newsblur.com/classifier/save";
+	
 	public static final String PARAMETER_FEEDS = "feeds";
 	public static final String PARAMETER_PASSWORD = "password";
 	public static final String PARAMETER_USER_ID = "user_id";
@@ -49,11 +51,5 @@ public class APIConstants {
 	public static final String PARAMETER_PAGE_NUMBER = "page";
 	
 	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
-	
-	
-	
-	
-	
-	
 	
 }

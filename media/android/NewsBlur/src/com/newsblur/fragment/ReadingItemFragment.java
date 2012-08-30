@@ -1,13 +1,18 @@
 package com.newsblur.fragment;
 
+import java.lang.ref.WeakReference;
+
 import android.content.ContentResolver;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -15,6 +20,7 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
+import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
@@ -28,16 +34,18 @@ public class ReadingItemFragment extends Fragment {
 	private APIManager apiManager;
 	private ImageLoader imageLoader;
 	private String feedColor;
+	private Classifier classifier;
 	private String feedFade;
 	private ContentResolver resolver;
 
-	public static ReadingItemFragment newInstance(Story story, String feedFaviconColor, String feedFaviconFade) { 
+	public static ReadingItemFragment newInstance(Story story, String feedFaviconColor, String feedFaviconFade, Classifier classifier) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
 		args.putSerializable("story", story);
 		args.putString("feedColor", feedFaviconColor);
 		args.putString("feedFade", feedFaviconFade);
+		args.putSerializable("classifier", classifier);
 		readingFragment.setArguments(args);
 
 		return readingFragment;
@@ -56,13 +64,14 @@ public class ReadingItemFragment extends Fragment {
 
 		feedColor = getArguments().getString("feedColor");
 		feedFade = getArguments().getString("feedFade");
+
+		classifier = (Classifier) getArguments().getSerializable("classifier");
 	}
 
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
 		this.inflater = inflater;
 
 		View view = inflater.inflate(R.layout.fragment_readingitem, null);
-
 
 		WebView web = (WebView) view.findViewById(R.id.reading_webview);
 		setupWebview(web);
@@ -94,7 +103,7 @@ public class ReadingItemFragment extends Fragment {
 		}
 
 		View sidebar = view.findViewById(R.id.row_item_sidebar);
-		
+
 		if (story.getIntelligenceTotal() > 0) {
 			sidebar.setBackgroundResource(R.drawable.positive_count_circle);
 		} else if (story.getIntelligenceTotal() == 0) {
@@ -111,16 +120,30 @@ public class ReadingItemFragment extends Fragment {
 		itemTitle.setText(story.title);
 		itemAuthors.setText(story.authors);
 
+		setupTags(view);
+	}
+
+
+	private void setupTags(View view) {
 		GridLayout tagContainer = (GridLayout) view.findViewById(R.id.reading_item_tags);
 
 		if (story.tags != null || story.tags.length > 0) {
 			tagContainer.setVisibility(View.VISIBLE);
-			for (String tag : story.tags) {
+			for (final String tag : story.tags) {
 				View v = inflater.inflate(R.layout.tag_view, null);
 				GridLayout.LayoutParams params = new GridLayout.LayoutParams();
 				params.columnSpec = GridLayout.spec(1, 1);
 				TextView tagText = (TextView) v.findViewById(R.id.tag_text);
 				tagText.setText(tag);
+
+				v.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(story.feedId, classifier, tag, Classifier.TAG);
+						classifierFragment.show(ReadingItemFragment.this.getFragmentManager(), "dialog");
+					}
+				});
+
 				tagContainer.addView(v);
 			}
 		}

@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
+import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FeedResult;
@@ -332,6 +333,53 @@ public class APIManager {
 				contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
 			}
 		}
+	}
+	
+	public boolean trainClassifier(String feedId, String key, int type, int action) {
+		String typeText = null;
+		String actionText = null;
+		
+		switch (type) {
+			case Classifier.AUTHOR:
+				typeText = "author"; 
+				break;
+			case Classifier.TAG:
+				typeText = "tag";
+				break;
+			case Classifier.TITLE:
+				typeText = "title";
+				break;
+			case Classifier.FEED:
+				typeText = "feed";
+				break;	
+		}
+		
+		switch (action) {
+			case Classifier.CLEAR_LIKE:
+				actionText = "remove_like_"; 
+				break;
+			case Classifier.CLEAR_DISLIKE:
+				actionText = "remove_dislike_"; 
+				break;	
+			case Classifier.LIKE:
+				actionText = "like_";
+				break;
+			case Classifier.DISLIKE:
+				actionText = "dislike_";
+				break;	
+		}
+		
+		StringBuilder builder = new StringBuilder();;
+		builder.append(actionText);
+		builder.append(typeText);
+		
+		ContentValues values = new ContentValues();
+		values.put(builder.toString(), key);
+		values.put(APIConstants.PARAMETER_FEEDID, feedId);
+		
+		final APIClient client = new APIClient(context);
+		final APIResponse response = client.post(APIConstants.URL_CLASSIFIER_SAVE, values);
+		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
 
 	public ProfileResponse getUser(String userId) {

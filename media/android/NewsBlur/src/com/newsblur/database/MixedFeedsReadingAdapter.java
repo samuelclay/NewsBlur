@@ -27,7 +27,7 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
 			stories.moveToPosition(position);
 			String feedFaviconColor = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
 			String feedFaviconFade = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
-			return ReadingItemFragment.newInstance(Story.fromCursor(stories), feedFaviconColor, feedFaviconFade);
+			return ReadingItemFragment.newInstance(Story.fromCursor(stories), feedFaviconColor, feedFaviconFade, null);
 		}
 	}
 	
