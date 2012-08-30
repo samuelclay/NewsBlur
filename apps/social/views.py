@@ -157,7 +157,6 @@ def load_social_stories(request, user_id, username=None):
                                            classifier_authors=classifier_authors,
                                            classifier_titles=classifier_titles,
                                            classifier_tags=classifier_tags)
-                                           
     if socialsub:
         socialsub.feed_opens += 1
         socialsub.needs_unread_recalc = True
