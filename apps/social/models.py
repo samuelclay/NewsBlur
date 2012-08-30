@@ -712,7 +712,7 @@ class MSocialSubscription(mongo.Document):
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)
-        mark_read_time  = int(time.mktime(self.mark_read_date.timetuple()))
+        mark_read_time  = int(time.mktime(self.mark_read_date.timetuple())) + 1
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
             min_score = mark_read_time

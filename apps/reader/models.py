@@ -128,7 +128,7 @@ class UserSubscription(models.Model):
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
             if read_filter == 'unread' or True:
-                min_score = int(time.mktime(self.mark_read_date.timetuple()))
+                min_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
             else:
                 now = datetime.datetime.now()
                 two_weeks_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -137,7 +137,8 @@ class UserSubscription(models.Model):
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
-            max_score = int(time.mktime(self.mark_read_date.timetuple()))
+            # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
+            max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
 
         if settings.DEBUG:
             print " ---> Unread all stories: %s" % r.zrevrange(unread_ranked_stories_key, 0, -1)
