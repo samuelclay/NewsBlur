@@ -19,7 +19,7 @@
             android:id="@+id/tag_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
+            android:textColor="@color/darkgray"
             android:textSize="10dp" />
     </LinearLayout>
 

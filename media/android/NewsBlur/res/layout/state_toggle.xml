@@ -4,11 +4,18 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/selector_left" />
+    
     <Button
         android:id="@+id/toggle_all"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_intelligence_left"
+        android:background="@drawable/selector_center"
+        android:textColor="@color/button_state_text_selector"
         android:minHeight="15dp"
         android:minWidth="80dp"
         android:text="All"
@@ -18,9 +25,11 @@
         android:id="@+id/toggle_some"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_intelligence_middle"
+        android:background="@drawable/selector_center"
         android:minHeight="15dp"
         android:minWidth="80dp"
+        android:enabled="false"
+        android:textColor="@color/button_state_text_selector"
         android:text="Some"
         android:layout_weight="1" />
     
@@ -28,11 +37,19 @@
         android:id="@+id/toggle_focus"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_intelligence_right"
+        android:background="@drawable/selector_center"
+        android:textColor="@color/button_state_text_selector"
         android:minHeight="15dp"
         android:minWidth="80dp"
         android:text="Focus"
         android:layout_weight="1"
          />
+    
+    
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/selector_right" />
 
 </LinearLayout>

@@ -22,6 +22,7 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri OFFLINE_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/offline_updates/");
 	public static final Uri SOCIAL_FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/social_feeds/");
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
+	public static final Uri CLASSIFIER_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/classifiers/");
 	public static final Uri FEED_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
 	public static final Uri MODIFY_SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
@@ -53,6 +54,7 @@ public class FeedProvider extends ContentProvider {
 	private static final int MULTIFEED_STORIES = 16;
 	private static final int ALL_STORIES = 17;
 	private static final int FEED_STORIES_NO_UPDATE = 18;
+	private static final int CLASSIFIERS_FOR_FEED = 19;
 	
 	
 	private BlurDatabase databaseHelper;
@@ -68,6 +70,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedcount/", FEED_COUNT);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/socialfeedcount/", DECREMENT_SOCIALFEED_COUNT);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/classifiers/#/", CLASSIFIERS_FOR_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/socialfeed/#/", SOCIALFEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feed/#/", FEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feed/#/noupdate", FEED_STORIES_NO_UPDATE);
@@ -89,6 +92,8 @@ public class FeedProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 			case OFFLINE_UPDATES:
 				return db.delete(DatabaseConstants.UPDATE_TABLE, selection, selectionArgs);
+			case CLASSIFIERS_FOR_FEED:
+				return db.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() });	
 			default:
 				return 0;
 		}
@@ -121,6 +126,15 @@ public class FeedProvider extends ContentProvider {
 			db.setTransactionSuccessful();
 			db.endTransaction();
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_FOLDER_FOLDER_NAME)).build();
+			break;
+			
+			// Inserting a classifier for a feed
+		case CLASSIFIERS_FOR_FEED:
+			db.beginTransaction();
+			values.put(DatabaseConstants.CLASSIFIER_ID, uri.getLastPathSegment());
+			db.insertWithOnConflict(DatabaseConstants.CLASSIFIER_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			db.setTransactionSuccessful();
+			db.endTransaction();
 			break;
 
 			// Inserting a feed
@@ -227,6 +241,10 @@ public class FeedProvider extends ContentProvider {
 		case INDIVIDUAL_FEED:
 			return db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE +
 					" WHERE " +  DatabaseConstants.FEED_ID + "= '" + uri.getLastPathSegment() + "'", selectionArgs);	
+		
+			// Query for classifiers for a given feed
+		case CLASSIFIERS_FOR_FEED:
+			return db.query(DatabaseConstants.CLASSIFIER_TABLE, null, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() }, null, null, null);
 			
 			// Query for a specific folder	
 		case INDIVIDUAL_FOLDER:

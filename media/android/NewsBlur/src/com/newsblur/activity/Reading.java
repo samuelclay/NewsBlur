@@ -140,7 +140,6 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 
 	@Override
 	public void onPageSelected(final int position) {
-		//new MarkStoryAsReadIntenallyTask(contentResolver).execute(readingAdapter.getStory(position));
 	}
 
 	@Override

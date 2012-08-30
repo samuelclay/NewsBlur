@@ -34,7 +34,7 @@
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
             android:padding="5dp"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="12dp"
             android:textStyle="bold" />
 
@@ -59,6 +59,19 @@
         android:layout_centerVertical="true"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:contentDescription="@string/description_row_folder_icon" />
+    
+    <ImageView
+        android:id="@+id/row_overlay"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:src="@drawable/avatar_overlay"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
         android:contentDescription="@string/description_row_folder_icon" />

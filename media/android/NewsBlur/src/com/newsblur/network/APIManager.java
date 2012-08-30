@@ -13,6 +13,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -146,13 +147,24 @@ public class APIManager {
 		}
 		Uri feedUri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(feedId).build();
 		final APIResponse response = client.get(feedUri.toString(), values);
-		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
+			
+			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
+			
+			int deleted = contentResolver.delete(classifierUri, null, null);
+			Log.d(TAG, "Deleted " + deleted + " previous classifiers");
+			for (ContentValues classifierValues : storiesResponse.classifiers.getContentValues()) {
+				contentResolver.insert(classifierUri, classifierValues);
+			}
+			
 			Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 			for (Story story : storiesResponse.stories) {
 				contentResolver.insert(storyUri, story.getValues());
 				insertComments(story);
 			}
+			
+			
 			return storiesResponse;
 		} else {
 			return null;

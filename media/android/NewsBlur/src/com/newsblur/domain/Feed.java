@@ -13,7 +13,7 @@ public class Feed {
 
 	@SerializedName("active")
 	public boolean active;
-
+	
 	@SerializedName("feed_address")
 	public String address;
 

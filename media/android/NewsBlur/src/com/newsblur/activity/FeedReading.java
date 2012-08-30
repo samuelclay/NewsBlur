@@ -13,6 +13,7 @@ import android.util.Log;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.FeedReadingAdapter;
+import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.SyncUpdateFragment;
@@ -33,7 +34,11 @@ public class FeedReading extends Reading {
 
 		setResult(RESULT_OK);
 		feedId = getIntent().getStringExtra(Reading.EXTRA_FEED);
-
+		
+		Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
+		Cursor feedClassifierCursor = contentResolver.query(classifierUri, null, null, null, null);
+		Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
+		
 		Uri storiesURI = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 		storiesToMarkAsRead = new HashSet<String>();
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");

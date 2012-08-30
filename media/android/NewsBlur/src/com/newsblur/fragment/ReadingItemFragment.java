@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +53,7 @@ public class ReadingItemFragment extends Fragment {
 
 		resolver = getActivity().getContentResolver();
 		inflater = getActivity().getLayoutInflater();
-		
+
 		feedColor = getArguments().getString("feedColor");
 		feedFade = getArguments().getString("feedFade");
 	}
@@ -93,10 +94,10 @@ public class ReadingItemFragment extends Fragment {
 		}
 
 		View sidebar = view.findViewById(R.id.row_item_sidebar);
-		int storyIntelligence = story.intelligence.intelligenceAuthors + story.intelligence.intelligenceTags + story.intelligence.intelligenceFeed + story.intelligence.intelligenceTitle;
-		if (storyIntelligence > 0) {
+		
+		if (story.getIntelligenceTotal() > 0) {
 			sidebar.setBackgroundResource(R.drawable.positive_count_circle);
-		} else if (storyIntelligence == 0) {
+		} else if (story.getIntelligenceTotal() == 0) {
 			sidebar.setBackgroundResource(R.drawable.neutral_count_circle);
 		} else {
 			sidebar.setBackgroundResource(R.drawable.negative_count_circle);
@@ -109,6 +110,20 @@ public class ReadingItemFragment extends Fragment {
 		itemDate.setText(story.shortDate);
 		itemTitle.setText(story.title);
 		itemAuthors.setText(story.authors);
+
+		GridLayout tagContainer = (GridLayout) view.findViewById(R.id.reading_item_tags);
+
+		if (story.tags != null || story.tags.length > 0) {
+			tagContainer.setVisibility(View.VISIBLE);
+			for (String tag : story.tags) {
+				View v = inflater.inflate(R.layout.tag_view, null);
+				GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+				params.columnSpec = GridLayout.spec(1, 1);
+				TextView tagText = (TextView) v.findViewById(R.id.tag_text);
+				tagText.setText(tag);
+				tagContainer.addView(v);
+			}
+		}
 	}
 
 	private void setupWebview(WebView web) {

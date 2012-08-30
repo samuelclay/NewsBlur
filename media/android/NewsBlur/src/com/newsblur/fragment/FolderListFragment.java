@@ -185,10 +185,10 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		if (folderAdapter.isGroup(groupPosition)) {
 			if (list.isGroupExpanded(groupPosition)) {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
-				((ImageView) group.findViewById(R.id.indicator_icon)).setImageResource(R.drawable.indicator_collapsed);
+				//((ImageView) group.findViewById(R.id.indicator_icon)).setImageResource(R.drawable.indicator_collapsed);
 			} else {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
-				((ImageView) group.findViewById(R.id.indicator_icon)).setImageResource(R.drawable.indicator_expanded);
+				//((ImageView) group.findViewById(R.id.indicator_icon)).setImageResource(R.drawable.indicator_expanded);
 			}
 			return false;
 		} else if (folderAdapter.isBlog(groupPosition)) {

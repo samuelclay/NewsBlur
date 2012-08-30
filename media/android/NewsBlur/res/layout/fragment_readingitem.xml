@@ -67,6 +67,16 @@
                     android:layout_marginRight="10dp"
                     android:textColor="@color/darkgray"
                     android:textSize="18dp" />
+                
+                <android.support.v7.widget.GridLayout
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/reading_item_tags"
+                    android:layout_width="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@+id/reading_item_title"
+                    app:useDefaultMargins="true" />
               
             </RelativeLayout>
         </LinearLayout>
@@ -121,12 +131,11 @@
                 <android.support.v7.widget.GridLayout
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/reading_social_shareimages"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/reading_share_text"
-                    android:layout_toLeftOf="@+id/reading_social_friendimages"
                     app:columnCount="3"
-                    app:useDefaultMargins="true" />
+                    android:layout_toRightOf="@+id/reading_share_text"
+                    android:layout_toLeftOf="@+id/reading_social_friendimages" />
                 
             </RelativeLayout>
 

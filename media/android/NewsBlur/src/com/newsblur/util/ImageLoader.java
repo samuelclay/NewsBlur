@@ -30,9 +30,11 @@ public class ImageLoader {
 	private final ExecutorService executorService;
 	private final Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 	private String TAG = "ImageLoader";
+	private Context context;
 
 	public ImageLoader(Context context) {
 		fileCache = new FileCache(context);
+		this.context = context;
 		executorService = Executors.newFixedThreadPool(5);
 	}
 	
@@ -43,7 +45,7 @@ public class ImageLoader {
 			bitmap = memoryCache.get(url);
 		}
 		if (bitmap != null) {
-			bitmap = UIUtils.roundBitmap(bitmap);
+			bitmap = UIUtils.roundBitmapWithFrame(bitmap, context);
 			imageView.setImageBitmap(bitmap);
 		} else {
 			queuePhoto(url, imageView);
