@@ -827,8 +827,8 @@ def save_blurblog_settings(request):
 @json.json_view
 def load_user_friends(request):
     user = get_user(request.user)
-    social_profile, _  = MSocialProfile.objects.get_or_create(user_id=user.pk)
-    social_services, _ = MSocialServices.objects.get_or_create(user_id=user.pk)
+    social_profile     = MSocialProfile.get_user(user_id=user.pk)
+    social_services    = MSocialServices.get_user(user_id=user.pk)
     following_profiles = MSocialProfile.profiles(social_profile.following_user_ids)
     follower_profiles  = MSocialProfile.profiles(social_profile.follower_user_ids)
     recommended_users  = social_profile.recommended_users()

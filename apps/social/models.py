@@ -1711,7 +1711,16 @@ class MSocialServices(mongo.Document):
     
     @classmethod
     def get_user(cls, user_id):
-        profile, created = cls.objects.get_or_create(user_id=user_id)
+        try:
+            profile, created = cls.objects.get_or_create(user_id=user_id)
+        except cls.MultipleObjectsReturned:
+            dupes = cls.objects.filter(user_id=user_id)
+            logging.debug(" ---> ~FRDeleting dupe social services. %s found." % dupes.count())
+            for dupe in dupes[1:]:
+                dupe.delete()
+            profile = dupes[0]
+            created = False
+
         if created:
             profile.save()
         return profile
@@ -2273,7 +2282,6 @@ class MActivity(mongo.Document):
                                          story_feed_id=story_feed_id,
                                          content_id=story_id,
                                          defaults={
-                                             'with_user_id': source_user_id,
                                              'title': story_title,
                                              'content': comments,
                                          })
