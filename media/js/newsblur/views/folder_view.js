@@ -12,7 +12,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     events: {
-        "contextmenu"                       : "show_manage_menu",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
         "click .folder_title"               : "open",
         "click .NB-feedlist-collapse-icon"  : "collapse_folder",
@@ -86,6 +85,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         }
         
         this.check_collapsed({skip_animation: true});
+        this.$('.folder_title').eq(0).bind('contextmenu', _.bind(this.show_manage_menu, this));
         
         return this;
     },
@@ -200,7 +200,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
 
         NEWSBLUR.reader.show_manage_menu('folder', this.$el, {
             toplevel: this.options.depth == 0,
-            folder_title: this.options.folder_title
+            folder_title: this.options.folder_title,
+            rightclick: e.which >= 2
         });
 
         return false;

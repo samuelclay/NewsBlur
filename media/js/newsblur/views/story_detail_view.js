@@ -151,7 +151,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             </div>\
             <div class="NB-sideoption NB-feed-story-share">\
                 <div class="NB-sideoption-icon">&nbsp;</div>\
-                <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Post to Blurblog" %></div>\
+                <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
             </div>\
             <%= story_share_view %>\
         </div>\
@@ -397,7 +397,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         e.stopPropagation();
         NEWSBLUR.reader.show_manage_menu('story', this.$el, {
             story_id: this.model.id,
-            feed_id: this.model.get('story_feed_id')
+            feed_id: this.model.get('story_feed_id'),
+            rightclick: e.which >= 2
         });
         return false;
     },

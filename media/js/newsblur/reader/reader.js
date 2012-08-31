@@ -2707,7 +2707,7 @@
                 var starred_class = story.get('starred') ? ' NB-story-starred ' : '';
                 var starred_title = story.get('starred') ? 'Remove bookmark' : 'Save This Story';
                 var shared_class = story.get('shared') ? ' NB-story-shared ' : '';
-                var shared_title = story.get('shared') ? 'Shared' : 'Post to blurblog';
+                var shared_title = story.get('shared') ? 'Shared' : 'Share to your Blurblog';
                 story.story_share_menu_view = new NEWSBLUR.Views.StoryShareView({
                     model: story
                 });
@@ -2985,16 +2985,18 @@
             
             // Hide menu on click outside menu.
             _.defer(function() {
-                $(document).bind('mousedown.menu', function(e) {
-                    console.log(["Click outside, hide menu", e.which, e]);
-                    if (e.which >= 2) {
-                        // Ignore right-clicks
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return false;
-                    }
-                    self.hide_manage_menu(type, $item, false);
-                });
+                var close_menu_handler = function(e) {
+                    _.defer(function() {
+                        $(document).bind('click.menu', function(e) {
+                            self.hide_manage_menu(type, $item, false);
+                        });
+                    });
+                };
+                if (options.rightclick) {
+                    $(document).one('mouseup.menu', close_menu_handler);
+                } else {
+                    close_menu_handler();
+                }
             });
             
             // Hide menu on mouseout (on a delay).
@@ -3050,7 +3052,8 @@
             
             clearTimeout(this.flags.closed_manage_menu);
             this.flags['feed_list_showing_manage_menu'] = false;
-            $(document).unbind('mousedown.menu');
+            $(document).unbind('click.menu');
+            $(document).unbind('mouseup.menu');
             $manage_menu_container.uncorner();
             if (this.model.preference('show_tooltips')) {
                 $('.NB-task-manage').tipsy('enable');
@@ -3371,7 +3374,7 @@
             var $confirm = $('.NB-menu-manage-story-share-confirm');
             
             $share.removeClass('NB-menu-manage-story-share-cancel');
-            var text = 'Post to blurblog';
+            var text = 'Share to your Blurblog';
             if (shared) {
                 text = 'Shared';
                 $share.addClass('NB-active');
