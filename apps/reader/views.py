@@ -175,7 +175,7 @@ def autologin(request, username, secret):
         
     return HttpResponseRedirect(reverse('index') + next)
     
-@ratelimit(minutes=1, requests=12)
+@ratelimit(minutes=1, requests=24)
 @never_cache
 @json.json_view
 def load_feeds(request):

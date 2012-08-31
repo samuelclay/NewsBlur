@@ -224,6 +224,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     // ==========
     
     open: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         if (this.options.feed_chooser) return;
         if (this.options.type != 'feed') return;
         if (e.which >= 2) return;
