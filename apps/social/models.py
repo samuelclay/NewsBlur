@@ -949,8 +949,6 @@ class MSocialSubscription(mongo.Document):
             max_score = max(scores['author'], scores['tags'], scores['title'])
             min_score = min(scores['author'], scores['tags'], scores['title'])
 
-            if min_score < 0:
-                import pdb; pdb.set_trace()
             if max_score > 0:
                 feed_scores['positive'] += 1
             elif min_score < 0:
