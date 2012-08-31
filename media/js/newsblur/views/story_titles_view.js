@@ -30,7 +30,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             }).render().el;
         });
         this.$el.html($stories);
-        this.attach_audio_handler_to_stories();
         this.end_loading();
         this.fill_out();
     },
@@ -46,7 +45,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 }).render().el;
             });
             this.$el.append($stories);
-            this.attach_audio_handler_to_stories();
         }
         this.end_loading();
         this.fill_out();
@@ -68,23 +66,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ===========
     // = Actions =
     // ===========
-    
-    attach_audio_handler_to_stories: function() {
-        _.delay(_.bind(function() {
-            var $audio = this.$('audio').filter(function() {
-                return !$(this).closest('.audiojs').length;
-            });
-            var audio_opts = window.a = {
-                imageLocation: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/player-graphics.gif',
-                swfLocation: NEWSBLUR.Globals.MEDIA_URL + 'flash/audiojs.swf',
-                preload: false
-            };
-
-            audiojs.events.ready(function() {
-                audiojs.createAll(audio_opts, $audio);
-            });
-        }, this), 500);
-    },
     
     fill_out: function(options) {
         this.snap_back_scroll_position();

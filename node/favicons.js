@@ -32,7 +32,6 @@
     return _this.collection.findOne({
       _id: feed_id
     }, function(err, docs) {
-      console.log("Req: " + feed_id + ", etag: " + etag);
       if (!err && etag && docs && docs.color === etag) {
         return res.send(304);
       } else if (!err && docs && docs.data) {

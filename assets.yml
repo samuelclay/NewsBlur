@@ -33,7 +33,6 @@ javascripts:
         - media/js/vendor/jquery.ajaxmanager.3.js
         - media/js/vendor/jquery.simplemodal-1.3.js
         - media/js/vendor/jquery.color.js
-        - media/js/vendor/jquery.rightclick.js
         - media/js/vendor/jquery.ui.core.js
         - media/js/vendor/jquery.ui.widget.js
         - media/js/vendor/jquery.ui.mouse.js

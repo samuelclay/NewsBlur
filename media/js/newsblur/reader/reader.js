@@ -504,7 +504,7 @@
             var unread_count = !force_next_feed && this.active_feed && this.get_unread_count(true);
             
             if (!unread_count) {
-                if (this.flags.river_view) {
+                if (this.flags.river_view && !this.flags.social_view) {
                     var $next_folder = this.get_next_unread_folder(1);
                     var folder = NEWSBLUR.assets.folders.get_view($next_folder);
                     this.open_river_stories($next_folder, folder && folder.model);
@@ -2707,7 +2707,7 @@
                 var starred_class = story.get('starred') ? ' NB-story-starred ' : '';
                 var starred_title = story.get('starred') ? 'Remove bookmark' : 'Save This Story';
                 var shared_class = story.get('shared') ? ' NB-story-shared ' : '';
-                var shared_title = story.get('shared') ? 'Shared' : 'Post to blurblog';
+                var shared_title = story.get('shared') ? 'Shared' : 'Share to your Blurblog';
                 story.story_share_menu_view = new NEWSBLUR.Views.StoryShareView({
                     model: story
                 });
@@ -2985,10 +2985,18 @@
             
             // Hide menu on click outside menu.
             _.defer(function() {
-                $(document).bind('click.menu', function(e) {
-                    if (e.button == 2) return; // Ignore right-clicks
-                    self.hide_manage_menu(type, $item, false);
-                });
+                var close_menu_handler = function(e) {
+                    _.defer(function() {
+                        $(document).bind('click.menu', function(e) {
+                            self.hide_manage_menu(type, $item, false);
+                        });
+                    });
+                };
+                if (options.rightclick) {
+                    $(document).one('mouseup.menu', close_menu_handler);
+                } else {
+                    close_menu_handler();
+                }
             });
             
             // Hide menu on mouseout (on a delay).
@@ -3045,6 +3053,7 @@
             clearTimeout(this.flags.closed_manage_menu);
             this.flags['feed_list_showing_manage_menu'] = false;
             $(document).unbind('click.menu');
+            $(document).unbind('mouseup.menu');
             $manage_menu_container.uncorner();
             if (this.model.preference('show_tooltips')) {
                 $('.NB-task-manage').tipsy('enable');
@@ -3365,7 +3374,7 @@
             var $confirm = $('.NB-menu-manage-story-share-confirm');
             
             $share.removeClass('NB-menu-manage-story-share-cancel');
-            var text = 'Post to blurblog';
+            var text = 'Share to your Blurblog';
             if (shared) {
                 text = 'Shared';
                 $share.addClass('NB-active');

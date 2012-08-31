@@ -2756,14 +2756,17 @@ background: transparent;
   border-bottom: 1px solid #E9E9E9;
 }
 
-.NB-feeds-header-dashboard:hover {
+.NB-feeds-header-dashboard.NB-active:hover {
   color: #DCDCDC;
-  cursor: default;
+  cursor: pointer;
 }
 
 .NB-feeds-header-dashboard .NB-feeds-header-right {
   float: right;
   color: #808080;
+}
+.NB-feeds-header-dashboard.NB-active:hover .NB-feeds-header-right {
+    display: none;
 }
 
 .NB-feeds-header-dashboard .NB-feeds-header-left {
@@ -2795,7 +2798,6 @@ background: transparent;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-sites {
     float: right;
-    cursor: pointer;
     padding-right: 16px;
     padding-top: 1px;
     background: transparent url('/media/embed/icons/silk/bullet_orange.png') no-repeat right 0;
@@ -2803,16 +2805,14 @@ background: transparent;
 .NB-feedlist-hide-read-feeds .NB-feeds-header-dashboard .NB-feeds-header-sites {
     background-image: url('/media/embed/icons/silk/bullet_blue.png');
 }
-.NB-feeds-header-dashboard .NB-feeds-header-sites:hover {
-    color: #5E7B88;
-}
 .NB-feeds-header-dashboard.NB-active:hover {
   cursor: pointer;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-home {
     display: none;
-    padding: 1px 0 0 4px;
+    padding: 1px 18px 0 4px;
     color: #7493C7;
+    text-align: center;
 }
 .NB-feeds-header-dashboard.NB-active:hover {
   cursor: pointer;

@@ -610,12 +610,13 @@ class MSocialSubscription(mongo.Document):
     }
 
     def __unicode__(self):
-        return "%s:%s" % (self.user_id, self.subscription_user_id)
+        user = User.objects.get(pk=self.user_id)
+        subscription_user = User.objects.get(pk=self.subscription_user_id)
+        return "Socialsub %s:%s" % (user, subscription_user)
     
     @classmethod
     def feeds(cls, user_id=None, subscription_user_id=None, calculate_all_scores=False,
               update_counts=False, *args, **kwargs):
-        print locals()
         params = {
             'user_id': user_id,
         }
@@ -711,7 +712,7 @@ class MSocialSubscription(mongo.Document):
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)
-        mark_read_time  = int(time.mktime(self.mark_read_date.timetuple()))
+        mark_read_time  = int(time.mktime(self.mark_read_date.timetuple())) + 1
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
             min_score = mark_read_time
@@ -730,7 +731,7 @@ class MSocialSubscription(mongo.Document):
 
         if not ignore_user_stories:
             r.delete(unread_stories_key)
-        print "User_id: %s, sub user: %s, order: %s, filter: %s, stories: %s, min: %s, max: %s" % (self.user_id, self.subscription_user_id, order, read_filter, story_ids, min_score, max_score)
+
         return [story_id for story_id in story_ids if story_id and story_id != 'None']
         
     @classmethod
@@ -893,6 +894,7 @@ class MSocialSubscription(mongo.Document):
             story_feed_ids.add(s['story_feed_id'])
             story_ids.append(s['story_guid'])
         story_feed_ids = list(story_feed_ids)
+
         usersubs = UserSubscription.objects.filter(user__pk=self.user_id, feed__pk__in=story_feed_ids)
         usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
 
@@ -907,6 +909,7 @@ class MSocialSubscription(mongo.Document):
 
         oldest_unread_story_date = now
         unread_stories_db = []
+
         for story in stories_db:
             if getattr(story, 'story_guid', None) in read_stories_ids:
                 continue
@@ -918,7 +921,7 @@ class MSocialSubscription(mongo.Document):
             if story.shared_date < oldest_unread_story_date:
                 oldest_unread_story_date = story.shared_date
         stories = Feed.format_stories(unread_stories_db)
-        
+
         classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
         classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
         classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
@@ -935,11 +938,6 @@ class MSocialSubscription(mongo.Document):
                                                                                feed_id__in=story_feed_ids))
 
         for story in stories:
-            if isinstance(story, dict) and not story['story_feed_id']:
-                continue
-            elif hasattr(story, 'story_feed_id') and not story.story_feed_id:
-                continue
-                
             scores = {
                 'feed'   : apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
                                                   social_user_id=self.subscription_user_id),
@@ -950,14 +948,17 @@ class MSocialSubscription(mongo.Document):
             
             max_score = max(scores['author'], scores['tags'], scores['title'])
             min_score = min(scores['author'], scores['tags'], scores['title'])
+
+            if min_score < 0:
+                import pdb; pdb.set_trace()
             if max_score > 0:
                 feed_scores['positive'] += 1
             elif min_score < 0:
                 feed_scores['negative'] += 1
             else:
-                if scores['feed'] > 0:
+                if story['story_feed_id'] and scores['feed'] > 0:
                     feed_scores['positive'] += 1
-                elif scores['feed'] < 0:
+                elif story['story_feed_id'] and scores['feed'] < 0:
                     feed_scores['negative'] += 1
                 else:
                     feed_scores['neutral'] += 1
@@ -2186,16 +2187,16 @@ class MActivity(mongo.Document):
     def new_starred_story(cls, user_id, story_title, story_feed_id, story_id):
         cls.objects.get_or_create(user_id=user_id,
                                   category='star',
-                                  content=story_title,
                                   story_feed_id=story_feed_id,
-                                  content_id=story_id)
+                                  content_id=story_id,
+                                  defaults=dict(content=story_title))
                            
     @classmethod
     def new_feed_subscription(cls, user_id, feed_id, feed_title):
-        cls.objects.create(user_id=user_id,
-                           category='feedsub',
-                           content=feed_title,
-                           feed_id=feed_id)
+        cls.objects.get_or_create(user_id=user_id,
+                                  category='feedsub',
+                                  feed_id=feed_id,
+                                  defaults=dict(content=feed_title))
                            
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
@@ -2266,7 +2267,7 @@ class MActivity(mongo.Document):
     @classmethod
     def new_shared_story(cls, user_id, source_user_id, story_title, comments, story_feed_id, story_id, share_date=None):
         a, _ = cls.objects.get_or_create(user_id=user_id,
-                                         with_user_id=user_id,
+                                         with_user_id=source_user_id,
                                          category='sharedstory',
                                          feed_id="social:%s" % user_id,
                                          story_feed_id=story_feed_id,
