@@ -5227,7 +5227,17 @@
             });
             $document.bind('keydown', 'r', function(e) {
                 e.preventDefault();
-                self.open_river_stories();
+                if (self.active_feed == 'starred') {
+                    self.open_starred_stories();
+                } else if (self.flags['social_view'] && self.active_feed == 'river:blurblogs') {
+                    self.open_river_blurblogs_stories();
+                } else if (self.flags['social_view']) {
+                    self.open_social_stories(self.active_feed);
+                } else if (self.flags['river_view']) {
+                    self.open_river_stories(self.active_folder && self.active_folder.folder_view.$el, self.active_folder);
+                } else {
+                    self.open_feed(self.active_feed);
+                }
             });
             $document.bind('keydown', 'enter', function(e) {
                 e.preventDefault();
