@@ -5080,53 +5080,6 @@
                 self.close_social_profile();
                 self.open_feed(feed_id);
             }); 
-            // $.targetIs(e, { tagSelector: '.NB-activity-sharedstory' }, function($t, $p){
-            //     e.preventDefault();
-            //     var $interaction = $t.closest('.NB-interaction');
-            //     var feed_id = $interaction.data('feedId');
-            //     var story_id = $interaction.data('contentId');
-            //     var user_id = $interaction.data('userId');
-            //     
-            //     self.close_social_profile();
-            //     if ($t.hasClass('NB-interaction-sharedstory-content')) {
-            //         self.open_social_stories('social:'+user_id, {'story_id': story_id});
-            //     } else {
-            //         self.open_feed(feed_id, {
-            //             'story_id': story_id, 
-            //             'scroll_to_comments': true,
-            //             'feed': new NEWSBLUR.Models.Feed({
-            //                 'feed_title': $('.NB-interaction-sharedstory-title', $interaction).text(),
-            //                 'favicon_url': $('.NB-interaction-photo', $interaction).attr('src')
-            //             })
-            //         });
-            //     }
-            // }); 
-            // $.targetIs(e, { tagSelector: '.NB-activity, .NB-interaction-comment_like' }, function($t, $p){
-            //     e.preventDefault();
-            //     var $interaction = $t.closest('.NB-interaction');
-            //     var user_id = $interaction.hasClass('NB-interaction-comment_like') ?
-            //                     NEWSBLUR.Globals.user_id : 
-            //                     $interaction.data('userId');
-            //     var feed_id = 'social:' + user_id;
-            //     var story_id = $interaction.data('contentId');
-            //     var username = $interaction.data('username');
-            //     
-            //     self.close_social_profile();
-            //     if (self.model.get_feed(feed_id)) {
-            //         self.open_social_stories(feed_id, {
-            //             'story_id': story_id,
-            //             'scroll_to_comments': true
-            //         });
-            //     } else {
-            //         var socialsub = self.model.add_social_feed({
-            //             id: feed_id, 
-            //             user_id: user_id, 
-            //             username: username
-            //         });
-            //         self.load_social_feed_in_tryfeed_view(socialsub, {'story_id': story_id});
-            //     }
-            // }); 
-
             
             // = One-offs =====================================================
             
