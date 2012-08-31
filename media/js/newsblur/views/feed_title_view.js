@@ -9,7 +9,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedbar-train-feed"      : "open_trainer",
         "click .NB-feedbar-statistics"      : "open_statistics",
         "click .NB-feedbar-settings"        : "open_settings",
-        "contextmenu"                       : "show_manage_menu",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
         "dblclick"                          : "open_feed_link",
         "click"                             : "open",
@@ -109,6 +108,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         this.render_counts();
         this.setup_tooltips();
         this.render_updated_time();
+        
+        this.$el.bind('contextmenu', _.bind(this.show_manage_menu, this));
         
         return this;
     },
@@ -223,8 +224,12 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     // ==========
     
     open: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         if (this.options.feed_chooser) return;
         if (this.options.type != 'feed') return;
+        if (e.which >= 2) return;
+        if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
         
         if (this.model.get('has_exception') && this.model.get('exception_type') == 'feed') {
             NEWSBLUR.reader.open_feed_exception_modal(this.model.id);
@@ -247,10 +252,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         if (this.options.feed_chooser) return;
         e.preventDefault();
         e.stopPropagation();
-        // NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+        NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this, e.which, e.button]);
         NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', this.$el, {
             feed_id: this.model.id,
-            toplevel: this.options.depth == 0
+            toplevel: this.options.depth == 0,
+            rightclick: e.which >= 2
         });
         return false;
     },

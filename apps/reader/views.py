@@ -185,7 +185,7 @@ def autologin(request, username, secret):
         
     return HttpResponseRedirect(reverse('index') + next)
     
-@ratelimit(minutes=1, requests=12)
+@ratelimit(minutes=1, requests=24)
 @never_cache
 @json.json_view
 def load_feeds(request):
@@ -806,14 +806,15 @@ def mark_social_stories_as_read(request):
 @json.json_view
 def mark_story_as_unread(request):
     story_id = request.POST['story_id']
-    feed_id = int(request.POST['feed_id'])
+    feed_id = request.POST['feed_id']
+    feed_id = int(feed_id)
     
     try:
         usersub = UserSubscription.objects.select_related('feed').get(user=request.user, feed=feed_id)
         feed = usersub.feed
     except UserSubscription.DoesNotExist:
         usersub = None
-        feed = Feed.objects.get(pk=feed_id)
+        feed = Feed.get_by_id(feed_id)
         
     if usersub and not usersub.needs_unread_recalc:
         usersub.needs_unread_recalc = True
@@ -912,11 +913,11 @@ def add_url(request):
         message = 'Enter in the website address or the feed URL.'
     else:
         folder = request.POST.get('folder', '')
-        code, message, _ = UserSubscription.add_subscription(user=request.user, feed_address=url, 
+        code, message, us = UserSubscription.add_subscription(user=request.user, feed_address=url, 
                                                              folder=folder, auto_active=auto_active,
                                                              skip_fetch=skip_fetch)
     
-    return dict(code=code, message=message)
+    return dict(code=code, message=message, feed=us.feed)
 
 @ajax_login_required
 @json.json_view

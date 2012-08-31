@@ -2756,14 +2756,17 @@ background: transparent;
   border-bottom: 1px solid #E9E9E9;
 }
 
-.NB-feeds-header-dashboard:hover {
+.NB-feeds-header-dashboard.NB-active:hover {
   color: #DCDCDC;
-  cursor: default;
+  cursor: pointer;
 }
 
 .NB-feeds-header-dashboard .NB-feeds-header-right {
   float: right;
   color: #808080;
+}
+.NB-feeds-header-dashboard.NB-active:hover .NB-feeds-header-right {
+    display: none;
 }
 
 .NB-feeds-header-dashboard .NB-feeds-header-left {
@@ -2781,6 +2784,7 @@ background: transparent;
     color: #B0B0B0;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-negative {
+    display: none;
     background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 2px -1px;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-neutral {
@@ -2794,7 +2798,6 @@ background: transparent;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-sites {
     float: right;
-    cursor: pointer;
     padding-right: 16px;
     padding-top: 1px;
     background: transparent url('/media/embed/icons/silk/bullet_orange.png') no-repeat right 0;
@@ -2802,16 +2805,14 @@ background: transparent;
 .NB-feedlist-hide-read-feeds .NB-feeds-header-dashboard .NB-feeds-header-sites {
     background-image: url('/media/embed/icons/silk/bullet_blue.png');
 }
-.NB-feeds-header-dashboard .NB-feeds-header-sites:hover {
-    color: #5E7B88;
-}
 .NB-feeds-header-dashboard.NB-active:hover {
   cursor: pointer;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-home {
     display: none;
-    padding: 1px 0 0 4px;
+    padding: 1px 18px 0 4px;
     color: #7493C7;
+    text-align: center;
 }
 .NB-feeds-header-dashboard.NB-active:hover {
   cursor: pointer;
@@ -7665,31 +7666,37 @@ form.opml_import_form input {
 /* = iPhone Page = */
 /* =============== */
 
-.NB-static-iphone .NB-iphone-main {
-    margin: 24px 36px 24px -36px;
+.NB-static-iphone {
+    -webkit-transform : translate3d(0, 0, 0);
+}
+.NB-static-iphone .NB-ios-main {
+    margin: 24px 36px 24px 0;
     text-align: center;
 }
-.NB-static-iphone .NB-iphone-title {
+.NB-static-iphone .NB-ios-title {
     font-size: 20px;
     margin: 0 0 24px;
+    text-align: center;
 }
-.NB-static-iphone .NB-iphone-subtitle {
+.NB-static-iphone .NB-ios-subtitle {
     font-size: 16px;
+    text-align: center;
     margin: 8px 0 0;
     color: #6D7D88;
 }
-.NB-static-iphone .NB-iphone-stripe-wrapper {
+.NB-static-iphone .NB-ios-stripe-wrapper {
     border-top: 1px solid #505050;
     border-bottom: 1px solid #505050;    
     margin-right: -36px;
 }
-.NB-static-iphone .NB-iphone-stripe {
+.NB-static-iphone .NB-ios-stripe {
     border-top: 1px solid white;
     border-bottom: 1px solid white;
     padding: 12px 0;
+    text-align: center;
     background: #F0F0F0 url('/media/embed/reader/stripe_background.png');
 }
-.NB-static-iphone .NB-iphone-download button {
+.NB-static-iphone .NB-ios-download button {
     padding: 4px 20px 4px 10px;
     letter-spacing: -0.03em;
     text-align: center;
@@ -7717,15 +7724,15 @@ form.opml_import_form input {
     cursor: pointer;
 
 }
-.NB-static-iphone .NB-iphone-download .NB-big {
+.NB-static-iphone .NB-ios-download .NB-big {
     font-size: 1.45em;
     font-weight: bold;
 }
-.NB-static-iphone .NB-iphone-download img {
+.NB-static-iphone .NB-ios-download img {
     float: left;
     margin: 0 8px 0 0;
 }
-.NB-static-iphone .NB-iphone-download button:hover {
+.NB-static-iphone .NB-ios-download button:hover {
     background-color: #3A8FCE;
         background-image: -webkit-gradient(
         linear,
@@ -7741,7 +7748,7 @@ form.opml_import_form input {
     );
     color: #C0D7E7;
 }
-.NB-static-iphone .NB-iphone-download button:active {
+.NB-static-iphone .NB-ios-download button:active {
     background-color: #3A8FCE;
         background-image: -webkit-gradient(
         linear,
@@ -7757,7 +7764,7 @@ form.opml_import_form input {
     );
 }
 
-.NB-static-iphone .NB-iphone-features {
+.NB-static-iphone .NB-ios-features {
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
@@ -7769,31 +7776,44 @@ form.opml_import_form input {
     overflow: hidden;
     display: inline-block;
 }
-.NB-static-iphone .NB-iphone-features li {
+.NB-static-iphone .NB-ios-features li {
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
 }
 
-.NB-static-iphone .NB-iphone-features .NB-iphone-feature {
-    padding: 12px 12px 12px 12px;
+.NB-static-iphone .NB-ios-features .NB-ios-feature {
     float: left;
-    width: 160px;
+    position: relative;
+    width: 158px;
 }
-.NB-static-iphone .NB-iphone-features .NB-iphone-feature img {
-    width: 128px;
-    height: 184px;
+.NB-static-iphone .NB-ios-features .NB-ios-feature img {
     border: 1px solid #202020;
     border-color: #909090 #808080 #505050 #606060;
+    position: absolute;
 }
-.NB-static-iphone .NB-iphone-features .NB-iphone-feature .NB-iphone-feature-title {
+.NB-static-iphone .NB-ios-features .NB-ios-feature img.NB-ios-iphone-screenshot {
+    width: 60px;
+    height: 88px;
+    top: 84px;
+    left: 6px;
+}
+.NB-static-iphone .NB-ios-features .NB-ios-feature img.NB-ios-ipad-screenshot {
+    width: 122px;
+    height: 160px;
+    top: 6px;
+    left: 30px;
+}
+.NB-static-iphone .NB-ios-features .NB-ios-feature .NB-ios-feature-title {
     font-weight: bold;
+    margin: 184px 0 12px;
+    width: 100%;
+    text-align: center;
+}
+.NB-static-iphone .NB-ios-features .NB-ios-feature .NB-ios-feature-subtitle {
     margin: 8px 0 0;
 }
-.NB-static-iphone .NB-iphone-features .NB-iphone-feature .NB-iphone-feature-subtitle {
-    margin: 8px 0 0;
-}
-.NB-static-iphone .NB-iphone-main .NB-iphone-feature {
+.NB-static-iphone .NB-ios-main .NB-ios-feature {
     -webkit-transition: all .32s ease-out;
     -moz-transition: all .32s ease-out;
     -o-transition: all .32s ease-out;
@@ -7801,58 +7821,112 @@ form.opml_import_form input {
     border-radius: 4px;
     border: 2px solid transparent;
 }
-.NB-static-iphone .NB-iphone-feature.NB-active {
+.NB-static-iphone .NB-ios-feature.NB-active {
     border: 2px solid #39518B;
 }
-.NB-static-iphone .NB-iphone-mockup {
+
+/* ========== */
+/* = Mockup = */
+/* ========== */
+
+.NB-static-iphone .NB-ios-mockup {
     float: right;
-    margin: 142px 96px 0 0;
-    width: 320px;
-    height: 460px;
+    width: 554px;
+    height: 630px;
     position: relative;
 }
-.NB-static-iphone .NB-iphone-mockup .NB-iphone-skeleton {
+.NB-static-iphone .NB-ios-mockup .NB-ios-iphone-skeleton {
     position: absolute;
-    top: -140px;
-    left: -32px;
-    width: 381px;
-    height: 729px;
-    background: transparent url('/media/embed/iphone/skeleton.png') no-repeat 0 0;
+    bottom: -24px;
+    left: 0;
+    width: 228px;
+    height: 437px;
     z-index: 0;
 }
-.NB-static-iphone .NB-iphone-mockup .NB-iphone-features {
+.NB-static-iphone .NB-ios-mockup .NB-ios-iphone-skeleton img {
+    width: 100%;
+    height: 100%;
+}
+.NB-static-iphone .NB-ios-mockup .NB-ios-ipad-skeleton {
+    position: absolute;
+    bottom: 0;
+    left: 48px;
+    width: 500px;
+    height: 640px;
+    z-index: 0;
+}
+.NB-static-iphone .NB-ios-mockup .NB-ios-ipad-skeleton img {
+    width: 100%;
+    height: 100%;
+}
+.NB-static-iphone .NB-ios-mockup .NB-ios-features-iphone {
+    overflow: hidden;
+    width: 192px;
+    height: 276px;
+    display: block;
+    position: absolute;
+    top: 301px;
+    left: 19px;
     padding: 0;
     margin: 0;
-    overflow: hidden;
-    width: 320px;
-    height: 460px;
-    display: block;
-    position: relative;
 }
-.NB-static-iphone .NB-iphone-mockup .NB-iphone-feature {
+.NB-static-iphone .NB-ios-mockup .NB-ios-features-ipad {
+    overflow: hidden;
+    width: 386px;
+    height: 504px;
+    display: block;
+    position: absolute;
+    top: 64px;
+    left: 105px;
+    padding: 0;
+    margin: 0;
+}
+
+.NB-static-iphone .NB-ios-mockup .NB-ios-feature {
     position: absolute;
     top: 0;
     left: 0;
-    padding: 0;
     border: none;
 }
-.NB-static-iphone .NB-iphone-mockup .NB-iphone-feature img {
-    width: 320px;
-    height: 460px;
+.NB-static-iphone .NB-ios-mockup .NB-ios-feature img.NB-ios-ipad-screenshot {
+    width: 386px;
+    height: 504px;
+    top: 0;
+    left: 0;
     border-left: none;
     border-top: none;
     border-bottom: none;
     border-right: 1px solid #505050;
 }
-@media screen and (max-width: 1050px) {
-    .NB-static-iphone .NB-iphone-mockup {
-        margin-right: 36px;
+.NB-static-iphone .NB-ios-mockup .NB-ios-feature img.NB-ios-iphone-screenshot {
+    width: 192px;
+    height: 276px;
+    top: 0;
+    left: 0;
+    border-left: none;
+    border-top: none;
+    border-bottom: none;
+    border-right: 1px solid #505050;
+}
+@media screen and (max-width: 1100px) {
+    .NB-static-iphone .NB-ios-mockup {
+        float: none;
+        margin: 0 auto 48px;
     }
-    .NB-static-iphone .NB-iphone-features .NB-iphone-feature {
-        padding: 4px;
+    .NB-static-iphone .NB-ios-mockup .NB-ios-ipad-skeleton {
+        left: 115px;
     }
-    .NB-static-iphone .NB-iphone-main {
-        margin-bottom: 54px;
+    .NB-static-iphone .NB-ios-mockup .NB-ios-iphone-skeleton {
+        left: -64px;
+    }
+    .NB-static-iphone .NB-ios-mockup .NB-ios-features-ipad {
+        left: 172px;
+    }
+    .NB-static-iphone .NB-ios-mockup .NB-ios-features-iphone {
+        left: -45px;
+    }
+    .NB-static-iphone .NB-ios-features .NB-ios-feature {
+        padding: 0px;
     }
 }
 

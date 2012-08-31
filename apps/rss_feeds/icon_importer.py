@@ -197,6 +197,8 @@ class IconImporter(object):
         url = None
         if not content: return url
         try:
+            if isinstance(content, unicode):
+                content = content.encode('utf-8')
             icon_path = lxml.html.fromstring(content).xpath(
                 '//link[@rel="icon" or @rel="shortcut icon"]/@href'
             )

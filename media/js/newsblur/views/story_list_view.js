@@ -272,7 +272,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         this.flags['feed_view_positions_calculated'] = false;
         
         if (this.cache.story_pane_position == null) {
-            this.cache.story_pane_position = this.$el.offsetParent().offset().top;
+            this.cache.story_pane_position = NEWSBLUR.reader.$s.$story_pane.offset().top;
         }
 
         models.each(_.bind(function(story) {
@@ -333,7 +333,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         var positions = this.cache.feed_view_story_positions_keys;
         var closest = $.closest(position, positions);
         var story = this.cache.feed_view_story_positions[positions[closest]];
-
+        // console.log(["mousemove", from_top, offset, position, positions]);
         if (!story) return;
         if (!story.get('selected')) {
             story.set('selected', true, {selected_by_scrolling: true, mouse: true, immediate: true});
@@ -351,7 +351,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             !NEWSBLUR.assets.preference('feed_view_single_story')) {
             var from_top = NEWSBLUR.reader.cache.mouse_position_y + this.$el.scrollTop();
             var offset = this.cache.story_pane_position;
-            var position = from_top - offset;
+            var position = from_top; // - offset;
             var positions = this.cache.feed_view_story_positions_keys;
             var closest = $.closest(position, positions);
             var story = this.cache.feed_view_story_positions[positions[closest]];

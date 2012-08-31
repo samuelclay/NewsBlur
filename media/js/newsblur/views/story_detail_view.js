@@ -59,6 +59,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.toggle_score();
         this.generate_gradients();
         this.render_comments();
+        this.attach_audio_handler_to_stories();
 
         return this;
     },
@@ -150,7 +151,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             </div>\
             <div class="NB-sideoption NB-feed-story-share">\
                 <div class="NB-sideoption-icon">&nbsp;</div>\
-                <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Post to Blurblog" %></div>\
+                <div class="NB-sideoption-title"><%= story.get("shared") ? "Shared" : "Share this story" %></div>\
             </div>\
             <%= story_share_view %>\
         </div>\
@@ -328,12 +329,34 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         }
     },
     
+    attach_audio_handler_to_stories: function() {
+        _.delay(_.bind(function() {
+            var $audio = this.$('audio').filter(function() {
+                return !$(this).closest('.audiojs').length;
+            });
+
+            var audio_opts = window.a = {
+                imageLocation: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/player-graphics.gif',
+                swfLocation: NEWSBLUR.Globals.MEDIA_URL + 'flash/audiojs.swf',
+                preload: false
+            };
+
+            audiojs.events.ready(function() {
+                audiojs.createAll(audio_opts, $audio);
+            });
+        }, this), 500);
+    },
+    
     // ==========
     // = Events =
     // ==========
     
     click_link_in_story: function(e) {
         e.preventDefault();
+        e.stopPropagation();
+        if (e.which >= 2) return;
+        if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
+
         var href = $(e.currentTarget).attr('href');
         
         if (NEWSBLUR.assets.preference('new_window') == 1) {
@@ -374,7 +397,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         e.stopPropagation();
         NEWSBLUR.reader.show_manage_menu('story', this.$el, {
             story_id: this.model.id,
-            feed_id: this.model.get('story_feed_id')
+            feed_id: this.model.get('story_feed_id'),
+            rightclick: e.which >= 2
         });
         return false;
     },

@@ -321,6 +321,7 @@ class MSocialProfile(mongo.Document):
         }
         if not compact:
             params.update({
+                'large_photo_url': self.large_photo_url,
                 'bio': self.bio,
                 'website': self.website,
                 'shared_stories_count': self.shared_stories_count,
@@ -491,16 +492,16 @@ class MSocialProfile(mongo.Document):
     def send_email_for_new_follower(self, follower_user_id):
         user = User.objects.get(pk=self.user_id)
         if follower_user_id not in self.follower_user_ids:
-            logging.user(user, "~BB~FMNo longer being followed by %s" % follower_user_id)
+            logging.user(user, "~FMNo longer being followed by %s" % follower_user_id)
             return
         if not user.email:
-            logging.user(user, "~BB~FMNo email to send to, skipping.")
+            logging.user(user, "~FMNo email to send to, skipping.")
             return
         elif not user.profile.send_emails:
-            logging.user(user, "~BB~FMDisabled emails, skipping.")
+            logging.user(user, "~FMDisabled emails, skipping.")
             return
         if self.user_id == follower_user_id:
-            logging.user(user, "~BB~FMDisabled emails, skipping.")
+            logging.user(user, "~FMDisabled emails, skipping.")
             return
         
         emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,
@@ -509,7 +510,7 @@ class MSocialProfile(mongo.Document):
         day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
         for email in emails_sent:
             if email.date_sent > day_ago:
-                logging.user(user, "~BB~SK~FMNot sending new follower email, already sent before. NBD.")
+                logging.user(user, "~SK~FMNot sending new follower email, already sent before. NBD.")
                 return
         
         follower_profile = MSocialProfile.get_user(follower_user_id)
@@ -541,7 +542,7 @@ class MSocialProfile(mongo.Document):
         MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
                           email_type='new_follower')
                 
-        logging.user(user, "~BB~FM~SBSending email for new follower: %s" % follower_profile.username)
+        logging.user(user, "~BB~FR~SBSending email for new follower: %s" % follower_profile.username)
             
     def save_feed_story_history_statistics(self):
         """
@@ -668,12 +669,13 @@ class MSocialSubscription(mongo.Document):
     }
 
     def __unicode__(self):
-        return "%s:%s" % (self.user_id, self.subscription_user_id)
+        user = User.objects.get(pk=self.user_id)
+        subscription_user = User.objects.get(pk=self.subscription_user_id)
+        return "Socialsub %s:%s" % (user, subscription_user)
     
     @classmethod
     def feeds(cls, user_id=None, subscription_user_id=None, calculate_all_scores=False,
               update_counts=False, *args, **kwargs):
-        print locals()
         params = {
             'user_id': user_id,
         }
@@ -769,7 +771,7 @@ class MSocialSubscription(mongo.Document):
         r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)
-        mark_read_time  = int(time.mktime(self.mark_read_date.timetuple()))
+        mark_read_time  = int(time.mktime(self.mark_read_date.timetuple())) + 1
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
             min_score = mark_read_time
@@ -788,7 +790,7 @@ class MSocialSubscription(mongo.Document):
 
         if not ignore_user_stories:
             r.delete(unread_stories_key)
-        print "User_id: %s, sub user: %s, order: %s, filter: %s, stories: %s, min: %s, max: %s" % (self.user_id, self.subscription_user_id, order, read_filter, story_ids, min_score, max_score)
+
         return [story_id for story_id in story_ids if story_id and story_id != 'None']
         
     @classmethod
@@ -951,6 +953,7 @@ class MSocialSubscription(mongo.Document):
             story_feed_ids.add(s['story_feed_id'])
             story_ids.append(s['story_guid'])
         story_feed_ids = list(story_feed_ids)
+
         usersubs = UserSubscription.objects.filter(user__pk=self.user_id, feed__pk__in=story_feed_ids)
         usersubs_map = dict((sub.feed_id, sub) for sub in usersubs)
 
@@ -965,6 +968,7 @@ class MSocialSubscription(mongo.Document):
 
         oldest_unread_story_date = now
         unread_stories_db = []
+
         for story in stories_db:
             if getattr(story, 'story_guid', None) in read_stories_ids:
                 continue
@@ -976,7 +980,7 @@ class MSocialSubscription(mongo.Document):
             if story.shared_date < oldest_unread_story_date:
                 oldest_unread_story_date = story.shared_date
         stories = Feed.format_stories(unread_stories_db)
-        
+
         classifier_feeds   = list(MClassifierFeed.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
         classifier_authors = list(MClassifierAuthor.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
         classifier_titles  = list(MClassifierTitle.objects(user_id=self.user_id, social_user_id=self.subscription_user_id))
@@ -1003,14 +1007,17 @@ class MSocialSubscription(mongo.Document):
             
             max_score = max(scores['author'], scores['tags'], scores['title'])
             min_score = min(scores['author'], scores['tags'], scores['title'])
+
+            if min_score < 0:
+                import pdb; pdb.set_trace()
             if max_score > 0:
                 feed_scores['positive'] += 1
             elif min_score < 0:
                 feed_scores['negative'] += 1
             else:
-                if scores['feed'] > 0:
+                if story['story_feed_id'] and scores['feed'] > 0:
                     feed_scores['positive'] += 1
-                elif scores['feed'] < 0:
+                elif story['story_feed_id'] and scores['feed'] < 0:
                     feed_scores['negative'] += 1
                 else:
                     feed_scores['neutral'] += 1
@@ -1121,6 +1128,15 @@ class MSharedStory(mongo.Document):
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()
+    
+    def to_json(self):
+        return {
+            "user_id": self.user_id,
+            "shared_date": self.shared_date,
+            "story_title": self.story_title,
+            "story_content": self.story_content_z and zlib.decompress(self.story_content_z),
+            "comments": self.comments,
+        }
         
     def save(self, *args, **kwargs):
         if self.story_content:
@@ -1157,6 +1173,39 @@ class MSharedStory(mongo.Document):
 
         super(MSharedStory, self).delete(*args, **kwargs)
     
+    @classmethod
+    def get_shared_stories_from_site(cls, feed_id, user_id, story_url, limit=3):
+        your_story = cls.objects.filter(story_feed_id=feed_id,
+                                        story_permalink=story_url,
+                                        user_id=user_id).limit(1).first()
+        same_stories = cls.objects.filter(story_feed_id=feed_id,
+                                          story_permalink=story_url,
+                                          user_id__ne=user_id
+                                          ).order_by('-shared_date')
+
+        same_stories = [{
+            "user_id": story.user_id,
+            "comments": story.comments,
+            "relative_date": relative_timesince(story.shared_date),
+            "blurblog_permalink": story.blurblog_permalink(),
+        } for story in same_stories]
+        
+        other_stories = []
+        if feed_id:
+            other_stories = cls.objects.filter(story_feed_id=feed_id,
+                                               story_permalink__ne=story_url
+                                               ).order_by('-shared_date').limit(limit)
+            other_stories = [{
+                "user_id": story.user_id,
+                "story_title": story.story_title,
+                "story_permalink": story.story_permalink,
+                "comments": story.comments,
+                "relative_date": relative_timesince(story.shared_date),
+                "blurblog_permalink": story.blurblog_permalink(),
+            } for story in other_stories]
+        
+        return your_story, same_stories, other_stories
+        
     def ensure_story_db_id(self, save=True):
         if not self.story_db_id:
             story, _ = MStory.find_story(self.story_feed_id, self.story_guid)
@@ -1214,11 +1263,11 @@ class MSharedStory(mongo.Document):
             story.save()
         
     @classmethod
-    def collect_popular_stories(cls, cutoff=None):
+    def collect_popular_stories(cls, cutoff=None, days=1):
         from apps.statistics.models import MStatistics
         shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
         cutoff = cutoff or max(math.floor(.05 * shared_stories_count), 3)
-        today = datetime.datetime.now() - datetime.timedelta(days=1)
+        today = datetime.datetime.now() - datetime.timedelta(days=days)
         
         map_f = """
             function() {
@@ -1253,11 +1302,11 @@ class MSharedStory(mongo.Document):
         return stories, cutoff
         
     @classmethod
-    def share_popular_stories(cls, cutoff=None, verbose=True):
+    def share_popular_stories(cls, cutoff=None, days=None, verbose=True):
         publish_new_stories = False
         popular_profile = MSocialProfile.objects.get(username='popular')
         popular_user = User.objects.get(pk=popular_profile.user_id)
-        shared_stories_today, cutoff = cls.collect_popular_stories(cutoff=cutoff)
+        shared_stories_today, cutoff = cls.collect_popular_stories(cutoff=cutoff, days=days)
         for guid, story_info in shared_stories_today.items():
             story, _ = MStory.find_story(story_info['feed_id'], story_info['guid'])
             if not story:
@@ -1269,7 +1318,6 @@ class MSharedStory(mongo.Document):
             story_values = {
                 'user_id': popular_profile.user_id,
                 'story_guid': story_db['story_guid'],
-                'story_feed_id': story_db['story_feed_id'],
                 'defaults': story_db,
             }
             shared_story, created = MSharedStory.objects.get_or_create(**story_values)
@@ -1567,9 +1615,9 @@ class MSharedStory(mongo.Document):
 
             if not user.email or not user.profile.send_emails:
                 if not user.email:
-                    logging.user(user, "~BB~FMNo email to send to, skipping.")
+                    logging.user(user, "~FMNo email to send to, skipping.")
                 elif not user.profile.send_emails:
-                    logging.user(user, "~BB~FMDisabled emails, skipping.")
+                    logging.user(user, "~FMDisabled emails, skipping.")
                 continue
             
             mute_url = "http://%s%s" % (
@@ -1618,9 +1666,9 @@ class MSharedStory(mongo.Document):
                                                          
         if not original_user.email or not original_user.profile.send_emails:
             if not original_user.email:
-                logging.user(original_user, "~BB~FMNo email to send to, skipping.")
+                logging.user(original_user, "~FMNo email to send to, skipping.")
             elif not original_user.profile.send_emails:
-                logging.user(original_user, "~BB~FMDisabled emails, skipping.")
+                logging.user(original_user, "~FMDisabled emails, skipping.")
             return
             
         story_feed = Feed.objects.get(pk=self.story_feed_id)
@@ -1807,7 +1855,7 @@ class MSocialServices(mongo.Document):
                 followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
+        logging.user(user, "~BM~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
         
         return following
         
@@ -2198,16 +2246,16 @@ class MActivity(mongo.Document):
     def new_starred_story(cls, user_id, story_title, story_feed_id, story_id):
         cls.objects.get_or_create(user_id=user_id,
                                   category='star',
-                                  content=story_title,
                                   story_feed_id=story_feed_id,
-                                  content_id=story_id)
+                                  content_id=story_id,
+                                  defaults=dict(content=story_title))
                            
     @classmethod
     def new_feed_subscription(cls, user_id, feed_id, feed_title):
-        cls.objects.create(user_id=user_id,
-                           category='feedsub',
-                           content=feed_title,
-                           feed_id=feed_id)
+        cls.objects.get_or_create(user_id=user_id,
+                                  category='feedsub',
+                                  feed_id=feed_id,
+                                  defaults=dict(content=feed_title))
                            
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):
@@ -2278,6 +2326,7 @@ class MActivity(mongo.Document):
     @classmethod
     def new_shared_story(cls, user_id, source_user_id, story_title, comments, story_feed_id, story_id, share_date=None):
         a, _ = cls.objects.get_or_create(user_id=user_id,
+                                         with_user_id=source_user_id,
                                          category='sharedstory',
                                          feed_id="social:%s" % user_id,
                                          story_feed_id=story_feed_id,

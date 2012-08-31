@@ -885,6 +885,10 @@
         - "The endpoint is far different from all other endpoints. It takes a variety of param keys."
         - "You can send a list for any of the keys. <code>like_tag[]=tech&like_tag[]=mobile</code>"
       params:
+        - key: feed_id
+          desc: "ID of feed for the classifier."
+          required: true
+          example: "42"
         - key: "like_[TYPE]"
           desc: "Positive score for TYPE <- [tag, author, title, feed]"
           optional: true

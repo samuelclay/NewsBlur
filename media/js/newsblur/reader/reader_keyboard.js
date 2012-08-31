@@ -206,7 +206,7 @@ NEWSBLUR.ReaderKeyboard.prototype = {
             ]),
             $.make('div', { className: 'NB-keyboard-group' }, [
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Post to blurblog'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Share this story'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'shift',
                     $.make('span', '+'),

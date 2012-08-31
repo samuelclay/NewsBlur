@@ -128,7 +128,7 @@ class UserSubscription(models.Model):
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
             if read_filter == 'unread' or True:
-                min_score = int(time.mktime(self.mark_read_date.timetuple()))
+                min_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
             else:
                 now = datetime.datetime.now()
                 two_weeks_ago = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -137,7 +137,8 @@ class UserSubscription(models.Model):
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
-            max_score = int(time.mktime(self.mark_read_date.timetuple()))
+            # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
+            max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
 
         if settings.DEBUG:
             print " ---> Unread all stories: %s" % r.zrevrange(unread_ranked_stories_key, 0, -1)
@@ -551,7 +552,7 @@ class MUserStory(mongo.Document):
     Stories read by the user. These are deleted as the mark_read_date for the
     UserSubscription passes the UserStory date.
     """
-    user_id = mongo.IntField(unique_with=('feed_id', 'story_id'))
+    user_id = mongo.IntField()
     feed_id = mongo.IntField()
     read_date = mongo.DateTimeField()
     story_id = mongo.StringField(unique_with=('user_id', 'feed_id'))
@@ -562,6 +563,7 @@ class MUserStory(mongo.Document):
     meta = {
         'collection': 'userstories',
         'indexes': [
+            {'fields': ('user_id', 'feed_id', 'story_id'), 'unique': True},
             ('feed_id', 'story_id'),   # Updating stories with new guids
             ('feed_id', 'story_date'), # Trimming feeds
         ],
