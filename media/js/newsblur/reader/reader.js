@@ -2436,6 +2436,20 @@
             });
         },
         
+        close_story_titles_pane: function() {
+            var story_anchor = this.model.preference('story_pane_anchor');
+            NEWSBLUR.reader.layout.rightLayout.close(story_anchor);
+            this.resize_window();
+            this.flags['story_titles_closed'] = true;
+        },
+        
+        open_story_titles_pane: function() {
+            var story_anchor = this.model.preference('story_pane_anchor');
+            NEWSBLUR.reader.layout.rightLayout.open(story_anchor);
+            this.resize_window();
+            this.flags['story_titles_closed'] = false;
+        },
+        
         // =======================
         // = Sidebar Manage Menu =
         // =======================
@@ -5261,6 +5275,14 @@
                     self.open_sidebar();
                 } else {
                     self.close_sidebar();
+                }
+            });
+            $document.bind('keydown', 'shift+t', function(e) {
+                e.preventDefault();
+                if (self.flags['story_titles_closed']) {
+                    self.open_story_titles_pane();
+                } else {
+                    self.close_story_titles_pane();
                 }
             });
             $document.bind('keydown', 'n', function(e) {
