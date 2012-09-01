@@ -1794,13 +1794,13 @@ class MSocialServices(mongo.Document):
             if socialsub:
                 following.append(followee_user_id)
     
-        # Follow any friends already on NewsBlur
-        following_users = MSocialServices.objects.filter(twitter_friend_ids__contains=self.twitter_uid)
-        for following_user in following_users:
-            if following_user.autofollow:
-                following_user_profile = MSocialProfile.get_user(following_user.user_id)
-                following_user_profile.follow_user(self.user_id, check_unfollowed=True)
-                followers += 1
+        # Friends already on NewsBlur should follow back
+        # following_users = MSocialServices.objects.filter(twitter_friend_ids__contains=self.twitter_uid)
+        # for following_user in following_users:
+        #     if following_user.autofollow:
+        #         following_user_profile = MSocialProfile.get_user(following_user.user_id)
+        #         following_user_profile.follow_user(self.user_id, check_unfollowed=True)
+        #         followers += 1
         
         user = User.objects.get(pk=self.user_id)
         logging.user(user, "~BM~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
@@ -1862,12 +1862,12 @@ class MSocialServices(mongo.Document):
                 following.append(followee_user_id)
     
         # Friends already on NewsBlur should follow back
-        following_users = MSocialServices.objects.filter(facebook_friend_ids__contains=self.facebook_uid)
-        for following_user in following_users:
-            if following_user.autofollow:
-                following_user_profile = MSocialProfile.get_user(following_user.user_id)
-                following_user_profile.follow_user(self.user_id, check_unfollowed=True)
-                followers += 1
+        # following_users = MSocialServices.objects.filter(facebook_friend_ids__contains=self.facebook_uid)
+        # for following_user in following_users:
+        #     if following_user.autofollow:
+        #         following_user_profile = MSocialProfile.get_user(following_user.user_id)
+        #         following_user_profile.follow_user(self.user_id, check_unfollowed=True)
+        #         followers += 1
         
         user = User.objects.get(pk=self.user_id)
         logging.user(user, "~BB~FRFacebook import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.facebook_friend_ids), len(following), followers))
