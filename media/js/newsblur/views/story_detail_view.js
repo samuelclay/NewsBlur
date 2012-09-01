@@ -464,6 +464,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     open_story_in_new_tab: function() {
+        this.model.mark_read({skip_delay: true});
         window.open(this.model.get('story_permalink'), '_blank');
         window.focus();
     }
