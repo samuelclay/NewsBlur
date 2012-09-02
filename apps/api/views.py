@@ -86,7 +86,7 @@ def add_site_load_script(request, token):
             usf = UserSubscriptionFolders.objects.get(
                 user=profile.user
             )
-            user_profile = MSocialProfile.objects.get(user_id=profile.user.pk)
+            user_profile = MSocialProfile.get_user(user_id=profile.user.pk)
         else:
             code = -1
     except Profile.DoesNotExist:

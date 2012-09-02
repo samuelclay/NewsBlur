@@ -133,7 +133,7 @@ def apply_classifier_tags(classifiers, story):
     return score
     
 def apply_classifier_feeds(classifiers, feed, social_user_id=None):
-    if not feed: return
+    if not feed: return 0
     feed_id = feed if isinstance(feed, int) else feed.pk
     
     for classifier in classifiers:

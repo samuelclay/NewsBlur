@@ -175,7 +175,7 @@ def autologin(request, username, secret):
         
     return HttpResponseRedirect(reverse('index') + next)
     
-@ratelimit(minutes=1, requests=12)
+@ratelimit(minutes=1, requests=24)
 @never_cache
 @json.json_view
 def load_feeds(request):
@@ -897,6 +897,7 @@ def add_url(request):
     url = request.POST['url']
     auto_active = is_true(request.POST.get('auto_active', 1))
     skip_fetch = is_true(request.POST.get('skip_fetch', False))
+    feed = None
     
     if not url:
         code = -1
@@ -906,8 +907,9 @@ def add_url(request):
         code, message, us = UserSubscription.add_subscription(user=request.user, feed_address=url, 
                                                              folder=folder, auto_active=auto_active,
                                                              skip_fetch=skip_fetch)
-    
-    return dict(code=code, message=message, feed=us.feed)
+        feed = us and us.feed
+        
+    return dict(code=code, message=message, feed=feed)
 
 @ajax_login_required
 @json.json_view
