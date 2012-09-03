@@ -52,17 +52,18 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private ViewBinder blogViewBinder;
 
 	public String currentState = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
-	private Cursor countCursor;
+	private Cursor allStoriesCountCursor, sharedStoriesCountCursor;
 	private ViewBinder everythingViewBinder;
 
-	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final int collapsedGroupLayout,
+	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final Cursor sharedCountCursor, final int collapsedGroupLayout,
 			int expandedGroupLayout, int blogGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, String[] blogFrom, int[] blogTo) {
 		this.context = context;
 		this.expandedGroupLayout = expandedGroupLayout;
 		this.collapsedGroupLayout = collapsedGroupLayout;
 		this.childLayout = childLayout;
 		this.blogGroupLayout = blogGroupLayout;
-		this.countCursor = countCursor;
+		this.allStoriesCountCursor = countCursor;
+		this.sharedStoriesCountCursor = sharedCountCursor;
 
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		contentResolver = context.getContentResolver();
@@ -256,7 +257,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 
 	public void setCountCursor(Cursor countCursor) {
-		this.countCursor = countCursor;
+		this.allStoriesCountCursor = countCursor;
 	}
 
 	@Override
@@ -264,17 +265,17 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		Cursor cursor = null;
 		View v;
 		if (groupPosition == 0) {
-			cursor = countCursor;
+			cursor = allStoriesCountCursor;
 			v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
-			countCursor.moveToFirst();
-			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
-			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
+			sharedStoriesCountCursor.moveToFirst();
+			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
+			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 		} else if (groupPosition == 1) {
-			cursor = countCursor;
+			cursor = allStoriesCountCursor;
 			v =  inflater.inflate(R.layout.row_all_stories, null, false);
-			countCursor.moveToFirst();
-			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
-			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
+			allStoriesCountCursor.moveToFirst();
+			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
+			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 		} else {
 			cursor = folderCursorHelper.moveTo(groupPosition - 2);
 			if (convertView == null) {
@@ -390,8 +391,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public void notifyDataSetChanged(boolean releaseCursors) {
 		if (releaseCursors) {
 			releaseCursorHelpers();
-			if (countCursor != null) {
-				countCursor.deactivate();
+			if (allStoriesCountCursor != null) {
+				allStoriesCountCursor.deactivate();
 			}
 		}
 		super.notifyDataSetChanged();
@@ -400,7 +401,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public void requery() {
 		folderCursorHelper.getCursor().requery();
 		blogCursorHelper.getCursor().requery();
-		countCursor.requery();
+		allStoriesCountCursor.requery();
 	}
 
 	@Override

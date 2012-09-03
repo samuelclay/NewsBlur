@@ -200,7 +200,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 				} else {
 					socialSelectionArgs = new String[] { DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, story.socialUserId } ;
 				}
-				operations.add(ContentProviderOperation.newUpdate(FeedProvider.MODIFY_SOCIALCOUNT_URI).withValues(emptyValues).withSelection("", socialSelectionArgs).build());
+				operations.add(ContentProviderOperation.newUpdate(FeedProvider.SOCIALCOUNT_URI).withValues(emptyValues).withSelection("", socialSelectionArgs).build());
 			}
 
 			Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();

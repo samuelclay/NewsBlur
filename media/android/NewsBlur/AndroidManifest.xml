@@ -41,7 +41,7 @@
             android:name=".activity.FeedItemsList" />
         
         <activity
-            android:name=".activity.EverythingItemsList" />
+            android:name=".activity.AllStoriesItemsList" />
         
         <activity
             android:name=".activity.FolderItemsList" />

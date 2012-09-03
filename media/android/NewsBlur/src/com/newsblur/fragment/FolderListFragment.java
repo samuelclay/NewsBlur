@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
@@ -16,13 +15,12 @@ import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
-import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.newsblur.R;
-import com.newsblur.activity.EverythingItemsList;
+import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.activity.Main;
@@ -63,6 +61,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		Cursor folderCursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
 		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
 		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
+		Cursor sharedCountCursor = resolver.query(FeedProvider.SOCIALCOUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
 
 		groupViewBinder = new FolderTreeViewBinder();
 		blogViewBinder = new SocialFeedViewBinder(getActivity());
@@ -78,7 +77,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		final String[] blogFrom = new String[] { DatabaseConstants.SOCIAL_FEED_TITLE, DatabaseConstants.SOCIAL_FEED_ICON, DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT };
 		final int[] blogTo = new int[] { R.id.row_socialfeed_name, R.id.row_socialfeed_icon, R.id.row_socialsumneu, R.id.row_socialsumneg, R.id.row_socialsumpos };
 
-		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
+		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder, everythingCountViewBinder);
 	}
 
@@ -101,11 +100,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		list.setAdapter(folderAdapter);
 		list.setOnGroupClickListener(this);
 		list.setOnChildClickListener(this);
-
-		//		int count = folderAdapter.getGroupCount();
-		//		for (int position = 1; position <= count; position++) {
-		//		    list.expandGroup(position - 1);
-		//		}
 
 		return v;
 	}
@@ -201,8 +195,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			}
 			return false;
 		} else {
-			Intent i = new Intent(getActivity(), EverythingItemsList.class);
-			i.putExtra(EverythingItemsList.EXTRA_STATE, currentState);
+			Intent i = new Intent(getActivity(), AllStoriesItemsList.class);
+			i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
 			startActivityForResult(i, FEEDCHECK);
 
 			return true;

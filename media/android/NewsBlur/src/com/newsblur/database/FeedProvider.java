@@ -24,7 +24,8 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri FEEDS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feeds/");
 	public static final Uri CLASSIFIER_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/classifiers/");
 	public static final Uri FEED_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
-	public static final Uri MODIFY_SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
+	public static final Uri SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
+	
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
 	public static final Uri MULTIFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feeds/");
 	public static final Uri SOCIALFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/socialfeed/");
@@ -48,7 +49,7 @@ public class FeedProvider extends ContentProvider {
 	private static final int INDIVIDUAL_STORY = 10;
 	private static final int FEED_COUNT = 11;
 	private static final int OFFLINE_UPDATES = 12;
-	private static final int DECREMENT_SOCIALFEED_COUNT = 13;
+	private static final int SOCIALFEED_COUNT = 13;
 	private static final int INDIVIDUAL_SOCIAL_FEED = 14;
 	private static final int REPLIES = 15;
 	private static final int MULTIFEED_STORIES = 16;
@@ -68,7 +69,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/social_feeds/#/", INDIVIDUAL_SOCIAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feeds/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feedcount/", FEED_COUNT);
-		uriMatcher.addURI(AUTHORITY, VERSION + "/socialfeedcount/", DECREMENT_SOCIALFEED_COUNT);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/socialfeedcount/", SOCIALFEED_COUNT);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/classifiers/#/", CLASSIFIERS_FOR_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/socialfeed/#/", SOCIALFEED_STORIES);
@@ -276,6 +277,12 @@ public class FeedProvider extends ContentProvider {
 			"SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + ") AS " + DatabaseConstants.SUM_NEG + " FROM " + DatabaseConstants.FEED_TABLE;
 			return db.rawQuery(sumQuery, selectionArgs);	
 			
+		case SOCIALFEED_COUNT:
+			String socialSumQuery = "SELECT SUM(" + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") AS " + DatabaseConstants.SUM_POS + ", " +
+			"SUM(" + DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + ") AS " + DatabaseConstants.SUM_NEUT + ", " + 
+			"SUM(" + DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT + ") AS " + DatabaseConstants.SUM_NEG + " FROM " + DatabaseConstants.SOCIALFEED_TABLE;
+			return db.rawQuery(socialSumQuery, selectionArgs);		
+			
 			// Querying for a stories from a feed
 		case FEED_STORIES:
 			if (!TextUtils.isEmpty(selection)) {
@@ -425,7 +432,7 @@ public class FeedProvider extends ContentProvider {
 		case FEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.FEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.FEED_ID + " = " + selectionArgs[1]);
 			return 0;
-		case DECREMENT_SOCIALFEED_COUNT: 
+		case SOCIALFEED_COUNT: 
 			db.execSQL("UPDATE " + DatabaseConstants.SOCIALFEED_TABLE + " SET " + selectionArgs[0] + " = " + selectionArgs[0] + " - 1 WHERE " + DatabaseConstants.SOCIAL_FEED_ID + " = " + selectionArgs[1]);
 			return 0;	
 		default:

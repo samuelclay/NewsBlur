@@ -15,7 +15,7 @@ import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
 
-public class EverythingItemsList extends ItemsList {
+public class AllStoriesItemsList extends ItemsList {
 
 	private ArrayList<String> feedIds;
 
