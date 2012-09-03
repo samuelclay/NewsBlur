@@ -1,6 +1,5 @@
 package com.newsblur.network;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,7 +16,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -25,7 +23,6 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FeedResult;
-import com.newsblur.domain.FolderStructure;
 import com.newsblur.domain.Reply;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
@@ -37,7 +34,6 @@ import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.serialization.DateStringTypeAdapter;
-import com.newsblur.serialization.FolderStructureTypeAdapter;
 import com.newsblur.util.PrefsUtil;
 
 public class APIManager {
@@ -50,7 +46,7 @@ public class APIManager {
 	public APIManager(final Context context) {
 		this.context = context;
 		final GsonBuilder builder = new GsonBuilder();
-		builder.registerTypeAdapter(FolderStructure.class, new FolderStructureTypeAdapter());
+		//builder.registerTypeAdapter(FolderStructure.class, new FolderStructureTypeAdapter());
 		builder.registerTypeAdapter(Date.class, new DateStringTypeAdapter());
 		contentResolver = context.getContentResolver();
 		gson = builder.create();
@@ -320,7 +316,7 @@ public class APIManager {
 		
 		String unsortedFolderName = context.getResources().getString(R.string.unsorted_folder_name);
 		
-		for (final Entry<String, List<Long>> entry : feedUpdate.folderStructure.folders.entrySet()) {
+		for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
 			String folderName = TextUtils.isEmpty(entry.getKey()) ? unsortedFolderName : entry.getKey();
 			final ContentValues folderValues = new ContentValues();
 			folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
@@ -476,6 +472,17 @@ public class APIManager {
 		} else {
 			return null;
 		}
+	}
+
+	public boolean deleteFeed(long feedId, String folderName) {
+		final APIClient client = new APIClient(context);
+		ContentValues values = new ContentValues();
+		values.put(APIConstants.PARAMETER_FEEDID, Long.toString(feedId));
+		if (!TextUtils.isEmpty(folderName)) {
+			values.put(APIConstants.PARAMETER_IN_FOLDER, folderName);
+		}
+		final APIResponse response = client.post(APIConstants.URL_DELETE_FEED, values);
+		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
 
 }

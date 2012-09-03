@@ -44,8 +44,8 @@ public class FeedItemsAdapter extends SimpleCursorAdapter {
 		cursor.moveToPosition(position);
 		
 		if (!TextUtils.equals(feed.faviconColour, "#null") && !TextUtils.equals(feed.faviconFade, "#null")) {
-			borderOne.setBackgroundColor(Color.parseColor(feed.faviconColour));
-			borderTwo.setBackgroundColor(Color.parseColor(feed.faviconFade));
+			borderOne.setBackgroundColor(Color.parseColor(feed.faviconBorder));
+			borderTwo.setBackgroundColor(Color.parseColor(feed.faviconColour));
 		} else {
 			borderOne.setBackgroundColor(Color.GRAY);
 			borderTwo.setBackgroundColor(Color.LTGRAY);

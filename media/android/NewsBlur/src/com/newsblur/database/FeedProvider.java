@@ -92,8 +92,16 @@ public class FeedProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 			case OFFLINE_UPDATES:
 				return db.delete(DatabaseConstants.UPDATE_TABLE, selection, selectionArgs);
+				
+			case INDIVIDUAL_FEED:
+				db.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() } );
+				db.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, DatabaseConstants.FEED_FOLDER_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() } );
+				db.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() } );
+				return 1;
+				
 			case CLASSIFIERS_FOR_FEED:
-				return db.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() });	
+				return db.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() });
+				
 			default:
 				return 0;
 		}
@@ -371,7 +379,7 @@ public class FeedProvider extends ContentProvider {
 		case OFFLINE_UPDATES:
 			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
 		case ALL_SOCIAL_FEEDS:
-			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, null);
+			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, DatabaseConstants.SOCIAL_FEED_TITLE + " ASC");
 		case INDIVIDUAL_SOCIAL_FEED:
 			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() }, null, null, null);	
 		case SOCIALFEED_STORIES:
@@ -385,7 +393,7 @@ public class FeedProvider extends ContentProvider {
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID + " = " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_STORYID +
 			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID +
-			" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ?";
+			" WHERE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? ";
 			
 			StringBuilder storyBuilder = new StringBuilder();
 			storyBuilder.append(socialQuery);

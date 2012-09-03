@@ -3,14 +3,18 @@ package com.newsblur.service;
 import java.util.ArrayList;
 
 import android.app.IntentService;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.OfflineUpdate;
@@ -32,6 +36,7 @@ public class SyncService extends IntentService {
 	private static final String TAG = "SyncService";
 	public static final String EXTRA_STATUS_RECEIVER = "resultReceiverExtra";
 	public static final String EXTRA_TASK_FEED_ID = "taskFeedId";
+	public static final String EXTRA_TASK_FOLDER_NAME = "taskFoldername";
 	public static final String EXTRA_TASK_STORY_ID = "taskStoryId";
 	public static final String EXTRA_TASK_STORIES = "stories";
 	public static final String EXTRA_TASK_SOCIALFEED_ID = "userId";
@@ -54,9 +59,11 @@ public class SyncService extends IntentService {
 	public static final int EXTRA_TASK_MULTIFEED_UPDATE = 36;
 	public static final int EXTRA_TASK_MARK_MULTIPLE_STORIES_READ = 37;
 	public static final int EXTRA_TASK_ALL_STORIES = 38;
+	public static final int EXTRA_TASK_DELETE_FEED = 39;
 
 	public APIClient apiClient;
 	private APIManager apiManager;
+	private ContentResolver contentResolver;
 	public static final String SYNCSERVICE_TASK = "syncservice_task";
 	
 
@@ -68,6 +75,7 @@ public class SyncService extends IntentService {
 	public void onCreate() {
 		super.onCreate();
 		apiManager = new APIManager(this);
+		contentResolver = getContentResolver();
 	}
 
 	@Override
@@ -157,6 +165,24 @@ public class SyncService extends IntentService {
 					apiManager.getStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
 				} else {
 					Log.e(TAG, "No feed ids to refresh included in SyncRequest");
+					receiver.send(STATUS_ERROR, Bundle.EMPTY);
+				}
+				break;	 
+				
+			case EXTRA_TASK_DELETE_FEED:
+				if (intent.getLongExtra(EXTRA_TASK_FEED_ID, -1) != -1) {
+					Long feedToBeDeleted = intent.getLongExtra(EXTRA_TASK_FEED_ID, -1);
+					if (apiManager.deleteFeed(feedToBeDeleted, intent.getStringExtra(EXTRA_TASK_FOLDER_NAME))) {
+						Log.d(TAG, "Deleted feed");
+						Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedToBeDeleted)).build();
+						contentResolver.delete(feedUri, null, null);
+					} else {
+						Log.e(TAG, "Error deleting feed");
+						Toast.makeText(this, getResources().getString(R.string.error_deleting_feed), Toast.LENGTH_LONG).show();
+						receiver.send(STATUS_ERROR, Bundle.EMPTY);
+					}
+				} else {
+					Log.e(TAG, "No feed id to delete include in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;	

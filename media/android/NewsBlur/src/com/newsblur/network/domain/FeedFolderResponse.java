@@ -1,5 +1,6 @@
 package com.newsblur.network.domain;
 
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.annotations.SerializedName;
@@ -15,8 +16,8 @@ public class FeedFolderResponse {
 	@SerializedName("feeds")
 	public Map<String, Feed> feeds;
 	
-	@SerializedName("folders")
-	public FolderStructure folderStructure;
+	@SerializedName("flat_folders")
+	public Map<String, List<Long>> folders;
 	
 	@SerializedName("social_feeds")
 	public SocialFeed[] socialFeeds;

@@ -3,5 +3,8 @@
     
     <item android:id="@+id/menu_mark_feed_as_read"
           android:title="@string/menu_mark_feed_as_read" />
-
+    
+    <item android:id="@+id/menu_delete_feed"
+          android:title="@string/menu_delete_feed" />
+    
 </menu>

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/lightgray"
+    android:background="@drawable/selector_folder_background"
     android:paddingBottom="10dp"
     android:paddingTop="10dp" >
 
@@ -36,18 +36,6 @@
         android:layout_marginRight="5dp" >
 
         <TextView
-            android:id="@+id/row_foldersumneg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/negative_count_rect"
-            android:gravity="center"
-            android:padding="5dp"
-            android:textColor="@color/white"
-            android:textSize="12dp"
-            android:textStyle="bold" />
-
-        <TextView
             android:id="@+id/row_foldersumneu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -56,7 +44,7 @@
             android:gravity="center"
             android:padding="5dp"
             android:textColor="@color/white"
-            android:textSize="12dp"
+            android:textSize="14dp"
             android:textStyle="bold" />
 
         <TextView
@@ -68,7 +56,7 @@
             android:gravity="center"
             android:padding="5dp"
             android:textColor="@color/white"
-            android:textSize="12dp"
+            android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
 

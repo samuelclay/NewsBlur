@@ -3,7 +3,7 @@ package com.newsblur.network;
 public class APIConstants {
 
 	public static final String URL_LOGIN = "http://newsblur.com/api/login";
-	public static final String URL_FEEDS = "http://newsblur.com/reader/feeds/?include_favicons=true";
+	public static final String URL_FEEDS = "http://newsblur.com/reader/feeds/?include_favicons=true&flat=true";
 	public static final String URL_USER_PROFILE = "http://newsblur.com/social/profile";
 	public static final String URL_MY_PROFILE = "http://newsblur.com/social/load_user_profile";
 	public static final String URL_FOLLOW = "http://newsblur.com/social/follow";
@@ -27,6 +27,7 @@ public class APIConstants {
 	public static final String URL_UNLIKE_COMMENT = "http://www.newsblur.com/social/remove_like_comment";
 	public static final String URL_REPLY_TO = "http://www.newsblur.com/social/save_comment_reply";
 	public static final String URL_ADD_FEED = "http://www.newsblur.com/reader/add_url";
+	public static final String URL_DELETE_FEED = "http://www.newsblur.com/reader/delete_feed";
 	
 	public static final String URL_CLASSIFIER_SAVE = "http://www.newsblur.com/classifier/save";
 	
@@ -39,6 +40,7 @@ public class APIConstants {
 	public static final String PARAMETER_FEEDS_STORIES = "feeds_stories";
 	public static final String PARAMETER_FEED_SEARCH_TERM = "term";
 	public static final String PARAMETER_FOLDER = "folder";
+	public static final String PARAMETER_IN_FOLDER = "in_folder";
 	public static final String PARAMETER_COMMENT_USERID = "comment_user_id";
 	public static final String PARAMETER_FEEDID = "feed_id";
 	public static final String PARAMETER_REPLY_TEXT = "reply_comments";
@@ -51,5 +53,7 @@ public class APIConstants {
 	public static final String PARAMETER_PAGE_NUMBER = "page";
 	
 	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
+	
+	
 	
 }

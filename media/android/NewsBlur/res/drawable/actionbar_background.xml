@@ -2,15 +2,8 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item>
-        <bitmap
-            android:src="@drawable/repeating_pattern"
-        	android:tileMode="repeat" 
-            />        
-    </item>
-    
-    <item>
         <shape>
-        	<solid android:color="@color/half_darkgray" />
+        	<solid android:color="@color/half_newsblur_blue" />
         </shape>
     </item>
     

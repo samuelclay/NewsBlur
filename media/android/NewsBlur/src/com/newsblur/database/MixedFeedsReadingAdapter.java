@@ -25,8 +25,8 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
 			return loadingFragment;
 		} else {
 			stories.moveToPosition(position);
-			String feedFaviconColor = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
-			String feedFaviconFade = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_FADE));
+			String feedFaviconColor = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
+			String feedFaviconFade = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
 			return ReadingItemFragment.newInstance(Story.fromCursor(stories), feedFaviconColor, feedFaviconFade, null);
 		}
 	}

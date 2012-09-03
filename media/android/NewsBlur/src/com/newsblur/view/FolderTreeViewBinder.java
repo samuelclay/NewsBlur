@@ -54,15 +54,6 @@ public class FolderTreeViewBinder implements ViewBinder {
 				view.setVisibility(View.GONE);
 			}
 			return true;
-		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_NEGATIVE_COUNT) || TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SUM_NEG)) {
-			int feedNegative = cursor.getInt(columnIndex);
-			if (feedNegative > 0 && currentState == AppConstants.STATE_ALL) {
-				view.setVisibility(View.VISIBLE);
-				((TextView) view).setText("" + feedNegative);
-			} else {
-				view.setVisibility(View.GONE);
-			}
-			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FOLDER_NAME)) {
 			final String folderName = cursor.getString(columnIndex);
 			((TextView) view).setText("" + folderName);

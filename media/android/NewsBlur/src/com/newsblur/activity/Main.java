@@ -102,6 +102,15 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	public void deleteFeed(long id, String foldername) {
+		setSupportProgressBarIndeterminateVisibility(true);
+		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
+		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
+		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_DELETE_FEED);
+		intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, id);
+		startService(intent);
+	}
 
 	@Override
 	public void changedState(int state) {

@@ -28,7 +28,7 @@ import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
-import com.newsblur.view.FeedItemViewBinder;
+import com.newsblur.view.SocialItemViewBinder;
 
 public class EverythingItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
 
@@ -66,8 +66,8 @@ public class EverythingItemListFragment extends ItemListFragment implements Load
 		calculateTotals();
 		
 		
-		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
-		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar };
+		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
+		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
@@ -75,7 +75,7 @@ public class EverythingItemListFragment extends ItemListFragment implements Load
 
 		itemList.setOnScrollListener(this);
 		
-		adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
+		adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
 

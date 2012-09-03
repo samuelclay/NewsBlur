@@ -30,7 +30,7 @@
         android:minWidth="80dp"
         android:enabled="false"
         android:textColor="@color/button_state_text_selector"
-        android:text="Some"
+        android:text="Unread"
         android:layout_weight="1" />
     
     <Button

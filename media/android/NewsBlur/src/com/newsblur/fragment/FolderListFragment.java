@@ -25,6 +25,7 @@ import com.newsblur.R;
 import com.newsblur.activity.EverythingItemsList;
 import com.newsblur.activity.FeedItemsList;
 import com.newsblur.activity.ItemsList;
+import com.newsblur.activity.Main;
 import com.newsblur.activity.SocialFeedItemsList;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -70,10 +71,10 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		leftBound = UIUtils.convertDPsToPixels(getActivity(), 20);
 		rightBound = UIUtils.convertDPsToPixels(getActivity(), 10);
 
-		final String[] groupFrom = new String[] { DatabaseConstants.FOLDER_NAME, DatabaseConstants.SUM_POS, DatabaseConstants.SUM_NEG, DatabaseConstants.SUM_NEUT };
-		final int[] groupTo = new int[] { R.id.row_foldername, R.id.row_foldersumpos, R.id.row_foldersumneg, R.id.row_foldersumneu };
-		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON, DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.FEED_NEGATIVE_COUNT, DatabaseConstants.FEED_POSITIVE_COUNT };
-		final int[] childTo = new int[] { R.id.row_feedname, R.id.row_feedfavicon, R.id.row_feedneutral, R.id.row_feednegative, R.id.row_feedpositive };
+		final String[] groupFrom = new String[] { DatabaseConstants.FOLDER_NAME, DatabaseConstants.SUM_POS, DatabaseConstants.SUM_NEUT };
+		final int[] groupTo = new int[] { R.id.row_foldername, R.id.row_foldersumpos, R.id.row_foldersumneu };
+		final String[] childFrom = new String[] { DatabaseConstants.FEED_TITLE, DatabaseConstants.FEED_FAVICON, DatabaseConstants.FEED_NEUTRAL_COUNT, DatabaseConstants.FEED_POSITIVE_COUNT };
+		final int[] childTo = new int[] { R.id.row_feedname, R.id.row_feedfavicon, R.id.row_feedneutral, R.id.row_feedpositive };
 		final String[] blogFrom = new String[] { DatabaseConstants.SOCIAL_FEED_TITLE, DatabaseConstants.SOCIAL_FEED_ICON, DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT, DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT, DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT };
 		final int[] blogTo = new int[] { R.id.row_socialfeed_name, R.id.row_socialfeed_icon, R.id.row_socialsumneu, R.id.row_socialsumneg, R.id.row_socialsumpos };
 		
@@ -100,6 +101,11 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		list.setAdapter(folderAdapter);
 		list.setOnGroupClickListener(this);
 		list.setOnChildClickListener(this);
+		
+		int count = folderAdapter.getGroupCount();
+		for (int position = 1; position <= count; position++) {
+		    list.expandGroup(position - 1);
+		}
 		
 		return v;
 	}
@@ -129,6 +135,11 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		
 		case R.id.menu_mark_feed_as_read:
 			new MarkFeedAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(Long.toString(info.id));
+			return true;
+			
+		case R.id.menu_delete_feed:
+			Toast.makeText(getActivity(), "Delete feed", Toast.LENGTH_SHORT).show();
+			((Main) getActivity()).deleteFeed(info.id, null);
 			return true;
 			
 		case R.id.menu_mark_folder_as_read:
@@ -185,14 +196,11 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		if (folderAdapter.isGroup(groupPosition)) {
 			if (list.isGroupExpanded(groupPosition)) {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
-				//((ImageView) group.findViewById(R.id.indicator_icon)).setImageResource(R.drawable.indicator_collapsed);
 			} else {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
-				//((ImageView) group.findViewById(R.id.indicator_icon)).setImageResource(R.drawable.indicator_expanded);
 			}
 			return false;
 		} else if (folderAdapter.isBlog(groupPosition)) {
-			Log.d(TAG, "Clicked blog.");
 			Cursor blurblogCursor = folderAdapter.getGroup(groupPosition);
 			String username = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_USERNAME));
 			String userIcon = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ICON));

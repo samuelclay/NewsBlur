@@ -1,19 +1,25 @@
 body {
-	font-size: 2.0em;
+	font-size: 100.1%;
 	padding: 5%;	
 	background-color: #f5f5f5;
 }
 
+p {
+	font-size: 1.2em;
+	line-height: 1.3em;
+}
+
 img {
-	max-width: 100%;	
+	max-width: 100%;
+	height: auto;	
 }
 
 a {
-	color: #d98800;	
+	color: #405BA8;	
 }
 
 a:visited {
-	color: #b44a00;
+	color: #405BA8;
 }
 
 blockquote {
@@ -22,6 +28,10 @@ blockquote {
 	padding-left: 15px;
 	font-style: italic;
 	margin-left: 10px;	
+}
+
+ins { 
+	text-decoration: none;
 }
 
 del {

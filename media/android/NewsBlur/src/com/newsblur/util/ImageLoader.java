@@ -45,7 +45,7 @@ public class ImageLoader {
 			bitmap = memoryCache.get(url);
 		}
 		if (bitmap != null) {
-			bitmap = UIUtils.roundBitmapWithFrame(bitmap, context);
+			bitmap = UIUtils.roundCorners(bitmap, 5);
 			imageView.setImageBitmap(bitmap);
 		} else {
 			queuePhoto(url, imageView);
@@ -57,14 +57,14 @@ public class ImageLoader {
 	public void displayImageByUid(String uid, ImageView imageView) {
 		Bitmap bitmap = memoryCache.get(uid);
 		if (bitmap != null) {
-			bitmap = UIUtils.roundBitmap(bitmap);
+			bitmap = UIUtils.roundCorners(bitmap, 5);
 			imageView.setImageBitmap(bitmap);
 		} else {
 			File f = fileCache.getFile(uid);
 			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 			if (bitmap != null) {
 				memoryCache.put(uid, bitmap);
-				bitmap = UIUtils.roundBitmap(bitmap);
+				bitmap = UIUtils.roundCorners(bitmap, 5);
 				imageView.setImageBitmap(bitmap);
 			} else {
 				imageView.setImageResource(R.drawable.logo);
@@ -91,7 +91,7 @@ public class ImageLoader {
 		if (bitmap != null) {
 			Log.d(TAG, "Retrieving bitmap From file cache");
 			memoryCache.put(url, bitmap);			
-			bitmap = UIUtils.roundBitmap(bitmap);
+			bitmap = UIUtils.roundCorners(bitmap, 5);
 			return bitmap;
 		}
 
@@ -111,7 +111,7 @@ public class ImageLoader {
 			bitmap = BitmapFactory.decodeStream(new FileInputStream(f));
 			memoryCache.put(url, bitmap);
 			outputStream.close();
-			bitmap = UIUtils.roundBitmap(bitmap);
+			bitmap = UIUtils.roundCorners(bitmap, 5);
 			return bitmap;
 		} catch (IOException ex) {
 			Log.e(TAG, "Error loading image from network", ex.fillInStackTrace());

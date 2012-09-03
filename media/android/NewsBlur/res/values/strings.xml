@@ -39,7 +39,7 @@
 	
 	<string name="reading_sharedby">SHARED BY: </string>
 	
-	<string name="everything">Everything</string>
+	<string name="everything">All stories</string>
 	
 	<string name="replied">Reply posted</string>
 	<string name="error_replying">There was an error replying</string>
@@ -70,7 +70,7 @@
     <string name="profile_with_comment">with the comment</string>
     <string name="profile_shared_story">Shared the story</string>
     <string name="profile_button_follow">Follow</string>
-    <string name="profile_button_unfollow">Unfollow</string>
+    <string name="profile_button_unfollow">Following</string>
     
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>
@@ -91,5 +91,9 @@
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>
     <string name="empty_search_notice">Type a search term to begin</string>
+    <string name="menu_delete_feed">Delete feed</string>
+    
+    <string name="feed_deleted">Feed deleted</string>
+    <string name="error_deleting_feed">There was an error deleting the feed.</string>
     
 </resources>

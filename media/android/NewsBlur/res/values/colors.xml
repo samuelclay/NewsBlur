@@ -9,6 +9,7 @@
     <color name="lightgray">#ccc</color>
     <color name="lightorange">#d98800</color>
     <color name="darkorange">#b44a00</color>
+	
 	<color name="lightgreen">#3b8207</color>
     <color name="darkgreen">#134c00</color>
     
@@ -21,13 +22,22 @@
     <color name="half_darkgray">#77434343</color>
     <color name="half_lightgray">#77dddddd</color>
     
-    <color name="positive">#3B7613</color>
+    <color name="positive">#47730B</color>
     
     <color name="darkneutral">#C59A00</color>
-    <color name="neutral">#F6C000</color>
+    <color name="neutral">#F5A90C</color>
     
     <color name="negative">#DE0000</color>
     <color name="darknegative">#B20000</color>
+    
+    <color name="tag_red">#D2A1A1</color>
+    <color name="tag_green">#BECCA4</color>
+    <color name="tag_gray">#A2A2A2</color>
+    
+    <color name="half_newsblur_blue">#770b445a</color>
+    <color name="newsblur_blue">#0b445a</color>
+    <color name="light_newsblur_blue">#2d6b82</color>
+    
     
     
 </resources>

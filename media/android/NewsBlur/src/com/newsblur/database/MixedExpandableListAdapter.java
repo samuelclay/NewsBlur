@@ -246,7 +246,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			cursor = countCursor;
 			v =  inflater.inflate(R.layout.row_everything, null, false);
 			countCursor.moveToFirst();
-			((TextView) v.findViewById(R.id.row_foldersumneg)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_NEG)));
 			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
 			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 		} else {

@@ -136,6 +136,17 @@ public class ReadingItemFragment extends Fragment {
 				TextView tagText = (TextView) v.findViewById(R.id.tag_text);
 				tagText.setText(tag);
 
+				if (classifier != null && classifier.tags.containsKey(tag)) {
+					switch (classifier.tags.get(tag)) {
+						case Classifier.LIKE:
+							tagText.setBackgroundResource(R.drawable.tag_background_positive);
+							break;
+						case Classifier.DISLIKE:
+							tagText.setBackgroundResource(R.drawable.tag_background_negative);
+							break;
+					}
+				}
+				
 				v.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View view) {

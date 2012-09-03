@@ -63,7 +63,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/reading_item_date"
-                    android:maxLines="2"
                     android:layout_marginRight="10dp"
                     android:textColor="@color/darkgray"
                     android:textSize="18dp" />
@@ -72,11 +71,11 @@
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/reading_item_tags"
                     android:layout_width="match_parent"
-                    android:layout_gravity="center"
+                    android:layout_gravity="left"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_below="@+id/reading_item_title"
-                    app:useDefaultMargins="true" />
+                    app:useDefaultMargins="false" />
               
             </RelativeLayout>
         </LinearLayout>
