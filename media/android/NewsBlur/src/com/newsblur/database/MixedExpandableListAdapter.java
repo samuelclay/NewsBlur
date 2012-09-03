@@ -23,14 +23,17 @@ import com.newsblur.domain.Folder;
 
 @SuppressWarnings("deprecation")
 public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
-	
+
 	private Handler mHandler;
 	private boolean mAutoRequery;
 
-	private final int GROUP = 0;
-    private final int BLOG = 1;
-    private final int EVERYTHING = 2;
+	private final int FOLDER = 0;
+	private final int BLOG = 0;
+	private final int FEED = 1;
 	
+	private final int ALL_STORIES = 1;
+	private final int ALL_SHARED_STORIES = 2;
+
 	private SparseArray<MyCursorHelper> mChildrenCursorHelpers;
 	private MyCursorHelper folderCursorHelper, blogCursorHelper;
 	private ContentResolver contentResolver;
@@ -42,7 +45,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private int[] childTo;
 	private int[] blogFrom;
 	private int[] blogTo;
-	
+
 	private final int childLayout, expandedGroupLayout, collapsedGroupLayout, blogGroupLayout;
 	private final LayoutInflater inflater;
 	private ViewBinder groupViewBinder;
@@ -60,7 +63,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		this.childLayout = childLayout;
 		this.blogGroupLayout = blogGroupLayout;
 		this.countCursor = countCursor;
-		
+
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		contentResolver = context.getContentResolver();
 
@@ -71,15 +74,15 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 		init(groupFrom, groupTo, childFrom, childTo, blogFrom, blogTo);
 	}
-	
+
 	private void init(final String[] groupFromNames, final int[] groupTo, final String[] childFromNames, final int[] childTo, final String[] blogFromNames, final int[] blogTo) {
 		this.groupTo = groupTo;
 		this.childTo = childTo;
 		this.blogTo = blogTo;
-		
+
 		initGroupFromColumns(groupFromNames);
 		initBlogFromColumns(blogFromNames);
-		
+
 		if (getGroupCount() > 0) {
 			MyCursorHelper tmpCursorHelper = getChildrenCursorHelper(0, true);
 			if (tmpCursorHelper != null) {
@@ -105,7 +108,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		groupFrom = new int[groupFromNames.length];
 		initFromColumns(folderCursorHelper.getCursor(), groupFromNames, groupFrom);
 	}
-	
+
 	private void initBlogFromColumns(String[] blogFromNames) {
 		blogFrom = new int[blogFromNames.length];
 		initFromColumns(blogCursorHelper.getCursor(), blogFromNames, blogFrom);
@@ -122,67 +125,98 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
 		return contentResolver.query(uri, null, null, new String[] { currentState }, null);
 	}
-	
+
 	@Override
 	public int getGroupType(int groupPosition) {
-		if (groupPosition < blogCursorHelper.getCount()) {
-			return BLOG;
-		} else if (groupPosition == blogCursorHelper.getCount()) {
-			return EVERYTHING;
+		if (groupPosition == 0) {
+			return ALL_SHARED_STORIES;
+		} else if (groupPosition == 1) {
+			return ALL_STORIES;
 		} else {
-			return GROUP;
+			return FOLDER;
 		}
 	}
 	
+	public int getChildType(int groupPosition, int childPosition) {
+		if (groupPosition == 0) {
+			return BLOG;
+		} else {
+			return FEED;
+		}
+	};
+
 	@Override
 	public int getGroupTypeCount() {
 		return 3;
 	}
 
+	@Override
+	public int getChildTypeCount() {
+		return 2;
+	}
 
 	@Override
 	public Cursor getChild(int groupPosition, int childPosition) {
-		groupPosition = groupPosition - blogCursorHelper.getCount() - 1;
-		return getChildrenCursorHelper(groupPosition, true).moveTo(childPosition);
+		if (groupPosition == 0) {
+			blogCursorHelper.moveTo(childPosition);
+			return blogCursorHelper.getCursor();
+		} else {
+			groupPosition = groupPosition - 2;
+			return getChildrenCursorHelper(groupPosition, true).moveTo(childPosition);
+		}
 	}
 
 	@Override
 	public long getChildId(int groupPosition, int childPosition) {
-		groupPosition = groupPosition - blogCursorHelper.getCount()  - 1;
-		return getChildrenCursorHelper(groupPosition, true).getId(childPosition);
+		if (groupPosition == 0) {
+			return blogCursorHelper.getId(childPosition);
+		} else {
+			groupPosition = groupPosition - 2;
+			return getChildrenCursorHelper(groupPosition, true).getId(childPosition);
+		}
 	}
 
 	@Override
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-		
-		groupPosition = groupPosition - blogCursorHelper.getCount() - 1;
-		
-		MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition, true);
-
-		Cursor cursor = cursorHelper.moveTo(childPosition);
-		if (cursor == null) {
-			throw new IllegalStateException("This should only be called when the cursor is valid");
-		}
-
 		View v;
-		if (convertView == null) {
-			v = newChildView(context, cursor, isLastChild, parent);
+		if (groupPosition == 0) {
+				blogCursorHelper.moveTo(childPosition);
+				if (convertView == null) {
+					v = newBlogView(context, blogCursorHelper.getCursor(), parent);
+				} else {
+					v = convertView;
+				}
+				bindBlogView(v, context, blogCursorHelper.getCursor());
 		} else {
-			v = convertView;
+			groupPosition = groupPosition - 2;
+
+			MyCursorHelper cursorHelper = getChildrenCursorHelper(groupPosition, true);
+
+			Cursor cursor = cursorHelper.moveTo(childPosition);
+			if (cursor == null) {
+				throw new IllegalStateException("This should only be called when the cursor is valid");
+			}
+			if (convertView == null) {
+				v = newChildView(context, cursor, isLastChild, parent);
+			} else {
+				v = convertView;
+			}
+			bindChildView(v, context, cursor, isLastChild);
 		}
-		bindChildView(v, context, cursor, isLastChild);
 		return v;
 	}
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		if (groupPosition <= blogCursorHelper.getCount()) {
+		if (groupPosition == 0) {
+			return blogCursorHelper.getCount();
+		} else if (groupPosition == 1) {
 			return 0;
+		} else {
+			groupPosition = groupPosition - 2;
+			MyCursorHelper helper = getChildrenCursorHelper(groupPosition, true);
+			return (folderCursorHelper.isValid() && helper != null) ? helper.getCount() : 0;
 		}
-		
-		groupPosition = groupPosition - blogCursorHelper.getCount() - 1;
-		MyCursorHelper helper = getChildrenCursorHelper(groupPosition, true);
-		return (folderCursorHelper.isValid() && helper != null) ? helper.getCount() : 0;
 	}
 
 	public View newChildView(Context context, Cursor cursor, boolean isLastChild, ViewGroup parent) {
@@ -191,24 +225,20 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public Cursor getGroup(int groupPosition) {
-		if (groupPosition >= blogCursorHelper.getCount()) {
-			return folderCursorHelper.moveTo(groupPosition - blogCursorHelper.getCount() - 1);
+		if (groupPosition >= 2) {
+			return folderCursorHelper.moveTo(groupPosition - 2);
 		} else {
 			return blogCursorHelper.moveTo(groupPosition);
 		}
 	}
-	
-	public boolean isGroup(int groupPosition) {
-		return (groupPosition > blogCursorHelper.getCount());
-	}
-	
-	public boolean isBlog(int groupPosition) {
-		return (groupPosition < blogCursorHelper.getCount());
+
+	public boolean isExpandable(int groupPosition) {
+		return (groupPosition == 0 || groupPosition > 1);
 	}
 
 	@Override
 	public int getGroupCount() {
-		return (folderCursorHelper.getCount() + blogCursorHelper.getCount());
+		return (folderCursorHelper.getCount() + 2);
 	}
 
 	@Override
@@ -223,33 +253,30 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public void setBlogCursor(Cursor blogCursor) {
 		blogCursorHelper.changeCursor(blogCursor, false);
 	}
-	
+
 
 	public void setCountCursor(Cursor countCursor) {
 		this.countCursor = countCursor;
 	}
 
-
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 		Cursor cursor = null;
 		View v;
-		if (groupPosition < blogCursorHelper.getCount()) {
-			cursor = blogCursorHelper.moveTo(groupPosition);
-			if (convertView == null) {
-				v = newBlogView(context, cursor, parent);
-			} else {
-				v = convertView;
-			}
-			bindBlogView(v, context, cursor);
-		} else if (groupPosition == blogCursorHelper.getCount()) {
+		if (groupPosition == 0) {
 			cursor = countCursor;
-			v =  inflater.inflate(R.layout.row_everything, null, false);
+			v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
+			countCursor.moveToFirst();
+			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
+			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
+		} else if (groupPosition == 1) {
+			cursor = countCursor;
+			v =  inflater.inflate(R.layout.row_all_stories, null, false);
 			countCursor.moveToFirst();
 			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
 			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(countCursor.getString(countCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 		} else {
-			cursor = folderCursorHelper.moveTo(groupPosition - blogCursorHelper.getCount() - 1);
+			cursor = folderCursorHelper.moveTo(groupPosition - 2);
 			if (convertView == null) {
 				v = newGroupView(context, cursor, isExpanded, parent);
 			} else {
@@ -257,7 +284,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			}
 			bindGroupView(v, context, cursor, isExpanded);
 		}
-		
+
 		if (cursor == null) {
 			throw new IllegalStateException("this should only be called when the cursor is valid");
 		}
@@ -268,7 +295,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private View newGroupView(Context context, Cursor cursor, boolean isExpanded, ViewGroup parent) {
 		return inflater.inflate((isExpanded) ? expandedGroupLayout : collapsedGroupLayout, parent, false);
 	}
-	
+
 	private View newBlogView(Context context, Cursor cursor, ViewGroup parent) {
 		return inflater.inflate(blogGroupLayout, parent, false);
 	}
@@ -294,11 +321,11 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		bindView(view, context, cursor, groupFrom, groupTo, groupViewBinder);
 		((ImageView) view.findViewById(R.id.row_folder_icon)).setImageResource(isExpanded ? R.drawable.folder_open : R.drawable.folder_closed);
 	}
-	
+
 	protected void bindBlogView(View view, Context context, Cursor cursor) {
 		bindView(view, context, cursor, blogFrom, blogTo, blogViewBinder);
 	}
-	
+
 	private void bindView(View view, Context context, Cursor cursor, int[] from, int[] to, ViewBinder viewbinder) {
 		final ViewBinder binder = viewbinder;
 
@@ -359,7 +386,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public void notifyDataSetChanged() {
 		notifyDataSetChanged(true);
 	}
-	
+
 	public void notifyDataSetChanged(boolean releaseCursors) {
 		if (releaseCursors) {
 			releaseCursorHelpers();
@@ -369,18 +396,18 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		}
 		super.notifyDataSetChanged();
 	}
-	
+
 	public void requery() {
 		folderCursorHelper.getCursor().requery();
 		blogCursorHelper.getCursor().requery();
 		countCursor.requery();
 	}
-	
+
 	@Override
-    public void notifyDataSetInvalidated() {
-        releaseCursorHelpers();
-        super.notifyDataSetInvalidated();
-    }
+	public void notifyDataSetInvalidated() {
+		releaseCursorHelpers();
+		super.notifyDataSetInvalidated();
+	}
 
 	class MyCursorHelper {
 		private Cursor mCursor;

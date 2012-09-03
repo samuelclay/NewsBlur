@@ -102,10 +102,10 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		list.setOnGroupClickListener(this);
 		list.setOnChildClickListener(this);
 		
-		int count = folderAdapter.getGroupCount();
-		for (int position = 1; position <= count; position++) {
-		    list.expandGroup(position - 1);
-		}
+//		int count = folderAdapter.getGroupCount();
+//		for (int position = 1; position <= count; position++) {
+//		    list.expandGroup(position - 1);
+//		}
 		
 		return v;
 	}
@@ -144,7 +144,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			
 		case R.id.menu_mark_folder_as_read:
 			int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-			if (folderAdapter.isGroup(groupPosition)) {
+			if (folderAdapter.isExpandable(groupPosition)) {
 				final Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
 				String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
 				new MarkFolderAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(folderId);
@@ -193,27 +193,13 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 	@Override
 	public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
-		if (folderAdapter.isGroup(groupPosition)) {
+		if (folderAdapter.isExpandable(groupPosition)) {
 			if (list.isGroupExpanded(groupPosition)) {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
 			} else {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
 			}
 			return false;
-		} else if (folderAdapter.isBlog(groupPosition)) {
-			Cursor blurblogCursor = folderAdapter.getGroup(groupPosition);
-			String username = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_USERNAME));
-			String userIcon = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ICON));
-			String userId = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
-			
-			final Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
-			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USER_ICON, userIcon);
-			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERNAME, username);
-			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERID, userId);
-			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
-			getActivity().startActivityForResult(intent, FEEDCHECK );
-				
-			return true;
 		} else {
 			Intent i = new Intent(getActivity(), EverythingItemsList.class);
 			i.putExtra(EverythingItemsList.EXTRA_STATE, currentState);
