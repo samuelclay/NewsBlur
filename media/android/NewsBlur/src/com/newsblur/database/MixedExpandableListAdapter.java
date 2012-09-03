@@ -27,10 +27,10 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private Handler mHandler;
 	private boolean mAutoRequery;
 
+	// Child-type & Group-type IDs must be less than their respective type-counts, even though they're never implicitly mentioned as linked
 	private final int FOLDER = 0;
 	private final int BLOG = 0;
 	private final int FEED = 1;
-	
 	private final int ALL_STORIES = 1;
 	private final int ALL_SHARED_STORIES = 2;
 
@@ -225,11 +225,11 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public Cursor getGroup(int groupPosition) {
-		if (groupPosition >= 2) {
-			return folderCursorHelper.moveTo(groupPosition - 2);
-		} else {
-			return blogCursorHelper.moveTo(groupPosition);
-		}
+		return folderCursorHelper.moveTo(groupPosition - 2);
+	}
+	
+	public Cursor getBlogCursor(int childPosition) {
+		return blogCursorHelper.moveTo(childPosition);
 	}
 
 	public boolean isExpandable(int groupPosition) {
