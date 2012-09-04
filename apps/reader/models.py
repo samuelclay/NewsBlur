@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from mongoengine.queryset import OperationError
 from apps.reader.managers import UserSubscriptionManager
-from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
+from apps.rss_feeds.models import Feed, MStory, DStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from utils.feed_functions import add_object_to_folder
@@ -137,15 +137,23 @@ class UserSubscription(models.Model):
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
-            # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
-            max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
+            if read_filter == 'unread':
+                # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
+                max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
+            else:
+                max_score = 0
 
         if settings.DEBUG:
-            print " ---> Unread all stories: %s" % r.zrevrange(unread_ranked_stories_key, 0, -1)
+            debug_stories = r.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
+            print " ---> Unread all stories (%s - %s) %s stories: %s" % (
+                min_score,
+                max_score,
+                len(debug_stories),
+                debug_stories)
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
-
+        print story_ids, ignore_user_stories, order, read_filter
         r.expire(unread_ranked_stories_key, 24*60*60)
         if not ignore_user_stories:
             r.delete(unread_stories_key)
@@ -153,7 +161,19 @@ class UserSubscription(models.Model):
         # XXX TODO: Remove below line after combing redis for these None's.
         story_ids = [s for s in story_ids if s and s != 'None'] # ugh, hack
         
-        return story_ids
+        if withscores:
+            return story_ids
+        elif story_ids:
+            if self.feed.backed_by_dynamodb:
+                mstories = DStory.get_batch(story_ids, table=settings.DDB)
+                mstories = sorted(mstories, key=lambda s: s.story_date, reverse=bool(order=='newest'))
+            else:
+                story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+                mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
+            stories = Feed.format_stories(mstories)
+            return stories
+        else:
+            return []
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):

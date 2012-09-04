@@ -3,7 +3,9 @@ import logging
 import os
 import datetime
 from mongoengine import connect
+from vendor.dynamodb_mapper.model import ConnectionBorg
 import redis
+import boto
 from utils import jammit
 
 # ===================
@@ -411,6 +413,13 @@ ACCOUNT_ACTIVATION_DAYS = 30
 AWS_ACCESS_KEY_ID = S3_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = S3_SECRET
 
+os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
+os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
+try:
+    DDB = ConnectionBorg().get_table('stories')
+except boto.exception.DynamoDBResponseError:
+    DDB = None
+
 def custom_show_toolbar(request):
     return DEBUG
 
@@ -446,4 +455,3 @@ if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.SqldumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
-

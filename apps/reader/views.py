@@ -427,11 +427,8 @@ def load_single_feed(request, feed_id):
     except UserSubscription.DoesNotExist:
         usersub = None
     
-    if usersub and (read_filter == 'unread' or order == 'oldest'):
-        story_ids = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
-        story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
-        mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
-        stories = Feed.format_stories(mstories)
+    if usersub:
+        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
     else:
         stories = feed.get_stories(offset, limit)
     

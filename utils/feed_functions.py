@@ -41,7 +41,8 @@ def timelimit(timeout):
             #     return function(*args, **kw)
         return _2
     return _1
-    
+
+         
 def utf8encode(tstr):
     """ Encodes a unicode string in utf-8
     """

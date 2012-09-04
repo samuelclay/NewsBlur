@@ -23,7 +23,6 @@ from utils.feed_functions import timelimit, TimeoutError, mail_feed_error_to_adm
 # Refresh feed code adapted from Feedjack.
 # http://feedjack.googlecode.com
 
-ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 FEED_OK, FEED_SAME, FEED_ERRPARSE, FEED_ERRHTTP, FEED_ERREXC = range(5)
 
 def mtime(ttime):
@@ -95,12 +94,6 @@ class ProcessFeed:
         self.feed_id = feed_id
         self.options = options
         self.fpf = fpf
-        self.entry_trans = {
-            ENTRY_NEW:'new',
-            ENTRY_UPDATED:'updated',
-            ENTRY_SAME:'same',
-            ENTRY_ERR:'error'}
-        self.entry_keys = sorted(self.entry_trans.keys())
     
     def refresh_feed(self):
         self.feed = Feed.get_by_id(self.feed_id)
@@ -111,11 +104,7 @@ class ProcessFeed:
         start = time.time()
         self.refresh_feed()
         
-        ret_values = {
-            ENTRY_NEW:0,
-            ENTRY_UPDATED:0,
-            ENTRY_SAME:0,
-            ENTRY_ERR:0}
+        ret_values = dict(new=0, updated=0, same=0, error=0)
 
         # logging.debug(u' ---> [%d] Processing %s' % (self.feed.id, self.feed.feed_title))
 
@@ -198,27 +187,16 @@ class ProcessFeed:
         if not self.feed.feed_link_locked:
             self.feed.feed_link = self.fpf.feed.get('link') or self.fpf.feed.get('id') or self.feed.feed_link
         
-        guids = []
-        for entry in self.fpf.entries:
-            if entry.get('id', ''):
-                guids.append(entry.get('id', ''))
-            elif entry.get('link'):
-                guids.append(entry.link)
-            elif entry.get('title'):
-                guids.append(entry.title)
         self.feed = self.feed.save()
 
         # Compare new stories to existing stories, adding and updating
         start_date = datetime.datetime.utcnow()
-        # end_date = datetime.datetime.utcnow()
         story_guids = []
         stories = []
         for entry in self.fpf.entries:
             story = pre_process_story(entry)
             if story.get('published') < start_date:
                 start_date = story.get('published')
-            # if story.get('published') > end_date:
-            #     end_date = story.get('published')
             stories.append(story)
             story_guids.append(story.get('guid') or story.get('link'))
 
@@ -228,11 +206,6 @@ class ProcessFeed:
             story_feed_id=self.feed_id
         ).limit(len(story_guids)))
         
-        # MStory.objects(
-        #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
-        #     | (Q(story_guid__in=story_guids)),
-        #     story_feed=self.feed
-        # ).order_by('-story_date')
         ret_values = self.feed.add_update_stories(stories, existing_stories,
                                                   verbose=self.options['verbose'])
 
@@ -253,12 +226,12 @@ class ProcessFeed:
         
         logging.debug(u'   ---> [%-30s] ~FYParsed Feed: %snew=%s~SN~FY %sup=%s~SN same=%s%s~SN %serr=%s~SN~FY total=~SB%s' % (
                       self.feed.title[:30], 
-                      '~FG~SB' if ret_values[ENTRY_NEW] else '', ret_values[ENTRY_NEW],
-                      '~FY~SB' if ret_values[ENTRY_UPDATED] else '', ret_values[ENTRY_UPDATED],
-                      '~SB' if ret_values[ENTRY_SAME] else '', ret_values[ENTRY_SAME],
-                      '~FR~SB' if ret_values[ENTRY_ERR] else '', ret_values[ENTRY_ERR],
+                      '~FG~SB' if ret_values['new'] else '', ret_values['new'],
+                      '~FY~SB' if ret_values['updated'] else '', ret_values['updated'],
+                      '~SB' if ret_values['same'] else '', ret_values['same'],
+                      '~FR~SB' if ret_values['error'] else '', ret_values['error'],
                       len(self.fpf.entries)))
-        self.feed.update_all_statistics(full=bool(ret_values[ENTRY_NEW]), force=self.options['force'])
+        self.feed.update_all_statistics(full=bool(ret_values['new']), force=self.options['force'])
         self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         
@@ -272,11 +245,6 @@ class ProcessFeed:
 class Dispatcher:
     def __init__(self, options, num_threads):
         self.options = options
-        self.entry_stats = {
-            ENTRY_NEW:0,
-            ENTRY_UPDATED:0,
-            ENTRY_SAME:0,
-            ENTRY_ERR:0}
         self.feed_stats = {
             FEED_OK:0,
             FEED_SAME:0,
@@ -307,12 +275,6 @@ class Dispatcher:
             identity = current_process._identity[0]
             
         for feed_id in feed_queue:
-            ret_entries = {
-                ENTRY_NEW: 0,
-                ENTRY_UPDATED: 0,
-                ENTRY_SAME: 0,
-                ENTRY_ERR: 0
-            }
             start_time = time.time()
             ret_feed = FEED_ERREXC
             try:
@@ -348,7 +310,7 @@ class Dispatcher:
                     ret_feed, ret_entries = pfeed.process()
                     feed = pfeed.feed
                     
-                    if ret_entries.get(ENTRY_NEW) or self.options['force']:
+                    if ret_entries['new'] or self.options['force']:
                         start = time.time()
                         if not feed.known_good or not feed.fetched_once:
                             feed.known_good = True
@@ -363,7 +325,7 @@ class Dispatcher:
                             logging.debug(u'   ---> [%-30s] ~FBTIME: unread count in ~FM%.4ss' % (
                                           feed.title[:30], time.time() - start))
                     cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
-                    # if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
+                    # if ret_entries['new'] or ret_entries['updated'] or self.options['force']:
                     #     feed.get_stories(force=True)
             except KeyboardInterrupt:
                 break
@@ -444,7 +406,7 @@ class Dispatcher:
             except IntegrityError:
                 logging.debug("   ---> [%-30s] ~FRIntegrityError on feed: %s" % (feed.title[:30], feed.feed_address,))
             
-            if ret_entries[ENTRY_NEW]:
+            if ret_entries['new']:
                 self.publish_to_subscribers(feed)
                 
             done_msg = (u'%2s ---> [%-30s] ~FYProcessed in ~FM~SB%.4ss~FY~SN (~FB%s~FY) [%s]' % (
@@ -453,8 +415,6 @@ class Dispatcher:
             logging.debug(done_msg)
             
             self.feed_stats[ret_feed] += 1
-            for key, val in ret_entries.items():
-                self.entry_stats[key] += val
                 
         if len(feed_queue) == 1:
             return feed

@@ -8,8 +8,11 @@ import mongoengine as mongo
 import zlib
 import hashlib
 import redis
+import bson
+import pytz
 from collections import defaultdict
 from operator import itemgetter
+from vendor.dynamodb_mapper.model import DynamoDBModel, ConnectionBorg
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
@@ -77,6 +80,7 @@ class Feed(models.Model):
     last_load_time = models.IntegerField(default=0)
     favicon_color = models.CharField(max_length=6, null=True, blank=True)
     favicon_not_found = models.BooleanField(default=False)
+    backed_by_dynamodb = models.BooleanField(default=False)
 
     class Meta:
         db_table="feeds"
@@ -295,6 +299,21 @@ class Feed(models.Model):
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
         self.set_next_scheduled_update()
+    
+    def convert_to_dynamodb(self):
+        stories = MStory.objects.filter(story_feed_id=self.pk)
+        batch_stories = []
+        logging.debug('   ---> [%-30s] Converting %s stories to DynamoDB...' % (unicode(self)[:30],
+                                                                                stories.count()))
+        for story in stories:
+            item = story.save_to_dynamodb(batch=True)
+            batch_stories.append(item._to_db_dict())
+            # story.delete()
+
+        DStory.batch_write(batch_stories)
+
+        self.backed_by_dynamodb = True
+        self.save()
         
     def check_feed_link_for_feed_address(self):
         @timelimit(10)
@@ -731,12 +750,7 @@ class Feed(models.Model):
                     return duplicate_feeds[0].feed
                 
     def add_update_stories(self, stories, existing_stories, verbose=False):
-        ret_values = {
-            ENTRY_NEW:0,
-            ENTRY_UPDATED:0,
-            ENTRY_SAME:0,
-            ENTRY_ERR:0
-        }
+        ret_values = dict(new=0, updated=0, same=0, error=0)
 
         for story in stories:
             if not story.get('title'):
@@ -759,9 +773,9 @@ class Feed(models.Model):
                 )
                 try:
                     s.save()
-                    ret_values[ENTRY_NEW] += 1
+                    ret_values['new'] += 1
                 except (IntegrityError, OperationError):
-                    ret_values[ENTRY_ERR] += 1
+                    ret_values['error'] += 1
                     if verbose:
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s' % (self.feed_title[:30], story.get('title')[:30]))
             elif existing_story and story_has_changed:
@@ -782,7 +796,7 @@ class Feed(models.Model):
                     else:
                         raise MStory.DoesNotExist
                 except (MStory.DoesNotExist, OperationError):
-                    ret_values[ENTRY_ERR] += 1
+                    ret_values['error'] += 1
                     if verbose:
                         logging.info('   ---> [%-30s] ~SN~FROperation on existing story: %s' % (self.feed_title[:30], story.get('title')[:30]))
                     continue
@@ -817,17 +831,17 @@ class Feed(models.Model):
                 existing_story.story_tags = story_tags
                 try:
                     existing_story.save()
-                    ret_values[ENTRY_UPDATED] += 1
+                    ret_values['updated'] += 1
                 except (IntegrityError, OperationError):
-                    ret_values[ENTRY_ERR] += 1
+                    ret_values['error'] += 1
                     if verbose:
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on updated story: %s' % (self.feed_title[:30], story.get('title')[:30]))
                 except ValidationError:
-                    ret_values[ENTRY_ERR] += 1
+                    ret_values['error'] += 1
                     if verbose:
                         logging.info('   ---> [%-30s] ~SN~FRValidationError on updated story: %s' % (self.feed_title[:30], story.get('title')[:30]))
             else:
-                ret_values[ENTRY_SAME] += 1
+                ret_values['same'] += 1
                 # logging.debug("Unchanged story: %s " % story.get('title'))
         
         return ret_values
@@ -947,10 +961,13 @@ class Feed(models.Model):
     
     @classmethod
     def format_story(cls, story_db, feed_id=None, text=False):
+        if isinstance(story_db.story_content_z, unicode):
+            story_db.story_content_z = story_db.story_content_z.decode('base64')
+            
         story_content = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
         story                     = {}
         story['story_tags']       = story_db.story_tags or []
-        story['story_date']       = story_db.story_date
+        story['story_date']       = story_db.story_date.replace(tzinfo=None)
         story['story_authors']    = story_db.story_author_name
         story['story_title']      = story_db.story_title
         story['story_content']    = story_content
@@ -1414,7 +1431,59 @@ class MStory(mongo.Document):
         self.share_count = shares.count()
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
+    
+    def save_to_dynamodb(self, batch=False):
+        mongo_dict = self._data
+        ddb_dict = dict(mongo_id=unicode(self.id))
+        allowed_keys = DStory.__schema__.keys()
+
+        for story_key, story_value in mongo_dict.items():
+            if story_key not in allowed_keys:
+                continue
+            elif isinstance(story_value, bson.binary.Binary):
+                ddb_dict[story_key] = unicode(story_value.encode('base64'))
+            elif isinstance(story_value, list):
+                ddb_dict[story_key] = set(story_value)
+            elif isinstance(story_value, str):
+                ddb_dict[story_key] = unicode(story_value)
+            elif isinstance(story_value, datetime.datetime):
+                ddb_dict[story_key] = story_value.replace(tzinfo=pytz.UTC)
+            else:
+                ddb_dict[story_key] = story_value
         
+        dstory = DStory(**ddb_dict)
+        if batch:
+            return dstory
+        else:
+            dstory.save()
+        
+class DStory(DynamoDBModel):
+    '''Story backed by Amazon's DynamoDB'''
+    __table__ = "stories"
+    __hash_key__ = "mongo_id"
+    __schema__ = {
+        "mongo_id": unicode,
+        "story_feed_id": int,
+        "story_date": datetime.datetime,
+        "story_title": unicode,
+        "story_content_z": unicode,
+        "story_original_content_z": unicode,
+        "story_latest_content_z": unicode,
+        "story_content_type": unicode,
+        "story_author_name": unicode,
+        "story_permalink": unicode,
+        "story_guid": unicode,
+        "story_tags": set,
+        "comment_count": int,
+        "comment_user_ids": set,
+        "share_count": int,
+        "share_user_ids": set,
+    }
+    
+    @classmethod
+    def create_table(cls):
+        conn = ConnectionBorg()
+        conn.create_table(cls, 1000, 1000, wait_for_active=True)
 
 class MStarredStory(mongo.Document):
     """Like MStory, but not inherited due to large overhead of _cls and _type in
