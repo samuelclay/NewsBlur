@@ -351,7 +351,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             !NEWSBLUR.assets.preference('feed_view_single_story')) {
             var from_top = NEWSBLUR.reader.cache.mouse_position_y + this.$el.scrollTop();
             var offset = this.cache.story_pane_position;
-            var position = from_top; // - offset;
+            var position = from_top - offset;
             var positions = this.cache.feed_view_story_positions_keys;
             var closest = $.closest(position, positions);
             var story = this.cache.feed_view_story_positions[positions[closest]];
