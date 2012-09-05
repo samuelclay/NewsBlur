@@ -19,6 +19,15 @@ BROKEN_PAGES = [
     '[]',
 ]
 
+# Also change in reader_utils.js.
+BROKEN_PAGE_URLS = [
+    'nytimes.com',
+    'stackoverflow.com',
+    'stackexchange.com',
+    'twitter.com',
+    'rankexploits',
+]
+
 class PageImporter(object):
     
     def __init__(self, feed):
@@ -47,11 +56,17 @@ class PageImporter(object):
         if not feed_link:
             self.save_no_page()
             return
-        
+            
+        if feed_link.startswith('www'):
+            self.feed.feed_link = 'http://' + feed_link
         try:
-            if feed_link.startswith('www'):
-                self.feed.feed_link = 'http://' + feed_link
-            if feed_link.startswith('http'):
+            if any(feed_link.startswith(s) for s in BROKEN_PAGES):
+                self.save_no_page()
+                return
+            elif any(s in feed_link.lower() for s in BROKEN_PAGE_URLS):
+                self.save_no_page()
+                return
+            elif feed_link.startswith('http'):
                 if urllib_fallback:
                     request = urllib2.Request(feed_link, headers=self.headers)
                     response = urllib2.urlopen(request)
@@ -66,9 +81,6 @@ class PageImporter(object):
                         data = response.text
                     except (LookupError, TypeError):
                         data = response.content
-            elif any(feed_link.startswith(s) for s in BROKEN_PAGES):
-                self.save_no_page()
-                return
             else:
                 try:
                     data = open(feed_link, 'r').read()
@@ -112,6 +124,7 @@ class PageImporter(object):
         return html
         
     def save_no_page(self):
+        logging.debug('   --->> [%-30s] ~FYNo original page: %s' % (self.feed, self.feed.feed_link))
         self.feed.has_page = False
         self.feed.save()
         self.feed.save_page_history(404, "Feed has no original page.")
