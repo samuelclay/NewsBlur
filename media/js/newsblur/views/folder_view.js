@@ -183,6 +183,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     // ==========
    
     open: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         if (this.options.feed_chooser) return;
         var $folder = $(e.currentTarget).closest('li.folder');
         if ($folder[0] != this.el) return;
