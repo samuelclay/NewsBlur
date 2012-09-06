@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
     android:versionCode="2"
-    android:versionName="0.9.03" >
+    android:versionName="0.9.05" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -42,6 +42,9 @@
         
         <activity
             android:name=".activity.AllStoriesItemsList" />
+         
+        <activity
+            android:name=".activity.AllSharedStoriesItemsList" />
         
         <activity
             android:name=".activity.FolderItemsList" />
@@ -53,7 +56,7 @@
             android:name=".activity.FeedReading"/>
         
         <activity
-            android:name=".activity.EverythingReading"/>
+            android:name=".activity.AllStoriesReading"/>
         
         <activity
             android:name=".activity.FolderReading"/>

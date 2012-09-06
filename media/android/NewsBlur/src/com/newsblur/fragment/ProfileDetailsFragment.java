@@ -112,7 +112,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		} else {
 			followButton.setVisibility(View.GONE);
 			Bitmap userPicture = PrefsUtil.getUserImage(getActivity());
-			userPicture = UIUtils.roundBitmap(userPicture);
+			userPicture = UIUtils.roundCorners(userPicture, 5);
 			imageView.setImageBitmap(userPicture);
 		}
 	}

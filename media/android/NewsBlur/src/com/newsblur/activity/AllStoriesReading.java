@@ -17,7 +17,7 @@ import com.newsblur.network.MarkMixedStoriesAsReadTask;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.AppConstants;
 
-public class EverythingReading extends Reading {
+public class AllStoriesReading extends Reading {
 	
 	private Cursor stories;
 	private ValueMultimap storiesToMarkAsRead;
@@ -38,7 +38,7 @@ public class EverythingReading extends Reading {
 		setupCountCursor();
 		
 		stories = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
-		setTitle(getResources().getString(R.string.everything));
+		setTitle(getResources().getString(R.string.all_stories));
 		storiesToMarkAsRead = new ValueMultimap();
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), stories);
 

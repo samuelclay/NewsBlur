@@ -1,7 +1,9 @@
 package com.newsblur.database;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.DataSetObserver;
@@ -13,12 +15,15 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.newsblur.R;
+import com.newsblur.activity.AllSharedStoriesItemsList;
+import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.domain.Folder;
 
 @SuppressWarnings("deprecation")
@@ -53,8 +58,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	public String currentState = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
 	private Cursor allStoriesCountCursor, sharedStoriesCountCursor;
-	private ViewBinder everythingViewBinder;
-
+	
 	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final Cursor sharedCountCursor, final int collapsedGroupLayout,
 			int expandedGroupLayout, int blogGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, String[] blogFrom, int[] blogTo) {
 		this.context = context;
@@ -93,10 +97,9 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		}
 	}
 
-	public void setViewBinders(final ViewBinder groupViewBinder, final ViewBinder blogViewBinder, final ViewBinder everythingViewBinder) {
+	public void setViewBinders(final ViewBinder groupViewBinder, final ViewBinder blogViewBinder) {
 		this.groupViewBinder = groupViewBinder;
 		this.blogViewBinder = blogViewBinder;
-		this.everythingViewBinder = everythingViewBinder;
 	}
 
 	private void initFromColumns(Cursor cursor, String[] fromColumnNames, int[] fromColumns) {
@@ -255,7 +258,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		blogCursorHelper.changeCursor(blogCursor, false);
 	}
 
-
 	public void setCountCursor(Cursor countCursor) {
 		this.allStoriesCountCursor = countCursor;
 	}
@@ -268,6 +270,14 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			cursor = allStoriesCountCursor;
 			v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
 			sharedStoriesCountCursor.moveToFirst();
+			((TextView) v.findViewById(R.id.row_everythingtext)).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent i = new Intent(context, AllSharedStoriesItemsList.class);
+					i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
+					((Activity) context).startActivityForResult(i, Activity.RESULT_OK);
+				}
+			});
 			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
 			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
 		} else if (groupPosition == 1) {

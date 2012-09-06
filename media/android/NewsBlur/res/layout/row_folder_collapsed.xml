@@ -20,7 +20,7 @@
     <TextView
         android:id="@+id/row_foldername"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_folder_icon"
         android:textColor="@color/darkgray"

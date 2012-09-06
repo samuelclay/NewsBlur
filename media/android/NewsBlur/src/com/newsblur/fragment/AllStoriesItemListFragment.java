@@ -20,7 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.newsblur.R;
-import com.newsblur.activity.EverythingReading;
+import com.newsblur.activity.AllStoriesReading;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;
@@ -30,7 +30,7 @@ import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.view.SocialItemViewBinder;
 
-public class EverythingItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
+public class AllStoriesItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
 
 	public int currentState;
 	private boolean doRequest = true;
@@ -118,7 +118,7 @@ public class EverythingItemListFragment extends ItemListFragment implements Load
 	}
 
 	public static ItemListFragment newInstance(int currentState) {
-		ItemListFragment everythingFragment = new EverythingItemListFragment();
+		ItemListFragment everythingFragment = new AllStoriesItemListFragment();
 		Bundle arguments = new Bundle();
 		arguments.putInt("currentState", currentState);
 		everythingFragment.setArguments(arguments);
@@ -161,7 +161,7 @@ public class EverythingItemListFragment extends ItemListFragment implements Load
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Intent i = new Intent(getActivity(), EverythingReading.class);
+		Intent i = new Intent(getActivity(), AllStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
 		startActivityForResult(i, READING_RETURNED );

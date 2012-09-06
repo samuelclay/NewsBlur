@@ -10,12 +10,12 @@ import android.support.v4.app.FragmentTransaction;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
-import com.newsblur.fragment.AllStoriesItemListFragment;
+import com.newsblur.fragment.AllSharedStoriesItemListFragment;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
 
-public class AllStoriesItemsList extends ItemsList {
+public class AllSharedStoriesItemsList extends ItemsList {
 
 	private ArrayList<String> feedIds;
 
@@ -23,19 +23,19 @@ public class AllStoriesItemsList extends ItemsList {
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		
-		setTitle(getResources().getString(R.string.all_stories));
+		setTitle(getResources().getString(R.string.all_shared_stories));
 		
 		feedIds = new ArrayList<String>();
 		
-		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		Cursor cursor = getContentResolver().query(FeedProvider.SOCIAL_FEEDS_URI, null, null, null, null);
 		
 		while (cursor.moveToNext()) {
-			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
+			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID)));
 		}
 		
-		itemListFragment = (AllStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
+		itemListFragment = (AllSharedStoriesItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
-			itemListFragment = AllStoriesItemListFragment.newInstance(currentState);
+			itemListFragment = AllSharedStoriesItemListFragment.newInstance(currentState);
 			itemListFragment.setRetainInstance(true);
 			FragmentTransaction listTransaction = fragmentManager.beginTransaction();
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
@@ -49,7 +49,7 @@ public class AllStoriesItemsList extends ItemsList {
 			triggerRefresh();
 		}
 	}
-
+	
 
 	@Override
 	public void triggerRefresh() {
@@ -61,7 +61,7 @@ public class AllStoriesItemsList extends ItemsList {
 		setSupportProgressBarIndeterminateVisibility(true);
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MULTIFEED_UPDATE);
+		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MULTISOCIALFEED_UPDATE);
 		
 		String[] feeds = new String[feedIds.size()];
 		feedIds.toArray(feeds);

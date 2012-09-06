@@ -50,7 +50,7 @@ public class FeedSearchResultAdapter extends ArrayAdapter<FeedResult>{
 			bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_favicon);
 		}
 		
-		favicon.setImageBitmap(UIUtils.roundBitmap(bitmap));
+		favicon.setImageBitmap(UIUtils.roundCorners(bitmap, 5));
 		
 		((TextView) v.findViewById(R.id.row_result_title)).setText(result.label);
 		((TextView) v.findViewById(R.id.row_result_tagline)).setText(result.tagline);

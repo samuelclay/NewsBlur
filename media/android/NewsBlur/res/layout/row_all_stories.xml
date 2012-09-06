@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="50dp"
-        android:text="@string/everything"
+        android:text="@string/all_stories"
         android:textColor="@color/white"
         android:textSize="16dp"
         android:textStyle="bold" />

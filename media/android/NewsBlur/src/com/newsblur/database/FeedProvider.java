@@ -31,6 +31,7 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri SOCIALFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/socialfeed/");
 	public static final Uri STORY_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/story/");
 	public static final Uri ALL_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
+	public static final Uri ALL_SHARED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/socialfeeds/");
 	public static final Uri COMMENTS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/comments/");
 	public static final Uri REPLIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/replies/");
 	public static final Uri FEED_FOLDER_MAP_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedfoldermap/");
@@ -53,7 +54,8 @@ public class FeedProvider extends ContentProvider {
 	private static final int INDIVIDUAL_SOCIAL_FEED = 14;
 	private static final int REPLIES = 15;
 	private static final int MULTIFEED_STORIES = 16;
-	private static final int ALL_STORIES = 17;
+	private static final int ALL_STORIES = 20;
+	private static final int ALL_SHARED_STORIES = 17;
 	private static final int FEED_STORIES_NO_UPDATE = 18;
 	private static final int CLASSIFIERS_FOR_FEED = 19;
 	
@@ -73,6 +75,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/feed/*/", INDIVIDUAL_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/classifiers/#/", CLASSIFIERS_FOR_FEED);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/socialfeed/#/", SOCIALFEED_STORIES);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/socialfeeds/", ALL_SHARED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feed/#/", FEED_STORIES);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/feed/#/noupdate", FEED_STORIES_NO_UPDATE);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/stories/", ALL_STORIES);
@@ -171,9 +174,7 @@ public class FeedProvider extends ContentProvider {
 			socialMapValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, uri.getLastPathSegment());
 			socialMapValues.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
 			db.insertWithOnConflict(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, socialMapValues, SQLiteDatabase.CONFLICT_REPLACE);
-			
-			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			
+		
 			db.setTransactionSuccessful();
 			db.endTransaction();
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.SOCIAL_FEED_ID)).build();
@@ -388,7 +389,26 @@ public class FeedProvider extends ContentProvider {
 		case ALL_SOCIAL_FEEDS:
 			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, DatabaseConstants.SOCIAL_FEED_TITLE + " ASC");
 		case INDIVIDUAL_SOCIAL_FEED:
-			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() }, null, null, null);	
+			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() }, null, null, null);
+		case ALL_SHARED_STORIES: 
+			String allSharedQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.STORY_COLUMNS) + ", " + DatabaseConstants.FEED_TITLE + ", " +
+			DatabaseConstants.FEED_FAVICON_URL + ", " + DatabaseConstants.FEED_FAVICON_COLOUR + ", " + DatabaseConstants.FEED_FAVICON_BORDER + ", " +
+			DatabaseConstants.FEED_FAVICON_FADE +  
+			" FROM " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + 
+			" INNER JOIN " + DatabaseConstants.STORY_TABLE + 
+			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID + " = " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + "." + DatabaseConstants.SOCIALFEED_STORY_STORYID +
+			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
+			" ON " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_FEED_ID + " = " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID;
+			
+			StringBuilder allSharedBuilder = new StringBuilder();
+			allSharedBuilder.append(allSharedQuery);
+			if (!TextUtils.isEmpty(selection)) {
+				allSharedBuilder.append(" WHERE ");
+				allSharedBuilder.append(selection);
+			}
+			allSharedBuilder.append(" ORDER BY " + DatabaseConstants.STORY_DATE + " DESC");
+			return db.rawQuery(allSharedBuilder.toString(), null);
+			
 		case SOCIALFEED_STORIES:
 			String[] userArgument = new String[] { uri.getLastPathSegment() };
 

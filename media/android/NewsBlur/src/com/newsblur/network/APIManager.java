@@ -192,6 +192,43 @@ public class APIManager {
 		}
 	}
 	
+	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, String pageNumber) {
+		final APIClient client = new APIClient(context);
+		final ValueMultimap values = new ValueMultimap();
+		for (String feedId : feedIds) {
+			values.put(APIConstants.PARAMETER_FEEDS, feedId);
+		}
+		if (!TextUtils.isEmpty(pageNumber)) {
+			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
+		}
+		final APIResponse response = client.get(APIConstants.URL_SHARED_RIVER_STORIES, values);
+		
+		SocialFeedResponse storiesResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			for (Story story : storiesResponse.stories) {
+				for (String userId : story.friendUserIds) {
+					Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
+					contentResolver.insert(storySocialUri, story.getValues());
+				}
+				
+				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
+				contentResolver.insert(storyUri, story.getValues());
+				
+				insertComments(story);
+			}
+			
+			if (storiesResponse != null && storiesResponse.feeds!= null) {
+				for (Feed feed : storiesResponse.feeds) {
+					contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
+				}
+			}
+			
+			return storiesResponse;
+		} else {
+			return null;
+		}
+	}
+	
 	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, String pageNumber) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
@@ -205,15 +242,12 @@ public class APIManager {
 		SocialFeedResponse socialFeedResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			for (Story story : socialFeedResponse.stories) {
-				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
-				contentResolver.insert(storyUri, story.getValues());
-
 				insertComments(story);
 				
 				Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storySocialUri, story.getValues());
 			}
-			if (socialFeedResponse != null && socialFeedResponse .feeds!= null) {
+			if (socialFeedResponse != null && socialFeedResponse.feeds!= null) {
 				for (Feed feed : socialFeedResponse.feeds) {
 					contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
 				}

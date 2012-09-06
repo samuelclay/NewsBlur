@@ -34,7 +34,6 @@ import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.UIUtils;
-import com.newsblur.view.EverythingCountViewBinder;
 import com.newsblur.view.FolderTreeViewBinder;
 import com.newsblur.view.SocialFeedViewBinder;
 
@@ -50,7 +49,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	private int FEEDCHECK = 0x01;
 	private SocialFeedViewBinder blogViewBinder;
 	private String TAG = "FolderListFragment";
-	private EverythingCountViewBinder everythingCountViewBinder;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +63,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 		groupViewBinder = new FolderTreeViewBinder();
 		blogViewBinder = new SocialFeedViewBinder(getActivity());
-		everythingCountViewBinder = new EverythingCountViewBinder();
 
 		leftBound = UIUtils.convertDPsToPixels(getActivity(), 20);
 		rightBound = UIUtils.convertDPsToPixels(getActivity(), 10);
@@ -78,7 +75,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		final int[] blogTo = new int[] { R.id.row_socialfeed_name, R.id.row_socialfeed_icon, R.id.row_socialsumneu, R.id.row_socialsumneg, R.id.row_socialsumpos };
 
 		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
-		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder, everythingCountViewBinder);
+		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
 	}
 
 	public void hasUpdated() {
@@ -109,9 +106,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		MenuInflater inflater = getActivity().getMenuInflater();
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
-		//Only create a context menu for child items
+			// Only create a context menu for child items
 		switch(type) {
-		// Group (folder) item
+			// Group (folder) item
 		case 0:
 			inflater.inflate(R.menu.context_folder, menu);
 			break;
@@ -143,7 +140,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 				String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
 				new MarkFolderAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(folderId);
 			} else {
-				// TODO: Include the mark-social-feed-as-read functionality here
 				final Cursor socialFeedCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
 				String socialFeedId = socialFeedCursor.getString(socialFeedCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
 				new MarkSocialFeedAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(socialFeedId);
@@ -162,16 +158,16 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		switch (state) {
 		case (AppConstants.STATE_ALL):
 			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
-		blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_ALL;
-		break;
+			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_ALL;
+			break;
 		case (AppConstants.STATE_SOME):
 			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
-		blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_SOME;
-		break;
+			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_SOME;
+			break;
 		case (AppConstants.STATE_BEST):
 			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_BEST;
-		blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_BEST;
-		break;
+			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_BEST;
+			break;
 		}
 
 		folderAdapter.currentState = groupSelection;
@@ -198,7 +194,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			Intent i = new Intent(getActivity(), AllStoriesItemsList.class);
 			i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
 			startActivityForResult(i, FEEDCHECK);
-
 			return true;
 		}
 	}
