@@ -9,43 +9,82 @@
         android:layout_height="match_parent"
         android:scaleType="fitXY"
         android:src="@drawable/selector_left" />
-    
-    <Button
-        android:id="@+id/toggle_all"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:background="@drawable/selector_center"
-        android:textColor="@color/button_state_text_selector"
-        android:minHeight="15dp"
-        android:minWidth="80dp"
-        android:text="All"
-        android:layout_weight="1" />
-    
-    <Button
-        android:id="@+id/toggle_some"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/selector_center"
-        android:minHeight="15dp"
-        android:minWidth="80dp"
-        android:enabled="false"
-        android:textColor="@color/button_state_text_selector"
-        android:text="Unread"
-        android:layout_weight="1" />
-    
-    <Button
-        android:id="@+id/toggle_focus"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/selector_center"
-        android:textColor="@color/button_state_text_selector"
-        android:minHeight="15dp"
-        android:minWidth="80dp"
-        android:text="Focus"
-        android:layout_weight="1"
-         />
-    
-    
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/toggle_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:text="All"
+            android:textColor="@color/button_state_text_selector"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:src="@drawable/neutral_simple_circle" />
+
+            <ImageView
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_marginLeft="4dp"
+                android:src="@drawable/positive_simple_circle" />
+
+            <TextView
+                android:id="@+id/toggle_some"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:enabled="false"
+                android:text="Unread"
+                android:textColor="@color/button_state_text_selector"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:src="@drawable/positive_simple_circle" />
+
+            <TextView
+                android:id="@+id/toggle_focus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="10dp"
+                android:text="Focus"
+                android:textColor="@color/button_state_text_selector"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

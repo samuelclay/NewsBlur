@@ -412,6 +412,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		folderCursorHelper.getCursor().requery();
 		blogCursorHelper.getCursor().requery();
 		allStoriesCountCursor.requery();
+		sharedStoriesCountCursor.requery();
 	}
 
 	@Override

@@ -5,8 +5,8 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.util.AppConstants;
@@ -22,11 +22,11 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 
 	private View view;
 
-	private Button allButton;
+	private TextView allButton;
 
-	private Button someButton;
+	private TextView someButton;
 
-	private Button focusButton;
+	private TextView focusButton;
 
 	public StateToggleButton(Context context, AttributeSet art) {
 		super(context, art);
@@ -41,9 +41,9 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 	public void setupContents() {
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		view = inflater.inflate(R.layout.state_toggle, this);
-		allButton = (Button) view.findViewById(R.id.toggle_all);
-		someButton = (Button) view.findViewById(R.id.toggle_some);
-		focusButton = (Button) view.findViewById(R.id.toggle_focus);
+		allButton = (TextView) view.findViewById(R.id.toggle_all);
+		someButton = (TextView) view.findViewById(R.id.toggle_some);
+		focusButton = (TextView) view.findViewById(R.id.toggle_focus);
 		allButton.setOnClickListener(this);
 		someButton.setOnClickListener(this);
 		focusButton.setOnClickListener(this);
