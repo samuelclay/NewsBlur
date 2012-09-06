@@ -59,6 +59,9 @@
             android:name=".activity.AllStoriesReading"/>
         
         <activity
+            android:name=".activity.AllSharedStoriesReading"/>
+        
+        <activity
             android:name=".activity.FolderReading"/>
         
         <activity 

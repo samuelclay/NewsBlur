@@ -20,6 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.newsblur.R;
+import com.newsblur.activity.AllSharedStoriesReading;
 import com.newsblur.activity.AllStoriesReading;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
@@ -160,7 +161,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Intent i = new Intent(getActivity(), AllStoriesReading.class);
+		Intent i = new Intent(getActivity(), AllSharedStoriesReading.class);
 		i.putExtra(FeedReading.EXTRA_POSITION, position);
 		i.putExtra(ItemsList.EXTRA_STATE, currentState);
 		startActivityForResult(i, READING_RETURNED );
