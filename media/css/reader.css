@@ -7666,8 +7666,12 @@ form.opml_import_form input {
 /* = iPhone Page = */
 /* =============== */
 
-.NB-static-iphone {
+.NB-static-iphone .NB-ios-mockup,
+.NB-static-iphone .NB-ios-main {
     -webkit-transform : translate3d(0, 0, 0);
+}
+.NB-static-iphone .NB-splash-info {
+    z-index: 2;
 }
 .NB-static-iphone .NB-ios-main {
     margin: 24px 36px 24px 0;
@@ -7834,6 +7838,7 @@ form.opml_import_form input {
     width: 554px;
     height: 630px;
     position: relative;
+    z-index: 1;
 }
 .NB-static-iphone .NB-ios-mockup .NB-ios-iphone-skeleton {
     position: absolute;
