@@ -238,12 +238,13 @@ class MAnalyticsPageLoad(mongo.Document):
     platform = mongo.StringField()
     path = mongo.StringField()
     duration = mongo.FloatField()
+    server = mongo.StringField()
     
     meta = {
         'db_alias': 'nbanalytics',
         'collection': 'page_loads',
         'allow_inheritance': False,
-        'indexes': ['path', 'date', 'platform', 'user_id'],
+        'indexes': ['path', 'date', 'platform', 'user_id', 'server'],
         'ordering': ['date'],
     }
     
@@ -260,9 +261,10 @@ class MAnalyticsPageLoad(mongo.Document):
             user_id = user.pk
             
         path = cls.clean_path(path)
+        server_name = settings.SERVER_NAME
         
         cls.objects.create(username=username, user_id=user_id, is_premium=is_premium,
-                           platform=platform, path=path, duration=duration)
+                           platform=platform, path=path, duration=duration, server=server_name)
     
     @classmethod
     def clean_path(cls, path):
@@ -303,12 +305,14 @@ class MAnalyticsFetcher(mongo.Document):
     page = mongo.FloatField()
     icon = mongo.FloatField()
     total = mongo.FloatField()
+    server = mongo.StringField()
+    feed_code = mongo.IntField()
     
     meta = {
         'db_alias': 'nbanalytics',
         'collection': 'feed_fetches',
         'allow_inheritance': False,
-        'indexes': ['date', 'feed_id'],
+        'indexes': ['date', 'feed_id', 'server', 'feed_code'],
         'ordering': ['date'],
     }
     
@@ -321,17 +325,19 @@ class MAnalyticsFetcher(mongo.Document):
         
     @classmethod
     def add(cls, feed_id, feed_fetch, feed_process, 
-            page, icon, total):
+            page, icon, total, feed_code):
         if icon and page:
             icon -= page
         if page and feed_process:
             page -= feed_process
         if feed_process and feed_fetch:
             feed_process -= feed_fetch
+        server_name = settings.SERVER_NAME
         
         cls.objects.create(feed_id=feed_id, feed_fetch=feed_fetch,
                            feed_process=feed_process, 
-                           page=page, icon=icon, total=total)
+                           page=page, icon=icon, total=total,
+                           server=server_name, feed_code=feed_code)
     
     @classmethod
     def calculate_stats(cls, stats):
