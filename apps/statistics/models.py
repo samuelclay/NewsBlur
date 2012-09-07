@@ -298,11 +298,11 @@ class MAnalyticsPageLoad(mongo.Document):
 class MAnalyticsFetcher(mongo.Document):
     date = mongo.DateTimeField(default=datetime.datetime.now)
     feed_id = mongo.IntField()
-    feed_fetch_duration = mongo.FloatField()
-    feed_process_duration = mongo.FloatField()
-    page_duration = mongo.FloatField()
-    icon_duration = mongo.FloatField()
-    total_duration = mongo.FloatField()
+    feed_fetch = mongo.FloatField()
+    feed_process = mongo.FloatField()
+    page = mongo.FloatField()
+    icon = mongo.FloatField()
+    total = mongo.FloatField()
     
     meta = {
         'db_alias': 'nbanalytics',
@@ -313,26 +313,25 @@ class MAnalyticsFetcher(mongo.Document):
     }
     
     def __unicode__(self):
-        return "%s: %.4s+%.4s+%.4s+%.4s = %.4ss" % (self.feed_id, self.feed_fetch_duration,
-                                                    self.feed_process_duration,
-                                                    self.page_duration, 
-                                                    self.icon_duration,
-                                                    self.total_duration)
+        return "%s: %.4s+%.4s+%.4s+%.4s = %.4ss" % (self.feed_id, self.feed_fetch,
+                                                    self.feed_process,
+                                                    self.page, 
+                                                    self.icon,
+                                                    self.total)
         
     @classmethod
-    def add(cls, feed_id, feed_fetch_duration, feed_process_duration, 
-            page_duration, icon_duration, total_duration):
-        if icon_duration and page_duration:
-            icon_duration -= page_duration
-        if page_duration and feed_process_duration:
-            page_duration -= feed_process_duration
-        if feed_process_duration and feed_fetch_duration:
-            feed_process_duration -= feed_fetch_duration
+    def add(cls, feed_id, feed_fetch, feed_process, 
+            page, icon, total):
+        if icon and page:
+            icon -= page
+        if page and feed_process:
+            page -= feed_process
+        if feed_process and feed_fetch:
+            feed_process -= feed_fetch
         
-        cls.objects.create(feed_id=feed_id, feed_fetch_duration=feed_fetch_duration,
-                           feed_process_duration=feed_process_duration, 
-                           page_duration=page_duration, icon_duration=icon_duration,
-                           total_duration=total_duration)
+        cls.objects.create(feed_id=feed_id, feed_fetch=feed_fetch,
+                           feed_process=feed_process, 
+                           page=page, icon=icon, total=total)
     
     @classmethod
     def calculate_stats(cls, stats):
