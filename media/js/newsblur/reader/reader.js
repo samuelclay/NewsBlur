@@ -199,6 +199,7 @@
                             
             this.layout.outerLayout = this.$s.$body.layout({ 
                 closable: true,
+                zIndex:                 1,
                 center__paneSelector:   ".right-pane",
                 west__paneSelector:     ".left-pane",
                 west__size:             this.model.preference('feed_pane_size'),
