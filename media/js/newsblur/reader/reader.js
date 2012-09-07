@@ -153,7 +153,7 @@
             this.locks.scrolling = _.delay(_.bind(function() {
                 this.flags.scrolling_by_selecting_story_title = false;
             }, this), 1000);
-            this.make_content_pane_feed_counter();
+            this.make_story_titles_pane_counter();
             this.position_mouse_indicator();
             
             this.switch_taskbar_view(view, {
@@ -1128,7 +1128,7 @@
                     this.show_next_story(1);
                 }
                 
-                this.make_content_pane_feed_counter(feed_id);
+                this.make_story_titles_pane_counter();
             }
             this.hide_stories_progress_bar();
             if (this.flags['showing_feed_in_tryfeed_view']) {
@@ -1336,6 +1336,9 @@
                     this.select_story_in_feed();
                 }
                 this.hide_stories_progress_bar();
+                if (first_load) {
+                    this.make_story_titles_pane_counter();
+                }
             }
         },
         
@@ -1930,17 +1933,26 @@
         // = Story Titles Pane =
         // =====================
         
-        make_content_pane_feed_counter: function(feed_id) {
+        make_story_titles_pane_counter: function() {
             var $content_pane = this.$s.$content_pane;
-            feed_id = feed_id || this.active_feed;
+            feed_id = this.active_feed;
             if (!feed_id) return;
-            var feed = this.model.get_feed(feed_id);
-            if (!feed) return;
+            if (this.flags['river_view']) {
+                var folder = this.active_folder;
+            } else {
+                var feed = this.model.get_feed(feed_id);
+            }
+            if (!feed && !folder) return;
             
             if (NEWSBLUR.app.story_unread_counter) {
                 NEWSBLUR.app.story_unread_counter.remove();
             }
-            NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FeedCount({model: feed}).render();
+            
+            if (feed) {
+                NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FeedCount({model: feed}).render();
+            } else if (folder) {
+                NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FolderCount({collection: folder.folder_view.collection}).render();
+            }
 
             NEWSBLUR.app.story_unread_counter.$el.css({'opacity': 0});
             this.$s.$story_taskbar.append(NEWSBLUR.app.story_unread_counter.$el);

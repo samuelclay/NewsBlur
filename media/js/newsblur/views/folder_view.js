@@ -31,10 +31,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             this.model.bind('delete', this.delete_folder);
             this.model.folder_view = this;
         }
-        
-        if (this.collection && !this.options.feed_chooser) {
-            this.collection.bind('change:counts', this.check_collapsed);
-        }
     },
     
     destroy: function() {
