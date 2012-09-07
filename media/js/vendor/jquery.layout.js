@@ -1842,7 +1842,6 @@ $.fn.layout = function (opts) {
 		// update options.zIndexes if a zIndex-option specified
 		var zo	= opts.zIndex
 		,	z	= options.zIndexes;
-		console.log(["zo", zo]);
 		if (zo > 0) {
 			z.pane_normal		= zo;
 			z.content_mask		= max(zo+1, z.content_mask);	// MIN = +1

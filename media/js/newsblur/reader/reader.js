@@ -263,6 +263,8 @@
             rightLayoutOptions[story_anchor+'__paneSelector'] = '.right-north';
             rightLayoutOptions[story_anchor+'__size'] = this.model.preference('story_titles_pane_size');
             rightLayoutOptions[story_anchor+'__onresize_end'] = $.rescope(this.save_story_titles_pane_size, this);
+            rightLayoutOptions[story_anchor+'__onclose_start'] = $.rescope(this.toggle_story_titles_pane, this);
+            rightLayoutOptions[story_anchor+'__onopen_start'] = $.rescope(this.toggle_story_titles_pane, this);
             this.layout.rightLayout = $('.right-pane').layout(rightLayoutOptions); 
 
             var contentLayoutOptions = { 
@@ -2449,19 +2451,33 @@
             });
         },
         
-        close_story_titles_pane: function() {
+        toggle_story_titles_pane: function(update_layout) {
+            if (this.flags['story_titles_closed']) {
+                this.open_story_titles_pane(update_layout === true);
+            } else {
+                this.close_story_titles_pane(update_layout === true);
+            }
+        },
+        
+        close_story_titles_pane: function(update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
-            NEWSBLUR.reader.layout.rightLayout.close(story_anchor);
+            if (update_layout) {
+                NEWSBLUR.reader.layout.rightLayout.close(story_anchor);
+            }
             this.resize_window();
             this.flags['story_titles_closed'] = true;
         },
         
-        open_story_titles_pane: function() {
+        open_story_titles_pane: function(update_layout) {
             var story_anchor = this.model.preference('story_pane_anchor');
-            NEWSBLUR.reader.layout.rightLayout.open(story_anchor);
+            if (update_layout) {
+                NEWSBLUR.reader.layout.rightLayout.open(story_anchor);
+            }
             this.resize_window();
             this.flags['story_titles_closed'] = false;
-            NEWSBLUR.app.story_titles.scroll_to_selected_story();
+            _.defer(function() {
+                NEWSBLUR.app.story_titles.scroll_to_selected_story();
+            });
         },
         
         // =======================
@@ -5293,11 +5309,7 @@
             });
             $document.bind('keydown', 'shift+t', function(e) {
                 e.preventDefault();
-                if (self.flags['story_titles_closed']) {
-                    self.open_story_titles_pane();
-                } else {
-                    self.close_story_titles_pane();
-                }
+                self.toggle_story_titles_pane(true);
             });
             $document.bind('keydown', 'n', function(e) {
                 e.preventDefault();
