@@ -1,21 +1,24 @@
 package com.newsblur.fragment;
 
-import java.lang.ref.WeakReference;
-
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayout;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -24,11 +27,17 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
+import com.newsblur.service.DetachableResultReceiver;
+import com.newsblur.service.DetachableResultReceiver.Receiver;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.PrefConstants;
+import com.newsblur.view.NewsblurWebview;
 
 public class ReadingItemFragment extends Fragment {
 
 	private static final String TAG = "ReadingItemFragment";
+	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
+	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
 	public Story story;
 	private LayoutInflater inflater;
 	private APIManager apiManager;
@@ -37,6 +46,8 @@ public class ReadingItemFragment extends Fragment {
 	private Classifier classifier;
 	private String feedFade;
 	private ContentResolver resolver;
+	private NewsblurWebview web;
+	private BroadcastReceiver receiver;
 
 	public static ReadingItemFragment newInstance(Story story, String feedFaviconColor, String feedFaviconFade, Classifier classifier) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -66,6 +77,15 @@ public class ReadingItemFragment extends Fragment {
 		feedFade = getArguments().getString("feedFade");
 
 		classifier = (Classifier) getArguments().getSerializable("classifier");
+		
+		receiver = new TextSizeReceiver();
+		getActivity().registerReceiver(receiver, new IntentFilter(TEXT_SIZE_CHANGED));
+	}
+	
+	@Override
+	public void onDestroy() {
+		getActivity().unregisterReceiver(receiver);
+		super.onDestroy();
 	}
 
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -73,7 +93,7 @@ public class ReadingItemFragment extends Fragment {
 
 		View view = inflater.inflate(R.layout.fragment_readingitem, null);
 
-		WebView web = (WebView) view.findViewById(R.id.reading_webview);
+		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
 		setupWebview(web);
 		setupItemMetadata(view);
 		if (story.sharedUserIds.length > 0 || story.commentCount > 0 ) {
@@ -84,10 +104,15 @@ public class ReadingItemFragment extends Fragment {
 		return view;
 	}
 
+	public void changeTextSize(float newTextSize) {
+		if (web != null) {
+			web.setTextSize(newTextSize);
+		}
+	}
+
 	private void setupItemCommentsAndShares(final View view) {
 		new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, resolver, apiManager, story, imageLoader).execute();
 	}
-
 
 	private void setupItemMetadata(View view) {
 
@@ -120,6 +145,15 @@ public class ReadingItemFragment extends Fragment {
 		itemTitle.setText(story.title);
 		itemAuthors.setText(story.authors);
 
+		itemTitle.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(Intent.ACTION_VIEW);
+				i.setData(Uri.parse(story.permalink));
+				startActivity(i);
+			}
+		});
+
 		setupTags(view);
 	}
 
@@ -138,15 +172,15 @@ public class ReadingItemFragment extends Fragment {
 
 				if (classifier != null && classifier.tags.containsKey(tag)) {
 					switch (classifier.tags.get(tag)) {
-						case Classifier.LIKE:
-							tagText.setBackgroundResource(R.drawable.tag_background_positive);
-							break;
-						case Classifier.DISLIKE:
-							tagText.setBackgroundResource(R.drawable.tag_background_negative);
-							break;
+					case Classifier.LIKE:
+						tagText.setBackgroundResource(R.drawable.tag_background_positive);
+						break;
+					case Classifier.DISLIKE:
+						tagText.setBackgroundResource(R.drawable.tag_background_negative);
+						break;
 					}
 				}
-				
+
 				v.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View view) {
@@ -160,25 +194,27 @@ public class ReadingItemFragment extends Fragment {
 		}
 	}
 
-	private void setupWebview(WebView web) {
-		web.getSettings().setLoadWithOverviewMode(true);
-		web.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-		web.getSettings().setDomStorageEnabled(true);
-		web.getSettings().setSupportZoom(true);
-		web.getSettings().setAppCacheMaxSize(1024*1024*8);
-		web.getSettings().setAppCachePath("/data/data/com.newsblur/cache");
-		web.getSettings().setAllowFileAccess(true);
-		web.getSettings().setAppCacheEnabled(true);
-		web.setVerticalScrollBarEnabled(false);
-		web.setHorizontalScrollBarEnabled(false);
-
+	private void setupWebview(NewsblurWebview web) {
+		final SharedPreferences preferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
+		
 		StringBuilder builder = new StringBuilder();
-		// TODO: Define a better strategy for rescaling the HTML across device screen sizes and storying this HTML as boilerplate somewhere
-		builder.append("<html><head><meta name=\"viewport\" content=\"target-densitydpi=device-dpi\" /><link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body>");
+		builder.append("<html><head><meta name=\"viewport\" content=\"target-densitydpi=device-dpi\" />");
+		builder.append("<style style=\"text/css\">");
+		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize)));
+		builder.append("</style>");
+		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body>");
 		builder.append(story.content);
 		builder.append("</body></html>");
 		web.loadDataWithBaseURL("file:///android_asset/", builder.toString(), "text/html", "UTF-8", null);
+		
 	}
 
+	private class TextSizeReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			web.setTextSize(intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f));
+		}   
+	}
 
 }

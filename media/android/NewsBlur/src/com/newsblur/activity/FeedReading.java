@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.SeekBar;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -133,6 +134,5 @@ public class FeedReading extends Reading {
 		startService(intent);
 	}
 
-	
 
 }

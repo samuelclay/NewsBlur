@@ -17,6 +17,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -27,11 +29,14 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Story;
+import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.fragment.TextSizeDialogFragment;
+import com.newsblur.util.PrefConstants;
 import com.newsblur.util.UIUtils;
 
-public abstract class Reading extends SherlockFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface {
+public abstract class Reading extends SherlockFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener {
 
 	public static final String EXTRA_FEED = "feed_selected";
 	public static final String TAG = "ReadingActivity";
@@ -40,7 +45,8 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	public static final String EXTRA_USERNAME = "username";
 	public static final String EXTRA_FOLDERNAME = "foldername";
 	public static final String EXTRA_FEED_IDS = "feed_ids";
-
+	private static final String TEXT_SIZE = "textsize";
+	
 	protected int passedPosition;
 	protected int currentState;
 
@@ -70,7 +76,6 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	}
 
 	protected void setupPager() {
-
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
@@ -84,6 +89,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 
 		pager.setAdapter(readingAdapter);
 		pager.setCurrentItem(passedPosition);
+		readingAdapter.setCurrentItem(passedPosition);
 	}
 
 	@Override
@@ -125,6 +131,12 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			intent.putExtra(Intent.EXTRA_TEXT, String.format(shareString, new Object[] { story.title, story.permalink }));
 			startActivity(Intent.createChooser(intent, "Share using"));
 			return true;
+		case R.id.menu_textsize:
+			float currentValue = getSharedPreferences(PrefConstants.PREFERENCES, 0).getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
+			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(currentValue);
+			textSize.show(getSupportFragmentManager(), TEXT_SIZE);
+			return true;	
+			
 		default:
 			return super.onOptionsItemSelected(item);	
 		}
@@ -209,5 +221,26 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			
 			operations.add(ContentProviderOperation.newUpdate(storyUri).withValues(values).build());
 	}
+	
+
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+		getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, (float) progress / 10f).commit();
+		Intent data = new Intent(ReadingItemFragment.TEXT_SIZE_CHANGED);
+		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, (float) progress / 10f); 
+		
+		sendBroadcast(data);
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+	}
+
+	
+
 
 }

@@ -15,7 +15,7 @@
         android:layout_marginLeft="18dp"
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/folder" />
+        android:src="@drawable/folder_open" />
 
     <TextView
         android:id="@+id/row_foldername"
@@ -43,8 +43,8 @@
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
             android:padding="5dp"
-            android:textColor="@color/white"
-            android:textSize="14dp"
+            android:textColor="@color/black"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView

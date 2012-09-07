@@ -85,7 +85,7 @@
             android:layout_height="3dp"
             android:background="@drawable/divider_light" />
 
-        <WebView
+        <com.newsblur.view.NewsblurWebview
             android:id="@+id/reading_webview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

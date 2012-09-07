@@ -9,13 +9,14 @@ import android.view.ViewGroup;
 
 import com.newsblur.domain.Story;
 import com.newsblur.fragment.LoadingFragment;
+import com.newsblur.fragment.ReadingItemFragment;
 
 public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
-
 
 	protected Cursor stories;
 	private String TAG = "ReadingAdapter";
 	protected LoadingFragment loadingFragment;
+	private int currentPosition = 0;
 	
 	public ReadingAdapter(FragmentManager fm, Cursor stories) {
 		super(fm);
@@ -49,6 +50,10 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 		}
 	}
 	
+	public void setTextSize(float textSize) {
+		((ReadingItemFragment) getItem(currentPosition)).changeTextSize(textSize);
+	}
+	
 	@Override
 	public int getItemPosition(Object object) {
 		if (object instanceof LoadingFragment) {
@@ -58,5 +63,8 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 		}
 	}
 
+	public void setCurrentItem(int passedPosition) {
+		this.currentPosition = passedPosition;
+	}
 
 }

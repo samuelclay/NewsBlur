@@ -14,6 +14,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
+        android:padding="3dp"
         android:gravity="right"
         android:orientation="horizontal" >
 
@@ -24,9 +25,12 @@
             android:layout_marginRight="5dp"
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="14sp"
-            android:padding="5dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             android:textStyle="bold" />
 
         <TextView
@@ -38,7 +42,10 @@
             android:gravity="center"
             android:textColor="@color/white"
             android:textSize="14sp"
-            android:padding="4dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             android:textStyle="bold" />
     </LinearLayout>
 
