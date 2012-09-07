@@ -14,6 +14,7 @@ ADMINS       = (
     ('Samuel Clay', 'samuel@newsblur.com'),
 )
 
+SERVER_NAME  = 'local'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'

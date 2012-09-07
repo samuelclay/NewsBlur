@@ -314,6 +314,7 @@ class Dispatcher:
             feed_process_duration = None
             page_duration = None
             icon_duration = None
+            feed_code = None
         
             ret_entries = {
                 ENTRY_NEW: 0,
@@ -387,6 +388,7 @@ class Dispatcher:
             except TimeoutError, e:
                 logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.title[:30]))
                 feed.save_feed_history(505, 'Timeout', '')
+                feed_code = 505
                 fetched_feed = None
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
@@ -396,9 +398,24 @@ class Dispatcher:
                 ret_feed = FEED_ERREXC 
                 feed = self.refresh_feed(feed.pk)
                 feed.save_feed_history(500, "Error", tb)
+                feed_code = 500
                 fetched_feed = None
                 mail_feed_error_to_admin(feed, e, local_vars=locals())
-            
+
+            if not feed_code:
+                if ret_feed == FEED_OK:
+                    feed_code = 200
+                elif ret_feed == FEED_SAME:
+                    feed_code = 304
+                elif ret_feed == FEED_ERRHTTP:
+                    feed_code = 400
+                if ret_feed == FEED_ERREXC:
+                    feed_code = 500
+                elif ret_feed == FEED_ERRPARSE:
+                    feed_code = 550
+                elif ret_feed == FEED_ERRPARSE:
+                    feed_code = 550
+                
             feed = self.refresh_feed(feed.pk)
             if ((self.options['force']) or 
                 (random.random() > .9) or
@@ -467,7 +484,7 @@ class Dispatcher:
             MAnalyticsFetcher.add(feed_id=feed.pk, feed_fetch=feed_fetch_duration,
                                   feed_process=feed_process_duration, 
                                   page=page_duration, icon=icon_duration,
-                                  total=total_duration)
+                                  total=total_duration, feed_code=feed_code)
             
             self.feed_stats[ret_feed] += 1
             for key, val in ret_entries.items():
