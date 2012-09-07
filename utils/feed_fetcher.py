@@ -464,10 +464,10 @@ class Dispatcher:
                 feed.pk, self.feed_trans[ret_feed],))
             logging.debug(done_msg)
             total_duration = time.time() - start_duration
-            MAnalyticsFetcher.add(feed_id=feed.pk, feed_fetch=feed_fetch_duration,
-                                  feed_process=feed_process_duration, 
-                                  page=page_duration, icon=icon_duration,
-                                  total=total_duration)
+            # MAnalyticsFetcher.add(feed_id=feed.pk, feed_fetch=feed_fetch_duration,
+            #                       feed_process=feed_process_duration, 
+            #                       page=page_duration, icon=icon_duration,
+            #                       total=total_duration)
             
             self.feed_stats[ret_feed] += 1
             for key, val in ret_entries.items():
