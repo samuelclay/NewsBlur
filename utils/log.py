@@ -4,6 +4,7 @@ import string
 import time
 from django.core.handlers.wsgi import WSGIRequest
 from django.conf import settings
+from utils.user_functions import extract_user_agent
 
 class NullHandler(logging.Handler): #exists in python 3.1
     def emit(self, record):
@@ -14,41 +15,14 @@ def getlogger():
     return logger
 
 def user(u, msg, request=None):
+    from apps.statistics.models import MAnalyticsPageLoad
     platform = '------'
     time_elapsed = ""
     if isinstance(u, WSGIRequest) or request:
         if not request:
             request = u
             u = request.user
-        user_agent = request.environ.get('HTTP_USER_AGENT', '')
-        if 'iPad App' in user_agent:
-            platform = 'iPad'
-        elif 'iPhone App' in user_agent:
-            platform = 'iPhone'
-        elif 'Blar' in user_agent:
-            platform = 'Blar'
-        elif 'Android' in user_agent:
-            platform = 'Androd'
-        elif 'MSIE' in user_agent:
-            platform = 'IE'
-            if 'MSIE 9' in user_agent:
-                platform += '9'
-            elif 'MSIE 10' in user_agent:
-                platform += '10'
-            elif 'MSIE 8' in user_agent:
-                platform += '8'
-        elif 'Chrome' in user_agent:
-            platform = 'Chrome'
-        elif 'Safari' in user_agent:
-            platform = 'Safari'
-        elif 'MeeGo' in user_agent:
-            platform = 'MeeGo'
-        elif 'Firefox' in user_agent:
-            platform = 'FF'
-        elif 'Opera' in user_agent:
-            platform = 'Opera'
-        elif 'WP7' in user_agent:
-            platform = 'WP7'
+        platform = extract_user_agent(request)
 
         if hasattr(request, 'start_time'):
             seconds = time.time() - request.start_time
@@ -56,9 +30,13 @@ def user(u, msg, request=None):
                 '~FB' if seconds < .5 else '~FR',
                 seconds,
             )
-    premium = '*' if u.is_authenticated() and u.profile.is_premium else ''
-    username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else u
+    is_premium = u.is_authenticated() and u.profile.is_premium
+    premium = '*' if is_premium else ''
+    username = cipher(unicode(u)) if settings.CIPHER_USERNAMES else unicode(u)
     info(' ---> [~FB~SN%-6s~SB] %s[%s%s] %s' % (platform, time_elapsed, username, premium, msg))
+    if request:
+        MAnalyticsPageLoad.add(user=u, is_premium=is_premium, platform=platform, path=request.path, 
+                               duration=seconds)
 
 def cipher(msg):
     shift = len(msg)

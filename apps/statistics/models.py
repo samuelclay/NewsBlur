@@ -229,3 +229,126 @@ class MFeedback(mongo.Document):
         feedbacks = cls.objects.all()[:4]
 
         return feedbacks
+
+class MAnalyticsPageLoad(mongo.Document):
+    date = mongo.DateTimeField(default=datetime.datetime.now)
+    username = mongo.StringField()
+    user_id = mongo.IntField()
+    is_premium = mongo.BooleanField()
+    platform = mongo.StringField()
+    path = mongo.StringField()
+    duration = mongo.FloatField()
+    
+    meta = {
+        'db_alias': 'nbanalytics',
+        'collection': 'analytics_page_loads',
+        'allow_inheritance': False,
+        'indexes': ['path', 'date', 'platform', 'user_id'],
+        'ordering': ['date'],
+    }
+    
+    def __unicode__(self):
+        return "%s / %s: (%.4s) %s" % (self.username, self.platform, self.duration, self.path)
+        
+    @classmethod
+    def add(cls, user, is_premium, platform, path, duration):
+        if user.is_anonymous():
+            username = None
+            user_id = 0
+        else:
+            username = user.username
+            user_id = user.pk
+            
+        path = cls.clean_path(path)
+        
+        cls.objects.create(username=username, user_id=user_id, is_premium=is_premium,
+                           platform=platform, path=path, duration=duration)
+    
+    @classmethod
+    def clean_path(cls, path):
+        if path.startswith('/reader/feed/'):
+            path = '/reader/feed/'
+            
+        return path
+        
+    @classmethod
+    def fetch_stats(cls, stat_key, stat_value):
+        stats = cls.objects.filter(**{stat_key: stat_value})
+        return cls.calculate_stats(stats)
+        
+    @classmethod
+    def calculate_stats(cls, stats):
+        return cls.aggregate(**stats)
+
+    @classmethod
+    def clean(cls, days=1):
+        last_day = datetime.datetime.now() - datetime.timedelta(days=days)
+        
+        from utils.feed_functions import timelimit, TimeoutError
+        @timelimit(60)
+        def delete_old_history():
+            cls.objects(date__lte=last_day).delete()
+            cls.objects(date__lte=last_day).delete()
+        try:
+            delete_old_history()
+        except TimeoutError:
+            print "Timed out on deleting old history. Shit."
+        
+
+class MAnalyticsFetcher(mongo.Document):
+    date = mongo.DateTimeField(default=datetime.datetime.now)
+    feed_id = mongo.IntField()
+    feed_fetch_duration = mongo.FloatField()
+    feed_process_duration = mongo.FloatField()
+    page_duration = mongo.FloatField()
+    icon_duration = mongo.FloatField()
+    total_duration = mongo.FloatField()
+    
+    meta = {
+        'db_alias': 'nbanalytics',
+        'collection': 'analytics_feed_fetch',
+        'allow_inheritance': False,
+        'indexes': ['date', 'feed_id'],
+        'ordering': ['date'],
+    }
+    
+    def __unicode__(self):
+        return "%s: %.4s+%.4s+%.4s+%.4s = %.4ss" % (self.feed_id, self.feed_fetch_duration,
+                                                    self.feed_process_duration,
+                                                    self.page_duration, 
+                                                    self.icon_duration,
+                                                    self.total_duration)
+        
+    @classmethod
+    def add(cls, feed_id, feed_fetch_duration, feed_process_duration, 
+            page_duration, icon_duration, total_duration):
+        if icon_duration and page_duration:
+            icon_duration -= page_duration
+        if page_duration and feed_process_duration:
+            page_duration -= feed_process_duration
+        if feed_process_duration and feed_fetch_duration:
+            feed_process_duration -= feed_fetch_duration
+        
+        cls.objects.create(feed_id=feed_id, feed_fetch_duration=feed_fetch_duration,
+                           feed_process_duration=feed_process_duration, 
+                           page_duration=page_duration, icon_duration=icon_duration,
+                           total_duration=total_duration)
+    
+    @classmethod
+    def calculate_stats(cls, stats):
+        return cls.aggregate(**stats)
+
+    @classmethod
+    def clean(cls, days=1):
+        last_day = datetime.datetime.now() - datetime.timedelta(days=days)
+        
+        from utils.feed_functions import timelimit, TimeoutError
+        @timelimit(60)
+        def delete_old_history():
+            cls.objects(date__lte=last_day).delete()
+            cls.objects(date__lte=last_day).delete()
+        try:
+            delete_old_history()
+        except TimeoutError:
+            print "Timed out on deleting old history. Shit."
+        
