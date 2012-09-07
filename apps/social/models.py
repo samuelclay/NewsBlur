@@ -8,7 +8,7 @@ import math
 import mongoengine as mongo
 import random
 from collections import defaultdict
-from mongoengine.queryset import OperationError
+# from mongoengine.queryset import OperationError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -796,15 +796,21 @@ class MSocialSubscription(mongo.Document):
             date = now if now > story.story_date else story.story_date # For handling future stories
             if not feed_id:
                 feed_id = story.story_feed_id
-            m = MUserStory(user_id=self.user_id, 
-                           feed_id=feed_id, read_date=date, 
-                           story_id=story.story_guid, story_date=story.shared_date)
             try:
-                m.save()
-            except OperationError:
+                m, _ = MUserStory.objects.get_or_create(user_id=self.user_id, 
+                                                        feed_id=feed_id, 
+                                                        story_id=story.story_guid,
+                                                        defaults={
+                                                            "read_date": date,
+                                                            "story_date": story.shared_date,
+                                                        })
+            # except OperationError:
+            #     if not mark_all_read:
+            #         logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
+            #     continue
+            except MUserStory.MultipleObjectsReturned:
                 if not mark_all_read:
-                    logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
-                continue
+                    logging.user(request, "~FRMultiple read stories: %s" % story.story_guid)
             
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (self.user_id)

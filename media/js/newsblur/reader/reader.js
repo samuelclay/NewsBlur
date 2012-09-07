@@ -2448,6 +2448,7 @@
             NEWSBLUR.reader.layout.rightLayout.open(story_anchor);
             this.resize_window();
             this.flags['story_titles_closed'] = false;
+            NEWSBLUR.app.story_titles.scroll_to_selected_story();
         },
         
         // =======================
