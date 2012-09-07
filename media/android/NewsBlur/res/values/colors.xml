@@ -24,8 +24,12 @@
     
     <color name="positive">#47730B</color>
     
+    <color name="highlight">#d2e6fd</color>
+    
     <color name="darkneutral">#C59A00</color>
     <color name="neutral">#F5A90C</color>
+    
+    <color name="linkblue">#405BA8</color>
     
     <color name="negative">#DE0000</color>
     <color name="darknegative">#B20000</color>
@@ -36,7 +40,7 @@
     
     <color name="half_newsblur_blue">#770b445a</color>
     <color name="newsblur_blue">#0b445a</color>
-    <color name="light_newsblur_blue">#2d6b82</color>
+    <color name="light_newsblur_blue">#47A2C4</color>
     
     
     

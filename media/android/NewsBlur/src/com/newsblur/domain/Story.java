@@ -76,7 +76,7 @@ public class Story implements Serializable {
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
-		values.put(DatabaseConstants.STORY_TITLE, title);
+		values.put(DatabaseConstants.STORY_TITLE, title.replace("\n", " ").replace("\r", " "));
 		values.put(DatabaseConstants.STORY_DATE, date.getTime());
 		values.put(DatabaseConstants.STORY_SHARED_DATE, sharedDate != null ? sharedDate.getTime() : new Date().getTime());
 		values.put(DatabaseConstants.STORY_SHORTDATE, shortDate);

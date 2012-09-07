@@ -331,6 +331,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
 		bindView(view, context, cursor, groupFrom, groupTo, groupViewBinder);
 		((ImageView) view.findViewById(R.id.row_folder_icon)).setImageResource(isExpanded ? R.drawable.folder_open : R.drawable.folder_closed);
+		((ImageView) view.findViewById(R.id.row_folder_indicator)).setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
 	}
 
 	protected void bindBlogView(View view, Context context, Cursor cursor) {

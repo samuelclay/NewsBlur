@@ -47,7 +47,7 @@ public class FeedSearchResultAdapter extends ArrayAdapter<FeedResult>{
 			bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 		}
 		if (bitmap == null) {
-			bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_favicon);
+			bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.world);
 		}
 		
 		favicon.setImageBitmap(UIUtils.roundCorners(bitmap, 5));

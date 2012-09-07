@@ -4,6 +4,7 @@ public class APIConstants {
 
 	public static final String URL_LOGIN = "http://newsblur.com/api/login";
 	public static final String URL_FEEDS = "http://newsblur.com/reader/feeds/?include_favicons=true&flat=true";
+	public static final String URL_FEEDS_NO_UPDATE = "http://newsblur.com/reader/feeds/?include_favicons=true&flat=true&update_counts=false";
 	public static final String URL_USER_PROFILE = "http://newsblur.com/social/profile";
 	public static final String URL_MY_PROFILE = "http://newsblur.com/social/load_user_profile";
 	public static final String URL_FOLLOW = "http://newsblur.com/social/follow";
@@ -55,6 +56,7 @@ public class APIConstants {
 	public static final String PARAMETER_PAGE_NUMBER = "page";
 	
 	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
+	
 	
 	
 	

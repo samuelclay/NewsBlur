@@ -335,8 +335,14 @@ public class APIManager {
 	}
 
 	public void getFolderFeedMapping() {
+		getFolderFeedMapping(false);		
+	}
+	
+	public void getFolderFeedMapping(boolean doUpdateCounts) {
 		final APIClient client = new APIClient(context);
-		final APIResponse response = client.get(APIConstants.URL_FEEDS);
+		long millis = System.currentTimeMillis();
+		final APIResponse response = client.get(doUpdateCounts ? APIConstants.URL_FEEDS : APIConstants.URL_FEEDS_NO_UPDATE);
+		Log.d(TAG, "With update: " + doUpdateCounts + " it took: " + (System.currentTimeMillis() - millis) + "ms");
 		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
 
 		for (final Entry<String, Feed> entry : feedUpdate.feeds.entrySet()) {

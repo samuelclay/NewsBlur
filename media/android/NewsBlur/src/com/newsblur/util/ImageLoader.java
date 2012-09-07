@@ -39,17 +39,24 @@ public class ImageLoader {
 	}
 	
 	public void displayImage(String url, ImageView imageView) {
+		displayImage(url, imageView, true);
+	}
+	
+	public void displayImage(String url, ImageView imageView, boolean doRound) {
 		imageViews.put(imageView, url);
 		Bitmap bitmap = memoryCache.get(url);
 		if (bitmap == null) {
-			bitmap = memoryCache.get(url);
+			File f = fileCache.getFile(url);
+			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 		}
 		if (bitmap != null) {
-			bitmap = UIUtils.roundCorners(bitmap, 5);
+			if (doRound) { 
+				bitmap = UIUtils.roundCorners(bitmap, 5);
+			}
 			imageView.setImageBitmap(bitmap);
 		} else {
 			queuePhoto(url, imageView);
-			imageView.setImageResource(R.drawable.logo);
+			imageView.setImageResource(R.drawable.world);
 		}
 	}
 	
@@ -67,7 +74,7 @@ public class ImageLoader {
 				bitmap = UIUtils.roundCorners(bitmap, 5);
 				imageView.setImageBitmap(bitmap);
 			} else {
-				imageView.setImageResource(R.drawable.logo);
+				imageView.setImageResource(R.drawable.world);
 			}
 		}
 	}
@@ -173,7 +180,7 @@ public class ImageLoader {
 			} else if (bitmap != null) {
 				photoToLoad.imageView.setImageBitmap(bitmap);
 			} else {
-				photoToLoad.imageView.setImageResource(R.drawable.logo);
+				photoToLoad.imageView.setImageResource(R.drawable.world);
 			}
 		}
 	}

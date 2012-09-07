@@ -51,6 +51,7 @@ public class SyncService extends IntentService {
 	public static final int NOT_RUNNING = 0x01;
 
 	public static final int EXTRA_TASK_FOLDER_UPDATE = 30;
+	public static final int EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT = 41;
 	public static final int EXTRA_TASK_FEED_UPDATE = 31;
 	public static final int EXTRA_TASK_REFRESH_COUNTS = 32;
 	public static final int EXTRA_TASK_MARK_STORY_READ = 33;
@@ -92,6 +93,10 @@ public class SyncService extends IntentService {
 			case EXTRA_TASK_FOLDER_UPDATE:
 				apiManager.getFolderFeedMapping();
 				break;
+				
+			case EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT:
+				apiManager.getFolderFeedMapping(true);
+				break;	
 
 				// For the moment, we only retry offline updates when we refresh counts. We also assume here that every update is to mark a story as read.
 			case EXTRA_TASK_REFRESH_COUNTS:

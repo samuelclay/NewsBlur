@@ -15,18 +15,6 @@
         android:layout_marginRight="5dp" >
 
         <TextView
-            android:id="@+id/row_socialsumneg"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/negative_count_rect"
-            android:gravity="center"
-            android:padding="5dp"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <TextView
             android:id="@+id/row_socialsumneu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,7 +22,7 @@
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
             android:padding="5dp"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="14sp"
             android:textStyle="bold" />
 

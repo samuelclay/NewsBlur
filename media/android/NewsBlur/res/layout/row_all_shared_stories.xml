@@ -18,25 +18,23 @@
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/person" />
     
-    
-    <TextView
-        android:id="@+id/row_everythingtext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/row_folder_indicator"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="50dp"
-        android:text="@string/all_shared_stories"
-        android:textColor="@color/white"
-        android:textSize="16dp"
-        android:textStyle="bold" />
-
+        android:layout_marginRight="12dp"
+        android:contentDescription="@string/description_row_folder_icon"
+        android:src="@drawable/indicator_collapsed" />
+    
     <LinearLayout
         android:id="@+id/row_foldersums"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="5dp" >
+        android:layout_marginRight="38dp" >
 
         <TextView
             android:id="@+id/row_foldersumneu"
@@ -62,5 +60,17 @@
             android:textSize="14dp"
             android:textStyle="bold" />
     </LinearLayout>
-
+    
+    <TextView
+        android:id="@+id/row_everythingtext"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/row_everything_icon"
+        android:layout_toLeftOf="@id/row_foldersums"
+        android:text="@string/all_shared_stories"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+    
 </RelativeLayout>

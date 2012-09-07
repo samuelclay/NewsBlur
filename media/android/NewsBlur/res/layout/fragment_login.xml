@@ -82,7 +82,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
                 android:layout_toLeftOf="@id/login_logging_in"
-                android:src="@drawable/no_favicon" />
+                android:src="@drawable/world" />
         </RelativeLayout>
 
         <RelativeLayout

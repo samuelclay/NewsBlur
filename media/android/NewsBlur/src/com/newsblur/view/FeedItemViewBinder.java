@@ -13,9 +13,13 @@ import com.newsblur.database.DatabaseConstants;
 public class FeedItemViewBinder implements ViewBinder {
 
 	private final Context context;
+	private int darkGray;
+	private int lightGray;
 
 	public FeedItemViewBinder(final Context context) {
 		this.context = context;
+		darkGray = context.getResources().getColor(R.color.darkgray);
+		lightGray = context.getResources().getColor(R.color.lightgray);
 	}
 	
 	@Override
@@ -24,9 +28,9 @@ public class FeedItemViewBinder implements ViewBinder {
 		if (TextUtils.equals(columnName, DatabaseConstants.STORY_READ)) {
 			String read = cursor.getString(columnIndex);
 			if (TextUtils.equals(read, "0")) {
-				((TextView) view).setTextColor(context.getResources().getColor(R.color.darkgray));
+				((TextView) view).setTextColor(darkGray);
 			} else {
-				((TextView) view).setTextColor(context.getResources().getColor(R.color.lightgray));
+				((TextView) view).setTextColor(lightGray);
 			}
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_AUTHORS)) {
@@ -34,7 +38,9 @@ public class FeedItemViewBinder implements ViewBinder {
 				view.setVisibility(View.GONE);
 			} else {
 				view.setVisibility(View.VISIBLE);
+				((TextView) view).setText(cursor.getString(columnIndex).toUpperCase());
 			}
+			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS)) {
 			int authors = cursor.getInt(columnIndex);
 			int tags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));

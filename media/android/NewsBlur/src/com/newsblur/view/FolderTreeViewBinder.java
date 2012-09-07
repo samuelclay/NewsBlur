@@ -32,7 +32,7 @@ public class FolderTreeViewBinder implements ViewBinder {
 				bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 			}
 			if (bitmap == null) {
-				bitmap = BitmapFactory.decodeResource(view.getContext().getResources(), R.drawable.no_favicon);
+				bitmap = BitmapFactory.decodeResource(view.getContext().getResources(), R.drawable.world);
 			}
 			((ImageView) view).setImageBitmap(bitmap);
 			return true;

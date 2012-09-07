@@ -8,9 +8,11 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
+import com.newsblur.domain.Story;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
 
@@ -18,11 +20,16 @@ public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
 
 	private Cursor cursor;
 	private ImageLoader imageLoader;
+	private int darkGray;
+	private int lightGray;
 
 	public MultipleFeedItemsAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags) {
 		super(context, layout, c, from, to, flags);
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
 		this.cursor = c;
+
+		darkGray = context.getResources().getColor(R.color.darkgray);
+		lightGray = context.getResources().getColor(R.color.lightgray);
 	}
 
 	@Override
@@ -47,7 +54,7 @@ public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
 		String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
 
 		String faviconUrl = AppConstants.NEWSBLUR_URL + cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
-		imageLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)));
+		imageLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)), false);
 
 		if (!TextUtils.equals(feedColour, "#null") && !TextUtils.equals(feedFade, "#null")) {
 			borderOne.setBackgroundColor(Color.parseColor(feedColour));
@@ -55,6 +62,16 @@ public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
 		} else {
 			borderOne.setBackgroundColor(Color.GRAY);
 			borderTwo.setBackgroundColor(Color.LTGRAY);
+		}
+		
+		if (TextUtils.equals(Story.fromCursor(cursor).read, "1")) {
+			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(lightGray);
+			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(lightGray);
+			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(lightGray);
+		} else {
+			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(darkGray);
+			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(darkGray);
+			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(darkGray);
 		}
 
 		return v;

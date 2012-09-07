@@ -67,7 +67,7 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 
 		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_REFRESH_COUNTS);
+		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT);
 		startService(intent);
 	}
 
