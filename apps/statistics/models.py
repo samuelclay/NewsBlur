@@ -330,6 +330,8 @@ class MAnalyticsFetcher(mongo.Document):
             icon -= page
         if page and feed_process:
             page -= feed_process
+        elif page and feed_fetch:
+            page -= feed_fetch
         if feed_process and feed_fetch:
             feed_process -= feed_fetch
         server_name = settings.SERVER_NAME
