@@ -15,6 +15,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
         "click .folder_title"               : "open",
         "click .NB-feedlist-collapse-icon"  : "collapse_folder",
+        "click .NB-feedbar-settings"        : "open_settings",
+        "click .NB-feedbar-mark-feed-read"  : "mark_folder_as_read",
+        "click .NB-story-title-indicator"   : "show_hidden_story_titles",
         "mouseenter"                        : "add_hover_inverse",
         "mouseleave"                        : "remove_hover_inverse"
     },
@@ -29,11 +32,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             this.model.bind('change:folder_title', this.update_title);
             this.model.bind('change:selected', this.update_selected);
             this.model.bind('delete', this.delete_folder);
-            this.model.folder_view = this;
-        }
-        
-        if (this.collection && !this.options.feed_chooser) {
-            this.collection.bind('change:counts', this.check_collapsed);
+            if (!this.options.feedbar) {
+                this.model.folder_view = this;
+            }
         }
     },
     
@@ -51,7 +52,6 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         var folder_collection = this.collection;
         this.options.collapsed =  folder_title && _.contains(NEWSBLUR.Preferences.collapsed_folders, folder_title);
         var $folder = this.render_folder();
-        this.$el.html($folder);
         
         if (!this.options.only_title) {
             var $feeds = _.compact(this.collection.map(function(item) {
@@ -92,23 +92,43 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     
     render_folder: function($feeds) {
         var $folder = _.template('\
+        <<%= list_type %> class="folder NB-folder">\
         <% if (!root) { %>\
             <div class="folder_title <% if (depth <= 1) { %>NB-toplevel<% } %>">\
                 <div class="NB-folder-icon"></div>\
                 <div class="NB-feedlist-collapse-icon" title="<% if (is_collapsed) { %>Expand Folder<% } else {%>Collapse Folder<% } %>"></div>\
                 <div class="NB-feedlist-manage-icon"></div>\
                 <span class="folder_title_text"><%= folder_title %></span>\
+                <% if (feedbar) { %>\
+                    <div class="NB-story-title-indicator">\
+                        <div class="NB-story-title-indicator-count"></div>\
+                        <span class="NB-story-title-indicator-text">show hidden stories</span>\
+                    </div>\
+                    <span class="NB-feedbar-settings" title="Site settings"></span>\
+                    <div class="NB-feedbar-mark-feed-read">Mark All as Read</div>\
+              <% } %>\
             </div>\
         <% } %>\
-        <ul class="folder <% if (root) { %>NB-root<% } %>" <% if (is_collapsed) { %>style="display: none"<% } %>>\
-        </ul>\
+        <% if (!feedbar) { %>\
+            <ul class="folder <% if (root) { %>NB-root<% } %>" <% if (is_collapsed) { %>style="display: none"<% } %>>\
+            </ul>\
+        <% } %>\
+        </<%= list_type %>>\
         ', {
           depth         : this.options.depth,
           folder_title  : this.options.folder_title,
           is_collapsed  : this.options.collapsed && !this.options.feed_chooser,
-          root          : this.options.root
+          root          : this.options.root,
+          feedbar       : this.options.feedbar,
+          list_type     : this.options.feedbar ? 'div' : 'li'
         });
 
+        this.$el.replaceWith($folder);
+        this.setElement($folder);
+        
+        if (this.options.feedbar) {
+            this.show_collapsed_folder_count();
+        }
         return $folder;
     },
     
@@ -155,9 +175,13 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         }
         
         var $counts = new NEWSBLUR.Views.FolderCount({collection: this.collection}).render().$el;
-        $folder_title.prepend($counts.css({
-            'opacity': 0
-        }));
+        if (this.options.feedbar) {
+            this.$('.NB-story-title-indicator-count').html($counts.clone());
+        } else {
+            $folder_title.prepend($counts.css({
+                'opacity': 0
+            }));
+        }
         $counts.animate({'opacity': 1}, {'duration': options.skip_animation ? 0 : 400});
     },
     
@@ -183,6 +207,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     // ==========
    
     open: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         if (this.options.feed_chooser) return;
         var $folder = $(e.currentTarget).closest('li.folder');
         if ($folder[0] != this.el) return;
@@ -279,6 +305,20 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                 }
             });
         }
+    },
+    
+    open_settings: function(e) {
+        this.show_manage_menu(e);
+    },
+    
+    mark_folder_as_read: function() {
+        NEWSBLUR.reader.mark_folder_as_read();
+        this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
+    },
+    
+    show_hidden_story_titles: function() {
+        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     }
+
     
 });

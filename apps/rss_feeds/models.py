@@ -37,14 +37,6 @@ from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
-# Also change in reader_utils.js.
-BROKEN_PAGE_URLS = [
-    'nytimes.com',
-    'stackoverflow.com',
-    'stackexchange.com',
-    'twitter.com',
-    'rankexploits',
-]
 
 class Feed(models.Model):
     feed_address = models.URLField(max_length=255, db_index=True)
@@ -143,12 +135,8 @@ class Feed(models.Model):
             feed['exception_type'] = None
             feed['exception_code'] = self.exception_code
         
-        if self.feed_link:
-            for broken_page in BROKEN_PAGE_URLS:
-                if broken_page in self.feed_link:
-                    feed['disabled_page'] = True
-                    break
-        
+        if not self.has_page:
+            feed['disabled_page'] = True
         if full:
             feed['feed_tags'] = json.decode(self.data.popular_tags) if self.data.popular_tags else []
             feed['feed_authors'] = json.decode(self.data.popular_authors) if self.data.popular_authors else []

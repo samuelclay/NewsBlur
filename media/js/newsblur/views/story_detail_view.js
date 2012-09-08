@@ -450,7 +450,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     open_story_trainer: function() {
-        NEWSBLUR.reader.open_story_trainer(this.model.id, this.model.get('story_feed_id'));
+        var feed_id = this.model.get('story_feed_id');
+        var options = {};
+        if (NEWSBLUR.reader.flags['social_view']) {
+            options['social_feed'] = true;
+        }
+        NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
     },
     
     star_story: function() {

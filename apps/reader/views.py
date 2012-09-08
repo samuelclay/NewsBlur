@@ -3,6 +3,7 @@ import time
 import boto
 import redis
 from django.shortcuts import get_object_or_404
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.db import IntegrityError
@@ -544,11 +545,14 @@ def load_single_feed(request, feed_id):
 def load_feed_page(request, feed_id):
     if not feed_id:
         raise Http404
-        
+    
+    feed = Feed.get_by_id(feed_id)
     data = MFeedPage.get_data(feed_id=feed_id)
-
-    if not data:
-        data = "Fetching feed..."
+    
+    if not data or not feed.has_page or feed.has_page_exception:
+        return render(request, 'static/404_original_page.xhtml', {}, 
+            content_type='text/html',
+            status=404)
     
     return HttpResponse(data, mimetype="text/html; charset=utf-8")
     

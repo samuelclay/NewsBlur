@@ -8,7 +8,7 @@ import math
 import mongoengine as mongo
 import random
 from collections import defaultdict
-from mongoengine.queryset import OperationError
+# from mongoengine.queryset import OperationError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -796,15 +796,21 @@ class MSocialSubscription(mongo.Document):
             date = now if now > story.story_date else story.story_date # For handling future stories
             if not feed_id:
                 feed_id = story.story_feed_id
-            m = MUserStory(user_id=self.user_id, 
-                           feed_id=feed_id, read_date=date, 
-                           story_id=story.story_guid, story_date=story.shared_date)
             try:
-                m.save()
-            except OperationError:
+                m, _ = MUserStory.objects.get_or_create(user_id=self.user_id, 
+                                                        feed_id=feed_id, 
+                                                        story_id=story.story_guid,
+                                                        defaults={
+                                                            "read_date": date,
+                                                            "story_date": story.shared_date,
+                                                        })
+            # except OperationError:
+            #     if not mark_all_read:
+            #         logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
+            #     continue
+            except MUserStory.MultipleObjectsReturned:
                 if not mark_all_read:
-                    logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
-                continue
+                    logging.user(request, "~FRMultiple read stories: %s" % story.story_guid)
             
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (self.user_id)
@@ -2151,7 +2157,8 @@ class MActivity(mongo.Document):
             'category': self.category,
             'title': self.title,
             'content': self.content,
-            'with_user_id': self.with_user_id,
+            'user_id': self.user_id,
+            'with_user_id': self.with_user_id or self.user_id,
             'feed_id': self.feed_id,
             'story_feed_id': self.story_feed_id,
             'content_id': self.content_id,
@@ -2185,7 +2192,7 @@ class MActivity(mongo.Document):
             if social_profile:
                 activity['photo_url'] = social_profile.profile_photo_url
             activity['is_new'] = activity_db.date > dashboard_date
-            activity['with_user'] = social_profiles.get(activity_db.with_user_id)
+            activity['with_user'] = social_profiles.get(activity_db.with_user_id or activity_db.user_id)
             activities.append(activity)
         
         return activities, has_next_page
@@ -2274,17 +2281,20 @@ class MActivity(mongo.Document):
     @classmethod
     def new_shared_story(cls, user_id, source_user_id, story_title, comments, story_feed_id, story_id, share_date=None):
         a, _ = cls.objects.get_or_create(user_id=user_id,
-                                         with_user_id=source_user_id,
                                          category='sharedstory',
                                          feed_id="social:%s" % user_id,
                                          story_feed_id=story_feed_id,
                                          content_id=story_id,
                                          defaults={
+                                             'with_user_id': source_user_id,
                                              'title': story_title,
                                              'content': comments,
                                          })
         if a.content != comments:
             a.content = comments
+            a.save()
+        if source_user_id and a.with_user_id != source_user_id:
+            a.source_user_id = source_user_id
             a.save()
         if share_date:
             a.date = share_date
