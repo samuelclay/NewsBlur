@@ -1278,7 +1278,10 @@
             
             this.reset_feed();
             this.hide_splash_page();
-            this.active_folder = folder;
+            this.active_folder = folder || new Backbone.Model({
+                folder_title: folder_title,
+                fake: true
+            });
             if (!folder) {
                 this.active_feed = 'river:';
                 this.$s.$river_sites_header.addClass('NB-selected');
@@ -1392,7 +1395,11 @@
             
             this.reset_feed();
             this.hide_splash_page();
-            // this.active_folder = "blurblogs";
+            
+            this.active_folder = new Backbone.Model({
+                folder_title: "All Blurblog Stories",
+                fake: true
+            });
             this.active_feed = 'river:blurblogs';
             this.$s.$river_blurblogs_header.addClass('NB-selected');
             
@@ -1961,6 +1968,7 @@
             if (feed) {
                 NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FeedCount({model: feed}).render();
             } else if (folder) {
+                if (!folder.folder_view) return; // No counter for river blurblog yet.
                 NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FolderCount({collection: folder.folder_view.collection}).render();
             }
 
@@ -5280,7 +5288,7 @@
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();
-                if (self.flags.social_view) {
+                if (!self.flags.river_view && self.flags.social_view) {
                     self.mark_feed_as_read();
                 } else if (self.flags.river_view) {
                     if (self.active_feed == 'river:') {
@@ -5288,7 +5296,7 @@
                     } else {
                         self.mark_folder_as_read();
                     }
-                } else {
+                } else if (!self.flags.river_view && !self.flags.social_view) {
                     self.mark_feed_as_read();
                 }
             });

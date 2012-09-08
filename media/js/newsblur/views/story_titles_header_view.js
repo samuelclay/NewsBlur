@@ -3,24 +3,36 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     el: $('.NB-feedbar'),
     
     render: function() {
-        if (NEWSBLUR.reader.active_folder && NEWSBLUR.reader.active_folder.get('folder_title')) {
-            var view = new NEWSBLUR.Views.Folder({
+        if (NEWSBLUR.reader.flags['river_view'] && !NEWSBLUR.reader.active_folder.get('fake')) {
+            var $view = new NEWSBLUR.Views.Folder({
                 model: NEWSBLUR.reader.active_folder,
                 collection: NEWSBLUR.reader.active_folder.folder_view.collection,
                 feedbar: true,
                 only_title: true
-            }).render();
-            this.$el.html(view.$el);
-            this.setElement(view.$el);            
+            }).render().$el;        
+        } else if (NEWSBLUR.reader.flags['river_view']) {
+            var $view = $(_.template('\
+                <div class="NB-folder NB-no-hover">\
+                    <div class="NB-story-title-indicator">\
+                        <div class="NB-story-title-indicator-count"></div>\
+                        <span class="NB-story-title-indicator-text">show hidden stories</span>\
+                    </div>\
+                    <div class="NB-folder-icon"></div>\
+                    <div class="NB-feedlist-manage-icon"></div>\
+                    <div class="folder_title_text"><%= folder_title %></div>\
+                </div>\
+            ', {
+                folder_title: NEWSBLUR.reader.flags['social_view'] ? "All Blurblog Stories" : "All Site Stories"
+            }));
         } else {
-            var view = new NEWSBLUR.Views.FeedTitleView({
+            var $view = new NEWSBLUR.Views.FeedTitleView({
                 model: NEWSBLUR.assets.get_feed(this.options.feed_id), 
                 type: 'story'
-            }).render();
-            this.$el.html(view.$el);
-            this.setElement(view.$el);
+            }).render().$el;
         }
-        
+
+        this.$el.html($view);
+        this.setElement($view);            
         this.show_feed_hidden_story_title_indicator();
         
         return this;

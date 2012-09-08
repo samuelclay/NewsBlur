@@ -1092,13 +1092,13 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
 }
 
-#story_titles .NB-feedbar:hover .NB-feedlist-manage-icon {
+#story_titles .NB-feedbar:hover :not(.NB-no-hover) .NB-feedlist-manage-icon {
   display: block;
   opacity: 1;
 }
 
 #story_titles .NB-feedbar:hover .feed_favicon,
-#story_titles .NB-feedbar:hover .NB-folder-icon {
+#story_titles .NB-feedbar:hover :not(.NB-no-hover) .NB-folder-icon {
   display: none;
 }
 #story_titles .NB-feedbar .folder_title .NB-feedlist-manage-icon {
