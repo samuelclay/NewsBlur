@@ -975,7 +975,6 @@ background: transparent;
 .NB-story-pane-west #story_titles .NB-feedbar {
     padding-right: 4px;
 }
-
 #story_titles .NB-feedbar .feed .feed_favicon {
     margin: 2px 4px 0 2px;
     vertical-align: top;
@@ -1081,7 +1080,7 @@ background: transparent;
     background-color: #00609f;
 }
 
-#story_titles .NB-feedbar .feed .NB-feedlist-manage-icon {
+#story_titles .NB-feedbar .NB-feedlist-manage-icon {
     opacity: 0;
     display: none;
     position: absolute;
@@ -1093,12 +1092,13 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
 }
 
-#story_titles .NB-feedbar .feed:hover .NB-feedlist-manage-icon {
+#story_titles .NB-feedbar:hover .NB-feedlist-manage-icon {
   display: block;
   opacity: 1;
 }
 
-#story_titles .NB-feedbar .feed:hover .feed_favicon {
+#story_titles .NB-feedbar:hover .feed_favicon,
+#story_titles .NB-feedbar:hover .NB-folder-icon {
   display: none;
 }
 #story_titles .NB-feedbar .folder_title .NB-feedlist-manage-icon {
@@ -1161,6 +1161,9 @@ background: transparent;
     display: block;
 }
 
+#story_titles .NB-feedbar .NB-folder {
+    padding-left: 24px;
+}
 #story_titles .NB-feedbar .NB-folder .NB-folder-title {
     padding: 1px 0 1px 22px;
     font-size: 14px;

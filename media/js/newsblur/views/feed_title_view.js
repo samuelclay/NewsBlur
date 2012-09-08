@@ -6,6 +6,8 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     events: {
+        "click .NB-feedbar-mark-feed-read"  : "mark_feed_as_read",
+        "click .NB-story-title-indicator"   : "show_hidden_story_titles",
         "click .NB-feedbar-train-feed"      : "open_trainer",
         "click .NB-feedbar-statistics"      : "open_statistics",
         "click .NB-feedbar-settings"        : "open_settings",
@@ -214,11 +216,6 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         $(this.el).addClass(extra_classes);
     },
     
-    // ===========
-    // = Actions =
-    // ===========
-    
-    
     // ==========
     // = Events =
     // ==========
@@ -246,6 +243,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         NEWSBLUR.reader.mark_feed_as_read(this.model.id);
         window.open(this.model.get('feed_link'), '_blank');
         window.focus();
+    },
+    
+    mark_feed_as_read: function(e) {
+        NEWSBLUR.reader.mark_feed_as_read(this.model.id);
+        this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
     },
     
     show_manage_menu: function(e) {
@@ -296,6 +298,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     open_settings: function(e) {
         this.show_manage_menu(e);
+    },
+    
+    show_hidden_story_titles: function() {
+        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     }
 
 });
