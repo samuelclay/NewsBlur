@@ -3,14 +3,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     el: $('.NB-feedbar'),
     
     render: function() {
-        if (NEWSBLUR.reader.flags['river_view'] && !NEWSBLUR.reader.active_folder.get('fake')) {
-            var $view = new NEWSBLUR.Views.Folder({
-                model: NEWSBLUR.reader.active_folder,
-                collection: NEWSBLUR.reader.active_folder.folder_view.collection,
-                feedbar: true,
-                only_title: true
-            }).render().$el;        
-        } else if (NEWSBLUR.reader.flags['river_view']) {
+        if (NEWSBLUR.reader.flags['river_view'] && NEWSBLUR.reader.active_folder && NEWSBLUR.reader.active_folder.get('fake')) {
             var $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
                     <div class="NB-story-title-indicator">\
@@ -24,6 +17,13 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             ', {
                 folder_title: NEWSBLUR.reader.flags['social_view'] ? "All Blurblog Stories" : "All Site Stories"
             }));
+        } else if (NEWSBLUR.reader.flags['river_view'] && NEWSBLUR.reader.active_folder && NEWSBLUR.reader.active_folder.get('folder_title')) {
+            var $view = new NEWSBLUR.Views.Folder({
+                model: NEWSBLUR.reader.active_folder,
+                collection: NEWSBLUR.reader.active_folder.folder_view.collection,
+                feedbar: true,
+                only_title: true
+            }).render().$el;        
         } else {
             var $view = new NEWSBLUR.Views.FeedTitleView({
                 model: NEWSBLUR.assets.get_feed(this.options.feed_id), 
