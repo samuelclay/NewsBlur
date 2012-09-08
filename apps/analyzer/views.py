@@ -1,7 +1,7 @@
 from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
-from mongoengine.queryset import OperationError
+# from mongoengine.queryset import OperationError
 from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -80,7 +80,6 @@ def save_classifier(request):
                             classifier_dict['feed_id'] = post_content
                     # try:
                     classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
-                    print classifier_dict, classifier, created
                     # except OperationError:
                     #     continue
                     if score == 0:

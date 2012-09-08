@@ -95,8 +95,8 @@ class MClassifierFeed(mongo.Document):
     
     def __unicode__(self):
         user = User.objects.get(pk=self.user_id)
-        feed = Feed.objects.get(pk=self.feed_id)
-        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, feed.feed_title[:30])
+        feed = Feed.objects.get(pk=self.feed_id) if self.feed_id else None
+        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, feed)
     
     
 def apply_classifier_titles(classifiers, story):

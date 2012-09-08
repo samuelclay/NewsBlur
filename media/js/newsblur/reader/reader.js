@@ -1273,7 +1273,7 @@
             var $story_titles = this.$s.$story_titles;
             $folder = $folder || this.$s.$feed_list;
             var folder_view = NEWSBLUR.assets.folders.get_view($folder) ||
-                              this.active_folder.folder_view;
+                              this.active_folder && this.active_folder.folder_view;
             var folder_title = folder && folder.get('folder_title') || "Everything";
             
             this.reset_feed();
@@ -1748,14 +1748,18 @@
             }
         },
         
-        open_story_trainer: function(story_id, feed_id) {
+        open_story_trainer: function(story_id, feed_id, options) {
+            options = options || {};
+            console.log(["open_story_trainer", story_id, feed_id, options]);
             story_id = story_id || this.active_story && this.active_story.id;
             feed_id = feed_id || (story_id && this.model.get_story(story_id).get('story_feed_id'));
             
             if (story_id && feed_id) {
-                NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, {
-                    'feed_loaded': !this.flags['river_view']
-                });
+                options['feed_loaded'] = !this.flags['river_view'];
+                if (this.flags['social_view']) {
+                    options['social_feed_id'] = this.active_feed;
+                }
+                NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, options);
             }
         },
 
