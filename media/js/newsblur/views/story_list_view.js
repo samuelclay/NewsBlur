@@ -205,7 +205,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (this.is_feed_loaded_for_location_fetch()) {
             this.fetch_story_locations_in_feed_view({'reset_timer': true});
         } else {
-            NEWSBLUR.log(['Still loading feed view...', _.keys(this.flags.feed_view_images_loaded).length, this.cache.feed_view_story_positions_keys.length, this.flags.feed_view_images_loaded]);
+            // NEWSBLUR.log(['Still loading feed view...', _.keys(this.flags.feed_view_images_loaded).length, this.cache.feed_view_story_positions_keys.length, this.flags.feed_view_images_loaded]);
         }
     },
     
