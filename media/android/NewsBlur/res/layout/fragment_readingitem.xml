@@ -8,7 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,20 +34,20 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" 
-                android:padding="8dp"
-                android:layout_marginBottom="8dp">
-                
+                android:layout_height="wrap_content" >
+
                 <TextView
-                    android:id="@+id/reading_item_authors"
+                    android:id="@+id/reading_feed_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:maxLines="1"
                     android:minWidth="80dp"
-                    android:textColor="@color/darkgray"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:textColor="@color/highlight"
                     android:textSize="11dp" />
-                
+
                 <TextView
                     android:id="@+id/reading_item_date"
                     android:layout_width="wrap_content"
@@ -57,7 +57,7 @@
                     android:layout_marginRight="10dp"
                     android:textColor="@color/linkblue"
                     android:textSize="11dp" />
-                
+
                 <TextView
                     android:id="@+id/reading_item_title"
                     android:layout_width="wrap_content"
@@ -66,19 +66,30 @@
                     android:layout_marginRight="10dp"
                     android:textColor="@color/darkgray"
                     android:textSize="18dp" />
-                
-                <android.support.v7.widget.GridLayout
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/reading_item_tags"
-                    android:layout_width="match_parent"
-                    android:layout_gravity="left"
+
+                <TextView
+                    android:id="@+id/reading_item_authors"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/reading_item_title"
                     android:layout_marginTop="10dp"
-                    android:layout_below="@+id/reading_item_title"
-                    app:useDefaultMargins="false" />
-              
+                    android:maxLines="1"
+                    android:minWidth="80dp"
+                    android:textColor="@color/darkgray"
+                    android:textSize="11dp" />
             </RelativeLayout>
         </LinearLayout>
+
+        <GridView
+            android:id="@+id/reading_item_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnWidth="60dp"
+            android:horizontalSpacing="3dp"
+            android:numColumns="5"
+            android:stretchMode="columnWidth"
+            android:verticalSpacing="3dp" />
 
         <View
             android:layout_width="match_parent"
@@ -91,7 +102,7 @@
             android:layout_height="wrap_content"
             android:background="@color/item_background"
             android:scrollbars="none" />
-        
+
         <RelativeLayout
             android:id="@+id/reading_shared_container"
             android:layout_width="match_parent"
@@ -104,17 +115,17 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/list_background"
                 android:gravity="center_vertical"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp" >
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp" >
 
                 <TextView
+                    android:id="@+id/reading_share_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:text="@string/reading_sharedby"
-                    android:layout_centerVertical="true"
-                    android:id="@+id/reading_share_text"
                     android:textColor="@color/white"
                     android:textSize="12dp" />
 
@@ -126,16 +137,15 @@
                     android:layout_alignParentRight="true"
                     app:columnCount="3"
                     app:useDefaultMargins="true" />
-                
+
                 <android.support.v7.widget.GridLayout
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/reading_social_shareimages"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:columnCount="3"
+                    android:layout_toLeftOf="@+id/reading_social_friendimages"
                     android:layout_toRightOf="@+id/reading_share_text"
-                    android:layout_toLeftOf="@+id/reading_social_friendimages" />
-                
+                    app:columnCount="3" />
             </RelativeLayout>
 
             <LinearLayout
@@ -145,15 +155,15 @@
                 android:layout_below="@id/reading_share_bar"
                 android:background="@color/white"
                 android:orientation="vertical" />
-            
+
             <View
+                android:id="@+id/comment_divider"
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
                 android:layout_below="@id/reading_friend_comment_container"
-                android:id="@+id/comment_divider"
                 android:background="@drawable/divider_light" />
-            
-             <LinearLayout
+
+            <LinearLayout
                 android:id="@+id/reading_public_comment_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -37,7 +37,8 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 
 		fragmentManager = getSupportFragmentManager();
 		folderFeedList = (FolderListFragment) fragmentManager.findFragmentByTag("folderFeedListFragment");
-
+		folderFeedList.setRetainInstance(true);
+		
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();

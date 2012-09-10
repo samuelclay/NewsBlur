@@ -1,10 +1,13 @@
 package com.newsblur.fragment;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
@@ -33,6 +36,7 @@ import com.newsblur.network.MarkFeedAsReadTask;
 import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.util.AppConstants;
+import com.newsblur.util.PrefConstants;
 import com.newsblur.util.UIUtils;
 import com.newsblur.view.FolderTreeViewBinder;
 import com.newsblur.view.SocialFeedViewBinder;
@@ -49,13 +53,13 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	private int FEEDCHECK = 0x01;
 	private SocialFeedViewBinder blogViewBinder;
 	private String TAG = "FolderListFragment";
+	private SharedPreferences sharedPreferences;
 
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		resolver = getActivity().getContentResolver();
-		apiManager = new APIManager(getActivity());
-
+		
 		Cursor folderCursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
 		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
 		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
@@ -77,13 +81,24 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
 	}
+	
+	@Override
+	public void onAttach(Activity activity) {
+		sharedPreferences = activity.getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		resolver = activity.getContentResolver();
+		apiManager = new APIManager(activity);
+		
+		super.onAttach(activity);
+	}
 
 	public void hasUpdated() {
 		folderAdapter.requery();
+		checkOpenFolderPreferences();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		Log.d(TAG, "Creating folder fragment view");
 		View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
 		list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
 		list.setGroupIndicator(getResources().getDrawable(R.drawable.transparent));
@@ -97,8 +112,19 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		list.setAdapter(folderAdapter);
 		list.setOnGroupClickListener(this);
 		list.setOnChildClickListener(this);
-
+		
+		checkOpenFolderPreferences();
+		
 		return v;
+	}
+
+	private void checkOpenFolderPreferences() {
+		for (int i = 0; i < folderAdapter.getGroupCount(); i++) {
+			long groupId = folderAdapter.getGroupId(i);
+			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + groupId, false)) {
+				list.expandGroup(i);
+			}
+		}
 	}
 
 	@Override
@@ -106,6 +132,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		MenuInflater inflater = getActivity().getMenuInflater();
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+		
 			// Only create a context menu for child items
 		switch(type) {
 			// Group (folder) item
@@ -129,7 +156,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			return true;
 
 		case R.id.menu_delete_feed:
-			Toast.makeText(getActivity(), "Delete feed", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), "Deleted feed", Toast.LENGTH_SHORT).show();
 			((Main) getActivity()).deleteFeed(info.id, null);
 			return true;
 
@@ -184,10 +211,13 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	@Override
 	public boolean onGroupClick(ExpandableListView list, View group, int groupPosition, long id) {
 		if (folderAdapter.isExpandable(groupPosition)) {
+			long groupId = folderAdapter.getGroupId(groupPosition);
 			if (list.isGroupExpanded(groupPosition)) {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.VISIBLE);
+				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + groupId, false).commit();
 			} else {
 				group.findViewById(R.id.row_foldersums).setVisibility(View.INVISIBLE);
+				sharedPreferences.edit().putBoolean(AppConstants.FOLDER_PRE + groupId, true).commit();
 			}
 			return false;
 		} else {

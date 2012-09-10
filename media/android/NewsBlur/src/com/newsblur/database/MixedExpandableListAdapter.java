@@ -247,7 +247,11 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	@Override
 	public long getGroupId(int groupPosition) {
-		return folderCursorHelper.getId(groupPosition);
+		if (groupPosition >= 2) {
+			return folderCursorHelper.getId(groupPosition);
+		} else {
+			return groupPosition;
+		}
 	}
 
 	public void setGroupCursor(Cursor cursor) {
@@ -359,8 +363,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 					} else if (v instanceof ImageView) {
 						setViewImage((ImageView) v, text);
 					} else {
-						throw new IllegalStateException("SimpleCursorTreeAdapter can bind values" +
-						" only to TextView and ImageView!");
+						throw new IllegalStateException("SimpleCursorTreeAdapter can bind values only to TextView and ImageView!");
 					}
 				}
 			}
@@ -457,7 +460,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		long getId(int position) {
 			if (mDataValid && mCursor != null) {
 				if (mCursor.moveToPosition(position)) {
-					return mCursor.getLong(mRowIDColumn);
+					Long id =  mCursor.getLong(mRowIDColumn);
+					return id;
 				} else {
 					return 0;
 				}

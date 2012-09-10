@@ -10,15 +10,12 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayout;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import com.newsblur.R;
@@ -27,11 +24,10 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
-import com.newsblur.service.DetachableResultReceiver;
-import com.newsblur.service.DetachableResultReceiver.Receiver;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.view.NewsblurWebview;
+import com.newsblur.view.TagAdapter;
 
 public class ReadingItemFragment extends Fragment {
 
@@ -140,10 +136,12 @@ public class ReadingItemFragment extends Fragment {
 		TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
 		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
 		TextView itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
+		TextView itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
 
 		itemDate.setText(story.shortDate);
 		itemTitle.setText(story.title);
 		itemAuthors.setText(story.authors.toUpperCase());
+		itemFeed.setText(story.feedId);
 
 		itemTitle.setOnClickListener(new OnClickListener() {
 			@Override
@@ -159,39 +157,8 @@ public class ReadingItemFragment extends Fragment {
 
 
 	private void setupTags(View view) {
-		GridLayout tagContainer = (GridLayout) view.findViewById(R.id.reading_item_tags);
-
-		if (story.tags != null || story.tags.length > 0) {
-			tagContainer.setVisibility(View.VISIBLE);
-			for (final String tag : story.tags) {
-				View v = inflater.inflate(R.layout.tag_view, null);
-				GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-				params.columnSpec = GridLayout.spec(1, 1);
-				TextView tagText = (TextView) v.findViewById(R.id.tag_text);
-				tagText.setText(tag);
-
-				if (classifier != null && classifier.tags.containsKey(tag)) {
-					switch (classifier.tags.get(tag)) {
-					case Classifier.LIKE:
-						tagText.setBackgroundResource(R.drawable.tag_background_positive);
-						break;
-					case Classifier.DISLIKE:
-						tagText.setBackgroundResource(R.drawable.tag_background_negative);
-						break;
-					}
-				}
-
-				v.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(story.feedId, classifier, tag, Classifier.TAG);
-						classifierFragment.show(ReadingItemFragment.this.getFragmentManager(), "dialog");
-					}
-				});
-
-				tagContainer.addView(v);
-			}
-		}
+		GridView tagContainer = (GridView) view.findViewById(R.id.reading_item_tags);
+		tagContainer.setAdapter(new TagAdapter(getActivity(), getFragmentManager(), story.feedId, classifier, story.tags));
 	}
 
 	private void setupWebview(NewsblurWebview web) {
@@ -201,7 +168,7 @@ public class ReadingItemFragment extends Fragment {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<html><head><meta name=\"viewport\" content=\"target-densitydpi=device-dpi\" />");
 		builder.append("<style style=\"text/css\">");
-		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize)));
+		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + 0.5f)));
 		builder.append("</style>");
 		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body>");
 		builder.append(story.content);

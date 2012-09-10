@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
     android:versionCode="3"
-    android:versionName="0.9.07" >
+    android:versionName="0.9.09" >
 
     <uses-sdk
         android:minSdkVersion="8"
