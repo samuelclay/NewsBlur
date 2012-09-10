@@ -534,13 +534,7 @@ def mark_story_as_unshared(request):
     if not shared_story:
         return json.json_response(request, {'code': -1, 'message': 'Shared story not found.'})
     
-    socialsubs = MSocialSubscription.objects.filter(subscription_user_id=request.user.pk)
-    for socialsub in socialsubs:
-        socialsub.needs_unread_recalc = True
-        socialsub.save()
-    logging.user(request, "~FC~SKUn-sharing ~FM%s: ~SB~FB%s" % (shared_story.story_title[:20],
-                                                                shared_story.comments[:30]))
-    shared_story.delete()
+    shared_story.unshare_story()
     
     if original_story_found:
         story.count_comments()

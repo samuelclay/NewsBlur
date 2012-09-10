@@ -1118,6 +1118,15 @@ class MSharedStory(mongo.Document):
 
         super(MSharedStory, self).delete(*args, **kwargs)
     
+    def unshare_story(self):
+        socialsubs = MSocialSubscription.objects.filter(subscription_user_id=self.user_id,
+                                                        needs_unread_recalc=False)
+        for socialsub in socialsubs:
+            socialsub.needs_unread_recalc = True
+            socialsub.save()
+
+        self.delete()
+
     @classmethod
     def get_shared_stories_from_site(cls, feed_id, user_id, story_url, limit=3):
         your_story = cls.objects.filter(story_feed_id=feed_id,
