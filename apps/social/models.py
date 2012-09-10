@@ -1248,7 +1248,7 @@ class MSharedStory(mongo.Document):
         finalize_f = """
             function(key, value) {
                 if (value.count >= %(cutoff)s) {
-                    var english_title = value.title.replace(/[^\\x00-\\x7F]/g, "");
+                    var english_title = value.title.replace(/[^\\062-\\177]/g, "");
                     if (english_title.length < 5) return;
                     
                     return value;
