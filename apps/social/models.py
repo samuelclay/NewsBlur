@@ -1217,10 +1217,11 @@ class MSharedStory(mongo.Document):
             story.save()
         
     @classmethod
-    def collect_popular_stories(cls, cutoff=None, days=1):
+    def collect_popular_stories(cls, cutoff=None, days=None):
         from apps.statistics.models import MStatistics
+        if not days: days = 1
         shared_stories_count = sum(json.decode(MStatistics.get('stories_shared')))
-        cutoff = cutoff or max(math.floor(.05 * shared_stories_count), 3)
+        cutoff = cutoff or max(math.floor(.025 * shared_stories_count), 3)
         today = datetime.datetime.now() - datetime.timedelta(days=days)
         
         map_f = """
@@ -1228,6 +1229,7 @@ class MSharedStory(mongo.Document):
                 emit(this.story_guid, {
                     'guid': this.story_guid, 
                     'feed_id': this.story_feed_id, 
+                    'title': this.story_title,
                     'count': 1
                 });
             }
@@ -1237,6 +1239,7 @@ class MSharedStory(mongo.Document):
                 var r = {'guid': key, 'count': 0};
                 for (var i=0; i < values.length; i++) {
                     r.feed_id = values[i].feed_id;
+                    r.title = values[i].title;
                     r.count += 1;
                 }
                 return r;
@@ -1245,6 +1248,9 @@ class MSharedStory(mongo.Document):
         finalize_f = """
             function(key, value) {
                 if (value.count >= %(cutoff)s) {
+                    var english_title = value.title.replace(/[^\\x00-\\x7F]/g, "");
+                    if (english_title.length < 5) return;
+                    
                     return value;
                 }
             }
@@ -1256,17 +1262,24 @@ class MSharedStory(mongo.Document):
         return stories, cutoff
         
     @classmethod
-    def share_popular_stories(cls, cutoff=None, days=None, verbose=True):
+    def share_popular_stories(cls, cutoff=None, days=None, interactive=True):
         publish_new_stories = False
         popular_profile = MSocialProfile.objects.get(username='popular')
         popular_user = User.objects.get(pk=popular_profile.user_id)
         shared_stories_today, cutoff = cls.collect_popular_stories(cutoff=cutoff, days=days)
+        shared = 0
+        
         for guid, story_info in shared_stories_today.items():
             story, _ = MStory.find_story(story_info['feed_id'], story_info['guid'])
             if not story:
                 logging.user(popular_user, "~FRPopular stories, story not found: %s" % story_info)
                 continue
-
+            
+            if interactive:
+                feed = Feed.get_by_id(story.story_feed_id)
+                accept_story = raw_input("%s / %s [Y/n]: " % (story.story_title, feed.title))
+                if accept_story in ['n', 'N']: continue
+                
             story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
             story_values = {
@@ -1276,8 +1289,8 @@ class MSharedStory(mongo.Document):
             }
             shared_story, created = MSharedStory.objects.get_or_create(**story_values)
             if created:
+                shared += 1
                 publish_new_stories = True
-            if verbose and created:
                 logging.user(popular_user, "~FCSharing: ~SB~FM%s (%s shares, %s min)" % (
                     story.story_title[:50],
                     story_info['count'],
@@ -1289,6 +1302,8 @@ class MSharedStory(mongo.Document):
                 socialsub.needs_unread_recalc = True
                 socialsub.save()
             shared_story.publish_update_to_subscribers()
+        
+        return shared
             
     @classmethod
     def sync_all_redis(cls):

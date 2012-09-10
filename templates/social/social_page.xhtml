@@ -34,8 +34,12 @@
         'email'            : "{{ user.email|safe }}",
         'MEDIA_URL'        : "{{ MEDIA_URL }}",
     };
-    NEWSBLUR.user_social_profile = {{ user_social_profile_page|safe }};
-    NEWSBLUR.user_social_services = {{ user_social_services_page|safe }};
+    {% if user_social_profile_page %}
+        NEWSBLUR.user_social_profile = {{ user_social_profile_page|safe }};
+    {% endif %}
+    {% if user_social_services_page %}}
+        NEWSBLUR.user_social_services = {{ user_social_services_page|safe }};
+    {% endif %}
     NEWSBLUR.Preferences = {};
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};
