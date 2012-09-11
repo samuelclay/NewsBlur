@@ -1,23 +1,14 @@
 package com.newsblur.activity;
 
-import java.util.List;
-
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
-import com.newsblur.database.DatabaseConstants;
-import com.newsblur.database.FeedProvider;
-import com.newsblur.domain.Story;
 import com.newsblur.fragment.FeedIntelligenceSelectorFragment;
 import com.newsblur.fragment.ItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
@@ -37,7 +28,6 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 	private FeedIntelligenceSelectorFragment intelligenceSelectorFragment;
 	protected String TAG = "ItemsList";
 	protected int currentState;
-	private ContentResolver contentResolver;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -48,8 +38,6 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 
 		setContentView(R.layout.activity_itemslist);
 		fragmentManager = getSupportFragmentManager();
-
-		contentResolver = getContentResolver();
 
 		currentState = getIntent().getIntExtra(EXTRA_STATE, 0);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -92,7 +92,7 @@
     
     <string name="unsorted_folder_name">Unsorted</string>
     
-    <string name="empty_list_notice">There aren\'t any stories to display here right now.</string>
+    <string name="empty_list_notice">Loading stories…</string>
     <string name="feed_search_hint">Search for new feeds</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>

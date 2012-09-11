@@ -96,6 +96,16 @@ public class FeedProvider extends ContentProvider {
 		switch (uriMatcher.match(uri)) {
 			case OFFLINE_UPDATES:
 				return db.delete(DatabaseConstants.UPDATE_TABLE, selection, selectionArgs);
+			
+			case ALL_SOCIAL_FEEDS:	
+				db.delete(DatabaseConstants.SOCIALFEED_TABLE, null, null);
+				return 1;	
+				
+			case ALL_FEEDS:	
+				db.delete(DatabaseConstants.FEED_TABLE, null, null);
+				db.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, null);
+				db.delete(DatabaseConstants.STORY_TABLE, null, null);
+				return 1;
 				
 			case INDIVIDUAL_FEED:
 				db.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() } );
@@ -124,100 +134,67 @@ public class FeedProvider extends ContentProvider {
 
 		// Inserting a folder
 		case ALL_FOLDERS:
-			db.beginTransaction();
 			final long folderId = db.insertWithOnConflict(DatabaseConstants.FOLDER_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			resultUri = uri.buildUpon().appendPath("" + folderId).build();
 			break;
 
 			// Inserting a feed to folder mapping
 		case FEED_FOLDER_MAP:
-			db.beginTransaction();
 			db.insertWithOnConflict(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_FOLDER_FOLDER_NAME)).build();
 			break;
 			
 			// Inserting a classifier for a feed
 		case CLASSIFIERS_FOR_FEED:
-			db.beginTransaction();
 			values.put(DatabaseConstants.CLASSIFIER_ID, uri.getLastPathSegment());
 			db.insertWithOnConflict(DatabaseConstants.CLASSIFIER_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			break;
 
 			// Inserting a feed
 		case ALL_FEEDS:
-			db.beginTransaction();
 			db.insertWithOnConflict(DatabaseConstants.FEED_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_ID)).build();
 			break;
 		
 			// Inserting a social feed
 		case ALL_SOCIAL_FEEDS:
-			db.beginTransaction();
 			db.insertWithOnConflict(DatabaseConstants.SOCIALFEED_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.SOCIAL_FEED_ID)).build();
 			break;
 
 			// Inserting a story for a social feed
 		case SOCIALFEED_STORIES:
-			db.beginTransaction();
 			final ContentValues socialMapValues = new ContentValues();
 			socialMapValues.put(DatabaseConstants.SOCIALFEED_STORY_USER_ID, uri.getLastPathSegment());
 			socialMapValues.put(DatabaseConstants.SOCIALFEED_STORY_STORYID, values.getAsString(DatabaseConstants.STORY_ID));
 			db.insertWithOnConflict(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, null, socialMapValues, SQLiteDatabase.CONFLICT_REPLACE);
 		
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.SOCIAL_FEED_ID)).build();
 			break;
 	
 			// Inserting a comment
 		case STORY_COMMENTS:
-			db.beginTransaction();
 			db.insertWithOnConflict(DatabaseConstants.COMMENT_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			break;	
 		
 			// Inserting a reply
 		case REPLIES:
-			db.beginTransaction();
 			db.insertWithOnConflict(DatabaseConstants.REPLY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			break;
 
 			// Inserting a story	
 		case FEED_STORIES:
-			db.beginTransaction();
 			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			break;	
 			
 			// Inserting a story assuming it's not already in the DB
 		case FEED_STORIES_NO_UPDATE:
-			db.beginTransaction();
 			db.insertWithOnConflict(DatabaseConstants.STORY_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			break;		
 			
 			// Inserting a story	
 		case OFFLINE_UPDATES:
-			db.beginTransaction();
 			db.insertWithOnConflict(DatabaseConstants.UPDATE_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-			db.setTransactionSuccessful();
-			db.endTransaction();
 			break;		
 
 		case UriMatcher.NO_MATCH:

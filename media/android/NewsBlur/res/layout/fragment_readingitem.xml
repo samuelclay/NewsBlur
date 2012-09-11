@@ -31,18 +31,6 @@
                 android:layout_marginLeft="10dp" >
 
                 <TextView
-                    android:id="@+id/reading_feed_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:maxLines="1"
-                    android:minWidth="80dp"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:textColor="@color/newsblur_blue"
-                    android:textSize="13sp" />
-
-                <TextView
                     android:id="@+id/reading_item_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -52,7 +40,18 @@
                     android:layout_marginBottom="5dp"
                     android:layout_marginRight="10dp"
                     android:textColor="@color/linkblue"
-                    android:textSize="11dp" />
+                    android:textSize="13sp" />
+                
+                 <TextView
+                    android:id="@+id/reading_feed_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@id/reading_item_date"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:textColor="@color/newsblur_blue"
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/reading_item_title"

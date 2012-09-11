@@ -16,7 +16,7 @@
         android:layout_marginLeft="18dp"
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
-        android:src="@drawable/everything_icon" />
+        android:src="@drawable/archive" />
     
     
     <TextView

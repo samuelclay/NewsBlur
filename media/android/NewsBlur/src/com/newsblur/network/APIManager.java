@@ -11,6 +11,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -46,7 +47,6 @@ public class APIManager {
 	public APIManager(final Context context) {
 		this.context = context;
 		final GsonBuilder builder = new GsonBuilder();
-		//builder.registerTypeAdapter(FolderStructure.class, new FolderStructureTypeAdapter());
 		builder.registerTypeAdapter(Date.class, new DateStringTypeAdapter());
 		contentResolver = context.getContentResolver();
 		gson = builder.create();
@@ -80,7 +80,7 @@ public class APIManager {
 			return false;
 		}
 	}
-	
+
 	public boolean markStoryAsRead(final String feedId, final ArrayList<String> storyIds) {
 		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
@@ -95,7 +95,7 @@ public class APIManager {
 			return false;
 		}
 	}
-	
+
 	public boolean markSocialStoryAsRead(final String updateJson) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
@@ -146,28 +146,28 @@ public class APIManager {
 		final APIResponse response = client.get(feedUri.toString(), values);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
-			
+
 			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
-			
+
 			int deleted = contentResolver.delete(classifierUri, null, null);
 			Log.d(TAG, "Deleted " + deleted + " previous classifiers");
 			for (ContentValues classifierValues : storiesResponse.classifiers.getContentValues()) {
 				contentResolver.insert(classifierUri, classifierValues);
 			}
-			
+
 			Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 			for (Story story : storiesResponse.stories) {
 				contentResolver.insert(storyUri, story.getValues());
 				insertComments(story);
 			}
-			
-			
+
+
 			return storiesResponse;
 		} else {
 			return null;
 		}
 	}
-	
+
 	public StoriesResponse getStoriesForFeeds(String[] feedIds, String pageNumber) {
 		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
@@ -178,7 +178,7 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
 		final APIResponse response = client.get(APIConstants.URL_RIVER_STORIES, values);
-		
+
 		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			for (Story story : storiesResponse.stories) {
@@ -191,7 +191,7 @@ public class APIManager {
 			return null;
 		}
 	}
-	
+
 	public SocialFeedResponse getSharedStoriesForFeeds(String[] feedIds, String pageNumber) {
 		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
@@ -202,7 +202,7 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
 		final APIResponse response = client.get(APIConstants.URL_SHARED_RIVER_STORIES, values);
-		
+
 		SocialFeedResponse storiesResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			for (Story story : storiesResponse.stories) {
@@ -210,25 +210,25 @@ public class APIManager {
 					Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 					contentResolver.insert(storySocialUri, story.getValues());
 				}
-				
+
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
-				
+
 				insertComments(story);
 			}
-			
+
 			if (storiesResponse != null && storiesResponse.feeds!= null) {
 				for (Feed feed : storiesResponse.feeds) {
 					contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
 				}
 			}
-			
+
 			return storiesResponse;
 		} else {
 			return null;
 		}
 	}
-	
+
 	public SocialFeedResponse getStoriesForSocialFeed(String userId, String username, String pageNumber) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
@@ -243,10 +243,10 @@ public class APIManager {
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			for (Story story : socialFeedResponse.stories) {
 				insertComments(story);
-				
+
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
-				
+
 				Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storySocialUri, story.getValues());
 			}
@@ -270,13 +270,13 @@ public class APIManager {
 			comment.storyId = story.id;
 			comment.id = (builder.toString());
 			contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
-			
+
 			for (Reply reply : comment.replies) {
 				reply.commentId = comment.id;
 				contentResolver.insert(FeedProvider.REPLIES_URI, reply.getValues());
 			}
 		}
-		
+
 		for (Comment comment : story.friendsComments) {
 			StringBuilder builder = new StringBuilder();
 			builder.append(story.id);
@@ -285,7 +285,7 @@ public class APIManager {
 			comment.storyId = story.id;
 			comment.id = (builder.toString());
 			contentResolver.insert(FeedProvider.COMMENTS_URI, comment.getValues());
-			
+
 			for (Reply reply : comment.replies) {
 				reply.commentId = comment.id;
 				contentResolver.insert(FeedProvider.REPLIES_URI, reply.getValues());
@@ -316,7 +316,7 @@ public class APIManager {
 			return false;
 		}
 	}
-	
+
 	public Boolean shareStory(final String storyId, final String feedId, final String comment, final String sourceUserId) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
@@ -328,7 +328,7 @@ public class APIManager {
 		}
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		values.put(APIConstants.PARAMETER_STORYID, storyId);
-		
+
 		final APIResponse response = client.post(APIConstants.URL_SHARE_STORY, values);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			return true;
@@ -340,7 +340,7 @@ public class APIManager {
 	public void getFolderFeedMapping() {
 		getFolderFeedMapping(false);		
 	}
-	
+
 	public void getFolderFeedMapping(boolean doUpdateCounts) {
 		final APIClient client = new APIClient(context);
 		long millis = System.currentTimeMillis();
@@ -348,70 +348,73 @@ public class APIManager {
 		Log.d(TAG, "With update: " + doUpdateCounts + " it took: " + (System.currentTimeMillis() - millis) + "ms");
 		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
 
-		for (final Entry<String, Feed> entry : feedUpdate.feeds.entrySet()) {
-			final Feed feed = entry.getValue();
-			contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
-		}
-		
-		for (final SocialFeed feed : feedUpdate.socialFeeds) {
-			contentResolver.insert(FeedProvider.SOCIAL_FEEDS_URI, feed.getValues());
-		}
-		
-		String unsortedFolderName = context.getResources().getString(R.string.unsorted_folder_name);
-		
-		for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
-			String folderName = TextUtils.isEmpty(entry.getKey()) ? unsortedFolderName : entry.getKey();
-			final ContentValues folderValues = new ContentValues();
-			folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
-			contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
+		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			for (final Entry<String, Feed> entry : feedUpdate.feeds.entrySet()) {
+				final Feed feed = entry.getValue();
+				contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
+			}
 
-			for (Long feedId : entry.getValue()) {
-				ContentValues values = new ContentValues(); 
-				values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
-				values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
-				contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
+			for (final SocialFeed feed : feedUpdate.socialFeeds) {
+				contentResolver.insert(FeedProvider.SOCIAL_FEEDS_URI, feed.getValues());
+			}
+
+			String unsortedFolderName = context.getResources().getString(R.string.unsorted_folder_name);
+
+			for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
+				String folderName = TextUtils.isEmpty(entry.getKey()) ? unsortedFolderName : entry.getKey();
+				final ContentValues folderValues = new ContentValues();
+				folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
+				contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
+
+				for (Long feedId : entry.getValue()) {
+					ContentValues values = new ContentValues(); 
+					values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
+					values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
+					contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
+				}
 			}
 		}
+		Log.d(TAG, "Total it took: " + (System.currentTimeMillis() - millis) + "ms");
 	}
-	
+
 	public boolean trainClassifier(String feedId, String key, int type, int action) {
 		String typeText = null;
 		String actionText = null;
-		
+
 		switch (type) {
-			case Classifier.AUTHOR:
-				typeText = "author"; 
-				break;
-			case Classifier.TAG:
-				typeText = "tag";
-				break;
-			case Classifier.TITLE:
-				typeText = "title";
-				break;
-			case Classifier.FEED:
-				typeText = "feed";
-				break;	
+		case Classifier.AUTHOR:
+			typeText = "author"; 
+			break;
+		case Classifier.TAG:
+			typeText = "tag";
+			break;
+		case Classifier.TITLE:
+			typeText = "title";
+			break;
+		case Classifier.FEED:
+			typeText = "feed";
+			break;	
 		}
-		
+
 		switch (action) {
-			case Classifier.CLEAR_LIKE:
-				actionText = "remove_like_"; 
-				break;
-			case Classifier.CLEAR_DISLIKE:
-				actionText = "remove_dislike_"; 
-				break;	
-			case Classifier.LIKE:
-				actionText = "like_";
-				break;
-			case Classifier.DISLIKE:
-				actionText = "dislike_";
-				break;	
+		case Classifier.CLEAR_LIKE:
+			actionText = "remove_like_"; 
+			break;
+		case Classifier.CLEAR_DISLIKE:
+			actionText = "remove_dislike_"; 
+			break;	
+		case Classifier.LIKE:
+			actionText = "like_";
+			break;
+		case Classifier.DISLIKE:
+			actionText = "dislike_";
+			break;	
 		}
-		
+
 		StringBuilder builder = new StringBuilder();;
 		builder.append(actionText);
 		builder.append(typeText);
-		
+
 		ContentValues values = new ContentValues();
 		if (type == Classifier.FEED) {
 			values.put(builder.toString(), feedId);
@@ -419,7 +422,7 @@ public class APIManager {
 			values.put(builder.toString(), key);
 		}
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
-		
+
 		final APIClient client = new APIClient(context);
 		final APIResponse response = client.post(APIConstants.URL_CLASSIFIER_SAVE, values);
 		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
@@ -447,7 +450,7 @@ public class APIManager {
 				Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 				contentResolver.update(feedUri, feedCountUpdate.feedCounts.get(feedId).getValues(), null, null);
 			}
-			
+
 			for (String socialfeedId : feedCountUpdate.socialfeedCounts.keySet()) {
 				String userId = socialfeedId.split(":")[1];
 				Uri feedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
@@ -496,7 +499,7 @@ public class APIManager {
 			return false;
 		}
 	}
-	
+
 	public boolean addFeed(String feedUrl, String folderName) {
 		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
@@ -507,13 +510,13 @@ public class APIManager {
 		final APIResponse response = client.post(APIConstants.URL_ADD_FEED, values);
 		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
-	
+
 	public FeedResult[] searchForFeed(String searchTerm) {
 		final APIClient client = new APIClient(context);
 		ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_FEED_SEARCH_TERM, searchTerm);
 		final APIResponse response = client.get(APIConstants.URL_FEED_AUTOCOMPLETE, values);
-		
+
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			return gson.fromJson(response.responseString, FeedResult[].class);
 		} else {
