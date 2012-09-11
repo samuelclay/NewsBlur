@@ -14,6 +14,7 @@ from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
 from apps.push.models import PushSubscription
+from apps.statistics.models import MAnalyticsFetcher
 from utils import feedparser
 from utils.story_functions import pre_process_story
 from utils import log as logging
@@ -303,10 +304,18 @@ class Dispatcher:
         current_process = multiprocessing.current_process()
         identity = "X"
         feed = None
+        
         if current_process._identity:
             identity = current_process._identity[0]
             
         for feed_id in feed_queue:
+            start_duration = time.time()
+            feed_fetch_duration = None
+            feed_process_duration = None
+            page_duration = None
+            icon_duration = None
+            feed_code = None
+        
             ret_entries = {
                 ENTRY_NEW: 0,
                 ENTRY_UPDATED: 0,
@@ -339,14 +348,16 @@ class Dispatcher:
                         feed.num_subscribers,
                         rand, quick))
                     continue
-
+                    
                 ffeed = FetchFeed(feed_id, self.options)
                 ret_feed, fetched_feed = ffeed.fetch()
+                feed_fetch_duration = time.time() - start_duration
                 
                 if ((fetched_feed and ret_feed == FEED_OK) or self.options['force']):
                     pfeed = ProcessFeed(feed_id, fetched_feed, self.options)
                     ret_feed, ret_entries = pfeed.process()
                     feed = pfeed.feed
+                    feed_process_duration = time.time() - start_duration
                     
                     if ret_entries.get(ENTRY_NEW) or self.options['force']:
                         start = time.time()
@@ -377,6 +388,7 @@ class Dispatcher:
             except TimeoutError, e:
                 logging.debug('   ---> [%-30s] ~FRFeed fetch timed out...' % (feed.title[:30]))
                 feed.save_feed_history(505, 'Timeout', '')
+                feed_code = 505
                 fetched_feed = None
             except Exception, e:
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
@@ -386,9 +398,24 @@ class Dispatcher:
                 ret_feed = FEED_ERREXC 
                 feed = self.refresh_feed(feed.pk)
                 feed.save_feed_history(500, "Error", tb)
+                feed_code = 500
                 fetched_feed = None
                 mail_feed_error_to_admin(feed, e, local_vars=locals())
-            
+
+            if not feed_code:
+                if ret_feed == FEED_OK:
+                    feed_code = 200
+                elif ret_feed == FEED_SAME:
+                    feed_code = 304
+                elif ret_feed == FEED_ERRHTTP:
+                    feed_code = 400
+                if ret_feed == FEED_ERREXC:
+                    feed_code = 500
+                elif ret_feed == FEED_ERRPARSE:
+                    feed_code = 550
+                elif ret_feed == FEED_ERRPARSE:
+                    feed_code = 550
+                
             feed = self.refresh_feed(feed.pk)
             if ((self.options['force']) or 
                 (random.random() > .9) or
@@ -402,6 +429,7 @@ class Dispatcher:
                 page_importer = PageImporter(feed)
                 try:
                     page_data = page_importer.fetch_page()
+                    page_duration = time.time() - start_duration
                 except TimeoutError, e:
                     logging.debug('   ---> [%-30s] ~FRPage fetch timed out...' % (feed.title[:30]))
                     page_data = None
@@ -421,6 +449,7 @@ class Dispatcher:
                 icon_importer = IconImporter(feed, page_data=page_data, force=self.options['force'])
                 try:
                     icon_importer.save()
+                    icon_duration = time.time() - start_duration
                 except TimeoutError, e:
                     logging.debug('   ---> [%-30s] ~FRIcon fetch timed out...' % (feed.title[:30]))
                     feed.save_page_history(556, 'Timeout', '')
@@ -451,6 +480,11 @@ class Dispatcher:
                 identity, feed.feed_title[:30], delta,
                 feed.pk, self.feed_trans[ret_feed],))
             logging.debug(done_msg)
+            total_duration = time.time() - start_duration
+            MAnalyticsFetcher.add(feed_id=feed.pk, feed_fetch=feed_fetch_duration,
+                                  feed_process=feed_process_duration, 
+                                  page=page_duration, icon=icon_duration,
+                                  total=total_duration, feed_code=feed_code)
             
             self.feed_stats[ret_feed] += 1
             for key, val in ret_entries.items():
@@ -489,7 +523,7 @@ class Dispatcher:
                           feed.title[:30], stories_db.count(), user_subs.count(),
                           feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))        
             self.calculate_feed_scores_with_stories(user_subs, stories_db)
-        else:
+        elif self.options.get('mongodb_replication_lag'):
             logging.debug(u'   ---> [%-30s] ~BR~FYSkipping computing scores: ~SB%s seconds~SN of mongodb lag' % (
               feed.title[:30], self.options.get('mongodb_replication_lag')))
     

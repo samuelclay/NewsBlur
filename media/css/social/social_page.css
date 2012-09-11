@@ -234,11 +234,11 @@ header {
     color: #878787;
 }
 .NB-header .NB-header-following-user .NB-follow-user {
-    color: #C06411;
+    color: #AF000F;
     font-weight: bold;
 }
 .NB-header .NB-header-following-user .NB-follow-user:hover {
-    color: #AF000F;
+    color: #5B000A;
     cursor: pointer;
 }
 .NB-header .NB-header-stat:last-child {

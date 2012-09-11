@@ -178,6 +178,16 @@
           optional: true
           default: 1
           example: 2
+        - key: order
+          desc: "Story order by oldest or newest first"
+          optional: true
+          default: newest
+          example: oldest
+        - key: read_filter
+          desc: "Show all stories or only unread stories"
+          optional: true
+          default: all
+          example: unread
   
     - url: /reader/starred_stories
       method: GET
@@ -207,16 +217,12 @@
           optional: true
           default: 1
           example: 2
-        - key: read_stories_count
-          desc: >
-            An optimization used to skip a set number of stories that are 
-            guaranteed to be read. Pass in the number of stories that have 
-            been read from this series. If your page >= 2, you should probably 
-            have some read stories from the first page.
+        - key: order
+          desc: "Story order by oldest or newest first"
           optional: true
-          default: "0"
-          example: 12
-  
+          default: newest
+          example: oldest
+            
     - url: /reader/mark_story_as_read
       method: POST
       short_desc: "Mark a story as read."
@@ -329,6 +335,28 @@
           example: "7"
 
 - social:
+    - url: /social/river_stories
+      method: GET
+      short_desc: "Stories from multiple users (River of News)."
+      long_desc: 
+        - "Retrieve stories from a collection of social subscriptions. This is known as the River of News."
+        - "Stories are ordered in reverse chronological order by default."
+        - "Only unread stories are available."
+      params:
+        - key: social_user_ids
+          desc: "User ids to use in the river."
+          required: true
+          example: "[12, 24, 36]"
+        - key: page
+          desc: "Page of stories, starting from 1."
+          optional: true
+          default: 1
+          example: 2
+        - key: order
+          desc: "Story order by oldest or newest first"
+          optional: true
+          default: newest
+          example: oldest
     - url: /social/share_story
       method: POST
       short_desc: "Share a story with optional comments."
@@ -657,6 +685,17 @@
       long_desc: 
         - "Shared stories from a user's blurblog."
         - "Comments, replies, and profiles from followed users are automatically included."
+      params:
+        - key: order
+          desc: "Story order by oldest or newest first"
+          optional: true
+          default: newest
+          example: oldest
+        - key: read_filter
+          desc: "Show all stories or only unread stories"
+          optional: true
+          default: all
+          example: unread
       tips:
         - >
           The <code>username</code> url parameter is optional. It's just recommended 

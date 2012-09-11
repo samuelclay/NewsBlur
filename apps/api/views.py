@@ -15,9 +15,7 @@ from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json
 from utils import log as logging
-from utils.scrubber import SelectiveScriptScrubber
 from utils.feed_functions import relative_timesince
-from utils.story_functions import strip_tags
 
 @json.json_view
 def login(request):
@@ -86,7 +84,7 @@ def add_site_load_script(request, token):
             usf = UserSubscriptionFolders.objects.get(
                 user=profile.user
             )
-            user_profile = MSocialProfile.objects.get(user_id=profile.user.pk)
+            user_profile = MSocialProfile.get_user(user_id=profile.user.pk)
         else:
             code = -1
     except Profile.DoesNotExist:
@@ -254,12 +252,6 @@ def share_story(request, token):
             feed = Feed.get_feed_from_url(story_url, create=True, fetch=True)
         if feed:
             feed_id = feed.pk
-    
-    parsed_url = urlparse.urlparse(story_url)
-    base_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.hostname, parsed_url.path)
-    scrubber = SelectiveScriptScrubber(base_url=base_url)
-    content = scrubber.scrub(content)
-    title = strip_tags(title)
     
     shared_story = MSharedStory.objects.filter(user_id=profile.user.pk,
                                                story_feed_id=feed_id, 

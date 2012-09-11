@@ -2,6 +2,13 @@ NEWSBLUR.Views.FolderCount = Backbone.View.extend({
     
     className: 'feed_counts_floater',
     
+    initialize: function() {
+        _.bindAll(this, 'render');
+        if (!this.options.stale) {
+            this.collection.bind('change:counts', this.render);
+        }
+    },
+
     // ==========
     // = Render =
     // ==========
@@ -47,6 +54,13 @@ NEWSBLUR.Views.FolderCount = Backbone.View.extend({
     // ===========
     // = Actions =
     // ===========
+    
+    center: function() {
+        var i_width = this.$el.width();
+        var o_width = NEWSBLUR.reader.$s.$story_taskbar.width();
+        var left = (o_width / 2.0) - (i_width / 2.0);
+        this.$el.css({'left': left});
+    },
     
     flash: function() {
         var $floater = this.$el;

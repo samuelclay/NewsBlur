@@ -975,7 +975,6 @@ background: transparent;
 .NB-story-pane-west #story_titles .NB-feedbar {
     padding-right: 4px;
 }
-
 #story_titles .NB-feedbar .feed .feed_favicon {
     margin: 2px 4px 0 2px;
     vertical-align: top;
@@ -1081,7 +1080,7 @@ background: transparent;
     background-color: #00609f;
 }
 
-#story_titles .NB-feedbar .feed .NB-feedlist-manage-icon {
+#story_titles .NB-feedbar .NB-feedlist-manage-icon {
     opacity: 0;
     display: none;
     position: absolute;
@@ -1093,12 +1092,13 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/bullet_arrow_right.png') no-repeat 3px 4px;
 }
 
-#story_titles .NB-feedbar .feed:hover .NB-feedlist-manage-icon {
+#story_titles .NB-feedbar:hover :not(.NB-no-hover) .NB-feedlist-manage-icon {
   display: block;
   opacity: 1;
 }
 
-#story_titles .NB-feedbar .feed:hover .feed_favicon {
+#story_titles .NB-feedbar:hover .feed_favicon,
+#story_titles .NB-feedbar:hover :not(.NB-no-hover) .NB-folder-icon {
   display: none;
 }
 #story_titles .NB-feedbar .folder_title .NB-feedlist-manage-icon {
@@ -1161,6 +1161,9 @@ background: transparent;
     display: block;
 }
 
+#story_titles .NB-feedbar .NB-folder {
+    padding-left: 24px;
+}
 #story_titles .NB-feedbar .NB-folder .NB-folder-title {
     padding: 1px 0 1px 22px;
     font-size: 14px;
@@ -7666,8 +7669,12 @@ form.opml_import_form input {
 /* = iPhone Page = */
 /* =============== */
 
-.NB-static-iphone {
+.NB-static-iphone .NB-ios-mockup,
+.NB-static-iphone .NB-ios-main {
     -webkit-transform : translate3d(0, 0, 0);
+}
+.NB-static-iphone .NB-splash-info {
+    z-index: 2;
 }
 .NB-static-iphone .NB-ios-main {
     margin: 24px 36px 24px 0;
@@ -7834,6 +7841,7 @@ form.opml_import_form input {
     width: 554px;
     height: 630px;
     position: relative;
+    z-index: 1;
 }
 .NB-static-iphone .NB-ios-mockup .NB-ios-iphone-skeleton {
     position: absolute;

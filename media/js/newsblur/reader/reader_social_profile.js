@@ -91,19 +91,20 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
 
         this.model.fetch_user_profile(user_id, _.bind(function(data) {
             $('.NB-modal-loading', this.$modal).removeClass('NB-active');
-            this.profile.set(data.user_profile);
             this.profiles = data.profiles;
             this.activities = data.activities;
             this.data = data;
-            this.populate_friends();
+
+            this.profile.set(data.user_profile);
+            // this.populate_friends(); # Bound to this.profile's change
             this.populate_activities(data.activities_html);
             this.load_images_and_resize();
             callback && callback();
         }, this));
     },
     
-    populate_friends: function(data) {
-        NEWSBLUR.log(["populate_friends", data, this.profile.get('followers_youknow')]);
+    populate_friends: function() {
+        // NEWSBLUR.log(["populate_friends", this.profile.get('followers_youknow')]);
         _.each(['following_youknow', 'following_everybody', 'followers_youknow', 'followers_everybody'], _.bind(function(f) {
             var user_ids = this.profile.get(f);
             var $f = $('.NB-profile-'+f.replace('_', '-'), this.$modal);
@@ -212,6 +213,14 @@ _.extend(NEWSBLUR.ReaderSocialProfile.prototype, {
             e.preventDefault();
             
             var user_id = $t.data('user_id');
+            $t.tipsy('hide').tipsy('disable');
+            self.fetch_profile(user_id);
+        });
+        $.targetIs(e, { tagSelector: '.NB-activity-follow' }, function($t, $p) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            var user_id = $t.data('userId');
             $t.tipsy('hide').tipsy('disable');
             self.fetch_profile(user_id);
         });

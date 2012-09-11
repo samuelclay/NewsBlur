@@ -9,7 +9,8 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     MAX_AUTO_ADVANCED_PAGES: 15,
         
     events: {
-        "click .NB-page-controls-next:not(.NB-loaded):not(.NB-loading)" : "next_page"
+        "click .NB-page-controls-next:not(.NB-loaded):not(.NB-loading)" : "next_page",
+        "click .NB-follow-user" : "follow_user"
     },
     
     stories: {},
@@ -192,6 +193,14 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         $loading.animate({'bottom': height}, this.next_animation_options);
         
         clearInterval(this.feed_stories_loading);
+    },
+    
+    follow_user: function() {
+        this.$(".NB-follow-user").html('Following...');
+        NEWSBLUR.assets.follow_user(NEWSBLUR.Globals.blurblog_user_id, _.bind(function() {
+            var message = 'You are now following ' + NEWSBLUR.Globals.blurblog_username;
+            this.$(".NB-follow-user").replaceWith(message);
+        }, this));
     }
     
 });

@@ -14,6 +14,7 @@ ADMINS       = (
     ('Samuel Clay', 'samuel@newsblur.com'),
 )
 
+SERVER_NAME  = 'local'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
@@ -352,6 +353,19 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
+# =========
+# = Mongo =
+# =========
+
+MONGO_DB = {
+    'host': '127.0.0.1:27017',
+    'name': 'newsblur',
+}
+MONGO_ANALYTICS_DB = {
+    'host': '127.0.0.1:27017',
+    'name': 'nbanalytics',
+}
+
 # ====================
 # = Database Routers =
 # ====================
@@ -427,9 +441,18 @@ DEBUG_TOOLBAR_CONFIG = {
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
     'host': 'db02:27017',
+    'alias': 'default',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+
+MONGO_ANALYTICS_DB_DEFAULTS = {
+    'name': 'nbanalytics',
+    'host': 'db02:27017',
+    'alias': 'nbanalytics',
+}
+MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
+MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 
 # =========
 # = Redis =

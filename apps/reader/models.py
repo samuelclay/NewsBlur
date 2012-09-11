@@ -291,8 +291,8 @@ class UserSubscription(models.Model):
         now = datetime.datetime.utcnow()
         
         # Use the latest story to get last read time.
-        latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date')
-        if latest_story:
+        latest_story = MStory.objects(story_feed_id=self.feed.pk).order_by('-story_date').only('story_date').limit(1)
+        if latest_story and len(latest_story) >= 1:
             latest_story_date = latest_story[0]['story_date']\
                                 + datetime.timedelta(seconds=1)
         else:
@@ -557,7 +557,7 @@ class MUserStory(mongo.Document):
     read_date = mongo.DateTimeField()
     story_id = mongo.StringField(unique_with=('user_id', 'feed_id'))
     story_date = mongo.DateTimeField()
-    story = mongo.ReferenceField(MStory)
+    story = mongo.ReferenceField(MStory, dbref=True)
     found_story = mongo.GenericReferenceField()
     
     meta = {

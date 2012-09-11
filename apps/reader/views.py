@@ -3,6 +3,7 @@ import time
 import boto
 import redis
 from django.shortcuts import get_object_or_404
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.db import IntegrityError
@@ -557,11 +558,14 @@ def load_single_feed(request, feed_id):
 def load_feed_page(request, feed_id):
     if not feed_id:
         raise Http404
-        
+    
+    feed = Feed.get_by_id(feed_id)
     data = MFeedPage.get_data(feed_id=feed_id)
-
-    if not data:
-        data = "Fetching feed..."
+    
+    if not data or not feed.has_page or feed.has_page_exception:
+        return render(request, 'static/404_original_page.xhtml', {}, 
+            content_type='text/html',
+            status=404)
     
     return HttpResponse(data, mimetype="text/html; charset=utf-8")
     
@@ -907,6 +911,7 @@ def add_url(request):
     url = request.POST['url']
     auto_active = is_true(request.POST.get('auto_active', 1))
     skip_fetch = is_true(request.POST.get('skip_fetch', False))
+    feed = None
     
     if not url:
         code = -1
@@ -916,8 +921,9 @@ def add_url(request):
         code, message, us = UserSubscription.add_subscription(user=request.user, feed_address=url, 
                                                              folder=folder, auto_active=auto_active,
                                                              skip_fetch=skip_fetch)
-    
-    return dict(code=code, message=message, feed=us.feed)
+        feed = us and us.feed
+        
+    return dict(code=code, message=message, feed=feed)
 
 @ajax_login_required
 @json.json_view

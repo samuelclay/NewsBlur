@@ -33,11 +33,16 @@
         'username'         : "{{ user.username|safe }}",
         'user_id'          : "{{ user.pk|safe }}",
         'blurblog_user_id' : "{{ social_profile.user_id|safe }}",
+        'blurblog_username' : "{{ social_profile.username|safe }}",
         'email'            : "{{ user.email|safe }}",
         'MEDIA_URL'        : "{{ MEDIA_URL }}",
     };
-    NEWSBLUR.user_social_profile = {{ user_social_profile_page|safe }};
-    NEWSBLUR.user_social_services = {{ user_social_services_page|safe }};
+    {% if user_social_profile_page %}
+        NEWSBLUR.user_social_profile = {{ user_social_profile_page|safe }};
+    {% endif %}
+    {% if user_social_services_page %}}
+        NEWSBLUR.user_social_services = {{ user_social_services_page|safe }};
+    {% endif %}
     NEWSBLUR.Preferences = {};
     NEWSBLUR.Models = {};
     NEWSBLUR.Collections = {};
