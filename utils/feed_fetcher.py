@@ -523,7 +523,7 @@ class Dispatcher:
                           feed.title[:30], stories_db.count(), user_subs.count(),
                           feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))        
             self.calculate_feed_scores_with_stories(user_subs, stories_db)
-        else:
+        elif self.options.get('mongodb_replication_lag'):
             logging.debug(u'   ---> [%-30s] ~BR~FYSkipping computing scores: ~SB%s seconds~SN of mongodb lag' % (
               feed.title[:30], self.options.get('mongodb_replication_lag')))
     

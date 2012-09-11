@@ -47,5 +47,8 @@ class SharePopularStories(Task):
 
     def run(self, **kwargs):
         logging.debug(" ---> Sharing popular stories...")
-        MSharedStory.share_popular_stories()
+        shared = MSharedStory.share_popular_stories(interactive=False)
+        if not shared:
+            shared = MSharedStory.share_popular_stories(interactive=False, days=2)
+            
         
