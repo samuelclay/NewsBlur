@@ -198,8 +198,10 @@
                             .addClass('NB-story-pane-'+story_anchor);
                             
             this.layout.outerLayout = this.$s.$body.layout({ 
-                closable: true,
+                closable:               true,
                 zIndex:                 1,
+                fxName:                 "slide",
+                fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 center__paneSelector:   ".right-pane",
                 west__paneSelector:     ".left-pane",
                 west__size:             this.model.preference('feed_pane_size'),
@@ -218,8 +220,8 @@
             this.layout.leftLayout = $('.left-pane').layout({
                 closable:               false,
                 resizeWhileDragging:    true,
-                fxName:                 "scale",
-                fxSettings:             { duration: 500, easing: "easeInOutQuint" },
+                fxName:                 "slide",
+                fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 north__paneSelector:    ".left-north",
                 north__size:            18,
                 north__resizeable:      false,
@@ -248,8 +250,7 @@
                 south__closable:        true,
                 south__initClosed:      true,
                 fxName:                 "slide",
-                fxSpeed:                 1000,
-                fxSettings:             { duration: 1000, easing: "easeInOutQuint" },
+                fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 enableCursorHotkey:     false
             });
             
@@ -258,7 +259,9 @@
                 center__paneSelector:   ".content-pane",
                 spacing_open:           story_anchor == 'west' ? 4 : 10,
                 resizerDragOpacity:     0.6,
-                enableCursorHotkey:     false
+                enableCursorHotkey:     false,
+                fxName:                 "slide",
+                fxSettings:             { duration: 560, easing: "easeInOutQuint" }
             };
             rightLayoutOptions[story_anchor+'__paneSelector'] = '.right-north';
             rightLayoutOptions[story_anchor+'__size'] = this.model.preference('story_titles_pane_size');
