@@ -7,7 +7,9 @@ import re
 import math
 import mongoengine as mongo
 import random
+import requests
 from collections import defaultdict
+from BeautifulSoup import BeautifulSoup
 # from mongoengine.queryset import OperationError
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -24,12 +26,17 @@ from apps.profile.models import Profile, MSentEmail
 from vendor import facebook
 from vendor import tweepy
 from vendor import pynliner
+from vendor.readability import readability
 from utils import log as logging
-from utils.feed_functions import relative_timesince
-from utils.story_functions import truncate_chars, strip_tags, linkify
 from utils import json_functions as json
+from utils.feed_functions import relative_timesince
+from utils.story_functions import truncate_chars, strip_tags, linkify, image_size
+from utils.scrubber import SelectiveScriptScrubber
 
 RECOMMENDATIONS_LIMIT = 5
+IGNORE_IMAGE_SOURCES = [
+    "http://feeds.feedburner.com"
+]
     
 class MSocialProfile(mongo.Document):
     user_id              = mongo.IntField(unique=True)
@@ -1045,6 +1052,7 @@ class MSharedStory(mongo.Document):
     story_content_z          = mongo.BinaryField()
     story_original_content   = mongo.StringField()
     story_original_content_z = mongo.BinaryField()
+    original_article_z       = mongo.BinaryField()
     story_content_type       = mongo.StringField(max_length=255)
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
@@ -1055,6 +1063,8 @@ class MSharedStory(mongo.Document):
     liking_users             = mongo.ListField(mongo.IntField())
     emailed_reshare          = mongo.BooleanField(default=False)
     emailed_replies          = mongo.ListField(mongo.ObjectIdField())
+    image_count              = mongo.IntField()
+    image_sizes              = mongo.ListField(mongo.DictField())
     
     meta = {
         'collection': 'shared_stories',
@@ -1068,7 +1078,11 @@ class MSharedStory(mongo.Document):
 
     def __unicode__(self):
         user = User.objects.get(pk=self.user_id)
-        return "%s: %s (%s)%s%s" % (user.username, self.story_title[:20], self.story_feed_id, ': ' if self.has_comments else '', self.comments[:20])
+        return "%s: %s (%s)%s%s" % (user.username, 
+                                    self.story_title[:20], 
+                                    self.story_feed_id, 
+                                    ': ' if self.has_comments else '', 
+                                    self.comments[:20])
 
     @property
     def guid_hash(self):
@@ -1084,17 +1098,22 @@ class MSharedStory(mongo.Document):
         }
         
     def save(self, *args, **kwargs):
+        scrubber = SelectiveScriptScrubber()
+
         if self.story_content:
+            self.story_content = scrubber.scrub(self.story_content)
             self.story_content_z = zlib.compress(self.story_content)
             self.story_content = None
         if self.story_original_content:
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
         
+        self.story_title = strip_tags(self.story_title)
+        
         self.comments = linkify(strip_tags(self.comments))
         for reply in self.replies:
             reply.comments = linkify(strip_tags(reply.comments))
-        
+
         self.shared_date = self.shared_date or datetime.datetime.utcnow()
         self.has_replies = bool(len(self.replies))
 
@@ -1682,8 +1701,67 @@ class MSharedStory(mongo.Document):
         logging.user(reshare_user, "~BB~FM~SBSending %s email for story re-share: %s" % (
             original_user.username,
             self.story_title[:30]))
+    
+    def calculate_image_sizes(self, force=False):
+        if not self.story_content_z:
+            return
         
+        if not force and self.image_count:
+            return self.image_sizes
+            
+        headers = {
+            'User-Agent': 'NewsBlur Image Fetcher - %s '
+                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
+                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
+                          'Safari/534.48.3)' % (
+                settings.NEWSBLUR_URL
+            ),
+        }
+        soup = BeautifulSoup(zlib.decompress(self.story_content_z))
+        image_sources = [img.get('src') for img in soup.findAll('img')]
+        image_sizes = []
+        for image_source in image_sources[:10]:
+            if any(ignore in image_source for ignore in IGNORE_IMAGE_SOURCES):
+                continue
+            r = requests.get(image_source, prefetch=False, headers=headers)
+            _, width, height = image_size(r.raw)
+            if width <= 16 or height <= 16:
+                continue
+            image_sizes.append({'src': image_source, 'size': (width, height)})
         
+        if image_sizes:
+            image_sizes = sorted(image_sizes, key=lambda i: i['size'][0] * i['size'][1],
+                                              reverse=True)
+            self.image_sizes = image_sizes
+            self.image_count = len(image_sizes)
+            self.save()
+        
+        logging.debug(" ---> ~SN~FGFetched image sizes on shared story: ~SB%s images" % self.image_count)
+        
+        return image_sizes
+    
+    def fetch_original_text(self):
+        headers = {
+            'User-Agent': 'NewsBlur Content Fetcher - %s '
+                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
+                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
+                          'Safari/534.48.3)' % (
+                settings.NEWSBLUR_URL
+            ),
+            'Connection': 'close',
+        }
+        html = requests.get(self.story_permalink, headers=headers).text
+        original_text_doc = readability.Document(html)
+        content = original_text_doc.content()
+        self.original_article_z = content and zlib.compress(content)
+        self.save()
+        
+        logging.debug(" ---> ~SN~FGFetched original text on shared story: now ~SB%s bytes~SN vs. was ~SB%s bytes" % (
+            len(unicode(content)),
+            len(zlib.decompress(self.story_content_z))
+        ))
+        
+        return original_text_doc
 
 class MSocialServices(mongo.Document):
     user_id               = mongo.IntField()
@@ -2304,16 +2382,27 @@ class MActivity(mongo.Document):
     
     @classmethod
     def new_shared_story(cls, user_id, source_user_id, story_title, comments, story_feed_id, story_id, share_date=None):
-        a, _ = cls.objects.get_or_create(user_id=user_id,
-                                         category='sharedstory',
-                                         feed_id="social:%s" % user_id,
-                                         story_feed_id=story_feed_id,
-                                         content_id=story_id,
-                                         defaults={
-                                             'with_user_id': source_user_id,
-                                             'title': story_title,
-                                             'content': comments,
-                                         })
+        data = {
+            "user_id": user_id,
+            "category": 'sharedstory',
+            "feed_id": "social:%s" % user_id,
+            "story_feed_id": story_feed_id,
+            "content_id": story_id,
+        }
+
+        try:
+            a, _ = cls.objects.get_or_create(defaults={
+                                                 'with_user_id': source_user_id,
+                                                 'title': story_title,
+                                                 'content': comments,
+                                             }, **data)
+        except cls.MultipleObjectsReturned:
+            dupes = cls.objects.filter(**data)
+            logging.debug(" ---> ~FRDeleting dupe shared story activities. %s found." % dupes.count())
+            a = dupes[0]
+            for dupe in dupes[1:]:
+                dupe.delete()
+
         if a.content != comments:
             a.content = comments
             a.save()
@@ -2328,9 +2417,9 @@ class MActivity(mongo.Document):
     def remove_shared_story(cls, user_id, story_feed_id, story_id):
         try:
             a = cls.objects.get(user_id=user_id,
-                                with_user_id=user_id,
                                 category='sharedstory',
-                                feed_id=story_feed_id,
+                                feed_id="social:%s" % user_id,
+                                story_feed_id=story_feed_id,
                                 content_id=story_id)
         except cls.DoesNotExist:
             return
