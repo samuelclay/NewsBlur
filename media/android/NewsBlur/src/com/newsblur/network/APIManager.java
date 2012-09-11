@@ -413,7 +413,11 @@ public class APIManager {
 		builder.append(typeText);
 		
 		ContentValues values = new ContentValues();
-		values.put(builder.toString(), key);
+		if (type == Classifier.FEED) {
+			values.put(builder.toString(), feedId);
+		} else {
+			values.put(builder.toString(), key);
+		}
 		values.put(APIConstants.PARAMETER_FEEDID, feedId);
 		
 		final APIClient client = new APIClient(context);
