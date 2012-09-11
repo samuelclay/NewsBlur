@@ -50,7 +50,7 @@ from vendor.timezones.utilities import localtime_for_timezone
 
 
 @never_cache
-@render_to('reader/feeds.xhtml')
+@render_to('reader/dashboard.xhtml')
 def index(request, **kwargs):
     if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app02', 'app01', 'www']:
         username = request.subdomain
@@ -64,27 +64,17 @@ def index(request, **kwargs):
                 reverse('index')))
         return load_social_page(request, user_id=user.pk, username=request.subdomain, **kwargs)
 
-    # XXX TODO: Remove me on launch.
-    # if request.method == "GET" and request.user.is_anonymous() and not request.REQUEST.get('letmein'):
-    #     return {}, 'reader/social_signup.xhtml'
-        
-    if request.method == "POST":
-        if request.POST.get('submit') == 'login':
-            login_form  = LoginForm(request.POST, prefix='login')
-            signup_form = SignupForm(prefix='signup')
-        else:
-            login_form  = LoginForm(prefix='login')
-            signup_form = SignupForm(request.POST, prefix='signup')
+    if request.user.is_anonymous():
+        return welcome(request, **kwargs)
     else:
-        login_form  = LoginForm(prefix='login')
-        signup_form = SignupForm(prefix='signup')
-    
-    user              = get_user(request)
-    authed            = request.user.is_authenticated()
-    feed_count        = UserSubscription.objects.filter(user=request.user).count() if authed else 0
-    active_count      = UserSubscription.objects.filter(user=request.user, active=True).count() if authed else 0
+        return dashboard(request, **kwargs)
+
+def dashboard(request, **kwargs):
+    user              = request.user
+    feed_count        = UserSubscription.objects.filter(user=request.user).count()
+    active_count      = UserSubscription.objects.filter(user=request.user, active=True).count()
     train_count       = UserSubscription.objects.filter(user=request.user, active=True, is_trained=False,
-                                                        feed__stories_last_month__gte=1).count() if authed else 0
+                                                        feed__stories_last_month__gte=1).count()
     recommended_feeds = RecommendedFeed.objects.filter(is_public=True,
                                                        approved_date__lte=datetime.datetime.now())\
                                                        .select_related('feed')[:2]
@@ -98,9 +88,7 @@ def index(request, **kwargs):
         del request.session['import_from_google_reader']
     
     return {
-        'user_profile'      : hasattr(user, 'profile') and user.profile,
-        'login_form'        : login_form,
-        'signup_form'       : signup_form,
+        'user_profile'      : user.profile,
         'feed_count'        : feed_count,
         'active_count'      : active_count,
         'train_count'       : active_count - train_count,
@@ -110,7 +98,32 @@ def index(request, **kwargs):
         'statistics'        : statistics,
         'social_profile'    : social_profile,
         'start_import_from_google_reader': start_import_from_google_reader,
-    }
+    }, "reader/dashboard.xhtml"
+    
+def welcome(request, **kwargs):
+    user              = get_user(request)
+    statistics        = MStatistics.all()
+    social_profile    = MSocialProfile.get_user(user.pk)
+    
+    if request.method == "POST":
+        if request.POST.get('submit') == 'login':
+            login_form  = LoginForm(request.POST, prefix='login')
+            signup_form = SignupForm(prefix='signup')
+        else:
+            login_form  = LoginForm(prefix='login')
+            signup_form = SignupForm(request.POST, prefix='signup')
+    else:
+        login_form  = LoginForm(prefix='login')
+        signup_form = SignupForm(prefix='signup')
+    
+    
+    return {
+        'user_profile'      : hasattr(user, 'profile') and user.profile,
+        'login_form'        : login_form,
+        'signup_form'       : signup_form,
+        'statistics'        : statistics,
+        'social_profile'    : social_profile,
+    }, "reader/welcome.xhtml"
 
 @never_cache
 def login(request):
