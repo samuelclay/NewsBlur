@@ -9,12 +9,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
@@ -38,18 +40,18 @@ public class ReadingItemFragment extends Fragment {
 	private LayoutInflater inflater;
 	private APIManager apiManager;
 	private ImageLoader imageLoader;
-	private String feedColor;
+	private String feedColor, feedTitle, feedFade;
 	private Classifier classifier;
-	private String feedFade;
 	private ContentResolver resolver;
 	private NewsblurWebview web;
 	private BroadcastReceiver receiver;
 
-	public static ReadingItemFragment newInstance(Story story, String feedFaviconColor, String feedFaviconFade, Classifier classifier) { 
+	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, Classifier classifier) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
 		args.putSerializable("story", story);
+		args.putString("feedTitle", feedTitle);
 		args.putString("feedColor", feedFaviconColor);
 		args.putString("feedFade", feedFaviconFade);
 		args.putSerializable("classifier", classifier);
@@ -69,6 +71,7 @@ public class ReadingItemFragment extends Fragment {
 		resolver = getActivity().getContentResolver();
 		inflater = getActivity().getLayoutInflater();
 
+		feedTitle = getArguments().getString("feedTitle");
 		feedColor = getArguments().getString("feedColor");
 		feedFade = getArguments().getString("feedFade");
 
@@ -92,6 +95,8 @@ public class ReadingItemFragment extends Fragment {
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
 		setupWebview(web);
 		setupItemMetadata(view);
+		setupShareButton(view);
+		
 		if (story.sharedUserIds.length > 0 || story.commentCount > 0 ) {
 			view.findViewById(R.id.reading_shared_container).setVisibility(View.VISIBLE);
 			setupItemCommentsAndShares(view);
@@ -99,6 +104,18 @@ public class ReadingItemFragment extends Fragment {
 
 		return view;
 	}
+
+	private void setupShareButton(View view) {
+		Button shareButton = (Button) view.findViewById(R.id.share_story_button);
+		shareButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				DialogFragment newFragment = ShareDialogFragment.newInstance(story.id, story.title, story.feedId, null);
+				newFragment.show(getFragmentManager(), "dialog");
+			}
+		});
+	}
+
 
 	public void changeTextSize(float newTextSize) {
 		if (web != null) {
@@ -123,16 +140,6 @@ public class ReadingItemFragment extends Fragment {
 			borderTwo.setBackgroundColor(Color.LTGRAY);
 		}
 
-		View sidebar = view.findViewById(R.id.row_item_sidebar);
-
-		if (story.getIntelligenceTotal() > 0) {
-			sidebar.setBackgroundResource(R.drawable.positive_count_circle);
-		} else if (story.getIntelligenceTotal() == 0) {
-			sidebar.setBackgroundResource(R.drawable.neutral_count_circle);
-		} else {
-			sidebar.setBackgroundResource(R.drawable.negative_count_circle);
-		}
-
 		TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
 		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
 		TextView itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
@@ -140,8 +147,25 @@ public class ReadingItemFragment extends Fragment {
 
 		itemDate.setText(story.shortDate);
 		itemTitle.setText(story.title);
+		
 		itemAuthors.setText(story.authors.toUpperCase());
-		itemFeed.setText(story.feedId);
+		itemAuthors.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(story.feedId, classifier, story.authors, Classifier.AUTHOR);
+				classifierFragment.show(getFragmentManager(), "dialog");		
+			}	
+		});
+		
+		itemFeed.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(story.feedId, classifier, feedTitle, Classifier.FEED);
+				classifierFragment.show(getFragmentManager(), "dialog");
+			}
+		});
+		
+		itemFeed.setText(feedTitle);
 
 		itemTitle.setOnClickListener(new OnClickListener() {
 			@Override

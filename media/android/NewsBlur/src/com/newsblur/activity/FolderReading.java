@@ -38,7 +38,7 @@ public class FolderReading extends Reading {
 		storiesToMarkAsRead = new ValueMultimap();
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), feedIds, null);
 		
-		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), stories);
+		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 		setupFolderCount();
 		setupPager();
 			

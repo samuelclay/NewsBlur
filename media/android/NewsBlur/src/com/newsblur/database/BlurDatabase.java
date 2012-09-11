@@ -20,7 +20,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
 	private final String FOLDER_SQL = "CREATE TABLE " + DatabaseConstants.FOLDER_TABLE + " (" +
 		DatabaseConstants.FOLDER_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
-		DatabaseConstants.FOLDER_NAME + TEXT + " " +  
+		DatabaseConstants.FOLDER_NAME + TEXT + " UNIQUE " +  
 		")";
 
 	private final String FEED_SQL = "CREATE TABLE " + DatabaseConstants.FEED_TABLE + " (" +

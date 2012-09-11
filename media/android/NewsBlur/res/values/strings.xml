@@ -37,15 +37,19 @@
 	<string name="description_follow_button">Follow or unfollow a user</string>
 	<string name="description_comment_user">Comment user image</string>
 	
-	<string name="reading_sharedby">SHARED BY: </string>
+	<string name="reading_shared_count" formatted="false">%s SHARES</string>
+	<string name="reading_comment_count" formatted="false">%s COMMENTS</string>
 	
 	<string name="all_stories">All stories</string>
 	<string name="all_shared_stories">All shared stories</string>
+	
+	<string name="error_saving_classifier">There was an error. Check your internet connection.</string>
 	
 	<string name="replied">Reply posted</string>
 	<string name="error_replying">There was an error replying</string>
 	<string name="share" formatted="false">\"%s\" - %s (via NewsBlur)</string>
 	<string name="shared_title">Share</string>
+	<string name="share_this">Share this</string>
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="shared">Story shared</string>
 	<string name="error_sharing">There was an problem sharing this story.</string>

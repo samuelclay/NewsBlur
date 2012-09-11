@@ -43,7 +43,7 @@ public class SocialFeedReading extends Reading {
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
 
-		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), stories);
+		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 
 		setupPager();
 

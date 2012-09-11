@@ -40,7 +40,7 @@ public class AllSharedStoriesReading extends Reading {
 		stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		setTitle(getResources().getString(R.string.all_shared_stories));
 		storiesToMarkAsRead = new ValueMultimap();
-		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), stories);
+		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 
 		setupPager();
 		

@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,6 +51,9 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	private final Context context;
 	private UserProfile user;
 	private final FragmentManager manager;
+	private Cursor commentCursor;
+	private String comment;
+	private String sharedBy;
 
 	public SetupCommentSectionTask(final Context context, final View view, final FragmentManager manager, LayoutInflater inflater, final ContentResolver resolver, final APIManager apiManager, final Story story, final ImageLoader imageLoader) {
 		this.context = context;
@@ -60,6 +64,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 		this.story = story;
 		this.imageLoader = imageLoader;
 		viewHolder = new WeakReference<View>(view);
+		comment = context.getResources().getString(R.string.reading_comment_count);
+		sharedBy = context.getResources().getString(R.string.reading_shared_count);
 		user = PrefsUtil.getUserDetails(context);
 	}
 
@@ -68,11 +74,13 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 		for (String userId : story.sharedUserIds) {
 			ProfileResponse user = apiManager.getUser(userId);
 			friendUserMap.put(userId, user.user);
+			publicUserMap.put(userId, user.user);
 		}
 
 		for (String userId : story.friendUserIds) {
 			ProfileResponse user = apiManager.getUser(userId);
 			friendUserMap.put(userId, user.user);
+			publicUserMap.put(userId, user.user);
 		}
 
 		for (String userId : story.publicUserIds) {
@@ -80,13 +88,13 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			publicUserMap.put(userId, user.user);
 		}
 
-		Cursor cursor = resolver.query(FeedProvider.COMMENTS_URI, null, null, new String[] { story.id }, null);
+		commentCursor = resolver.query(FeedProvider.COMMENTS_URI, null, null, new String[] { story.id }, null);
 
 		publicCommentViews = new ArrayList<View>();
 		friendCommentViews = new ArrayList<View>();
 
-		while (cursor.moveToNext()) {
-			final Comment comment = Comment.fromCursor(cursor);
+		while (commentCursor.moveToNext()) {
+			final Comment comment = Comment.fromCursor(commentCursor);
 			View commentView = inflater.inflate(R.layout.include_comment, null);
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
 			commentText.setText(comment.commentText);
@@ -124,7 +132,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					}
 				}
 			});
-			
 			
 			Cursor replies = resolver.query(FeedProvider.REPLIES_URI, null, null, new String[] { comment.id }, DatabaseConstants.REPLY_DATE + " DESC");
 			
@@ -169,17 +176,30 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 	protected void onPostExecute(Void result) {
 		if (viewHolder.get() != null) {
-			GridLayout grid = (GridLayout) viewHolder.get().findViewById(R.id.reading_social_shareimages);
-			GridLayout friendGrid = (GridLayout) viewHolder.get().findViewById(R.id.reading_social_friendimages);
+			GridLayout sharedGrid = (GridLayout) viewHolder.get().findViewById(R.id.reading_social_shareimages);
+			GridLayout commentGrid = (GridLayout) viewHolder.get().findViewById(R.id.reading_social_commentimages);
 
-			for (final String userId : story.publicUserIds) {
+			TextView commentText = (TextView) viewHolder.get().findViewById(R.id.comment_by);
+			commentText.setText(String.format(comment, commentCursor.getCount()));
+			
+			TextView sharesText = (TextView) viewHolder.get().findViewById(R.id.shared_by);
+			sharesText.setText(String.format(sharedBy, story.sharedUserIds.length));
+			
+			
+			for (final String userId : story.sharedUserIds) {
 				ImageView image = new ImageView(context);
 				int imageLength = UIUtils.convertDPsToPixels(context, 25);
 				image.setMaxHeight(imageLength);
 				image.setMaxWidth(imageLength);
 				GridLayout.LayoutParams imageParameters = new GridLayout.LayoutParams();
 				imageParameters.height = imageLength;
+				imageParameters.setGravity(Gravity.RIGHT);
 				imageParameters.width = imageLength;
+				imageParameters.leftMargin = UIUtils.convertDPsToPixels(context, 3);
+				imageParameters.rightMargin = UIUtils.convertDPsToPixels(context, 3);
+				imageParameters.topMargin = UIUtils.convertDPsToPixels(context, 3);
+				imageParameters.bottomMargin = UIUtils.convertDPsToPixels(context, 3);
+				
 				image.setLayoutParams(imageParameters);
 
 				imageLoader.displayImageByUid(publicUserMap.get(userId).photoUrl, image);
@@ -191,29 +211,39 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 						context.startActivity(i);
 					}
 				});
-				grid.addView(image);
+				sharedGrid.addView(image);
 			}
 
-			for (final String userId : story.friendUserIds) {
+			commentCursor.moveToFirst();
+			
+			for (int i = 0; i < commentCursor.getCount(); i++) {
+				Comment comment = Comment.fromCursor(commentCursor);
 				ImageView image = new ImageView(context);
 				int imageLength = UIUtils.convertDPsToPixels(context, 25);
 				image.setMaxHeight(imageLength);
 				image.setMaxWidth(imageLength);
 				GridLayout.LayoutParams imageParameters = new GridLayout.LayoutParams();
+				
 				imageParameters.height = imageLength;
 				imageParameters.width = imageLength;
+				imageParameters.leftMargin = UIUtils.convertDPsToPixels(context, 3);
+				imageParameters.rightMargin = UIUtils.convertDPsToPixels(context, 3);
+				imageParameters.topMargin = UIUtils.convertDPsToPixels(context, 3);
+				imageParameters.bottomMargin = UIUtils.convertDPsToPixels(context, 3);
+				
 				image.setLayoutParams(imageParameters);
 
-				imageLoader.displayImageByUid(friendUserMap.get(userId).photoUrl, image);
+				imageLoader.displayImageByUid(publicUserMap.get(comment.userId).photoUrl, image);
 				image.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View view) {
 						Intent i = new Intent(context, Profile.class);
-						i.putExtra(Profile.USER_ID, userId);
+						//i.putExtra(Profile.USER_ID, userId);
 						context.startActivity(i);
 					}
 				});
-				friendGrid.addView(image);
+				commentGrid.addView(image);
+				commentCursor.moveToNext();
 			}
 			
 			for (View comment : publicCommentViews) {

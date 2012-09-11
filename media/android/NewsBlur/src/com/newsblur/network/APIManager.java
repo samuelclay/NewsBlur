@@ -244,6 +244,9 @@ public class APIManager {
 			for (Story story : socialFeedResponse.stories) {
 				insertComments(story);
 				
+				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
+				contentResolver.insert(storyUri, story.getValues());
+				
 				Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storySocialUri, story.getValues());
 			}

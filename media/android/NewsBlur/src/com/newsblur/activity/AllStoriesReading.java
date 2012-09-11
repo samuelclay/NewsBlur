@@ -40,7 +40,7 @@ public class AllStoriesReading extends Reading {
 		stories = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
 		setTitle(getResources().getString(R.string.all_stories));
 		storiesToMarkAsRead = new ValueMultimap();
-		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), stories);
+		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 
 		setupPager();
 		
