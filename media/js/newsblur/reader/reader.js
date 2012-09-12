@@ -2,7 +2,9 @@
 
     NEWSBLUR.Reader = Backbone.Router.extend({
     
-        init: function() {
+        init: function(options) {
+            
+            var defaults = {};
             
             // ===========
             // = Globals =
@@ -11,6 +13,7 @@
             NEWSBLUR.assets = new NEWSBLUR.AssetModel();
             this.model = NEWSBLUR.assets;
             this.story_view = 'page';
+            this.options = _.extend({}, defaults, options);
             this.$s = {
                 $body: $('body'),
                 $feed_lists: $('.NB-feedlists'),
@@ -41,7 +44,8 @@
                 'bouncing_callout': false,
                 'has_unfetched_feeds': false,
                 'count_unreads_after_import_working': false,
-                'import_from_google_reader_working': false
+                'import_from_google_reader_working': false,
+                'sidebar_closed': this.options.hide_sidebar
             };
             this.locks = {};
             this.counts = {
@@ -200,14 +204,15 @@
             this.layout.outerLayout = this.$s.$body.layout({ 
                 closable:               true,
                 zIndex:                 1,
-                fxName:                 "slide",
+                fxName:                 "slideOffscreen",
                 fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 center__paneSelector:   ".right-pane",
                 west__paneSelector:     ".left-pane",
                 west__size:             this.model.preference('feed_pane_size'),
                 west__minSize:          this.constants.MIN_FEED_LIST_SIZE,
                 west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
-                spacing_open:           4,
+                west__initHidden:       this.options.hide_sidebar,
+                west__spacing_open:     this.options.hide_sidebar ? 1 : 6,
                 resizerDragOpacity:     0.6,
                 resizeWhileDragging:    true,
                 enableCursorHotkey:     false
@@ -220,7 +225,7 @@
             this.layout.leftLayout = $('.left-pane').layout({
                 closable:               false,
                 resizeWhileDragging:    true,
-                fxName:                 "slide",
+                fxName:                 "slideOffscreen",
                 fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 north__paneSelector:    ".left-north",
                 north__size:            18,
@@ -249,7 +254,7 @@
                 south__spacing_closed:  0,
                 south__closable:        true,
                 south__initClosed:      true,
-                fxName:                 "slide",
+                fxName:                 "slideOffscreen",
                 fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 enableCursorHotkey:     false
             });
@@ -260,7 +265,7 @@
                 spacing_open:           story_anchor == 'west' ? 4 : 10,
                 resizerDragOpacity:     0.6,
                 enableCursorHotkey:     false,
-                fxName:                 "slide",
+                fxName:                 "slideOffscreen",
                 fxSettings:             { duration: 560, easing: "easeInOutQuint" }
             };
             rightLayoutOptions[story_anchor+'__paneSelector'] = '.right-north';

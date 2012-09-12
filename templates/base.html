@@ -103,9 +103,11 @@
   <div class="NB-splash-info NB-splash-top">
     <a href="{% url index %}"><img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" /></a>
   </div>
-      
+  
+  {% block content %}{% endblock %}
+
   <div class="NB-splash-info NB-splash-bottom">
-    <ul class="NB-splash-links">
+    <ul class="NB-splash-links NB-inner">
       <li class="NB-splash-link NB-splash-link-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" /></a></li>
       <li class="NB-splash-link NB-splash-link-about"><a href="{% url about %}">About</a></li>
       <li class="NB-splash-link NB-splash-link-faq"><a href="{% url faq %}">FAQ</a></li>
@@ -118,8 +120,6 @@
     </ul>
   </div>
   
-  {% block content %}{% endblock %}
-
   {% block head_js %}
     {% include_javascripts "common" %}
   {% endblock head_js %}
