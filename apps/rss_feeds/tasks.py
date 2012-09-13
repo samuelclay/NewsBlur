@@ -49,7 +49,7 @@ class UpdateFeeds(Task):
         from apps.statistics.models import MStatistics
         
         mongodb_replication_lag = int(MStatistics.get('mongodb_replication_lag', 0))
-        compute_scores = bool(mongodb_replication_lag < 250)
+        compute_scores = bool(mongodb_replication_lag < 60)
         
         options = {
             'fake': bool(MStatistics.get('fake_fetch')),
@@ -96,7 +96,7 @@ class PushFeeds(Task):
         from apps.statistics.models import MStatistics
         
         mongodb_replication_lag = int(MStatistics.get('mongodb_replication_lag', 0))
-        compute_scores = bool(mongodb_replication_lag < 250)
+        compute_scores = bool(mongodb_replication_lag < 60)
         
         options = {
             'feed_xml': xml,
