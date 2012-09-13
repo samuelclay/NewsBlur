@@ -920,6 +920,8 @@ def find_friends(request):
         profiles = MSocialProfile.objects.filter(email__icontains=query)[:limit]
     if not profiles:
         profiles = MSocialProfile.objects.filter(blurblog_title__icontains=query)[:limit]
+    if not profiles:
+        profiles = MSocialProfile.objects.filter(location__icontains=query)[:limit]
     
     profiles = [p.to_json(include_following_user=request.user.pk) for p in profiles]
     profiles = sorted(profiles, key=lambda p: -1 * p['shared_stories_count'])
