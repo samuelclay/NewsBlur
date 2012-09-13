@@ -359,6 +359,8 @@
 		FF2D8CE014886ECF00057B80 /* OAServiceTicket.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8CCE14886ECF00057B80 /* OAServiceTicket.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF2D8CE114886ECF00057B80 /* OAToken.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8CD114886ECF00057B80 /* OAToken.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF2D8CE514893BC000057B80 /* MoveSiteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */; };
+		FF546DF71602930100948020 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF61602930100948020 /* Default-568h@2x.png */; };
+		FF546DF9160298E500948020 /* fleuron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FF546DF8160298E500948020 /* fleuron@2x.png */; };
 		FF5EA47F143B691000B7563D /* AddSiteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF5EA47D143B691000B7563D /* AddSiteViewController.m */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -867,6 +869,8 @@
 		FF2D8CD214886ECF00057B80 /* OAuthConsumer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAuthConsumer.h; sourceTree = "<group>"; };
 		FF2D8CE214893BBF00057B80 /* MoveSiteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoveSiteViewController.h; sourceTree = "<group>"; };
 		FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoveSiteViewController.m; sourceTree = "<group>"; };
+		FF546DF61602930100948020 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		FF546DF8160298E500948020 /* fleuron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fleuron@2x.png"; sourceTree = "<group>"; };
 		FF5EA47C143B691000B7563D /* AddSiteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddSiteViewController.h; sourceTree = "<group>"; };
 		FF5EA47D143B691000B7563D /* AddSiteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddSiteViewController.m; sourceTree = "<group>"; };
 		FF793E1713F1A9F700F282D2 /* ASIDataCompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataCompressor.h; sourceTree = "<group>"; };
@@ -1229,6 +1233,7 @@
 				43A4C40515B00A26008787B5 /* Default-Portrait@2x.png */,
 				43A4C40615B00A26008787B5 /* Default-Portrait@2x~ipad.png */,
 				43A4C40715B00A26008787B5 /* Default-Portrait~ipad.png */,
+				FF546DF61602930100948020 /* Default-568h@2x.png */,
 				43A4C40815B00A26008787B5 /* Default.png */,
 				43A4C40915B00A26008787B5 /* Default@2x.png */,
 				43A4C40A15B00A26008787B5 /* disclosure_highlighted.png */,
@@ -1239,6 +1244,7 @@
 				43A4C40F15B00A26008787B5 /* ellipses@2x.png */,
 				43A4C41015B00A26008787B5 /* feeds_background.png */,
 				43A4C41115B00A26008787B5 /* fleuron.png */,
+				FF546DF8160298E500948020 /* fleuron@2x.png */,
 				43A4C41215B00A26008787B5 /* focused_color.png */,
 				43A4C41315B00A26008787B5 /* focused_color@2x.png */,
 				43A4C41415B00A26008787B5 /* focused.png */,
@@ -1860,7 +1866,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = NewsBlur;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "NewsBlur" */;
@@ -2100,6 +2106,8 @@
 				43BC459315D9F76000205B69 /* facebook_button_on@2x.png in Resources */,
 				43BC459415D9F76000205B69 /* facebook_button.png in Resources */,
 				43BC459515D9F76000205B69 /* facebook_button@2x.png in Resources */,
+				FF546DF71602930100948020 /* Default-568h@2x.png in Resources */,
+				FF546DF9160298E500948020 /* fleuron@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
