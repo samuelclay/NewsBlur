@@ -1285,7 +1285,7 @@
                 folder_title: folder_title,
                 fake: true
             });
-            if (!folder) {
+            if (!folder || folder.get('fake')) {
                 this.active_feed = 'river:';
                 this.$s.$river_sites_header.addClass('NB-selected');
             } else {
@@ -5186,7 +5186,10 @@
                 } else if (self.flags['social_view']) {
                     self.open_social_stories(self.active_feed);
                 } else if (self.flags['river_view']) {
-                    self.open_river_stories(self.active_folder && self.active_folder.folder_view.$el, self.active_folder);
+                    self.open_river_stories(self.active_folder && 
+                                            self.active_folder.folder_view &&
+                                            self.active_folder.folder_view.$el,
+                                            self.active_folder);
                 } else {
                     self.open_feed(self.active_feed);
                 }
