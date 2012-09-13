@@ -203,7 +203,7 @@
                             
             this.layout.outerLayout = this.$s.$body.layout({ 
                 closable:               true,
-                zIndex:                 1,
+                zIndex:                 2,
                 fxName:                 "slideOffscreen",
                 fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 center__paneSelector:   ".right-pane",

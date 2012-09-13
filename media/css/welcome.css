@@ -92,17 +92,20 @@ body.NB-welcome {
     width: 500px;
     height: 327px;
     position: absolute;
-    bottom: -20px;
+    bottom: -350px;
     right: 0;
     border-radius: 2px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
+.NB-welcome-header-image.NB-active img.NB-1 {
+    bottom: 0px;
+}
 .NB-welcome-header-image img.NB-2 {
     opacity: 0;
     height: 325px;
     position: absolute;
-    bottom: -10px;
+    bottom: -300px;
     right: 0;
     border-radius: 2px;
     margin-right: 100px;
@@ -113,7 +116,7 @@ body.NB-welcome {
     opacity: 0;
     height: 300px;
     position: absolute;
-    bottom: -10px;
+    bottom: -300px;
     right: 0;
     border-radius: 2px;
     margin-right: 140px;
@@ -122,10 +125,10 @@ body.NB-welcome {
 }
 .NB-welcome-header-captions {
     text-align: center;
-    margin: 36px auto 0;
+    margin: 0 auto;
     position: absolute;
     top: 0;
-    left: 470px;
+    left: 420px;
     overflow: hidden;
     text-shadow: 0 1px 0 rgba(35,35,35,0.35);
     padding-left: 64px;
@@ -136,8 +139,11 @@ body.NB-welcome {
     float: left;
     color: #FDC85B;
     cursor: pointer;
-    padding: 0 12px;
+    padding: 36px 12px 12px;
     text-transform: uppercase;
+}
+.NB-welcome-header-caption.NB-welcome-header-caption-signin {
+    color: #A5E665;
 }
 .NB-welcome-header-caption span {
     padding: 2px 8px;
@@ -147,6 +153,12 @@ body.NB-welcome {
     -moz-transition: all 1s ease-in-out;
     -o-transition: all 1s ease-in-out;
     -ms-transition: all 1s ease-in-out;
+}
+.NB-welcome-header-caption:hover span {
+    -webkit-transition: all .25s ease-in-out;
+    -moz-transition: all .25s ease-in-out;
+    -o-transition: all .25s ease-in-out;
+    -ms-transition: all .25s ease-in-out;
 }
 .NB-welcome-header-caption.NB-active span {
     color: #FAA518;
@@ -207,12 +219,217 @@ body.NB-welcome {
     color: white;
 }
 
+/* ================== */
+/* = Login / Signup = */
+/* ================== */
+
+.NB-welcome-header-account {
+    position: absolute;
+    bottom: -350px;
+    right: 12px;
+    width: 400px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: rgba(245, 245, 245, 0.4);
+    padding: 36px 36px 12px;
+}
+.NB-welcome-header-account.NB-active {
+    bottom: 0;
+}
+.NB-welcome-header-account .NB-module-header-login {
+    width: 142px;
+    margin: 0 50px 0 0;
+    padding: 0 4px;
+    float: left;
+    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.3);
+}
+
+.NB-welcome-header-account .NB-module-header-signup {
+    width: 142px;
+    margin: 0;
+    padding: 0 4px;
+    float: left;
+    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.3);
+}
+
+.NB-welcome-header-account .NB-login {
+    padding: 0 4px;
+    margin: 12px 50px 0 12px;
+    width: 146px;
+    float: left;
+}
+
+.NB-welcome-header-account .NB-signup {
+    float: left;
+    width: 146px;
+    padding: 0 4px;
+    margin: 12px 0 0;
+    height: 206px;
+    overflow: hidden;
+}
+
+.NB-welcome-header-account .NB-import-signup {
+    float: left;
+    width: 146px;
+    padding: 0 0 64px 0;
+    margin: 0 24px 0 12px;
+    height: 206px;
+    overflow: hidden;
+}
+
+.NB-welcome-header-account .NB-import-signup-text {
+    text-align: center;
+    width: 190px;
+}
+.NB-welcome-header-account .NB-import-signup-text h3 {
+    margin-top: 48px;
+    color: #20843D;
+}
+.NB-welcome-header-account .NB-import-signup-text p {
+    color: #636363;
+}
+
+.NB-welcome-header-account .NB-signup-orline {
+    margin: 30px auto 24px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 10px;
+    color: #F9F9F9;
+    font-weight: bold;
+}
+
+.NB-welcome-header-account .NB-signup-orline-reduced {
+    margin: 0px auto 0px;
+}
+.NB-welcome-header-account .NB-signup-orline .NB-signup-orline-or {
+    padding: 0 4px;
+}
+
+.NB-welcome-header-account .NB-signup-optional {
+    float: right;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: bold;
+    font-size: 9px;
+    line-height: 17px;
+}
+.NB-welcome-header-account .NB-signup-hidden {
+    display: none;
+}
+
+.NB-welcome-header-account .NB-import-signup {
+    height: auto;
+}
+
+.NB-welcome-header-account .NB-signup .NB-signup-google {
+    margin: 12px auto;
+    display: block;
+    font-size: 12px;
+    text-align: center;
+}
+
+.NB-welcome-header-account input[type=text],
+.NB-welcome-header-account input[type=password] {
+    border: 1px solid rgba(35, 35, 35, 0.5);
+    display:block;
+    font-size:13px;
+    margin:0 0 12px;
+    padding:5px;
+    width:134px;
+}
+
+.NB-welcome-header-account input[type=text]:focus,
+.NB-welcome-header-account input[type=password]:focus {
+    border-color: #739BBE;
+}
+
+.NB-welcome-header-account input[type=submit] {
+    outline: none;
+    width: 146px; /* 174=input-width + 5*2=padding + 2=border */
+    margin: 4px 5px 0 0;
+    padding: 4px 10px 5px;
+    text-shadow: 0 -1px 0 rgba(35, 35, 35, 0.4);
+    font-weight: bold;
+    font-size: 12px;
+    border: 1px solid rgba(35, 35, 35, 0.5);
+    color: white;
+    cursor: pointer;
+}
+
+.NB-welcome-header-account input[type=hidden] {
+    display: none;
+}
+
+.NB-welcome-header-account label,
+.NB-welcome-header-account .NB-account-label {
+    margin: 0;
+    color: #FFFFB0;
+    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.3);
+    font-size: 12px;
+    display: block;
+    text-transform: uppercase;
+}
+
+.NB-welcome-header-account .NB-account-label {
+    font-weight: bold;
+}
+
+.NB-welcome-header-account .NB-account-text {
+    font-size: 13px;
+    color: #90A0B0;
+    margin-bottom: 30px;
+}
+
+.NB-welcome-header-account .NB-account-text a {
+    text-decoration: none;
+    color: #3E4773;
+}
+
+.NB-welcome-header-account .NB-account-text a:hover {
+    color: #0E1763;
+}
+
+.NB-welcome-header-account .errorlist {
+    list-style: none;
+    font-size: 12px;
+    color: #AF4D18;
+    font-weight: bold;
+    padding: 0;
+}
+
+
+
 /* ============ */
 /* = Features = */
 /* ============ */
 
 .NB-welcome-features {
-    margin: 36px 0;
+    margin: 48px 0;
+    overflow: hidden;
+}
+
+.NB-welcome-features .NB-feature {
+    float: left;
+    width: 204px;
+    margin: 0 36px 0 0;
+    text-align: center;
+}
+
+.NB-welcome-features img {
+    width: 200px;
+    height: 175px;
+    box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
+}
+.NB-welcome-features .NB-feature-caption {
+    font-weight: bold;
+    font-size: 24px;
+    margin: 8px 0 0;
+}
+.NB-welcome-features .NB-feature-text {
+    color: #808080;
+    margin: 8px 0 0;
+    font-size: 15px;
+    line-height: 22px;
 }
 
 /* ============ */
@@ -221,4 +438,30 @@ body.NB-welcome {
 
 .NB-welcome-activity {
     overflow: hidden;
+    clear: both;
+    margin: 48px 0;
+    padding: 36px 0;
+    background-color: #F5F5F5;
+}
+.NB-welcome-activity .NB-module {
+    width: 50%;
+    float: left;
+}
+.NB-welcome-activity .NB-module .NB-module-header {
+    display: none;
+}
+.NB-welcome-activity .NB-module .NB-module-stats-counts {
+    overflow: hidden;
+}
+.NB-welcome-activity .NB-module-stats .NB-module-content-header-hour {
+    margin-top: 36px;
+}
+.NB-welcome-activity .NB-module-stats-count-graph {
+    margin-left: 4px;
+}
+.NB-welcome-activity .NB-graph-bar {
+    width: 4px;
+}
+.NB-welcome-activity .NB-graph-value {
+    width: 4px;
 }

@@ -22,15 +22,16 @@
 <div class="NB-welcome-header">
     <div class="NB-inner">
         <div class="NB-welcome-header-logo">
-            <img src="{{ MEDIA_URL }}img/logo_newsblur.png" class="NB-module-logo-image" style="width: 312px; height: 55px;" />
+            <a href="/"><img src="{{ MEDIA_URL }}img/logo_newsblur.png" class="NB-module-logo-image" style="width: 312px; height: 55px;" /></a>
         </div>
         <div class="NB-welcome-header-tagline">
             Focus on the best stories from<br><b>your friends</b> and <b>favorite blogs</b>
         </div>
         <div class="NB-welcome-header-captions">
-            <div class="NB-welcome-header-caption NB-1 NB-active"><span>Web</span></div>
-            <div class="NB-welcome-header-caption NB-2"><span>iPad &amp; iPhone</span></div>
-            <div class="NB-welcome-header-caption NB-3"><span>Android</span></div>
+            <div class="NB-welcome-header-caption NB-1 {% if not post_request %}NB-active{% endif %}" data-ss="1"><span>Web</span></div>
+            <div class="NB-welcome-header-caption NB-2" data-ss="2"><span>iPad &amp; iPhone</span></div>
+            <div class="NB-welcome-header-caption NB-3" data-ss="3"><span>Android</span></div>
+            <div class="NB-welcome-header-caption NB-welcome-header-caption-signin {% if post_request %}NB-active{% endif %}"><span>Sign in</span></div>
         </div>
         <div class="NB-welcome-header-actions">
             <div class="NB-welcome-header-action">
@@ -42,81 +43,79 @@
             </div>
             <div class="NB-welcome-header-action">
                 <div class="NB-welcome-header-action-subtext">Then</div>
-                <div class="NB-button NB-button-tryout">
+                <div class="NB-button NB-button-login">
                     <img src="{{ MEDIA_URL }}img/reader/32-Power.png" class="NB-welcome-header-action-bolt">
                     <img src="{{ MEDIA_URL }}img/reader/32-Arrow-Right.png" class="NB-welcome-header-action-arrow">
                     Sign up or Log in
                 </div>
             </div>
         </div>
-        <div class="NB-welcome-header-image">
+        <div class="NB-welcome-header-image {% if not post_request %}NB-active{% endif %}">
             <img src="{{ MEDIA_URL }}img/welcome/header1.jpg" class="NB-1">
             <img src="{{ MEDIA_URL }}img/welcome/header-ios.png" class="NB-2">
             <img src="{{ MEDIA_URL }}img/welcome/header-android.png" class="NB-3">
         </div>
 
-        <div class="NB-account">
-            <div class="NB-module NB-module-login">
-                <h5>
-                    <div class="NB-module-header-login">Log in</div>
-                    <div class="NB-module-header-signup">Sign up</div>
-                </h5>
-                <div class="NB-login">
-                    {% if login_form.errors %}
-                        {% for field, error in login_form.errors.items %}
-                            {{ error|safe }}
-                        {% endfor %}
-                    {% endif %}
-                    <form method="post" action="{% url login %}">
-                        <div>
-                            {{ login_form.username.label_tag }}
-                            {{ login_form.username }}
+        <div class="NB-welcome-header-account {% if post_request %}NB-active{% endif %}">
+            <div class="NB-account-header">
+                <div class="NB-module-header-login">Log in</div>
+                <div class="NB-module-header-signup">Sign up</div>
+            </div>
+            <div class="NB-login">
+                <form method="post" action="{% url login %}">
+                    <div>
+                        {{ login_form.username.label_tag }}
+                        {{ login_form.username }}
+                    </div>
+                    <div>
+                        <div class="NB-signup-optional">
+                            {% if login_form.errors and login_form.errors|length %}
+                                <a href="mailto:password@newsblur.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot?</a>
+                            {% else %}
+                                Optional
+                            {% endif %}
                         </div>
-                        <div>
-                            <div class="NB-signup-optional">
-                                {% if login_form.errors %}
-                                    {% for field, error in login_form.errors.items %}
-                                        <a href="mailto:password@newsblur.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot?</a>
-                                    {% endfor %}
-                                {% else %}
-                                    Optional
-                                {% endif %}
-                            </div>
-                            {{ login_form.password.label_tag }}
-                            {{ login_form.password }}
-                        </div>
-                        <input name="submit" type="submit" value="log in" />
-                        <input type="hidden" name="next" value="/" />
-                    </form>
-                </div>
-                
-                <div class="NB-signup">
-                    <form method="post" action="{% url signup %}">
-                        <div>
-                            {{ signup_form.username.label_tag }}
-                            {{ signup_form.username }}
-                        </div>
-                        <div class="NB-signup-hidden">
-                            <div class="NB-signup-optional">Optional</div>
-                            {{ signup_form.password.label_tag }}
-                            {{ signup_form.password }}
-                        </div>
-                        <div class="NB-signup-hidden">
-                            {{ signup_form.email.label_tag }}
-                            {{ signup_form.email }}
-                        </div>
+                        {{ login_form.password.label_tag }}
+                        {{ login_form.password }}
+                    </div>
+                    <input name="submit" type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="log in" />
+                    <input type="hidden" name="next" value="/" />
+                </form>
+                {% if login_form.errors %}
+                    {% for field, error in login_form.errors.items %}
+                        {{ error|safe }}
+                    {% endfor %}
+                {% else %}
+                    <img src="{{ MEDIA_URL }}img/welcome/fleuron.png" style="width: 36px; height: 36px; opacity: .35; margin: 24px auto; display: block">
+                {% endif %}
+            </div>
+            
+            <div class="NB-signup">
+                <form method="post" action="{% url signup %}">
+                    <div>
+                        {{ signup_form.username.label_tag }}
+                        {{ signup_form.username }}
+                    </div>
+                    <div class="NB-signup-hidden">
+                        <div class="NB-signup-optional">Optional</div>
+                        {{ signup_form.password.label_tag }}
+                        {{ signup_form.password }}
+                    </div>
+                    <div class="NB-signup-hidden">
+                        {{ signup_form.email.label_tag }}
+                        {{ signup_form.email }}
+                    </div>
 
-                        <input name="submit" type="submit" value="create account" />
-                        <input type="hidden" name="next" value="/" />
-                    </form>
-                    {% if signup_form.errors %}
-                        {% for field, error in signup_form.errors.items %}
-                            {{ error|safe }}
-                        {% endfor %}
-                    {% endif %}
-                    <div class="NB-signup-orline {% if signup_form.errors %}NB-signup-orline-reduced{% endif %}">&mdash; <span class="NB-signup-orline-or">or</span> &mdash;</div>
-                    <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from <img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
-                </div>
+                    <input name="submit" type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="create account" />
+                    <input type="hidden" name="next" value="/" />
+                </form>
+                {% if signup_form.errors %}
+                    {% for field, error in signup_form.errors.items %}
+                        {{ error|safe }}
+                    {% endfor %}
+                {% endif %}
+                <div class="NB-signup-orline {% if signup_form.errors %}NB-signup-orline-reduced{% endif %}">&mdash; <span class="NB-signup-orline-or">or</span> &mdash;</div>
+                <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from Google Reader</a>
             </div>
         </div>
 
@@ -125,7 +124,26 @@
 
 <div class="NB-welcome-features">
     <div class="NB-inner">
-        
+        <div class="NB-feature">
+            <img src="{{ MEDIA_URL }}img/welcome/feature_1.png">
+            <div class="NB-feature-caption">Real-time RSS</div>
+            <div class="NB-feature-text">Stories are pushed directly to you, so you can read news as it comes in.</div>
+        </div>
+        <div class="NB-feature">
+            <img src="{{ MEDIA_URL }}img/welcome/feature_2.png">
+            <div class="NB-feature-caption">Original site</div>
+            <div class="NB-feature-text">Read the content in context, the way it was meant to be seen.</div>
+        </div>
+        <div class="NB-feature">
+            <img src="{{ MEDIA_URL }}img/welcome/feature_3.png">
+            <div class="NB-feature-caption">Shared stories</div>
+            <div class="NB-feature-text">Reading news is better with friends. Shares stories on your blurblog.</div>
+        </div>
+        <div class="NB-feature">
+            <img src="{{ MEDIA_URL }}img/welcome/feature_4.png">
+            <div class="NB-feature-caption">Training</div>
+            <div class="NB-feature-text">Hide the stories you don't like and highlight the stories you do.</div>
+        </div>
     </div>    
 </div>
 

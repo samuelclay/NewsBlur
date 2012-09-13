@@ -4469,6 +4469,9 @@ form.opml_import_form input {
 .NB-account .NB-module.NB-module-account .NB-module-account-stats {
     min-height: 0;
 }
+.NB-account .NB-module.NB-module-account .NB-module-stats-counts {
+    overflow: hidden;
+}
 .NB-account .NB-module.NB-module-account .NB-module-stats-count {
     margin: 0;
 }

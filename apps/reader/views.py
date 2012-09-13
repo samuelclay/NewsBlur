@@ -106,7 +106,7 @@ def welcome(request, **kwargs):
     social_profile    = MSocialProfile.get_user(user.pk)
     
     if request.method == "POST":
-        if request.POST.get('submit') == 'login':
+        if request.POST.get('submit').startswith('log'):
             login_form  = LoginForm(request.POST, prefix='login')
             signup_form = SignupForm(prefix='signup')
         else:
@@ -123,6 +123,7 @@ def welcome(request, **kwargs):
         'signup_form'       : signup_form,
         'statistics'        : statistics,
         'social_profile'    : social_profile,
+        'post_request'      : request.method == 'POST',
     }, "reader/welcome.xhtml"
 
 @never_cache
