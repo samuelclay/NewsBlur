@@ -115,7 +115,7 @@
                     {% endfor %}
                 {% endif %}
                 <div class="NB-signup-orline {% if signup_form.errors %}NB-signup-orline-reduced{% endif %}">&mdash; <span class="NB-signup-orline-or">or</span> &mdash;</div>
-                <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from Google Reader</a>
+                <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/welcome/Google_Reader_logo.png" width="16" height="16" style="vertical-align: bottom;"> Google Reader</a>
             </div>
         </div>
 

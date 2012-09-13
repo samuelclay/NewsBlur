@@ -423,11 +423,11 @@ body.NB-welcome {
 .NB-welcome-features .NB-feature-caption {
     font-weight: bold;
     font-size: 24px;
-    margin: 8px 0 0;
+    margin: 24px 0 0;
 }
 .NB-welcome-features .NB-feature-text {
     color: #808080;
-    margin: 8px 0 0;
+    margin: 24px 0 0;
     font-size: 15px;
     line-height: 22px;
 }
