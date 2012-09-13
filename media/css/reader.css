@@ -5135,6 +5135,9 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-folder-subscribe .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/add.png') no-repeat  0 1px;    
 }
+.NB-menu-manage .NB-menu-manage-folder-subfolder .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/silk/folder.png') no-repeat  0 1px;    
+}
 .NB-menu-manage .NB-menu-manage-social-profile .NB-menu-manage-image {
     background: transparent url('/media/embed/icons/silk/user_orange.png') no-repeat  0 1px;
 }
