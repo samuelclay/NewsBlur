@@ -119,7 +119,7 @@ body.NB-welcome {
     height: 300px;
     position: absolute;
     bottom: -300px;
-    right: 0;
+    right: -24px;
     border-radius: 2px;
     margin-right: 140px;
     border-top-left-radius: 4px;
