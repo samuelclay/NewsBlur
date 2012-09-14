@@ -38,6 +38,8 @@ public class APIConstants {
 	public static final String PARAMETER_PASSWORD = "password";
 	public static final String PARAMETER_USER_ID = "user_id";
 	public static final String PARAMETER_USERNAME = "username";
+	public static final String PARAMETER_EMAIL = "email";
+	
 	public static final String PARAMETER_USERID = "user_id";
 	public static final String PARAMETER_STORYID = "story_id";
 	public static final String PARAMETER_FEEDS_STORIES = "feeds_stories";
@@ -56,9 +58,9 @@ public class APIConstants {
 	public static final String PARAMETER_PAGE_NUMBER = "page";
 	
 	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
-	
-	
-	
-	
+	public static final String URL_CATEGORIES = "http://www.newsblur.com/categories/" ;
+	public static final String PARAMETER_CATEGORY = "category";
+	public static final String URL_ADD_CATEGORIES = "http://www.newsblur.com/categories/subscribe";
+	public static final String URL_AUTOFOLLOW_PREF = "http://www.newsblur.com/profile/set_preference";
 	
 }

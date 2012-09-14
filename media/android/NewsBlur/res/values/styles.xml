@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="edittext" parent="@android:style/Widget.EditText">
         <item name="android:focusable">true</item>
@@ -7,8 +7,8 @@
         <item name="android:clickable">true</item>
         <item name="android:background">@drawable/edittext_newsblur</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textColorHint">@color/hintgray</item>
+        <item name="android:textColor">@color/darkgray</item>
+        <item name="android:textColorHint">@color/lightorange</item>
     </style>
 
     <style name="greenButton" parent="@android:style/Widget.Button">

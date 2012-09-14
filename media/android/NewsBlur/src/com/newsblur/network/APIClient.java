@@ -47,7 +47,7 @@ public class APIClient {
 			}
 			return extractResponse(urlFeeds, connection);
 		} catch (IOException e) {
-			Log.d(TAG, "Error opening GET connection to " + urlString, e.getCause());
+			Log.e(TAG, "Error opening GET connection to " + urlString, e.getCause());
 			return new APIResponse();
 		} finally {
 			connection.disconnect();
@@ -82,7 +82,7 @@ public class APIClient {
 			}
 			return extractResponse(urlFeeds, connection);
 		} catch (IOException e) {
-			Log.d(TAG, "Error opening GET connection to " + urlString, e.getCause());
+			Log.e(TAG, "Error opening GET connection to " + urlString, e.getCause());
 			return new APIResponse();
 		} finally {
 			connection.disconnect();
@@ -109,7 +109,7 @@ public class APIClient {
 			}
 			return extractResponse(urlFeeds, connection);
 		} catch (IOException e) {
-			Log.d(TAG, "Error opening GET connection to " + urlString, e.getCause());
+			Log.e(TAG, "Error opening GET connection to " + urlString, e.getCause());
 			return new APIResponse();
 		} finally {
 			connection.disconnect();
@@ -149,7 +149,7 @@ public class APIClient {
 			parameters.add(builder.toString());
 		}
 		final String parameterString = TextUtils.join("&", parameters);
-		
+		Log.d(TAG, "Parameter string: " + parameterString);
 		try {
 			final URL url = new URL(urlString);
 			connection = (HttpURLConnection) url.openConnection();
@@ -198,7 +198,7 @@ public class APIClient {
 			connection.setDoOutput(true);
 			connection.setRequestMethod("POST");
 			String parameterString = jsonIfy ? valueMap.getJsonString() : valueMap.getParameterString();
-			
+			Log.d(TAG, "Parameter string: " + parameterString);
 			connection.setFixedLengthStreamingMode(parameterString.getBytes().length);
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			

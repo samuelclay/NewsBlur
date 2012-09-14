@@ -10,10 +10,10 @@ import android.util.Log;
 import android.view.Window;
 
 import com.newsblur.R;
-import com.newsblur.fragment.LoginFragment;
+import com.newsblur.fragment.LoginRegisterFragment;
 import com.newsblur.util.PrefConstants;
 
-public class Login extends FragmentActivity implements LoginFragment.LoginFragmentInterface {
+public class Login extends FragmentActivity {
 	
 	private FragmentManager fragmentManager;
 	private final static String currentTag = "currentFragment";
@@ -30,29 +30,12 @@ public class Login extends FragmentActivity implements LoginFragment.LoginFragme
 		if (fragmentManager.findFragmentByTag(currentTag) == null) {
 			Log.d(TAG, "Adding current new fragment");
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
-			LoginFragment login = new LoginFragment();
+			LoginRegisterFragment login = new LoginRegisterFragment();
 			transaction.add(R.id.login_container, login, currentTag);
 			transaction.commit();
 		}
 	}
 
-	@Override
-	public void loginSuccessful() {
-		Log.d(TAG, "Login successful");
-	}
-	
-	@Override
-	public void syncSuccessful() {
-		Log.d(TAG, "Sync successful");
-		final Intent mainIntent = new Intent(this, Main.class);
-		startActivity(mainIntent);
-	}
-
-	@Override
-	public void loginUnsuccessful() {
-		Log.d(TAG, "Login unsuccessful");
-	}
-	
 	private void preferenceCheck() {
 		final SharedPreferences preferences = getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		if (preferences.getString(PrefConstants.PREF_COOKIE, null) != null) {

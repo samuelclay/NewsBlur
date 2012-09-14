@@ -20,7 +20,6 @@
         
         <activity
             android:name=".activity.Login"
-            android:noHistory="true"
             android:label="@string/newsblur">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,10 +27,43 @@
             </intent-filter>
         </activity>
         
+            
+        <activity
+            android:name=".activity.LoginProgress"
+            android:label="@string/newsblur" />
+       	
+		<activity
+            android:name=".activity.RegisterProgress"
+            android:label="@string/get_started" />
+		
+		<activity
+            android:name=".activity.AddSites"
+            android:label="@string/add_sites" />
+		
+		<activity
+            android:name=".activity.AddFollow"
+            android:label="@string/add_follow" />
+		
+		<activity
+            android:name=".activity.AddTwitter"
+            android:label="@string/add_twitter" />
+		
+			<activity
+            android:name=".activity.AddFacebook"
+            android:label="@string/add_facebook" />
+		
+		<activity
+            android:name=".activity.AddSocial"
+            android:label="@string/add_friends" />
+		
+		<activity
+            android:name=".activity.ImportFeeds"
+            android:label="@string/newsblur" />
+        
         <activity
             android:name=".activity.Main"
-            android:label="@string/newsblur">
-       	</activity>
+            android:label="@string/newsblur" />
+       	
         
         <activity
             android:name=".activity.Profile"

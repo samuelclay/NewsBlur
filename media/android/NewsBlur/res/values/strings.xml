@@ -5,6 +5,7 @@
     
     <string name="login_username_hint">username</string>
     <string name="login_password_hint">password</string>
+    <string name="login_registration_email_hint">email address</string>
     <string name="login_button_login">Log In</string>
     <string name="login_button_signup">Sign Up</string>
     <string name="login_message_error">There was problem connecting to NewsBlur. Check your internet connection.</string>
@@ -101,5 +102,24 @@
     
     <string name="feed_deleted">Feed deleted</string>
     <string name="error_deleting_feed">There was an error deleting the feed.</string>
+    <string name="login_registration_register">Register</string>
+    <string name="login_google_reader">Google Reader</string>
+    <string name="login_add_sites_from_google_reader">Import your sites from Google Reader</string>
+    <string name="add_sites">Add some sites</string>
+    <string name="get_started">Let\'s get started</string>
+    <string name="add_friends">Add your friends</string>
+    <string name="connect_with_your_friends">Connect with your friends to easily follow the stories that matter to them</string>
+    <string name="twitter">Twitter</string>
+    <string name="facebook">Facebook</string>
+    <string name="auto_follow_friends">Auto-follow friends</string>
+    <string name="faster_faster">Faster! Faster! Until the thrill of speed overcomes the fear of death!</string>
+    <string name="add_twitter">Add Twitter friends</string>
+    <string name="add_facebook">Add Facebook friends</string>
+    <string name="need_to_login"><u>I need to log in!</u></string>
+    <string name="need_to_register"><u>I need to register</u></string>
+    <string name="wonderful_things">Wonderful things are happening at Newsblur. Add our blog for the latest news.</string>
+    <string name="addfollow_add_newsblur">Follow NewsBlur</string>
+    <string name="addfollow_add_popular">Follow Popular</string>
+    <string name="add_follow">All Done!</string>
     
 </resources>

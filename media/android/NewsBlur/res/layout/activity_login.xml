@@ -2,36 +2,27 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/activity_background"
-    android:gravity="center" >
+    android:background="@color/item_background" >
 
     <ImageView
         android:id="@+id/login_logo"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginRight="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
         android:contentDescription="@string/description_login_logo"
-        android:src="@drawable/logo" />
+        android:src="@drawable/logo_newsblur_blur" />
 
-    <TextView
-        android:id="@+id/login_logo_title"
-        android:layout_width="wrap_content"
-        android:layout_height="80dp"
-        android:layout_alignBaseline="@+id/login_logo"
-        android:layout_marginTop="40dp"
-        android:layout_toRightOf="@+id/login_logo"
-        android:gravity="center"
-        android:text="@string/newsblur"
-        android:textColor="@color/white"
-        android:textSize="40dp"
-        android:textStyle="bold" />
-
+    
+    
     <FrameLayout
         android:id="@+id/login_container"
-        android:layout_width="280dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@+id/login_logo"
-        android:layout_marginTop="50dp" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:padding="30dp" />
 
 </RelativeLayout>

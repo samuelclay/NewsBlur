@@ -21,6 +21,9 @@ public class PrefConstants {
 	public final static String USER_FOLLOWING_COUNT = "following_count";
 	public final static String USER_SUBSCRIBER_COUNT = "subscribers_count";
 	public final static String USER_SHARED_STORIES_COUNT = "shared_stories_count";
+	
 	public static final String PREFERENCE_TEXT_SIZE = "default_reading_text_size";
+	
+	public static final String PREFERENCE_REGISTRATION_STATE = "registration_stage";
 	
 }

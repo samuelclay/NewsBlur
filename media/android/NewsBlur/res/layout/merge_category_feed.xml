@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" 
+    android:orientation="horizontal"
+    android:paddingLeft="2dp"
+    android:gravity="center_vertical"
+    android:paddingRight="2dp">
+    
+    <View 
+        android:layout_width="2dp" 
+        android:layout_height="match_parent" 
+        android:id="@+id/login_category_feed_leftbar" />
+    
+    <ImageView
+        android:layout_width="20dp" 
+        android:layout_height="20dp"
+        android:id="@+id/login_category_feed_icon" 
+        android:layout_marginLeft="5dp"
+        android:padding="2dp"
+        android:layout_marginRight="5dp" />
+    
+    <TextView 
+        android:id="@+id/login_category_feed_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="4dp"
+    	android:paddingBottom="4dp"
+    	android:textSize="14sp"
+        android:textColor="@color/darkgray"
+        />
+    
+    <View 
+        android:layout_width="2dp" 
+        android:layout_height="match_parent"
+        android:layout_gravity="right" 
+        android:id="@+id/login_category_feed_rightbar" />
+
+</LinearLayout>

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.domain.Feed;
-import com.newsblur.domain.FolderStructure;
 import com.newsblur.domain.SocialFeed;
 
 public class FeedFolderResponse {

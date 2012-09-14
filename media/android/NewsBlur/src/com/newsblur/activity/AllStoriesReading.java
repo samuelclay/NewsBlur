@@ -25,9 +25,7 @@ public class AllStoriesReading extends Reading {
 	private int neutralCount;
 	private int positiveCount;
 	private int currentPage;
-	private boolean requestedPage;
 	private ArrayList<String> feedIds;
-	private ArrayList<ContentProviderOperation> storiesToMarkAsReadInternally = new ArrayList<ContentProviderOperation>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
@@ -101,7 +99,6 @@ public class AllStoriesReading extends Reading {
 
 			if (loadMore) {
 				currentPage += 1;
-				requestedPage = true;
 				triggerRefresh(currentPage);
 			} else {
 				Log.d(TAG, "No need");

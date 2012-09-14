@@ -11,9 +11,10 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,6 +29,7 @@ import com.newsblur.domain.Reply;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.ValueMultimap;
+import com.newsblur.network.domain.CategoriesResponse;
 import com.newsblur.network.domain.FeedFolderResponse;
 import com.newsblur.network.domain.FeedRefreshResponse;
 import com.newsblur.network.domain.LoginResponse;
@@ -65,6 +67,24 @@ public class APIManager {
 		} else {
 			return new LoginResponse();
 		}		
+	}
+	
+	public boolean setAutoFollow(boolean autofollow) {
+		final APIClient client = new APIClient(context);
+		ContentValues values = new ContentValues();
+		values.put("autofollow_friends", autofollow ? "true" : "false");
+		final APIResponse response = client.post(APIConstants.URL_AUTOFOLLOW_PREF, values);
+		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
+	}
+	
+	public boolean addCategories(ArrayList<String> categories) {
+		final APIClient client = new APIClient(context);
+		final ValueMultimap values = new ValueMultimap();
+		for (String category : categories) {
+			values.put(APIConstants.PARAMETER_CATEGORY, category);
+		}
+		final APIResponse response = client.post(APIConstants.URL_ADD_CATEGORIES, values, false);
+		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);
 	}
 
 	public boolean markFeedAsRead(final String[] feedIds) {
@@ -107,16 +127,34 @@ public class APIManager {
 			return false;
 		}
 	}
+	
+	public CategoriesResponse getCategories() {
+		final APIClient client = new APIClient(context);
+		final APIResponse response = client.get(APIConstants.URL_CATEGORIES);
+		if (!response.isOffline && response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			return gson.fromJson(response.responseString, CategoriesResponse.class);
+		} else {
+			return null;
+		}
+	}
 
-	public LoginResponse signup(final String username, final String password) {
+	public LoginResponse signup(final String username, final String password, final String email) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
 		values.put(APIConstants.PARAMETER_USERNAME, username);
 		values.put(APIConstants.PARAMETER_PASSWORD, password);
+		values.put(APIConstants.PARAMETER_EMAIL, email);
 		final APIResponse response = client.post(APIConstants.URL_SIGNUP, values);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			LoginResponse loginResponse = gson.fromJson(response.responseString, LoginResponse.class);
 			PrefsUtil.saveCookie(context, response.cookie);
+			
+			CookieSyncManager.createInstance(context.getApplicationContext());
+			CookieManager cookieManager = CookieManager.getInstance();
+
+			cookieManager.setCookie(".newsblur.com", response.cookie);
+			CookieSyncManager.getInstance().sync();
+
 			return loginResponse;
 		} else {
 			return new LoginResponse();
