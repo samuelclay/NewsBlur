@@ -21,11 +21,14 @@ body.NB-welcome {
 /* = Common = */
 /* ========== */
 
-.NB-inner {
+.NB-welcome .NB-inner {
     width: 960px;
     margin: 0 auto;
     position: relative;
     height: 100%;
+}
+.NB-welcome .NB-splash-links {
+    overflow: hidden;
 }
 .NB-button {
     border: 1px solid #07360F;
@@ -89,11 +92,10 @@ body.NB-welcome {
     transform : translate3d(0, 0, 0);
 }
 .NB-welcome-header-image img.NB-1 {
-    width: 500px;
-    height: 327px;
+    height: 300px;
     position: absolute;
     bottom: -350px;
-    right: 0;
+    right: -40px;
     border-radius: 2px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -103,7 +105,7 @@ body.NB-welcome {
 }
 .NB-welcome-header-image img.NB-2 {
     opacity: 0;
-    height: 325px;
+    height: 300px;
     position: absolute;
     bottom: -300px;
     right: 0;
@@ -439,7 +441,7 @@ body.NB-welcome {
 .NB-welcome-activity {
     overflow: hidden;
     clear: both;
-    margin: 48px 0;
+    margin: 48px 0 0;
     padding: 36px 0;
     background-color: #F5F5F5;
 }
@@ -464,4 +466,18 @@ body.NB-welcome {
 }
 .NB-welcome-activity .NB-graph-value {
     width: 4px;
+}
+
+/* ========== */
+/* = Footer = */
+/* ========== */
+
+.NB-welcome .NB-splash-bottom {
+    background: #EBEBEB;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EBEBEB), to(#DFDFDF));
+    background: -moz-linear-gradient(center top, #EBEBEB 0%, #DFDFDF 100%); 
+    border-top: 1px solid #D9D9D9;
+}
+.NB-welcome .NB-splash-link a {
+    text-shadow: 0 1px 0 rgba(245, 245, 245, 0.4);
 }

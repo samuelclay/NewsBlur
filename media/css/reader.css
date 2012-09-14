@@ -3466,6 +3466,7 @@ form.opml_import_form input {
 
 .NB-splash-info .NB-splash-links .NB-splash-link {
   display: block;
+  overflow: hidden;
   line-height: 12px;
   margin: 0;
   float: left;
@@ -3490,6 +3491,7 @@ form.opml_import_form input {
 }
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
     padding-top: 0;
+    padding-bottom: 0;
     margin-top: -1px;
 }
 
