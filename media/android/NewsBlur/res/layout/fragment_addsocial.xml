@@ -84,6 +84,7 @@
         android:id="@+id/addsocial_autofollow_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checked="true"
         android:layout_below="@id/addsocial_facebook"
         android:layout_alignBaseline="@id/addsocial_autofollow_text"
         android:layout_toRightOf="@id/addsocial_autofollow_text" />
