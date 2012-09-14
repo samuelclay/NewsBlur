@@ -130,7 +130,7 @@ body.NB-welcome {
     margin: 0 auto;
     position: absolute;
     top: 0;
-    left: 420px;
+    right: 32px;
     overflow: hidden;
     text-shadow: 0 1px 0 rgba(35,35,35,0.35);
     padding-left: 64px;
@@ -446,8 +446,12 @@ body.NB-welcome {
     background-color: #F5F5F5;
 }
 .NB-welcome-activity .NB-module {
-    width: 50%;
+    width: 47%;
+    margin-right: 3%;
     float: left;
+}
+.NB-welcome-activity .NB-module-stats {
+    margin-right: 0;
 }
 .NB-welcome-activity .NB-module .NB-module-header {
     display: none;
