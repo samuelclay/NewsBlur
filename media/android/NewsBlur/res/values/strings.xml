@@ -91,12 +91,16 @@
     <string name="toast_marked_feed_as_read">Feed marked as read</string>
     <string name="toast_error_marking_feed_as_read">Error marking feed as read. Check your internet connection.</string>
     
+    <string name="logout_warning"></string>
+    
     <string name="unsorted_folder_name">Unsorted</string>
     
     <string name="empty_list_notice">Loading stories…</string>
     <string name="feed_search_hint">Search for new feeds</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>
+    
+    <string name="menu_logout">Log out</string>
     <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_delete_feed">Delete feed</string>
     

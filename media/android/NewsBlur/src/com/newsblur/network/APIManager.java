@@ -1,5 +1,6 @@
 package com.newsblur.network;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -81,7 +82,7 @@ public class APIManager {
 		final APIClient client = new APIClient(context);
 		final ValueMultimap values = new ValueMultimap();
 		for (String category : categories) {
-			values.put(APIConstants.PARAMETER_CATEGORY, category);
+			values.put(APIConstants.PARAMETER_CATEGORY, URLEncoder.encode(category));
 		}
 		final APIResponse response = client.post(APIConstants.URL_ADD_CATEGORIES, values, false);
 		return (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected);

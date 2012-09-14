@@ -16,5 +16,9 @@
           android:icon="@drawable/plus"
           android:title="@string/menu_add_feed"
           android:showAsAction="never" />
+    
+    <item android:id="@+id/menu_logout"
+          android:title="@string/menu_logout"
+          android:showAsAction="never" />
 
 </menu>

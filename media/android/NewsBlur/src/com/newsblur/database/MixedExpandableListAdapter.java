@@ -51,6 +51,8 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private int[] blogFrom;
 	private int[] blogTo;
 
+	private String[] childFromNames;
+	
 	private final int childLayout, expandedGroupLayout, collapsedGroupLayout, blogGroupLayout;
 	private final LayoutInflater inflater;
 	private ViewBinder groupViewBinder;
@@ -58,6 +60,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	public String currentState = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
 	private Cursor allStoriesCountCursor, sharedStoriesCountCursor;
+	private String TAG = "MixedExpandableAdapter";
 	
 	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final Cursor sharedCountCursor, final int collapsedGroupLayout,
 			int expandedGroupLayout, int blogGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, String[] blogFrom, int[] blogTo) {
@@ -77,6 +80,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 		mChildrenCursorHelpers = new SparseArray<MyCursorHelper>();
 
+		this.childFromNames = childFrom;
 		init(groupFrom, groupTo, childFrom, childTo, blogFrom, blogTo);
 	}
 
@@ -84,16 +88,17 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		this.groupTo = groupTo;
 		this.childTo = childTo;
 		this.blogTo = blogTo;
-
+		
 		initGroupFromColumns(groupFromNames);
 		initBlogFromColumns(blogFromNames);
+		initialiseChildBinds(childFromNames);
+	}
 
-		if (getGroupCount() > 0) {
-			MyCursorHelper tmpCursorHelper = getChildrenCursorHelper(0, true);
-			if (tmpCursorHelper != null) {
-				initChildrenFromColumns(childFromNames, tmpCursorHelper.getCursor());
-				deactivateChildrenCursorHelper(0);
-			}
+	private void initialiseChildBinds(final String[] childFromNames) {
+		MyCursorHelper tmpCursorHelper = getChildrenCursorHelper(2, true);
+		if (tmpCursorHelper != null) {
+			initChildrenFromColumns(childFromNames, tmpCursorHelper.getCursor());
+			deactivateChildrenCursorHelper(0);
 		}
 	}
 
@@ -112,7 +117,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		groupFrom = new int[groupFromNames.length];
 		initFromColumns(folderCursorHelper.getCursor(), groupFromNames, groupFrom);
 	}
-
+	
 	private void initBlogFromColumns(String[] blogFromNames) {
 		blogFrom = new int[blogFromNames.length];
 		initFromColumns(blogCursorHelper.getCursor(), blogFromNames, blogFrom);
@@ -329,7 +334,13 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	//-----------------------
 
 	protected void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
+		// This 'if' is for an edge case, where we've no intialised the child-from to cursor-column mapping yet because we've initialised the adapter but 
+		// it contained no group cursor yet. This happens when first registering, assuming the user initially has no data.
+		if (childFrom == null) {
+			initialiseChildBinds(childFromNames);
+		}
 		bindView(view, context, cursor, childFrom, childTo, groupViewBinder);
+		
 	}
 
 	protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
