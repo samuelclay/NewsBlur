@@ -2,8 +2,8 @@ package com.newsblur.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -13,6 +13,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
 import com.newsblur.fragment.FolderListFragment;
+import com.newsblur.fragment.LogoutDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.service.SyncService;
 import com.newsblur.view.StateToggleButton.StateChangedListener;
@@ -100,6 +101,9 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 			Intent intent = new Intent(this, SearchForFeeds.class);
 			startActivityForResult(intent, 0);
 			return true;	
+		case R.id.menu_logout:
+			DialogFragment newFragment = new LogoutDialogFragment();
+			newFragment.show(getSupportFragmentManager(), "dialog");
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -115,12 +119,10 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 
 	@Override
 	public void changedState(int state) {
-		Log.d(TAG, "State changed");
 		folderFeedList.changeState(state);
 	}
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d(TAG, "Returned okay.");
 		if (resultCode == RESULT_OK) {
 			folderFeedList.hasUpdated();
 		}
@@ -128,7 +130,6 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 
 	@Override
 	public void updateAfterSync() {
-		Log.d(TAG, "Finished feed count refresh.");
 		folderFeedList.hasUpdated();
 		setSupportProgressBarIndeterminateVisibility(false);
 		menu.findItem(R.id.menu_refresh).setEnabled(true);

@@ -91,7 +91,7 @@
     <string name="toast_marked_feed_as_read">Feed marked as read</string>
     <string name="toast_error_marking_feed_as_read">Error marking feed as read. Check your internet connection.</string>
     
-    <string name="logout_warning"></string>
+    <string name="logout_warning">Are you sure you want to log out?</string>
     
     <string name="unsorted_folder_name">Unsorted</string>
     

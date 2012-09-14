@@ -10,7 +10,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 	private final String TEXT = " text";
 	private final String INTEGER = " integer";
 	private final static String TAG = "DatabaseHelper";
-	private final static String DB_NAME = "blur.db";
+	public final static String DB_NAME = "blur.db";
 	private final static int VERSION = 1;
 
 	public BlurDatabase(Context context) {
@@ -132,6 +132,34 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(FEED_FOLDER_SQL);
 		db.execSQL(SOCIALFEED_STORIES_SQL);
 		db.execSQL(OFFLINE_UPDATE_SQL);
+	}
+	
+	public void dropAndRecreateTables() {
+		SQLiteDatabase db = getWritableDatabase();
+		String drop = "DROP TABLE IF EXISTS ";
+		db.execSQL(drop + DatabaseConstants.FEED_TABLE);
+		db.execSQL(drop + DatabaseConstants.SOCIALFEED_TABLE);
+		db.execSQL(drop + DatabaseConstants.FOLDER_TABLE);
+		db.execSQL(drop + DatabaseConstants.STORY_TABLE);
+		db.execSQL(drop + DatabaseConstants.COMMENT_TABLE);
+		db.execSQL(drop + DatabaseConstants.REPLY_TABLE);
+		db.execSQL(drop + DatabaseConstants.CLASSIFIER_TABLE);
+		db.execSQL(drop + DatabaseConstants.FEED_FOLDER_MAP_TABLE);
+		db.execSQL(drop + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
+		db.execSQL(drop + DatabaseConstants.UPDATE_TABLE);
+		
+		db.execSQL(FEED_SQL);
+		db.execSQL(SOCIAL_FEED_SQL);
+		db.execSQL(FOLDER_SQL);
+		db.execSQL(STORY_SQL);
+		db.execSQL(COMMENT_SQL);
+		db.execSQL(REPLY_SQL);
+		db.execSQL(CLASSIFIER_SQL);
+		db.execSQL(FEED_FOLDER_SQL);
+		db.execSQL(SOCIALFEED_STORIES_SQL);
+		db.execSQL(OFFLINE_UPDATE_SQL);
+		
+		db.close();
 	}
 
 	@Override

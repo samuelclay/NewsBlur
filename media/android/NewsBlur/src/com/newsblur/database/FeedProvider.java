@@ -207,7 +207,7 @@ public class FeedProvider extends ContentProvider {
 	@Override
 	public boolean onCreate() {
 		Log.d(TAG, "Creating provider and database.");
-		databaseHelper = new BlurDatabase(getContext());
+		databaseHelper = new BlurDatabase(getContext().getApplicationContext());
 		return true;
 	}
 
