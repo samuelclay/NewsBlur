@@ -1285,7 +1285,7 @@
                 folder_title: folder_title,
                 fake: true
             });
-            if (!folder) {
+            if (!folder || folder.get('fake')) {
                 this.active_feed = 'river:';
                 this.$s.$river_sites_header.addClass('NB-selected');
             } else {
@@ -2621,6 +2621,10 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-subscribe' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Add a site to this folder')
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-subfolder' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Create a new subfolder')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-folder' }, [
@@ -4689,6 +4693,12 @@
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
                 self.open_add_feed_modal({folder_title: folder_name});
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-subfolder' }, function($t, $p){
+                e.preventDefault();
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                self.open_add_feed_modal({folder_title: folder_name, init_folder: true});
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-open' }, function($t, $p){
                 e.preventDefault();
                 if (!self.flags['showing_confirm_input_on_manage_menu']) {
@@ -5186,7 +5196,10 @@
                 } else if (self.flags['social_view']) {
                     self.open_social_stories(self.active_feed);
                 } else if (self.flags['river_view']) {
-                    self.open_river_stories(self.active_folder && self.active_folder.folder_view.$el, self.active_folder);
+                    self.open_river_stories(self.active_folder && 
+                                            self.active_folder.folder_view &&
+                                            self.active_folder.folder_view.$el,
+                                            self.active_folder);
                 } else {
                     self.open_feed(self.active_feed);
                 }
