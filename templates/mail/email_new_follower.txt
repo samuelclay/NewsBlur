@@ -1,0 +1,16 @@
+{% extends "mail/email_base.txt" %}
+
+{% block body %}Say hello to your newest follower: {{ follower_profile.username }}.
+
+    {{ follower_profile.blurblog_url }} - {{ follower_profile.shared_stories_count }} shared {{ follower_profile.shared_stories_count|pluralize:"story,stories" }} - {{ follower_profile.follower_count }} follower{{ follower_profile.follower_count|pluralize }}
+
+{% if common_followers %}
+You follow {{ common_followers|length }} {{ common_followers|pluralize:"person,people" }} who follow{{ common_followers|pluralize:"s," }} {{ follower_profile.username }}:
+
+{% for follower in common_followers %} * {{ follower.username }}: {{ follower.blurblog_url }}
+{% endfor %}{% endif %}
+
+{% if common_followings %}You follow {{ common_followings|length }} {{ common_followings|pluralize:"person,people" }} that {{ follower_profile.username }} also follows:
+
+{% for following in common_followings %} * {{ following.username }}: {{ following.blurblog_url }}
+{% endfor %}{% endif %}{% endblock %}

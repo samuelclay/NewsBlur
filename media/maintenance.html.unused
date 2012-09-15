@@ -9,7 +9,9 @@
 
 <h1>NewsBlur is upgrading...</h1>
 
-<p>Running a quick 2m45s database upgrade (as tested during development). The time is now 10:30pm PT.</p>
+<p>Moving PostgreSQL to a new server. It's Thursday night at 11:40pm. No more than 10 minutes. As little as 5 minutes.</p>
+
+<!-- <p><b>UPDATE 12:57am</b>: OK, I lied. Turns out it took 30 minutes just to get the upgrade *started*. If you've ever upgraded postgresql, you know what a pain in the butt this can be. But it's going and now I'm just writing up maintenance posts for only a few dozen people to see. Go bother <a href="http://twitter.com/samuelclay">@samuelclay</a> for the next 10-15 minutes. :-)</p> -->
 
 </body>
 </html>

@@ -22,83 +22,96 @@ compress_assets: on
 
 javascripts:
     common:
-        - media/js/jquery-1.7.1.js
-        - media/js/jquery.json.js
-        - media/js/jquery.easing.js
-        - media/js/jquery.newsblur.js
-        - media/js/jquery.scrollTo.js
-        - media/js/jquery.corners.js
-        - media/js/jquery.hotkeys.js
-        - media/js/jquery.ajaxupload.js
-        - media/js/jquery.ajaxmanager.3.js
-        - media/js/jquery.simplemodal-1.3.js
-        - media/js/jquery.color.js
-        - media/js/jquery.rightclick.js
-        - media/js/jquery.ui.core.js
-        - media/js/jquery.ui.widget.js
-        - media/js/jquery.ui.mouse.js
-        - media/js/jquery.ui.position.js
-        - media/js/jquery.ui.draggable.js
-        - media/js/jquery.ui.sortable.js
-        - media/js/jquery.ui.slider.js
-        - media/js/jquery.ui.autocomplete.js
-        - media/js/jquery.ui.progressbar.js
-        - media/js/jquery.cookie.js
-        - media/js/jquery.layout.js
-        - media/js/jquery.tinysort.js
-        - media/js/jquery.fieldselection.js
-        - media/js/jquery.flot.js
-        - media/js/jquery.tipsy.js
-        - media/js/jquery.chosen.js
-        - media/js/jquery.linkify.js
-        - media/js/audio.js
-        - media/js/socket.io-client.*.js
-        - media/js/inflector.js
-        - media/js/underscore.js
-        - media/js/underscore.string.js
-        - media/js/newsblur/reader_utils.js
-        - media/js/newsblur/assetmodel.js
-        - media/js/newsblur/reader.js
-        - media/js/newsblur/generate_bookmarklet.js
-        - media/js/newsblur/modal.js
-        - media/js/newsblur/reader_classifier.js
-        - media/js/newsblur/reader_add_feed.js
-        - media/js/newsblur/reader_mark_read.js
-        - media/js/newsblur/reader_goodies.js
-        - media/js/newsblur/reader_preferences.js
-        - media/js/newsblur/reader_account.js
-        - media/js/newsblur/reader_feedchooser.js
-        - media/js/newsblur/reader_statistics.js
-        - media/js/newsblur/reader_feed_exception.js
-        - media/js/newsblur/reader_keyboard.js
-        - media/js/newsblur/reader_recommend_feed.js
-        - media/js/newsblur/reader_send_email.js
-        - media/js/newsblur/reader_tutorial.js
-        - media/js/newsblur/about.js
-        - media/js/newsblur/faq.js
+        - media/js/vendor/jquery-1.7.2.js
+        - media/js/vendor/jquery.json.js
+        - media/js/vendor/jquery.easing.js
+        - media/js/vendor/jquery.newsblur.js
+        - media/js/vendor/jquery.scrollTo.js
+        - media/js/vendor/jquery.corners.js
+        - media/js/vendor/jquery.hotkeys.js
+        - media/js/vendor/jquery.ajaxupload.js
+        - media/js/vendor/jquery.ajaxmanager.3.js
+        - media/js/vendor/jquery.simplemodal-1.3.js
+        - media/js/vendor/jquery.color.js
+        - media/js/vendor/jquery.ui.core.js
+        - media/js/vendor/jquery.ui.widget.js
+        - media/js/vendor/jquery.ui.mouse.js
+        - media/js/vendor/jquery.ui.position.js
+        - media/js/vendor/jquery.ui.draggable.js
+        - media/js/vendor/jquery.ui.sortable.js
+        - media/js/vendor/jquery.ui.slider.js
+        - media/js/vendor/jquery.ui.autocomplete.js
+        - media/js/vendor/jquery.ui.progressbar.js
+        - media/js/vendor/jquery.cookie.js
+        - media/js/vendor/jquery.layout.js
+        - media/js/vendor/jquery.tinysort.js
+        - media/js/vendor/jquery.fieldselection.js
+        - media/js/vendor/jquery.flot.js
+        - media/js/vendor/jquery.tipsy.js
+        - media/js/vendor/jquery.chosen.js
+        - media/js/vendor/jquery.effects.core.js
+        - media/js/vendor/jquery.effects.slide.js
+        # - media/js/vendor/jquery.linkify.js
+        - media/js/vendor/bootstrap.*.js
+        - media/js/vendor/audio.js
+        - media/js/vendor/socket.io-client.*.js
+        - media/js/vendor/inflector.js
+        - media/js/vendor/underscore-*.js
+        - media/js/vendor/underscore.string.js
+        - media/js/vendor/backbone-*.js
+        - media/js/newsblur/common/*.js
+        - media/js/newsblur/models/*.js
+        - media/js/newsblur/views/*.js
+        - media/js/newsblur/reader/reader_utils.js
+        - media/js/newsblur/reader/reader.js
+        - media/js/newsblur/reader/*.js
+        - media/js/newsblur/static/*.js
     mobile:
-        - media/js/jquery-1.7.1.js
+        - media/js/vendor/jquery-1.7.2.js
         - media/js/mobile/jquery.mobile-1.0b1.js
-        - media/js/jquery.ajaxmanager.3.js
-        - media/js/underscore.js
-        - media/js/underscore.string.js
-        - media/js/inflector.js
-        - media/js/jquery.json.js
-        - media/js/jquery.easing.js
-        - media/js/jquery.newsblur.js
-        - media/js/newsblur/reader_utils.js
-        - media/js/newsblur/assetmodel.js
+        - media/js/vendor/jquery.ajaxmanager.3.js
+        - media/js/vendor/underscore-*.js
+        - media/js/vendor/underscore.string.js
+        - media/js/vendor/inflector.js
+        - media/js/vendor/jquery.json.js
+        - media/js/vendor/jquery.easing.js
+        - media/js/vendor/jquery.newsblur.js
+        - media/js/vendor/backbone-*.js
+        - media/js/newsblur/reader/reader_utils.js
+        - media/js/newsblur/models/*.js
+        - media/js/newsblur/common/assetmodel.js
         - media/js/mobile/newsblur/mobile_workspace.js
     payments:
-        - media/js/newsblur/stripe_form.js
-        - media/js/newsblur/paypal_return.js
+        - media/js/newsblur/payments/paypal_return.js
+        - media/js/newsblur/payments/stripe_form.js
     bookmarklet:
-        - media/js/jquery-1.5.1.min.js
-        - media/js/jquery.noConflict.js
-        - media/js/jquery.newsblur.js
-        - media/js/jquery.tinysort.js
-        - media/js/jquery.simplemodal-1.3.js
-        - media/js/jquery.corners.js
+        - media/js/vendor/jquery-1.7.2.min.js
+        - media/js/vendor/jquery.noConflict.js
+        - media/js/vendor/jquery.newsblur.js
+        - media/js/vendor/jquery.tinysort.js
+        - media/js/vendor/jquery.simplemodal-1.3.js
+        - media/js/vendor/jquery.corners.js
+        - media/js/vendor/jquery.hotkeys.js
+        - media/js/vendor/jquery.easing.js
+        - media/js/vendor/jquery.url.js
+        - media/js/vendor/underscore-*.js
+        - media/js/vendor/readability-*.js
+    blurblog:
+        - media/js/vendor/jquery-1.7.2.js
+        - media/js/vendor/jquery.color.js
+        - media/js/vendor/underscore-*.js
+        - media/js/vendor/underscore.string.js
+        - media/js/vendor/backbone-*.js
+        - media/js/vendor/jquery.tipsy.js
+        - media/js/vendor/inflector.js
+        - media/js/newsblur/social_page/*.js
+        - media/js/newsblur/models/comments.js
+        - media/js/newsblur/views/story_share_view.js
+        - media/js/newsblur/views/story_comment_view.js
+        - media/js/vendor/jquery.easing.js
+        - media/js/vendor/jquery.newsblur.js
+        - media/js/vendor/jquery.scrollTo.js
+        - media/js/vendor/jquery.hotkeys.js
 
 stylesheets:
     common:
@@ -113,4 +126,9 @@ stylesheets:
         - media/css/mobile/mobile.css
     bookmarklet:
         - media/css/bookmarklet/reset.css
+        - media/css/modals.css
+        - media/css/bookmarklet/bookmarklet.css
+    blurblog:
+        - media/css/jquery.tipsy.css
+        - media/css/social/social_page.css
         - media/css/modals.css

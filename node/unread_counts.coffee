@@ -7,6 +7,10 @@ client = redis.createClient 6379, REDIS_SERVER
 
 io.configure 'production', ->
     io.set 'log level', 1
+    io.enable 'browser client minification'
+    io.enable 'browser client etag'
+    io.enable 'browser client gzip'
+
 
 io.configure 'development', ->
     io.set 'log level', 2

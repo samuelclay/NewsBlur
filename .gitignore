@@ -20,6 +20,11 @@ xcuserdata
 *.mode1v3
 *.pbxuser
 media/maintenance.html
+media/maintenance.html.unused
+config/settings
+static.tgz
+media/css/circular
+
 config/settings
 
 # ----------------------

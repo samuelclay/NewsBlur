@@ -1,4 +1,5 @@
 import datetime
+import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
 from django.db.utils import DatabaseError
@@ -10,11 +11,11 @@ from django.core.mail import mail_admins
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
-from celery.task import Task
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
 from apps.rss_feeds.tasks import NewFeeds
 from utils import log as logging
+from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup
@@ -29,6 +30,10 @@ class Profile(models.Model):
     collapsed_folders = models.TextField(default="[]")
     feed_pane_size    = models.IntegerField(default=240)
     tutorial_finished = models.BooleanField(default=False)
+    hide_getting_started = models.NullBooleanField(default=False, null=True, blank=True)
+    has_setup_feeds   = models.NullBooleanField(default=False, null=True, blank=True)
+    has_found_friends = models.NullBooleanField(default=False, null=True, blank=True)
+    has_trained_intelligence = models.NullBooleanField(default=False, null=True, blank=True)
     hide_mobile       = models.BooleanField(default=False)
     last_seen_on      = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip      = models.CharField(max_length=50, blank=True, null=True)
@@ -41,6 +46,19 @@ class Profile(models.Model):
     def __unicode__(self):
         return "%s <%s> (Premium: %s)" % (self.user, self.user.email, self.is_premium)
     
+    def to_json(self):
+        return {
+            'is_premium': self.is_premium,
+            'preferences': json.decode(self.preferences),
+            'tutorial_finished': self.tutorial_finished,
+            'hide_getting_started': self.hide_getting_started,
+            'has_setup_feeds': self.has_setup_feeds,
+            'has_found_friends': self.has_found_friends,
+            'has_trained_intelligence': self.has_trained_intelligence,
+            'hide_mobile': self.hide_mobile,
+            'dashboard_date': self.dashboard_date
+        }
+        
     def save(self, *args, **kwargs):
         if not self.secret_token:
             self.secret_token = generate_secret_token(self.user.username, 12)
@@ -49,8 +67,58 @@ class Profile(models.Model):
         except DatabaseError:
             print " ---> Profile not saved. Table isn't there yet."
     
+    def delete_user(self, confirm=False):
+        if not confirm:
+            print " ---> You must pass confirm=True to delete this user."
+            return
+        
+        from apps.social.models import MSocialProfile, MSharedStory, MSocialSubscription
+        from apps.social.models import MActivity, MInteraction
+        try:
+            social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
+            print " ---> Unfollowing %s followings and %s followers" % (social_profile.following_count,
+                                                                        social_profile.follower_count)
+            for follow in social_profile.following_user_ids:
+                social_profile.unfollow_user(follow)
+            for follower in social_profile.follower_user_ids:
+                follower_profile = MSocialProfile.objects.get(user_id=follower)
+                follower_profile.unfollow_user(self.user.pk)
+            social_profile.delete()
+        except MSocialProfile.DoesNotExist:
+            print " ***> No social profile found. S'ok, moving on."
+            pass
+        
+        shared_stories = MSharedStory.objects.filter(user_id=self.user.pk)
+        print " ---> Deleting %s shared stories" % shared_stories.count()
+        for story in shared_stories:
+            story.delete()
+            
+        subscriptions = MSocialSubscription.objects.filter(subscription_user_id=self.user.pk)
+        print " ---> Deleting %s social subscriptions" % subscriptions.count()
+        subscriptions.delete()
+        
+        interactions = MInteraction.objects.filter(user_id=self.user.pk)
+        print " ---> Deleting %s interactions for user." % interactions.count()
+        interactions.delete()
+        
+        interactions = MInteraction.objects.filter(with_user_id=self.user.pk)
+        print " ---> Deleting %s interactions with user." % interactions.count()
+        interactions.delete()
+        
+        activities = MActivity.objects.filter(user_id=self.user.pk)
+        print " ---> Deleting %s activities for user." % activities.count()
+        activities.delete()
+        
+        activities = MActivity.objects.filter(with_user_id=self.user.pk)
+        print " ---> Deleting %s activities with user." % activities.count()
+        activities.delete()
+        
+        print " ---> Deleting user: %s" % self.user
+        self.user.delete()
+        
     def activate_premium(self):
-        self.send_new_premium_email()
+        from apps.profile.tasks import EmailNewPremium
+        EmailNewPremium.delay(user_id=self.user.pk)
         
         self.is_premium = True
         self.save()
@@ -67,14 +135,6 @@ class Profile(models.Model):
         self.queue_new_feeds()
         
         logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
-        message = """Woohoo!
-        
-User: %(user)s
-Feeds: %(feeds)s
-
-Sincerely,
-NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
-        mail_admins('New premium account', message, fail_silently=True)
         
     def queue_new_feeds(self, new_feeds=None):
         if not new_feeds:
@@ -84,10 +144,8 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             new_feeds = list(set([f['feed_id'] for f in new_feeds]))
         logging.user(self.user, "~BB~FW~SBQueueing NewFeeds: ~FC(%s) %s" % (len(new_feeds), new_feeds))
         size = 4
-        publisher = Task.get_publisher(exchange="new_feeds")
         for t in (new_feeds[pos:pos + size] for pos in xrange(0, len(new_feeds), size)):
-            NewFeeds.apply_async(args=(t,), queue="new_feeds", publisher=publisher)
-        publisher.connection.close()   
+            NewFeeds.apply_async(args=(t,), queue="new_feeds")
 
     def refresh_stale_feeds(self, exclude_new=False):
         stale_cutoff = datetime.datetime.now() - datetime.timedelta(days=7)
@@ -104,7 +162,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
             sub.feed.save()
         
         if stale_feeds:
-            stale_feeds = list(set([f.feed.pk for f in stale_feeds]))
+            stale_feeds = list(set([f.feed_id for f in stale_feeds]))
             self.queue_new_feeds(new_feeds=stale_feeds)
     
     def send_new_user_email(self):
@@ -124,6 +182,16 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         logging.user(self.user, "~BB~FM~SBSending email for new user: %s" % self.user.email)
     
     def send_new_premium_email(self, force=False):
+        subs = UserSubscription.objects.filter(user=self.user)
+        message = """Woohoo!
+        
+User: %(user)s
+Feeds: %(feeds)s
+
+Sincerely,
+NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
+        mail_admins('New premium account', message, fail_silently=True)
+        
         if not self.user.email or not self.send_emails:
             return
         
@@ -166,13 +234,58 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
         
+    def send_upload_opml_finished_email(self, feed_count):
+        if not self.user.email:
+            print "Please provide an email address."
+            return
+        
+        user    = self.user
+        text    = render_to_string('mail/email_upload_opml_finished.txt', locals())
+        html    = render_to_string('mail/email_upload_opml_finished.xhtml', locals())
+        subject = "Your OPML upload is complete. Get going with NewsBlur!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+                
+        logging.user(self.user, "~BB~FM~SBSending email for OPML upload: %s" % self.user.email)
+    
+    def send_launch_social_email(self, force=False):
+        if not self.user.email or not self.send_emails:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, %s: %s" % (self.user.email and 'opt-out: ' or 'blank', self.user.email))
+            return
+        
+        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
+                                                               email_type='launch_social')
+        
+        if not created and not force:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending launch social email for user, sent already: %s" % self.user.email)
+            return
+        
+        delta      = datetime.datetime.now() - self.last_seen_on
+        months_ago = delta.days / 30
+        user    = self.user
+        data    = dict(user=user, months_ago=months_ago)
+        text    = render_to_string('mail/email_launch_social.txt', data)
+        html    = render_to_string('mail/email_launch_social.xhtml', data)
+        subject = "NewsBlur is now a social news reader"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % (months_ago, self.user.email))
+    
     def autologin_url(self, next=None):
         return reverse('autologin', kwargs={
             'username': self.user.username, 
             'secret': self.secret_token
         }) + ('?' + next + '=1' if next else '')
         
-        
+
+            
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
@@ -194,8 +307,12 @@ def paypal_signup(sender, **kwargs):
 subscription_signup.connect(paypal_signup)
 
 def stripe_signup(sender, full_json, **kwargs):
-    profile = Profile.objects.get(stripe_id=full_json['data']['object']['customer'])
-    profile.activate_premium()
+    stripe_id = full_json['data']['object']['customer']
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_id)
+        profile.activate_premium()
+    except Profile.DoesNotExist:
+        return {"code": -1, "message": "User doesn't exist."}
 zebra_webhook_customer_subscription_created.connect(stripe_signup)
 
 def change_password(user, old_password, new_password):
@@ -206,3 +323,26 @@ def change_password(user, old_password, new_password):
         user_db.set_password(new_password)
         user_db.save()
         return 1
+        
+    
+class MSentEmail(mongo.Document):
+    sending_user_id = mongo.IntField()
+    receiver_user_id = mongo.IntField()
+    email_type = mongo.StringField()
+    date_sent = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'sent_emails',
+        'allow_inheritance': False,
+        'indexes': ['sending_user_id', 'receiver_user_id', 'email_type'],
+    }
+    
+    def __unicode__(self):
+        return "%s sent %s email to %s" % (self.sending_user_id, self.email_type, self.receiver_user_id)
+    
+    @classmethod
+    def record(cls, email_type, receiver_user_id, sending_user_id):
+        cls.objects.create(email_type=email_type, 
+                           receiver_user_id=receiver_user_id, 
+                           sending_user_id=sending_user_id)
+    

@@ -1,0 +1,15 @@
+<html>
+<head>
+    <title>4-oh-4, not found</title>
+</head>
+<body>
+    <script>
+        if (window.top == window) {
+            var feed_id = window.location.href.replace(/[^\d+]/g, '');
+            window.location.href = '/site/' + feed_id + '/';
+        } else if (window.top.NEWSBLUR) {
+            window.top.NEWSBLUR.reader.switch_taskbar_view('feed');
+        }
+    </script>
+</body>
+</html>

@@ -27,19 +27,18 @@ def timelimit(timeout):
                         self.result = function(*args, **kw)
                     except:
                         self.error = sys.exc_info()
-            if not settings.DEBUG and not settings.TEST_DEBUG:
-                c = Dispatch()
-                c.join(timeout)
-                if c.isAlive():
-                    raise TimeoutError, 'took too long'
-                if c.error:
-                    tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
-                    logging.debug(tb)
-                    mail_admins('Error in timeout: %s' % c.error[0], tb)
-                    raise c.error[0], c.error[1]
-                return c.result
-            else:
-                return function(*args, **kw)
+            c = Dispatch()
+            c.join(timeout)
+            if c.isAlive():
+                raise TimeoutError, 'took too long'
+            if not settings.DEBUG and not settings.TEST_DEBUG and c.error:
+                tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
+                logging.debug(tb)
+                mail_admins('Error in timeout: %s' % c.error[0], tb)
+                raise c.error[0], c.error[1]
+            return c.result
+            # else:
+            #     return function(*args, **kw)
         return _2
     return _1
     
@@ -104,11 +103,14 @@ def _do_timesince(d, chunks, now=None):
     # ignore microsecond part of 'd' since we removed it from 'now'
     delta = now - (d - datetime.timedelta(0, 0, d.microsecond))
     since = delta.days * 24 * 60 * 60 + delta.seconds
-    for i, (seconds, name) in enumerate(chunks):
-        count = since // seconds
-        if count != 0:
-            break
-    s = '%(number)d %(type)s' % {'number': count, 'type': name(count)}
+    if since > 10:
+        for i, (seconds, name) in enumerate(chunks):
+            count = since // seconds
+            if count != 0:
+                break
+        s = '%(number)d %(type)s' % {'number': count, 'type': name(count)}
+    else:
+        s = 'just a second'
     return s
 
 def relative_timesince(value):
@@ -116,8 +118,11 @@ def relative_timesince(value):
         return u''
 
     chunks = (
+      (60 * 60 * 24, lambda n: ungettext('day', 'days', n)),
       (60 * 60, lambda n: ungettext('hour', 'hours', n)),
-      (60, lambda n: ungettext('minute', 'minutes', n))
+      (60, lambda n: ungettext('minute', 'minutes', n)),
+      (1, lambda n: ungettext('second', 'seconds', n)),
+      (0, lambda n: 'just now'),
     )
     return _do_timesince(value, chunks)
     
@@ -153,7 +158,7 @@ def format_relative_date(date, future=False):
                                    '' if future else 'ago')
     elif datetime.timedelta(minutes=60) <= diff < datetime.timedelta(minutes=90):
         return "1 hour %s" % ('' if future else 'ago')
-    elif diff >= datetime.timedelta(minutes=90):
+    elif diff < datetime.timedelta(hours=24):
         dec = (diff.seconds / 60 + 15) % 60
         if dec >= 30:
             return "%s.5 hours %s" % ((((diff.seconds / 60) + 15) / 60),
@@ -161,19 +166,39 @@ def format_relative_date(date, future=False):
         else:
             return "%s hours %s" % ((((diff.seconds / 60) + 15) / 60), 
                                     '' if future else 'ago')
+    else:
+        days = ((diff.seconds / 60) / 60 / 24)
+        return "%s day%s %s" % (days, '' if days == 1 else 's', '' if future else 'ago')
+    
+def add_object_to_folder(obj, in_folder, folders, parent='', added=False):
+    obj_identifier = obj
+    if isinstance(obj, dict):
+        obj_identifier = obj.keys()[0]
+        print obj, obj_identifier, folders
 
-def add_object_to_folder(obj, folder, folders, parent='', added=False):
-    if not folder and not parent and obj not in folders:
+    if (not in_folder and not parent and 
+        not isinstance(obj, dict) and 
+        obj_identifier not in folders):
         folders.append(obj)
         return folders
 
+    child_folder_names = []
+    for item in folders:
+        if isinstance(item, dict):
+            child_folder_names.append(item.keys()[0])
+    if isinstance(obj, dict) and in_folder == parent:
+        if obj_identifier not in child_folder_names:
+            folders.append(obj)
+        return folders
+        
     for k, v in enumerate(folders):
         if isinstance(v, dict):
             for f_k, f_v in v.items():
-                if f_k == folder and obj not in f_v and not added:
+                if f_k == in_folder and obj_identifier not in f_v and not added:
                     f_v.append(obj)
                     added = True
-                folders[k][f_k] = add_object_to_folder(obj, folder, f_v, f_k, added)
+                folders[k][f_k] = add_object_to_folder(obj, in_folder, f_v, f_k, added)
+    
     return folders  
 
 def mail_feed_error_to_admin(feed, e, local_vars=None, subject=None):

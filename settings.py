@@ -1,6 +1,7 @@
 import sys
 import logging
 import os
+import datetime
 from mongoengine import connect
 import redis
 from utils import jammit
@@ -10,9 +11,10 @@ from utils import jammit
 # ===================
 
 ADMINS       = (
-    ('Samuel Clay', 'samuel@ofbrooklyn.com'),
+    ('Samuel Clay', 'samuel@newsblur.com'),
 )
 
+SERVER_NAME  = 'local'
 SERVER_EMAIL = 'server@newsblur.com'
 HELLO_EMAIL  = 'hello@newsblur.com'
 NEWSBLUR_URL = 'http://www.newsblur.com'
@@ -37,9 +39,10 @@ IMAGE_MASK    = os.path.join(CURRENT_DIR, 'media/img/mask.png')
 
 if '/utils' not in ' '.join(sys.path):
     sys.path.append(UTILS_ROOT)
+
 if '/vendor' not in ' '.join(sys.path):
     sys.path.append(VENDOR_ROOT)
-    
+
 # ===================
 # = Global Settings =
 # ===================
@@ -63,6 +66,7 @@ SECRET_KEY            = 'YOUR_SECRET_KEY'
 EMAIL_BACKEND         = 'django_ses.SESBackend'
 CIPHER_USERNAMES      = False
 DEBUG_ASSETS          = DEBUG
+HOMEPAGE_USERNAME     = 'popular'
 
 # ===============
 # = Enviornment =
@@ -92,8 +96,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.profile.middleware.TimingMiddleware',
     'apps.profile.middleware.LastSeenMiddleware',
     'apps.profile.middleware.SQLLogToConsoleMiddleware',
+    'subdomains.middleware.SubdomainMiddleware',
+    'apps.profile.middleware.SimpsonsMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -173,12 +180,23 @@ TEST_DATABASE_NAME      = 'newsblur_test'
 ROOT_URLCONF            = 'urls'
 INTERNAL_IPS            = ('127.0.0.1',)
 LOGGING_LOG_SQL         = True
-APPEND_SLASH            = True
+APPEND_SLASH            = False
 SOUTH_TESTS_MIGRATE     = False 
 SESSION_ENGINE          = "django.contrib.sessions.backends.db"
 TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
+SESSION_COOKIE_DOMAIN   = '.newsblur.com'
+
+# ==============
+# = Subdomains =
+# ==============
+
+SUBDOMAIN_URLCONFS = {
+    None: 'urls',
+    'www': 'urls',
+}
+REMOVE_WWW_FROM_DOMAIN = True
 
 # ===========
 # = Logging =
@@ -210,6 +228,9 @@ INSTALLED_APPS = (
     'apps.static',
     'apps.mobile',
     'apps.push',
+    'apps.social',
+    'apps.oauth',
+    'apps.categories',
     'south',
     'utils',
     'vendor',
@@ -222,7 +243,7 @@ if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
     )
-    
+
 # ==========
 # = Stripe =
 # ==========
@@ -238,6 +259,10 @@ ZEBRA_ENABLE_APP = True
 import djcelery
 djcelery.setup_loader()
 CELERY_ROUTES = {
+    "work-queue": {
+        "queue": "work_queue",
+        "binding_key": "work_queue"
+    },
     "new-feeds": {
         "queue": "new_feeds",
         "binding_key": "new_feeds"
@@ -250,8 +275,17 @@ CELERY_ROUTES = {
         "queue": "update_feeds",
         "binding_key": "update_feeds"
     },
+    "beat-tasks": {
+        "queue": "beat_tasks",
+        "binding_key": "beat_tasks"
+    },
 }
 CELERY_QUEUES = {
+    "work_queue": {
+        "exchange": "work_queue",
+        "exchange_type": "direct",
+        "binding_key": "work_queue",
+    },
     "new_feeds": {
         "exchange": "new_feeds",
         "exchange_type": "direct",
@@ -267,20 +301,70 @@ CELERY_QUEUES = {
         "exchange_type": "direct",
         "binding_key": "update_feeds"
     },
+    "beat_tasks": {
+        "exchange": "beat_tasks",
+        "exchange_type": "direct",
+        "binding_key": "beat_tasks"
+    },
 }
-CELERY_DEFAULT_QUEUE = "update_feeds"
-BROKER_BACKEND       = "redis"
+CELERY_DEFAULT_QUEUE = "work_queue"
+BROKER_BACKEND = "redis"
 BROKER_URL = "redis://db01:6379/0"
-CELERY_REDIS_HOST          = "db01"
+CELERY_REDIS_HOST = "db01"
 
 CELERYD_PREFETCH_MULTIPLIER = 1
-CELERY_IMPORTS              = ("apps.rss_feeds.tasks", )
+CELERY_IMPORTS              = ("apps.rss_feeds.tasks", 
+                               "apps.social.tasks", 
+                               "apps.reader.tasks",
+                               "apps.feed_import.tasks",)
 CELERYD_CONCURRENCY         = 4
 CELERY_IGNORE_RESULT        = True
 CELERY_ACKS_LATE            = True # Retry if task fails
 CELERYD_MAX_TASKS_PER_CHILD = 10
 CELERYD_TASK_TIME_LIMIT     = 12 * 30
 CELERY_DISABLE_RATE_LIMITS  = True
+SECONDS_TO_DELAY_CELERY_EMAILS = 60
+
+CELERYBEAT_SCHEDULE = {
+    'freshen-homepage': {
+        'task': 'freshen-homepage',
+        'schedule': datetime.timedelta(hours=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'task-feeds': {
+        'task': 'task-feeds',
+        'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'collect-stats': {
+        'task': 'collect-stats',
+        'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'collect-feedback': {
+        'task': 'collect-feedback',
+        'schedule': datetime.timedelta(minutes=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'share-popular-stories': {
+        'task': 'share-popular-stories',
+        'schedule': datetime.timedelta(hours=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+}
+
+# =========
+# = Mongo =
+# =========
+
+MONGO_DB = {
+    'host': '127.0.0.1:27017',
+    'name': 'newsblur',
+}
+MONGO_ANALYTICS_DB = {
+    'host': '127.0.0.1:27017',
+    'name': 'nbanalytics',
+}
 
 # ====================
 # = Database Routers =
@@ -288,22 +372,22 @@ CELERY_DISABLE_RATE_LIMITS  = True
 
 class MasterSlaveRouter(object):
     """A router that sets up a simple master/slave configuration"""
-
+    
     def db_for_read(self, model, **hints):
         "Point all read operations to a random slave"
         return 'slave'
-
+    
     def db_for_write(self, model, **hints):
         "Point all write operations to the master"
         return 'default'
-
+    
     def allow_relation(self, obj1, obj2, **hints):
         "Allow any relation between two objects in the db pool"
         db_list = ('slave','default')
         if obj1._state.db in db_list and obj2._state.db in db_list:
             return True
         return None
-
+    
     def allow_syncdb(self, db, model):
         "Explicitly put all models on all databases."
         return True
@@ -316,6 +400,15 @@ REDIS = {
     'host': 'db01',
 }
 
+# ===============
+# = Social APIs =
+# ===============
+
+FACEBOOK_APP_ID = '111111111111111'
+FACEBOOK_SECRET = '99999999999999999999999999999999'
+TWITTER_CONSUMER_KEY = 'ooooooooooooooooooooo'
+TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+
 # ==================
 # = Configurations =
 # ==================
@@ -323,6 +416,7 @@ try:
     from gunicorn_conf import *
 except ImportError, e:
     pass
+
 from local_settings import *
 
 COMPRESS = not DEBUG
@@ -347,17 +441,32 @@ DEBUG_TOOLBAR_CONFIG = {
 MONGO_DB_DEFAULTS = {
     'name': 'newsblur',
     'host': 'db02:27017',
+    'alias': 'default',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+
+MONGO_ANALYTICS_DB_DEFAULTS = {
+    'name': 'nbanalytics',
+    'host': 'db02:27017',
+    'alias': 'nbanalytics',
+}
+MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
+MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
 
 # =========
 # = Redis =
 # =========
 
 REDIS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=0)
+REDIS_STORY_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=1)
+REDIS_ANALYTICS_POOL = redis.ConnectionPool(host=REDIS['host'], port=6379, db=2)
 
 JAMMIT = jammit.JammitAssets(NEWSBLUR_DIR)
 
 if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.mongo_raw_log_middleware.SqldumpMiddleware',)
+    MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.SqldumpMiddleware',)
+    MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
+    MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
+

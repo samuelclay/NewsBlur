@@ -1,0 +1,175 @@
+{% load utils_tags social_tags %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ social_profile.title }}</title>
+    <link rel="alternate" type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}" title="{{ social_profile.feed_title }} RSS feed">
+    <link rel="shortcut icon" href="{{ social_profile.photo_url }}">
+    <link rel="icon" href="{{ social_profile.photo_url }}">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1.5">
+    
+    {% include_stylesheets "blurblog" %}
+    
+    {% if social_profile.custom_css %}
+    <style type="text/css" media="screen">
+        {{ social_profile.custom_css|safe }}
+    </style>
+    {% endif %}
+
+    <script type="text/javascript" charset="utf-8">
+    window.NEWSBLUR = {};
+    NEWSBLUR.Globals = {
+        'is_authenticated' : {{ user.is_authenticated|yesno:"true,false" }},
+        'is_anonymous'     : {{ user.is_anonymous|yesno:"true,false" }},
+        'is_premium'       : {{ user.profile.is_premium|yesno:"true,false" }},
+        'is_admin'         : {{ user.is_staff|yesno:"true,false" }},
+        'is_staff'         : {{ user.is_staff|yesno:"true,false" }},
+        'secret_token'     : "{{ user.profile.secret_token }}",
+        'username'         : "{{ user.username|safe }}",
+        'user_id'          : "{{ user.pk|safe }}",
+        'blurblog_user_id' : "{{ social_profile.user_id|safe }}",
+        'blurblog_username' : "{{ social_profile.username|safe }}",
+        'email'            : "{{ user.email|safe }}",
+        'MEDIA_URL'        : "{{ MEDIA_URL }}",
+    };
+    {% if user_social_profile_page %}
+        NEWSBLUR.user_social_profile = {{ user_social_profile_page|safe }};
+    {% endif %}
+    {% if user_social_services_page %}
+        NEWSBLUR.user_social_services = {{ user_social_services_page|safe }};
+    {% endif %}
+    NEWSBLUR.Preferences = {};
+    NEWSBLUR.Models = {};
+    NEWSBLUR.Collections = {};
+    NEWSBLUR.Views = {};
+    NEWSBLUR.app = {};
+    </script>
+    
+  {% if not debug %}
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-8371683-2']);
+    _gaq.push(['_setDomainName', "{{ social_profile.username }}.newsblur.com"]);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+  </script>
+  {% endif %}
+
+</head>
+
+<body class="{% if user.is_authenticated %}NB-authenticated{% else %}NB-unauthenticated{% endif %}">
+    
+<div class="NB-page" style="background-color: {% if social_profile.custom_bgcolor %}{{ social_profile.custom_bgcolor }}{% else %}#EBC55F{% endif %}">
+    <header class="NB-header">
+        <h1 class="NB-title {% if not social_profile.bio %}NB-title-no-bio{% endif %}">
+
+            <div class="NB-title-background"></div>
+            
+            <table class="NB-header-table">
+                <tr>
+                    <td class="NB-title-photo">
+                        <a href="/">
+                            <img src="{{ social_profile.large_photo_url }}" />
+                        </a>
+                    </td>
+                    <td class="NB-title">
+                        <div class="NB-title-content">
+                            <div class="NB-title-name">
+                                <a href="/">{{ social_profile.title }}</a>
+                            </div>
+                            {% if social_profile.location %}
+                                <div class="NB-title-location">
+                                    {{ social_profile.location }}
+                                </div>
+                            {% endif %}
+                            {% if social_profile.bio %}
+                                <div class="NB-title-bio">
+                                    {{ social_profile.bio }}
+                                </div>
+                            {% endif %}
+                            <div class="NB-header-stats">
+                                <div class="NB-header-stat"><b>{{ social_profile.shared_stories_count }}</b> shared {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
+                                <div class="NB-header-stat">&middot;</div>
+                                <div class="NB-header-stat"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
+                                {% if user.is_authenticated %}
+                                    <div class="NB-header-stat">&middot;</div>
+                                    <div class="NB-header-stat NB-header-following-user">
+                                        {% if user_following_social_profile %}
+                                            {% if social_profile.user_id == user.pk %}
+                                                This is your blurblog
+                                            {% else %}
+                                                You are following {{ social_profile.username }}
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="NB-follow-user">Follow {{ social_profile.username }}</div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="NB-header-right">
+                        <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-title-logo">
+                            <img src="{{ MEDIA_URL }}img/logo_128.png" class="NB-hover-off" />
+                            <img src="{{ MEDIA_URL }}img/logo_newsblur_512.png" class="NB-hover-on" />
+                        </a>
+                    </td>
+                </tr>
+            </table>
+            
+            
+        </h1>
+        <div class="NB-header-feed">
+            {# <a type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}">RSS feed for this page</a> #}
+        </div>
+    </header>
+
+    {% for story in stories %}
+        {% render_social_story story %}
+    {% endfor %}
+
+    {% if has_next_page %}
+        <div class="NB-page-controls">
+            <div class="NB-page-controls-next">
+                <div class="NB-page-controls-text NB-page-controls-text-next">
+                    Next Page of Stories
+                </div>
+                <div class="NB-page-controls-text NB-page-controls-text-loading"></div>
+                <div class="NB-page-controls-text NB-page-controls-text-loaded">
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+</div>
+    
+<footer>
+    <div class="NB-footer-logo">
+        <a href="//{% current_domain %}"><img src="{{ MEDIA_URL }}img/logo_newsblur_blur.png" /></a>
+    </div>
+</footer>
+
+{% include_javascripts "blurblog" %}
+
+<script type="text/javascript" charset="utf-8">
+    _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
+</script>
+
+<script>
+if ($(window).width() < 600) { 
+    $('meta[name=viewport]').attr('content','initial-scale=0.9, maximum-scale=1.5'); 
+}
+</script>
+
+</body>
+
+</html>

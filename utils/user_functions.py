@@ -71,3 +71,39 @@ def generate_secret_token(phrase, size=12):
     """Generate a (SHA1) security hash from the provided info."""
     info = (phrase, settings.SECRET_KEY)
     return sha_constructor("".join(info)).hexdigest()[:size]
+
+def extract_user_agent(request):
+    user_agent = request.environ.get('HTTP_USER_AGENT', '')
+    platform = '------'
+    if 'iPad App' in user_agent:
+        platform = 'iPad'
+    elif 'iPhone App' in user_agent:
+        platform = 'iPhone'
+    elif 'Blar' in user_agent:
+        platform = 'Blar'
+    elif 'Android' in user_agent:
+        platform = 'Androd'
+    elif 'MSIE' in user_agent:
+        platform = 'IE'
+        if 'MSIE 9' in user_agent:
+            platform += '9'
+        elif 'MSIE 10' in user_agent:
+            platform += '10'
+        elif 'MSIE 8' in user_agent:
+            platform += '8'
+    elif 'Chrome' in user_agent:
+        platform = 'Chrome'
+    elif 'Safari' in user_agent:
+        platform = 'Safari'
+    elif 'MeeGo' in user_agent:
+        platform = 'MeeGo'
+    elif 'Firefox' in user_agent:
+        platform = 'FF'
+    elif 'Opera' in user_agent:
+        platform = 'Opera'
+    elif 'WP7' in user_agent:
+        platform = 'WP7'
+    elif 'WP8' in user_agent:
+        platform = 'WP8'
+    
+    return platform

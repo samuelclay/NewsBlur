@@ -16,6 +16,20 @@
     border: 1px solid #303030;
 }
 
+/* =================== */
+/* = Common Elements = */
+/* =================== */
+
+.NB-input {
+    font-size: 14px;
+    padding: 2px;
+    margin: 2px 4px 2px;
+    border: 1px solid #606060;
+    -moz-box-shadow:2px 2px 0 #D0D0D0;
+    -webkit-box-shadow:2px 2px 0 #D0D0D0;
+    box-shadow:2px 2px 0 #D0D0D0;
+}
+
 /* ========== */
 /* = Modals = */
 /* ========== */
@@ -70,21 +84,13 @@
 .NB-module h5 {
     margin: 0;
     padding: 8px 12px 6px;
-    background-color: #D1E1FA;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #C5D7FB),
-        color-stop(0.84, #D8E1FF)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #C5D7FB 16%,
-        #D8E1FF 84%
-    );
 
-    text-shadow: 1px 1px 0 #E9E9E9;
+    background-color: #E3ECF8;
+    background-image: -moz-linear-gradient(top, #E3ECF8, #CBDBF5); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#E3ECF8), to(#CBDBF5)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #E3ECF8, #CBDBF5);
+
+    text-shadow: 0 1px 0 #F2F6FE;
     border-top: 1px solid #D1DAF7;
     border-bottom: 1px solid #A1A9CF;
     color:#505050;
@@ -208,27 +214,200 @@
     text-decoration: none;
 }
 
-.NB-modal-submit-back,
-.NB-modal-submit-reset {
-    background-color: #d5d4dB;
-    color: #909090;
-    
-}
-.NB-modal-submit-close {
-    background-color: #d5d4dB;
-    color: #909090;
-    font-weight: bold;
-}
 .NB-modal-submit-green {
     background-color: #217412;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #216200),
+        color-stop(0.84, #217412)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #216200 16%,
+        #217412 84%
+    );
     font-weight: bold;
     color: #FCFCFC;
 }
+.NB-modal-submit-green:hover {
+    background-color: #216200;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #1E5000),
+        color-stop(0.84, #216200)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #1E5000 16%,
+        #216200 84%
+    );
+    font-weight: bold;
+    color: #FCFCFC;
+}
+.NB-modal-submit-green:active {
+    background-color: #1E5000;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #1B3F00),
+        color-stop(0.84, #1E5000)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #1B3F00 16%,
+        #1E5000 84%
+    );
+    font-weight: bold;
+    color: #FCFCFC;
+}
+.NB-modal-submit-save.NB-disabled,
+.NB-modal-submit-green.NB-disabled,
+.NB-modal-submit-button.NB-disabled,
+.NB-modal-submit-back,
+.NB-modal-submit-reset,
+.NB-modal-submit-close,
+.NB-modal-submit-grey {
+    background-color: #d5d4dB;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #CBCAD3),
+        color-stop(0.84, #d5d4dB)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #CBCAD3 16%,
+        #d5d4dB 84%
+    );
+    color: #909090;
+}
+.NB-modal-submit-save.NB-disabled:hover,
+.NB-modal-submit-green.NB-disabled:hover,
+.NB-modal-submit-button.NB-disabled:hover {
+    background-color: #d5d4dB;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #CBCAD3),
+        color-stop(0.84, #d5d4dB)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #CBCAD3 16%,
+        #d5d4dB 84%
+    );
+}
+.NB-modal-submit-back:hover,
+.NB-modal-submit-reset:hover,
+.NB-modal-submit-close:hover,
+.NB-modal-submit-grey:hover {
+    background-color: #CBCAD3;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #BDBCC7),
+        color-stop(0.84, #CBCAD3)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #BDBCC7 16%,
+        #CBCAD3 84%
+    );
+}
+.NB-modal-submit-back:active,
+.NB-modal-submit-reset:active,
+.NB-modal-submit-close:active,
+.NB-modal-submit-grey:active {
+    background-color: #BDBCC7;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #ADACBB),
+        color-stop(0.84, #BDBCC7)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #ADACBB 16%,
+        #BDBCC7 84%
+    );
+}
 
+.NB-modal-submit-close {
+    background-color: #525255;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #192716),
+        color-stop(0.84, #2E432B)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #192716 16%,
+        #2E432B 84%
+    );
+    color: white;
+}
+.NB-modal-submit-close:hover {
+    background-color: #CBCAD3;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #131D10),
+        color-stop(0.84, #192716)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #131D10 16%,
+        #192716 84%
+    );
+}
+.NB-modal-submit-close:active {
+    background-color: #BDBCC7;
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.16, #0A0D09),
+        color-stop(0.84, #131D10)
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        #0A0D09 16%,
+        #131D10 84%
+    );
+}
+.NB-modal-submit-close,
+.NB-modal-submit-grey {
+    font-weight: bold;
+}
+.NB-modal-submit-red {
+    background-color: #911C31;
+    color: #E4E4E4;
+    font-weight: bold;
+}
 .NB-modal-submit-delete {
     background-color: #7E020D;
     font-weight: bold;
     color: #FCFCFC;
+}
+.NB-modal-submit-red:hover,
+.NB-modal-submit-delete:hover {
+    background-color: #4D000A;
+}
+.NB-modal-submit-red:active,
+.NB-modal-submit-delete:active {
+    background-color: #1E0007;
 }
 .NB-modal-submit .NB-disabled {
     background-color: #d5d4dB;
@@ -274,106 +453,52 @@
     margin: 0 0 12px;
 }
 
-/* ===================== */
-/* = Bookmarklet Modal = */
-/* ===================== */
-
-.NB-bookmarklet {
-  font-family: 'Lucida Sans', 'Lucida Grande', Verdana, Arial, Helvetica, sans-serif;
-  font-size: 12px;
-  text-align: left;
+.NB-modal .NB-modal-tabs {
+    float: right;
+    position: relative;
+    bottom: -1px;
+    margin-right: 16px;
 }
 
-.NB-bookmarklet .NB-modal-information {
-  float: right;
-  margin-top: 10px;
-  text-transform: uppercase;
-  color: #909090;
-  font-size: 10px;
+.NB-modal .NB-modal-tab {
+    float: left;
+    padding: 8px 12px 10px;
+    background-color: #E0E0E0;
+    border-top: 1px solid #A0A0A0;
+    border-left: 1px solid #A0A0A0;
+    border-bottom: 1px solid #A0A0A0;
+    cursor: pointer;
+    text-shadow: 0 1px 0 white;
+    margin-top: -4px;
 }
-.NB-bookmarklet .NB-bookmarklet-folder-container {
-  margin: 28px 0;
-  float: right;
+
+.NB-modal .NB-modal-tab:hover {
+    background-color: #F2F2F9;
 }
-.NB-bookmarklet .NB-bookmarklet-folder-container .NB-bookmarklet-folder-label {
-  float: left;
-  margin: 2px 4px 0 0;
+.NB-modal .NB-modal-tab:last-child {
+    border-right: 1px solid #A0A0A0;
 }
-.NB-bookmarklet .NB-bookmarklet-folder-container .NB-folders {
-  font-size: 14px;
+
+.NB-modal .NB-modal-tab.NB-active {
+    background-color: white;
+    border-bottom: 1px solid white;
+    cursor: default;
 }
-.NB-bookmarklet .NB-bookmarklet-folder-add-button {
-  float: left;
-  margin: 2px 4px 0 0;
-  cursor: pointer;
+
+.NB-modal .NB-tab {
+    display: none;
+    margin-top: 0;
+    clear: both;
+    border-top: 1px solid #A0A0A0;
+    overflow: auto;
+    height: 400px;
+    width: 100%;
+    padding-right: 12px;
 }
-.NB-bookmarklet .NB-bookmarklet-new-folder-container {
-  display: none;
-  float: right;
-  clear: both;
+.NB-modal .NB-tab.NB-active {
+    display: block;
 }
-.NB-bookmarklet .NB-bookmarklet-folder-new {
-  float: left;
-  padding: 2px;
-  border: 1px solid #505050;
-  font-size: 11px;
-  line-height: 13px;
-  margin: 2px 0 0;
-  width: 170px;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-new-label {
-  margin: 4px 4px 0 0;
-  float: left;
-}
-.NB-bookmarklet .NB-folders {
-  width: 200px;
-}
-.NB-bookmarklet .NB-modal-submit {
-  margin: 24px 0 8px;
-  padding: 0 0 6px;
-}
-.NB-bookmarklet .NB-modal-submit-button {
-  clear: both;
-  padding: 0 16px;
-  line-height: 24px;
-  width: 200px;
-  text-align: center;
-  text-shadow: none;
-}
-.NB-bookmarklet .NB-modal-submit-button img {
-  margin: 5px 6px 0 0;
-  width: 16px;
-  height: 16px;
-  float: left;
-  vertical-align: top;
-}
-.NB-bookmarklet .NB-bookmarklet-error {
-  margin: 12px 0 0 0;
-  font-weight: bold;
-  color: #701040;
-}
-.NB-bookmarklet .NB-bookmarklet-error img {
-  float: left;
-  width: 16px;
-  height: 16px;
-  vertical-align: top;
-  margin: -2px 6px 0 0;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-label {
-  float: right;
-}
-.NB-bookmarklet .NB-folders {
-  float: right;
-}
-.NB-bookmarklet .NB-error-invalid {
-    padding: 12px 12px;
-    font-size: 13px;
-    text-shadow: none;
-    color: white;
-    background-color: #690F0F;
-    border-radius: 8px;
-}
-.NB-bookmarklet .NB-error-invalid a {
-    color: #9FC6F5;
-    text-decoration: underline;
+
+.NB-modal .NB-modal-section {
+    padding: 12px 0;
 }

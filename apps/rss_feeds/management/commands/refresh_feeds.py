@@ -9,7 +9,6 @@ from utils.management_functions import daemonize
 import django
 import socket
 import datetime
-import redis
 
 
 class Command(BaseCommand):
@@ -67,7 +66,7 @@ class Command(BaseCommand):
             num_workers = 1
         
         options['compute_scores'] = True
-        options['quick'] = "0"
+        options['quick'] = float(MStatistics.get('quick_fetch', 0))
         
         disp = feed_fetcher.Dispatcher(options, num_workers)        
         
