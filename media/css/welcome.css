@@ -7,9 +7,9 @@ body.NB-welcome {
 }
 .NB-welcome .NB-splash-info.NB-splash-top {
     height: 6px;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#17501B), to(#143F14));
-    background: -moz-linear-gradient(center top, #17501B 0%, #143F14 100%); 
-    border-bottom: 1px solid #213021;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4B638C), to(#23364D));
+    background: -moz-linear-gradient(center top , #4B638C 0%, #23364D 100%);
+    border-bottom: 1px solid #000D41;
     border-top: none;
 }
 
@@ -57,8 +57,8 @@ body.NB-welcome {
 
 .NB-welcome-header {
     background-color: #238232;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#238232), to(#1E6F24));
-    background: -moz-linear-gradient(center top, #238232 0%, #1E6F24 100%);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#69A1D1), to(#F1C366));
+    background: -moz-linear-gradient(center top , #69A1D1 0%, #F1C366 100%) repeat scroll 0 0 transparent;
     height: 400px;
     color: white;
     overflow: hidden;
@@ -139,13 +139,13 @@ body.NB-welcome {
 }
 .NB-welcome-header-caption {
     float: left;
-    color: #FDC85B;
+    color: white;
     cursor: pointer;
     padding: 36px 12px 12px;
     text-transform: uppercase;
 }
 .NB-welcome-header-caption.NB-welcome-header-caption-signin {
-    color: #A5E665;
+    color: #E8F64A;
 }
 .NB-welcome-header-caption span {
     padding: 2px 8px;
@@ -163,7 +163,7 @@ body.NB-welcome {
     -ms-transition: all .25s ease-in-out;
 }
 .NB-welcome-header-caption.NB-active span {
-    color: #FAA518;
+    color: #FDC85B;
     background-color: rgba(235, 235, 235, 0.1);
 }
 
@@ -180,7 +180,7 @@ body.NB-welcome {
     padding: 0 12px;
     font-size: 11px;
     text-transform: uppercase;
-    color: #C5EC88;
+    color: white;
     text-shadow: 0 1px 0 rgba(35, 35, 35, 0.4);
 }
 .NB-welcome-header-actions img {
@@ -365,7 +365,7 @@ body.NB-welcome {
 .NB-welcome-header-account label,
 .NB-welcome-header-account .NB-account-label {
     margin: 0;
-    color: #FFFFB0;
+    color: #FFFFD5;
     text-shadow: 0 1px 0 rgba(35, 35, 35, 0.3);
     font-size: 12px;
     display: block;

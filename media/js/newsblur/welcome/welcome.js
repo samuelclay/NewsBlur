@@ -32,7 +32,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     
     leave_header_caption: function(e) {
         var $caption = $(e.currentTarget);
-        console.log(["leave_header_caption", $caption]);
+
         if ($caption.hasClass('NB-welcome-header-caption-signin')) {
 
         } else {
