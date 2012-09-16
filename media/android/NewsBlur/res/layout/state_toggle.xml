@@ -20,8 +20,9 @@
         <TextView
             android:id="@+id/toggle_all"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
+            android:gravity="center"
             android:layout_weight="1"
             android:text="All"
             android:textColor="@color/button_state_text_selector"
@@ -42,17 +43,12 @@
                 android:layout_height="7dp"
                 android:src="@drawable/neutral_simple_circle" />
 
-            <ImageView
-                android:layout_width="7dp"
-                android:layout_height="7dp"
-                android:layout_marginLeft="4dp"
-                android:src="@drawable/positive_simple_circle" />
-
             <TextView
                 android:id="@+id/toggle_some"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="4dp"
+                android:gravity="center"
                 android:enabled="false"
                 android:text="Unread"
                 android:textColor="@color/button_state_text_selector"
@@ -75,8 +71,9 @@
             <TextView
                 android:id="@+id/toggle_focus"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="4dp"
+                android:gravity="center"
                 android:layout_marginRight="10dp"
                 android:text="Focus"
                 android:textColor="@color/button_state_text_selector"

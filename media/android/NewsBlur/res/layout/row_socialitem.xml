@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/item_background"
+    android:background="@drawable/selector_feed_background"
     android:orientation="horizontal" >
 
     <RelativeLayout
@@ -30,14 +30,10 @@
 
         <ImageView
             android:id="@+id/row_item_feedicon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
             android:layout_marginLeft="6dp"
             android:layout_marginTop="10dp"
-            android:paddingBottom="4dp"
-            android:paddingTop="2dp"
-            android:paddingLeft="2dp"
-            android:paddingRight="2dp"
             android:layout_toRightOf="@id/row_item_sidebar" />
 
         <TextView

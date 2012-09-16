@@ -200,7 +200,6 @@ public class APIManager {
 				insertComments(story);
 			}
 
-
 			return storiesResponse;
 		} else {
 			return null;

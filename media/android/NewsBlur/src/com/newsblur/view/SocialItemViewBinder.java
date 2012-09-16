@@ -17,31 +17,15 @@ import com.newsblur.util.ImageLoader;
 public class SocialItemViewBinder implements ViewBinder {
 
 	private ImageLoader imageLoader;
-	private Context context;
 
 	public SocialItemViewBinder(final Context context) {
 		this.imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
-		this.context = context;
 	}
 	
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		final String columnName = cursor.getColumnName(columnIndex);
-		if (TextUtils.equals(columnName, DatabaseConstants.STORY_READ)) {
-			String read = cursor.getString(columnIndex);
-			if (TextUtils.equals(read, "0")) {
-				((TextView) view).setTextColor(context.getResources().getColor(R.color.darkgray));
-			} else {
-				((TextView) view).setTextColor(context.getResources().getColor(R.color.lightgray));
-			}
-			return true;
-		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_AUTHORS)) {
-			if (TextUtils.isEmpty(cursor.getString(columnIndex))) {
-				view.setVisibility(View.GONE);
-			} else {
-				view.setVisibility(View.VISIBLE);
-			}
-		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
+		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
 			String faviconUrl = AppConstants.NEWSBLUR_URL + cursor.getString(columnIndex);
 			imageLoader.displayImage(faviconUrl, ((ImageView) view), false);
 			return true;

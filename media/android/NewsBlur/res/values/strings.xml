@@ -41,8 +41,8 @@
 	<string name="reading_shared_count" formatted="false">%s SHARES</string>
 	<string name="reading_comment_count" formatted="false">%s COMMENTS</string>
 	
-	<string name="all_stories">All stories</string>
-	<string name="all_shared_stories">All shared stories</string>
+	<string name="all_stories">ALL STORIES</string>
+	<string name="all_shared_stories">ALL SHARED STORIES</string>
 	
 	<string name="error_saving_classifier">There was an error. Check your internet connection.</string>
 	
@@ -89,19 +89,21 @@
     
     <string name="toast_marked_folder_as_read">Folder marked as read</string>
     <string name="toast_marked_feed_as_read">Feed marked as read</string>
+    <string name="toast_marked_socialfeed_as_read">Blurblog marked as read</string>
+    
     <string name="toast_error_marking_feed_as_read">Error marking feed as read. Check your internet connection.</string>
     
     <string name="logout_warning">Are you sure you want to log out?</string>
     
     <string name="unsorted_folder_name">Unsorted</string>
     
-    <string name="empty_list_notice">Loading stories…</string>
     <string name="feed_search_hint">Search for new feeds</string>
+    <string name="empty_list_notice">Loading stories…</string>
+    <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_add_feed">Add new feed</string>
     <string name="menu_search">Search</string>
-    
+    <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
-    <string name="empty_search_notice">Type a search term to begin</string>
     <string name="menu_delete_feed">Delete feed</string>
     
     <string name="feed_deleted">Feed deleted</string>

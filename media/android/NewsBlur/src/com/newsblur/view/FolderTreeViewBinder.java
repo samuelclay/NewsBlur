@@ -56,7 +56,7 @@ public class FolderTreeViewBinder implements ViewBinder {
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FOLDER_NAME)) {
 			final String folderName = cursor.getString(columnIndex);
-			((TextView) view).setText("" + folderName);
+			((TextView) view).setText("" + folderName.toUpperCase());
 			view.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {

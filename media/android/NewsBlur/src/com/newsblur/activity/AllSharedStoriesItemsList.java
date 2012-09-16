@@ -72,5 +72,12 @@ public class AllSharedStoriesItemsList extends ItemsList {
 
 		startService(intent);
 	}
+
+
+	@Override
+	public void markItemListAsRead() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

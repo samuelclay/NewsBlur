@@ -35,7 +35,7 @@ public class Story implements Serializable {
 	public int commentCount;
 
 	@SerializedName("read_status")
-	public String read;
+	public int read;
 
 	@SerializedName("story_tags")
 	public String[] tags;
@@ -118,7 +118,7 @@ public class Story implements Serializable {
 		story.intelligence.intelligenceFeed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
 		story.intelligence.intelligenceTags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));
 		story.intelligence.intelligenceTitle = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
-		story.read = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_READ));
+		story.read = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ));
 		story.tags = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TAGS)), ",");
 		story.feedId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FEED_ID));
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));

@@ -72,5 +72,12 @@ public class AllStoriesItemsList extends ItemsList {
 
 		startService(intent);
 	}
+
+
+	@Override
+	public void markItemListAsRead() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

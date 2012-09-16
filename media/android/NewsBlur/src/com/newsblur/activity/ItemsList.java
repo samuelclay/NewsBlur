@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Window;
 import com.newsblur.R;
@@ -28,6 +30,7 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 	private FeedIntelligenceSelectorFragment intelligenceSelectorFragment;
 	protected String TAG = "ItemsList";
 	protected int currentState;
+	private Menu menu;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -60,12 +63,20 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			finish();
-			return true;
+			case android.R.id.home:
+				finish();
+				return true;
+	
+			case R.id.menu_mark_all_as_read:
+				markItemListAsRead();
+				return true;
 		}
+	
 		return false;
 	}
+	
+	public abstract void markItemListAsRead();
+	
 
 	@Override
 	public void updateAfterSync() {

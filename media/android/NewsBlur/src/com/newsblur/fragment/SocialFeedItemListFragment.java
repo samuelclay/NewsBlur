@@ -53,10 +53,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		this.currentState = currentState;
 	}
 	
-	public SocialFeedItemListFragment() {
-		
-	}
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -67,8 +63,8 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		
 		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
 		
-		String[] groupFrom = new String[] { DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
-		int[] groupTo = new int[] { R.id.row_item_feedicon, R.id.row_item_feedtitle, R.id.row_item_title, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar};
+		String[] groupFrom = new String[] { DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
+		int[] groupTo = new int[] { R.id.row_item_feedicon, R.id.row_item_feedtitle, R.id.row_item_title, R.id.row_item_date, R.id.row_item_author, R.id.row_item_sidebar};
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 				

@@ -424,6 +424,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	}
 
 	public void requery() {
+		notifyDataSetInvalidated();
 		folderCursorHelper.getCursor().requery();
 		blogCursorHelper.getCursor().requery();
 		allStoriesCountCursor.requery();

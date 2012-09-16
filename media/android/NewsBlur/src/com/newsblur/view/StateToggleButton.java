@@ -22,11 +22,11 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 
 	private View view;
 
-	private TextView allButton;
+	private View allButton;
 
-	private TextView someButton;
+	private View someButton;
 
-	private TextView focusButton;
+	private View focusButton;
 
 	public StateToggleButton(Context context, AttributeSet art) {
 		super(context, art);
@@ -41,9 +41,9 @@ public class StateToggleButton extends LinearLayout implements OnClickListener {
 	public void setupContents() {
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		view = inflater.inflate(R.layout.state_toggle, this);
-		allButton = (TextView) view.findViewById(R.id.toggle_all);
-		someButton = (TextView) view.findViewById(R.id.toggle_some);
-		focusButton = (TextView) view.findViewById(R.id.toggle_focus);
+		allButton = (View) view.findViewById(R.id.toggle_all);
+		someButton = (View) view.findViewById(R.id.toggle_some);
+		focusButton = (View) view.findViewById(R.id.toggle_focus);
 		allButton.setOnClickListener(this);
 		someButton.setOnClickListener(this);
 		focusButton.setOnClickListener(this);

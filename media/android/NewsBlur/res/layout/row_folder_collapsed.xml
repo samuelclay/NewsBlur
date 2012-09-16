@@ -8,12 +8,12 @@
 
     <ImageView
         android:id="@+id/row_folder_icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="18dp"
-        android:layout_marginRight="12dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="10dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/folder_open" />
 
@@ -67,7 +67,7 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/row_folder_icon"
         android:layout_toLeftOf="@id/row_foldersums"
-        android:textColor="@color/darkgray"
+        android:textColor="@color/folder_text"
         android:textSize="16dp"
         android:textStyle="bold" />
    

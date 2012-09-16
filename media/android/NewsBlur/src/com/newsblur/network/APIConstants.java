@@ -26,13 +26,13 @@ public class APIConstants {
 	
 	public static final String URL_FEED_AUTOCOMPLETE = "http://newsblur.com/rss_feeds/feed_autocomplete";
 	
-	public static final String URL_LIKE_COMMENT = "http://dev.newsblur.com/social/like_comment";
-	public static final String URL_UNLIKE_COMMENT = "http://dev.newsblur.com/social/remove_like_comment";
-	public static final String URL_REPLY_TO = "http://dev.newsblur.com/social/save_comment_reply";
-	public static final String URL_ADD_FEED = "http://dev.newsblur.com/reader/add_url";
-	public static final String URL_DELETE_FEED = "http://dev.newsblur.com/reader/delete_feed";
+	public static final String URL_LIKE_COMMENT = "http://newsblur.com/social/like_comment";
+	public static final String URL_UNLIKE_COMMENT = "http://newsblur.com/social/remove_like_comment";
+	public static final String URL_REPLY_TO = "http://newsblur.com/social/save_comment_reply";
+	public static final String URL_ADD_FEED = "http://newsblur.com/reader/add_url";
+	public static final String URL_DELETE_FEED = "http://newsblur.com/reader/delete_feed";
 	
-	public static final String URL_CLASSIFIER_SAVE = "http://dev.newsblur.com/classifier/save";
+	public static final String URL_CLASSIFIER_SAVE = "http://newsblur.com/classifier/save";
 	
 	public static final String PARAMETER_FEEDS = "feeds";
 	public static final String PARAMETER_PASSWORD = "password";
@@ -57,10 +57,10 @@ public class APIConstants {
 	
 	public static final String PARAMETER_PAGE_NUMBER = "page";
 	
-	public static final String NEWSBLUR_URL = "http://dev.newsblur.com";
-	public static final String URL_CATEGORIES = "http://dev.newsblur.com/categories/" ;
+	public static final String NEWSBLUR_URL = "http://newsblur.com";
+	public static final String URL_CATEGORIES = "http://newsblur.com/categories/" ;
 	public static final String PARAMETER_CATEGORY = "category";
-	public static final String URL_ADD_CATEGORIES = "http://dev.newsblur.com/categories/subscribe";
-	public static final String URL_AUTOFOLLOW_PREF = "http://dev.newsblur.com/profile/set_preference";
+	public static final String URL_ADD_CATEGORIES = "http://newsblur.com/categories/subscribe";
+	public static final String URL_AUTOFOLLOW_PREF = "http://newsblur.com/profile/set_preference";
 	
 }

@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/selector_feed_background"
     android:orientation="vertical"
-    android:paddingBottom="10dp"
-    android:paddingTop="10dp" >
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp" >
 
     <LinearLayout
         android:id="@+id/row_feedcounters"
@@ -14,7 +14,7 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
-        android:padding="3dp"
+        android:padding="2dp"
         android:gravity="right"
         android:orientation="horizontal" >
 
@@ -51,10 +51,10 @@
 
     <ImageView
         android:id="@+id/row_feedfavicon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:layout_width="17dp"
+        android:layout_height="17dp"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="18dp"
+        android:layout_marginLeft="19dp"
         android:contentDescription="@string/description_favicon" />
 
     <TextView

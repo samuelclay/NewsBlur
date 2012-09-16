@@ -3,11 +3,16 @@ package com.newsblur.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.SocialFeedItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.MarkSocialFeedAsReadTask;
 import com.newsblur.service.SyncService;
 
 public class SocialFeedItemsList extends ItemsList {
@@ -15,18 +20,18 @@ public class SocialFeedItemsList extends ItemsList {
 	private String username;
 	private String userId;
 	private String userIcon;
+	private APIManager apiManager;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 
+		apiManager = new APIManager(this);
+		
 		username = getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME);
 		userIcon = getIntent().getStringExtra(EXTRA_BLURBLOG_USER_ICON );
 		userId = getIntent().getStringExtra(EXTRA_BLURBLOG_USERID);
-		
-//		Drawable drawable = ((NewsBlurApplication) getApplication()).getImageLoader().getImage(userIcon, userId);
-//		getSupportActionBar().setLogo(drawable);
-		
+				
 		setTitle(username);
 		
 		if (itemListFragment == null) {
@@ -43,6 +48,15 @@ public class SocialFeedItemsList extends ItemsList {
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
 			triggerRefresh();
 		}
+	}
+	
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.itemslist, menu);
+		return true;
 	}
 	
 	@Override
@@ -62,6 +76,22 @@ public class SocialFeedItemsList extends ItemsList {
 		}
 		intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_USERNAME, username);
 		startService(intent);
+	}
+
+	@Override
+	public void markItemListAsRead() {
+		new MarkSocialFeedAsReadTask(apiManager, getContentResolver()){
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (result.booleanValue()) {
+					setResult(RESULT_OK);
+					Toast.makeText(SocialFeedItemsList.this, R.string.toast_marked_socialfeed_as_read, Toast.LENGTH_SHORT).show();
+					finish();
+				} else {
+					Toast.makeText(SocialFeedItemsList.this, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
+				}
+			}
+		}.execute(userId);
 	}
 
 }

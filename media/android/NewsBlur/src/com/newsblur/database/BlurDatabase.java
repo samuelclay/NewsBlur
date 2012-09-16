@@ -148,16 +148,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(drop + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE);
 		db.execSQL(drop + DatabaseConstants.UPDATE_TABLE);
 		
-		db.execSQL(FEED_SQL);
-		db.execSQL(SOCIAL_FEED_SQL);
-		db.execSQL(FOLDER_SQL);
-		db.execSQL(STORY_SQL);
-		db.execSQL(COMMENT_SQL);
-		db.execSQL(REPLY_SQL);
-		db.execSQL(CLASSIFIER_SQL);
-		db.execSQL(FEED_FOLDER_SQL);
-		db.execSQL(SOCIALFEED_STORIES_SQL);
-		db.execSQL(OFFLINE_UPDATE_SQL);
+		onCreate(db);
 		
 		db.close();
 	}

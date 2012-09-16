@@ -25,12 +25,12 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri CLASSIFIER_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/classifiers/");
 	public static final Uri FEED_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
 	public static final Uri SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
+	public static final Uri ALL_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
 	
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
 	public static final Uri MULTIFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feeds/");
 	public static final Uri SOCIALFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/socialfeed/");
 	public static final Uri STORY_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/story/");
-	public static final Uri ALL_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
 	public static final Uri ALL_SHARED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/socialfeeds/");
 	public static final Uri COMMENTS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/comments/");
 	public static final Uri REPLIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/replies/");
@@ -132,9 +132,9 @@ public class FeedProvider extends ContentProvider {
 		Uri resultUri = null;
 		switch (uriMatcher.match(uri)) {
 
-		// Inserting a folder
+			// Inserting a folder
 		case ALL_FOLDERS:
-			final long folderId = db.insertWithOnConflict(DatabaseConstants.FOLDER_TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+			final long folderId = db.insertWithOnConflict(DatabaseConstants.FOLDER_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			resultUri = uri.buildUpon().appendPath("" + folderId).build();
 			break;
 
@@ -364,7 +364,7 @@ public class FeedProvider extends ContentProvider {
 		case OFFLINE_UPDATES:
 			return db.query(DatabaseConstants.UPDATE_TABLE, null, null, null, null, null, null);
 		case ALL_SOCIAL_FEEDS:
-			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, DatabaseConstants.SOCIAL_FEED_TITLE + " ASC");
+			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, selection, null, null, null, "UPPER(" + DatabaseConstants.SOCIAL_FEED_TITLE + ") ASC");
 		case INDIVIDUAL_SOCIAL_FEED:
 			return db.query(DatabaseConstants.SOCIALFEED_TABLE, null, DatabaseConstants.SOCIAL_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() }, null, null, null);
 		case ALL_SHARED_STORIES: 

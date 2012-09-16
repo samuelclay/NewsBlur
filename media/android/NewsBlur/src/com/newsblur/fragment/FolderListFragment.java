@@ -2,6 +2,7 @@ package com.newsblur.fragment;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -55,11 +56,11 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	private String TAG = "FolderListFragment";
 	private SharedPreferences sharedPreferences;
 
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		Cursor folderCursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { DatabaseConstants.FOLDER_INTELLIGENCE_SOME }, null);
 		Cursor socialFeedCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
 		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
@@ -81,13 +82,13 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		folderAdapter = new MixedExpandableListAdapter(getActivity(), folderCursor, socialFeedCursor, countCursor, sharedCountCursor, R.layout.row_folder_collapsed, R.layout.row_folder_collapsed, R.layout.row_socialfeed, groupFrom, groupTo, R.layout.row_feed, childFrom, childTo, blogFrom, blogTo);
 		folderAdapter.setViewBinders(groupViewBinder, blogViewBinder);
 	}
-	
+
 	@Override
 	public void onAttach(Activity activity) {
 		sharedPreferences = activity.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		resolver = activity.getContentResolver();
 		apiManager = new APIManager(activity);
-		
+
 		super.onAttach(activity);
 	}
 
@@ -112,9 +113,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		list.setAdapter(folderAdapter);
 		list.setOnGroupClickListener(this);
 		list.setOnChildClickListener(this);
-		
+
 		checkOpenFolderPreferences();
-		
+
 		return v;
 	}
 
@@ -132,10 +133,10 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		MenuInflater inflater = getActivity().getMenuInflater();
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
-		
-			// Only create a context menu for child items
+
+		// Only create a context menu for child items
 		switch(type) {
-			// Group (folder) item
+		// Group (folder) item
 		case 0:
 			inflater.inflate(R.menu.context_folder, menu);
 			break;
@@ -152,7 +153,22 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		switch (item.getItemId()) {
 
 		case R.id.menu_mark_feed_as_read:
-			new MarkFeedAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(Long.toString(info.id));
+			new MarkFeedAsReadTask(getActivity(), apiManager) {
+				@Override
+				protected void onPostExecute(Boolean result) {
+					if (result.booleanValue()) {
+						ContentValues values = new ContentValues();
+						values.put(DatabaseConstants.FEED_NEGATIVE_COUNT, 0);
+						values.put(DatabaseConstants.FEED_NEUTRAL_COUNT, 0);
+						values.put(DatabaseConstants.FEED_POSITIVE_COUNT, 0);
+						resolver.update(FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(info.id)).build(), values, null, null);
+						folderAdapter.requery();
+						Toast.makeText(getActivity(), R.string.toast_marked_feed_as_read, Toast.LENGTH_SHORT).show();
+					} else {
+						Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
+					}	
+				}
+			}.execute(Long.toString(info.id));
 			return true;
 
 		case R.id.menu_delete_feed:
@@ -165,11 +181,31 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			if (folderAdapter.isExpandable(groupPosition)) {
 				final Cursor folderCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
 				String folderId = folderCursor.getString(folderCursor.getColumnIndex(DatabaseConstants.FOLDER_NAME));
-				new MarkFolderAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(folderId);
+				new MarkFolderAsReadTask(apiManager, resolver) {
+					@Override
+					protected void onPostExecute(Boolean result) {
+						if (result) {
+							folderAdapter.requery();
+							Toast.makeText(getActivity(), R.string.toast_marked_folder_as_read, Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
+						}
+					}
+				}.execute(folderId);
 			} else {
 				final Cursor socialFeedCursor = ((MixedExpandableListAdapter) list.getExpandableListAdapter()).getGroup(groupPosition);
 				String socialFeedId = socialFeedCursor.getString(socialFeedCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
-				new MarkSocialFeedAsReadTask(getActivity(), apiManager, resolver, folderAdapter).execute(socialFeedId);
+				new MarkSocialFeedAsReadTask(apiManager, resolver){
+					@Override
+					protected void onPostExecute(Boolean result) {
+						if (result.booleanValue()) {
+							folderAdapter.requery();
+							Toast.makeText(getActivity(), R.string.toast_marked_socialfeed_as_read, Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(getActivity(), R.string.toast_error_marking_feed_as_read, Toast.LENGTH_LONG).show();
+						}
+					}
+				}.execute(socialFeedId);
 			}
 			return true;	
 		}
@@ -185,16 +221,16 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		switch (state) {
 		case (AppConstants.STATE_ALL):
 			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
-			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_ALL;
-			break;
+		blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_ALL;
+		break;
 		case (AppConstants.STATE_SOME):
 			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
-			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_SOME;
-			break;
+		blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_SOME;
+		break;
 		case (AppConstants.STATE_BEST):
 			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_BEST;
-			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_BEST;
-			break;
+		blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_BEST;
+		break;
 		}
 
 		folderAdapter.currentState = groupSelection;

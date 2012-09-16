@@ -7,7 +7,7 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <View
             android:id="@+id/row_item_favicon_borderbar_1"

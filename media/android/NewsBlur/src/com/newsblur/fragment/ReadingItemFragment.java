@@ -148,7 +148,10 @@ public class ReadingItemFragment extends Fragment {
 		itemDate.setText(story.shortDate);
 		itemTitle.setText(story.title);
 		
-		itemAuthors.setText(story.authors.toUpperCase());
+		if (!TextUtils.isEmpty(story.authors)) {
+			itemAuthors.setText(story.authors.toUpperCase());
+		}
+		
 		itemAuthors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

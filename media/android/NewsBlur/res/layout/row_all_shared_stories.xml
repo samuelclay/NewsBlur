@@ -2,18 +2,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/newsblur_blue"
+    android:background="@drawable/selector_folder_background"
     android:paddingBottom="15dp"
     android:paddingTop="15dp" >
 
     
     <ImageView
         android:id="@+id/row_everything_icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="18dp"
+        android:layout_marginLeft="15dp"
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/group" />
@@ -69,7 +69,7 @@
         android:layout_toRightOf="@id/row_everything_icon"
         android:layout_toLeftOf="@id/row_foldersums"
         android:text="@string/all_shared_stories"
-        android:textColor="@color/white"
+        android:textColor="@color/folder_text"
         android:textSize="16dp"
         android:textStyle="bold" />
     

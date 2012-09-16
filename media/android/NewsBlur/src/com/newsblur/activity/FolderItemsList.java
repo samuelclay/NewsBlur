@@ -7,13 +7,18 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.fragment.FeedItemListFragment;
 import com.newsblur.fragment.FolderItemListFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.MarkFolderAsReadTask;
 import com.newsblur.service.SyncService;
 
 public class FolderItemsList extends ItemsList {
@@ -21,7 +26,8 @@ public class FolderItemsList extends ItemsList {
 	public static final String EXTRA_FOLDER_NAME = "folderName";
 	private String folderName;
 	private ArrayList<String> feedIds;
-
+	private APIManager apiManager;
+	
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -30,6 +36,8 @@ public class FolderItemsList extends ItemsList {
 		setTitle(folderName);
 		
 		feedIds = new ArrayList<String>();
+		
+		apiManager = new APIManager(this);
 		
 		final Uri feedsUri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(folderName).build();
 		Cursor cursor = getContentResolver().query(feedsUri, new String[] { DatabaseConstants.FEED_ID } , FeedProvider.getSelectionFromState(currentState), null, null);
@@ -60,6 +68,13 @@ public class FolderItemsList extends ItemsList {
 	public void triggerRefresh() {
 		triggerRefresh(0);
 	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.itemslist, menu);
+		return true;
+	}
 
 	@Override
 	public void triggerRefresh(int page) {
@@ -73,7 +88,23 @@ public class FolderItemsList extends ItemsList {
 		if (page > 1) {
 			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 		}
-
 		startService(intent);
+	}
+
+
+	@Override
+	public void markItemListAsRead() {
+		new MarkFolderAsReadTask(apiManager, getContentResolver()) {
+			@Override
+			protected void onPostExecute(Boolean result) {
+				if (result) {
+					setResult(RESULT_OK);
+					Toast.makeText(FolderItemsList.this, R.string.toast_marked_folder_as_read, Toast.LENGTH_SHORT).show();
+					finish();
+				} else {
+					Toast.makeText(FolderItemsList.this, R.string.toast_error_marking_feed_as_read, Toast.LENGTH_SHORT).show();
+				}
+			}
+		}.execute(folderName);
 	}
 }
