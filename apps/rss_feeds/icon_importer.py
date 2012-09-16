@@ -18,9 +18,10 @@ HEADERS = {
 
 class IconImporter(object):
     
-    def __init__(self, feed, force=False):
+    def __init__(self, feed, page_data=None, force=False):
         self.feed = feed
         self.force = force
+        self.page_data = page_data
         self.feed_icon, _ = MFeedIcon.objects.get_or_create(feed_id=self.feed.pk)
     
     def save(self):
@@ -45,18 +46,21 @@ class IconImporter(object):
             color     = self.determine_dominant_color_in_image(image)
             image_str = self.string_from_image(image)
 
-            self.feed_icon.data      = image_str
-            self.feed_icon.icon_url  = icon_url
-            self.feed_icon.color     = color
-            self.feed_icon.not_found = False
-            self.feed_icon.save()
+            if (self.feed_icon.color != color or 
+                self.feed_icon.data != image_str or 
+                self.feed_icon.icon_url != icon_url or
+                self.feed_icon.not_found):
+                self.feed_icon.data      = image_str
+                self.feed_icon.icon_url  = icon_url
+                self.feed_icon.color     = color
+                self.feed_icon.not_found = False
+                self.feed_icon.save()
             self.feed.favicon_color     = color
             self.feed.favicon_not_found = False
         else:
             self.feed_icon.not_found = True
             self.feed.favicon_not_found = True
             
-        self.feed_icon.save()
         self.feed.save()
         return not self.feed.favicon_not_found
      
@@ -103,7 +107,10 @@ class IconImporter(object):
 
         if PngImagePlugin._accept(prefix):
             # Windows Vista icon with PNG inside
-            image = PngImagePlugin.PngImageFile(image_file)
+            try:
+                image = PngImagePlugin.PngImageFile(image_file)
+            except IOError:
+                return
         else:
             # Load XOR bitmap
             image = BmpImagePlugin.DibImageFile(image_file)
@@ -137,7 +144,10 @@ class IconImporter(object):
     def fetch_image_from_page_data(self):
         image = None
         image_file = None
-        content = MFeedPage.get_data(feed_id=self.feed.pk)
+        if self.page_data:
+            content = self.page_data
+        else:
+            content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)
         if url:
             image, image_file = self.get_image_from_url(url)
@@ -187,6 +197,8 @@ class IconImporter(object):
         url = None
         if not content: return url
         try:
+            if isinstance(content, unicode):
+                content = content.encode('utf-8')
             icon_path = lxml.html.fromstring(content).xpath(
                 '//link[@rel="icon" or @rel="shortcut icon"]/@href'
             )

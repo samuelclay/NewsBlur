@@ -5,9 +5,10 @@
   <title>{% block title %}NewsBlur{% endblock %}</title>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
   <link rel="shortcut icon" HREF="/media/img/favicon.png">
+  <link rel="apple-touch-icon" href="/media/img/mobile/apple-touch-icon-precomposed.png" />
 
   <script type="text/javascript" charset="utf-8">
-    var NEWSBLUR = {};
+    window.NEWSBLUR = {};
     NEWSBLUR.Globals = {
       'is_authenticated'        : {{ user.is_authenticated|yesno:"true,false" }},
       'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
@@ -16,8 +17,8 @@
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
       'secret_token'            : "{{ user.profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
+      {% if user.pk %}'user_id'                 : {{ user.pk }},{% endif %}
       'email'                   : "{{ user.email|safe }}",
-      'google_favicon_url'      : 'http://www.google.com/s2/favicons?domain_url=',
       'MEDIA_URL'               : "{{ MEDIA_URL }}",
       'debug'                   : {{ debug|yesno:"true,false" }}
     };
@@ -28,12 +29,17 @@
       'unread_view'             : 0,
       'lock_mouse_indicator'    : 0,
       'feed_pane_size'          : {% firstof user_profile.feed_pane_size 240 %},
-      'tutorial_finished'       : {{ user_profile.tutorial_finished|yesno:"true,false" }},
+      'hide_getting_started'    : {{ user_profile.hide_getting_started|yesno:"true,false" }},
+      'has_setup_feeds'         : {{ user_profile.has_setup_feeds|yesno:"true,false" }},
+      'has_found_friends'       : {{ user_profile.has_found_friends|yesno:"true,false" }},
+      'has_trained_intelligence': {{ user_profile.has_trained_intelligence|yesno:"true,false" }},
       'hide_mobile'             : {{ user_profile.hide_mobile|yesno:"true,false" }},
       'story_titles_pane_size'  : 168,
       'story_pane_anchor'       : 'south',
       'new_window'              : 1,
-      'default_view'            : 'page',
+      'default_view'            : 'feed',
+      'default_order'           : 'newest',
+      'default_read_filter'     : 'all',
       'hide_read_feeds'         : 0,
       'show_tooltips'           : 1,
       'feed_order'              : 'ALPHABETICAL',
@@ -60,25 +66,31 @@
       'google-reader-authorize' : "{% url google-reader-authorize %}",
       'opml-upload'             : "{% url opml-upload %}",
       'opml-export'             : "{% url opml-export %}",
-      'domain'                  : "{% current_domain %}"
+      'domain'                  : "{% current_domain %}",
+      'favicon'                 : "/rss_feeds/icon/{id}"
     };
+    NEWSBLUR.Models = {};
+    NEWSBLUR.Collections = {};
+    NEWSBLUR.Views = {};
+    NEWSBLUR.app = {};
   </script>
   
   {% include_stylesheets "common" %}
     
-  {% if not debug %}
   <script type="text/javascript">
-
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-8371683-2']);
+    _gaq.push(['_setDomainName', "{% current_domain %}"]);
     _gaq.push(['_trackPageview']);
-
+  </script>
+  
+  {% if not debug %}
+  <script type="text/javascript">
     (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
-
   </script>
   {% endif %}
 </head>
@@ -90,24 +102,19 @@
   
   <div class="NB-splash-info NB-splash-top">
     <a href="{% url index %}"><img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" /></a>
-    <ul class="NB-splash-links">
-      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/samuelclay">@samuelclay</a></li>
-      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li>
-      <li class="NB-splash-link NB-splash-link-blog"><a href="http://blog.newsblur.com">The Blog</a></li>
-    </ul>
   </div>
       
   <div class="NB-splash-info NB-splash-bottom">
-    <a href="{% url index %}"><img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur.png" /></a>
     <ul class="NB-splash-links">
-      <li class="NB-splash-link"><a href="{% url faq %}">FAQ</a></li>
-      <li class="NB-splash-link"><a href="{% url about %}">About</a></li>
-      <li class="NB-splash-link NB-first NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
-    </ul>
-    <ul class="NB-splash-links NB-splash-links-2">
-      <li class="NB-splash-link"><a href="{% url api %}">API</a></li>
-      <li class="NB-splash-link"><a href="{% url press %}">Press</a></li>
+      <li class="NB-splash-link NB-splash-link-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" /></a></li>
+      <li class="NB-splash-link NB-splash-link-about"><a href="{% url about %}">About</a></li>
+      <li class="NB-splash-link NB-splash-link-faq"><a href="{% url faq %}">FAQ</a></li>
+      <li class="NB-splash-link NB-splash-link-api"><a href="{% url api %}">API</a></li>
+      <li class="NB-splash-link NB-splash-link-press"><a href="{% url press %}">Press</a></li>
+      <li class="NB-splash-link NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
       <li class="NB-splash-link NB-splash-link-getsatisfaction"><a href="https://getsatisfaction.com/newsblur">Feedback</a></li>
+      <li class="NB-splash-link NB-splash-link-blog"><a href="http://blog.newsblur.com">The Blog</a></li>
+      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li>
     </ul>
   </div>
   
@@ -116,13 +123,16 @@
   {% block head_js %}
     {% include_javascripts "common" %}
   {% endblock head_js %}
+
+  <script type="text/javascript" charset="utf-8">
+    _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
+    _.extend(NEWSBLUR.Preferences['view_settings'], {% if user_profile.view_settings %}{{ user_profile.view_settings|safe }}{% else %}{}{% endif %});
+    _.extend(NEWSBLUR.Preferences['collapsed_folders'], {% if user_profile.collapsed_folders %}{{ user_profile.collapsed_folders|safe }}{% else %}[]{% endif %});
+    
+  </script>
+
   {% block extra_head_js %}
   {% endblock extra_head_js %}
   
-  <script type="text/javascript" charset="utf-8">
-    $.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
-    $.extend(NEWSBLUR.Preferences['view_settings'], {% if user_profile.view_settings %}{{ user_profile.view_settings|safe }}{% else %}{}{% endif %});
-    $.extend(NEWSBLUR.Preferences['collapsed_folders'], {% if user_profile.collapsed_folders %}{{ user_profile.collapsed_folders|safe }}{% else %}[]{% endif %});
-  </script>
 </body>
 </html>

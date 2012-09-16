@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block bodyclass %}NB-static NB-static-iphone{% endblock %}
+
+{% block title %}The NewsBlur iPad &amp; iPhone App{% endblock %}
+
+{% block content %}
+
+  <div class="NB-static-title">
+    The NewsBlur iPad &amp; iPhone App
+  </div>
+
+  <div class="NB-ios-mockup">
+      <div class="NB-ios-ipad-skeleton">
+        <img src="{{ MEDIA_URL }}img/iphone/iPad skeleton.png">
+      </div>
+      <ul class="NB-ios-features NB-ios-features-ipad">
+        
+      </ul>
+      <div class="NB-ios-iphone-skeleton">
+        <img src="{{ MEDIA_URL }}img/iphone/iPhone skeleton.png">
+      </div>
+      <ul class="NB-ios-features NB-ios-features-iphone">
+        
+      </ul>
+  </div>
+  
+  <div class="NB-ios-main">
+    
+    <div class="NB-ios-title">
+        <div><a href="/">NewsBlur</a> is a free social news reader.</div>
+        <div class="NB-ios-subtitle">Built <a href="http://github.com/samuelclay/">in the open</a> in New York and San Francisco.</div>
+        
+    </div>
+    
+    <div class="NB-ios-stripe-wrapper">
+    <div class="NB-ios-stripe">
+    <a href="http://itunes.apple.com/us/app/newsblur/id463981119"  class="NB-ios-download">
+        <button>
+            <img src="{{ MEDIA_URL }}img/reader/download.png" />
+          Download the free NewsBlur iOS app on the<br /><span class="NB-big">iOS App Store</span>
+        </button>
+    </a>
+    </div>
+    </div>
+    <br />
+    <ul class="NB-ios-features">
+        <li class="NB-ios-feature" data-screenshot="1">
+            <img src="{{ MEDIA_URL }}img/iphone/v1.5 - iPad 1.png" class="NB-ios-ipad-screenshot" />
+            <img src="{{ MEDIA_URL }}img/iphone/v1.5 - iPhone 1.png" class="NB-ios-iphone-screenshot" />
+            <div class="NB-ios-feature-title">Sites &amp; Friends</div>
+            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+        </li>
+        <li class="NB-ios-feature" data-screenshot="2">
+            <img src="{{ MEDIA_URL }}img/iphone/v1.5 - iPad 2.png" class="NB-ios-ipad-screenshot" />
+            <img src="{{ MEDIA_URL }}img/iphone/v1.5 - iPhone 2.png" class="NB-ios-iphone-screenshot" />
+            <div class="NB-ios-feature-title">River of News</div>
+            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+        </li>
+        <li class="NB-ios-feature" data-screenshot="3">
+            <img src="{{ MEDIA_URL }}img/iphone/v1.5 - iPad 3.png" class="NB-ios-ipad-screenshot" />
+            <img src="{{ MEDIA_URL }}img/iphone/v1.5 - iPhone 3.png" class="NB-ios-iphone-screenshot" />
+            <div class="NB-ios-feature-title">Easy reading</div>
+            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+        </li>
+    </ul>
+    <br />
+    <ul class="NB-ios-features">
+        <li class="NB-ios-feature" data-screenshot="4">
+            <img src="{{ MEDIA_URL }}img/iphone/v1.5 - iPad 4.png" class="NB-ios-ipad-screenshot" />
+            <img src="{{ MEDIA_URL }}img/iphone/v1.5 - iPhone 4.png" class="NB-ios-iphone-screenshot" />
+            <div class="NB-ios-feature-title">Expand your network</div>
+            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+        </li>
+        <li class="NB-ios-feature" data-screenshot="5">
+            <img src="{{ MEDIA_URL }}img/iphone/v1.5 - iPad 5.png" class="NB-ios-ipad-screenshot" />
+            <img src="{{ MEDIA_URL }}img/iphone/v1.5 - iPhone 5.png" class="NB-ios-iphone-screenshot" />
+            <div class="NB-ios-feature-title">Comments from friends</div>
+            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+        </li>
+        <li class="NB-ios-feature NB-active" data-screenshot="6">
+            <img src="{{ MEDIA_URL }}img/iphone/iPad Default.png" class="NB-ios-ipad-screenshot" />
+            <img src="{{ MEDIA_URL }}img/iphone/iPhone Default.png" class="NB-ios-iphone-screenshot" />
+            <div class="NB-ios-feature-title">The NewsBlur<br />iOS App</div>
+            {# <div class="NB-ios-feature-subtitle">Read</div> #}
+        </li>
+    </ul>
+
+  </div>
+
+{% endblock content %}
+
+
+{% block extra_head_js %}
+<script>
+$(document).ready(function() {
+    var $features = $('.NB-ios-main .NB-ios-feature');
+    var iphone_width, ipad_width;
+    
+    var copy_features_to_mockup = function() {
+        var $mockup = $('.NB-ios-mockup .NB-ios-features-iphone');
+        var $mockup_ipad = $('.NB-ios-mockup .NB-ios-features-ipad');
+        $mockup.append($features.clone());
+        $mockup.find('.NB-ios-feature-title, .NB-ios-feature-subtitle').remove();
+        
+        $mockup_ipad.append($mockup.children().clone());
+        iphone_width = $('.NB-ios-mockup .NB-ios-iphone-screenshot').first().width();
+        ipad_width = $('.NB-ios-mockup .NB-ios-ipad-screenshot').first().width();
+        $mockup.children().not(':last').css('left', iphone_width);
+        $mockup_ipad.children().not(':last').css('left', ipad_width);
+
+        $mockup.find('.NB-ios-ipad-screenshot').remove();
+        $mockup_ipad.find('.NB-ios-iphone-screenshot').remove();
+        
+        $mockup.children().addClass("NB-ios-iphone");
+        $mockup_ipad.children().addClass("NB-ios-ipad");
+    };
+    
+    var hover_features = function() {
+        $features.bind('mouseenter', function() {
+            select_feature($(this));
+        });
+    };
+    
+    var select_feature = function($feature) {
+        var $mockup = $('.NB-ios-mockup .NB-ios-feature');
+        var $other_features = $features.not($feature);
+        var screenshots = $other_features.map(function() { return $(this).data('screenshot'); });
+        $features.removeClass('NB-active');
+        $feature.addClass('NB-active');
+        $mockup.each(function() {
+            var $this = $(this);
+            var screenshot_filtered = _.contains(screenshots, $this.data('screenshot'));
+            var feature_width = $this.hasClass('NB-ios-iphone') ? iphone_width : ipad_width;
+            var left = -1 * (feature_width + 1);
+            if (screenshot_filtered) {  
+                if (parseInt($this.css('left'), 10) > 0) left = feature_width;
+                $this.animate({'left': left}, {'duration': 320, 'queue': false, 'easing': 'easeInOutQuad'});
+            } else if (!screenshot_filtered) {
+                if (parseInt($this.css('left'), 10) <= (-1 * feature_width)) {
+                    $this.css({
+                        'left': feature_width
+                    });
+                }
+                $this.animate({'left': 0}, {'duration': 320, 'queue': false, 'easing': 'easeInOutQuad'});
+            }
+        });
+    };
+    
+    var rotation_interval;
+    var user_on_features = false;
+    var rotate_features = function() {
+        $('.NB-ios-main .NB-ios-features').bind('mouseenter', function() {
+            user_on_features = true;
+        }).bind('mouseleave', function() {
+            user_on_features = false;
+            clearInterval(rotation_interval);
+            start_rotation(1000);
+        });
+    };
+    var start_rotation = function(duration) {
+        clearInterval(rotation_interval);
+        rotation_interval = setInterval(function() {
+            if (!user_on_features) {
+                var current_feature = parseInt($features.filter('.NB-active').data('screenshot'), 10);
+                var next_feature = ((current_feature) % 6); // Off by 1, so no need to +1
+                var $next_feature = $features.eq(next_feature);
+                select_feature($next_feature);
+            }
+            if (duration != 3000) start_rotation(3000);
+        }, duration);
+    };
+    
+    copy_features_to_mockup();
+    hover_features();
+    rotate_features();
+    start_rotation(1000);
+    
+});
+</script>
+{% endblock %}

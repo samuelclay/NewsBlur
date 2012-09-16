@@ -1,4 +1,5 @@
 from django import template
+from apps.statistics.models import MFeedback
 
 register = template.Library()
 
@@ -15,5 +16,6 @@ def format_graph(n, max_value, height=30):
     return max(1, height * (n/float(max_value)))
     
 @register.inclusion_tag('statistics/render_feedback_table.xhtml')
-def render_feedback_table(feedbacks):
+def render_feedback_table():
+    feedbacks = MFeedback.all()
     return dict(feedbacks=feedbacks)

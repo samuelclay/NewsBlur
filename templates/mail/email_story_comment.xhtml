@@ -1,0 +1,157 @@
+{% load social_tags %}
+
+<style>
+.NB-story-comment {
+    border-top: 1px solid #A6A6A6;
+    border-bottom: 1px solid #A6A6A6;
+    background-color: #FCFCFC;
+    position: relative;
+    padding: 4px 28px 8px 80px;
+    line-height: 20px;
+    overflow: hidden;
+}
+.NB-story-comment .NB-user-avatar {
+    position: absolute;
+    left: 28px;
+    top: 10px;
+    cursor: pointer;
+}
+.NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
+    top: 26px;
+    left: 28px;
+    z-index: 1;
+}
+.NB-story-comment .NB-user-avatar img {
+    border-radius: 6px;
+    margin: 2px 0 0 1px;
+    width: 38px;
+    height: 38px;
+}
+.NB-story-comment .NB-user-avatar.NB-story-comment-reshare img {
+    height: 24px;
+    width: 24px;
+}
+.NB-story-comment .NB-story-comment-author-container {
+    overflow: hidden;
+    margin: 6px 0 0;
+}
+.NB-story-comment .NB-story-comment-reshares {
+    position: absolute;
+    top: 0px;
+    left: 8px;
+    z-index: 0;
+}
+.NB-story-comment .NB-story-comment-reshares .NB-user-avatar {
+    top: 12px;
+    left: 36px;
+}
+.NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+}
+.NB-story-comment .NB-story-comment-username {
+    float: left;
+    font-size: 11px;
+    color: #1D4BA6;
+    font-weight: bold;
+    margin: 0 10px 0 0;
+    text-shadow: 0 -1px 0 #F0F0F0;
+    cursor: pointer;
+}
+.NB-story-comment .NB-story-comment-date {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #9D9D9D;
+    font-weight: bold;
+    float: left;
+}
+.NB-story-comment .NB-story-comment-content {
+    float: left;
+    color: #303030;
+    clear: both;
+    padding: 0 0 6px 0;
+}
+.NB-story-comment .NB-story-comment-reply-button {
+    padding: 4px 24px 4px 12px;
+    float: left;
+    cursor: pointer;
+}
+.NB-story-comment .NB-story-comment-reply-button .NB-story-comment-reply-button-wrapper {
+    text-transform: uppercase;
+    background-color: #E9AF86;
+    color: white;
+    padding: 1px 4px;
+    line-height: 9px;
+    font-size: 9px;
+}
+.NB-story-comment .NB-story-comment-reply-button:hover .NB-story-comment-reply-button-wrapper {
+    background-color: #DE772B;
+}
+.NB-story-comment .NB-story-comment-reply-button:active .NB-story-comment-reply-button-wrapper {
+    background-color: #9F3A00;
+}
+
+.NB-story-comment-reply {
+    border-top: 1px solid #E0E0E0;
+    padding: 4px 0;
+    overflow: hidden;
+    clear: both;
+    position: relative;
+    padding: 6px 0 6px 32px;
+    line-height: 18px;
+}
+.NB-story-comment-reply .NB-story-comment-reply-photo {
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
+    position: absolute;
+    left: 0px;
+    top: 10px;
+    cursor: pointer;
+}
+.NB-story-comment-reply-content {
+    clear: both;
+    color: #303030;
+    float: left;
+}
+</style>
+
+<div style="margin: 24px 0;font-size: 14px;">
+
+    <div class="NB-story-comment" data-user-id="{{ comment.user_id }}">
+        <a href="{{ comment.user.feed_link }}" class="NB-user-avatar {% if comment.source_user_id %}NB-story-comment-reshare{% endif %}">
+            <img src="{{ comment.user.photo_url }}">
+        </a>
+        <div class="NB-story-comment-author-container">
+            {% if comment.source_user_id %}
+                <div class="NB-story-comment-reshares">
+                    <a href="{{ comment.source_user.feed_link }}" class="NB-user-avatar" title="{{ comment.source_user.username }}">
+                        <img src="{{ comment.source_user.photo_url }}">
+                    </a>
+                </div>
+            {% endif %}
+            <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
+            <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
+        </div>
+        <div class="NB-story-comment-content">
+            {% autoescape off %}
+            {{ comment.comments|linebreaksbr }}
+            {% endautoescape %}
+        </div>
+        {% if comment.replies %}
+        <div class="NB-story-comment-replies">
+            {% for reply in comment.replies %}
+            <div class="NB-story-comment-reply">
+                <a href="{{ reply.user.feed_link }}">
+                    <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
+                </a>
+                <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
+                <div class="NB-story-comment-date NB-story-comment-reply-date">{{ reply.publish_date }} ago</div>
+                <div class="NB-story-comment-reply-content">{{ reply.comments|safe }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
