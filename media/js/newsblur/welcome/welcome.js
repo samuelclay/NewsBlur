@@ -77,6 +77,9 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         }, {easing: 'easeInOutQuart', queue: false, duration: force ? 650 : 1400});
         $out_caption.removeClass('NB-active');
         $in_caption.addClass('NB-active');
+        if (r < 3) {
+            this.$('input').blur();
+        }
     },
     
     show_signin_form: function() {

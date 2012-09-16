@@ -57,8 +57,8 @@ body.NB-welcome {
 
 .NB-welcome-header {
     background-color: #238232;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#69A1D1), to(#F1C366));
-    background: -moz-linear-gradient(center top , #69A1D1 0%, #F1C366 100%) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#69A1D1), to(#E5B568));
+    background: -moz-linear-gradient(center top , #69A1D1 0%, #E5B568 100%) repeat scroll 0 0 transparent;
     height: 400px;
     color: white;
     overflow: hidden;
