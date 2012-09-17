@@ -98,7 +98,7 @@ public class ReadingItemFragment extends Fragment {
 		setupShareButton(view);
 		
 		if (story.sharedUserIds.length > 0 || story.commentCount > 0 ) {
-			view.findViewById(R.id.reading_shared_container).setVisibility(View.VISIBLE);
+			view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
 			setupItemCommentsAndShares(view);
 		}
 
@@ -181,7 +181,6 @@ public class ReadingItemFragment extends Fragment {
 
 		setupTags(view);
 	}
-
 
 	private void setupTags(View view) {
 		GridView tagContainer = (GridView) view.findViewById(R.id.reading_item_tags);

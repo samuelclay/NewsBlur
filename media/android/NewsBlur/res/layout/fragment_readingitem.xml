@@ -23,7 +23,7 @@
             <View
                 android:id="@+id/row_item_favicon_borderbar_2"
                 android:layout_width="8dp"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -35,14 +35,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
                     android:layout_marginBottom="5dp"
                     android:layout_marginRight="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
                     android:textColor="@color/linkblue"
                     android:textSize="13sp" />
-                
-                 <TextView
+
+                <TextView
                     android:id="@+id/reading_feed_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -100,8 +100,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp" >
+            
+            android:paddingTop="10dp"
+            android:visibility="gone" >
 
             <View
                 android:id="@+id/center_filler"
@@ -146,14 +147,15 @@
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@+id/shared_by"
                 android:paddingRight="5dp"
+                android:paddingBottom="10dp"
                 app:columnCount="3" />
-                 
-        </RelativeLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@drawable/divider_light" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/divider_light" />
+        </RelativeLayout>
 
         <com.newsblur.view.NewsblurWebview
             android:id="@+id/reading_webview"
@@ -166,9 +168,11 @@
             android:id="@+id/share_story_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/selector_button_background"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/selector_sharebutton_background"
             android:padding="10dp"
+            style="@style/shareButton"
             android:text="@string/share_this" />
 
         <RelativeLayout

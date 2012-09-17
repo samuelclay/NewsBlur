@@ -132,7 +132,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			startActivity(Intent.createChooser(intent, "Share using"));
 			return true;
 		case R.id.menu_textsize:
-			float currentValue = getSharedPreferences(PrefConstants.PREFERENCES, 0).getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
+			float currentValue = getSharedPreferences(PrefConstants.PREFERENCES, 0).getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 2.0f);
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(currentValue);
 			textSize.show(getSupportFragmentManager(), TEXT_SIZE);
 			return true;	
@@ -225,9 +225,9 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-		getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, (float) progress / 10f).commit();
+		getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, (float) progress / 2).commit();
 		Intent data = new Intent(ReadingItemFragment.TEXT_SIZE_CHANGED);
-		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, (float) progress / 10f); 
+		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, (float) progress / 2f); 
 		
 		sendBroadcast(data);
 	}

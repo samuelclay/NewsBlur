@@ -40,8 +40,8 @@
         android:id="@+id/textSizeSlider"
         android:background="@android:color/transparent"
         android:layout_width="fill_parent"
-        android:progress="15"
-        android:max="30"
+        android:progress="3"
+        android:max="5"
         android:layout_height="wrap_content" />
 
 </LinearLayout>

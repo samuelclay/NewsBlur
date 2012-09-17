@@ -25,10 +25,10 @@ public class Story implements Serializable {
 	@SerializedName("share_user_ids")
 	public String[] sharedUserIds;
 
-	@SerializedName("friend_user_ids")
+	@SerializedName("shared_by_friends")
 	public String[] friendUserIds = new String[]{};
 	
-	@SerializedName("public_user_ids")
+	@SerializedName("shared_by_public")
 	public String[] publicUserIds = new String[]{};
 	
 	@SerializedName("comment_count")
