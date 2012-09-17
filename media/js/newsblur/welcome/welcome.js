@@ -85,12 +85,17 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     },
     
     show_signin_form: function() {
+        var open = !NEWSBLUR.reader.flags['sidebar_closed'];
         this.hide_tryout();
         
         this.flags.on_header_caption = true;
-        this.rotate_screenshots(4, _.bind(function() {
-            this.$('input[name=login-username]').focus();
-        }, this));
+
+        _.delay(_.bind(function() {
+            this.rotate_screenshots(4, _.bind(function() {
+                this.$('input[name=login-username]').focus();
+            }, this));
+        }, this), open ? 560 : 0);
+
     },
     
     show_tryout: function() {
@@ -116,7 +121,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     
     hide_tryout: function() {
         if (!NEWSBLUR.reader) return;
-
+        
         NEWSBLUR.reader.close_sidebar();
         
         this.$('.NB-inner').animate({
