@@ -22,6 +22,41 @@
             android:layout_marginRight="10dp"
             android:contentDescription="@string/description_comment_user"
             android:scaleType="fitCenter" />
+        
+        <ImageView
+            android:id="@+id/comment_sharesource_image"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="35dp"
+            android:layout_marginRight="10dp"
+            android:visibility="invisible"
+            android:contentDescription="@string/description_comment_user"
+            android:scaleType="fitCenter" />
+        
+        <ImageView
+            android:id="@+id/comment_user_reshare_image"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:visibility="invisible"
+            android:contentDescription="@string/description_comment_user"
+            android:scaleType="fitCenter" />
+        
+        
+        
+        <ImageView
+            android:id="@+id/comment_user_reshare_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:contentDescription="@string/description_comment_user"
+            android:scaleType="fitCenter" />
 
         <ImageView
             android:id="@+id/comment_reply_icon"

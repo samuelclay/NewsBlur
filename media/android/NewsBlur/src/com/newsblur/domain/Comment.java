@@ -22,6 +22,9 @@ public class Comment implements Serializable {
 
 	@SerializedName("shared_date")
 	public String sharedDate;
+	
+	@SerializedName("source_user_id")
+	public String sourceUserId;
 
 	@SerializedName("date")
 	public String date;
@@ -40,6 +43,7 @@ public class Comment implements Serializable {
 		values.put(DatabaseConstants.COMMENT_LIKING_USERS, TextUtils.join(",", likingUsers));
 		values.put(DatabaseConstants.COMMENT_TEXT, commentText);
 		values.put(DatabaseConstants.COMMENT_SHAREDDATE, sharedDate);
+		values.put(DatabaseConstants.COMMENT_SOURCE_USERID, sourceUserId);
 		values.put(DatabaseConstants.COMMENT_USERID, userId);
 		values.put(DatabaseConstants.COMMENT_ID, id);
 		return values;
@@ -55,6 +59,7 @@ public class Comment implements Serializable {
 		comment.userId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_USERID));
 		String likingUsers = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_LIKING_USERS));
 		comment.likingUsers = TextUtils.split(likingUsers, ",");
+		comment.sourceUserId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_SOURCE_USERID));
 		comment.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_ID));
 
 		return comment;

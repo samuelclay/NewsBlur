@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.GridLayout;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -143,8 +144,17 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				replyText.setText(reply.text);
 				ImageView replyImage = (ImageView) replyView.findViewById(R.id.reply_user_image);
 
-				ProfileResponse replyUser = apiManager.getUser(reply.userId);
+				final ProfileResponse replyUser = apiManager.getUser(reply.userId);
 				imageLoader.displayImage(replyUser.user.photoUrl, replyImage);
+				replyImage.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Intent i = new Intent(context, Profile.class);
+						i.putExtra(Profile.USER_ID, replyUser.user.userId);
+						context.startActivity(i);
+					}
+				});
+				
 				TextView replyUsername = (TextView) replyView.findViewById(R.id.reply_username);
 				replyUsername.setText(replyUser.user.username);
 
@@ -159,8 +169,31 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
 				commentUsername.setText(commentUser.username);
 				String userPhoto = commentUser.photoUrl;
-				imageLoader.displayImage(userPhoto, commentImage);
+				
+				if (!TextUtils.isEmpty(comment.sourceUserId)) {
+					commentImage.setVisibility(View.INVISIBLE);
+					ImageView usershareImage = (ImageView) commentView.findViewById(R.id.comment_user_reshare_image);
+					ImageView sourceUserImage = (ImageView) commentView.findViewById(R.id.comment_sharesource_image);
+					sourceUserImage.setVisibility(View.VISIBLE);
+					usershareImage.setVisibility(View.VISIBLE);
+					commentImage.setVisibility(View.INVISIBLE);
+					
+					UserProfile user;
+					if (publicUserMap.containsKey(comment.sourceUserId)) {
+						user = publicUserMap.get(comment.sourceUserId);
+					} else {
+						user = friendUserMap.get(comment.sourceUserId);
+					}
+					
+					imageLoader.displayImage(user.photoUrl, sourceUserImage);
+					imageLoader.displayImage(userPhoto, usershareImage);
+				} else {
+					imageLoader.displayImage(userPhoto, commentImage);
+				}
+				
 				publicCommentViews.add(commentView);
+				
+				
 			} else {
 				UserProfile commentUser = friendUserMap.get(comment.userId);
 				if (commentUser != null) {
@@ -171,6 +204,16 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					friendCommentViews.add(commentView);
 				}
 			}
+			
+			commentImage.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					Intent i = new Intent(context, Profile.class);
+					i.putExtra(Profile.USER_ID, comment.userId);
+					context.startActivity(i);
+				}
+			});
+			
 		}
 		return null;
 	}
@@ -228,7 +271,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			commentCursor.moveToFirst();
 			
 			for (int i = 0; i < commentCursor.getCount(); i++) {
-				Comment comment = Comment.fromCursor(commentCursor);
+				final Comment comment = Comment.fromCursor(commentCursor);
 				ImageView image = new ImageView(context);
 				int imageLength = UIUtils.convertDPsToPixels(context, 25);
 				image.setMaxHeight(imageLength);
@@ -249,7 +292,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					@Override
 					public void onClick(View view) {
 						Intent i = new Intent(context, Profile.class);
-						//i.putExtra(Profile.USER_ID, userId);
+						i.putExtra(Profile.USER_ID, comment.userId);
 						context.startActivity(i);
 					}
 				});

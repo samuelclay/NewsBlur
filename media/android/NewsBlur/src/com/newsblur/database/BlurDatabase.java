@@ -54,6 +54,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 	private final String COMMENT_SQL = "CREATE TABLE " + DatabaseConstants.COMMENT_TABLE + " (" +
 		DatabaseConstants.COMMENT_DATE + TEXT + ", " +
 		DatabaseConstants.COMMENT_SHAREDDATE + TEXT + ", " +
+		DatabaseConstants.COMMENT_SOURCE_USERID + TEXT + ", " +
 		DatabaseConstants.COMMENT_ID + TEXT + " PRIMARY KEY, " +
 		DatabaseConstants.COMMENT_LIKING_USERS + TEXT + ", " +
 		DatabaseConstants.COMMENT_STORYID + TEXT + ", " + 
@@ -91,6 +92,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_COMMENT_COUNT + INTEGER + ", " +
 		DatabaseConstants.STORY_SHARE_COUNT + INTEGER + ", " +
 		DatabaseConstants.STORY_SOCIAL_USER_ID + TEXT + ", " +
+		DatabaseConstants.STORY_SOURCE_USER_ID + TEXT + ", " +
 		DatabaseConstants.STORY_SHARED_USER_IDS + TEXT + ", " +
 		DatabaseConstants.STORY_PUBLIC_USER_IDS + TEXT + ", " +
 		DatabaseConstants.STORY_FRIEND_USER_IDS + TEXT + ", " +

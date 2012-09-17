@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.domain.Classifier;
-import com.newsblur.fragment.ClassifierDialogFragment.TagUpdateCallback;
 import com.newsblur.network.APIManager;
 
 public class ClassifierDialogFragment extends DialogFragment {
@@ -111,9 +110,10 @@ public class ClassifierDialogFragment extends DialogFragment {
 							Toast.makeText(getActivity(), R.string.error_saving_classifier, Toast.LENGTH_SHORT).show();
 						}
 						
-						ClassifierDialogFragment.this.dismiss();
 					};
 				}.execute();
+
+				ClassifierDialogFragment.this.dismiss();
 			}
 		});
 		
@@ -136,9 +136,10 @@ public class ClassifierDialogFragment extends DialogFragment {
 						} else {
 							tagCallback.updateTagView(key, classifierType, result.intValue());	
 						}
-						ClassifierDialogFragment.this.dismiss();
 					}
 				}.execute();
+
+				ClassifierDialogFragment.this.dismiss();
 			}
 		});
 
@@ -169,9 +170,10 @@ public class ClassifierDialogFragment extends DialogFragment {
 						} else {
 							tagCallback.updateTagView(key, classifierType, result.intValue());	
 						}
-						ClassifierDialogFragment.this.dismiss();
 					}
 				}.execute();
+
+				ClassifierDialogFragment.this.dismiss();
 			}
 		});
 

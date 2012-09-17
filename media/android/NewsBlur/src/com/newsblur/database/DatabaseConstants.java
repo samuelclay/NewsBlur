@@ -76,12 +76,14 @@ public class DatabaseConstants {
 	public static final String STORY_PUBLIC_USER_IDS = "public_user_ids";
 	public static final String STORY_SHORTDATE = "shortDate";
 	public static final String STORY_SOCIAL_USER_ID = "socialUserId";
+	public static final String STORY_SOURCE_USER_ID = "sourceUserId";
 	public static final String STORY_TAGS = "tags";
 
 	public static final String COMMENT_ID = BaseColumns._ID;
 	public static final String COMMENT_STORYID = "comment_storyid";
 	public static final String COMMENT_TEXT = "comment_text";
 	public static final String COMMENT_DATE = "comment_date";
+	public static final String COMMENT_SOURCE_USERID = "comment_source_user";
 	public static final String COMMENT_LIKING_USERS = "comment_liking_users";
 	public static final String COMMENT_SHAREDDATE = "comment_shareddate";
 	public static final String COMMENT_USERID = "comment_userid";
@@ -114,7 +116,7 @@ public class DatabaseConstants {
 	};
 
 	public static final String[] COMMENT_COLUMNS = {
-		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_USERID, COMMENT_DATE, COMMENT_LIKING_USERS, COMMENT_SHAREDDATE
+		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_USERID, COMMENT_DATE, COMMENT_LIKING_USERS, COMMENT_SHAREDDATE, COMMENT_SOURCE_USERID
 	};
 	
 	public static final String[] REPLY_COLUMNS = {
@@ -127,7 +129,7 @@ public class DatabaseConstants {
 
 	public static final String[] STORY_COLUMNS = {
 		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_DATE, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TITLE,
-		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE, STORY_SOCIAL_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_PUBLIC_USER_IDS
+		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE, STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_PUBLIC_USER_IDS
 	};
 
 	public static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") >= 0 ";
@@ -141,6 +143,7 @@ public class DatabaseConstants {
 	public static final String STORY_INTELLIGENCE_BEST = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 ";
 	public static final String STORY_INTELLIGENCE_SOME = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 ";
 	public static final String STORY_INTELLIGENCE_ALL = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 ";
+	
 	
 	
 }

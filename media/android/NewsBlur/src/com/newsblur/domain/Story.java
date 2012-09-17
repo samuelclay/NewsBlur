@@ -43,6 +43,9 @@ public class Story implements Serializable {
 	@SerializedName("social_user_id")
 	public String socialUserId;
 
+	@SerializedName("source_user_id")
+	public String sourceUserId;
+	
 	@SerializedName("story_title")
 	public String title;
 
@@ -86,6 +89,7 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_SHARE_COUNT, shareCount);
 		values.put(DatabaseConstants.STORY_AUTHORS, authors);
 		values.put(DatabaseConstants.STORY_SOCIAL_USER_ID, socialUserId);
+		values.put(DatabaseConstants.STORY_SOURCE_USER_ID, sourceUserId);
 		values.put(DatabaseConstants.STORY_SHARED_USER_IDS, TextUtils.join(",", sharedUserIds));
 		values.put(DatabaseConstants.STORY_FRIEND_USER_IDS, TextUtils.join(",", friendUserIds));
 		values.put(DatabaseConstants.STORY_PUBLIC_USER_IDS, TextUtils.join(",", publicUserIds));
@@ -110,6 +114,7 @@ public class Story implements Serializable {
 		story.shareCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHARE_COUNT));
 		story.commentCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_COMMENT_COUNT));
 		story.socialUserId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SOCIAL_USER_ID));
+		story.sourceUserId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SOURCE_USER_ID));
 		story.permalink = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_PERMALINK));
 		story.sharedUserIds = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHARED_USER_IDS)), ",");
 		story.friendUserIds = TextUtils.split(cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_FRIEND_USER_IDS)), ",");
