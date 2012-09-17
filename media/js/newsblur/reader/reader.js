@@ -203,7 +203,6 @@
                             .addClass('NB-story-pane-'+story_anchor);
                             
             this.layout.outerLayout = this.$s.$layout.layout({ 
-                closable:               true,
                 zIndex:                 2,
                 fxName:                 "slideOffscreen",
                 fxSettings:             { duration: 560, easing: "easeInOutQuint" },
@@ -212,7 +211,7 @@
                 west__size:             this.model.preference('feed_pane_size'),
                 west__minSize:          this.constants.MIN_FEED_LIST_SIZE,
                 west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
-                west__initHidden:       this.options.hide_sidebar,
+                // west__initHidden:       this.options.hide_sidebar,
                 west__spacing_open:     this.options.hide_sidebar ? 1 : 6,
                 resizerDragOpacity:     0.6,
                 resizeWhileDragging:    true,
@@ -971,7 +970,9 @@
         // = Feed bar - Individual Feeds =
         // ===============================
         
-        reset_feed: function() {
+        reset_feed: function(options) {
+            options = options || {};
+            
             $.extend(this.flags, {
                 'scrolling_by_selecting_story_title': false,
                 'page_view_showing_feed_view': false,
@@ -1032,6 +1033,10 @@
                 this.hide_tryfeed_view();
             }
             if (NEWSBLUR.Globals.is_anonymous) {
+                if (options.router) {
+                    this.$s.$layout.layout().show('west', true);
+                    this.$s.$layout.show();
+                }
                 this.hide_tryout_signup_button();
             }
             
@@ -1058,7 +1063,7 @@
             this.flags['opening_feed'] = true;
             
             if (options.try_feed || feed) {
-                this.reset_feed();
+                this.reset_feed(options);
                 this.hide_splash_page();
                 if (options.story_id) {
                     this.flags['select_story_in_feed'] = options.story_id;
@@ -1290,7 +1295,7 @@
                               this.active_folder && this.active_folder.folder_view;
             var folder_title = folder && folder.get('folder_title') || "Everything";
             
-            this.reset_feed();
+            this.reset_feed(options);
             this.hide_splash_page();
             this.active_folder = folder || new Backbone.Model({
                 folder_title: folder_title,
@@ -1409,7 +1414,7 @@
             var $story_titles = this.$s.$story_titles;
             var folder_title = "Blurblogs";
             
-            this.reset_feed();
+            this.reset_feed(options);
             this.hide_splash_page();
             
             this.active_folder = new Backbone.Model({
@@ -4251,7 +4256,7 @@
             }, options.feed && options.feed.attributes);
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
-            this.reset_feed();
+            this.reset_feed(options);
             feed = this.model.set_feed(feed_id, feed);
 
             $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(feed.get('feed_title'));

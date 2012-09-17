@@ -13,6 +13,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     
     initialize: function() {
         this.start_rotation();
+        NEWSBLUR.reader.$s.$layout.hide();
     },
     
     // ==========
@@ -94,7 +95,12 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     
     show_tryout: function() {
         if (!NEWSBLUR.reader) return;
-
+        
+        if (!this.flags.loaded) {
+            NEWSBLUR.reader.$s.$layout.layout().hide('west', true);
+            NEWSBLUR.reader.$s.$layout.show();
+            this.flags.loaded = true;
+        }
         var open = NEWSBLUR.reader.toggle_sidebar();
         
         this.$('.NB-inner').animate({
