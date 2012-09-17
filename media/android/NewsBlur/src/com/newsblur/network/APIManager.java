@@ -177,13 +177,17 @@ public class APIManager {
 	public StoriesResponse getStoriesForFeed(String feedId, String pageNumber) {
 		final APIClient client = new APIClient(context);
 		final ContentValues values = new ContentValues();
-		values.put(APIConstants.PARAMETER_FEEDS, feedId);
-		if (!TextUtils.isEmpty(pageNumber)) {
-			values.put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber);
-		}
 		Uri feedUri = Uri.parse(APIConstants.URL_FEED_STORIES).buildUpon().appendPath(feedId).build();
+		values.put(APIConstants.PARAMETER_FEEDS, feedId);
+		values.put(APIConstants.PARAMETER_PAGE_NUMBER, pageNumber);
+		
 		final APIResponse response = client.get(feedUri.toString(), values);
+		Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
+		
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			if (TextUtils.equals(pageNumber, "1")) {
+				contentResolver.delete(storyUri, null, null);
+			}
 			StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
 
 			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
@@ -194,7 +198,6 @@ public class APIManager {
 				contentResolver.insert(classifierUri, classifierValues);
 			}
 
-			Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 			for (Story story : storiesResponse.stories) {
 				contentResolver.insert(storyUri, story.getValues());
 				insertComments(story);
@@ -216,9 +219,16 @@ public class APIManager {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
 		final APIResponse response = client.get(APIConstants.URL_RIVER_STORIES, values);
-
+		
 		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			if (TextUtils.equals(pageNumber,"1")) {
+				for (String feedId : feedIds) {
+					Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
+					contentResolver.delete(storyUri, null, null);
+				}
+			}
+			
 			for (Story story : storiesResponse.stories) {
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
@@ -243,6 +253,14 @@ public class APIManager {
 
 		SocialFeedResponse storiesResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			
+			if (TextUtils.equals(pageNumber,"1")) {
+				for (String feedId : feedIds) {
+					Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
+					contentResolver.delete(storyUri, null, null);
+				}
+			}
+			
 			for (Story story : storiesResponse.stories) {
 				for (String userId : story.friendUserIds) {
 					Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
@@ -381,9 +399,7 @@ public class APIManager {
 
 	public void getFolderFeedMapping(boolean doUpdateCounts) {
 		final APIClient client = new APIClient(context);
-		long millis = System.currentTimeMillis();
 		final APIResponse response = client.get(doUpdateCounts ? APIConstants.URL_FEEDS : APIConstants.URL_FEEDS_NO_UPDATE);
-		Log.d(TAG, "With update: " + doUpdateCounts + " it took: " + (System.currentTimeMillis() - millis) + "ms");
 		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
 
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
@@ -412,7 +428,6 @@ public class APIManager {
 				}
 			}
 		}
-		Log.d(TAG, "Total it took: " + (System.currentTimeMillis() - millis) + "ms");
 	}
 
 	public boolean trainClassifier(String feedId, String key, int type, int action) {

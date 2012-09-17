@@ -61,7 +61,7 @@ public class SocialFeedItemsList extends ItemsList {
 	
 	@Override
 	public void triggerRefresh() {
-		triggerRefresh(0);
+		triggerRefresh(1);
 	}
 
 	@Override
@@ -71,9 +71,7 @@ public class SocialFeedItemsList extends ItemsList {
 		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
 		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_SOCIALFEED_UPDATE);
 		intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_ID, userId);
-		if (page > 1) {
-			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-		}
+		intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 		intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_USERNAME, username);
 		startService(intent);
 	}

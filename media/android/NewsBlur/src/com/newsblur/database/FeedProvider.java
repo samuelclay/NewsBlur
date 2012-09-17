@@ -113,6 +113,10 @@ public class FeedProvider extends ContentProvider {
 				db.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() } );
 				return 1;
 				
+			case FEED_STORIES:
+				db.delete(DatabaseConstants.STORY_TABLE, DatabaseConstants.STORY_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() } );
+				return 1;	
+				
 			case CLASSIFIERS_FOR_FEED:
 				return db.delete(DatabaseConstants.CLASSIFIER_TABLE, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() });
 				

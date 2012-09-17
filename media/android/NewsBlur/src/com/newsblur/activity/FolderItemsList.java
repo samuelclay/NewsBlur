@@ -66,7 +66,7 @@ public class FolderItemsList extends ItemsList {
 
 	@Override
 	public void triggerRefresh() {
-		triggerRefresh(0);
+		triggerRefresh(1);
 	}
 	
 	@Override
@@ -85,9 +85,7 @@ public class FolderItemsList extends ItemsList {
 		String[] feeds = new String[feedIds.size()];
 		feedIds.toArray(feeds);
 		intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
-		if (page > 1) {
-			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-		}
+		intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 		startService(intent);
 	}
 

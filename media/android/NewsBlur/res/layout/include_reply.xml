@@ -10,6 +10,8 @@
     android:paddingRight="10dp"
     android:paddingTop="12dp" >
 
+    
+    
     <ImageView
         android:id="@+id/reply_user_image"
         android:layout_width="30dp"

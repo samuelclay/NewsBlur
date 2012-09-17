@@ -87,7 +87,7 @@ public class FeedItemsList extends ItemsList {
 
 	@Override
 	public void triggerRefresh() {
-		triggerRefresh(0);
+		triggerRefresh(1);
 	}
 	
 	@Override

@@ -13,20 +13,23 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.domain.Classifier;
 import com.newsblur.fragment.ClassifierDialogFragment;
+import com.newsblur.fragment.ClassifierDialogFragment.TagUpdateCallback;
 
 public class TagAdapter extends BaseAdapter {
 
 	private final String[] tags;
 	private LayoutInflater inflater;
-	private final Classifier classifier;
+	private Classifier classifier;
 	private final String feedId;
 	private final FragmentManager fragmentManager;
+	private TagUpdateCallback callback;
 
-	public TagAdapter(Context context, FragmentManager fragmentManager, String feedId, Classifier classifier, String[] tags) {
+	public TagAdapter(Context context, FragmentManager fragmentManager, ClassifierDialogFragment.TagUpdateCallback callback, String feedId, Classifier classifier, String[] tags) {
 		this.fragmentManager = fragmentManager;
 		this.feedId = feedId;
 		this.classifier = classifier;
 		this.tags = tags;
+		this.callback = callback;
 		inflater = ((Activity) context).getLayoutInflater();
 	}
 	
@@ -39,12 +42,16 @@ public class TagAdapter extends BaseAdapter {
 	public String getItem(int position) {
 		return tags[position];
 	}
-
+	
 	@Override
 	public long getItemId(int position) {
 		return position;
 	}
-
+	
+	public void setClassifier(Classifier classifier) {
+		this.classifier = classifier;
+	}
+	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		final String tag = tags[position];
@@ -68,7 +75,7 @@ public class TagAdapter extends BaseAdapter {
 		v.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(feedId, classifier, tag, Classifier.TAG);
+				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(callback, feedId, classifier, tag, Classifier.TAG);
 				classifierFragment.show(fragmentManager, "dialog");
 			}
 		});

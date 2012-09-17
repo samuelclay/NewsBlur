@@ -85,7 +85,9 @@ public class APIClient {
 			Log.e(TAG, "Error opening GET connection to " + urlString, e.getCause());
 			return new APIResponse();
 		} finally {
-			connection.disconnect();
+			if (connection != null) {
+				connection.disconnect();
+			}
 		}
 	}
 	

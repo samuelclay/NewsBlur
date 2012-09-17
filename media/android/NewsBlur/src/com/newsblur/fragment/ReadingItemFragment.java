@@ -31,8 +31,9 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.view.NewsblurWebview;
 import com.newsblur.view.TagAdapter;
 
-public class ReadingItemFragment extends Fragment {
+public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback {
 
+	private static final long serialVersionUID = -5737027559180364671L;
 	private static final String TAG = "ReadingItemFragment";
 	public static final String TEXT_SIZE_CHANGED = "textSizeChanged";
 	public static final String TEXT_SIZE_VALUE = "textSizeChangeValue";
@@ -45,6 +46,10 @@ public class ReadingItemFragment extends Fragment {
 	private ContentResolver resolver;
 	private NewsblurWebview web;
 	private BroadcastReceiver receiver;
+	private TextView itemAuthors;
+	private TextView itemFeed;
+	private TagAdapter tagAdapter;
+	private GridView tagContainer;
 
 	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, Classifier classifier) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -143,8 +148,8 @@ public class ReadingItemFragment extends Fragment {
 
 		TextView itemTitle = (TextView) view.findViewById(R.id.reading_item_title);
 		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
-		TextView itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
-		TextView itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
+		itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
+		itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
 
 		itemDate.setText(story.shortDate);
 		itemTitle.setText(story.title);
@@ -156,7 +161,7 @@ public class ReadingItemFragment extends Fragment {
 		itemAuthors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(story.feedId, classifier, story.authors, Classifier.AUTHOR);
+				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, story.authors, Classifier.AUTHOR);
 				classifierFragment.show(getFragmentManager(), "dialog");		
 			}	
 		});
@@ -164,7 +169,7 @@ public class ReadingItemFragment extends Fragment {
 		itemFeed.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(story.feedId, classifier, feedTitle, Classifier.FEED);
+				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(ReadingItemFragment.this, story.feedId, classifier, feedTitle, Classifier.FEED);
 				classifierFragment.show(getFragmentManager(), "dialog");
 			}
 		});
@@ -184,8 +189,9 @@ public class ReadingItemFragment extends Fragment {
 	}
 
 	private void setupTags(View view) {
-		GridView tagContainer = (GridView) view.findViewById(R.id.reading_item_tags);
-		tagContainer.setAdapter(new TagAdapter(getActivity(), getFragmentManager(), story.feedId, classifier, story.tags));
+		tagContainer = (GridView) view.findViewById(R.id.reading_item_tags);
+		tagAdapter = new TagAdapter(getActivity(), getFragmentManager(), this, story.feedId, classifier, story.tags);
+		tagContainer.setAdapter(tagAdapter);
 	}
 
 	private void setupWebview(NewsblurWebview web) {
@@ -209,6 +215,49 @@ public class ReadingItemFragment extends Fragment {
 		public void onReceive(Context context, Intent intent) {
 			web.setTextSize(intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f));
 		}   
+	}
+
+	@Override
+	public void updateTagView(String key, int classifierType, int classifierAction) {
+		switch (classifierType) {
+			case Classifier.AUTHOR:
+				switch (classifierAction) {
+					case Classifier.LIKE:
+						itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.positive));
+						break;
+					case Classifier.DISLIKE:
+						itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.negative));
+						break;
+					case Classifier.CLEAR_DISLIKE:
+						itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
+						break;
+					case Classifier.CLEAR_LIKE:
+						itemAuthors.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
+						break;	
+				}
+				break;
+			case Classifier.FEED:
+				switch (classifierAction) {
+				case Classifier.LIKE:
+					itemFeed.setTextColor(getActivity().getResources().getColor(R.color.positive));
+					break;
+				case Classifier.DISLIKE:
+					itemFeed.setTextColor(getActivity().getResources().getColor(R.color.negative));
+					break;
+				case Classifier.CLEAR_DISLIKE:
+					itemFeed.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
+					break;
+				case Classifier.CLEAR_LIKE:
+					itemFeed.setTextColor(getActivity().getResources().getColor(R.color.darkgray));
+					break;
+				}
+				break;
+			case Classifier.TAG:
+				classifier.tags.put(key, classifierAction);
+				tagAdapter.setClassifier(classifier);
+				tagAdapter.notifyDataSetInvalidated();
+				break;	
+		}
 	}
 
 }
