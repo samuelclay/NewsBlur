@@ -16,7 +16,12 @@ body {
     background-color: white;
     -webkit-overflow-scrolling: touch;
 }
-
+.NB-layout {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
 a, a:active, a:hover, a:visited, button {
     outline: none;
 }
@@ -2729,6 +2734,9 @@ background: transparent;
     display: block;
     font-size: 20px;
 }
+.NB-is-anonymous .content-pane .feed_counts_floater {
+    display: none;
+}
 
 .content-pane .feed_counts_floater .unread_count {
     float: right;
@@ -3158,7 +3166,8 @@ background: transparent;
     overflow: hidden;
 }
 #story_taskbar .NB-tryfeed-add,
-#story_taskbar .NB-tryfeed-follow {
+#story_taskbar .NB-tryfeed-follow,
+#story_taskbar .NB-tryout-signup {
     margin: 2px auto 0px;
     width: 60px;
     height: 14px;
@@ -3228,10 +3237,6 @@ background: transparent;
 .NB-taskbar .task_button.task_story_next .NB-task-image {
     left: 12px;
     background: transparent url('/media/embed/icons/silk/arrow_down.png') no-repeat 0 0;
-}
-.NB-taskbar .task_button.task_button_signup .NB-task-image {
-    left: 12px;
-    background: transparent url('/media/embed/icons/media-devices/imac.png') no-repeat 0 0;
 }
 
 .NB-taskbar .task_button_background {
@@ -3388,7 +3393,7 @@ form.opml_import_form input {
 /* =============== */
 
 #NB-splash {
-    z-index: 0;
+    z-index: 1;
     position: absolute;
     top: 0;
     left: 0;
@@ -3466,6 +3471,7 @@ form.opml_import_form input {
 
 .NB-splash-info .NB-splash-links .NB-splash-link {
   display: block;
+  overflow: hidden;
   line-height: 12px;
   margin: 0;
   float: left;
@@ -3490,6 +3496,7 @@ form.opml_import_form input {
 }
 .NB-splash-info .NB-splash-links .NB-splash-link.NB-splash-link-logo a {
     padding-top: 0;
+    padding-bottom: 0;
     margin-top: -1px;
 }
 
@@ -4468,6 +4475,9 @@ form.opml_import_form input {
 
 .NB-account .NB-module.NB-module-account .NB-module-account-stats {
     min-height: 0;
+}
+.NB-account .NB-module.NB-module-account .NB-module-stats-counts {
+    overflow: hidden;
 }
 .NB-account .NB-module.NB-module-account .NB-module-stats-count {
     margin: 0;
