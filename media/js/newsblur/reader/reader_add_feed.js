@@ -105,7 +105,9 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
     },
     
     focus_add_feed: function() {
-        var $add = $('.NB-add-url', this.$modal);
+        var $add = this.options.init_folder ? 
+                    $('.NB-add-folder', this.$modal) :
+                    $('.NB-add-url', this.$modal);
         if (!NEWSBLUR.Globals.is_anonymous) {
             _.delay(function() {
                 $add.focus();

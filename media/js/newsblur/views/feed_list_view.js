@@ -59,7 +59,9 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         this.$el.html($feeds);
         this.$el.animate({'opacity': 1}, {'duration': 700});
         // this.count_collapsed_unread_stories();
-        this.$s.$feed_link_loader.fadeOut(250);
+        this.$s.$feed_link_loader.fadeOut(250, _.bind(function() {
+            this.$s.$feed_link_loader.css({'display': 'none'});
+        }, this));
 
         if (!this.options.feed_chooser && 
             NEWSBLUR.Globals.is_authenticated && 

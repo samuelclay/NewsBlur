@@ -49,6 +49,8 @@ javascripts:
         - media/js/vendor/jquery.flot.js
         - media/js/vendor/jquery.tipsy.js
         - media/js/vendor/jquery.chosen.js
+        - media/js/vendor/jquery.effects.core.js
+        - media/js/vendor/jquery.effects.slideOffscreen.js
         # - media/js/vendor/jquery.linkify.js
         - media/js/vendor/bootstrap.*.js
         - media/js/vendor/audio.js
@@ -64,6 +66,7 @@ javascripts:
         - media/js/newsblur/reader/reader.js
         - media/js/newsblur/reader/*.js
         - media/js/newsblur/static/*.js
+        - media/js/newsblur/welcome/*.js
     mobile:
         - media/js/vendor/jquery-1.7.2.js
         - media/js/mobile/jquery.mobile-1.0b1.js

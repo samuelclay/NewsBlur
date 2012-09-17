@@ -2,7 +2,9 @@
 
     NEWSBLUR.Reader = Backbone.Router.extend({
     
-        init: function() {
+        init: function(options) {
+            
+            var defaults = {};
             
             // ===========
             // = Globals =
@@ -11,8 +13,10 @@
             NEWSBLUR.assets = new NEWSBLUR.AssetModel();
             this.model = NEWSBLUR.assets;
             this.story_view = 'page';
+            this.options = _.extend({}, defaults, options);
             this.$s = {
                 $body: $('body'),
+                $layout: $('.NB-layout'),
                 $feed_lists: $('.NB-feedlists'),
                 $feed_list: $('#feed_list'),
                 $social_feeds: $('.NB-socialfeeds'),
@@ -41,7 +45,8 @@
                 'bouncing_callout': false,
                 'has_unfetched_feeds': false,
                 'count_unreads_after_import_working': false,
-                'import_from_google_reader_working': false
+                'import_from_google_reader_working': false,
+                'sidebar_closed': this.options.hide_sidebar
             };
             this.locks = {};
             this.counts = {
@@ -197,15 +202,17 @@
                             .removeClass('NB-story-pane-south')
                             .addClass('NB-story-pane-'+story_anchor);
                             
-            this.layout.outerLayout = this.$s.$body.layout({ 
-                closable: true,
-                zIndex:                 1,
+            this.layout.outerLayout = this.$s.$layout.layout({ 
+                zIndex:                 2,
+                fxName:                 "slideOffscreen",
+                fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 center__paneSelector:   ".right-pane",
                 west__paneSelector:     ".left-pane",
                 west__size:             this.model.preference('feed_pane_size'),
                 west__minSize:          this.constants.MIN_FEED_LIST_SIZE,
                 west__onresize_end:     $.rescope(this.save_feed_pane_size, this),
-                spacing_open:           4,
+                // west__initHidden:       this.options.hide_sidebar,
+                west__spacing_open:     this.options.hide_sidebar ? 1 : 6,
                 resizerDragOpacity:     0.6,
                 resizeWhileDragging:    true,
                 enableCursorHotkey:     false
@@ -218,8 +225,8 @@
             this.layout.leftLayout = $('.left-pane').layout({
                 closable:               false,
                 resizeWhileDragging:    true,
-                fxName:                 "scale",
-                fxSettings:             { duration: 500, easing: "easeInOutQuint" },
+                fxName:                 "slideOffscreen",
+                fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 north__paneSelector:    ".left-north",
                 north__size:            18,
                 north__resizeable:      false,
@@ -247,9 +254,8 @@
                 south__spacing_closed:  0,
                 south__closable:        true,
                 south__initClosed:      true,
-                fxName:                 "slide",
-                fxSpeed:                 1000,
-                fxSettings:             { duration: 1000, easing: "easeInOutQuint" },
+                fxName:                 "slideOffscreen",
+                fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 enableCursorHotkey:     false
             });
             
@@ -258,7 +264,9 @@
                 center__paneSelector:   ".content-pane",
                 spacing_open:           story_anchor == 'west' ? 4 : 10,
                 resizerDragOpacity:     0.6,
-                enableCursorHotkey:     false
+                enableCursorHotkey:     false,
+                fxName:                 "slideOffscreen",
+                fxSettings:             { duration: 560, easing: "easeInOutQuint" }
             };
             rightLayoutOptions[story_anchor+'__paneSelector'] = '.right-north';
             rightLayoutOptions[story_anchor+'__size'] = this.model.preference('story_titles_pane_size');
@@ -382,13 +390,13 @@
                 resize = true;
             }
             $('.right-pane').show();
-            $('#NB-splash').hide();
+            $('#NB-splash,.NB-splash').hide();
             $('.NB-splash-info').hide();
             $('#NB-splash-overlay').hide();
             this.$s.$dashboard.addClass('NB-active');
 
             if (resize) {
-                this.$s.$body.layout().resizeAll();
+                this.$s.$layout.layout().resizeAll();
             }
             if (NEWSBLUR.Globals.is_anonymous) {
                 this.setup_ftux_signup_callout();
@@ -401,7 +409,7 @@
             NEWSBLUR.app.story_tab_view.unload_story_iframe();
             $('.right-pane').hide();
             $('.NB-splash-info').show();
-            $('#NB-splash').show();
+            $('#NB-splash,.NB-splash').show();
             $('#NB-splash-overlay').show();
             this.$s.$dashboard.removeClass('NB-active');
             if (!skip_router) {
@@ -962,7 +970,9 @@
         // = Feed bar - Individual Feeds =
         // ===============================
         
-        reset_feed: function() {
+        reset_feed: function(options) {
+            options = options || {};
+            
             $.extend(this.flags, {
                 'scrolling_by_selecting_story_title': false,
                 'page_view_showing_feed_view': false,
@@ -1022,6 +1032,13 @@
             if (this.flags['showing_feed_in_tryfeed_view'] || this.flags['showing_social_feed_in_tryfeed_view']) {
                 this.hide_tryfeed_view();
             }
+            if (NEWSBLUR.Globals.is_anonymous) {
+                if (options.router) {
+                    this.$s.$layout.layout().show('west', true);
+                    this.$s.$layout.show();
+                }
+                this.hide_tryout_signup_button();
+            }
             
             this.active_folder = null;
             this.active_feed = null;
@@ -1046,7 +1063,7 @@
             this.flags['opening_feed'] = true;
             
             if (options.try_feed || feed) {
-                this.reset_feed();
+                this.reset_feed(options);
                 this.hide_splash_page();
                 if (options.story_id) {
                     this.flags['select_story_in_feed'] = options.story_id;
@@ -1134,7 +1151,9 @@
                 this.make_story_titles_pane_counter();
             }
             this.hide_stories_progress_bar();
-            if (this.flags['showing_feed_in_tryfeed_view']) {
+            if (NEWSBLUR.Globals.is_anonymous) {
+                this.show_tryout_signup_button();
+            } else if (this.flags['showing_feed_in_tryfeed_view']) {
                 this.show_tryfeed_add_button();
                 this.correct_tryfeed_title();
             }
@@ -1276,13 +1295,13 @@
                               this.active_folder && this.active_folder.folder_view;
             var folder_title = folder && folder.get('folder_title') || "Everything";
             
-            this.reset_feed();
+            this.reset_feed(options);
             this.hide_splash_page();
             this.active_folder = folder || new Backbone.Model({
                 folder_title: folder_title,
                 fake: true
             });
-            if (!folder) {
+            if (!folder || folder.get('fake')) {
                 this.active_feed = 'river:';
                 this.$s.$river_sites_header.addClass('NB-selected');
             } else {
@@ -1349,7 +1368,9 @@
                     this.select_story_in_feed();
                 }
                 this.hide_stories_progress_bar();
-                if (first_load) {
+                if (NEWSBLUR.Globals.is_anonymous) {
+                    this.show_tryout_signup_button();
+                } else if (first_load) {
                     this.make_story_titles_pane_counter();
                 }
             }
@@ -1393,7 +1414,7 @@
             var $story_titles = this.$s.$story_titles;
             var folder_title = "Blurblogs";
             
-            this.reset_feed();
+            this.reset_feed(options);
             this.hide_splash_page();
             
             this.active_folder = new Backbone.Model({
@@ -1462,6 +1483,9 @@
                     this.select_story_in_feed();
                 }
                 this.hide_stories_progress_bar();
+                if (NEWSBLUR.Globals.is_anonymous) {
+                    this.show_tryout_signup_button();
+                }
             }
         },
         
@@ -1562,8 +1586,9 @@
                     this.show_last_unread_story(true);
                 }
                 this.hide_stories_progress_bar();
-                
-                if (this.flags['showing_social_feed_in_tryfeed_view']) {
+                if (NEWSBLUR.Globals.is_anonymous) {
+                    this.show_tryout_signup_button();
+                } else if (this.flags['showing_social_feed_in_tryfeed_view']) {
                     this.show_tryfeed_follow_button();
                     this.correct_tryfeed_title();
                 }
@@ -2344,8 +2369,18 @@
             }
         },
         
+        toggle_sidebar: function() {
+            if (this.flags['sidebar_closed']) {
+                this.open_sidebar();
+                return true;
+            } else {
+                this.close_sidebar();
+                return false;
+            }
+        },
+        
         close_sidebar: function() {
-            this.$s.$body.layout().close('west');
+            this.$s.$layout.layout().hide('west');
             this.resize_window();
             this.flags['sidebar_closed'] = true;
             $('.NB-taskbar-sidebar-toggle-open').stop().animate({
@@ -2358,7 +2393,7 @@
         },
         
         open_sidebar: function() {
-            this.$s.$body.layout().open('west');
+            this.$s.$layout.layout().open('west');
             this.resize_window();
             this.flags['sidebar_closed'] = false;
             $('.NB-taskbar-sidebar-toggle-open').stop().css({
@@ -2618,6 +2653,10 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-subscribe' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Add a site to this folder')
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-subfolder' }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Create a new subfolder')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-folder' }, [
@@ -4217,7 +4256,7 @@
             }, options.feed && options.feed.attributes);
             var $tryfeed_container = this.$s.$tryfeed_header.closest('.NB-feeds-header-container');
 
-            this.reset_feed();
+            this.reset_feed(options);
             feed = this.model.set_feed(feed_id, feed);
 
             $('.NB-feeds-header-title', this.$s.$tryfeed_header).text(feed.get('feed_title'));
@@ -4269,7 +4308,6 @@
         },
         
         show_tryfeed_add_button: function() {
-            NEWSBLUR.log(["show_tryfeed_add_button", this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length]);
             if (this.$s.$story_taskbar.find('.NB-tryfeed-add:visible').length) return;
             
             var $add = $.make('div', { className: 'NB-modal-submit' }, [
@@ -4293,6 +4331,20 @@
             ]).css({'opacity': 0});
             this.$s.$story_taskbar.find('.NB-taskbar').append($add);
             $add.animate({'opacity': 1}, {'duration': 600});
+        },
+        
+        show_tryout_signup_button: function() {
+            if (this.$s.$story_taskbar.find('.NB-tryout-signup:visible').length) return;
+            
+            var $add = $.make('div', { className: 'NB-modal-submit' }, [
+              $.make('div', { className: 'NB-tryout-signup NB-modal-submit-green NB-modal-submit-button' }, 'Sign Up')
+            ]).css({'opacity': 0});
+            this.$s.$story_taskbar.find('.NB-taskbar').append($add);
+            $add.animate({'opacity': 1}, {'duration': 600});
+        },
+        
+        hide_tryout_signup_button: function() {
+            this.$s.$story_taskbar.find('.NB-tryout-signup:visible').remove();
         },
         
         add_recommended_feed: function(feed_id) {
@@ -4686,6 +4738,12 @@
                 var $folder = $t.parents('.NB-menu-manage').data('$folder');
                 self.open_add_feed_modal({folder_title: folder_name});
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-folder-subfolder' }, function($t, $p){
+                e.preventDefault();
+                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
+                var $folder = $t.parents('.NB-menu-manage').data('$folder');
+                self.open_add_feed_modal({folder_title: folder_name, init_folder: true});
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-story-open' }, function($t, $p){
                 e.preventDefault();
                 if (!self.flags['showing_confirm_input_on_manage_menu']) {
@@ -4881,10 +4939,6 @@
                 e.preventDefault();
                 self.show_previous_story();
             }); 
-            $.targetIs(e, { tagSelector: '.task_button_signup' }, function($t, $p){
-                e.preventDefault();
-                self.show_splash_page();
-            }); 
             $.targetIs(e, { tagSelector: '.NB-intelligence-slider-control' }, function($t, $p){
                 e.preventDefault();
                 var unread_value;
@@ -4981,6 +5035,13 @@
                 e.preventDefault();
                 var feed_id = self.active_feed;
                 self.follow_user_in_tryfeed(feed_id);
+            }); 
+            $.targetIs(e, { tagSelector: '.NB-tryout-signup' }, function($t, $p){
+                e.preventDefault();
+                self.show_splash_page();
+                if (NEWSBLUR.welcome) {
+                    NEWSBLUR.welcome.show_signin_form();
+                }
             }); 
             
             // = Interactions Module ==========================================
@@ -5183,7 +5244,10 @@
                 } else if (self.flags['social_view']) {
                     self.open_social_stories(self.active_feed);
                 } else if (self.flags['river_view']) {
-                    self.open_river_stories(self.active_folder && self.active_folder.folder_view.$el, self.active_folder);
+                    self.open_river_stories(self.active_folder && 
+                                            self.active_folder.folder_view &&
+                                            self.active_folder.folder_view.$el,
+                                            self.active_folder);
                 } else {
                     self.open_feed(self.active_feed);
                 }
@@ -5206,11 +5270,7 @@
             });
             $document.bind('keydown', 'shift+u', function(e) {
                 e.preventDefault();
-                if (self.flags['sidebar_closed']) {
-                    self.open_sidebar();
-                } else {
-                    self.close_sidebar();
-                }
+                self.toggle_sidebar();
             });
             $document.bind('keydown', 'shift+t', function(e) {
                 e.preventDefault();
