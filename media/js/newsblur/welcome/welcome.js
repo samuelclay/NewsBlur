@@ -1,6 +1,6 @@
 NEWSBLUR.Welcome = Backbone.View.extend({
     
-    el: 'body',
+    el: '.NB-body-inner',
     flags: {},
     rotation: 0,
     

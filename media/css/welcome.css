@@ -1,7 +1,8 @@
 .NB-welcome .NB-body-inner {
     overflow: auto;
     height: 100%;
-    position: static;
+    width: 100%;
+    position: absolute;
 }
 .NB-welcome .NB-splash-info.NB-splash-top .NB-splash-title {
     display: none;
@@ -9,7 +10,6 @@
 .NB-welcome .NB-splash-info.NB-splash-top {
     height: 6px;
     position: absolute;
-    z-index: 2;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4B638C), to(#23364D));
     background: -moz-linear-gradient(center top , #4B638C 0%, #23364D 100%);
     border-bottom: 1px solid #000D41;
@@ -18,6 +18,10 @@
 
 .NB-welcome .NB-splash-info.NB-splash-bottom {
     position: static;
+}
+
+.NB-welcome .NB-taskbar-sidebar-toggle-open {
+    display: none;
 }
 
 /* ========== */
