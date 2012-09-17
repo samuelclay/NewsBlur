@@ -46,15 +46,23 @@ a img {
 /* ==================== */
 
 body {
-    font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+    font-family: "Helvetica Neue", "Helvetica", sans-serif;
 }
 
-body.NB-theme-sans-serif #story_pane {
-    font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+body.NB-theme-sans-serif-alt1 #story_pane {
+    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", sans-serif;
+}
+
+bodu.NB-theme-sans-serif-alt2 #story_pane {
+    font-family: "Open Sans", "Liberation Sans", sans-serif;
+}
+
+body.NB-theme-sans-serif-wide #story_pane {
+    font-family: "DejaVu Sans", "Bitstream Vera Sans", "Verdana", "Tahoma", "Geneva", sans-serif;
 }
 
 body.NB-theme-serif #story_pane .NB-feed-story-content {
-    font-family: "Palatino Linotype", Georgia, "URW Palladio L", "Century Schoolbook L", serif;
+    font-family: "Perpetua", "Baskerville", "Big Caslon", "Palatino Linotype", "Palatino", "URW Palladio L", "Nimbus Roman No9 L", serif;
     font-size: 14px;
     line-height: 20px;
 }
