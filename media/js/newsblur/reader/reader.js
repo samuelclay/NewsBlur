@@ -15,7 +15,8 @@
             this.story_view = 'page';
             this.options = _.extend({}, defaults, options);
             this.$s = {
-                $body: $('body'),
+                $body: $('.NB-body-inner'),
+                $layout: $('.NB-layout'),
                 $feed_lists: $('.NB-feedlists'),
                 $feed_list: $('#feed_list'),
                 $social_feeds: $('.NB-socialfeeds'),
@@ -201,7 +202,7 @@
                             .removeClass('NB-story-pane-south')
                             .addClass('NB-story-pane-'+story_anchor);
                             
-            this.layout.outerLayout = this.$s.$body.layout({ 
+            this.layout.outerLayout = this.$s.$layout.layout({ 
                 closable:               true,
                 zIndex:                 2,
                 fxName:                 "slideOffscreen",
@@ -396,7 +397,7 @@
             this.$s.$dashboard.addClass('NB-active');
 
             if (resize) {
-                this.$s.$body.layout().resizeAll();
+                this.$s.$layout.layout().resizeAll();
             }
             if (NEWSBLUR.Globals.is_anonymous) {
                 this.setup_ftux_signup_callout();
@@ -2352,8 +2353,18 @@
             }
         },
         
+        toggle_sidebar: function() {
+            if (this.flags['sidebar_closed']) {
+                this.open_sidebar();
+                return true;
+            } else {
+                this.close_sidebar();
+                return false;
+            }
+        },
+        
         close_sidebar: function() {
-            this.$s.$body.layout().close('west');
+            this.$s.$layout.layout().hide('west');
             this.resize_window();
             this.flags['sidebar_closed'] = true;
             $('.NB-taskbar-sidebar-toggle-open').stop().animate({
@@ -2366,7 +2377,7 @@
         },
         
         open_sidebar: function() {
-            this.$s.$body.layout().open('west');
+            this.$s.$layout.layout().open('west');
             this.resize_window();
             this.flags['sidebar_closed'] = false;
             $('.NB-taskbar-sidebar-toggle-open').stop().css({
@@ -5227,11 +5238,7 @@
             });
             $document.bind('keydown', 'shift+u', function(e) {
                 e.preventDefault();
-                if (self.flags['sidebar_closed']) {
-                    self.open_sidebar();
-                } else {
-                    self.close_sidebar();
-                }
+                self.toggle_sidebar();
             });
             $document.bind('keydown', 'shift+t', function(e) {
                 e.preventDefault();

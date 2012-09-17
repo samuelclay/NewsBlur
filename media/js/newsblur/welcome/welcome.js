@@ -6,6 +6,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     
     events: {
         "click .NB-button-login" : "show_signin_form",
+        "click .NB-button-tryout" : "show_tryout",
         "mouseenter .NB-welcome-header-caption" : "enter_header_caption",
         "mouseleave .NB-welcome-header-caption" : "leave_header_caption"
     },
@@ -83,10 +84,44 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     },
     
     show_signin_form: function() {
+        this.hide_tryout();
+        
         this.flags.on_header_caption = true;
         this.rotate_screenshots(4, _.bind(function() {
             this.$('input[name=login-username]').focus();
         }, this));
+    },
+    
+    show_tryout: function() {
+        if (!NEWSBLUR.reader) return;
+
+        var open = NEWSBLUR.reader.toggle_sidebar();
+        
+        this.$('.NB-inner').animate({
+            paddingLeft: open ? 240 : 0
+        }, {
+            queue: false,
+            easing: 'easeInOutQuint',
+            duration: 560
+        });
+        
+        this.$('.NB-welcome-container')[open ? 'addClass' : 'removeClass']('NB-welcome-tryout');
+    },
+    
+    hide_tryout: function() {
+        if (!NEWSBLUR.reader) return;
+
+        NEWSBLUR.reader.close_sidebar();
+        
+        this.$('.NB-inner').animate({
+            paddingLeft: 0
+        }, {
+            queue: false,
+            easing: 'easeInOutQuint',
+            duration: 560
+        });
+        
+        this.$('.NB-welcome-container').removeClass('NB-welcome-tryout');
     }
     
 });

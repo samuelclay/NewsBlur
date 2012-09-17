@@ -1,12 +1,15 @@
-body.NB-welcome {
-    overflow: auto !important;
+.NB-welcome .NB-body-inner {
+    overflow: auto;
+    height: 100%;
+    position: static;
 }
-
 .NB-welcome .NB-splash-info.NB-splash-top .NB-splash-title {
     display: none;
 }
 .NB-welcome .NB-splash-info.NB-splash-top {
     height: 6px;
+    position: absolute;
+    z-index: 2;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4B638C), to(#23364D));
     background: -moz-linear-gradient(center top , #4B638C 0%, #23364D 100%);
     border-bottom: 1px solid #000D41;
@@ -50,6 +53,9 @@ body.NB-welcome {
     -webkit-box-shadow:1px 1px 0 rgba(35, 35, 35, 0.6);
     box-shadow:1px 1px 0 rgba(35, 35, 35, 0.6);
 }
+.NB-welcome-container.NB-welcome-tryout {
+    overflow-x: hidden;
+}
 
 /* ========== */
 /* = Header = */
@@ -88,8 +94,6 @@ body.NB-welcome {
     position: absolute;
     right: 0;
     bottom: 0;
-    -webkit-transform : translate3d(0, 0, 0);
-    transform : translate3d(0, 0, 0);
 }
 .NB-welcome-header-image img.NB-1 {
     height: 300px;
@@ -134,8 +138,6 @@ body.NB-welcome {
     overflow: hidden;
     text-shadow: 0 1px 0 rgba(35,35,35,0.35);
     padding-left: 64px;
-    -webkit-transform : translate3d(0, 0, 0);
-    transform : translate3d(0, 0, 0);
 }
 .NB-welcome-header-caption {
     float: left;

@@ -16,7 +16,12 @@ body {
     background-color: white;
     -webkit-overflow-scrolling: touch;
 }
-
+.NB-layout {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
 a, a:active, a:hover, a:visited, button {
     outline: none;
 }
