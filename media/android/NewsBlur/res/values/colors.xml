@@ -15,6 +15,15 @@
     <color name="feed_background">#F2F2F2</color>
     <color name="feed_title_text_background">#606060</color>
     
+    <color name="story_title_unread">#606060</color>
+    <color name="story_title_read">#C0C0C0</color>
+    <color name="story_feed_unread">#333333</color>
+    <color name="story_feed_read">#C0C0C0</color>
+    <color name="story_author_unread">#959595</color>
+    <color name="story_author_read">#C0C0C0</color>
+    <color name="story_date_unread">#262C6C</color>
+    <color name="story_date_read">#BABDD1</color>
+    
     <color name="twitter_blue">#4099FF</color>
     <color name="facebook_blue">#3B5998</color>
     

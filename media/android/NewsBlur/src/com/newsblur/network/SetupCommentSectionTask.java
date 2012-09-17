@@ -71,21 +71,22 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 	@Override
 	protected Void doInBackground(Void... arg0) {
-		for (String userId : story.sharedUserIds) {
-			ProfileResponse user = apiManager.getUser(userId);
-			friendUserMap.put(userId, user.user);
-			publicUserMap.put(userId, user.user);
-		}
-
+		
 		for (String userId : story.friendUserIds) {
 			ProfileResponse user = apiManager.getUser(userId);
 			friendUserMap.put(userId, user.user);
-			publicUserMap.put(userId, user.user);
 		}
-
+		
 		for (String userId : story.publicUserIds) {
 			ProfileResponse user = apiManager.getUser(userId);
 			publicUserMap.put(userId, user.user);
+		}
+
+		for (String userId : story.sharedUserIds) {
+			if (!publicUserMap.containsKey(userId) && !friendUserMap.containsKey(userId)) {
+				ProfileResponse user = apiManager.getUser(userId);
+				publicUserMap.put(userId, user.user);
+			}
 		}
 
 		commentCursor = resolver.query(FeedProvider.COMMENTS_URI, null, null, new String[] { story.id }, null);
@@ -127,7 +128,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				@Override
 				public void onClick(View v) {
 					if (story != null) {
-						DialogFragment newFragment = ReplyDialogFragment.newInstance(story.id, story.feedId, comment.userId, friendUserMap.get(comment.userId).username);
+						DialogFragment newFragment = ReplyDialogFragment.newInstance(story.id, story.feedId, comment.userId, publicUserMap.get(comment.userId).username);
 						newFragment.show(manager, "dialog");
 					}
 				}
@@ -180,13 +181,23 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			GridLayout commentGrid = (GridLayout) viewHolder.get().findViewById(R.id.reading_social_commentimages);
 
 			TextView commentText = (TextView) viewHolder.get().findViewById(R.id.comment_by);
-			commentText.setText(String.format(comment, commentCursor.getCount()));
+			if (commentCursor.getCount() > 0) {
+				comment = String.format(comment, commentCursor.getCount());
+				commentText.setText(commentCursor.getCount() > 1 ? comment : comment.substring(0, comment.length() - 1));
+			} else {
+				commentText.setVisibility(View.INVISIBLE);
+			}
 			
 			TextView sharesText = (TextView) viewHolder.get().findViewById(R.id.shared_by);
-			sharesText.setText(String.format(sharedBy, story.sharedUserIds.length));
+			if (story.sharedUserIds.length > 0) {
+				sharedBy = String.format(sharedBy, story.sharedUserIds.length);
+				sharesText.setText(story.sharedUserIds.length > 1 ? sharedBy : sharedBy.substring(0, sharedBy.length() - 1));
+			} else {
+				sharesText.setVisibility(View.INVISIBLE);
+			}
 			
 			
-			for (final String userId : story.sharedUserIds) {
+			for (final String userId : story.publicUserIds) {
 				ImageView image = new ImageView(context);
 				int imageLength = UIUtils.convertDPsToPixels(context, 25);
 				image.setMaxHeight(imageLength);

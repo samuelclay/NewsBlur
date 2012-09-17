@@ -99,6 +99,7 @@ public class ReadingItemFragment extends Fragment {
 		
 		if (story.sharedUserIds.length > 0 || story.commentCount > 0 ) {
 			view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
+			view.findViewById(R.id.share_bar_underline).setVisibility(View.VISIBLE);
 			setupItemCommentsAndShares(view);
 		}
 

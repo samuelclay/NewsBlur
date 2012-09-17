@@ -6,17 +6,17 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingBottom="12dp"
-    android:paddingLeft="25dp"
+    android:paddingLeft="60dp"
+    android:paddingRight="10dp"
     android:paddingTop="12dp" >
 
     <ImageView
         android:id="@+id/reply_user_image"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="12dp"
         android:contentDescription="@string/description_comment_user"
         android:scaleType="fitCenter" />
 
@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="26dp"
         android:textColor="@color/lightgray"
         android:textSize="11dp" />
 
@@ -33,7 +33,7 @@
         android:id="@+id/reply_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/darkorange"
+        android:textColor="@color/newsblur_blue"
         android:layout_toRightOf="@id/reply_user_image"
         android:textSize="11dp" />
 

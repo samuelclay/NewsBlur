@@ -18,16 +18,19 @@ public class FeedItemsAdapter extends SimpleCursorAdapter {
 
 	private Cursor cursor;
 	private final Feed feed;
-	private int darkGray;
-	private int lightGray;
+	private int storyTitleUnread, storyTitleRead, storyAuthorUnread, storyAuthorRead, storyDateUnread, storyDateRead;
 
 	public FeedItemsAdapter(Context context, Feed feed, int layout, Cursor c, String[] from, int[] to, int flags) {
 		super(context, layout, c, from, to, flags);
 		this.feed = feed;
 		this.cursor = c;
 		
-		darkGray = context.getResources().getColor(R.color.darkgray);
-		lightGray = context.getResources().getColor(R.color.lightgray);
+		storyTitleUnread = context.getResources().getColor(R.color.story_title_unread);
+		storyTitleRead = context.getResources().getColor(R.color.story_title_read);
+		storyAuthorUnread = context.getResources().getColor(R.color.story_author_unread);
+		storyAuthorRead = context.getResources().getColor(R.color.story_author_read);
+		storyDateUnread = context.getResources().getColor(R.color.story_date_unread);
+		storyDateRead = context.getResources().getColor(R.color.story_date_read);
 	}
 
 	@Override
@@ -59,15 +62,15 @@ public class FeedItemsAdapter extends SimpleCursorAdapter {
 
 		// 1 is read
 		if (Story.fromCursor(cursor).read == 0) {
-			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(darkGray);
-			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(darkGray);
+			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorUnread);
+			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
 			((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.BOLD);
 			borderOne.getBackground().setAlpha(255);
 			sidebar.getBackground().setAlpha(255);
 			borderTwo.getBackground().setAlpha(255);
 		} else {
-			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(lightGray);
-			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(lightGray);
+			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorRead);
+			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateRead);
 			((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
 			borderOne.getBackground().setAlpha(125);
 			sidebar.getBackground().setAlpha(125);

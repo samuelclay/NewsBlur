@@ -31,26 +31,24 @@
                 android:layout_marginLeft="10dp" >
 
                 <TextView
-                    android:id="@+id/reading_item_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginRight="10dp"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:textColor="@color/linkblue"
-                    android:textSize="13sp" />
-
-                <TextView
                     android:id="@+id/reading_feed_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:layout_toLeftOf="@id/reading_item_date"
-                    android:paddingBottom="10dp"
                     android:paddingTop="10dp"
                     android:textColor="@color/newsblur_blue"
+                    android:textSize="13sp" />
+                
+                
+                <TextView
+                    android:id="@+id/reading_item_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/reading_feed_title"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginRight="10dp"
+                    android:paddingTop="10dp"
+                    android:textColor="@color/linkblue"
                     android:textSize="13sp" />
 
                 <TextView
@@ -99,8 +97,8 @@
             android:id="@+id/reading_share_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            
+            android:layout_gravity="center_vertical"
+            android:paddingBottom="10dp"
             android:paddingTop="10dp"
             android:visibility="gone" >
 
@@ -116,9 +114,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="20dp"
                 android:textColor="@color/darkgray"
-                android:textSize="10sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/shared_by"
@@ -126,15 +125,17 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="5dp"
+                android:layout_marginRight="20dp"
                 android:textColor="@color/darkgray"
-                android:textSize="10sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <android.support.v7.widget.GridLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/reading_social_commentimages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/center_filler"
                 android:layout_toRightOf="@id/comment_by"
                 android:paddingLeft="5dp"
@@ -145,41 +146,45 @@
                 android:id="@+id/reading_social_shareimages"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/shared_by"
                 android:paddingRight="5dp"
-                android:paddingBottom="10dp"
                 app:columnCount="3" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_alignParentBottom="true"
-                android:background="@drawable/divider_light" />
         </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:id="@+id/share_bar_underline"
+            android:visibility="gone"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/divider_light" />
 
         <com.newsblur.view.NewsblurWebview
             android:id="@+id/reading_webview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/item_background"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             android:scrollbars="none" />
 
         <Button
             android:id="@+id/share_story_button"
+            style="@style/shareButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:background="@drawable/selector_sharebutton_background"
             android:padding="10dp"
-            style="@style/shareButton"
+            android:layout_marginBottom="10dp"
             android:text="@string/share_this" />
 
         <RelativeLayout
             android:id="@+id/reading_shared_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" >
+            android:layout_height="wrap_content" >
 
             <LinearLayout
                 android:id="@+id/reading_friend_comment_container"

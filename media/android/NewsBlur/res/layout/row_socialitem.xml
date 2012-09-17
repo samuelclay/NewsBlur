@@ -41,12 +41,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="12dp"
             android:layout_toRightOf="@id/row_item_feedicon"
+            android:layout_alignBottom="@id/row_item_feedicon"
             android:ellipsize="end"
             android:singleLine="true"
             android:textColor="@color/darkgray"
-            android:textSize="11dp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/row_item_title"
