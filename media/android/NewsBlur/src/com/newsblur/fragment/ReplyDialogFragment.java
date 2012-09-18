@@ -96,4 +96,8 @@ public class ReplyDialogFragment extends DialogFragment {
 		return v;
 	}
 
+	public interface ReplyDialogCallback {
+		public void replyPosted(String reply);
+	}
+	
 }

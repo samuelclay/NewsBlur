@@ -88,7 +88,7 @@
             android:id="@+id/comment_favourite_avatars"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/comment_shareddate"
+            android:layout_alignBottom="@id/comment_shareddate"
             android:layout_marginRight="4dp"
             android:layout_toLeftOf="@id/comment_favourite_icon"
             android:gravity="right" />

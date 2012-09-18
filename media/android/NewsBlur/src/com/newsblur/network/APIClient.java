@@ -173,7 +173,6 @@ public class APIClient {
 			return extractResponse(url, connection);
 		} catch (IOException e) {
 			Log.e(TAG, "Error opening POST connection to " + urlString + ": " + e.getCause(), e.getCause());
-			
 			return new APIResponse();
 		} finally {
 			if (connection != null) {
@@ -216,8 +215,7 @@ public class APIClient {
 
 			return extractResponse(url, connection);
 		} catch (IOException e) {
-			Log.e(TAG, "Error opening POST connection to " + urlString + ": " + e.getLocalizedMessage(), e.getCause());
-			
+			Log.e(TAG, "Error opening POST connection to " + urlString + ": " + e.getCause(), e.getCause());
 			return new APIResponse();
 		} finally {
 			if (connection != null) {
@@ -225,23 +223,4 @@ public class APIClient {
 			}
 		}
 	}
-
-	
-	/*
-	 * This method enables HTTP Response cache should the device support it.
-	 * See Android Developer's Blog for more detail: http://android-developers.blogspot.ca/2011/09/androids-http-clients.html
-	 */
-	private void enableHttpResponseCache() {
-		Log.d(TAG, "Enabling HttpResponseCache");
-		try {
-			final long httpCacheSize = 10 * 1024 * 1024; //
-			File httpCacheDir = new File(context.getCacheDir(), "http");
-			if (httpCacheDir != null) {
-				Class.forName("android.net.http.HttpResponseCache").getMethod("install", File.class, long.class).invoke(null, httpCacheDir, httpCacheSize);
-			}
-		} catch (Exception httpResponseCacheNotAvailable) {
-			Log.d(TAG, "No HttpResponseCache available", httpResponseCacheNotAvailable.getCause());
-		}
-	}
-
 }
