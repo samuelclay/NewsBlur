@@ -123,7 +123,16 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	}
 
 	private void setupShareButton(View view) {
+
 		Button shareButton = (Button) view.findViewById(R.id.share_story_button);
+		
+		for (String userId : story.sharedUserIds) {
+			if (TextUtils.equals(userId, user.id)) {
+				shareButton.setText(R.string.edit);
+				break;
+			}
+		}
+		
 		shareButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
