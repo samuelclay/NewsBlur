@@ -16,7 +16,6 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 	
 	private static final String TAG = "LikeCommentTask";
 	final WeakReference<ImageView> favouriteIconViewHolder;
-	final WeakReference<View> favouriteCountViewHolder;
 	
 	private final APIManager apiManager;
 	private final String storyId;
@@ -25,7 +24,7 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 	private final Context context;
 	private final String userId;
 	
-	public LikeCommentTask(final Context context, final APIManager apiManager, final View favouriteCount, final ImageView favouriteIcon, final String storyId, final Comment comment, final String feedId, final String userId) {
+	public LikeCommentTask(final Context context, final APIManager apiManager, final ImageView favouriteIcon, final String storyId, final Comment comment, final String feedId, final String userId) {
 		this.apiManager = apiManager;
 		this.storyId = storyId;
 		this.comment = comment;
@@ -34,7 +33,6 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 		this.userId = userId;
 		
 		favouriteIconViewHolder = new WeakReference<ImageView>(favouriteIcon);
-		favouriteCountViewHolder = new WeakReference<View>(favouriteCount);
 	}
 	
 	@Override
@@ -53,7 +51,6 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 				newArray[newArray.length - 1] = userId;
 				comment.likingUsers = newArray;
 				
-				((TextView) favouriteCountViewHolder.get()).setText(Integer.toString(comment.likingUsers.length));
 				Toast.makeText(context, "Comment liked", Toast.LENGTH_SHORT).show();
 			} else {
 				Toast.makeText(context, "Error liking comment", Toast.LENGTH_SHORT).show();

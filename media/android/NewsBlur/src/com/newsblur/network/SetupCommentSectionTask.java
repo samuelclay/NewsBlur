@@ -18,7 +18,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -104,7 +106,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
 			commentSharedDate.setText(comment.sharedDate);
 
-			final TextView favouriteCount = (TextView) commentView.findViewById(R.id.comment_favourite_count);
+			final LinearLayout favouriteContainer = (LinearLayout) commentView.findViewById(R.id.comment_favourite_avatars);
 			final ImageView favouriteIcon = (ImageView) commentView.findViewById(R.id.comment_favourite_icon);
 			final ImageView replyIcon = (ImageView) commentView.findViewById(R.id.comment_reply_icon);
 			
@@ -112,14 +114,32 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				if (Arrays.asList(comment.likingUsers).contains(user.id)) {
 					favouriteIcon.setImageResource(R.drawable.have_favourite);
 				}
-				favouriteCount.setText(Integer.toString(comment.likingUsers.length));
+				
+				for (String id : comment.likingUsers) {
+					ImageView favouriteImage = new ImageView(context);
+					UserProfile favouriteUser = null;
+					favouriteImage.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+					favouriteImage.setScaleType(ScaleType.FIT_CENTER);
+					
+					if (publicUserMap.containsKey(id)) {
+						favouriteUser = publicUserMap.get(id);
+					} else if (friendUserMap.containsKey(id)) {
+						favouriteUser = friendUserMap.get(id);
+					} else {
+						favouriteUser = apiManager.getUser(id).user;
+					}
+					
+					imageLoader.displayImage(favouriteUser.photoUrl, favouriteImage);
+					favouriteContainer.addView(favouriteImage);
+				}
+				
 				favouriteIcon.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						if (!Arrays.asList(comment.likingUsers).contains(user.id)) {
-							new LikeCommentTask(context, apiManager, favouriteCount, favouriteIcon, story.id, comment, story.feedId, user.id).execute();
+							new LikeCommentTask(context, apiManager, favouriteIcon, story.id, comment, story.feedId, user.id).execute();
 						} else {
-							new UnLikeCommentTask(context, apiManager, favouriteCount, favouriteIcon, story.id, comment, story.feedId, user.id).execute();
+							new UnLikeCommentTask(context, apiManager, favouriteIcon, story.id, comment, story.feedId, user.id).execute();
 						}
 					}
 				});

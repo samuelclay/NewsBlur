@@ -46,8 +46,6 @@
             android:contentDescription="@string/description_comment_user"
             android:scaleType="fitCenter" />
         
-        
-        
         <ImageView
             android:id="@+id/comment_user_reshare_image"
             android:layout_width="50dp"
@@ -86,15 +84,14 @@
             android:scaleType="fitCenter"
             android:src="@drawable/favourite" />
 
-        <TextView
-            android:id="@+id/comment_favourite_count"
+        <LinearLayout
+            android:id="@+id/comment_favourite_avatars"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/comment_shareddate"
+            android:layout_alignBaseline="@id/comment_shareddate"
             android:layout_marginRight="4dp"
             android:layout_toLeftOf="@id/comment_favourite_icon"
-            android:textColor="@color/darkgray"
-            android:textSize="11dp" />
+            android:gravity="right" />
 
         <TextView
             android:id="@+id/comment_username"
