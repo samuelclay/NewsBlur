@@ -24,6 +24,7 @@
     
     <string name="dialog_title">Alert</string>
     <string name="loading">Loading…</string>
+    <string name="edit">Edit</string>
     
     <string name="follow_error">There was a problem following the user. Check your internet connection and try again.</string>
     <string name="unfollow_error">There was a problem unfollowing the user. Check your internet connection and try again.</string>
@@ -43,6 +44,8 @@
 	
 	<string name="all_stories">ALL STORIES</string>
 	<string name="all_shared_stories">ALL SHARED STORIES</string>
+	
+	<string name="now">now</string>
 	
 	<string name="error_saving_classifier">There was an error. Check your internet connection.</string>
 	

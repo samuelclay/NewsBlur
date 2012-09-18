@@ -29,11 +29,13 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Story;
+import com.newsblur.domain.UserProfile;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtil;
 import com.newsblur.util.UIUtils;
 
 public abstract class Reading extends SherlockFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener {
@@ -104,7 +106,8 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int currentItem = pager.getCurrentItem();
 		Story story = readingAdapter.getStory(currentItem);
-
+		UserProfile user = PrefsUtil.getUserDetails(this);
+		
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
@@ -118,7 +121,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			return true;
 		case R.id.menu_reading_sharenewsblur:
 			if (story != null) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(story.id, story.title, story.feedId, null);
+				DialogFragment newFragment = ShareDialogFragment.newInstance(((ReadingItemFragment) readingAdapter.getItem(currentItem)), story);
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 			return true;

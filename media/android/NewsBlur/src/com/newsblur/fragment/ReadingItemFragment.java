@@ -18,20 +18,25 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
+import com.newsblur.domain.UserProfile;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
+import com.newsblur.util.PrefsUtil;
+import com.newsblur.util.UIUtils;
 import com.newsblur.view.NewsblurWebview;
 import com.newsblur.view.TagAdapter;
 
-public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback {
+public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
 	private static final long serialVersionUID = -5737027559180364671L;
 	private static final String TAG = "ReadingItemFragment";
@@ -50,6 +55,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private TextView itemFeed;
 	private TagAdapter tagAdapter;
 	private GridView tagContainer;
+	private View view;
+	private UserProfile user;
 
 	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, Classifier classifier) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -75,6 +82,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 		resolver = getActivity().getContentResolver();
 		inflater = getActivity().getLayoutInflater();
+		
+
+		user = PrefsUtil.getUserDetails(getActivity());
 
 		feedTitle = getArguments().getString("feedTitle");
 		feedColor = getArguments().getString("feedColor");
@@ -93,9 +103,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	}
 
 	public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-		this.inflater = inflater;
 
-		View view = inflater.inflate(R.layout.fragment_readingitem, null);
+		view = inflater.inflate(R.layout.fragment_readingitem, null);
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
 		setupWebview(web);
@@ -116,7 +125,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		shareButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(story.id, story.title, story.feedId, null);
+				DialogFragment newFragment = ShareDialogFragment.newInstance(ReadingItemFragment.this, story);
 				newFragment.show(getFragmentManager(), "dialog");
 			}
 		});
@@ -258,6 +267,26 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 				tagAdapter.notifyDataSetInvalidated();
 				break;	
 		}
+	}
+
+
+	@Override
+	public void sharedCallback(String sharedText) {
+		
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		
+		View commentView = inflater.inflate(R.layout.include_comment, null);
+		TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
+		commentText.setText(sharedText);
+		ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
+		commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtil.getUserImage(getActivity()), 10f));
+		TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
+		commentSharedDate.setText(R.string.now);
+		
+		TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
+		commentUsername.setText(user.username);
+		
+		((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(commentView);
 	}
 
 }

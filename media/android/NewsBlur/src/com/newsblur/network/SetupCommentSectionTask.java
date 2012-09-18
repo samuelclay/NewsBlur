@@ -18,9 +18,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,7 +31,6 @@ import com.newsblur.domain.Reply;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.fragment.ReplyDialogFragment;
-import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtil;
@@ -118,8 +115,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				for (String id : comment.likingUsers) {
 					ImageView favouriteImage = new ImageView(context);
 					UserProfile favouriteUser = null;
-					favouriteImage.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-					favouriteImage.setScaleType(ScaleType.FIT_CENTER);
 					
 					if (publicUserMap.containsKey(id)) {
 						favouriteUser = publicUserMap.get(id);
