@@ -7,7 +7,8 @@
 .NB-welcome .NB-splash-info.NB-splash-top .NB-splash-title {
     display: none;
 }
-.NB-welcome .NB-splash-info.NB-splash-top {
+.NB-welcome .NB-splash-info.NB-splash-top,
+.NB-welcome .NB-splash-info.NB-splash-bottom {
     height: 6px;
     position: absolute;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4B638C), to(#23364D));
@@ -15,9 +16,11 @@
     border-bottom: 1px solid #000D41;
     border-top: none;
 }
-
 .NB-welcome .NB-splash-info.NB-splash-bottom {
     position: static;
+}
+.NB-welcome .NB-splash-info.NB-splash-bottom .NB-splash-links {
+    display: none;
 }
 
 .NB-welcome .NB-taskbar-sidebar-toggle-open {
@@ -440,6 +443,63 @@
     line-height: 22px;
 }
 
+/* =========== */
+/* = Pricing = */
+/* =========== */
+
+.NB-welcome-pricing {
+    overflow: hidden;
+    clear: both;
+    margin: 48px 0 0;
+    padding: 36px 0;
+    
+    background-color: #FAFAFA;
+    border-top: 1px solid #F0F0F0;
+    border-bottom: 1px solid #F0F0F0;
+}
+.NB-welcome-pricing p {
+    line-height: 24px;
+}
+.NB-welcome-pricing .NB-price {
+    float: right;
+    margin: 0;
+    padding: 0;
+    line-height: 16px;
+}
+.NB-pricing {
+    margin: 12px 0;
+    width: 100%;
+    font-size: 14px;
+}
+.NB-pricing th,
+.NB-pricing td {
+    padding: 10px 8px;
+    text-align: left;
+    line-height: 16px;
+    width: 33%;
+    vertical-align: top;
+}
+.NB-pricing th {
+    border-right: 1px solid #E4E4E4;
+}
+.NB-pricing td {
+    border-top: 1px solid #E4E4E4;
+    border-right: 1px solid #E4E4E4;
+}
+.NB-pricing .NB-last {
+    border-right: none;
+}
+.NB-pricing .NB-bold {
+    font-weight: bold;
+}
+.NB-pricing .NB-shiloh {
+    display: block;
+    float: left;
+    border: 1px solid #606060;
+    height: 54px;
+    margin: 0 12px 0 0;
+}
+
 /* ============ */
 /* = Activity = */
 /* ============ */
@@ -447,17 +507,17 @@
 .NB-welcome-activity {
     overflow: hidden;
     clear: both;
-    margin: 48px 0 0;
     padding: 36px 0;
-    background-color: #F5F5F5;
 }
 .NB-welcome-activity .NB-module {
     width: 47%;
-    margin-right: 3%;
-    float: left;
+}
+.NB-welcome-activity .NB-module-features {
+    float: right;
 }
 .NB-welcome-activity .NB-module-stats {
-    margin-right: 0;
+    float: left;
+    margin-right: 3%;
 }
 .NB-welcome-activity .NB-module .NB-module-header {
     display: none;
@@ -482,12 +542,36 @@
 /* = Footer = */
 /* ========== */
 
-.NB-welcome .NB-splash-bottom {
-    background: #EBEBEB;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EBEBEB), to(#DFDFDF));
-    background: -moz-linear-gradient(center top, #EBEBEB 0%, #DFDFDF 100%); 
-    border-top: 1px solid #D9D9D9;
+.NB-welcome-footer {
+    overflow: hidden;
+    clear: both;
+    padding: 48px 0 52px;
+    color: #363C53;
+    line-height: 24px;
+    background-color: #FAFAFA;
+    border-top: 1px solid #F0F0F0;
 }
-.NB-welcome .NB-splash-link a {
+.NB-welcome-footer .NB-footer-logo {
+    vertical-align: text-bottom;
+    position: relative;
+    bottom: -4px;
+}
+.NB-welcome-footer .NB-splash-link {
+    color: #363C53;
+    font-weight: bold;
     text-shadow: 0 1px 0 rgba(245, 245, 245, 0.4);
+}
+.NB-welcome-footer .NB-splash-link:hover {
+    color: #822216;
+}
+.NB-welcome-footer .NB-footer-icons {
+    float: right;
+}
+.NB-welcome-footer .NB-footer-icons a {
+    line-height: 0;
+    margin: 0 12px 0 0;
+    float: right;
+}
+.NB-welcome-footer .NB-footer-icons a img {
+    vertical-align: middle;
 }
