@@ -98,28 +98,30 @@
 <body class="{% block bodyclass %}{% endblock %}">
 
   {% block header %}{% endblock %}
-  
-  
-  <div class="NB-splash-info NB-splash-top">
-    <a href="{% url index %}"><img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" /></a>
-  </div>
-      
-  <div class="NB-splash-info NB-splash-bottom">
-    <ul class="NB-splash-links">
-      <li class="NB-splash-link NB-splash-link-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" /></a></li>
-      <li class="NB-splash-link NB-splash-link-about"><a href="{% url about %}">About</a></li>
-      <li class="NB-splash-link NB-splash-link-faq"><a href="{% url faq %}">FAQ</a></li>
-      <li class="NB-splash-link NB-splash-link-api"><a href="{% url api %}">API</a></li>
-      <li class="NB-splash-link NB-splash-link-press"><a href="{% url press %}">Press</a></li>
-      <li class="NB-splash-link NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
-      <li class="NB-splash-link NB-splash-link-getsatisfaction"><a href="https://getsatisfaction.com/newsblur">Feedback</a></li>
-      <li class="NB-splash-link NB-splash-link-blog"><a href="http://blog.newsblur.com">The Blog</a></li>
-      <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li>
-    </ul>
-  </div>
-  
-  {% block content %}{% endblock %}
 
+  <div class="NB-body-inner">
+      <div class="NB-splash-info NB-splash-top">
+        <a href="{% url index %}"><img class="NB-splash-title" src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" /></a>
+      </div>
+  
+      {% block content %}{% endblock %}
+
+      <div class="NB-splash-info NB-splash-bottom">
+        <ul class="NB-splash-links NB-inner">
+          <li class="NB-splash-link NB-splash-link-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" /></a></li>
+          <li class="NB-splash-link NB-splash-link-about"><a href="{% url about %}">About</a></li>
+          <li class="NB-splash-link NB-splash-link-faq"><a href="{% url faq %}">FAQ</a></li>
+          <li class="NB-splash-link NB-splash-link-api"><a href="{% url api %}">API</a></li>
+          <li class="NB-splash-link NB-splash-link-press"><a href="{% url press %}">Press</a></li>
+          <li class="NB-splash-link NB-splash-link-github"><a href="http://github.com/samuelclay">GitHub</a></li>
+          <li class="NB-splash-link NB-splash-link-getsatisfaction"><a href="https://getsatisfaction.com/newsblur">Feedback</a></li>
+          <li class="NB-splash-link NB-splash-link-blog"><a href="http://blog.newsblur.com">The Blog</a></li>
+          <li class="NB-splash-link NB-first NB-splash-link-twitter"><a href="http://twitter.com/newsblur">@newsblur</a></li>
+        </ul>
+      </div>
+      
+  </div>
+  
   {% block head_js %}
     {% include_javascripts "common" %}
   {% endblock head_js %}
