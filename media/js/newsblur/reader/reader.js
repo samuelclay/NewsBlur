@@ -1511,7 +1511,7 @@
                 return this.load_social_feed_in_tryfeed_view(socialsub, options);
             }
             
-            this.reset_feed();
+            this.reset_feed(options);
             this.hide_splash_page();
             
             this.active_feed = feed.id;
