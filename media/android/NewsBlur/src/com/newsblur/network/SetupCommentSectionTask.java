@@ -37,6 +37,10 @@ import com.newsblur.util.PrefsUtil;
 import com.newsblur.util.UIUtils;
 
 public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
+	public static final String COMMENT_BY = "commentBy";
+	public static final String COMMENT_DATE_BY = "commentDateBy";
+	public static final String COMMENT_VIEW_BY = "commentViewBy";
+	
 	private ArrayList<View> publicCommentViews;
 	private ArrayList<View> friendCommentViews;
 	private final ContentResolver resolver;
@@ -97,11 +101,17 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 		while (commentCursor.moveToNext()) {
 			final Comment comment = Comment.fromCursor(commentCursor);
 			View commentView = inflater.inflate(R.layout.include_comment, null);
+			commentView.setTag(COMMENT_VIEW_BY + comment.userId);
+			
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
 			commentText.setText(comment.commentText);
+			commentText.setTag(COMMENT_BY + comment.userId);
+			
 			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
+			
 			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
 			commentSharedDate.setText(comment.sharedDate);
+			commentSharedDate.setTag(COMMENT_DATE_BY + comment.userId);
 
 			final LinearLayout favouriteContainer = (LinearLayout) commentView.findViewById(R.id.comment_favourite_avatars);
 			final ImageView favouriteIcon = (ImageView) commentView.findViewById(R.id.comment_favourite_icon);

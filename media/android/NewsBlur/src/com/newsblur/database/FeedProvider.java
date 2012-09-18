@@ -305,7 +305,11 @@ public class FeedProvider extends ContentProvider {
 			
 			// Querying for a stories from a feed
 		case STORY_COMMENTS:
-			selection = DatabaseConstants.COMMENT_STORYID + " = ?";
+			if (selectionArgs.length == 1) {
+				selection = DatabaseConstants.COMMENT_STORYID + " = ?";
+			} else {
+				selection = DatabaseConstants.COMMENT_STORYID + " = ? AND " + DatabaseConstants.COMMENT_USERID + " = ?";
+			}
 			return db.query(DatabaseConstants.COMMENT_TABLE, DatabaseConstants.COMMENT_COLUMNS, selection, selectionArgs, null, null, null);
 
 			// Querying for replies to a comment

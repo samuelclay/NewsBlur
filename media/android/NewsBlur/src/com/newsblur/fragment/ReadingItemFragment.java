@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.TransitionDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -271,22 +273,46 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 
 	@Override
-	public void sharedCallback(String sharedText) {
+	public void sharedCallback(String sharedText, boolean hasBeenShared) {
 		
-		LayoutInflater inflater = getActivity().getLayoutInflater();
-		
-		View commentView = inflater.inflate(R.layout.include_comment, null);
-		TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-		commentText.setText(sharedText);
-		ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
-		commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtil.getUserImage(getActivity()), 10f));
-		TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
-		commentSharedDate.setText(R.string.now);
-		
-		TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
-		commentUsername.setText(user.username);
-		
-		((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(commentView);
+		if (!hasBeenShared) {
+			LayoutInflater inflater = getActivity().getLayoutInflater();
+			
+			View commentView = inflater.inflate(R.layout.include_comment, null);
+			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
+			commentText.setTag("commentBy" + user.id);
+			commentText.setText(sharedText);
+			
+			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
+			commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtil.getUserImage(getActivity()), 10f));
+			
+			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
+			commentSharedDate.setText(R.string.now);
+			
+			TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
+			commentUsername.setText(user.username);
+			
+			((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(commentView);
+		} else {
+			View commentViewForUser = view.findViewWithTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
+			commentViewForUser.setBackgroundResource(R.drawable.transition_edit_background);
+			
+			final TransitionDrawable transition = (TransitionDrawable) commentViewForUser.getBackground();
+			transition.startTransition(1000);
+			
+			new Handler().postDelayed(new Runnable() {
+		        public void run() {
+		            transition.reverseTransition(1000);
+		        }
+		    }, 1000);
+			
+			TextView commentText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_BY + user.id);
+			commentText.setText(sharedText);
+			
+			TextView commentDateText = (TextView) view.findViewWithTag(SetupCommentSectionTask.COMMENT_DATE_BY + user.id);
+			commentDateText.setText(R.string.now);
+			
+		}
 	}
 
 }
