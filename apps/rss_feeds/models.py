@@ -1311,6 +1311,7 @@ class MStory(mongo.Document):
         'index_drop_dups': True,
         'ordering': ['-story_date'],
         'allow_inheritance': False,
+        'cascade': False,
     }
     
     @property

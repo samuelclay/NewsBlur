@@ -569,6 +569,7 @@ class MUserStory(mongo.Document):
         ],
         'allow_inheritance': False,
         'index_drop_dups': True,
+        'cascade': False,
     }
     
     def save(self, *args, **kwargs):
