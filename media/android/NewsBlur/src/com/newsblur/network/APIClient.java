@@ -172,7 +172,7 @@ public class APIClient {
 
 			return extractResponse(url, connection);
 		} catch (IOException e) {
-			Log.e(TAG, "Error opening POST connection to " + urlString + ": " + e.getLocalizedMessage(), e.getCause());
+			Log.e(TAG, "Error opening POST connection to " + urlString + ": " + e.getCause(), e.getCause());
 			
 			return new APIResponse();
 		} finally {

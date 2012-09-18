@@ -288,6 +288,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			LayoutInflater inflater = getActivity().getLayoutInflater();
 			
 			View commentView = inflater.inflate(R.layout.include_comment, null);
+			commentView.setTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
+			
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
 			commentText.setTag("commentBy" + user.id);
 			commentText.setText(sharedText);
@@ -302,6 +304,18 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			commentUsername.setText(user.username);
 			
 			((LinearLayout) view.findViewById(R.id.reading_friend_comment_container)).addView(commentView);
+			
+			commentView.setBackgroundResource(R.drawable.transition_edit_background);
+			
+			final TransitionDrawable transition = (TransitionDrawable) commentView.getBackground();
+			transition.startTransition(1000);
+			
+			new Handler().postDelayed(new Runnable() {
+		        public void run() {
+		            transition.reverseTransition(1000);
+		        }
+		    }, 1000);
+			
 		} else {
 			View commentViewForUser = view.findViewWithTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);
 			commentViewForUser.setBackgroundResource(R.drawable.transition_edit_background);
