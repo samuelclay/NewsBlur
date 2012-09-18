@@ -19,3 +19,6 @@
 199.15.252.106  task05  task05.newsblur.com
 199.15.252.107  task06  task06.newsblur.com
 199.15.252.108  task07  task07.newsblur.com
+
+# EC2
+23.22.137.143   db10    db10.newsblur.com

@@ -555,7 +555,7 @@ class MUserStory(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
     read_date = mongo.DateTimeField()
-    story_id = mongo.StringField(unique_with=('user_id', 'feed_id'))
+    story_id = mongo.StringField()
     story_date = mongo.DateTimeField()
     story = mongo.ReferenceField(MStory, dbref=True)
     found_story = mongo.GenericReferenceField()
