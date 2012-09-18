@@ -574,4 +574,6 @@
 }
 .NB-welcome-footer .NB-footer-icons a img {
     vertical-align: middle;
+    width: 32px;
+    height: 32px;
 }
