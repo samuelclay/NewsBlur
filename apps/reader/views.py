@@ -566,16 +566,29 @@ def load_feed_page(request, feed_id):
     feed = Feed.get_by_id(feed_id)
     
     if feed.has_page and not feed.has_page_exception and feed.s3_page:
-        return HttpResponseRedirect('//%s/%s' % (settings.S3_PAGES_BUCKET_NAME,
-                                                 feed.s3_pages_key))
+        if settings.PROXY_S3_PAGES:
+            key = settings.S3_PAGES_BUCKET.get_key(feed.s3_pages_key)
+            compressed_data = key.get_contents_as_string()
+            response = HttpResponse(compressed_data, mimetype="text/html; charset=utf-8")
+            response['Content-Encoding'] = 'gzip'
+            
+            logging.user(request, "~FYLoading original page, proxied: ~SB%s bytes" %
+                         (len(compressed_data)))
+            return response
+        else:
+            logging.user(request, "~FYLoading original page, non-proxied")
+            return HttpResponseRedirect('//%s/%s' % (settings.S3_PAGES_BUCKET_NAME,
+                                                     feed.s3_pages_key))
     
     data = MFeedPage.get_data(feed_id=feed_id)
     
     if not data or not feed.has_page or feed.has_page_exception:
+        logging.user(request, "~FYLoading original page, ~FRmissing")
         return render(request, 'static/404_original_page.xhtml', {}, 
             content_type='text/html',
             status=404)
     
+    logging.user(request, "~FYLoading original page, from the db")
     return HttpResponse(data, mimetype="text/html; charset=utf-8")
     
 @json.json_view

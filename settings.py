@@ -438,6 +438,7 @@ AWS_SECRET_ACCESS_KEY = S3_SECRET
 S3_BACKUP_BUCKET = 'newsblur_backups'
 S3_PAGES_BUCKET_NAME = 'pages.newsblur.com'
 S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
+PROXY_S3_PAGES = True
 
 def custom_show_toolbar(request):
     return DEBUG
