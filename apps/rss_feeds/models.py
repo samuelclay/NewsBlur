@@ -72,6 +72,8 @@ class Feed(models.Model):
     last_load_time = models.IntegerField(default=0)
     favicon_color = models.CharField(max_length=6, null=True, blank=True)
     favicon_not_found = models.BooleanField(default=False)
+    s3_page = models.NullBooleanField(default=False, blank=True, null=True)
+    s3_icon = models.NullBooleanField(default=False, blank=True, null=True)
     backed_by_dynamodb = models.BooleanField(default=False)
 
     class Meta:
@@ -91,6 +93,8 @@ class Feed(models.Model):
         
     @property
     def favicon_url(self):
+        if self.s3_icon:
+            return "//%s/%s.png" % (settings.S3_ICONS_BUCKET, self.pk)
         return reverse('feed-favicon', kwargs={'feed_id': self.pk})
     
     @property
@@ -99,6 +103,15 @@ class Feed(models.Model):
             Site.objects.get_current().domain,
             self.favicon_url
         )
+    
+    @property
+    def s3_pages_key(self):
+        return "%s.gz.html" % self.pk
+        
+    @property
+    def s3_icons_key(self):
+        return "%s.png" % self.pk
+        
     def canonical(self, full=False, include_favicon=True):
         feed = {
             'id': self.pk,
@@ -118,6 +131,8 @@ class Feed(models.Model):
             'favicon_text_color': self.favicon_text_color(),
             'favicon_fetching': self.favicon_fetching,
             'favicon_url': self.favicon_url,
+            's3_page': self.s3_page,
+            's3_icon': self.s3_icon,
         }
         
         if include_favicon:
@@ -1328,6 +1343,7 @@ class MStory(mongo.Document):
         'index_drop_dups': True,
         'ordering': ['-story_date'],
         'allow_inheritance': False,
+        'cascade': False,
     }
     
     @property

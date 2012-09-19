@@ -6,8 +6,11 @@ import scipy.cluster
 import urlparse
 import struct
 import operator
+import gzip
 import BmpImagePlugin, PngImagePlugin, Image
+from boto.s3.key import Key
 from StringIO import StringIO
+from django.conf import settings
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.feed_functions import timelimit, TimeoutError
 
@@ -55,6 +58,8 @@ class IconImporter(object):
                 self.feed_icon.color     = color
                 self.feed_icon.not_found = False
                 self.feed_icon.save()
+                if settings.BACKED_BY_AWS.get('icons_on_s3'):
+                    self.save_to_s3(image_str)
             self.feed.favicon_color     = color
             self.feed.favicon_not_found = False
         else:
@@ -63,7 +68,16 @@ class IconImporter(object):
             
         self.feed.save()
         return not self.feed.favicon_not_found
-     
+
+    def save_to_s3(self, image_str):
+        k = Key(settings.S3_ICONS_BUCKET)
+        k.key = self.feed.s3_icons_key
+        k.set_metadata('Content-Type', 'image/png')
+        k.set_contents_from_string(image_str.decode('base64'))
+        k.set_acl('public-read')
+        
+        self.feed.s3_icon = True
+        
     def load_icon(self, image_file, index=None):
         '''
         Load Windows ICO image.
@@ -146,6 +160,12 @@ class IconImporter(object):
         image_file = None
         if self.page_data:
             content = self.page_data
+        elif settings.BACKED_BY_AWS.get('pages_on_s3') and self.feed.s3_page:
+            key = settings.S3_PAGES_BUCKET.get_key(self.feed.s3_pages_key)
+            compressed_content = key.get_contents_as_string()
+            stream = StringIO(compressed_content)
+            gz = gzip.GzipFile(fileobj=stream)
+            content = gz.read()
         else:
             content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)

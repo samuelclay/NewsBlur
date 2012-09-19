@@ -67,8 +67,8 @@ env.roledefs ={
 # ================
 
 def server():
-    env.NEWSBLUR_PATH = "/home/sclay/newsblur"
-    env.VENDOR_PATH   = "/home/sclay/code"
+    env.NEWSBLUR_PATH = "/home/%s/newsblur" % env.user
+    env.VENDOR_PATH   = "/home/%s/code" % env.user
 
 def app():
     server()
@@ -93,6 +93,11 @@ def task():
 def vps():
     server()
     env.roles = ['vps']
+
+def ec2():
+    env.user = 'ubuntu'
+    env.key_filename = ['/Users/sclay/.ec2/sclay.pem']
+    server()
     
 # ==========
 # = Deploy =
@@ -264,7 +269,6 @@ def setup_app():
     setup_app_firewall()
     setup_app_motd()
     copy_app_settings()
-    copy_certificates()
     configure_nginx()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
@@ -279,12 +283,16 @@ def setup_db():
     setup_db_firewall()
     setup_db_motd()
     copy_task_settings()
-    setup_memcached()
-    setup_postgres(standby=False)
-    # setup_mongo()
+    # setup_memcached()
+    # setup_postgres(standby=False)
+    setup_mongo()
     setup_gunicorn(supervisor=False)
-    setup_redis()
+    # setup_redis()
     setup_db_munin()
+    
+    if env.user == 'ubuntu':
+        setup_db_mdadm()
+        setup_db_raid_mounts()
 
 def setup_task():
     setup_common()
@@ -319,14 +327,15 @@ def setup_installs():
     run('mkdir -p %s' % env.VENDOR_PATH)
     
 def setup_user():
-    # run('useradd -c "NewsBlur" -m conesus -s /bin/zsh')
+    # run('useradd -c "NewsBlur" -m newsblur -s /bin/zsh')
     # run('openssl rand -base64 8 | tee -a ~conesus/.password | passwd -stdin conesus')
     run('mkdir -p ~/.ssh && chmod 700 ~/.ssh')
     run('rm -fr ~/.ssh/id_dsa*')
     run('ssh-keygen -t dsa -f ~/.ssh/id_dsa -N ""')
     run('touch ~/.ssh/authorized_keys')
     put("~/.ssh/id_dsa.pub", "authorized_keys")
-    run('mv authorized_keys ~/.ssh/')
+    run('echo `cat authorized_keys` >> ~/.ssh/authorized_keys')
+    run('rm authorized_keys')
     
 def add_machine_to_ssh():
     put("~/.ssh/id_dsa.pub", "local_keys")
@@ -372,7 +381,7 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil python-gflags')
+    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil python-gflags cssutils')
     
     put('config/pystartup.py', '.pystartup')
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -393,11 +402,12 @@ def setup_hosts():
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
-    put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    # put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    put('config/secrets/pgbouncer_auth.conf', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
-        sudo('pkill pgbouncer')
+        sudo('pkill -9 pgbouncer')
         run('sleep 2')
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
@@ -443,15 +453,15 @@ def setup_forked_mongoengine():
         with settings(warn_only=True):
             run('git checkout master')
             run('git branch -D dev')
-            run('git remote add sclay git://github.com/samuelclay/mongoengine.git')
-            run('git fetch sclay')
-            run('git checkout -b dev sclay/dev')
-            run('git pull sclay dev')
+            run('git remote add %s git://github.com/samuelclay/mongoengine.git' % env.user)
+            run('git fetch %s' % env.user)
+            run('git checkout -b dev %s/dev' % env.user)
+            run('git pull %s dev' % env.user)
 
 def switch_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         run('git co dev')
-        run('git pull sclay dev --force')
+        run('git pull %s dev --force' % env.user)
         # run('git checkout .')
         # run('git checkout master')
         # run('get branch -D dev')
@@ -486,6 +496,7 @@ def configure_nginx():
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
     sudo("/etc/init.d/nginx restart")
+    copy_certificates()
 
 def setup_vps():
     # VPS suffer from severe time drift. Force blunt hourly time recalibration.
@@ -576,9 +587,18 @@ def setup_db_firewall():
     sudo('ufw allow from 199.15.248.0/21 to any port 5432 ') # PostgreSQL
     sudo('ufw allow from 199.15.248.0/21 to any port 27017') # MongoDB
     sudo('ufw allow from 199.15.248.0/21 to any port 28017') # MongoDB web
-    # sudo('ufw allow from 199.15.248.0/21 to any port 5672 ') # RabbitMQ
     sudo('ufw allow from 199.15.248.0/21 to any port 6379 ') # Redis
     sudo('ufw allow from 199.15.248.0/21 to any port 11211 ') # Memcached
+
+    # EC2
+    sudo('ufw delete allow from 23.22.0.0/16 to any port 5432 ') # PostgreSQL
+    sudo('ufw delete allow from 23.22.0.0/16 to any port 27017') # MongoDB
+    sudo('ufw delete allow from 23.22.0.0/16 to any port 6379 ') # Redis
+    sudo('ufw delete allow from 23.22.0.0/16 to any port 11211 ') # Memcached
+    sudo('ufw allow from 23.20.0.0/16 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 23.20.0.0/16 to any port 27017') # MongoDB
+    sudo('ufw allow from 23.20.0.0/16 to any port 6379 ') # Redis
+    sudo('ufw allow from 23.20.0.0/16 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -629,7 +649,8 @@ def setup_mongo():
     sudo('echo "deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen" >> /etc/apt/sources.list')
     sudo('apt-get update')
     sudo('apt-get -y install mongodb-10gen')
-    put('config/mongodb.prod.conf', '/etc/mongodb.conf', use_sudo=True)
+    put('config/mongodb.%s.conf' % ('prod' if env.user != 'ubuntu' else 'ec2'), 
+        '/etc/mongodb.conf', use_sudo=True)
     sudo('/etc/init.d/mongodb restart')
 
 def setup_redis():
@@ -652,8 +673,10 @@ def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     with cd(env.VENDOR_PATH):
-        run('git clone git://github.com/samuel/python-munin.git')
-        run('sudo python python-munin/setup.py install')
+        with settings(warn_only=True):
+            run('git clone git://github.com/samuel/python-munin.git')
+    with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
+        run('sudo python setup.py install')
 
 def enable_celerybeat():
     with cd(env.NEWSBLUR_PATH):
@@ -662,6 +685,19 @@ def enable_celerybeat():
     put('config/supervisor_celeryd_beat.conf', '/etc/supervisor/conf.d/celeryd_beat.conf', use_sudo=True)
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
+    
+def setup_db_mdadm():
+    sudo('apt-get -y install xfsprogs mdadm')
+    sudo('yes | mdadm --create /dev/md0 --level=0 -c256 --raid-devices=4 /dev/xvdf /dev/xvdg /dev/xvdh /dev/xvdi')
+    sudo('mkfs.xfs /dev/md0')
+    sudo('mkdir -p /srv/db')
+    sudo('mount -t xfs -o rw,nobarrier,noatime,nodiratime /dev/md0 /srv/db')
+    sudo('mkdir -p /srv/db/mongodb')
+    sudo('chown mongodb.mongodb /srv/db/mongodb')
+    sudo("echo 'DEVICE /dev/xvdf /dev/xvdg /dev/xvdh /dev/xvdi' | sudo tee -a /etc/mdadm/mdadm.conf")
+    sudo("mdadm --examine --scan | sudo tee -a /etc/mdadm/mdadm.conf")
+    sudo("echo '/dev/md0   /srv/db xfs   rw,nobarrier,noatime,nodiratime,noauto   0 0' | sudo tee -a  /etc/fstab")
+    sudo("sudo update-initramfs -u -v -k `uname -r`")
     
 # ================
 # = Setup - Task =
@@ -698,7 +734,7 @@ def restore_postgres(port=5432):
     
 def restore_mongo():
     backup_date = '2012-07-24-09-00'
-    run('PYTHONPATH=/home/sclay/newsblur python s3.py get backup_mongo_%s.tgz' % backup_date)
+    run('PYTHONPATH=/home/%s/newsblur python s3.py get backup_mongo_%s.tgz' % (env.user, backup_date))
     run('tar -xf backup_mongo_%s.tgz' % backup_date)
     run('mongorestore backup_mongo_%s' % backup_date)
     

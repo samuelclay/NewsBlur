@@ -1511,7 +1511,7 @@
                 return this.load_social_feed_in_tryfeed_view(socialsub, options);
             }
             
-            this.reset_feed();
+            this.reset_feed(options);
             this.hide_splash_page();
             
             this.active_feed = feed.id;
@@ -1775,14 +1775,16 @@
         
         open_story_trainer: function(story_id, feed_id, options) {
             options = options || {};
-            console.log(["open_story_trainer", story_id, feed_id, options]);
             story_id = story_id || this.active_story && this.active_story.id;
             feed_id = feed_id || (story_id && this.model.get_story(story_id).get('story_feed_id'));
+            // console.log(["open_story_trainer", story_id, feed_id, options]);
             
             if (story_id && feed_id) {
                 options['feed_loaded'] = !this.flags['river_view'];
-                if (this.flags['social_view']) {
+                if (this.flags['social_view'] && !_.string.contains(this.active_feed, 'river:')) {
                     options['social_feed_id'] = this.active_feed;
+                } else if (this.flags['social_view'] && this.active_story.get('friend_user_ids')) {
+                    options['social_feed_id'] = 'social:' + this.active_story.get('friend_user_ids')[0];
                 }
                 NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, options);
             }

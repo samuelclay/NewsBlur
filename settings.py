@@ -2,10 +2,11 @@ import sys
 import logging
 import os
 import datetime
-from mongoengine import connect
-from vendor.dynamodb_mapper.model import ConnectionBorg
 import redis
 import boto
+from mongoengine import connect
+from vendor.dynamodb_mapper.model import ConnectionBorg
+from boto.s3.connection import S3Connection
 from utils import jammit
 
 # ===================
@@ -411,6 +412,18 @@ FACEBOOK_SECRET = '99999999999999999999999999999999'
 TWITTER_CONSUMER_KEY = 'ooooooooooooooooooooo'
 TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 
+# ===============
+# = AWS Backing =
+# ===============
+
+BACKED_BY_AWS = {
+    'pages_on_s3': False,
+    'icons_on_s3': False,
+    'stories_on_dynamodb': False,
+}
+
+PROXY_S3_PAGES = True
+
 # ==================
 # = Configurations =
 # ==================
@@ -426,6 +439,9 @@ TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
 AWS_ACCESS_KEY_ID = S3_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = S3_SECRET
+S3_BACKUP_BUCKET = 'newsblur_backups'
+S3_PAGES_BUCKET_NAME = 'pages.newsblur.com'
+S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
 
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
 os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
@@ -478,3 +494,13 @@ if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.redis_raw_log_middleware.SqldumpMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
+
+# =======
+# = AWS =
+# =======
+
+S3_CONN = None
+if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
+    S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET)
+    S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
+    S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
