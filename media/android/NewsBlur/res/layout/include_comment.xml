@@ -22,7 +22,7 @@
             android:layout_marginRight="10dp"
             android:contentDescription="@string/description_comment_user"
             android:scaleType="fitCenter" />
-        
+
         <ImageView
             android:id="@+id/comment_sharesource_image"
             android:layout_width="25dp"
@@ -30,10 +30,10 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="35dp"
             android:layout_marginRight="10dp"
-            android:visibility="invisible"
             android:contentDescription="@string/description_comment_user"
-            android:scaleType="fitCenter" />
-        
+            android:scaleType="fitCenter"
+            android:visibility="invisible" />
+
         <ImageView
             android:id="@+id/comment_user_reshare_image"
             android:layout_width="35dp"
@@ -42,10 +42,10 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="15dp"
             android:layout_marginTop="15dp"
-            android:visibility="invisible"
             android:contentDescription="@string/description_comment_user"
-            android:scaleType="fitCenter" />
-        
+            android:scaleType="fitCenter"
+            android:visibility="invisible" />
+
         <ImageView
             android:id="@+id/comment_user_reshare_image"
             android:layout_width="50dp"
@@ -58,8 +58,8 @@
 
         <ImageView
             android:id="@+id/comment_reply_icon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
             android:scaleType="fitCenter"
@@ -69,16 +69,17 @@
             android:id="@+id/comment_shareddate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/comment_reply_icon"
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/comment_reply_icon"
+            android:paddingBottom="3dp"
             android:textColor="@color/lightgray"
-            android:textSize="11dp" />
+            android:textSize="12sp" />
 
         <ImageView
             android:id="@+id/comment_favourite_icon"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_alignBottom="@id/comment_shareddate"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@id/comment_shareddate"
             android:scaleType="fitCenter"
@@ -97,9 +98,11 @@
             android:id="@+id/comment_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/comment_shareddate"
             android:layout_toRightOf="@id/comment_user_image"
+            android:paddingBottom="3dp"
             android:textColor="@color/newsblur_blue"
-            android:textSize="11dp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/comment_text"

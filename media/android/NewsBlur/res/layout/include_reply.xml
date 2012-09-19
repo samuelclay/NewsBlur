@@ -10,8 +10,6 @@
     android:paddingRight="10dp"
     android:paddingTop="12dp" >
 
-    
-    
     <ImageView
         android:id="@+id/reply_user_image"
         android:layout_width="30dp"
@@ -29,7 +27,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="26dp"
         android:textColor="@color/lightgray"
-        android:textSize="11dp" />
+        android:textSize="12sp"/>
 
     <TextView
         android:id="@+id/reply_username"
@@ -37,7 +35,8 @@
         android:layout_height="wrap_content"
         android:textColor="@color/newsblur_blue"
         android:layout_toRightOf="@id/reply_user_image"
-        android:textSize="11dp" />
+        android:layout_alignBottom="@id/reply_shareddate"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/reply_text"
@@ -47,6 +46,7 @@
         android:layout_marginRight="10dp"
         android:layout_toRightOf="@id/reply_user_image"
         android:textColor="@color/darkgray"
+        android:layout_marginTop="5dp" 
         android:textSize="14dp" />
 
 

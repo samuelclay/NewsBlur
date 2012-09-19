@@ -7,7 +7,10 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +32,7 @@ public class ShareDialogFragment extends DialogFragment {
 
 	private static final String STORY = "story";
 	private static final String CALLBACK= "callback";
+	private static final String PREVIOUSLY_SAVED_SHARE_TEXT = "previouslySavedComment";
 	private APIManager apiManager;
 	private SharedCallbackDialog callback;
 	private Story story;
@@ -37,11 +41,15 @@ public class ShareDialogFragment extends DialogFragment {
 	private boolean hasBeenShared = false;
 	private Cursor commentCursor;
 	private Comment previousComment;
+	private String previouslySavedShareText;
+	private boolean hasShared = false;
+	private EditText commentEditText;
 
-	public static ShareDialogFragment newInstance(final SharedCallbackDialog sharedCallback, final Story story) {
+	public static ShareDialogFragment newInstance(final SharedCallbackDialog sharedCallback, final Story story, final String previouslySavedShareText) {
 		ShareDialogFragment frag = new ShareDialogFragment();
 		Bundle args = new Bundle();
 		args.putSerializable(STORY, story);
+		args.putString(PREVIOUSLY_SAVED_SHARE_TEXT, previouslySavedShareText);
 		args.putSerializable(CALLBACK, sharedCallback);
 		frag.setArguments(args);
 		return frag;
@@ -54,7 +62,8 @@ public class ShareDialogFragment extends DialogFragment {
 		story = (Story) getArguments().getSerializable(STORY);
 		callback = (SharedCallbackDialog) getArguments().getSerializable(CALLBACK);
 		user = PrefsUtil.getUserDetails(getActivity());
-
+		previouslySavedShareText = getArguments().getString(PREVIOUSLY_SAVED_SHARE_TEXT);
+		
 		apiManager = new APIManager(getActivity());
 		resolver = getActivity().getContentResolver();
 
@@ -78,13 +87,34 @@ public class ShareDialogFragment extends DialogFragment {
 
 		View v = inflater.inflate(R.layout.fragment_dialog, container, false);
 		final TextView message = (TextView) v.findViewById(R.id.dialog_message);
-		final EditText commentEditText = (EditText) v.findViewById(R.id.dialog_share_comment);
+		commentEditText = (EditText) v.findViewById(R.id.dialog_share_comment);
+		final Button shareButton = (Button) v.findViewById(R.id.dialog_button_okay);
+		shareButton.setText(R.string.share_this_story);
+		
+		commentEditText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void afterTextChanged(Editable editable) {
+				if (editable.length() > 0) {
+					shareButton.setText(R.string.share_with_comments);
+				} else {
+					shareButton.setText(R.string.share_this_story);
+				}
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) { }
+		});
+		
 		message.setText(String.format(shareString, story.title));
 
 		if (hasBeenShared) {
-			Button shareButton = (Button) v.findViewById(R.id.dialog_button_okay);
 			shareButton.setText(R.string.edit);
 			commentEditText.setText(previousComment.commentText);
+		} else if (!TextUtils.isEmpty(previouslySavedShareText)) {
+			commentEditText.setText(previouslySavedShareText);
 		}
 
 		Button okayButton = (Button) v.findViewById(R.id.dialog_button_okay);
@@ -102,6 +132,7 @@ public class ShareDialogFragment extends DialogFragment {
 					@Override
 					protected void onPostExecute(Boolean result) {
 						if (result) {
+							hasShared = true;
 							callback.sharedCallback(shareComment, hasBeenShared);
 							Toast.makeText(getActivity(), R.string.shared, Toast.LENGTH_LONG).show();
 						} else {
@@ -123,16 +154,23 @@ public class ShareDialogFragment extends DialogFragment {
 
 		return v;
 	}
-
+	
 	@Override
 	public void onDestroy() {
 		if (commentCursor != null && !commentCursor.isClosed()) {
 			commentCursor.close();
 		}
+		
+		if (!hasShared && commentEditText.length() > 0) {
+			Log.d("ShareDialog", "settingPreviouslySharedText");
+			previouslySavedShareText = commentEditText.getText().toString();
+			callback.setPreviouslySavedShareText(previouslySavedShareText);
+		}
 		super.onDestroy();
 	}
 
-	public interface SharedCallbackDialog extends Serializable{ 
+	public interface SharedCallbackDialog extends Serializable{
+		public void setPreviouslySavedShareText(String previouslySavedShareText);
 		public void sharedCallback(String sharedText, boolean alreadyShared);
 	}
 

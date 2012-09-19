@@ -39,7 +39,7 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/dialog_share_comment"
         android:padding="10dp"
-        android:text="@string/alert_dialog_cancel"
+        android:text="@string/alert_dialog_close"
         android:textSize="14sp" />
 
 </RelativeLayout>

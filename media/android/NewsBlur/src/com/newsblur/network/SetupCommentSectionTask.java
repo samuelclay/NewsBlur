@@ -154,7 +154,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				@Override
 				public void onClick(View v) {
 					if (story != null) {
-						DialogFragment newFragment = ReplyDialogFragment.newInstance(story.id, story.feedId, comment.userId, publicUserMap.get(comment.userId).username);
+						DialogFragment newFragment = ReplyDialogFragment.newInstance(story, comment.userId, publicUserMap.get(comment.userId).username);
 						newFragment.show(manager, "dialog");
 					}
 				}

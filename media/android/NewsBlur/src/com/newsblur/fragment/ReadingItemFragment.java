@@ -59,6 +59,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private GridView tagContainer;
 	private View view;
 	private UserProfile user;
+	public String previouslySavedShareText;
 
 	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, Classifier classifier) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
@@ -136,7 +137,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		shareButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(ReadingItemFragment.this, story);
+				DialogFragment newFragment = ShareDialogFragment.newInstance(ReadingItemFragment.this, story, previouslySavedShareText);
 				newFragment.show(getFragmentManager(), "dialog");
 			}
 		});
@@ -336,6 +337,12 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			commentDateText.setText(R.string.now);
 			
 		}
+	}
+
+
+	@Override
+	public void setPreviouslySavedShareText(String previouslySavedShareText) {
+		this.previouslySavedShareText = previouslySavedShareText;
 	}
 
 }

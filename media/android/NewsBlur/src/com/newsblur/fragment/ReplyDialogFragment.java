@@ -13,25 +13,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.newsblur.R;
+import com.newsblur.domain.Story;
 import com.newsblur.network.APIManager;
 
 public class ReplyDialogFragment extends DialogFragment {
 
-	private static final String STORY_ID = "story_id";
-	private static final String STORY_FEED_ID = "feed_id";
+	private static final String STORY = "story";
 	private static final String COMMENT_USER_ID = "comment_user_id";
 	private static final String COMMENT_USERNAME = "comment_username";
 	
-	String storyId, storyFeedId, commentUserId, commentUsername;
+	private String commentUserId, commentUsername;
+	private Story story;
 	
 	private APIManager apiManager;
 
 
-	public static ReplyDialogFragment newInstance(final String storyId, final String storyFeedId, final String commentUserId, final String commentUsername) {
+	public static ReplyDialogFragment newInstance(final Story story, final String commentUserId, final String commentUsername) {
 		ReplyDialogFragment frag = new ReplyDialogFragment();
 		Bundle args = new Bundle();
-		args.putString(STORY_ID, storyId);
-		args.putString(STORY_FEED_ID, storyFeedId);
+		args.putSerializable(STORY, story);
 		args.putString(COMMENT_USER_ID, commentUserId);
 		args.putString(COMMENT_USERNAME, commentUsername);
 		frag.setArguments(args);
@@ -42,8 +42,8 @@ public class ReplyDialogFragment extends DialogFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		setStyle(DialogFragment.STYLE_NO_TITLE, R.style.dialog);
 
-		storyId = getArguments().getString(STORY_ID);
-		storyFeedId = getArguments().getString(STORY_FEED_ID);
+		story = (Story) getArguments().getSerializable(STORY);
+		
 		commentUserId = getArguments().getString(COMMENT_USER_ID);
 		commentUsername = getArguments().getString(COMMENT_USERNAME);
 		
@@ -69,7 +69,7 @@ public class ReplyDialogFragment extends DialogFragment {
 				new AsyncTask<Void, Void, Boolean>() {
 					@Override
 					protected Boolean doInBackground(Void... arg) {
-						return apiManager.replyToComment(storyId, storyFeedId, commentUserId, reply.getText().toString());
+						return apiManager.replyToComment(story.id, story.feedId, commentUserId, reply.getText().toString());
 					}
 					
 					@Override

@@ -121,7 +121,8 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			return true;
 		case R.id.menu_reading_sharenewsblur:
 			if (story != null) {
-				DialogFragment newFragment = ShareDialogFragment.newInstance(((ReadingItemFragment) readingAdapter.getItem(currentItem)), story);
+				ReadingItemFragment currentFragment = (ReadingItemFragment) readingAdapter.instantiateItem(pager, currentItem);
+				DialogFragment newFragment = ShareDialogFragment.newInstance(currentFragment, story, currentFragment.previouslySavedShareText);
 				newFragment.show(getSupportFragmentManager(), "dialog");
 			}
 			return true;

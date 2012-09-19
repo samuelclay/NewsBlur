@@ -63,6 +63,7 @@
 	
 	<string name="alert_dialog_ok">Okay</string>
 	<string name="alert_dialog_cancel">Cancel</string>
+	<string name="alert_dialog_close">Close</string>
 	
     <string name="profile">Profile</string>
     <string name="profile_location_icon">Location icon</string>
@@ -130,5 +131,7 @@
     <string name="addfollow_add_newsblur">Follow NewsBlur</string>
     <string name="addfollow_add_popular">Follow Popular</string>
     <string name="add_follow">All Done!</string>
+    <string name="share_with_comments">Share with comments</string>
+    <string name="share_this_story">Share this story</string>
     
 </resources>
