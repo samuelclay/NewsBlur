@@ -186,7 +186,7 @@ class PageImporter(object):
                 k.set_contents_from_string(compressed_html)
                 k.set_acl('public-read')
                 
-                if False and not self.feed.s3_page:
+                if not self.feed.s3_page:
                     try:
                         feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
                         feed_page.delete()
