@@ -97,6 +97,7 @@ def vps():
 def ec2():
     env.user = 'ubuntu'
     env.key_filename = ['/Users/sclay/.ec2/sclay.pem']
+    server()
     
 # ==========
 # = Deploy =
@@ -268,7 +269,6 @@ def setup_app():
     setup_app_firewall()
     setup_app_motd()
     copy_app_settings()
-    copy_certificates()
     configure_nginx()
     setup_gunicorn(supervisor=True)
     update_gunicorn()
@@ -289,6 +289,10 @@ def setup_db():
     setup_gunicorn(supervisor=False)
     # setup_redis()
     setup_db_munin()
+    
+    if env.user == 'ubuntu':
+        setup_db_mdadm()
+        setup_db_raid_mounts()
 
 def setup_task():
     setup_common()
@@ -398,11 +402,12 @@ def setup_hosts():
 
 def config_pgbouncer():
     put('config/pgbouncer.conf', '/etc/pgbouncer/pgbouncer.ini', use_sudo=True)
-    put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    # put('config/pgbouncer_userlist.txt', '/etc/pgbouncer/userlist.txt', use_sudo=True)
+    put('config/secrets/pgbouncer_auth.conf', '/etc/pgbouncer/userlist.txt', use_sudo=True)
     sudo('echo "START=1" > /etc/default/pgbouncer')
     sudo('su postgres -c "/etc/init.d/pgbouncer stop"', pty=False)
     with settings(warn_only=True):
-        sudo('pkill pgbouncer')
+        sudo('pkill -9 pgbouncer')
         run('sleep 2')
     sudo('/etc/init.d/pgbouncer start', pty=False)
 
@@ -491,6 +496,7 @@ def configure_nginx():
     sudo("chmod 0755 /etc/init.d/nginx")
     sudo("/usr/sbin/update-rc.d -f nginx defaults")
     sudo("/etc/init.d/nginx restart")
+    copy_certificates()
 
 def setup_vps():
     # VPS suffer from severe time drift. Force blunt hourly time recalibration.
@@ -585,10 +591,14 @@ def setup_db_firewall():
     sudo('ufw allow from 199.15.248.0/21 to any port 11211 ') # Memcached
 
     # EC2
-    sudo('ufw allow from 23.22.137.143/20 to any port 5432 ') # PostgreSQL
-    sudo('ufw allow from 23.22.137.143/20 to any port 27017') # MongoDB
-    sudo('ufw allow from 23.22.137.143/20 to any port 6379 ') # Redis
-    sudo('ufw allow from 23.22.137.143/20 to any port 11211 ') # Memcached
+    sudo('ufw delete allow from 23.22.0.0/16 to any port 5432 ') # PostgreSQL
+    sudo('ufw delete allow from 23.22.0.0/16 to any port 27017') # MongoDB
+    sudo('ufw delete allow from 23.22.0.0/16 to any port 6379 ') # Redis
+    sudo('ufw delete allow from 23.22.0.0/16 to any port 11211 ') # Memcached
+    sudo('ufw allow from 23.20.0.0/16 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 23.20.0.0/16 to any port 27017') # MongoDB
+    sudo('ufw allow from 23.20.0.0/16 to any port 6379 ') # Redis
+    sudo('ufw allow from 23.20.0.0/16 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -665,7 +675,8 @@ def setup_db_munin():
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             run('git clone git://github.com/samuel/python-munin.git')
-        run('sudo python python-munin/setup.py install')
+    with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
+        run('sudo python setup.py install')
 
 def enable_celerybeat():
     with cd(env.NEWSBLUR_PATH):
@@ -674,6 +685,19 @@ def enable_celerybeat():
     put('config/supervisor_celeryd_beat.conf', '/etc/supervisor/conf.d/celeryd_beat.conf', use_sudo=True)
     sudo('supervisorctl reread')
     sudo('supervisorctl update')
+    
+def setup_db_mdadm():
+    sudo('apt-get -y install xfsprogs mdadm')
+    sudo('yes | mdadm --create /dev/md0 --level=0 -c256 --raid-devices=4 /dev/xvdf /dev/xvdg /dev/xvdh /dev/xvdi')
+    sudo('mkfs.xfs /dev/md0')
+    sudo('mkdir -p /srv/db')
+    sudo('mount -t xfs -o rw,nobarrier,noatime,nodiratime /dev/md0 /srv/db')
+    sudo('mkdir -p /srv/db/mongodb')
+    sudo('chown mongodb.mongodb /srv/db/mongodb')
+    sudo("echo 'DEVICE /dev/xvdf /dev/xvdg /dev/xvdh /dev/xvdi' | sudo tee -a /etc/mdadm/mdadm.conf")
+    sudo("mdadm --examine --scan | sudo tee -a /etc/mdadm/mdadm.conf")
+    sudo("echo '/dev/md0   /srv/db xfs   rw,nobarrier,noatime,nodiratime,noauto   0 0' | sudo tee -a  /etc/fstab")
+    sudo("sudo update-initramfs -u -v -k `uname -r`")
     
 # ================
 # = Setup - Task =
