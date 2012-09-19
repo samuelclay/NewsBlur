@@ -69,6 +69,8 @@ class Feed(models.Model):
     last_load_time = models.IntegerField(default=0)
     favicon_color = models.CharField(max_length=6, null=True, blank=True)
     favicon_not_found = models.BooleanField(default=False)
+    s3_page = models.NullBooleanField(default=False, blank=True, null=True)
+    s3_icon = models.NullBooleanField(default=False, blank=True, null=True)
 
     class Meta:
         db_table="feeds"
@@ -95,6 +97,11 @@ class Feed(models.Model):
             Site.objects.get_current().domain,
             self.favicon_url
         )
+    
+    @property
+    def s3_pages_key(self):
+        return "%s.gz.html" % self.pk
+        
     def canonical(self, full=False, include_favicon=True):
         feed = {
             'id': self.pk,

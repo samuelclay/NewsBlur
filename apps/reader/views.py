@@ -564,6 +564,11 @@ def load_feed_page(request, feed_id):
         raise Http404
     
     feed = Feed.get_by_id(feed_id)
+    
+    if feed.has_page and not feed.has_page_exception and feed.s3_page:
+        return HttpResponseRedirect('//%s/%s' % (settings.S3_PAGES_BUCKET_NAME,
+                                                 feed.s3_pages_key))
+    
     data = MFeedPage.get_data(feed_id=feed_id)
     
     if not data or not feed.has_page or feed.has_page_exception:
