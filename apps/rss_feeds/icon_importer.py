@@ -6,8 +6,10 @@ import scipy.cluster
 import urlparse
 import struct
 import operator
+import gzip
 import BmpImagePlugin, PngImagePlugin, Image
 from StringIO import StringIO
+from django.conf import settings
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.feed_functions import timelimit, TimeoutError
 
@@ -146,6 +148,12 @@ class IconImporter(object):
         image_file = None
         if self.page_data:
             content = self.page_data
+        elif settings.BACKED_BY_AWS.get('pages_on_s3') and self.feed.s3_page:
+            key = settings.S3_PAGES_BUCKET.get_key(self.feed.s3_pages_key)
+            compressed_content = key.get_contents_as_string()
+            stream = StringIO(compressed_content)
+            gz = gzip.GzipFile(fileobj=stream)
+            content = gz.read()
         else:
             content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)

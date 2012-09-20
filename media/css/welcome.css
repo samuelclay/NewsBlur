@@ -574,4 +574,28 @@
 }
 .NB-welcome-footer .NB-footer-icons a img {
     vertical-align: middle;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    bottom: -4px;
+    opacity: .8;
+    -webkit-transition: all .25s ease-in-out;
+    -moz-transition: all .25s ease-in-out;
+    -o-transition: all .25s ease-in-out;
+    -ms-transition: all .25s ease-in-out;
+}
+.NB-welcome-footer .NB-footer-icons a img:hover {
+    opacity: 1;
+}
+
+.NB-welcome-footer .NB-twitter-avatar {
+    width: 24px;
+    height: 24px;
+    border: none;
+    box-shadow: 0 0 1px #C0C0C0;
+    vertical-align: bottom;
+    position: relative;
+    bottom: 0;
+    margin: 0 2px 0 4px;
+    border-radius: 2px;
 }

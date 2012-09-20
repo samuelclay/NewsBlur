@@ -76,19 +76,19 @@ MONGODB_SLAVE = {
     'host': '127.0.0.1'
 }
 
-# Celery RabbitMQ Broker
-BROKER_HOST = "127.0.0.1"
+# Celery RabbitMQ/Redis Broker
+CELERY_REDIS_HOST = "127.0.0.1"
+BROKER_URL = "redis://127.0.0.1:6379/0"
 
 REDIS = {
     'host': '127.0.0.1',
 }
 
-# AMQP - RabbitMQ server
-BROKER_HOST     = "db01.newsblur.com"
-BROKER_PORT     = 5672
-BROKER_USER     = "newsblur"
-BROKER_PASSWORD = "newsblur"
-BROKER_VHOST    = "newsblurvhost"
+BACKED_BY_AWS = {
+    'pages_on_s3': False,
+    'icons_on_s3': False,
+    'stories_on_dynamodb': False,
+}
 
 # ===========
 # = Logging =
