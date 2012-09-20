@@ -95,6 +95,8 @@ class Feed(models.Model):
     
     @property
     def favicon_url_fqdn(self):
+        if self.s3_icon:
+            return self.favicon_url
         return "http://%s%s" % (
             Site.objects.get_current().domain,
             self.favicon_url

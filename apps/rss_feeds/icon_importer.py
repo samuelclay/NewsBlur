@@ -55,7 +55,8 @@ class IconImporter(object):
             if (self.feed_icon.color != color or 
                 self.feed_icon.data != image_str or 
                 self.feed_icon.icon_url != icon_url or
-                self.feed_icon.not_found):
+                self.feed_icon.not_found or
+                (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.s3_icon)):
                 self.feed_icon.data      = image_str
                 self.feed_icon.icon_url  = icon_url
                 self.feed_icon.color     = color
