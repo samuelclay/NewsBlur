@@ -16,6 +16,6 @@ def mongo_max_replication_lag(connection):
                 oldest_secondary_optime = optime.time
 
     if not primary_optime or not oldest_secondary_optime:
-        raise Exception("Replica set is not healthy")
+        return 0
 
     return primary_optime - oldest_secondary_optime
