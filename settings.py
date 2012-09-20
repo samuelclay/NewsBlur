@@ -445,10 +445,6 @@ S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
 
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
 os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
-try:
-    DDB = ConnectionBorg().get_table('stories')
-except boto.exception.DynamoDBResponseError:
-    DDB = None
 
 def custom_show_toolbar(request):
     return DEBUG
@@ -504,3 +500,8 @@ if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
     S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET)
     S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
     S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
+if BACKED_BY_AWS.get('stories_on_dynamodb'):
+    try:
+        DDB = ConnectionBorg().get_table('stories')
+    except boto.exception.DynamoDBResponseError:
+        DDB = None
