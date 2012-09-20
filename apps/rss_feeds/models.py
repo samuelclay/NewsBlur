@@ -90,7 +90,7 @@ class Feed(models.Model):
     @property
     def favicon_url(self):
         if self.s3_icon:
-            return "//%s/%s.png" % (settings.S3_ICONS_BUCKET, self.pk)
+            return "http://%s/%s.png" % (settings.S3_ICONS_BUCKET_NAME, self.pk)
         return reverse('feed-favicon', kwargs={'feed_id': self.pk})
     
     @property
