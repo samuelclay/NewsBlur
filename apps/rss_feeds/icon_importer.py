@@ -31,7 +31,10 @@ class IconImporter(object):
         if not self.force and self.feed.favicon_not_found:
             # print 'Not found, skipping...'
             return
-        if not self.force and not self.feed.favicon_not_found and self.feed_icon.icon_url:
+        if (not self.force and 
+            not self.feed.favicon_not_found and 
+            self.feed_icon.icon_url and 
+            self.feed.s3_icon):
             # print 'Found, but skipping...'
             return
         image, image_file, icon_url = self.fetch_image_from_page_data()
@@ -52,7 +55,8 @@ class IconImporter(object):
             if (self.feed_icon.color != color or 
                 self.feed_icon.data != image_str or 
                 self.feed_icon.icon_url != icon_url or
-                self.feed_icon.not_found):
+                self.feed_icon.not_found or
+                (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon)):
                 self.feed_icon.data      = image_str
                 self.feed_icon.icon_url  = icon_url
                 self.feed_icon.color     = color

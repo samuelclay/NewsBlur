@@ -423,6 +423,9 @@ BACKED_BY_AWS = {
 }
 
 PROXY_S3_PAGES = True
+S3_BACKUP_BUCKET = 'newsblur_backups'
+S3_PAGES_BUCKET_NAME = 'pages.newsblur.com'
+S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
 
 # ==================
 # = Configurations =
@@ -439,9 +442,6 @@ TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
 AWS_ACCESS_KEY_ID = S3_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = S3_SECRET
-S3_BACKUP_BUCKET = 'newsblur_backups'
-S3_PAGES_BUCKET_NAME = 'pages.newsblur.com'
-S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
 
 os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
 os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
