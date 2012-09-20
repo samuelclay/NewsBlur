@@ -29,7 +29,7 @@ def user(u, msg, request=None):
             color = '~FK~SB'
             if seconds >= .5:
                 color = '~FR'
-            elif seconds < .1:
+            elif seconds <= .15:
                 color = '~FB'
             time_elapsed = "[%s%.4ss~SB] " % (
                 color,
