@@ -100,7 +100,6 @@
     [self showFolderPicker];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        NSLog(@"%@",  self.siteTable.frame);
         self.siteTable.hidden = NO;
         self.siteScrollView.frame = CGRectMake(self.siteScrollView.frame.origin.x,
                                            self.siteScrollView.frame.origin.y,
@@ -278,6 +277,7 @@
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(requestFinished:)];
     [request setDidFailSelector:@selector(requestFailed:)];
+    [request setTimeOutSeconds:30];
     [request startAsynchronous];
 }
 

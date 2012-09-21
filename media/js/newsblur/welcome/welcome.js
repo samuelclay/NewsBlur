@@ -7,6 +7,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     events: {
         "click .NB-button-login" : "show_signin_form",
         "click .NB-button-tryout" : "show_tryout",
+        "click .NB-welcome-header-caption" : "click_header_caption",
         "mouseenter .NB-welcome-header-caption" : "enter_header_caption",
         "mouseleave .NB-welcome-header-caption" : "leave_header_caption"
     },
@@ -20,11 +21,19 @@ NEWSBLUR.Welcome = Backbone.View.extend({
     // = Header =
     // ==========
     
+    click_header_caption: function(e) {
+        this.flags.on_signin = false;
+        this.enter_header_caption(e);
+    },
+    
     enter_header_caption: function(e) {
         this.flags.on_header_caption = true;
         var $caption = $(e.currentTarget);
-
+        
+        if (this.flags.on_signin) return;
+        
         if ($caption.hasClass('NB-welcome-header-caption-signin')) {
+            this.flags.on_signin = true;
             this.show_signin_form();
         } else {
             var r = parseInt($caption.data('ss'), 10);
@@ -36,7 +45,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         var $caption = $(e.currentTarget);
 
         if ($caption.hasClass('NB-welcome-header-caption-signin')) {
-
+          
         } else {
             this.flags.on_header_caption = false;
         }
