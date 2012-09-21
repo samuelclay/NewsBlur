@@ -749,6 +749,7 @@
         },
         
         find_story_with_action_preference_on_open_feed: function() {
+          // console.log(["find_story_with_action_preference_on_open_feed"]);
             var open_feed_action = this.model.preference('open_feed_action');
 
             if (this.counts['page'] != 1) return;
