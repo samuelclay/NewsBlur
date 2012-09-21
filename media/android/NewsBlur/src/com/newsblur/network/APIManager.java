@@ -253,7 +253,7 @@ public class APIManager {
 
 		SocialFeedResponse storiesResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			
+			// If we've successfully retrieved the latest stories for all shared feeds (the first page), delete all previous shared feeds
 			if (TextUtils.equals(pageNumber,"1")) {
 				for (String feedId : feedIds) {
 					Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
@@ -297,13 +297,18 @@ public class APIManager {
 		final APIResponse response = client.get(feedUri.toString(), values);
 		SocialFeedResponse socialFeedResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			
+			Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
+			if (TextUtils.equals(pageNumber, "1")) {
+				contentResolver.delete(storySocialUri, null, null);
+			}
+			
 			for (Story story : socialFeedResponse.stories) {
 				insertComments(story);
 
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
 
-				Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 				contentResolver.insert(storySocialUri, story.getValues());
 			}
 			if (socialFeedResponse != null && socialFeedResponse.feeds!= null) {

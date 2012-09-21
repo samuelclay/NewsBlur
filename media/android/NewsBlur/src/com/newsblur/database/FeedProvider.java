@@ -107,6 +107,17 @@ public class FeedProvider extends ContentProvider {
 				db.delete(DatabaseConstants.STORY_TABLE, null, null);
 				return 1;
 				
+			case SOCIALFEED_STORIES:
+				StringBuilder socialDeleteBuilder = new StringBuilder();
+				socialDeleteBuilder.append("DELETE FROM " + DatabaseConstants.STORY_TABLE);
+				socialDeleteBuilder.append(" WHERE " + DatabaseConstants.STORY_ID + " IN (");
+				socialDeleteBuilder.append(" SELECT " + DatabaseConstants.STORY_ID + " FROM ");
+				socialDeleteBuilder.append(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + " WHERE ");
+				socialDeleteBuilder.append(DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ? )");
+				db.execSQL(socialDeleteBuilder.toString(), new String[] { uri.getLastPathSegment() });
+				
+				return db.delete(DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE, DatabaseConstants.SOCIALFEED_STORY_USER_ID + " = ?", new String[] { uri.getLastPathSegment() } );
+				
 			case INDIVIDUAL_FEED:
 				db.delete(DatabaseConstants.FEED_TABLE, DatabaseConstants.FEED_ID + " = ?", new String[] { uri.getLastPathSegment() } );
 				db.delete(DatabaseConstants.FEED_FOLDER_MAP_TABLE, DatabaseConstants.FEED_FOLDER_FEED_ID + " = ?", new String[] { uri.getLastPathSegment() } );
