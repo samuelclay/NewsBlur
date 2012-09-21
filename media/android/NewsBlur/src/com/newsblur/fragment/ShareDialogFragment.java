@@ -26,7 +26,7 @@ import com.newsblur.domain.Comment;
 import com.newsblur.domain.Story;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.network.APIManager;
-import com.newsblur.util.PrefsUtil;
+import com.newsblur.util.PrefsUtils;
 
 public class ShareDialogFragment extends DialogFragment {
 
@@ -61,7 +61,7 @@ public class ShareDialogFragment extends DialogFragment {
 		super.onCreate(savedInstanceState);
 		story = (Story) getArguments().getSerializable(STORY);
 		callback = (SharedCallbackDialog) getArguments().getSerializable(CALLBACK);
-		user = PrefsUtil.getUserDetails(getActivity());
+		user = PrefsUtils.getUserDetails(getActivity());
 		previouslySavedShareText = getArguments().getString(PREVIOUSLY_SAVED_SHARE_TEXT);
 		
 		apiManager = new APIManager(getActivity());

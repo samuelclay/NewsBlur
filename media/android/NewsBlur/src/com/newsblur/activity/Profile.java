@@ -15,7 +15,7 @@ import com.newsblur.fragment.ProfileDetailsFragment;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.network.domain.ProfileResponse;
-import com.newsblur.util.PrefsUtil;
+import com.newsblur.util.PrefsUtils;
 
 public class Profile extends SherlockFragmentActivity {
 
@@ -78,7 +78,7 @@ public class Profile extends SherlockFragmentActivity {
 		@Override
 		protected void onPreExecute() {
 			if (TextUtils.isEmpty(userId)) {
-				detailsFragment.setUser(PrefsUtil.getUserDetails(Profile.this), true);
+				detailsFragment.setUser(PrefsUtils.getUserDetails(Profile.this), true);
 			}
 		}
 
@@ -90,7 +90,7 @@ public class Profile extends SherlockFragmentActivity {
 				activities = profileResponse.activities;
 			} else {
 				apiManager.updateUserProfile();
-				user = PrefsUtil.getUserDetails(Profile.this);
+				user = PrefsUtils.getUserDetails(Profile.this);
 				profileResponse = apiManager.getUser(user.id);
 				if (profileResponse != null) {
 					activities = profileResponse.activities;

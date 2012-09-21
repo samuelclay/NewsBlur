@@ -38,7 +38,7 @@ import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.network.domain.SocialFeedResponse;
 import com.newsblur.network.domain.StoriesResponse;
 import com.newsblur.serialization.DateStringTypeAdapter;
-import com.newsblur.util.PrefsUtil;
+import com.newsblur.util.PrefsUtils;
 
 public class APIManager {
 
@@ -63,7 +63,7 @@ public class APIManager {
 		final APIResponse response = client.post(APIConstants.URL_LOGIN, values);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			LoginResponse loginResponse = gson.fromJson(response.responseString, LoginResponse.class);
-			PrefsUtil.saveCookie(context, response.cookie);
+			PrefsUtils.saveCookie(context, response.cookie);
 			return loginResponse;
 		} else {
 			return new LoginResponse();
@@ -148,7 +148,7 @@ public class APIManager {
 		final APIResponse response = client.post(APIConstants.URL_SIGNUP, values);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			LoginResponse loginResponse = gson.fromJson(response.responseString, LoginResponse.class);
-			PrefsUtil.saveCookie(context, response.cookie);
+			PrefsUtils.saveCookie(context, response.cookie);
 			
 			CookieSyncManager.createInstance(context.getApplicationContext());
 			CookieManager cookieManager = CookieManager.getInstance();
@@ -167,7 +167,7 @@ public class APIManager {
 		final APIResponse response = client.get(APIConstants.URL_MY_PROFILE);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			ProfileResponse profileResponse = gson.fromJson(response.responseString, ProfileResponse.class);
-			PrefsUtil.saveUserDetails(context, profileResponse.user);
+			PrefsUtils.saveUserDetails(context, profileResponse.user);
 			return profileResponse;
 		} else {
 			return null;

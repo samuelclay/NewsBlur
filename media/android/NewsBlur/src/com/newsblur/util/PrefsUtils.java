@@ -16,7 +16,7 @@ import android.graphics.BitmapFactory;
 
 import com.newsblur.domain.UserProfile;
 
-public class PrefsUtil {
+public class PrefsUtils {
 
 	public static void saveCookie(final Context context, final String cookie) {
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);

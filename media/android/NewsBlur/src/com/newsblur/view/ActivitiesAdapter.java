@@ -26,7 +26,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
-	private final String startedFollowing, ago, repliedTo, sharedStory, withComment;
+	private final String startedFollowing, ago, repliedTo, sharedStory, withComment, likedComment;
 	private ForegroundColorSpan midgray, highlight, darkgray;
 	private String TAG = "ActivitiesAdapter";
 	private Context context;
@@ -44,11 +44,12 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		Resources resources = context.getResources();
 		startedFollowing = resources.getString(R.string.profile_started_following);
 		repliedTo = resources.getString(R.string.profile_replied_to);
+		likedComment = resources.getString(R.string.profile_liked_comment);
 		sharedStory = resources.getString(R.string.profile_shared_story);
 		withComment = resources.getString(R.string.profile_with_comment);
 		ago = resources.getString(R.string.profile_ago);
 		
-		highlight = new ForegroundColorSpan(resources.getColor(R.color.lightorange));
+		highlight = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
 		midgray = new ForegroundColorSpan(resources.getColor(R.color.midgray));
 		darkgray = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
 	}
@@ -80,17 +81,28 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 			stringBuilder.setSpan(darkgray, 0, startedFollowing.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(usernameClick, startedFollowing.length() + 1, startedFollowing.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(highlight, startedFollowing.length() + 1, startedFollowing.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		} else if (TextUtils.equals(activity.category, "comment_reply")) {
-			stringBuilder.append(repliedTo);
-			stringBuilder.append(" ");
-			stringBuilder.append(activity.user.username);
-			stringBuilder.append(": \"");
+		} else if (TextUtils.equals(activity.category, "comment_like")) {
+			stringBuilder.append(likedComment);
+			stringBuilder.append(" \"");
 			stringBuilder.append(activity.content);
-			stringBuilder.append("\"");
-			stringBuilder.setSpan(darkgray, 0, repliedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			stringBuilder.setSpan(usernameClick, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			stringBuilder.setSpan(highlight, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			stringBuilder.setSpan(midgray, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			stringBuilder.append("\" ");
+			stringBuilder.append("by ");
+			stringBuilder.append(activity.user.username);
+			stringBuilder.setSpan(darkgray, 0, likedComment.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			stringBuilder.setSpan(highlight, likedComment.length() + 1, likedComment.length() + 3 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			stringBuilder.setSpan(midgray, stringBuilder.length() - activity.user.username.length() - 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			stringBuilder.setSpan(usernameClick, likedComment.length() + 3 + activity.content.length() + 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		} else if (TextUtils.equals(activity.category, "comment_reply")) {
+				stringBuilder.append(repliedTo);
+				stringBuilder.append(" ");
+				stringBuilder.append(activity.user.username);
+				stringBuilder.append(": \"");
+				stringBuilder.append(activity.content);
+				stringBuilder.append("\"");
+				stringBuilder.setSpan(darkgray, 0, repliedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				stringBuilder.setSpan(usernameClick, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				stringBuilder.setSpan(highlight, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				stringBuilder.setSpan(midgray, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);	
 		} else if (TextUtils.equals(activity.category, "sharedstory")) {
 			stringBuilder.append(sharedStory);
 			stringBuilder.append(" \"");

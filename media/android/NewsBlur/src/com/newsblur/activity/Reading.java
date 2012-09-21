@@ -35,7 +35,7 @@ import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
 import com.newsblur.util.PrefConstants;
-import com.newsblur.util.PrefsUtil;
+import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
 public abstract class Reading extends SherlockFragmentActivity implements OnPageChangeListener, SyncUpdateFragment.SyncUpdateFragmentInterface, OnSeekBarChangeListener {
@@ -106,7 +106,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int currentItem = pager.getCurrentItem();
 		Story story = readingAdapter.getStory(currentItem);
-		UserProfile user = PrefsUtil.getUserDetails(this);
+		UserProfile user = PrefsUtils.getUserDetails(this);
 		
 		switch (item.getItemId()) {
 		case android.R.id.home:

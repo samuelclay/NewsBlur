@@ -19,7 +19,7 @@ import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefsUtil;
+import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 
 public class ProfileDetailsFragment extends Fragment implements OnClickListener {
@@ -111,7 +111,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 			}
 		} else {
 			followButton.setVisibility(View.GONE);
-			Bitmap userPicture = PrefsUtil.getUserImage(getActivity());
+			Bitmap userPicture = PrefsUtils.getUserImage(getActivity());
 			userPicture = UIUtils.roundCorners(userPicture, 5);
 			imageView.setImageBitmap(userPicture);
 		}

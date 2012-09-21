@@ -7,7 +7,7 @@ import com.newsblur.network.domain.LoginResponse;
 import com.newsblur.service.DetachableResultReceiver;
 import com.newsblur.service.SyncService;
 import com.newsblur.service.DetachableResultReceiver.Receiver;
-import com.newsblur.util.PrefsUtil;
+import com.newsblur.util.PrefsUtils;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -116,7 +116,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 				updateStatus.setText(R.string.login_logged_in);
 				updateStatus.startAnimation(a);
 				
-				loginProfilePicture.setImageBitmap(PrefsUtil.getUserImage(getActivity()));
+				loginProfilePicture.setImageBitmap(PrefsUtils.getUserImage(getActivity()));
 				feedProgress.setVisibility(View.VISIBLE);
 				
 				Log.d(TAG, "Authenticated. Starting receiver.");
