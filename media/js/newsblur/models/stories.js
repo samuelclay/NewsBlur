@@ -72,9 +72,9 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // = Actions =
     // ===========
     
-    deselect: function(selected_story) {
+    deselect_other_stories: function(selected_story) {
         this.any(function(story) {
-            if (story.get('selected') && story != selected_story) {
+            if (story.get('selected') && story.id != selected_story.id) {
                 story.set('selected', false);
                 return true;
             }
@@ -304,7 +304,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     detect_selected_story: function(selected_story, selected) {
         if (selected) {
-            this.deselect(selected_story);
+            this.deselect_other_stories(selected_story);
             this.active_story = selected_story;
             NEWSBLUR.reader.active_story = selected_story;
             this.previous_stories_stack.push(selected_story);
