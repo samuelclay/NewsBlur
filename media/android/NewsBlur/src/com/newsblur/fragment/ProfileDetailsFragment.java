@@ -26,6 +26,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 	
 	UserProfile user;
 	private TextView username, bio, location, sharedCount, followerCount, followingCount, website;
+	private View locationIcon;
 	private ImageView imageView;
 	private String noBio, noLocation;  
 	private boolean viewingSelf = false;
@@ -56,6 +57,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		username = (TextView) v.findViewById(R.id.profile_username);
 		bio = (TextView) v.findViewById(R.id.profile_bio);
 		location = (TextView) v.findViewById(R.id.profile_location);
+		locationIcon = v.findViewById(R.id.profile_location_icon);
 		sharedCount = (TextView) v.findViewById(R.id.profile_sharedcount);
 		website = (TextView) v.findViewById(R.id.profile_website);
 		followerCount = (TextView) v.findViewById(R.id.profile_followercount);
@@ -79,13 +81,14 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		if (!TextUtils.isEmpty(user.bio)) {
 			bio.setText(user.bio);
 		} else {
-			bio.setText(noBio);
+			bio.setVisibility(View.INVISIBLE);
 		}
 		
 		if (!TextUtils.isEmpty(user.location)) {
 			location.setText(user.location);
 		} else {
-			location.setText(noLocation);
+			location.setVisibility(View.INVISIBLE);
+			locationIcon.setVisibility(View.INVISIBLE);
 		}
 		
 		if (!TextUtils.isEmpty(user.website)) {
