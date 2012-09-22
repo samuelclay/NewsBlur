@@ -565,7 +565,10 @@ def load_feed_page(request, feed_id):
     
     feed = Feed.get_by_id(feed_id)
     
-    if feed.has_page and not feed.has_page_exception and feed.s3_page:
+    if (feed.has_page and 
+        not feed.has_page_exception and 
+        settings.BACKED_BY_AWS['icons_on_s3'] and 
+        feed.s3_page):
         if settings.PROXY_S3_PAGES:
             key = settings.S3_PAGES_BUCKET.get_key(feed.s3_pages_key)
             compressed_data = key.get_contents_as_string()
