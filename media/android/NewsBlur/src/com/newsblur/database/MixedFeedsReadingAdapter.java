@@ -39,7 +39,7 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
 			Cursor feedClassifierCursor = resolver.query(classifierUri, null, null, null, null);
 			Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
 			
-			return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, classifier);
+			return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, classifier, true);
 		}
 	}
 	

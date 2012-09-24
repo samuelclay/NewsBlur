@@ -12,7 +12,6 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.GridLayout;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +33,7 @@ import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ViewUtils;
+import com.newsblur.view.FlowLayout;
 
 public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 	public static final String COMMENT_BY = "commentBy";
@@ -240,8 +240,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 
 	protected void onPostExecute(Void result) {
 		if (viewHolder.get() != null) {
-			GridLayout sharedGrid = (GridLayout) viewHolder.get().findViewById(R.id.reading_social_shareimages);
-			GridLayout commentGrid = (GridLayout) viewHolder.get().findViewById(R.id.reading_social_commentimages);
+			FlowLayout sharedGrid = (FlowLayout) viewHolder.get().findViewById(R.id.reading_social_shareimages);
+			FlowLayout commentGrid = (FlowLayout) viewHolder.get().findViewById(R.id.reading_social_commentimages);
 
 			ViewUtils.setupCommentCount(context, viewHolder.get(), commentCursor.getCount());
 			ViewUtils.setupShareCount(context, viewHolder.get(), story.sharedUserIds.length);

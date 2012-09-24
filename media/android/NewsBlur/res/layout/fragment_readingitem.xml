@@ -114,9 +114,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="15dp"
                 android:textColor="@color/darkgray"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -125,31 +125,26 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
+                android:layout_marginRight="15dp"
                 android:textColor="@color/darkgray"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <android.support.v7.widget.GridLayout
-                xmlns:app="http://schemas.android.com/apk/res-auto"
+            <com.newsblur.view.FlowLayout
                 android:id="@+id/reading_social_commentimages"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/center_filler"
-                android:layout_toRightOf="@id/comment_by"
-                android:paddingLeft="5dp"
-                app:columnCount="3" />
+                android:layout_toRightOf="@id/comment_by" />
 
-            <android.support.v7.widget.GridLayout
-                xmlns:app="http://schemas.android.com/apk/res-auto"
+            <com.newsblur.view.FlowLayout
                 android:id="@+id/reading_social_shareimages"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/shared_by"
-                android:paddingRight="5dp"
-                app:columnCount="3" />
+                android:layout_toRightOf="@+id/center_filler"/>
         </RelativeLayout>
 
         <View

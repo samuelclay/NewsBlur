@@ -58,12 +58,13 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private TextView itemAuthors;
 	private TextView itemFeed;
 	private TagAdapter tagAdapter;
+	private boolean displayFeedDetails;
 	private GridView tagContainer;
 	private View view;
 	private UserProfile user;
 	public String previouslySavedShareText;
 
-	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, Classifier classifier) { 
+	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, Classifier classifier, boolean displayFeedDetails) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
@@ -71,6 +72,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		args.putString("feedTitle", feedTitle);
 		args.putString("feedColor", feedFaviconColor);
 		args.putString("feedFade", feedFaviconFade);
+		args.putBoolean("displayFeedDetails", displayFeedDetails);
 		args.putSerializable("classifier", classifier);
 		readingFragment.setArguments(args);
 
@@ -87,8 +89,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 		resolver = getActivity().getContentResolver();
 		inflater = getActivity().getLayoutInflater();
-
-
+		
+		displayFeedDetails = getArguments().getBoolean("displayFeedDetails");
+		
 		user = PrefsUtils.getUserDetails(getActivity());
 
 		feedTitle = getArguments().getString("feedTitle");
@@ -173,6 +176,10 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
 		itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
 		itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
+		
+		if (!displayFeedDetails) {
+			itemFeed.setVisibility(View.GONE);
+		}
 
 		itemDate.setText(story.shortDate);
 		itemTitle.setText(story.title);

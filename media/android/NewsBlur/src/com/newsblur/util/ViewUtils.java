@@ -2,8 +2,6 @@ package com.newsblur.util;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.GridLayout;
-import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -12,6 +10,7 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.Profile;
 import com.newsblur.domain.UserProfile;
+import com.newsblur.view.FlowLayout;
 
 public class ViewUtils {
 	
@@ -39,20 +38,19 @@ public class ViewUtils {
 
 	public static ImageView createSharebarImage(final Context context, final ImageLoader imageLoader, final UserProfile user) {
 		ImageView image = new ImageView(context);
-		int imageLength = UIUtils.convertDPsToPixels(context, 25);
+		int imageLength = UIUtils.convertDPsToPixels(context, 15);
 		image.setMaxHeight(imageLength);
 		image.setMaxWidth(imageLength);
-		GridLayout.LayoutParams imageParameters = new GridLayout.LayoutParams();
+		
+		FlowLayout.LayoutParams imageParameters = new FlowLayout.LayoutParams(1, 1);
+		
 		imageParameters.height = imageLength;
-		imageParameters.setGravity(Gravity.RIGHT);
 		imageParameters.width = imageLength;
-		imageParameters.leftMargin = UIUtils.convertDPsToPixels(context, 3);
-		imageParameters.rightMargin = UIUtils.convertDPsToPixels(context, 3);
-		imageParameters.topMargin = UIUtils.convertDPsToPixels(context, 3);
-		imageParameters.bottomMargin = UIUtils.convertDPsToPixels(context, 3);
-
+		
+		image.setMaxHeight(imageLength);
+		image.setMaxWidth(imageLength);
+		
 		image.setLayoutParams(imageParameters);
-
 		imageLoader.displayImageByUid(user.photoUrl, image);
 		image.setOnClickListener(new OnClickListener() {
 			@Override
