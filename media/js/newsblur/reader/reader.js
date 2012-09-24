@@ -227,6 +227,7 @@
                 resizeWhileDragging:    true,
                 fxName:                 "slideOffscreen",
                 fxSettings:             { duration: 560, easing: "easeInOutQuint" },
+                animatePaneSizing:      true,
                 north__paneSelector:    ".left-north",
                 north__size:            18,
                 north__resizeable:      false,
