@@ -3060,7 +3060,6 @@
             this.flags['feed_list_showing_manage_menu'] = false;
             $(document).unbind('click.menu');
             $(document).unbind('mouseup.menu');
-            $manage_menu_container.uncorner();
             if (this.model.preference('show_tooltips')) {
                 $('.NB-task-manage').tipsy('enable');
             }

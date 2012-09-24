@@ -65,7 +65,6 @@ javascripts:
         - media/js/newsblur/reader/reader_utils.js
         - media/js/newsblur/reader/reader.js
         - media/js/newsblur/reader/*.js
-        - media/js/newsblur/static/*.js
         - media/js/newsblur/welcome/*.js
     mobile:
         - media/js/vendor/jquery-1.7.2.js
