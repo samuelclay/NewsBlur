@@ -286,6 +286,12 @@ def share_story(request, token):
         shared_story.save()
         logging.user(profile.user, "~BM~FY~SBUpdating~SN shared story from site: ~SB%s: %s" % (story_url, comments))
     
+    socialsub = MSocialSubscription.objects.get(user_id=profile.user.pk, 
+                                                subscription_user_id=profile.user.pk)
+    socialsub.mark_story_ids_as_read([shared_story.story_guid], 
+                                      shared_story.story_feed_id, 
+                                      request=request)
+
     shared_story.publish_update_to_subscribers()
     
     response = HttpResponse(json.encode({

@@ -205,7 +205,7 @@ class ProcessFeed:
             # story_guid__in=story_guids,
             story_date__gte=start_date,
             story_feed_id=self.feed_id
-        ).limit(min(int(len(story_guids)*1.5), 10)))
+        ).limit(max(int(len(story_guids)*1.5), 10)))
         
         ret_values = self.feed.add_update_stories(stories, existing_stories,
                                                   verbose=self.options['verbose'])

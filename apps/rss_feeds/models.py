@@ -22,6 +22,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
+from lxml.html.diff import htmldiff
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
 from utils import json_functions as json
 from utils import feedfinder, feedparser
@@ -33,7 +34,6 @@ from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
 from utils.story_functions import strip_tags
-from utils.diff import HTMLDiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -811,8 +811,7 @@ class Feed(models.Model):
                     original_content = zlib.decompress(existing_story.story_content_z)
                 # print 'Type: %s %s' % (type(original_content), type(story_content))
                 if story_content and len(story_content) > 10:
-                    diff = HTMLDiff(unicode(original_content), story_content)
-                    story_content_diff = diff.getDiff()
+                    story_content_diff = htmldiff(unicode(original_content), unicode(story_content))
                 else:
                     story_content_diff = original_content
                 # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())
