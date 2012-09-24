@@ -12,7 +12,7 @@ class Migration(DataMigration):
 
         conn = ConnectionBorg()
         conn.create_table(DStory, 100, 100, wait_for_active=True)
-
+        
     def backwards(self, orm):
         "Write your backwards methods here."
 
@@ -31,6 +31,7 @@ class Migration(DataMigration):
             'active_premium_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1', 'db_index': 'True'}),
             'active_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1', 'db_index': 'True'}),
             'average_stories_per_month': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'backed_by_dynamodb': ('django.db.models.fields.NullBooleanField', [], {'default': 'False', 'null': 'True', 'blank': 'True'}),
             'branch_from_feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['rss_feeds.Feed']", 'null': 'True', 'blank': 'True'}),
             'creation': ('django.db.models.fields.DateField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'days_to_trim': ('django.db.models.fields.IntegerField', [], {'default': '90'}),
@@ -60,6 +61,8 @@ class Migration(DataMigration):
             'num_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             'premium_subscribers': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             'queued_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True'}),
+            's3_icon': ('django.db.models.fields.NullBooleanField', [], {'default': 'False', 'null': 'True', 'blank': 'True'}),
+            's3_page': ('django.db.models.fields.NullBooleanField', [], {'default': 'False', 'null': 'True', 'blank': 'True'}),
             'stories_last_month': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
         'rss_feeds.feeddata': {

@@ -74,7 +74,7 @@ class Feed(models.Model):
     favicon_not_found = models.BooleanField(default=False)
     s3_page = models.NullBooleanField(default=False, blank=True, null=True)
     s3_icon = models.NullBooleanField(default=False, blank=True, null=True)
-    backed_by_dynamodb = models.BooleanField(default=False)
+    backed_by_dynamodb = models.NullBooleanField(default=False, blank=True, null=True)
 
     class Meta:
         db_table="feeds"
