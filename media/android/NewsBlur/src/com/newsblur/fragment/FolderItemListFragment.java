@@ -88,6 +88,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 		
 		Uri individualFolderUri = FeedProvider.FOLDERS_URI.buildUpon().appendPath(folderName).build();
 		Cursor folderCursor = contentResolver.query(individualFolderUri, null, null, null, null);
+		getActivity().startManagingCursor(folderCursor);
 		folderCursor.moveToFirst();
 		positiveCount = folderCursor.getInt(folderCursor.getColumnIndex(DatabaseConstants.SUM_POS));
 		negativeCount = folderCursor.getInt(folderCursor.getColumnIndex(DatabaseConstants.SUM_NEG));
@@ -104,8 +105,9 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.MULTIFEED_STORIES_URI;
 
-		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getSelectionFromState(currentState), feedIds, null);
-
+		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getStorySelectionFromState(currentState), feedIds, null);
+		getActivity().startManagingCursor(cursor);
+		
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.STORY_AUTHORS };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_feedtitle, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_author };
 
@@ -126,7 +128,7 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.MULTIFEED_STORIES_URI;
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getSelectionFromState(currentState), feedIds, DatabaseConstants.STORY_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getStorySelectionFromState(currentState), feedIds, DatabaseConstants.STORY_DATE + " DESC");
 		return cursorLoader;
 	}
 
@@ -160,8 +162,9 @@ public class FolderItemListFragment extends ItemListFragment implements LoaderMa
 
 	public void changeState(int state) {
 		currentState = state;
-		final String selection = FeedProvider.getSelectionFromState(state);
+		final String selection = FeedProvider.getStorySelectionFromState(state);
 		Cursor cursor = contentResolver.query(storiesUri, null, selection, feedIds, DatabaseConstants.STORY_DATE + " DESC");
+		getActivity().startManagingCursor(cursor);
 		adapter.swapCursor(cursor);
 	}
 

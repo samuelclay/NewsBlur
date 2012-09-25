@@ -101,6 +101,9 @@ public class ImageLoader {
 		}
 
 		try {
+			if (url.startsWith("/")) {
+				url = AppConstants.NEWSBLUR_URL + url;
+			}
 			final URL imageUrl = new URL(url);
 			final HttpURLConnection conn = (HttpURLConnection)imageUrl.openConnection();
 			conn.setConnectTimeout(10000);

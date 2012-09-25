@@ -33,7 +33,7 @@ public class FeedItemsList extends ItemsList {
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
 		
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
-		Cursor cursor = getContentResolver().query(feedUri, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		Cursor cursor = getContentResolver().query(feedUri, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		cursor.moveToFirst();
 		Feed feed = Feed.fromCursor(cursor);
 		setTitle(feed.title);

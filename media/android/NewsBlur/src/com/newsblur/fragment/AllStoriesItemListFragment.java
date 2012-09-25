@@ -62,7 +62,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 		
 		contentResolver = getActivity().getContentResolver();
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
 		calculateTotals();
 		
 		
@@ -112,7 +112,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 	public void changeState(int state) {
 		currentState = state;
 		calculateTotals();
-		final String selection = FeedProvider.getSelectionFromState(state);
+		final String selection = FeedProvider.getStorySelectionFromState(state);
 		Cursor cursor = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, selection, null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
 		adapter.swapCursor(cursor);
 	}
@@ -169,7 +169,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
 	    return cursorLoader;
 	}
 

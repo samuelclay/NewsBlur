@@ -42,7 +42,7 @@ public class FeedReading extends Reading {
 		
 		Uri storiesURI = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 		storiesToMarkAsRead = new HashSet<String>();
-		stories = contentResolver.query(storiesURI, null, FeedProvider.getSelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
+		stories = contentResolver.query(storiesURI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
 
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		Cursor feedCursor = contentResolver.query(feedUri, null, null, null, null);

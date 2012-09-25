@@ -35,7 +35,7 @@ public class AllStoriesReading extends Reading {
 		
 		setupCountCursor();
 		
-		stories = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		stories = contentResolver.query(FeedProvider.ALL_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		setTitle(getResources().getString(R.string.all_stories));
 		storiesToMarkAsRead = new ValueMultimap();
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
@@ -53,7 +53,7 @@ public class AllStoriesReading extends Reading {
 		neutralCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
 		positiveCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_POS));
 		
-		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		feedIds = new ArrayList<String>();
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));

@@ -221,19 +221,19 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		switch (state) {
 		case (AppConstants.STATE_ALL):
 			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
-		blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_ALL;
-		break;
+			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_ALL;
+			break;
 		case (AppConstants.STATE_SOME):
 			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
-		blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_SOME;
-		break;
+			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_SOME;
+			break;
 		case (AppConstants.STATE_BEST):
 			groupSelection = DatabaseConstants.FOLDER_INTELLIGENCE_BEST;
-		blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_BEST;
-		break;
+			blogSelection = DatabaseConstants.SOCIAL_INTELLIGENCE_BEST;
+			break;
 		}
 
-		folderAdapter.currentState = groupSelection;
+		folderAdapter.currentState = state;
 		Cursor cursor = resolver.query(FeedProvider.FOLDERS_URI, null, null, new String[] { groupSelection }, null);
 		Cursor blogCursor = resolver.query(FeedProvider.SOCIAL_FEEDS_URI, null, blogSelection, null, null);
 		Cursor countCursor = resolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null); 

@@ -37,7 +37,7 @@ public class AllSharedStoriesReading extends Reading {
 		
 		setupCountCursor();
 		
-		stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		setTitle(getResources().getString(R.string.all_shared_stories));
 		storiesToMarkAsRead = new ValueMultimap();
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
@@ -50,12 +50,15 @@ public class AllSharedStoriesReading extends Reading {
 
 	private void setupCountCursor() {
 		Cursor countCursor = contentResolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
+		startManagingCursor(countCursor);
+		
 		countCursor.moveToFirst();
 		negativeCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEG));
 		neutralCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
 		positiveCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_POS));
 		
-		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+		startManagingCursor(cursor);
 		feedIds = new ArrayList<String>();
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));

@@ -25,6 +25,7 @@ import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesItemsList;
 import com.newsblur.activity.AllStoriesItemsList;
 import com.newsblur.domain.Folder;
+import com.newsblur.util.AppConstants;
 
 @SuppressWarnings("deprecation")
 public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
@@ -58,7 +59,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private ViewBinder groupViewBinder;
 	private ViewBinder blogViewBinder;
 
-	public String currentState = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
+	public int currentState = AppConstants.STATE_SOME;
 	private Cursor allStoriesCountCursor, sharedStoriesCountCursor;
 	private String TAG = "MixedExpandableAdapter";
 	
@@ -132,7 +133,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		final Folder parentFolder = Folder.fromCursor(folderCursor);
 		Uri uri = null;
 		uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
-		return contentResolver.query(uri, null, null, new String[] { currentState }, null);
+		return contentResolver.query(uri, null, null, new String[] { FeedProvider.getFolderSelectionFromState(currentState) }, null);
 	}
 
 	@Override
@@ -283,6 +284,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 				@Override
 				public void onClick(View v) {
 					Intent i = new Intent(context, AllSharedStoriesItemsList.class);
+					
 					i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
 					((Activity) context).startActivityForResult(i, Activity.RESULT_OK);
 				}

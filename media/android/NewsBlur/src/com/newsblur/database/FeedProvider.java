@@ -456,7 +456,7 @@ public class FeedProvider extends ContentProvider {
 		}
 	}
 	
-	public static String getSelectionFromState(int state) {
+	public static String getStorySelectionFromState(int state) {
 		String selection = null;
 		switch (state) {
 		case (AppConstants.STATE_ALL):
@@ -471,6 +471,23 @@ public class FeedProvider extends ContentProvider {
 		}
 		return selection;
 	}
+	
+	public static String getFolderSelectionFromState(int state) {
+		String selection = null;
+		switch (state) {
+		case (AppConstants.STATE_ALL):
+			selection = DatabaseConstants.FOLDER_INTELLIGENCE_ALL;
+		break;
+		case (AppConstants.STATE_SOME):
+			selection = DatabaseConstants.FOLDER_INTELLIGENCE_SOME;
+		break;
+		case (AppConstants.STATE_BEST):
+			selection = DatabaseConstants.FOLDER_INTELLIGENCE_BEST;
+		break;
+		}
+		return selection;
+	}
+
 
 
 }

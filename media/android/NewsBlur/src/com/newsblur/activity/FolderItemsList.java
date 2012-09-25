@@ -40,7 +40,7 @@ public class FolderItemsList extends ItemsList {
 		apiManager = new APIManager(this);
 		
 		final Uri feedsUri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(folderName).build();
-		Cursor cursor = getContentResolver().query(feedsUri, new String[] { DatabaseConstants.FEED_ID } , FeedProvider.getSelectionFromState(currentState), null, null);
+		Cursor cursor = getContentResolver().query(feedsUri, new String[] { DatabaseConstants.FEED_ID } , FeedProvider.getStorySelectionFromState(currentState), null, null);
 		
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));

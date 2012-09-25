@@ -10,5 +10,6 @@ public class AppConstants {
 	public static final int REGISTRATION_COMPLETED = 1;
 	
 	public static final String FOLDER_PRE = "folder_collapsed";
+	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
 	
 }

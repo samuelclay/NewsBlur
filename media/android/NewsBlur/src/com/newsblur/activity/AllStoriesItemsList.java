@@ -27,7 +27,7 @@ public class AllStoriesItemsList extends ItemsList {
 		
 		feedIds = new ArrayList<String>();
 		
-		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));

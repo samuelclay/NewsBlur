@@ -110,6 +110,7 @@ public class SyncService extends IntentService {
 					}
 				}
 				apiManager.refreshFeedCounts();
+				cursor.close();
 				break;	
 
 			case EXTRA_TASK_MARK_STORY_READ:

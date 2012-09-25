@@ -28,7 +28,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 		feedIds = new ArrayList<String>();
 		
 		Cursor cursor = getContentResolver().query(FeedProvider.SOCIAL_FEEDS_URI, null, null, null, null);
-		
+		startManagingCursor(cursor);
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID)));
 		}

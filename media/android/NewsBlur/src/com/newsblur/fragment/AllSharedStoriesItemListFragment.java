@@ -62,7 +62,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 		
 		contentResolver = getActivity().getContentResolver();
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		calculateTotals();
 		
 		
@@ -112,7 +112,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	public void changeState(int state) {
 		currentState = state;
 		calculateTotals();
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		adapter.swapCursor(cursor);
 	}
 
@@ -168,7 +168,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getSelectionFromState(currentState), null, null);
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 	    return cursorLoader;
 	}
 

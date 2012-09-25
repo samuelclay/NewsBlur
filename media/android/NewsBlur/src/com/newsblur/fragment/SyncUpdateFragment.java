@@ -11,7 +11,7 @@ import com.newsblur.service.DetachableResultReceiver.Receiver;
 import com.newsblur.service.SyncService;
 
 public class SyncUpdateFragment extends Fragment implements Receiver {
-		public static final String TAG = "SyncReadingFragment";
+		public static final String TAG = "SyncUpdateFragment";
 		public DetachableResultReceiver receiver;
 		public boolean syncRunning = false;
 

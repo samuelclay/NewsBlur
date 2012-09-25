@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="4"
-    android:versionName="0.9.15" >
+    android:versionCode="5"
+    android:versionName="0.9.20" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -27,7 +27,6 @@
             </intent-filter>
         </activity>
         
-            
         <activity
             android:name=".activity.LoginProgress"
             android:label="@string/newsblur" />
