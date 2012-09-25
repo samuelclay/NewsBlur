@@ -66,8 +66,8 @@ public class SocialFeedReading extends Reading {
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
 		new MarkSocialStoryAsReadTask(this, syncFragment, markSocialAsReadList).execute();
+		super.onDestroy();
 	}
 	
 	public class MarkSocialAsReadUpdate {
