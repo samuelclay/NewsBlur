@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.database.DatabaseConstants;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
 
 public class SocialItemViewBinder implements ViewBinder {
@@ -26,7 +25,7 @@ public class SocialItemViewBinder implements ViewBinder {
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		final String columnName = cursor.getColumnName(columnIndex);
 		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
-			String faviconUrl = AppConstants.NEWSBLUR_URL + cursor.getString(columnIndex);
+			String faviconUrl = cursor.getString(columnIndex);
 			imageLoader.displayImage(faviconUrl, ((ImageView) view), false);
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS)) {

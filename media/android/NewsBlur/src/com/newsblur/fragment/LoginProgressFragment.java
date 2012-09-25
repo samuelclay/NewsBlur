@@ -1,14 +1,5 @@
 package com.newsblur.fragment;
 
-import com.newsblur.R;
-import com.newsblur.activity.Main;
-import com.newsblur.network.APIManager;
-import com.newsblur.network.domain.LoginResponse;
-import com.newsblur.service.DetachableResultReceiver;
-import com.newsblur.service.SyncService;
-import com.newsblur.service.DetachableResultReceiver.Receiver;
-import com.newsblur.util.PrefsUtils;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,13 +10,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
+
+import com.newsblur.R;
+import com.newsblur.activity.Main;
+import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.LoginResponse;
+import com.newsblur.service.DetachableResultReceiver;
+import com.newsblur.service.DetachableResultReceiver.Receiver;
+import com.newsblur.service.SyncService;
+import com.newsblur.util.PrefsUtils;
 
 public class LoginProgressFragment extends Fragment implements Receiver {
 

@@ -2,6 +2,8 @@ package com.newsblur.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -9,7 +11,9 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.Profile;
+import com.newsblur.domain.Classifier;
 import com.newsblur.domain.UserProfile;
+import com.newsblur.fragment.ClassifierDialogFragment;
 import com.newsblur.view.FlowLayout;
 
 public class ViewUtils {
@@ -42,7 +46,7 @@ public class ViewUtils {
 		image.setMaxHeight(imageLength);
 		image.setMaxWidth(imageLength);
 		
-		FlowLayout.LayoutParams imageParameters = new FlowLayout.LayoutParams(1, 1);
+		FlowLayout.LayoutParams imageParameters = new FlowLayout.LayoutParams(5, 5);
 		
 		imageParameters.height = imageLength;
 		imageParameters.width = imageLength;
@@ -61,6 +65,35 @@ public class ViewUtils {
 			}
 		});
 		return image;
+	}
+	
+	public static View createTagView(final LayoutInflater inflater, final FragmentManager fragmentManager, final String tag, final Classifier classifier, final ClassifierDialogFragment.TagUpdateCallback callback, final String feedId) {
+		
+		View v = inflater.inflate(R.layout.tag_view, null);
+		
+		TextView tagText = (TextView) v.findViewById(R.id.tag_text);
+		tagText.setText(tag);
+
+		if (classifier != null && classifier.tags.containsKey(tag)) {
+			switch (classifier.tags.get(tag)) {
+			case Classifier.LIKE:
+				tagText.setBackgroundResource(R.drawable.tag_background_positive);
+				break;
+			case Classifier.DISLIKE:
+				tagText.setBackgroundResource(R.drawable.tag_background_negative);
+				break;
+			}
+		}
+
+		v.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				ClassifierDialogFragment classifierFragment = ClassifierDialogFragment.newInstance(callback, feedId, classifier, tag, Classifier.TAG);
+				classifierFragment.show(fragmentManager, "dialog");
+			}
+		});
+
+		return v;
 	}
 
 }

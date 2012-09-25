@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.Story;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
 
 public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
@@ -60,7 +59,7 @@ public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
 		String feedColour = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
 		String feedFade = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
 
-		String faviconUrl = AppConstants.NEWSBLUR_URL + cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
+		String faviconUrl = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
 		imageLoader.displayImage(faviconUrl, ((ImageView) v.findViewById(R.id.row_item_feedicon)), false);
 
 		if (!TextUtils.equals(feedColour, "#null") && !TextUtils.equals(feedFade, "#null")) {

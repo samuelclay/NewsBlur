@@ -1,19 +1,35 @@
 package com.newsblur.view;
-import com.newsblur.util.UIUtils;
-
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.newsblur.R;
+import com.newsblur.util.UIUtils;
 
 /**
+ * A viewGroup that arranges child views in a similar way to text, with them laid
+ * out one line at a time and "wrapping" to the next line as needed. It handles ImageView children
+ * as special cases. It's a modified version of the code referenced below.
+ *  
+ * @author Ryan Bateman / Henrik Gustafsson
+ * @see http://stackoverflow.com/questions/549451/line-breaking-widget-layout-for-android
  *
- * @author RAW
  */
 public class FlowLayout extends ViewGroup {
 
     private int line_height;
-
+    private int defaultImageLength = 0;
+    
+    private final int FLOW_RIGHT = 0;
+    private final int FLOW_LEFT = 1;
+    
+    // By default, flow left to right
+    private int flowDirection = FLOW_RIGHT;
+    
     public static class LayoutParams extends ViewGroup.LayoutParams {
 
         public final int horizontal_spacing;
@@ -32,10 +48,18 @@ public class FlowLayout extends ViewGroup {
 
     public FlowLayout(Context context) {
         super(context);
+        defaultImageLength = UIUtils.convertDPsToPixels(context, 25);
     }
 
     public FlowLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        defaultImageLength = UIUtils.convertDPsToPixels(context, 25);
+        TypedArray styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout);
+        String flowAttribute = styledAttributes.getString(R.styleable.FlowLayout_flow);
+        if (!TextUtils.isEmpty(flowAttribute) && TextUtils.equals(flowAttribute, "left")) { 
+        	flowDirection = FLOW_LEFT;	
+        }
+        styledAttributes.recycle();
     }
 
     @Override
@@ -47,34 +71,53 @@ public class FlowLayout extends ViewGroup {
         final int count = getChildCount();
         int line_height = 0;
 
-        int xpos = getPaddingLeft();
-        int ypos = getPaddingTop();
+        int xpos;
+        int ypos= getPaddingTop();
+        
+        xpos = (flowDirection == FLOW_RIGHT) ? getPaddingLeft() : getWidth();
 
-        int childHeightMeasureSpec = UIUtils.convertDPsToPixels(getContext(), 25);
-
+        int childHeightMeasureSpec;
+        if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.AT_MOST) {
+            childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
+        } else {
+            childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        }
 
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
-            
             if (child.getVisibility() != GONE) {
                 final LayoutParams lp = (LayoutParams) child.getLayoutParams();
-                child.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), childHeightMeasureSpec);
-                final int childw = UIUtils.convertDPsToPixels(getContext(), 25);
-                line_height = Math.max(line_height, child.getMeasuredHeight() + lp.vertical_spacing);
-
-                if (xpos + childw > width) {
-                    xpos = getPaddingLeft();
-                    ypos += line_height;
+                int childw;
+                
+                if (child instanceof ImageView) { 
+                	child.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), defaultImageLength);
+                	childw = defaultImageLength;
+                	line_height = Math.max(line_height, defaultImageLength + lp.vertical_spacing);
+                } else {
+                	child.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), childHeightMeasureSpec);
+                	childw = child.getMeasuredWidth();
+                	line_height = Math.max(line_height, child.getMeasuredHeight() + lp.vertical_spacing);
                 }
 
-                xpos += childw + lp.horizontal_spacing;
+                if (flowDirection == FLOW_RIGHT && xpos + childw > width) {
+                	xpos = getPaddingLeft();
+                    ypos += line_height;
+                } else if (flowDirection == FLOW_LEFT && xpos - childw < 0) {
+                	xpos = getWidth();
+                    ypos += line_height;
+                }
+                
+                if (flowDirection == FLOW_RIGHT) {
+                	xpos += childw + lp.horizontal_spacing;
+                } else {
+                	xpos -= childw + lp.horizontal_spacing;
+                }
             }
         }
         this.line_height = line_height;
 
         if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.UNSPECIFIED) {
             height = ypos + line_height;
-
         } else if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.AT_MOST) {
             if (ypos + line_height < height) {
                 height = ypos + line_height;
@@ -85,7 +128,8 @@ public class FlowLayout extends ViewGroup {
 
     @Override
     protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
-        return new LayoutParams(1, 1); // default of 1px spacing
+    	int defaultPadding = UIUtils.convertDPsToPixels(getContext(), 3);
+        return new LayoutParams(defaultPadding, defaultPadding);
     }
 
     @Override
@@ -100,21 +144,38 @@ public class FlowLayout extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         final int count = getChildCount();
         final int width = r - l;
-        int xpos = getPaddingLeft();
+        
+        int xpos = (flowDirection == FLOW_RIGHT) ? getPaddingLeft() : getWidth();
         int ypos = getPaddingTop();
 
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
-                final int childw = UIUtils.convertDPsToPixels(getContext(), 25);
-                final int childh = UIUtils.convertDPsToPixels(getContext(), 25);
+            	int childw;
+            	int childh;
+            	if (child instanceof ImageView) {
+            		childw = UIUtils.convertDPsToPixels(getContext(), 25);
+            		childh = UIUtils.convertDPsToPixels(getContext(), 25);
+            	} else {
+            		childw = child.getMeasuredWidth();
+                    childh = child.getMeasuredHeight();	
+            	}
                 final LayoutParams lp = (LayoutParams) child.getLayoutParams();
-                if (xpos + childw > width) {
-                    xpos = getPaddingLeft();
+                if (flowDirection == FLOW_RIGHT && xpos + childw > width) {
+                	xpos = getPaddingLeft();
                     ypos += line_height;
+                } else if (flowDirection == FLOW_LEFT && xpos - childw < 0) {
+                	xpos = getWidth();
+                	ypos += line_height;
                 }
-                child.layout(xpos, ypos, xpos + childw, ypos + childh);
-                xpos += childw + lp.horizontal_spacing;
+                
+                if (flowDirection == FLOW_RIGHT) {
+                	child.layout(xpos, ypos, xpos + childw, ypos + childh);
+                	xpos += childw + lp.horizontal_spacing;
+                } else {
+                	child.layout(xpos - childw, ypos, xpos, ypos + childh);
+                	xpos -= childw + lp.horizontal_spacing;
+                }
             }
         }
     }

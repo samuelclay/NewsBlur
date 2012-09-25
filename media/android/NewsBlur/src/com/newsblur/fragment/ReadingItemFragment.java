@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,8 +36,8 @@ import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
 import com.newsblur.util.ViewUtils;
+import com.newsblur.view.FlowLayout;
 import com.newsblur.view.NewsblurWebview;
-import com.newsblur.view.TagAdapter;
 
 public class ReadingItemFragment extends Fragment implements ClassifierDialogFragment.TagUpdateCallback, ShareDialogFragment.SharedCallbackDialog {
 
@@ -57,9 +56,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private BroadcastReceiver receiver;
 	private TextView itemAuthors;
 	private TextView itemFeed;
-	private TagAdapter tagAdapter;
 	private boolean displayFeedDetails;
-	private GridView tagContainer;
+	private FlowLayout tagContainer;
 	private View view;
 	private UserProfile user;
 	public String previouslySavedShareText;
@@ -116,8 +114,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 		web = (NewsblurWebview) view.findViewById(R.id.reading_webview);
 		setupWebview(web);
-		setupItemMetadata(view);
-		setupShareButton(view);
+		setupItemMetadata();
+		setupShareButton();
 
 		if (story.sharedUserIds.length > 0 || story.commentCount > 0 ) {
 			view.findViewById(R.id.reading_share_bar).setVisibility(View.VISIBLE);
@@ -128,7 +126,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		return view;
 	}
 
-	private void setupShareButton(View view) {
+	private void setupShareButton() {
 
 		Button shareButton = (Button) view.findViewById(R.id.share_story_button);
 
@@ -159,7 +157,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		new SetupCommentSectionTask(getActivity(), view, getFragmentManager(), inflater, resolver, apiManager, story, imageLoader).execute();
 	}
 
-	private void setupItemMetadata(View view) {
+	private void setupItemMetadata() {
 
 		View borderOne = view.findViewById(R.id.row_item_favicon_borderbar_1);
 		View borderTwo = view.findViewById(R.id.row_item_favicon_borderbar_2);
@@ -215,13 +213,16 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			}
 		});
 
-		setupTags(view);
+		setupTags();
 	}
 
-	private void setupTags(View view) {
-		tagContainer = (GridView) view.findViewById(R.id.reading_item_tags);
-		tagAdapter = new TagAdapter(getActivity(), getFragmentManager(), this, story.feedId, classifier, story.tags);
-		tagContainer.setAdapter(tagAdapter);
+	private void setupTags() {
+		tagContainer = (FlowLayout) view.findViewById(R.id.reading_item_tags);
+		for (String tag : story.tags) {
+			View v = ViewUtils.createTagView(inflater, getFragmentManager(), tag, classifier, this, story.feedId);
+			tagContainer.addView(v);
+		}
+		
 	}
 
 	private void setupWebview(NewsblurWebview web) {
@@ -284,8 +285,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			break;
 		case Classifier.TAG:
 			classifier.tags.put(key, classifierAction);
-			tagAdapter.setClassifier(classifier);
-			tagAdapter.notifyDataSetInvalidated();
+			tagContainer.removeAllViews();
+			setupTags();
 			break;	
 		}
 	}

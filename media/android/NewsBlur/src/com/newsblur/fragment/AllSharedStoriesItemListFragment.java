@@ -21,7 +21,6 @@ import android.widget.ListView;
 
 import com.newsblur.R;
 import com.newsblur.activity.AllSharedStoriesReading;
-import com.newsblur.activity.AllStoriesReading;
 import com.newsblur.activity.FeedReading;
 import com.newsblur.activity.ItemsList;
 import com.newsblur.database.DatabaseConstants;

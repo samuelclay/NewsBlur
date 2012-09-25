@@ -28,7 +28,6 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
-import com.newsblur.domain.Story;
 import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.view.FeedItemViewBinder;

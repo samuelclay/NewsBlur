@@ -72,19 +72,14 @@
                     android:textColor="@color/darkgray"
                     android:textSize="11dp" />
 
-                <GridView
+                <com.newsblur.view.FlowLayout
                     android:id="@+id/reading_item_tags"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@id/reading_item_authors"
-                    android:columnWidth="60dp"
-                    android:horizontalSpacing="3dp"
-                    android:numColumns="5"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:stretchMode="columnWidth"
-                    android:verticalSpacing="3dp" />
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp" />
             </RelativeLayout>
         </LinearLayout>
 
@@ -115,6 +110,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="15dp"
+                android:layout_marginRight="3dp"
                 android:textColor="@color/darkgray"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -126,6 +122,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
+                android:layout_marginLeft="3dp"
                 android:textColor="@color/darkgray"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -139,11 +136,13 @@
                 android:layout_toRightOf="@id/comment_by" />
 
             <com.newsblur.view.FlowLayout
+                xmlns:newsblur="http://schemas.android.com/apk/res/com.newsblur"
                 android:id="@+id/reading_social_shareimages"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/shared_by"
+                newsblur:flow="left"
                 android:layout_toRightOf="@+id/center_filler"/>
         </RelativeLayout>
 

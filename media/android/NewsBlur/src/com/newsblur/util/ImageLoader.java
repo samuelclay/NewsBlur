@@ -30,11 +30,9 @@ public class ImageLoader {
 	private final ExecutorService executorService;
 	private final Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 	private String TAG = "ImageLoader";
-	private Context context;
 
 	public ImageLoader(Context context) {
 		fileCache = new FileCache(context);
-		this.context = context;
 		executorService = Executors.newFixedThreadPool(5);
 	}
 	
@@ -121,7 +119,7 @@ public class ImageLoader {
 			bitmap = UIUtils.roundCorners(bitmap, 5);
 			return bitmap;
 		} catch (IOException ex) {
-			Log.e(TAG, "Error loading image from network", ex.fillInStackTrace());
+			Log.e(TAG, "Error loading image from network: " + url, ex.fillInStackTrace());
 			ex.printStackTrace();
 			return null;
 		}
