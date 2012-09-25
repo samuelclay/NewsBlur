@@ -953,7 +953,7 @@ class MSocialSubscription(mongo.Document):
         for story in stories:
             scores = {
                 'feed'   : apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
-                                                  social_user_id=self.subscription_user_id),
+                                                  social_user_ids=self.subscription_user_id),
                 'author' : apply_classifier_authors(classifier_authors, story),
                 'tags'   : apply_classifier_tags(classifier_tags, story),
                 'title'  : apply_classifier_titles(classifier_titles, story),
