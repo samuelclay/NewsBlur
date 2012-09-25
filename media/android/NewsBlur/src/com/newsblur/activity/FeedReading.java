@@ -69,7 +69,7 @@ public class FeedReading extends Reading {
 	}
 
 	private void updateReadStories(Story story) {
-		storiesToMarkAsRead.add(readingAdapter.getStory(passedPosition).id);
+		storiesToMarkAsRead.add(story.id);
 		addStoryToMarkAsRead(story);
 	}
 
