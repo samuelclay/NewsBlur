@@ -32,10 +32,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     has_modifications: function() {
-        if (this.get('story_content').indexOf('<ins') != -1) {
-            return true;
-        } else if (NEWSBLUR.assets.preference('hide_story_changes') && 
-                   this.get('story_content').indexOf('<del') != -1) {
+        if (this.get('story_content').indexOf('<ins') != -1 ||
+            this.get('story_content').indexOf('<del') != -1) {
             return true;
         }
         return false;

@@ -449,7 +449,6 @@ class MSocialProfile(mongo.Document):
             logging.user(user, "~FMDisabled emails, skipping.")
             return
         if self.user_id == follower_user_id:
-            logging.user(user, "~FMDisabled emails, skipping.")
             return
         
         emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,

@@ -51,7 +51,6 @@ javascripts:
         - media/js/vendor/jquery.chosen.js
         - media/js/vendor/jquery.effects.core.js
         - media/js/vendor/jquery.effects.slideOffscreen.js
-        - media/js/vendor/mousetrap-*.js
         # - media/js/vendor/jquery.linkify.js
         - media/js/vendor/bootstrap.*.js
         - media/js/vendor/audio.js
