@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -81,7 +82,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			commentView.setTag(COMMENT_VIEW_BY + comment.userId);
 
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-			commentText.setText(comment.commentText);
+			
+			commentText.setText(Html.fromHtml(comment.commentText));
 			commentText.setTag(COMMENT_BY + comment.userId);
 
 			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
@@ -206,7 +208,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					context.startActivity(i);
 				}
 			});
-
 		}
 
 		return null;
