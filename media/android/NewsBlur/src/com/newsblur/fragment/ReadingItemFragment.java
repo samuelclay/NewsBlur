@@ -330,13 +330,13 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 				
 				ViewUtils.setupCommentCount(getActivity(), view, story.commentCount + 1);
 				
-//				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user);
-//				((FlowLayout) view.findViewById(R.id.reading_social_commentimages)).addView(image);
+				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
+				((FlowLayout) view.findViewById(R.id.reading_social_commentimages)).addView(image);
 				
 			} else {
-//				ViewUtils.setupShareCount(getActivity(), view, story.sharedUserIds.length + 1);
-//				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user);
-//				((FlowLayout) view.findViewById(R.id.reading_social_shareimages)).addView(image);
+				ViewUtils.setupShareCount(getActivity(), view, story.sharedUserIds.length + 1);
+				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user.photoUrl, user.id);
+				((FlowLayout) view.findViewById(R.id.reading_social_shareimages)).addView(image);
 			}
 		} else {
 			View commentViewForUser = view.findViewWithTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);

@@ -41,7 +41,7 @@ public class ViewUtils {
 		}
 	}
 
-	public static ImageView createSharebarImage(final Context context, final ImageLoader imageLoader, final UserProfile user) {
+	public static ImageView createSharebarImage(final Context context, final ImageLoader imageLoader, final String photoUrl, final String userId) {
 		ImageView image = new ImageView(context);
 		int imageLength = UIUtils.convertDPsToPixels(context, 15);
 		image.setMaxHeight(imageLength);
@@ -56,12 +56,12 @@ public class ViewUtils {
 		image.setMaxWidth(imageLength);
 		
 		image.setLayoutParams(imageParameters);
-		imageLoader.displayImageByUid(user.photoUrl, image);
+		imageLoader.displayImageByUid(photoUrl, image);
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				Intent i = new Intent(context, Profile.class);
-				i.putExtra(Profile.USER_ID, user.userId);
+				i.putExtra(Profile.USER_ID, userId);
 				context.startActivity(i);
 			}
 		});

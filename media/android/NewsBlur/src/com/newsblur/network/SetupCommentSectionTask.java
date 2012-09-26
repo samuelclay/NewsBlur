@@ -227,7 +227,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				UserProfile user = UserProfile.fromCursor(userCursor);
 				userCursor.close();
 
-				ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user);
+				ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
 				sharedGrid.addView(image);
 			}
 
@@ -240,7 +240,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				UserProfile user = UserProfile.fromCursor(userCursor);
 				userCursor.close();
 
-				ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user);
+				ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
 				commentGrid.addView(image);
 				commentCursor.moveToNext();
 			}
