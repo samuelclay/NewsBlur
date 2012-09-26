@@ -44,6 +44,10 @@ public class SyncUpdateFragment extends Fragment implements Receiver {
 			case SyncService.STATUS_RUNNING:
 				syncRunning = true;
 				Log.d(TAG, "Synchronisation running.");
+				break;
+			case SyncService.STATUS_NO_MORE_UPDATES:
+				syncRunning = false;
+				Log.d(TAG, "Synchronisation completed with nothing to update.");
 				break;	
 			case SyncService.STATUS_ERROR:
 				syncRunning = false;
@@ -65,6 +69,7 @@ public class SyncUpdateFragment extends Fragment implements Receiver {
 
 		public interface SyncUpdateFragmentInterface {
 			public void updateAfterSync();
+			public void setNothingMoreToUpdate();
 			public void updateSyncStatus(boolean syncRunning);
 		}
 }

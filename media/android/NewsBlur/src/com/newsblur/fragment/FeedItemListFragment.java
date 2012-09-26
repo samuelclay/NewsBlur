@@ -52,7 +52,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 	public static FeedItemListFragment newInstance(String feedId, int currentState) {
 		FeedItemListFragment feedItemFragment = new FeedItemListFragment();
-		
+
 		Bundle args = new Bundle();
 		args.putInt("currentState", currentState);
 		args.putString("feedId", feedId);
@@ -66,7 +66,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		super.onCreate(savedInstanceState);
 		currentState = getArguments().getInt("currentState");
 		feedId = getArguments().getString("feedId");
-		
+
 		if (!NetworkUtils.isOnline(getActivity())) {
 			doRequest = false;
 		}
@@ -78,11 +78,11 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
 
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
-		
+
 		contentResolver = getActivity().getContentResolver();
 		storiesUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
-		
+
 		setupFeed();
 
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_READ, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS };
@@ -93,7 +93,7 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 		adapter = new FeedItemsAdapter(getActivity(), feed, R.layout.row_item, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 		itemList.setOnScrollListener(this);
-		
+
 		adapter.setViewBinder(new FeedItemViewBinder(getActivity()));
 		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
@@ -153,27 +153,11 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 	@Override
 	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
 		if (firstVisible + visibleCount == totalCount) {
-			boolean loadMore = false;
-			
-			switch (currentState) {
-			case AppConstants.STATE_ALL:
-				loadMore = feed.positiveCount + feed.neutralCount + feed.negativeCount > totalCount;
-				break;
-			case AppConstants.STATE_BEST:
-				loadMore = feed.positiveCount > totalCount;
-				break;
-			case AppConstants.STATE_SOME:
-				loadMore = feed.positiveCount + feed.neutralCount > totalCount;
-				break;	
-			}
-	
-			if (loadMore && !requestedPage && doRequest) {
-				currentPage += 1;
-				requestedPage = true;
-				((ItemsList) getActivity()).triggerRefresh(currentPage);
-			} else {
-				Log.d(TAG, "No need");
-			}
+			currentPage += 1;
+			requestedPage = true;
+			((ItemsList) getActivity()).triggerRefresh(currentPage);
+		} else {
+			Log.d(TAG, "No need");
 		}
 	}
 

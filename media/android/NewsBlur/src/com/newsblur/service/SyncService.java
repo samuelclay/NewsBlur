@@ -22,6 +22,8 @@ import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.APIClient;
 import com.newsblur.network.APIConstants;
 import com.newsblur.network.APIManager;
+import com.newsblur.network.domain.SocialFeedResponse;
+import com.newsblur.network.domain.StoriesResponse;
 
 /**
  * The SyncService is based on an app architecture that tries to place network calls
@@ -48,6 +50,7 @@ public class SyncService extends IntentService {
 	public final static int STATUS_RUNNING = 0x02;
 	public final static int STATUS_FINISHED = 0x03;
 	public final static int STATUS_ERROR = 0x04;
+	public static final int STATUS_NO_MORE_UPDATES = 0x05;
 	public static final int NOT_RUNNING = 0x01;
 
 	public static final int EXTRA_TASK_FOLDER_UPDATE = 30;
@@ -159,7 +162,10 @@ public class SyncService extends IntentService {
 				
 			case EXTRA_TASK_FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
-					apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
+					StoriesResponse storiesForFeed = apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
+					if (storiesForFeed != null && storiesForFeed.stories.length == 0) {
+						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
+					}
 				} else {
 					Log.e(TAG, "No feed to refresh included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
@@ -169,7 +175,10 @@ public class SyncService extends IntentService {
 				
 			case EXTRA_TASK_MULTIFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
-					apiManager.getStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
+					StoriesResponse storiesForFeeds = apiManager.getStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
+					if (storiesForFeeds != null && storiesForFeeds.stories.length == 0) {
+						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
+					}
 				} else {
 					Log.e(TAG, "No feed ids to refresh included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
@@ -178,7 +187,10 @@ public class SyncService extends IntentService {
 
 			case EXTRA_TASK_MULTISOCIALFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
-					apiManager.getSharedStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
+					SocialFeedResponse sharedStoriesForFeeds = apiManager.getSharedStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
+					if (sharedStoriesForFeeds != null && sharedStoriesForFeeds.stories.length == 0) {
+						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
+					}
 				} else {
 					Log.e(TAG, "No socialfeed ids to refresh included in SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);

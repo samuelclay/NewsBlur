@@ -134,7 +134,7 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 		setSupportProgressBarIndeterminateVisibility(false);
 		menu.findItem(R.id.menu_refresh).setEnabled(true);
 	}
-
+	
 	@Override
 	public void updateSyncStatus(boolean syncRunning) {
 		if (syncRunning) {
@@ -143,5 +143,8 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 				menu.findItem(R.id.menu_refresh).setEnabled(true);
 			}
 		}
-	}			
+	}
+
+	@Override
+	public void setNothingMoreToUpdate() { }			
 }

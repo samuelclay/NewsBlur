@@ -20,6 +20,7 @@ public class SocialFeedItemsList extends ItemsList {
 	private String username;
 	private String userId;
 	private String userIcon;
+	private boolean stopLoading = false;
 	private APIManager apiManager;
 
 	@Override
@@ -66,14 +67,16 @@ public class SocialFeedItemsList extends ItemsList {
 
 	@Override
 	public void triggerRefresh(int page) {
-		setSupportProgressBarIndeterminateVisibility(true);
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_SOCIALFEED_UPDATE);
-		intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_ID, userId);
-		intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-		intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_USERNAME, username);
-		startService(intent);
+		if (!stopLoading) {
+			setSupportProgressBarIndeterminateVisibility(true);
+			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
+			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
+			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_SOCIALFEED_UPDATE);
+			intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_ID, userId);
+			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+			intent.putExtra(SyncService.EXTRA_TASK_SOCIALFEED_USERNAME, username);
+			startService(intent);
+		}
 	}
 
 	@Override
@@ -90,6 +93,12 @@ public class SocialFeedItemsList extends ItemsList {
 				}
 			}
 		}.execute(userId);
+	}
+
+
+	@Override
+	public void setNothingMoreToUpdate() {
+		stopLoading = true;
 	}
 
 }

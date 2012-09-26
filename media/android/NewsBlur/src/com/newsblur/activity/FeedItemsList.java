@@ -25,19 +25,20 @@ public class FeedItemsList extends ItemsList {
 	public static final String EXTRA_FEED = "feedId";
 	private String feedId;
 	private APIManager apiManager;
+	private boolean stopLoading = false;
 
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		apiManager = new APIManager(this);
 		feedId = getIntent().getStringExtra(EXTRA_FEED);
-		
+
 		final Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(feedId).build();
 		Cursor cursor = getContentResolver().query(feedUri, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		cursor.moveToFirst();
 		Feed feed = Feed.fromCursor(cursor);
 		setTitle(feed.title);
-		
+
 		itemListFragment = (FeedItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
 			itemListFragment = FeedItemListFragment.newInstance(feedId, currentState);
@@ -46,7 +47,7 @@ public class FeedItemsList extends ItemsList {
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
 			listTransaction.commit();
 		}
-		
+
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
@@ -54,7 +55,7 @@ public class FeedItemsList extends ItemsList {
 			triggerRefresh();
 		}
 	}
-	
+
 	@Override
 	public void markItemListAsRead() {
 		new MarkFeedAsReadTask(this, apiManager) {
@@ -75,7 +76,7 @@ public class FeedItemsList extends ItemsList {
 			}
 		}.execute(feedId);
 	}
-	
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,16 +90,23 @@ public class FeedItemsList extends ItemsList {
 	public void triggerRefresh() {
 		triggerRefresh(1);
 	}
-	
+
 	@Override
 	public void triggerRefresh(int page) {
-		setSupportProgressBarIndeterminateVisibility(true);
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
-		intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-		intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
-		startService(intent);
+		if (!stopLoading) {
+			setSupportProgressBarIndeterminateVisibility(true);
+			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
+			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
+			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
+			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+			intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
+			startService(intent);
+		}
+	}
+
+	@Override
+	public void setNothingMoreToUpdate() {
+		stopLoading = true;
 	}
 
 

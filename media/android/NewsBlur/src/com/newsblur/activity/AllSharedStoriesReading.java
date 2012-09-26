@@ -2,11 +2,9 @@ package com.newsblur.activity;
 
 import java.util.ArrayList;
 
-import android.content.ContentProviderOperation;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
@@ -15,57 +13,45 @@ import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.MarkMixedStoriesAsReadTask;
 import com.newsblur.service.SyncService;
-import com.newsblur.util.AppConstants;
 
 public class AllSharedStoriesReading extends Reading {
-	
+
 	private Cursor stories;
 	private ValueMultimap storiesToMarkAsRead;
-	private int negativeCount;
-	private int neutralCount;
-	private int positiveCount;
 	private int currentPage;
-	private boolean requestedPage;
 	private ArrayList<String> feedIds;
-	private ArrayList<ContentProviderOperation> storiesToMarkAsReadInternally = new ArrayList<ContentProviderOperation>();
-	
+	private boolean requestingPage = false;
+	private boolean stopLoading = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		super.onCreate(savedInstanceBundle);
-		
+
 		setResult(RESULT_OK);
-		
+
 		setupCountCursor();
-		
+
 		stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		setTitle(getResources().getString(R.string.all_shared_stories));
 		storiesToMarkAsRead = new ValueMultimap();
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
 
 		setupPager();
-		
+
 		addStoryToMarkAsRead(readingAdapter.getStory(passedPosition));
 		storiesToMarkAsRead.put(readingAdapter.getStory(passedPosition).feedId, readingAdapter.getStory(passedPosition).id);
 	}
 
 	private void setupCountCursor() {
-		Cursor countCursor = contentResolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
-		startManagingCursor(countCursor);
-		
-		countCursor.moveToFirst();
-		negativeCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEG));
-		neutralCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
-		positiveCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_POS));
-		
 		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		startManagingCursor(cursor);
 		feedIds = new ArrayList<String>();
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
 		}
-		
+
 	}
-	
+
 	@Override
 	public void onPageSelected(int position) {
 		super.onPageSelected(position);
@@ -73,7 +59,7 @@ public class AllSharedStoriesReading extends Reading {
 		addStoryToMarkAsRead(readingAdapter.getStory(position));
 		checkStoryCount(position);
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		new MarkMixedStoriesAsReadTask(this, syncFragment, storiesToMarkAsRead).execute();
@@ -84,49 +70,33 @@ public class AllSharedStoriesReading extends Reading {
 	public void triggerRefresh() {
 		triggerRefresh(1);
 	}
-	
+
 	@Override
 	public void checkStoryCount(int position) {
-		if (position == stories.getCount() - 1) {
-			boolean loadMore = false;
-
-			switch (currentState) {
-			case AppConstants.STATE_ALL:
-				loadMore = positiveCount + neutralCount + negativeCount > stories.getCount();
-				break;
-			case AppConstants.STATE_BEST:
-				loadMore = positiveCount > stories.getCount();
-				break;
-			case AppConstants.STATE_SOME:
-				loadMore = positiveCount + neutralCount > stories.getCount();
-				break;	
-			}
-
-			if (loadMore) {
-				currentPage += 1;
-				requestedPage = true;
-				triggerRefresh(currentPage);
-			} else {
-				Log.d(TAG, "No need");
-			}
+		if (position == stories.getCount() - 1 && !stopLoading && !requestingPage) {
+			currentPage += 1;
+			requestingPage = true;
+			triggerRefresh(currentPage);
 		}
 	}
 
 	@Override
 	public void triggerRefresh(int page) {
-		setSupportProgressBarIndeterminateVisibility(true);
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MULTISOCIALFEED_UPDATE);
-		
-		String[] feeds = new String[feedIds.size()];
-		feedIds.toArray(feeds);
-		intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
-		if (page > 1) {
-			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-		}
+		if (!stopLoading) {
+			setSupportProgressBarIndeterminateVisibility(true);
+			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
+			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
+			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MULTISOCIALFEED_UPDATE);
 
-		startService(intent);
+			String[] feeds = new String[feedIds.size()];
+			feedIds.toArray(feeds);
+			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
+			if (page > 1) {
+				intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+			}
+
+			startService(intent);
+		}
 	}
 
 	@Override
@@ -135,6 +105,12 @@ public class AllSharedStoriesReading extends Reading {
 		stories.requery();
 		readingAdapter.notifyDataSetChanged();
 		checkStoryCount(pager.getCurrentItem());
+		requestingPage = false;
 	}
-	
+
+	@Override
+	public void setNothingMoreToUpdate() {
+		stopLoading = true;
+	}
+
 }

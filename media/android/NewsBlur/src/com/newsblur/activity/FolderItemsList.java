@@ -27,25 +27,26 @@ public class FolderItemsList extends ItemsList {
 	private String folderName;
 	private ArrayList<String> feedIds;
 	private APIManager apiManager;
-	
+	private boolean stopLoading = false;
+
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
 		folderName = getIntent().getStringExtra(EXTRA_FOLDER_NAME);
-		
+
 		setTitle(folderName);
-		
+
 		feedIds = new ArrayList<String>();
-		
+
 		apiManager = new APIManager(this);
-		
+
 		final Uri feedsUri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(folderName).build();
 		Cursor cursor = getContentResolver().query(feedsUri, new String[] { DatabaseConstants.FEED_ID } , FeedProvider.getStorySelectionFromState(currentState), null, null);
-		
+
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
 		}
-		
+
 		itemListFragment = (FolderItemListFragment) fragmentManager.findFragmentByTag(FeedItemListFragment.FRAGMENT_TAG);
 		if (itemListFragment == null) {
 			itemListFragment = FolderItemListFragment.newInstance(feedIds, folderName, currentState);
@@ -54,7 +55,7 @@ public class FolderItemsList extends ItemsList {
 			listTransaction.add(R.id.activity_itemlist_container, itemListFragment, FeedItemListFragment.FRAGMENT_TAG);
 			listTransaction.commit();
 		}
-		
+
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
@@ -68,7 +69,7 @@ public class FolderItemsList extends ItemsList {
 	public void triggerRefresh() {
 		triggerRefresh(1);
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getSupportMenuInflater();
@@ -78,15 +79,17 @@ public class FolderItemsList extends ItemsList {
 
 	@Override
 	public void triggerRefresh(int page) {
-		setSupportProgressBarIndeterminateVisibility(true);
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MULTIFEED_UPDATE);
-		String[] feeds = new String[feedIds.size()];
-		feedIds.toArray(feeds);
-		intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
-		intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-		startService(intent);
+		if (!stopLoading) {
+			setSupportProgressBarIndeterminateVisibility(true);
+			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
+			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
+			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_MULTIFEED_UPDATE);
+			String[] feeds = new String[feedIds.size()];
+			feedIds.toArray(feeds);
+			intent.putExtra(SyncService.EXTRA_TASK_MULTIFEED_IDS, feeds);
+			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+			startService(intent);
+		}
 	}
 
 
@@ -104,5 +107,11 @@ public class FolderItemsList extends ItemsList {
 				}
 			}
 		}.execute(folderName);
+	}
+
+
+	@Override
+	public void setNothingMoreToUpdate() {
+		stopLoading = true;
 	}
 }

@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.SeekBar;
 
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -28,6 +27,7 @@ public class FeedReading extends Reading {
 	String feedId;
 	private Feed feed;
 	private int currentPage;
+	private boolean stopLoading = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
@@ -35,11 +35,11 @@ public class FeedReading extends Reading {
 
 		setResult(RESULT_OK);
 		feedId = getIntent().getStringExtra(Reading.EXTRA_FEED);
-		
+
 		Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
 		Cursor feedClassifierCursor = contentResolver.query(classifierUri, null, null, null, null);
 		Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
-		
+
 		Uri storiesURI = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
 		storiesToMarkAsRead = new HashSet<String>();
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " DESC");
@@ -58,12 +58,11 @@ public class FeedReading extends Reading {
 		Story story = readingAdapter.getStory(passedPosition);
 
 		updateReadStories(story);
-		
+
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
-			triggerRefresh();
 		}
 
 	}
@@ -81,7 +80,7 @@ public class FeedReading extends Reading {
 			checkStoryCount(position);
 		}
 	}
-	
+
 	@Override
 	public void checkStoryCount(int position) {
 		if (position == stories.getCount() - 1) {
@@ -123,13 +122,20 @@ public class FeedReading extends Reading {
 
 	@Override
 	public void triggerRefresh(int page) {
-		setSupportProgressBarIndeterminateVisibility(true);
-		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
-		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
-		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
-		intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
-		intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
-		startService(intent);
+		if (!stopLoading) {
+			setSupportProgressBarIndeterminateVisibility(true);
+			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
+			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
+			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
+			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+			intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
+			startService(intent);
+		}
+	}
+
+	@Override
+	public void setNothingMoreToUpdate() {
+		stopLoading = true;
 	}
 
 

@@ -28,7 +28,6 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MultipleFeedItemsAdapter;
 import com.newsblur.domain.SocialFeed;
-import com.newsblur.util.AppConstants;
 import com.newsblur.view.SocialItemViewBinder;
 
 public class SocialFeedItemListFragment extends ItemListFragment implements LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener, OnScrollListener {
@@ -61,7 +60,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 		
 		setupSocialFeed();
 		
-		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
+		Cursor cursor = contentResolver.query(storiesUri, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " ASC");
 		getActivity().startManagingCursor(cursor);
 		
 		String[] groupFrom = new String[] { DatabaseConstants.FEED_FAVICON_URL, DatabaseConstants.FEED_TITLE, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS};
@@ -99,7 +98,7 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	@Override
 	public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 		Uri uri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " DESC");
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), uri, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_SHARED_DATE + " ASC");
 	    return cursorLoader;
 	}
 
@@ -125,27 +124,11 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 	@Override
 	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
 		if (firstVisible + visibleCount == totalCount) {
-			boolean loadMore = false;
-			
-			switch (currentState) {
-			case AppConstants.STATE_ALL:
-				loadMore = socialFeed.positiveCount + socialFeed.neutralCount + socialFeed.negativeCount > totalCount;
-				break;
-			case AppConstants.STATE_BEST:
-				loadMore = socialFeed.positiveCount > totalCount;
-				break;
-			case AppConstants.STATE_SOME:
-				loadMore = socialFeed.positiveCount + socialFeed.neutralCount > totalCount;
-				break;	
-			}
-	
-			if (loadMore && !requestedPage) {
+			if (!requestedPage) {
 				currentPage += 1;
 				requestedPage = true;
 				((ItemsList) getActivity()).triggerRefresh(currentPage);
-			} else {
-				Log.d(TAG, "No need");
-			}
+			} 
 		}
 	}
 

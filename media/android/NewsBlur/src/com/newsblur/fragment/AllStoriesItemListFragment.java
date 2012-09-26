@@ -154,10 +154,7 @@ public class AllStoriesItemListFragment extends ItemListFragment implements Load
 	}
 
 	@Override
-	public void onScrollStateChanged(AbsListView arg0, int arg1) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onScrollStateChanged(AbsListView arg0, int arg1) { }
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

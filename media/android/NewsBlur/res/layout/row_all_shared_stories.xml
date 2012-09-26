@@ -3,8 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/selector_folder_background"
-    android:paddingBottom="15dp"
-    android:paddingTop="15dp" >
+    >
 
     
     <ImageView
@@ -71,6 +70,8 @@
         android:text="@string/all_shared_stories"
         android:textColor="@color/folder_text"
         android:textSize="16dp"
+        android:paddingBottom="15dp"
+    	android:paddingTop="15dp" 
         android:textStyle="bold" />
     
 </RelativeLayout>

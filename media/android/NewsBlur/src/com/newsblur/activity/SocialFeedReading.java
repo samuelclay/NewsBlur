@@ -15,7 +15,6 @@ import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
 import com.newsblur.network.MarkSocialStoryAsReadTask;
 import com.newsblur.service.SyncService;
-import com.newsblur.util.AppConstants;
 
 public class SocialFeedReading extends Reading {
 	
@@ -24,6 +23,7 @@ public class SocialFeedReading extends Reading {
 	private String username;
 	private SocialFeed socialFeed;
 	private boolean requestedPage;
+	private boolean stopLoading = false;
 	private int currentPage;
 	
 	@Override
@@ -116,25 +116,10 @@ public class SocialFeedReading extends Reading {
 		startService(intent);
 	}
 
-
 	@Override
 	public void checkStoryCount(int position) {
 		if (position == stories.getCount() - 1) {
-			boolean loadMore = false;
-			
-			switch (currentState) {
-			case AppConstants.STATE_ALL:
-				loadMore = socialFeed.positiveCount + socialFeed.neutralCount + socialFeed.negativeCount > stories.getCount();
-				break;
-			case AppConstants.STATE_BEST:
-				loadMore = socialFeed.positiveCount > stories.getCount();
-				break;
-			case AppConstants.STATE_SOME:
-				loadMore = socialFeed.positiveCount + socialFeed.neutralCount > stories.getCount();
-				break;	
-			}
-	
-			if (loadMore && !requestedPage) {
+			if (!requestedPage && !stopLoading) {
 				currentPage += 1;
 				requestedPage = true;
 				triggerRefresh(currentPage);
@@ -142,6 +127,11 @@ public class SocialFeedReading extends Reading {
 				Log.d(TAG, "No need");
 			}
 		}
+	}
+
+	@Override
+	public void setNothingMoreToUpdate() {
+		stopLoading = true;
 	}
 	
 }

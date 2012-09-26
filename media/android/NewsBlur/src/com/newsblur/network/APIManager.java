@@ -192,8 +192,8 @@ public class APIManager {
 
 			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(feedId).build();
 
-			int deleted = contentResolver.delete(classifierUri, null, null);
-			Log.d(TAG, "Deleted " + deleted + " previous classifiers");
+			contentResolver.delete(classifierUri, null, null);
+			
 			for (ContentValues classifierValues : storiesResponse.classifiers.getContentValues()) {
 				contentResolver.insert(classifierUri, classifierValues);
 			}
@@ -223,10 +223,9 @@ public class APIManager {
 		StoriesResponse storiesResponse = gson.fromJson(response.responseString, StoriesResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 			if (TextUtils.equals(pageNumber,"1")) {
-				for (String feedId : feedIds) {
-					Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-					contentResolver.delete(storyUri, null, null);
-				}
+				Uri storyUri = FeedProvider.ALL_STORIES_URI;
+				int deleted = contentResolver.delete(storyUri, null, null);
+				Log.d(TAG, "Deleted " + deleted + " stories");
 			}
 			
 			for (Story story : storiesResponse.stories) {
@@ -253,12 +252,12 @@ public class APIManager {
 
 		SocialFeedResponse storiesResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
+			
 			// If we've successfully retrieved the latest stories for all shared feeds (the first page), delete all previous shared feeds
 			if (TextUtils.equals(pageNumber,"1")) {
-				for (String feedId : feedIds) {
-					Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(feedId).build();
-					contentResolver.delete(storyUri, null, null);
-				}
+				Uri storyUri = FeedProvider.ALL_STORIES_URI;
+				int deleted = contentResolver.delete(storyUri, null, null);
+				Log.d(TAG, "Deleted " + deleted + " stories");
 			}
 			
 			for (Story story : storiesResponse.stories) {
@@ -305,12 +304,12 @@ public class APIManager {
 			
 			for (Story story : socialFeedResponse.stories) {
 				insertComments(story);
-
+				
 				Uri storyUri = FeedProvider.FEED_STORIES_URI.buildUpon().appendPath(story.feedId).build();
 				contentResolver.insert(storyUri, story.getValues());
-
 				contentResolver.insert(storySocialUri, story.getValues());
 			}
+			
 			if (socialFeedResponse != null && socialFeedResponse.feeds!= null) {
 				for (Feed feed : socialFeedResponse.feeds) {
 					contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());

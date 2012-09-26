@@ -24,7 +24,11 @@ public class DateStringTypeAdapter implements JsonDeserializer<Date> {
 				if (element == null || TextUtils.isEmpty(element.getAsString())) {
 					return new Date();	
 				} else {
-					return df.parse(element.getAsString());
+					String dateString = element.getAsString();
+					if (dateString.length() > 19) {
+						dateString = dateString.substring(0, 19);
+					}
+					return df.parse(dateString);
 				}
 			} catch (ParseException e) {
 				Log.e("DateTypeAdapter", e.getLocalizedMessage());

@@ -128,21 +128,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	@Override
 	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
 		if (firstVisible + visibleCount == totalCount) {
-			boolean loadMore = false;
-			
-			switch (currentState) {
-			case AppConstants.STATE_ALL:
-				loadMore = positiveCount + neutralCount + negativeCount > totalCount;
-				break;
-			case AppConstants.STATE_BEST:
-				loadMore = positiveCount > totalCount;
-				break;
-			case AppConstants.STATE_SOME:
-				loadMore = positiveCount + neutralCount > totalCount;
-				break;	
-			}
-	
-			if (loadMore && !requestedPage && doRequest) {
+			if (!requestedPage && doRequest) {
 				currentPage += 1;
 				requestedPage = true;
 				((ItemsList) getActivity()).triggerRefresh(currentPage);
