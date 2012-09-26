@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.Profile;
 import com.newsblur.domain.Classifier;
+import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.fragment.ClassifierDialogFragment;
 import com.newsblur.view.FlowLayout;

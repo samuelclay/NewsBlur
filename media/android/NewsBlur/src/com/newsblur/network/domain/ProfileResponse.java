@@ -1,12 +1,12 @@
 package com.newsblur.network.domain;
 
 import com.google.gson.annotations.SerializedName;
-import com.newsblur.domain.UserProfile;
+import com.newsblur.domain.UserDetails;
 
 public class ProfileResponse {
 	
 	@SerializedName("user_profile")
-	public UserProfile user;
+	public UserDetails user;
 	
 	@SerializedName("activities")
 	public ActivitiesResponse[] activities;

@@ -14,7 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 
-import com.newsblur.domain.UserProfile;
+import com.newsblur.domain.UserDetails;
 
 public class PrefsUtils {
 
@@ -25,7 +25,7 @@ public class PrefsUtils {
 		edit.commit();
 	}
 
-	public static void saveUserDetails(final Context context, final UserProfile profile) {
+	public static void saveUserDetails(final Context context, final UserDetails profile) {
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		final Editor edit = preferences.edit();
 		edit.putInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, profile.averageStoriesPerMonth);
@@ -47,8 +47,8 @@ public class PrefsUtils {
 		saveUserImage(context, profile.photoUrl);
 	}
 
-	public static UserProfile getUserDetails(final Context context) {
-		UserProfile user = new UserProfile();
+	public static UserDetails getUserDetails(final Context context) {
+		UserDetails user = new UserDetails();
 
 		final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		user.averageStoriesPerMonth = preferences.getInt(PrefConstants.USER_AVERAGE_STORIES_PER_MONTH, 0);

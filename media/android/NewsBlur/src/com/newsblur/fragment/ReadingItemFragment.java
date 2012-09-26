@@ -27,7 +27,7 @@ import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Story;
-import com.newsblur.domain.UserProfile;
+import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
 import com.newsblur.util.ImageLoader;
@@ -58,7 +58,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private boolean displayFeedDetails;
 	private FlowLayout tagContainer;
 	private View view;
-	private UserProfile user;
+	private UserDetails user;
 	public String previouslySavedShareText;
 
 	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, Classifier classifier, boolean displayFeedDetails) { 
@@ -330,13 +330,13 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 				
 				ViewUtils.setupCommentCount(getActivity(), view, story.commentCount + 1);
 				
-				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user);
-				((FlowLayout) view.findViewById(R.id.reading_social_commentimages)).addView(image);
+//				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user);
+//				((FlowLayout) view.findViewById(R.id.reading_social_commentimages)).addView(image);
 				
 			} else {
-				ViewUtils.setupShareCount(getActivity(), view, story.sharedUserIds.length + 1);
-				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user);
-				((FlowLayout) view.findViewById(R.id.reading_social_shareimages)).addView(image);
+//				ViewUtils.setupShareCount(getActivity(), view, story.sharedUserIds.length + 1);
+//				final ImageView image = ViewUtils.createSharebarImage(getActivity(), imageLoader, user);
+//				((FlowLayout) view.findViewById(R.id.reading_social_shareimages)).addView(image);
 			}
 		} else {
 			View commentViewForUser = view.findViewWithTag(SetupCommentSectionTask.COMMENT_VIEW_BY + user.id);

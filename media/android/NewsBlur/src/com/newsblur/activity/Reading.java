@@ -29,7 +29,7 @@ import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Story;
-import com.newsblur.domain.UserProfile;
+import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
@@ -106,7 +106,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int currentItem = pager.getCurrentItem();
 		Story story = readingAdapter.getStory(currentItem);
-		UserProfile user = PrefsUtils.getUserDetails(this);
+		UserDetails user = PrefsUtils.getUserDetails(this);
 		
 		switch (item.getItemId()) {
 		case android.R.id.home:

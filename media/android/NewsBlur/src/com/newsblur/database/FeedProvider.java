@@ -26,6 +26,7 @@ public class FeedProvider extends ContentProvider {
 	public static final Uri FEED_COUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/feedcount/");
 	public static final Uri SOCIALCOUNT_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/socialfeedcount/");
 	public static final Uri ALL_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/");
+	public static final Uri USERS_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/users/");
 	
 	public static final Uri FEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feed/");
 	public static final Uri MULTIFEED_STORIES_URI = Uri.parse("content://" + AUTHORITY + "/" + VERSION + "/stories/feeds/");
@@ -58,6 +59,7 @@ public class FeedProvider extends ContentProvider {
 	private static final int ALL_SHARED_STORIES = 17;
 	private static final int FEED_STORIES_NO_UPDATE = 18;
 	private static final int CLASSIFIERS_FOR_FEED = 19;
+	private static final int USERS = 21;
 	
 	
 	private BlurDatabase databaseHelper;
@@ -88,6 +90,7 @@ public class FeedProvider extends ContentProvider {
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/", ALL_FOLDERS);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/folders/*/", INDIVIDUAL_FOLDER);
 		uriMatcher.addURI(AUTHORITY, VERSION + "/offline_updates/", OFFLINE_UPDATES);
+		uriMatcher.addURI(AUTHORITY, VERSION + "/users/", USERS);
 	}
 
 	@Override
@@ -159,6 +162,11 @@ public class FeedProvider extends ContentProvider {
 		case FEED_FOLDER_MAP:
 			db.insertWithOnConflict(DatabaseConstants.FEED_FOLDER_MAP_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.FEED_FOLDER_FOLDER_NAME)).build();
+			break;
+		
+		case USERS:
+			db.insertWithOnConflict(DatabaseConstants.USER_TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+			resultUri = uri.buildUpon().appendPath(values.getAsString(DatabaseConstants.USER_USERID)).build();
 			break;
 			
 			// Inserting a classifier for a feed
@@ -246,6 +254,9 @@ public class FeedProvider extends ContentProvider {
 			return db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_TABLE +
 					" WHERE " +  DatabaseConstants.FEED_ID + "= '" + uri.getLastPathSegment() + "'", selectionArgs);	
 		
+		case USERS:
+			return db.query(DatabaseConstants.USER_TABLE, projection, selection, selectionArgs, null, null, null);	
+			
 			// Query for classifiers for a given feed
 		case CLASSIFIERS_FOR_FEED:
 			return db.query(DatabaseConstants.CLASSIFIER_TABLE, null, DatabaseConstants.CLASSIFIER_ID + " = ?", new String[] { uri.getLastPathSegment() }, null, null, null);

@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
-import com.newsblur.domain.UserProfile;
+import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
@@ -24,7 +24,7 @@ import com.newsblur.util.UIUtils;
 
 public class ProfileDetailsFragment extends Fragment implements OnClickListener {
 	
-	UserProfile user;
+	UserDetails user;
 	private TextView username, bio, location, sharedCount, followerCount, followingCount, website;
 	private View locationIcon;
 	private ImageView imageView;
@@ -43,7 +43,7 @@ public class ProfileDetailsFragment extends Fragment implements OnClickListener 
 		apiManager = new APIManager(getActivity());
 	}
 	
-	public void setUser(final UserProfile user, final boolean viewingSelf) {
+	public void setUser(final UserDetails user, final boolean viewingSelf) {
 		this.user = user;
 		this.viewingSelf = viewingSelf;
 		if (username != null) {

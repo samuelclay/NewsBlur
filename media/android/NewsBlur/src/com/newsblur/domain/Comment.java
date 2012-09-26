@@ -35,6 +35,8 @@ public class Comment implements Serializable {
 	public Reply[] replies;
 	
 	public String storyId;
+	
+	public boolean byFriend = false;
 
 	public ContentValues getValues() {
 		ContentValues values = new ContentValues();
@@ -43,6 +45,7 @@ public class Comment implements Serializable {
 		values.put(DatabaseConstants.COMMENT_LIKING_USERS, TextUtils.join(",", likingUsers));
 		values.put(DatabaseConstants.COMMENT_TEXT, commentText);
 		values.put(DatabaseConstants.COMMENT_SHAREDDATE, sharedDate);
+		values.put(DatabaseConstants.COMMENT_BYFRIEND, byFriend ? "true" : "false");
 		values.put(DatabaseConstants.COMMENT_SOURCE_USERID, sourceUserId);
 		values.put(DatabaseConstants.COMMENT_USERID, userId);
 		values.put(DatabaseConstants.COMMENT_ID, id);
@@ -57,6 +60,7 @@ public class Comment implements Serializable {
 		comment.commentText = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_TEXT));
 		comment.storyId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_STORYID));
 		comment.userId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_USERID));
+		comment.byFriend = Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_BYFRIEND)));
 		String likingUsers = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_LIKING_USERS));
 		comment.likingUsers = TextUtils.split(likingUsers, ",");
 		comment.sourceUserId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.COMMENT_SOURCE_USERID));

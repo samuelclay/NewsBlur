@@ -41,6 +41,11 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.FEED_UPDATED_SECONDS +
 		")";
 	
+	private final String USER_SQL = "CREATE TABLE " + DatabaseConstants.USER_TABLE + " (" + 
+		DatabaseConstants.USER_PHOTO_URL + TEXT + ", " + 
+		DatabaseConstants.USER_USERID + INTEGER + " PRIMARY KEY, " +
+		DatabaseConstants.USER_USERNAME + TEXT + ")";
+	
 	private final String SOCIAL_FEED_SQL = "CREATE TABLE " + DatabaseConstants.SOCIALFEED_TABLE + " (" +
 		DatabaseConstants.SOCIAL_FEED_ID + INTEGER + " PRIMARY KEY, " +
 		DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + INTEGER + ", " +
@@ -57,6 +62,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.COMMENT_SOURCE_USERID + TEXT + ", " +
 		DatabaseConstants.COMMENT_ID + TEXT + " PRIMARY KEY, " +
 		DatabaseConstants.COMMENT_LIKING_USERS + TEXT + ", " +
+		DatabaseConstants.COMMENT_BYFRIEND + TEXT + ", " +
 		DatabaseConstants.COMMENT_STORYID + TEXT + ", " + 
 		DatabaseConstants.COMMENT_TEXT + TEXT + ", " +
 		DatabaseConstants.COMMENT_USERID + TEXT +
@@ -116,9 +122,9 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		")";
 	
 	private final String SOCIALFEED_STORIES_SQL = "CREATE TABLE " + DatabaseConstants.SOCIALFEED_STORY_MAP_TABLE + " (" +
-	DatabaseConstants.SOCIALFEED_STORY_STORYID  + TEXT + " NOT NULL, " +
-	DatabaseConstants.SOCIALFEED_STORY_USER_ID  + INTEGER + " NOT NULL, " +
-	"PRIMARY KEY (" + DatabaseConstants.SOCIALFEED_STORY_STORYID  + ", " + DatabaseConstants.SOCIALFEED_STORY_USER_ID + ") " + 
+		DatabaseConstants.SOCIALFEED_STORY_STORYID  + TEXT + " NOT NULL, " +
+		DatabaseConstants.SOCIALFEED_STORY_USER_ID  + INTEGER + " NOT NULL, " +
+		"PRIMARY KEY (" + DatabaseConstants.SOCIALFEED_STORY_STORYID  + ", " + DatabaseConstants.SOCIALFEED_STORY_USER_ID + ") " + 
 	")";
 
 
@@ -127,6 +133,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(FEED_SQL);
 		db.execSQL(SOCIAL_FEED_SQL);
 		db.execSQL(FOLDER_SQL);
+		db.execSQL(USER_SQL);
 		db.execSQL(STORY_SQL);
 		db.execSQL(COMMENT_SQL);
 		db.execSQL(REPLY_SQL);
@@ -143,6 +150,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		db.execSQL(drop + DatabaseConstants.SOCIALFEED_TABLE);
 		db.execSQL(drop + DatabaseConstants.FOLDER_TABLE);
 		db.execSQL(drop + DatabaseConstants.STORY_TABLE);
+		db.execSQL(drop + DatabaseConstants.USER_TABLE);
 		db.execSQL(drop + DatabaseConstants.COMMENT_TABLE);
 		db.execSQL(drop + DatabaseConstants.REPLY_TABLE);
 		db.execSQL(drop + DatabaseConstants.CLASSIFIER_TABLE);

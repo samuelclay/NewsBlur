@@ -9,7 +9,7 @@ import android.text.TextUtils;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.newsblur.R;
-import com.newsblur.domain.UserProfile;
+import com.newsblur.domain.UserDetails;
 import com.newsblur.fragment.ProfileActivityFragment;
 import com.newsblur.fragment.ProfileDetailsFragment;
 import com.newsblur.network.APIManager;
@@ -72,7 +72,7 @@ public class Profile extends SherlockFragmentActivity {
 	}
 
 	private class LoadUserTask extends AsyncTask<Void, Void, Void> {
-		private UserProfile user;
+		private UserDetails user;
 		private ActivitiesResponse[] activities;
 
 		@Override

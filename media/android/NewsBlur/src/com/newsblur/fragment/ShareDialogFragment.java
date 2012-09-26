@@ -24,7 +24,7 @@ import com.newsblur.R;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Story;
-import com.newsblur.domain.UserProfile;
+import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.util.PrefsUtils;
 
@@ -36,7 +36,7 @@ public class ShareDialogFragment extends DialogFragment {
 	private APIManager apiManager;
 	private SharedCallbackDialog callback;
 	private Story story;
-	private UserProfile user;
+	private UserDetails user;
 	private ContentResolver resolver;
 	private boolean hasBeenShared = false;
 	private Cursor commentCursor;

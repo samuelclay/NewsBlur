@@ -55,6 +55,11 @@ public class DatabaseConstants {
 	public static final String UPDATE_TYPE = "update_type";
 	public static final String UPDATE_ARGUMENTS = "update_argument";
 
+	public static final String USER_TABLE = "user_table";
+	public static final String USER_USERID = BaseColumns._ID;
+	public static final String USER_USERNAME = "username";
+	public static final String USER_PHOTO_URL = "photo_url";
+	
 	public static final String STORY_TABLE = "stories";
 	public static final String STORY_ID = BaseColumns._ID;
 	public static final String STORY_AUTHORS = "authors";
@@ -86,6 +91,7 @@ public class DatabaseConstants {
 	public static final String COMMENT_SOURCE_USERID = "comment_source_user";
 	public static final String COMMENT_LIKING_USERS = "comment_liking_users";
 	public static final String COMMENT_SHAREDDATE = "comment_shareddate";
+	public static final String COMMENT_BYFRIEND = "comment_byfriend";
 	public static final String COMMENT_USERID = "comment_userid";
 
 	public static final String REPLY_TABLE = "comment_replies";
@@ -116,7 +122,7 @@ public class DatabaseConstants {
 	};
 
 	public static final String[] COMMENT_COLUMNS = {
-		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_USERID, COMMENT_DATE, COMMENT_LIKING_USERS, COMMENT_SHAREDDATE, COMMENT_SOURCE_USERID
+		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_BYFRIEND, COMMENT_USERID, COMMENT_DATE, COMMENT_LIKING_USERS, COMMENT_SHAREDDATE, COMMENT_SOURCE_USERID
 	};
 	
 	public static final String[] REPLY_COLUMNS = {
