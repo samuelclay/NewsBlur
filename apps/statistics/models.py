@@ -268,8 +268,21 @@ class MAnalyticsPageLoad(mongo.Document):
     
     @classmethod
     def clean_path(cls, path):
-        if path and path.startswith('/reader/feed/'):
+        if not path:
+            return
+            
+        if path.startswith('/reader/feed'):
             path = '/reader/feed/'
+        elif path.startswith('/social/stories'):
+            path = '/social/stories/'
+        elif path.startswith('/reader/river_stories'):
+            path = '/reader/river_stories/'
+        elif path.startswith('/social/river_stories'):
+            path = '/social/river_stories/'
+        elif path.startswith('/reader/page/'):
+            path = '/reader/page/'
+        elif path.startswith('/api/check_share_on_site'):
+            path = '/api/check_share_on_site/'
             
         return path
         
