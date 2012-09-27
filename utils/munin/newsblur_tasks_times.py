@@ -10,8 +10,12 @@ class NBMuninGraph(MuninGraph):
             'graph_title' : 'NewsBlur Task Server Times',
             'graph_vlabel' : 'Feed fetch time / server',
         }
-        servers = dict((("%s.label" % s['_id'], s['_id']) for s in self.stats))
-        graph.update(servers)
+
+        stats = self.stats
+        graph['graph_order'] = ' '.join(sorted(s['_id'] for s in stats))
+        graph.update(dict((("%s.label" % s['_id'], s['_id']) for s in stats)))
+        graph.update(dict((("%s.draw" % s['_id'], 'LINE1') for s in stats)))
+
         return graph
 
     def calculate_metrics(self):

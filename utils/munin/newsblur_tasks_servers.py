@@ -1,5 +1,8 @@
 #!/usr/bin/env python 
 from utils.munin.base import MuninGraph
+import datetime
+from django.conf import settings
+
 
 class NBMuninGraph(MuninGraph):
 
@@ -11,8 +14,10 @@ class NBMuninGraph(MuninGraph):
             'graph_vlabel' : '# of fetches / server',
             'total.label': 'total',
         }
-        servers = dict((("%s.label" % s['_id'], s['_id']) for s in self.stats))
-        graph.update(servers)
+        stats = self.stats
+        graph.update(dict((("%s.label" % s['_id'], s['_id']) for s in stats)))
+        graph.update(dict((("%s.draw" % s['_id'], "LINESTACK") for s in stats)))
+        graph['graph_order'] = ' '.join(sorted(s['_id'] for s in stats))
         return graph
 
     def calculate_metrics(self):
@@ -22,13 +27,10 @@ class NBMuninGraph(MuninGraph):
     
     @property
     def stats(self):
-        import datetime
-        from django.conf import settings
-        
         stats = settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.aggregate([{
             "$match": {
                 "date": {
-                    "$gt": datetime.datetime.now() - datetime.timedelta(minutes=5),
+                    "$gte": datetime.datetime.now() - datetime.timedelta(minutes=5),
                 },
             },
         }, {

@@ -9,8 +9,9 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Browser Breakdown',
         }
-        servers = dict((("%s.label" % s['_id'], s['_id']) for s in self.stats))
-        graph.update(servers)
+        stats = self.stats
+        graph.update(dict((("%s.label" % s['_id'], s['_id']) for s in stats)))
+        graph.update(dict((("%s.draw" % s['_id'], 'LINE1') for s in stats)))
         return graph
 
     def calculate_metrics(self):
