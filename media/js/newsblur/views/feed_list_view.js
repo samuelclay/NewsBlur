@@ -219,6 +219,22 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         }        
     },
     
+    scroll_to_show_highlighted_feed: function() {
+        var $feed_lists = this.$s.$feed_lists;
+        var $feed = $('.NB-feed-selector-selected');
+        
+        if (!$feed.length) return;
+        
+        var is_feed_visible = $feed_lists.isScrollVisible($feed);
+
+        if (!is_feed_visible) {
+            var scroll = $feed.position().top;
+            var container = $feed_lists.scrollTop();
+            var height = $feed_lists.outerHeight();
+            $feed_lists.scrollTop(scroll+container-height/5);
+        }        
+    },
+    
     scroll_to_show_selected_folder: function(folder_view) {
         var $feed_lists = this.$s.$feed_lists;
         

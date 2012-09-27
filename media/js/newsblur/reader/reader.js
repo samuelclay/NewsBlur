@@ -590,7 +590,7 @@
                 return this.show_next_folder(direction, $current_feed);
             }
             
-            var $next_feed = this.get_next_feed(direction, $current_feed);
+            var $next_feed = this.get_next_feed(direction, $current_feed, {include_selected: true});
 
             var next_feed_id = $next_feed.data('id');
             if (next_feed_id && next_feed_id == this.active_feed) {
@@ -610,7 +610,8 @@
             this.open_river_stories($next_folder, folder && folder.model);
         },
         
-        get_next_feed: function(direction, $current_feed) {
+        get_next_feed: function(direction, $current_feed, options) {
+            options = options || {};
             var self = this;
             var $feed_list = this.$s.$feed_list.add(this.$s.$social_feeds);
             var $current_feed = $current_feed || $('.selected', $feed_list);
@@ -618,8 +619,10 @@
                 scroll;
             var $feeds = $('.feed:visible:not(.NB-empty)', $feed_list);
             if (!$current_feed.length) {
-                $feeds = $feeds.add('.NB-feedlists .feed.NB-selected');
-                $current_feed = $('.feed:visible:not(.NB-empty)', $feed_list)[direction==1?'first':'last']();
+                if (options.include_selected) {
+                    $feeds = $feeds.add('.NB-feedlists .feed.NB-selected');
+                }
+                $current_feed = $('.feed:visible:not(.NB-empty)', $feed_list)[direction==-1?'last':'first']();
                 $next_feed = $current_feed;
             } else {
                 var current_feed = 0;
