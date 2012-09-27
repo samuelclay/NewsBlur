@@ -24,6 +24,7 @@ public class SocialItemViewBinder implements ViewBinder {
 	@Override
 	public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 		final String columnName = cursor.getColumnName(columnIndex);
+		final int hasBeenRead = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_READ));
 		if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.FEED_FAVICON_URL)) {
 			String faviconUrl = cursor.getString(columnIndex);
 			imageLoader.displayImage(faviconUrl, ((ImageView) view), false);
@@ -34,9 +35,9 @@ public class SocialItemViewBinder implements ViewBinder {
 			int feed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
 			int title = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
 			if (authors + tags + feed + title > 0) {
-				view.setBackgroundResource(R.drawable.positive_count_circle);
+				view.setBackgroundResource(hasBeenRead == 0 ? R.drawable.positive_count_circle : R.drawable.positive_count_circle_read);
 			} else if (authors + tags + feed + title == 0) {
-				view.setBackgroundResource(R.drawable.neutral_count_circle);
+				view.setBackgroundResource(hasBeenRead == 0 ? R.drawable.neutral_count_circle : R.drawable.neutral_count_circle_read);
 			} else {
 				view.setBackgroundResource(R.drawable.negative_count_circle);
 			}

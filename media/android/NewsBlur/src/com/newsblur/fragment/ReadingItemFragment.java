@@ -48,7 +48,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private LayoutInflater inflater;
 	private APIManager apiManager;
 	private ImageLoader imageLoader;
-	private String feedColor, feedTitle, feedFade;
+	private String feedColor, feedTitle, feedFade, feedIconUrl;
 	private Classifier classifier;
 	private ContentResolver resolver;
 	private NewsblurWebview web;
@@ -60,8 +60,9 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private View view;
 	private UserDetails user;
 	public String previouslySavedShareText;
+	private ImageView feedIcon;
 
-	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, Classifier classifier, boolean displayFeedDetails) { 
+	public static ReadingItemFragment newInstance(Story story, String feedTitle, String feedFaviconColor, String feedFaviconFade, String faviconUrl, Classifier classifier, boolean displayFeedDetails) { 
 		ReadingItemFragment readingFragment = new ReadingItemFragment();
 
 		Bundle args = new Bundle();
@@ -69,6 +70,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		args.putString("feedTitle", feedTitle);
 		args.putString("feedColor", feedFaviconColor);
 		args.putString("feedFade", feedFaviconFade);
+		args.putString("faviconUrl", faviconUrl);
 		args.putBoolean("displayFeedDetails", displayFeedDetails);
 		args.putSerializable("classifier", classifier);
 		readingFragment.setArguments(args);
@@ -91,6 +93,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		
 		user = PrefsUtils.getUserDetails(getActivity());
 
+		feedIconUrl = getArguments().getString("faviconUrl");
 		feedTitle = getArguments().getString("feedTitle");
 		feedColor = getArguments().getString("feedColor");
 		feedFade = getArguments().getString("feedFade");
@@ -173,12 +176,17 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		TextView itemDate = (TextView) view.findViewById(R.id.reading_item_date);
 		itemAuthors = (TextView) view.findViewById(R.id.reading_item_authors);
 		itemFeed = (TextView) view.findViewById(R.id.reading_feed_title);
+		feedIcon = (ImageView) view.findViewById(R.id.reading_feed_icon);
 		
 		if (!displayFeedDetails) {
 			itemFeed.setVisibility(View.GONE);
+			feedIcon.setVisibility(View.GONE);
+		} else {
+			imageLoader.displayImage(feedIconUrl, feedIcon);
+			itemFeed.setText(feedTitle);
 		}
 
-		itemDate.setText(story.shortDate);
+		itemDate.setText(story.longDate);
 		itemTitle.setText(story.title);
 
 		if (!TextUtils.isEmpty(story.authors)) {
@@ -200,8 +208,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 				classifierFragment.show(getFragmentManager(), "dialog");
 			}
 		});
-
-		itemFeed.setText(feedTitle);
 
 		itemTitle.setOnClickListener(new OnClickListener() {
 			@Override

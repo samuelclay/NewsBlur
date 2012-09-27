@@ -51,9 +51,9 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 				newArray[newArray.length - 1] = userId;
 				comment.likingUsers = newArray;
 				
-				Toast.makeText(context, "Comment liked", Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, R.string.comment_favourited, Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(context, "Error liking comment", Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, R.string.error_liking_comment, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

@@ -29,7 +29,7 @@ public class FeedReadingAdapter extends ReadingAdapter {
 			return loadingFragment;
 		} else {
 			stories.moveToPosition(position);
-			return ReadingItemFragment.newInstance(Story.fromCursor(stories), feed.title, feed.faviconColour, feed.faviconFade, classifier, false);
+			return ReadingItemFragment.newInstance(Story.fromCursor(stories), feed.title, feed.faviconColour, feed.faviconFade, feed.faviconUrl, classifier, false);
 		}
 	}
 	

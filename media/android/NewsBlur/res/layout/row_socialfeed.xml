@@ -3,8 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/selector_feed_background"
-    android:paddingBottom="3dp"
-    android:paddingTop="3dp" >
+    android:paddingBottom="2dp"
+    android:paddingTop="2dp">
 
     <LinearLayout
         android:id="@+id/row_foldersums"

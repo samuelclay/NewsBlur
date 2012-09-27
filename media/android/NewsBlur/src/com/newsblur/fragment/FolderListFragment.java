@@ -122,7 +122,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	private void checkOpenFolderPreferences() {
 		for (int i = 0; i < folderAdapter.getGroupCount(); i++) {
 			long groupId = folderAdapter.getGroupId(i);
-			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + groupId, false)) {
+			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + groupId, true)) {
 				list.expandGroup(i);
 			}
 		}
@@ -271,10 +271,12 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			String username = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_USERNAME));
 			String userIcon = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ICON));
 			String userId = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
+			String blurblogTitle = blurblogCursor.getString(blurblogCursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_TITLE));
 
 			final Intent intent = new Intent(getActivity(), SocialFeedItemsList.class);
 			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USER_ICON, userIcon);
 			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERNAME, username);
+			intent.putExtra(ItemsList.EXTRA_BLURBLOG_TITLE, blurblogTitle);
 			intent.putExtra(ItemsList.EXTRA_BLURBLOG_USERID, userId);
 			intent.putExtra(ItemsList.EXTRA_STATE, currentState);
 			getActivity().startActivityForResult(intent, FEEDCHECK );

@@ -22,6 +22,7 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 	public static final String EXTRA_BLURBLOG_USERID = "blurblogId";
 	public static final String EXTRA_BLURBLOG_USER_ICON = "userIcon";
 	public static final String RESULT_EXTRA_READ_STORIES = "storiesToMarkAsRead";
+	public static final String EXTRA_BLURBLOG_TITLE = "blurblogTitle";
 
 	protected ItemListFragment itemListFragment;
 	protected FragmentManager fragmentManager;

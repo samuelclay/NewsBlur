@@ -89,6 +89,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_DATE + TEXT + ", " +
 		DatabaseConstants.STORY_SHARED_DATE + TEXT + ", " +
 		DatabaseConstants.STORY_SHORTDATE + TEXT + ", " +
+		DatabaseConstants.STORY_LONGDATE + TEXT + ", " +
 		DatabaseConstants.STORY_FEED_ID + INTEGER + ", " +
 		DatabaseConstants.STORY_ID + TEXT + " PRIMARY KEY, " +
 		DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + INTEGER + ", " +

@@ -134,5 +134,7 @@
     <string name="add_follow">All Done!</string>
     <string name="share_with_comments">Share with comments</string>
     <string name="share_this_story">Share this story</string>
+    <string name="comment_favourited">Comment favorited</string>
+    <string name="error_liking_comment">Error favoriting comment</string>
     
 </resources>

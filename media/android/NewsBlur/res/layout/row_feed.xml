@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/selector_feed_background"
     android:orientation="vertical"
-    android:paddingBottom="8dp"
-    android:paddingTop="8dp" >
+    android:paddingBottom="7dp"
+    android:paddingTop="7dp" >
 
     <LinearLayout
         android:id="@+id/row_feedcounters"
@@ -27,10 +27,9 @@
             android:gravity="center"
             android:textColor="@color/black"
             android:textSize="14sp"
-            android:paddingTop="1dp"
-            android:paddingBottom="2dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingBottom="1dp"
             android:textStyle="bold" />
 
         <TextView

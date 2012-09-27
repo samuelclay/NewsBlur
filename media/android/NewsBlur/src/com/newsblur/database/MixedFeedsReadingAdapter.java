@@ -34,12 +34,13 @@ public class MixedFeedsReadingAdapter extends ReadingAdapter {
 			String feedTitle = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_TITLE));
 			String feedFaviconColor = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
 			String feedFaviconFade = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_COLOUR));
+			String feedFaviconUrl = stories.getString(stories.getColumnIndex(DatabaseConstants.FEED_FAVICON_URL));
 			
 			Uri classifierUri = FeedProvider.CLASSIFIER_URI.buildUpon().appendPath(story.feedId).build();
 			Cursor feedClassifierCursor = resolver.query(classifierUri, null, null, null, null);
 			Classifier classifier = Classifier.fromCursor(feedClassifierCursor);
 			
-			return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, classifier, true);
+			return ReadingItemFragment.newInstance(story, feedTitle, feedFaviconColor, feedFaviconFade, feedFaviconUrl, classifier, true);
 		}
 	}
 	

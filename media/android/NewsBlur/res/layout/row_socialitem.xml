@@ -40,7 +40,7 @@
             android:id="@+id/row_item_feedtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="4dp"
             android:layout_toRightOf="@id/row_item_feedicon"
             android:layout_alignBottom="@id/row_item_feedicon"
             android:ellipsize="end"

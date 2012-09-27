@@ -53,7 +53,6 @@ public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
 		View v = super.getView(position, view, viewGroup);
 		View borderOne = v.findViewById(R.id.row_item_favicon_borderbar_1);
 		View borderTwo = v.findViewById(R.id.row_item_favicon_borderbar_2);
-		View sidebar = v.findViewById(R.id.row_item_sidebar);
 
 		cursor.moveToPosition(position);
 		String feedColour = cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_FAVICON_BORDER));
@@ -76,20 +75,28 @@ public class MultipleFeedItemsAdapter extends SimpleCursorAdapter {
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateUnread);
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(storyFeedUnread);
 			((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleUnread);
+			
+			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTypeface(null, Typeface.BOLD);
+			((TextView) v.findViewById(R.id.row_item_date)).setTypeface(null, Typeface.BOLD);
+			((TextView) v.findViewById(R.id.row_item_author)).setTypeface(null, Typeface.BOLD);
 			((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.BOLD);
 
+			((ImageView) v.findViewById(R.id.row_item_feedicon)).setAlpha(255);
 			borderOne.getBackground().setAlpha(255);
-			sidebar.getBackground().setAlpha(255);
 			borderTwo.getBackground().setAlpha(255);
 		} else {
 			((TextView) v.findViewById(R.id.row_item_author)).setTextColor(storyAuthorRead);
 			((TextView) v.findViewById(R.id.row_item_date)).setTextColor(storyDateRead);
 			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTextColor(storyFeedRead);
 			((TextView) v.findViewById(R.id.row_item_title)).setTextColor(storyTitleRead);
+			
+			((TextView) v.findViewById(R.id.row_item_feedtitle)).setTypeface(null, Typeface.NORMAL);
+			((TextView) v.findViewById(R.id.row_item_date)).setTypeface(null, Typeface.NORMAL);
+			((TextView) v.findViewById(R.id.row_item_author)).setTypeface(null, Typeface.NORMAL);
 			((TextView) v.findViewById(R.id.row_item_title)).setTypeface(null, Typeface.NORMAL);
 
+			((ImageView) v.findViewById(R.id.row_item_feedicon)).setAlpha(125);
 			borderOne.getBackground().setAlpha(125);
-			sidebar.getBackground().setAlpha(125);
 			borderTwo.getBackground().setAlpha(125);
 		}
 

@@ -29,16 +29,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp" >
+                
+                <ImageView
+        			android:id="@+id/reading_feed_icon"
+        			android:layout_width="17dp"
+        			android:layout_height="17dp"
+        			android:layout_alignParentLeft="true"
+        			android:layout_marginTop="10dp"
+        			android:layout_marginRight="5dp"
+        			android:contentDescription="@string/description_row_folder_icon" />
 
                 <TextView
                     android:id="@+id/reading_feed_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:paddingTop="10dp"
+                    android:layout_marginTop="7dp"
+                	android:layout_toRightOf="@id/reading_feed_icon"
+                	android:layout_alignParentBottom="@id/reading_feed_icon"
                     android:textColor="@color/newsblur_blue"
-                    android:textSize="13sp" />
-                
+                    android:textSize="16dp" />
                 
                 <TextView
                     android:id="@+id/reading_item_date"

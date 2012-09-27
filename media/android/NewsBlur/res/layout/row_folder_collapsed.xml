@@ -3,8 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/selector_folder_background"
-    android:paddingBottom="10dp"
-    android:paddingTop="10dp" >
+    >
 
     <ImageView
         android:id="@+id/row_folder_icon"
@@ -68,6 +67,8 @@
         android:layout_toRightOf="@id/row_folder_icon"
         android:layout_toLeftOf="@id/row_foldersums"
         android:textColor="@color/folder_text"
+        android:paddingBottom="10dp"
+    	android:paddingTop="10dp" 
         android:textSize="16dp"
         android:textStyle="bold" />
    

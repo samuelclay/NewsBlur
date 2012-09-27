@@ -17,9 +17,7 @@ import com.newsblur.service.SyncService;
 
 public class SocialFeedItemsList extends ItemsList {
 
-	private String username;
-	private String userId;
-	private String userIcon;
+	private String userIcon, userId, username, title;
 	private boolean stopLoading = false;
 	private APIManager apiManager;
 
@@ -32,8 +30,9 @@ public class SocialFeedItemsList extends ItemsList {
 		username = getIntent().getStringExtra(EXTRA_BLURBLOG_USERNAME);
 		userIcon = getIntent().getStringExtra(EXTRA_BLURBLOG_USER_ICON );
 		userId = getIntent().getStringExtra(EXTRA_BLURBLOG_USERID);
+		title = getIntent().getStringExtra(EXTRA_BLURBLOG_TITLE);
 				
-		setTitle(username);
+		setTitle(title);
 		
 		if (itemListFragment == null) {
 			itemListFragment = SocialFeedItemListFragment.newInstance(userId, username, currentState);

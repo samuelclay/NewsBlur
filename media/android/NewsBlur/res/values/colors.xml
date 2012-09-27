@@ -40,11 +40,13 @@
     <color name="half_lightgray">#77dddddd</color>
     
     <color name="positive">#47730B</color>
+    <color name="positive_read">#75be13</color>
     
     <color name="highlight">#d2e6fd</color>
     
     <color name="darkneutral">#C59A00</color>
     <color name="neutral">#F5A90C</color>
+    <color name="neutral_read">#ffdc43</color>
     
     <color name="linkblue">#405BA8</color>
     
