@@ -407,11 +407,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $button = this.$('.NB-feed-story-hide-changes');
         
         if (NEWSBLUR.assets.preference('hide_story_changes')) {
-            this.$('ins').css({'text-decoration': 'underline'});
-            this.$('del').css({'display': 'inline'});
+            this.$el.addClass('NB-story-show-changes');
+            // this.$('ins').css({'text-decoration': 'underline'});
+            // this.$('del').css({'display': 'inline'});
         } else {
-            this.$('ins').css({'text-decoration': 'none'});
-            this.$('del').css({'display': 'none'});
+            this.$el.addClass('NB-story-hide-changes');
+            // this.$('ins').css({'text-decoration': 'none'});
+            // this.$('del').css({'display': 'none'});
         }
         $button.css('opacity', 1).fadeOut(400);
         $button.tipsy('hide').tipsy('disable');
