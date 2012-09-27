@@ -10,12 +10,12 @@ class NBMuninGraph(MuninGraph):
             'graph_title' : 'NewsBlur Task Codes',
             'graph_vlabel' : 'Status codes on feed fetch',
         }
-        servers = dict((("%s.label" % s['_id'], s['_id']) for s in self.stats))
+        servers = dict((("_%s.label" % s['_id'], s['_id']) for s in self.stats))
         graph.update(servers)
         return graph
 
     def calculate_metrics(self):
-        servers = dict((("%s" % s['_id'], s['feeds']) for s in self.stats))
+        servers = dict((("_%s" % s['_id'], s['feeds']) for s in self.stats))
         return servers
     
     @property

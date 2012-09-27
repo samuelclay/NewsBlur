@@ -339,6 +339,9 @@ class MAnalyticsFetcher(mongo.Document):
     @classmethod
     def add(cls, feed_id, feed_fetch, feed_process, 
             page, icon, total, feed_code):
+        server_name = settings.SERVER_NAME
+        if 'app' in server_name: return
+        
         if icon and page:
             icon -= page
         if page and feed_process:
@@ -347,7 +350,6 @@ class MAnalyticsFetcher(mongo.Document):
             page -= feed_fetch
         if feed_process and feed_fetch:
             feed_process -= feed_fetch
-        server_name = settings.SERVER_NAME
         
         cls.objects.create(feed_id=feed_id, feed_fetch=feed_fetch,
                            feed_process=feed_process, 
