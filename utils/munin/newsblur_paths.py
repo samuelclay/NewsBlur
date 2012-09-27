@@ -14,7 +14,7 @@ class NBMuninGraph(MuninGraph):
         return graph
 
     def calculate_metrics(self):
-        servers = dict((("%s" % s['_id'], s['feeds']) for s in self.stats))
+        servers = dict((("%s" % s['_id'], s['path']) for s in self.stats))
         return servers
     
     @property
