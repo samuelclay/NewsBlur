@@ -7,7 +7,7 @@ class NBMuninGraph(MuninGraph):
     def graph_config(self):
         graph = {
             'graph_category' : 'NewsBlur',
-            'graph_title' : 'NewsBlur Task Servers',
+            'graph_title' : 'NewsBlur Task Server Fetches',
             'graph_vlabel' : '# of fetches / server',
         }
         servers = dict((("%s.label" % s['_id'], s['_id']) for s in self.stats))

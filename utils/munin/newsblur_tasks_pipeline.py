@@ -7,7 +7,7 @@ class NBMuninGraph(MuninGraph):
     def graph_config(self):
         graph = {
             'graph_category' : 'NewsBlur',
-            'graph_title' : 'NewsBlur Task Times',
+            'graph_title' : 'NewsBlur Task Pipeline',
             'graph_vlabel' : 'Feed fetch pipeline times',
             'feed_fetch.label': 'feed_fetch',
             'feed_process.label': 'feed_process',

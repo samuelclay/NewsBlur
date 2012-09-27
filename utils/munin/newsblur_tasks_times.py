@@ -7,8 +7,8 @@ class NBMuninGraph(MuninGraph):
     def graph_config(self):
         graph = {
             'graph_category' : 'NewsBlur',
-            'graph_title' : 'NewsBlur Task Times',
-            'graph_vlabel' : 'Feed fetch pipeline times',
+            'graph_title' : 'NewsBlur Task Server Times',
+            'graph_vlabel' : 'Feed fetch time / server',
         }
         servers = dict((("%s.label" % s['_id'], s['_id']) for s in self.stats))
         graph.extend(servers)
