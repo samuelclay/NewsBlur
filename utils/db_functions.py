@@ -1,8 +1,14 @@
+import pymongo
+
 PRIMARY_STATE = 1
 SECONDARY_STATE = 2
 
 def mongo_max_replication_lag(connection):
-    status = connection.admin.command('replSetGetStatus')
+    try:
+        status = connection.admin.command('replSetGetStatus')
+    except pymongo.errors.OperationFailure:
+        return 0
+        
     members = status['members']
     primary_optime = None
     oldest_secondary_optime = None

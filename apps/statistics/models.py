@@ -1,10 +1,8 @@
 import datetime
 import mongoengine as mongo
 import urllib2
-from django.db.models import Avg, Count
 from django.conf import settings
 from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, MFeedPushHistory
-from apps.rss_feeds.models import FeedLoadtime
 from apps.social.models import MSharedStory
 from apps.profile.models import Profile
 from utils import json_functions as json
@@ -57,24 +55,22 @@ class MStatistics(mongo.Document):
     @classmethod
     def collect_statistics(cls):
         now = datetime.datetime.now()
-        last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
-        cls.collect_statistics_feeds_fetched(last_day)
+        cls.collect_statistics_feeds_fetched()
         print "Feeds Fetched: %s" % (datetime.datetime.now() - now)
-        cls.collect_statistics_premium_users(last_day)
+        cls.collect_statistics_premium_users()
         print "Premiums: %s" % (datetime.datetime.now() - now)
-        cls.collect_statistics_standard_users(last_day)
+        cls.collect_statistics_standard_users()
         print "Standard users: %s" % (datetime.datetime.now() - now)
-        cls.collect_statistics_sites_loaded(last_day)
+        cls.collect_statistics_sites_loaded()
         print "Sites loaded: %s" % (datetime.datetime.now() - now)
-        cls.collect_statistics_stories_shared(last_day)
+        cls.collect_statistics_stories_shared()
         print "Stories shared: %s" % (datetime.datetime.now() - now)
         cls.collect_statistics_for_db()
         print "DB Stats: %s" % (datetime.datetime.now() - now)
         
     @classmethod
-    def collect_statistics_feeds_fetched(cls, last_day=None):
-        if not last_day:
-            last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
+    def collect_statistics_feeds_fetched(cls):
+        last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
         last_month = datetime.datetime.now() - datetime.timedelta(days=30)
         
         feeds_fetched = MFeedFetchHistory.objects.filter(fetch_date__gte=last_day).count()
@@ -100,19 +96,17 @@ class MStatistics(mongo.Document):
         return feeds_fetched
         
     @classmethod
-    def collect_statistics_premium_users(cls, last_day=None):
-        if not last_day:
-            last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
-            
+    def collect_statistics_premium_users(cls):
+        last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
+        
         premium_users = Profile.objects.filter(last_seen_on__gte=last_day, is_premium=True).count()
         cls.objects(key='premium_users').update_one(upsert=True, set__key='premium_users', set__value=premium_users)
         
         return premium_users
     
     @classmethod
-    def collect_statistics_standard_users(cls, last_day=None):
-        if not last_day:
-            last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
+    def collect_statistics_standard_users(cls):
+        last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
         
         standard_users = Profile.objects.filter(last_seen_on__gte=last_day, is_premium=False).count()
         cls.objects(key='standard_users').update_one(upsert=True, set__key='standard_users', set__value=standard_users)
@@ -120,9 +114,7 @@ class MStatistics(mongo.Document):
         return standard_users
     
     @classmethod
-    def collect_statistics_sites_loaded(cls, last_day=None):
-        if not last_day:
-            last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
+    def collect_statistics_sites_loaded(cls):
         now = datetime.datetime.now()
         sites_loaded = []
         avg_time_taken = []
@@ -130,13 +122,39 @@ class MStatistics(mongo.Document):
         for hour in range(24):
             start_hours_ago = now - datetime.timedelta(hours=hour)
             end_hours_ago = now - datetime.timedelta(hours=hour+1)
-            aggregates = dict(count=Count('loadtime'), avg=Avg('loadtime'))
-            load_times = FeedLoadtime.objects.filter(
-                date_accessed__lte=start_hours_ago, 
-                date_accessed__gte=end_hours_ago
-            ).aggregate(**aggregates)
-            sites_loaded.append(load_times['count'] or 0)
-            avg_time_taken.append(load_times['avg'] or 0)
+            
+            load_times = settings.MONGOANALYTICSDB.nbanalytics.page_loads.aggregate([{
+                "$match": {
+                    "date": {
+                        "$gte": end_hours_ago,
+                        "$lte": start_hours_ago,
+                    },
+                    "path": {
+                        "$in": [
+                            "/reader/feed/",
+                            "/social/stories/",
+                            "/reader/river_stories/",
+                            "/social/river_stories/",
+                        ]
+                    }
+                },
+            }, {
+                "$group": {
+                    "_id"   : 1,
+                    "count" : {"$sum": 1},
+                    "avg"   : {"$avg": "$duration"},
+                },
+            }])
+
+            count = 0
+            avg = 0
+            if load_times['result']:
+                count = load_times['result'][0]['count']
+                avg = load_times['result'][0]['avg']
+                
+            sites_loaded.append(count)
+            avg_time_taken.append(avg)
+
         sites_loaded.reverse()
         avg_time_taken.reverse()
         
@@ -152,9 +170,7 @@ class MStatistics(mongo.Document):
             cls.objects(key=key).update_one(upsert=True, set__key=key, set__value=value)
             
     @classmethod
-    def collect_statistics_stories_shared(cls, last_day=None):
-        if not last_day:
-            last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
+    def collect_statistics_stories_shared(cls):
         now = datetime.datetime.now()
         stories_shared = []
         
@@ -182,11 +198,6 @@ class MStatistics(mongo.Document):
         lag = db_functions.mongo_max_replication_lag(settings.MONGODB)
         cls.set('mongodb_replication_lag', lag)
         
-    @classmethod
-    def delete_old_stats(cls):
-        now = datetime.datetime.now()
-        old_age = now - datetime.timedelta(days=7)
-        FeedLoadtime.objects.filter(date_accessed__lte=old_age).delete()
 
 class MFeedback(mongo.Document):
     date    = mongo.StringField()

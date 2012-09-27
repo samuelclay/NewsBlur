@@ -4,6 +4,8 @@ logs/*.pid
 *.pyc
 static/*
 local_settings.py
+celerybeat-schedule
+celerybeat.pid
 media/iphone/NewsBlur/build
 media/iphone/build
 build/

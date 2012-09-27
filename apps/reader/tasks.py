@@ -41,7 +41,6 @@ class CollectStats(Task):
     def run(self, **kwargs):
         logging.debug(" ---> Collecting stats...")
         MStatistics.collect_statistics()
-        MStatistics.delete_old_stats()
         
         
 class CollectFeedback(Task):
