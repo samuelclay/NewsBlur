@@ -11,7 +11,7 @@ class NBMuninGraph(MuninGraph):
             'graph_vlabel' : 'Feed fetch time / server',
         }
         servers = dict((("%s.label" % s['_id'], s['_id']) for s in self.stats))
-        graph.extend(servers)
+        graph.update(servers)
         return graph
 
     def calculate_metrics(self):
