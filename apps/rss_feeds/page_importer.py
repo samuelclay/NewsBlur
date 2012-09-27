@@ -197,7 +197,10 @@ class PageImporter(object):
                 self.feed.s3_page = True
                 self.feed.save()
             else:
-                feed_page, _ = MFeedPage.objects.get_or_create(feed_id=self.feed.pk)
-                feed_page.page_data = html
-                feed_page.save()
+                try:
+                    feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
+                    feed_page.page_data = html
+                    feed_page.save()
+                except MFeedPage.DoesNotExist:
+                    feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, page_data=html)
                 return feed_page
