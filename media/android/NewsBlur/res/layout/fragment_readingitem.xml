@@ -104,6 +104,8 @@
             android:layout_gravity="center_vertical"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:visibility="gone" >
 
             <View
@@ -119,7 +121,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="15dp"
-                android:layout_marginRight="3dp"
+                android:layout_marginRight="5dp"
                 android:textColor="@color/darkgray"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -131,7 +133,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
-                android:layout_marginLeft="3dp"
+                android:layout_marginLeft="5dp"
                 android:textColor="@color/darkgray"
                 android:textSize="12sp"
                 android:textStyle="bold" />

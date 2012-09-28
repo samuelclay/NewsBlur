@@ -255,15 +255,18 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				commentCursor.moveToNext();
 			}
 
-			for (View comment : publicCommentViews) {
-				((LinearLayout) viewHolder.get().findViewById(R.id.reading_public_comment_container)).addView(comment);
+			for (int i = 0; i < publicCommentViews.size(); i++) {
+				if (i == publicCommentViews.size() - 1) {
+					publicCommentViews.get(i).findViewById(R.id.comment_divider).setVisibility(View.GONE);
+				}
+				((LinearLayout) viewHolder.get().findViewById(R.id.reading_public_comment_container)).addView(publicCommentViews.get(i));
 			}
-			for (View comment : friendCommentViews) {
-				((LinearLayout) viewHolder.get().findViewById(R.id.reading_friend_comment_container)).addView(comment);
+			for (int i = 0; i < friendCommentViews.size(); i++) {
+				if (i == friendCommentViews.size() - 1) {
+					friendCommentViews.get(i).findViewById(R.id.comment_divider).setVisibility(View.GONE);
+				}
+				((LinearLayout) viewHolder.get().findViewById(R.id.reading_friend_comment_container)).addView(friendCommentViews.get(i));
 			}
-
-			Log.d("SetupCommentSection", "Friend comments: " + friendCommentViews.size());
-
 		}
 
 		commentCursor.close();
