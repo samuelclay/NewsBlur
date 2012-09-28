@@ -57,7 +57,7 @@
                 android:id="@+id/profile_username"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/lightorange"
+                android:textColor="@color/newsblur_blue"
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
@@ -90,7 +90,7 @@
                 android:layout_below="@id/profile_bio"
                 android:layout_marginBottom="5dp"
                 android:layout_toRightOf="@id/profile_location_icon"
-                android:textColor="@color/lightgray"
+                android:textColor="@color/darkgray"
                 android:textSize="12dp" />
 
             <TextView
@@ -100,7 +100,7 @@
                 android:layout_below="@id/profile_location"
                 android:autoLink="web"
                 android:clickable="true"
-                android:textColor="@color/lightorange"
+                android:textColor="@color/newsblur_blue"
                 android:textSize="12dp" />
         </RelativeLayout>
     </LinearLayout>

@@ -47,6 +47,9 @@ public class SyncUpdateFragment extends Fragment implements Receiver {
 				break;
 			case SyncService.STATUS_NO_MORE_UPDATES:
 				syncRunning = false;
+				if (getActivity() != null) {
+					((SyncUpdateFragmentInterface) getActivity()).setNothingMoreToUpdate();
+				}
 				Log.d(TAG, "Synchronisation completed with nothing to update.");
 				break;	
 			case SyncService.STATUS_ERROR:

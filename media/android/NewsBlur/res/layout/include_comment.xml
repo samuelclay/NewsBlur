@@ -3,7 +3,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/item_background"
-    android:orientation="vertical" >
+    android:orientation="vertical" xmlns:app="http://schemas.android.com/apk/res/com.newsblur">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -18,7 +18,6 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:contentDescription="@string/description_comment_user"
             android:scaleType="fitCenter" />
@@ -28,7 +27,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="35dp"
+            android:layout_marginLeft="25dp"
             android:layout_marginRight="10dp"
             android:contentDescription="@string/description_comment_user"
             android:scaleType="fitCenter"
@@ -39,7 +38,6 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="10dp"
             android:layout_marginRight="15dp"
             android:layout_marginTop="15dp"
             android:contentDescription="@string/description_comment_user"
@@ -58,8 +56,8 @@
 
         <ImageView
             android:id="@+id/comment_reply_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
             android:scaleType="fitCenter"
@@ -73,26 +71,27 @@
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/comment_reply_icon"
             android:paddingBottom="3dp"
-            android:textColor="@color/lightgray"
+            android:textColor="@color/darkgray"
             android:textSize="12sp" />
 
         <ImageView
             android:id="@+id/comment_favourite_icon"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@id/comment_shareddate"
             android:scaleType="fitCenter"
             android:src="@drawable/favourite" />
-
-        <LinearLayout
+         
+        <com.newsblur.view.FlowLayout
+            xmlns:newsblur="http://schemas.android.com/apk/res/com.newsblur"
             android:id="@+id/comment_favourite_avatars"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/comment_shareddate"
             android:layout_marginRight="4dp"
-            android:layout_toLeftOf="@id/comment_favourite_icon"
-            android:gravity="right" />
+            newsblur:flow="left"
+            android:layout_toLeftOf="@id/comment_favourite_icon" />
 
         <TextView
             android:id="@+id/comment_username"
@@ -102,8 +101,9 @@
             android:layout_toRightOf="@id/comment_user_image"
             android:paddingBottom="3dp"
             android:textColor="@color/newsblur_blue"
-            android:textSize="12sp" />
-
+            android:textSize="14sp" />
+       
+        
         <TextView
             android:id="@+id/comment_text"
             android:layout_width="match_parent"

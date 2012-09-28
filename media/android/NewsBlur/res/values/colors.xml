@@ -27,6 +27,8 @@
     <color name="twitter_blue">#4099FF</color>
     <color name="facebook_blue">#3B5998</color>
     
+    <color name="comment_background">#f5f9fb</color>
+    
 	<color name="lightgreen">#3b8207</color>
     <color name="darkgreen">#134c00</color>
     

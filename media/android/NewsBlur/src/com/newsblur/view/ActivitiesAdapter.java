@@ -19,17 +19,20 @@ import android.widget.TextView;
 import com.newsblur.R;
 import com.newsblur.activity.NewsBlurApplication;
 import com.newsblur.activity.Profile;
+import com.newsblur.domain.UserDetails;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.util.ImageLoader;
+import com.newsblur.util.PrefsUtils;
 
 public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
 	private final String startedFollowing, ago, repliedTo, sharedStory, withComment, likedComment;
-	private ForegroundColorSpan midgray, highlight, darkgray;
+	private ForegroundColorSpan midgray, highlight, darkgray, lightblue;
 	private String TAG = "ActivitiesAdapter";
 	private Context context;
+	private UserDetails userDetails;
 	
 	public ActivitiesAdapter(final Context context, final ActivitiesResponse[] activities) {
 		super(context, R.id.row_activity_text);
@@ -41,6 +44,8 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 			add(response);
 		}
 		
+		userDetails = PrefsUtils.getUserDetails(context);
+		
 		Resources resources = context.getResources();
 		startedFollowing = resources.getString(R.string.profile_started_following);
 		repliedTo = resources.getString(R.string.profile_replied_to);
@@ -49,6 +54,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		withComment = resources.getString(R.string.profile_with_comment);
 		ago = resources.getString(R.string.profile_ago);
 		
+		lightblue = new ForegroundColorSpan(resources.getColor(R.color.light_newsblur_blue));
 		highlight = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
 		midgray = new ForegroundColorSpan(resources.getColor(R.color.midgray));
 		darkgray = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
@@ -74,12 +80,24 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 			}
 		};
 		
+		TextView activityText = (TextView) view.findViewById(R.id.row_activity_text);
+		TextView activityTime = (TextView) view.findViewById(R.id.row_activity_time);
+		ImageView imageView = (ImageView) view.findViewById(R.id.row_activity_icon);
+		
+		activityTime.setText(activity.timeSince.toUpperCase() + " " + ago);
+		if (activity.user != null) {
+			imageLoader.displayImage(activity.user.photoUrl, imageView);
+		} else {
+			imageView.setImageResource(R.drawable.logo);
+		}
+		
 		if (TextUtils.equals(activity.category, "follow")) {
 			stringBuilder.append(startedFollowing);
 			stringBuilder.append(" ");
 			stringBuilder.append(activity.user.username);
 			stringBuilder.setSpan(darkgray, 0, startedFollowing.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(usernameClick, startedFollowing.length() + 1, startedFollowing.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			stringBuilder.setSpan(highlight, startedFollowing.length() + 1, startedFollowing.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(highlight, startedFollowing.length() + 1, startedFollowing.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		} else if (TextUtils.equals(activity.category, "comment_like")) {
 			stringBuilder.append(likedComment);
@@ -90,7 +108,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 			stringBuilder.append(activity.user.username);
 			stringBuilder.setSpan(darkgray, 0, likedComment.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(highlight, likedComment.length() + 1, likedComment.length() + 3 + activity.content.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			stringBuilder.setSpan(midgray, stringBuilder.length() - activity.user.username.length() - 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			stringBuilder.setSpan(darkgray, stringBuilder.length() - activity.user.username.length() - 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			stringBuilder.setSpan(usernameClick, likedComment.length() + 3 + activity.content.length() + 4, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		} else if (TextUtils.equals(activity.category, "comment_reply")) {
 				stringBuilder.append(repliedTo);
@@ -102,12 +120,13 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 				stringBuilder.setSpan(darkgray, 0, repliedTo.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				stringBuilder.setSpan(usernameClick, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				stringBuilder.setSpan(highlight, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				stringBuilder.setSpan(midgray, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);	
+				stringBuilder.setSpan(highlight, repliedTo.length() + 1, repliedTo.length() + 1 + activity.user.username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				stringBuilder.setSpan(darkgray, stringBuilder.length() - activity.content.length() - 2, stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);	
 		} else if (TextUtils.equals(activity.category, "sharedstory")) {
 			stringBuilder.append(sharedStory);
-			stringBuilder.append(" \"");
+			stringBuilder.append(" ");
 			stringBuilder.append(activity.title);
-			stringBuilder.append("\" ");
+			stringBuilder.append(" ");
 			if (!TextUtils.isEmpty(activity.content)) {
 				stringBuilder.append(withComment);
 				stringBuilder.append(": \"");
@@ -115,22 +134,15 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 				stringBuilder.append("\"");
 			}
 			stringBuilder.setSpan(darkgray, 0, sharedStory.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			stringBuilder.setSpan(highlight, sharedStory.length() + 1, sharedStory.length() + 2 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			stringBuilder.setSpan(lightblue, sharedStory.length() + 1, sharedStory.length() + 1 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			if (!TextUtils.isEmpty(activity.content)) {
 				stringBuilder.setSpan(midgray, sharedStory.length() + 4 + activity.title.length() + withComment.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
+		
+			imageLoader.displayImage(userDetails.photoUrl, imageView);
 		}
 		
-		TextView activityText = (TextView) view.findViewById(R.id.row_activity_text);
-		TextView activityTime = (TextView) view.findViewById(R.id.row_activity_time);
-		ImageView imageView = (ImageView) view.findViewById(R.id.row_activity_icon);
 		
-		activityTime.setText(activity.timeSince + " " + ago);
-		if (activity.user != null) {
-			imageLoader.displayImage(activity.user.photoUrl, imageView);
-		} else {
-			imageView.setImageResource(R.drawable.logo);
-		}
 		
 		activityText.setText(stringBuilder);
 		activityText.setMovementMethod(LinkMovementMethod.getInstance());

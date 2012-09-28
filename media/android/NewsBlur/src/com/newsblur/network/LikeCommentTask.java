@@ -3,14 +3,16 @@ package com.newsblur.network;
 import java.lang.ref.WeakReference;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.domain.Comment;
+import com.newsblur.domain.UserDetails;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.view.FlowLayout;
 
 public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 	
@@ -23,8 +25,11 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 	private final String feedId;
 	private final Context context;
 	private final String userId;
-	
-	public LikeCommentTask(final Context context, final APIManager apiManager, final ImageView favouriteIcon, final String storyId, final Comment comment, final String feedId, final String userId) {
+	private Bitmap userImage;
+	private WeakReference<FlowLayout> favouriteAvatarHolder;
+	private UserDetails user;
+
+	public LikeCommentTask(final Context context, final APIManager apiManager, final ImageView favouriteIcon, final FlowLayout favouriteAvatarLayout, final String storyId, final Comment comment, final String feedId, final String userId) {
 		this.apiManager = apiManager;
 		this.storyId = storyId;
 		this.comment = comment;
@@ -32,7 +37,11 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 		this.context = context;
 		this.userId = userId;
 		
+		favouriteAvatarHolder = new WeakReference<FlowLayout>(favouriteAvatarLayout);
 		favouriteIconViewHolder = new WeakReference<ImageView>(favouriteIcon);
+		
+		userImage = PrefsUtils.getUserImage(context);
+		user = PrefsUtils.getUserDetails(context);
 	}
 	
 	@Override
@@ -45,6 +54,12 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 		if (favouriteIconViewHolder.get() != null) {
 			if (result.booleanValue()) {
 				favouriteIconViewHolder.get().setImageResource(R.drawable.have_favourite);
+				
+				ImageView favouriteImage = new ImageView(context);
+				favouriteImage.setTag(user.id);
+				
+				favouriteImage.setImageBitmap(userImage);
+				favouriteAvatarHolder.get().addView(favouriteImage);
 				
 				String[] newArray = new String[comment.likingUsers.length + 1];
 				System.arraycopy(comment.likingUsers, 0, newArray, 0, comment.likingUsers.length);

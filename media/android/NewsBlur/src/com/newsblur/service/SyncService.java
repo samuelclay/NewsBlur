@@ -46,7 +46,7 @@ public class SyncService extends IntentService {
 	public static final String EXTRA_TASK_MARK_SOCIAL_JSON = "socialJson";
 	public static final String EXTRA_TASK_PAGE_NUMBER = "page";
 	public static final String EXTRA_TASK_MULTIFEED_IDS = "multi_feedids";
-	
+
 	public final static int STATUS_RUNNING = 0x02;
 	public final static int STATUS_FINISHED = 0x03;
 	public final static int STATUS_ERROR = 0x04;
@@ -70,7 +70,7 @@ public class SyncService extends IntentService {
 	private APIManager apiManager;
 	private ContentResolver contentResolver;
 	public static final String SYNCSERVICE_TASK = "syncservice_task";
-	
+
 
 	public SyncService() {
 		super(TAG);
@@ -96,7 +96,7 @@ public class SyncService extends IntentService {
 			case EXTRA_TASK_FOLDER_UPDATE:
 				apiManager.getFolderFeedMapping();
 				break;
-				
+
 			case EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT:
 				apiManager.getFolderFeedMapping(true);
 				break;	
@@ -133,7 +133,7 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
-				
+
 			case EXTRA_TASK_MARK_MULTIPLE_STORIES_READ:
 				final ValueMultimap stories = (ValueMultimap) intent.getSerializableExtra(EXTRA_TASK_STORIES);
 				ContentValues values = new ContentValues();
@@ -149,7 +149,7 @@ public class SyncService extends IntentService {
 					}
 				}
 				break;	
-				
+
 			case EXTRA_TASK_MARK_SOCIALSTORY_READ:
 				final String markSocialJson = intent.getStringExtra(EXTRA_TASK_MARK_SOCIAL_JSON);
 				if (!TextUtils.isEmpty(markSocialJson)) {
@@ -159,11 +159,13 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
-				
+
 			case EXTRA_TASK_FEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_FEED_ID))) {
 					StoriesResponse storiesForFeed = apiManager.getStoriesForFeed(intent.getStringExtra(EXTRA_TASK_FEED_ID), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
-					if (storiesForFeed != null && storiesForFeed.stories.length == 0) {
+					if (storiesForFeed != null && storiesForFeed.stories.length != 0) {
+						receiver.send(STATUS_FINISHED, null);
+					} else {
 						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
 					}
 				} else {
@@ -171,12 +173,14 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
-		
-				
+
+
 			case EXTRA_TASK_MULTIFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
 					StoriesResponse storiesForFeeds = apiManager.getStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
-					if (storiesForFeeds != null && storiesForFeeds.stories.length == 0) {
+					if (storiesForFeeds != null && storiesForFeeds.stories.length != 0) {
+						receiver.send(STATUS_FINISHED, Bundle.EMPTY);
+					} else {
 						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
 					}
 				} else {
@@ -188,7 +192,9 @@ public class SyncService extends IntentService {
 			case EXTRA_TASK_MULTISOCIALFEED_UPDATE:
 				if (intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS) != null) {
 					SocialFeedResponse sharedStoriesForFeeds = apiManager.getSharedStoriesForFeeds(intent.getStringArrayExtra(EXTRA_TASK_MULTIFEED_IDS), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
-					if (sharedStoriesForFeeds != null && sharedStoriesForFeeds.stories.length == 0) {
+					if (sharedStoriesForFeeds != null && sharedStoriesForFeeds.stories.length != 0) {
+						receiver.send(STATUS_FINISHED, null);
+					} else {
 						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
 					}
 				} else {
@@ -196,7 +202,7 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
-				
+
 			case EXTRA_TASK_DELETE_FEED:
 				if (intent.getLongExtra(EXTRA_TASK_FEED_ID, -1) != -1) {
 					Long feedToBeDeleted = intent.getLongExtra(EXTRA_TASK_FEED_ID, -1);
@@ -214,16 +220,21 @@ public class SyncService extends IntentService {
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;	
-				
+
 			case EXTRA_TASK_SOCIALFEED_UPDATE:
 				if (!TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID)) && !TextUtils.isEmpty(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME))) {
-					apiManager.getStoriesForSocialFeed(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID), intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
+					SocialFeedResponse storiesForSocialFeed = apiManager.getStoriesForSocialFeed(intent.getStringExtra(EXTRA_TASK_SOCIALFEED_ID), intent.getStringExtra(EXTRA_TASK_SOCIALFEED_USERNAME), intent.getStringExtra(EXTRA_TASK_PAGE_NUMBER));
+					if (storiesForSocialFeed != null && storiesForSocialFeed.stories.length != 0) {
+						receiver.send(STATUS_FINISHED, null);
+					} else {
+						receiver.send(STATUS_NO_MORE_UPDATES, Bundle.EMPTY);
+					}
 				} else {
 					Log.e(TAG, "Missing parameters forsocialfeed SyncRequest");
 					receiver.send(STATUS_ERROR, Bundle.EMPTY);
 				}
 				break;
-				
+
 			default:
 				Log.e(TAG, "SyncService called without relevant task assignment");
 				break;

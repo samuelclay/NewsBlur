@@ -13,6 +13,9 @@ import android.widget.Toast;
 
 import com.newsblur.R;
 import com.newsblur.domain.Comment;
+import com.newsblur.domain.UserDetails;
+import com.newsblur.util.PrefsUtils;
+import com.newsblur.view.FlowLayout;
 
 public class UnLikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 	
@@ -24,8 +27,10 @@ public class UnLikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 	private final String feedId;
 	private final Context context;
 	private final String userId;
+	private WeakReference<FlowLayout> favouriteAvatarHolder;
+	private UserDetails user;
 	
-	public UnLikeCommentTask(final Context context, final APIManager apiManager, final ImageView favouriteIcon, final String storyId, final Comment comment, final String feedId, final String userId) {
+	public UnLikeCommentTask(final Context context, final APIManager apiManager, final ImageView favouriteIcon, final FlowLayout favouriteAvatarContainer, final String storyId, final Comment comment, final String feedId, final String userId) {
 		this.apiManager = apiManager;
 		this.storyId = storyId;
 		this.comment = comment;
@@ -34,6 +39,9 @@ public class UnLikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 		this.userId = userId;
 		
 		favouriteIconViewHolder = new WeakReference<ImageView>(favouriteIcon);
+		favouriteAvatarHolder = new WeakReference<FlowLayout>(favouriteAvatarContainer);
+
+		user = PrefsUtils.getUserDetails(context);
 	}
 	
 	@Override
@@ -46,6 +54,9 @@ public class UnLikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 		if (favouriteIconViewHolder.get() != null) {
 			if (result.booleanValue()) {
 				favouriteIconViewHolder.get().setImageResource(R.drawable.favourite);
+				
+				View v = favouriteAvatarHolder.get().findViewWithTag(user.id);
+				favouriteAvatarHolder.get().removeView(v);
 				
 				ArrayList<String> likingUsers = new ArrayList<String>();
 				for (String user : comment.likingUsers) {

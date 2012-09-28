@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/selector_feed_background"
     android:orientation="vertical"
-    android:paddingBottom="7dp"
-    android:paddingTop="7dp" >
+    android:paddingBottom="6dp"
+    android:paddingTop="6dp" >
 
     <LinearLayout
         android:id="@+id/row_feedcounters"

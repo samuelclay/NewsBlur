@@ -82,17 +82,17 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			commentView.setTag(COMMENT_VIEW_BY + comment.userId);
 
 			TextView commentText = (TextView) commentView.findViewById(R.id.comment_text);
-			
+
 			commentText.setText(Html.fromHtml(comment.commentText));
 			commentText.setTag(COMMENT_BY + comment.userId);
 
 			ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
 
 			TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
-			commentSharedDate.setText(comment.sharedDate);
+			commentSharedDate.setText(comment.sharedDate.toUpperCase() + " AGO");
 			commentSharedDate.setTag(COMMENT_DATE_BY + comment.userId);
 
-			final LinearLayout favouriteContainer = (LinearLayout) commentView.findViewById(R.id.comment_favourite_avatars);
+			final FlowLayout favouriteContainer = (FlowLayout) commentView.findViewById(R.id.comment_favourite_avatars);
 			final ImageView favouriteIcon = (ImageView) commentView.findViewById(R.id.comment_favourite_icon);
 			final ImageView replyIcon = (ImageView) commentView.findViewById(R.id.comment_reply_icon);
 
@@ -108,6 +108,8 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					UserProfile user = UserProfile.fromCursor(userCursor);
 
 					imageLoader.displayImage(user.photoUrl, favouriteImage);
+					favouriteImage.setTag(id);
+					
 					favouriteContainer.addView(favouriteImage);
 				}
 
@@ -115,9 +117,9 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					@Override
 					public void onClick(View v) {
 						if (!Arrays.asList(comment.likingUsers).contains(user.id)) {
-							new LikeCommentTask(context, apiManager, favouriteIcon, story.id, comment, story.feedId, user.id).execute();
+							new LikeCommentTask(context, apiManager, favouriteIcon, favouriteContainer, story.id, comment, story.feedId, user.id).execute();
 						} else {
-							new UnLikeCommentTask(context, apiManager, favouriteIcon, story.id, comment, story.feedId, user.id).execute();
+							new UnLikeCommentTask(context, apiManager, favouriteIcon, favouriteContainer, story.id, comment, story.feedId, user.id).execute();
 						}
 					}
 				});
@@ -160,7 +162,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				replyUsername.setText(replyUser.user.username);
 
 				TextView replySharedDate = (TextView) replyView.findViewById(R.id.reply_shareddate);
-				replySharedDate.setText(reply.shortDate);
+				replySharedDate.setText(reply.shortDate.toUpperCase() + " AGO");
 
 				((LinearLayout) commentView.findViewById(R.id.comment_replies_container)).addView(replyView);
 			}
@@ -187,13 +189,13 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					UserProfile sourceUser = UserProfile.fromCursor(sourceUserCursor);
 					sourceUserCursor.close();
 
-					imageLoader.displayImage(sourceUser.photoUrl, sourceUserImage);
-					imageLoader.displayImage(userPhoto, usershareImage);
+					imageLoader.displayImage(sourceUser.photoUrl, sourceUserImage, 10f);
+					imageLoader.displayImage(userPhoto, usershareImage, 10f);
 				}
 			} else {
 				imageLoader.displayImage(userPhoto, commentImage);
 			}
-			
+
 			if (comment.byFriend) {
 				friendCommentViews.add(commentView);
 			} else {
@@ -221,14 +223,22 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			ViewUtils.setupCommentCount(context, viewHolder.get(), commentCursor.getCount());
 			ViewUtils.setupShareCount(context, viewHolder.get(), story.sharedUserIds.length);
 
-			for (final String userId : story.publicUserIds) {
+			ArrayList<String> commentIds = new ArrayList<String>();
+			commentCursor.moveToFirst();
+			for (int i = 0; i < commentCursor.getCount(); i++) {
+				commentIds.add(commentCursor.getString(commentCursor.getColumnIndex(DatabaseConstants.COMMENT_USERID)));
+				commentCursor.moveToNext();
+			}
 
-				Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { userId }, null);
-				UserProfile user = UserProfile.fromCursor(userCursor);
-				userCursor.close();
+			for (final String userId : story.sharedUserIds) {
+				if (!commentIds.contains(userId)) {
+					Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { userId }, null);
+					UserProfile user = UserProfile.fromCursor(userCursor);
+					userCursor.close();
 
-				ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
-				sharedGrid.addView(image);
+					ImageView image = ViewUtils.createSharebarImage(context, imageLoader, user.photoUrl, user.userId);
+					sharedGrid.addView(image);
+				}
 			}
 
 			commentCursor.moveToFirst();
@@ -251,9 +261,9 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			for (View comment : friendCommentViews) {
 				((LinearLayout) viewHolder.get().findViewById(R.id.reading_friend_comment_container)).addView(comment);
 			}
-			
+
 			Log.d("SetupCommentSection", "Friend comments: " + friendCommentViews.size());
-			
+
 		}
 
 		commentCursor.close();

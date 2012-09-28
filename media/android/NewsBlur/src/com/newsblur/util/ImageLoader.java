@@ -58,6 +58,23 @@ public class ImageLoader {
 		}
 	}
 	
+
+	public void displayImage(String url, ImageView imageView, float roundRadius) {
+		imageViews.put(imageView, url);
+		Bitmap bitmap = memoryCache.get(url);
+		if (bitmap == null) {
+			File f = fileCache.getFile(url);
+			bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
+		}
+		if (bitmap != null) {
+			bitmap = UIUtils.roundCorners(bitmap, roundRadius);
+			imageView.setImageBitmap(bitmap);
+		} else {
+			queuePhoto(url, imageView);
+			imageView.setImageResource(R.drawable.world);
+		}
+	}
+	
 	// Display an image assuming it's in cache
 	public void displayImageByUid(String uid, ImageView imageView) {
 		Bitmap bitmap = memoryCache.get(uid);

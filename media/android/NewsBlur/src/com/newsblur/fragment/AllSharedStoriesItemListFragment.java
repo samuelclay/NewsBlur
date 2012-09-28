@@ -38,7 +38,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	private SimpleCursorAdapter adapter;
 	private boolean requestedPage;
 	private int currentPage = 0;
-	private int positiveCount, neutralCount, negativeCount;
 	
 	public static int ITEMLIST_LOADER = 0x01;
 	private static final String TAG = "AllSharedStoriesItemListFragment";
@@ -63,8 +62,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		
 		contentResolver = getActivity().getContentResolver();
 		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
-		calculateTotals();
-		
 		
 		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
 		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
@@ -82,14 +79,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 		return v;
 	}
 
-	private void calculateTotals() {
-		countCursor = contentResolver.query(FeedProvider.SOCIALCOUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
-		
-		countCursor.moveToFirst();
-		positiveCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEG));
-		neutralCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
-		negativeCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_POS));
-	}
+
 	
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -111,7 +101,6 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	@Override
 	public void changeState(int state) {
 		currentState = state;
-		calculateTotals();
 		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		adapter.swapCursor(cursor);
 	}
@@ -139,10 +128,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	}
 
 	@Override
-	public void onScrollStateChanged(AbsListView arg0, int arg1) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void onScrollStateChanged(AbsListView arg0, int arg1) { }
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
