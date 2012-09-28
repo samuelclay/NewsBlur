@@ -9,6 +9,7 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Feeds & Subscriptions',
             'graph_vlabel' : 'Feeds & Subscribers',
+            'graph_args' : '-l 0',
             'feeds.label': 'feeds',
             'subscriptions.label': 'subscriptions',
             'profiles.label': 'profiles',

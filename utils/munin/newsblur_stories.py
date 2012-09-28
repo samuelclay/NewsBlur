@@ -10,6 +10,7 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Stories',
             'graph_vlabel' : 'Stories',
+            'graph_args' : '-l 0',
             'stories.label': 'stories',
             'tags.label': 'tags',
             'authors.label': 'authors',

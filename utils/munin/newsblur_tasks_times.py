@@ -9,6 +9,7 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Task Server Times',
             'graph_vlabel' : 'Feed fetch time / server',
+            'graph_args' : '-l 0',
         }
 
         stats = self.stats

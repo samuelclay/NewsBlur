@@ -8,6 +8,7 @@ class NBMuninGraph(MuninGraph):
         graph = {
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Browser Breakdown',
+            'graph_args' : '-l 0',
         }
         stats = self.stats
         graph.update(dict((("%s.label" % s['_id'], s['_id']) for s in stats)))

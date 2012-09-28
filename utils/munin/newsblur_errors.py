@@ -10,6 +10,7 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Fetching History',
             'graph_vlabel' : 'errors',
+            'graph_args' : '-l 0',
             # 'feed_errors.label': 'Feed Errors',
             'feed_success.label': 'Feed Success',
             # 'page_errors.label': 'Page Errors',

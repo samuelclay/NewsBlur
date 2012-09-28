@@ -10,6 +10,7 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Users',
             'graph_vlabel' : 'users',
+            'graph_args' : '-l 0',
             'all.label': 'all',
             'monthly.label': 'monthly',
             'daily.label': 'daily',

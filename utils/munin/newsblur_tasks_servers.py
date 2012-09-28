@@ -10,13 +10,14 @@ class NBMuninGraph(MuninGraph):
     def graph_config(self):
         graph = {
             'graph_category' : 'NewsBlur',
-            'graph_title' : 'NewsBlur Task Server Fetches',
-            'graph_vlabel' : '# of fetches / server',
-            'total.label': 'total',
+            'graph_title'    : 'NewsBlur Task Server Fetches',
+            'graph_vlabel'   : '# of fetches / server',
+            'graph_args'     : '-l 0',
+            'total.label'    : 'total',
         }
         stats = self.stats
         graph.update(dict((("%s.label" % s['_id'], s['_id']) for s in stats)))
-        graph.update(dict((("%s.draw" % s['_id'], "LINESTACK") for s in stats)))
+        graph.update(dict((("%s.draw" % s['_id'], "AREASTACK") for s in stats)))
         graph['graph_order'] = ' '.join(sorted(s['_id'] for s in stats))
         return graph
 

@@ -11,6 +11,7 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Loadtimes',
             'graph_vlabel' : 'Loadtimes (seconds)',
+            'graph_args' : '-l 0',
             'feed_loadtimes_avg_hour.label': 'Feed Loadtimes Avg (Hour)',
             'feed_loadtimes_min_hour.label': 'Feed Loadtimes Min (Hour)',
             'feed_loadtimes_max_hour.label': 'Feed Loadtimes Max (Hour)',

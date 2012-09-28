@@ -8,6 +8,7 @@ class NBMuninGraph(MuninGraph):
         graph = {
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Paths',
+            'graph_args' : '-l 0',
         }
         
         stats = self.stats

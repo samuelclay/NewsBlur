@@ -9,6 +9,7 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Feed Counts',
             'graph_vlabel' : 'Feeds Feed Counts',
+            'graph_args' : '-l 0',
             'exception_feeds.label': 'exception_feeds',
             'exception_pages.label': 'exception_pages',
             'inactive_feeds.label': 'inactive_feeds',

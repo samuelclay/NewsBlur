@@ -9,6 +9,7 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Task Codes',
             'graph_vlabel' : 'Status codes on feed fetch',
+            'graph_args' : '-l 0',
         }
         stats = self.stats
         graph.update(dict((("_%s.label" % s['_id'], s['_id']) for s in stats)))

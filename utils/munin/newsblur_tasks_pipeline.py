@@ -9,6 +9,7 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Task Pipeline',
             'graph_vlabel' : 'Feed fetch pipeline times',
+            'graph_args' : '-l 0',
             'feed_fetch.label': 'feed_fetch',
             'feed_process.label': 'feed_process',
             'page.label': 'page',

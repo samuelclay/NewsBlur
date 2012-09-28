@@ -10,6 +10,7 @@ class NBMuninGraph(MuninGraph):
             'graph_category' : 'NewsBlur',
             'graph_title' : 'NewsBlur Updates',
             'graph_vlabel' : '# of updates',
+            'graph_args' : '-l 0',
             'update_queue.label': 'Queued Feeds last hour',
             'feeds_fetched.label': 'Fetched feeds last hour',
             'celery_update_feeds.label': 'Celery - Update Feeds',
