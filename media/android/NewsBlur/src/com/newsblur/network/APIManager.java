@@ -230,7 +230,6 @@ public class APIManager {
 			if (TextUtils.equals(pageNumber,"1")) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
 				int deleted = contentResolver.delete(storyUri, null, null);
-				Log.d(TAG, "Deleted " + deleted + " stories");
 			}
 
 			for (Story story : storiesResponse.stories) {
@@ -272,7 +271,7 @@ public class APIManager {
 			}
 
 			for (Story story : storiesResponse.stories) {
-				for (String userId : story.friendUserIds) {
+				for (String userId : story.sharedUserIds) {
 					Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 					contentResolver.insert(storySocialUri, story.getValues());
 				}
@@ -281,6 +280,10 @@ public class APIManager {
 				contentResolver.insert(storyUri, story.getValues());
 
 				insertComments(story);
+			}
+			
+			for (UserProfile user : storiesResponse.userProfiles) {
+				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
 
 			if (storiesResponse != null && storiesResponse.feeds!= null) {

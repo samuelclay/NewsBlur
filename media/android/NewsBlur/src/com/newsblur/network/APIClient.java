@@ -74,7 +74,7 @@ public class APIClient {
 
 			final URL urlFeeds = new URL(urlString + "?" + parameterString);
 			connection = (HttpURLConnection) urlFeeds.openConnection();
-			
+			Log.d(TAG, urlFeeds.toString());
 			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 			if (cookie != null) {
@@ -103,7 +103,8 @@ public class APIClient {
 
 			final URL urlFeeds = new URL(urlString + "?" + parameterString);
 			connection = (HttpURLConnection) urlFeeds.openConnection();
-			
+
+			Log.d(TAG, urlFeeds.toString());
 			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 			if (cookie != null) {

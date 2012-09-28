@@ -42,6 +42,9 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	public static int ITEMLIST_LOADER = 0x01;
 	private static final String TAG = "AllSharedStoriesItemListFragment";
 	private Cursor countCursor;
+	private ListView itemList;
+	private String[] groupFrom;
+	private int[] groupTo;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,24 +59,17 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_itemlist, null);
-		ListView itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
-
+		itemList = (ListView) v.findViewById(R.id.itemlistfragment_list);
 		itemList.setEmptyView(v.findViewById(R.id.empty_view));
 		
 		contentResolver = getActivity().getContentResolver();
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
-		
-		String[] groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
-		int[] groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
+	
+		groupFrom = new String[] { DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_AUTHORS, DatabaseConstants.STORY_TITLE, DatabaseConstants.STORY_SHORTDATE, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS, DatabaseConstants.FEED_TITLE };
+		groupTo = new int[] { R.id.row_item_title, R.id.row_item_author, R.id.row_item_title, R.id.row_item_date, R.id.row_item_sidebar, R.id.row_item_feedtitle };
 
 		getLoaderManager().initLoader(ITEMLIST_LOADER , null, this);
 
-		adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
 		itemList.setOnScrollListener(this);
-		
-		adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
-		itemList.setAdapter(adapter);
 		itemList.setOnItemClickListener(this);
 
 		return v;
@@ -83,6 +79,11 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		if (adapter == null) {
+			adapter = new MultipleFeedItemsAdapter(getActivity(), R.layout.row_socialitem, cursor, groupFrom, groupTo, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+			adapter.setViewBinder(new SocialItemViewBinder(getActivity()));
+			itemList.setAdapter(adapter);
+		}
 		if (cursor != null) {
 			adapter.swapCursor(cursor);
 		}
@@ -101,7 +102,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 	@Override
 	public void changeState(int state) {
 		currentState = state;
-		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+		Cursor cursor = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
 		adapter.swapCursor(cursor);
 	}
 
@@ -140,7 +141,7 @@ public class AllSharedStoriesItemListFragment extends ItemListFragment implement
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+		CursorLoader cursorLoader = new CursorLoader(getActivity(), FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
 	    return cursorLoader;
 	}
 

@@ -415,7 +415,10 @@ public class FeedProvider extends ContentProvider {
 				allSharedBuilder.append(" WHERE ");
 				allSharedBuilder.append(selection);
 			}
-			allSharedBuilder.append(" ORDER BY " + DatabaseConstants.STORY_DATE + " DESC");
+			allSharedBuilder.append("GROUP BY " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
+			if (!TextUtils.isEmpty(sortOrder)) {
+				allSharedBuilder.append(" ORDER BY " + sortOrder);
+			}
 			return db.rawQuery(allSharedBuilder.toString(), null);
 			
 		case SOCIALFEED_STORIES:
@@ -437,7 +440,9 @@ public class FeedProvider extends ContentProvider {
 				storyBuilder.append("AND ");
 				storyBuilder.append(selection);
 			}
-			storyBuilder.append(" ORDER BY " + DatabaseConstants.STORY_DATE + " DESC");
+			if (!TextUtils.isEmpty(sortOrder)) {
+				storyBuilder.append(" ORDER BY " + sortOrder);
+			}
 			return db.rawQuery(storyBuilder.toString(), userArgument);
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);

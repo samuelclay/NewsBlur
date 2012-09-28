@@ -113,7 +113,7 @@ public class Story implements Serializable {
 		story.content = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_CONTENT));
 		story.title = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_TITLE));
 		story.date = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_DATE)));
-		story.sharedDate = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_DATE)));
+		story.sharedDate = new Date(cursor.getLong(cursor.getColumnIndex(DatabaseConstants.STORY_SHARED_DATE)));
 		story.shortDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHORTDATE));
 		story.longDate = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_LONGDATE));
 		story.shareCount = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_SHARE_COUNT));
