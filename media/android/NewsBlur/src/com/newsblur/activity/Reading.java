@@ -1,6 +1,7 @@
 package com.newsblur.activity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
@@ -48,7 +49,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	public static final String EXTRA_FOLDERNAME = "foldername";
 	public static final String EXTRA_FEED_IDS = "feed_ids";
 	private static final String TEXT_SIZE = "textsize";
-	
+
 	protected int passedPosition;
 	protected int currentState;
 
@@ -59,7 +60,8 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	protected SyncUpdateFragment syncFragment;
 	private ArrayList<ContentProviderOperation> operations;
 	protected Cursor stories;
-	
+	private HashSet<String> storiesToMarkAsRead;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		requestWindowFeature(Window.FEATURE_PROGRESS);
@@ -69,6 +71,8 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 
 		operations = new ArrayList<ContentProviderOperation>();
 		fragmentManager = getSupportFragmentManager();
+		
+		storiesToMarkAsRead = new HashSet<String>();
 
 		passedPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
 		currentState = getIntent().getIntExtra(ItemsList.EXTRA_STATE, 0);
@@ -107,7 +111,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 		int currentItem = pager.getCurrentItem();
 		Story story = readingAdapter.getStory(currentItem);
 		UserDetails user = PrefsUtils.getUserDetails(this);
-		
+
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			finish();
@@ -140,7 +144,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(currentValue);
 			textSize.show(getSupportFragmentManager(), TEXT_SIZE);
 			return true;	
-			
+
 		default:
 			return super.onOptionsItemSelected(item);	
 		}
@@ -165,7 +169,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 		readingAdapter.notifyDataSetChanged();
 		checkStoryCount(pager.getCurrentItem());
 	}
-	
+
 	public abstract void checkStoryCount(int position);
 
 	@Override
@@ -175,7 +179,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 
 	public abstract void triggerRefresh();
 	public abstract void triggerRefresh(int page);
-	
+
 	@Override
 	protected void onPause() {
 		if (isFinishing()) {
@@ -193,10 +197,12 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	}
 
 	protected void addStoryToMarkAsRead(Story story) {
+		if (story.read != 1 && !storiesToMarkAsRead.contains(story.id)) {
+			storiesToMarkAsRead.add(story.id);
 			String[] selectionArgs; 
 			ContentValues emptyValues = new ContentValues();
 			emptyValues.put(DatabaseConstants.FEED_ID, story.feedId);
-			
+
 			if (story.getIntelligenceTotal() > 0) {
 				selectionArgs = new String[] { DatabaseConstants.FEED_POSITIVE_COUNT, story.feedId } ; 
 			} else if (story.getIntelligenceTotal() == 0) {
@@ -204,9 +210,9 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			} else {
 				selectionArgs = new String[] { DatabaseConstants.FEED_NEGATIVE_COUNT, story.feedId } ;
 			}
+			
 			operations.add(ContentProviderOperation.newUpdate(FeedProvider.FEED_COUNT_URI).withValues(emptyValues).withSelection("", selectionArgs).build());
-			
-			
+
 			if (!TextUtils.isEmpty(story.socialUserId)) {
 				String[] socialSelectionArgs; 
 				if (story.getIntelligenceTotal() > 0) {
@@ -222,17 +228,17 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			Uri storyUri = FeedProvider.STORY_URI.buildUpon().appendPath(story.id).build();
 			ContentValues values = new ContentValues();
 			values.put(DatabaseConstants.STORY_READ, true);
-			
+
 			operations.add(ContentProviderOperation.newUpdate(storyUri).withValues(values).build());
+		}
 	}
-	
+
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 		getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, (float) progress / 2).commit();
 		Intent data = new Intent(ReadingItemFragment.TEXT_SIZE_CHANGED);
 		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, (float) progress / 2f); 
-		
 		sendBroadcast(data);
 	}
 
@@ -244,7 +250,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 	public void onStopTrackingTouch(SeekBar seekBar) {
 	}
 
-	
+
 
 
 }

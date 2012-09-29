@@ -55,16 +55,13 @@ public class FeedReading extends Reading {
 
 		setupPager();
 
-		Story story = readingAdapter.getStory(passedPosition);
-
-		updateReadStories(story);
-
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
 		}
 
+		updateReadStories(readingAdapter.getStory(passedPosition));
 	}
 
 	private void updateReadStories(Story story) {
