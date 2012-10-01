@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,6 +31,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -237,7 +239,8 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		StringBuilder builder = new StringBuilder();
 		builder.append("<html><head><meta name=\"viewport\" content=\"target-densitydpi=device-dpi\" />");
 		builder.append("<style style=\"text/css\">");
-		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + 0.5f)));
+		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
+		Log.d(TAG, "Setting initial size: " + Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND));
 		builder.append("</style>");
 		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body>");
 		builder.append(story.content);
@@ -249,6 +252,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private class TextSizeReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG, "Size: " + (AppConstants.FONT_SIZE_LOWER_BOUND + intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f)));
 			web.setTextSize(intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f));
 		}   
 	}

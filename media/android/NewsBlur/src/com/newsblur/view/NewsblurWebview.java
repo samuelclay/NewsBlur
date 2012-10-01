@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.PrefConstants;
 
 public class NewsblurWebview extends WebView {
@@ -35,16 +36,6 @@ public class NewsblurWebview extends WebView {
 	}
 	
 	
-	
-	public void increaseSize() {
-		
-		if (currentSize < 2.0) {
-			currentSize += 0.1f;
-			preferences.edit().putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, currentSize).commit();
-			setTextSize(currentSize);
-		}
-	}
-	
 	public class JavaScriptInterface {
 		NewsblurWebview view;
 		
@@ -67,15 +58,9 @@ public class NewsblurWebview extends WebView {
 	}
 
 	public void setTextSize(float textSize) {
-		loadUrl("javascript:document.body.style.fontSize='" + (0.8f + textSize) + "em';");
+		loadUrl("javascript:document.body.style.fontSize='" + (AppConstants.FONT_SIZE_LOWER_BOUND + textSize) + "em';");
 	}
 	
-	public void decreaseSize() {
-		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
-		if (currentSize > 0.8) {
-			currentSize -= 0.1f;
-		}
-	}
 	
 	
 }

@@ -11,5 +11,7 @@ public class AppConstants {
 	
 	public static final String FOLDER_PRE = "folder_collapsed";
 	public static final String NEWSBLUR_URL = "http://www.newsblur.com";
+	public static final float FONT_SIZE_LOWER_BOUND = 1.0f;
+	public static final float FONT_SIZE_INCREMENT_FACTOR = 5;
 	
 }

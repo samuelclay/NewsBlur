@@ -35,6 +35,7 @@ import com.newsblur.fragment.ReadingItemFragment;
 import com.newsblur.fragment.ShareDialogFragment;
 import com.newsblur.fragment.SyncUpdateFragment;
 import com.newsblur.fragment.TextSizeDialogFragment;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.UIUtils;
@@ -236,9 +237,9 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-		getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, (float) progress / 2).commit();
+		getSharedPreferences(PrefConstants.PREFERENCES, 0).edit().putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, (float) progress /  AppConstants.FONT_SIZE_INCREMENT_FACTOR).commit();
 		Intent data = new Intent(ReadingItemFragment.TEXT_SIZE_CHANGED);
-		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, (float) progress / 2f); 
+		data.putExtra(ReadingItemFragment.TEXT_SIZE_VALUE, (float) progress / AppConstants.FONT_SIZE_INCREMENT_FACTOR); 
 		sendBroadcast(data);
 	}
 
