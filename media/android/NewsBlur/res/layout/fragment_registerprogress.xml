@@ -55,7 +55,7 @@
                 android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:text="@string/faster_faster"
-                android:textColor="@color/darkgray"
+                android:textColor="@color/white"
                 android:textSize="18sp" />
         </LinearLayout>
 
@@ -65,8 +65,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="20dp"
-            android:layout_marginRight="20dp"
             android:text="@string/login_lets_go"
             android:textSize="20sp" />
     </RelativeLayout>

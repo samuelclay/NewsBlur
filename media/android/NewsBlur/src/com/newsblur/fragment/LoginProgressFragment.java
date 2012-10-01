@@ -47,10 +47,10 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		bundle.putString("password", password);
 		fragment.setArguments(bundle);
 		return fragment;
-		
+
 	}
-	
-	
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,16 +59,16 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		receiver = new DetachableResultReceiver(new Handler());
 		receiver.setReceiver(this);
 		Log.d(TAG , "Creating new fragment instance");
-		
+
 		username = getArguments().getString("username");
 		password = getArguments().getString("password");
-		
+
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_loginprogress, null);
-		
+
 		updateStatus = (TextView) v.findViewById(R.id.login_logging_in);
 		retrievingFeeds = (TextView) v.findViewById(R.id.login_retrieving_feeds);
 		letsGo = (TextView) v.findViewById(R.id.login_lets_go);
@@ -76,17 +76,17 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		loggingInProgress = (ProgressBar) v.findViewById(R.id.login_logging_in_progress);
 		loginProfilePicture = (ImageView) v.findViewById(R.id.login_profile_picture);
 		// password.setOnEditorActionListener(this);
-		
+
 		if (loginTask != null) {
 			refreshUI();
 		} else {
 			loginTask = new LoginTask();
 			loginTask.execute();
 		}
-		
+
 		return v;
 	}
-	
+
 	private class LoginTask extends AsyncTask<String, Void, LoginResponse> {
 
 		private static final String TAG = "LoginTask";
@@ -100,7 +100,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		@Override
 		protected LoginResponse doInBackground(String... params) {
 			LoginResponse response = apiManager.login(username, password);
-			
+			apiManager.updateUserProfile();
 			try {
 				// We include this wait simply as a small UX convenience. Otherwise the user could be met with a disconcerting flicker when attempting to log in and failing.
 				Thread.sleep(700);
@@ -113,16 +113,15 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		@Override
 		protected void onPostExecute(LoginResponse result) {
 			if (result.authenticated) {
-				apiManager.updateUserProfile();
 				final Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
 				updateStatus.setText(R.string.login_logged_in);
 				loggingInProgress.setVisibility(View.GONE);
 				updateStatus.startAnimation(a);
-				
+
 				loginProfilePicture.setVisibility(View.VISIBLE);
 				loginProfilePicture.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
 				feedProgress.setVisibility(View.VISIBLE);
-				
+
 				final Animation b = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
 				retrievingFeeds.setText(R.string.login_retrieving_feeds);
 				retrievingFeeds.startAnimation(b);
@@ -133,14 +132,14 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 				getActivity().startService(intent);
 			} else {
 				if (result.errors != null && result.errors.message != null) {
-						Toast.makeText(getActivity(), result.errors.message[0], Toast.LENGTH_LONG).show();
-					} else {
-						Toast.makeText(getActivity(), getResources().getString(R.string.login_message_error), Toast.LENGTH_LONG).show();
-					}
+					Toast.makeText(getActivity(), result.errors.message[0], Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(getActivity(), getResources().getString(R.string.login_message_error), Toast.LENGTH_LONG).show();
 				}
 				getActivity().finish();
 			}
 		}
+	}
 
 
 	private void refreshUI() {
@@ -177,7 +176,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 			break;
 		}
 	}
-	
+
 
 	// Interface for Host 
 	public interface LoginFragmentInterface {
@@ -192,5 +191,5 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		CURRENT_STATUS = resultCode;
 		refreshUI();
 	}
-	
+
 }
