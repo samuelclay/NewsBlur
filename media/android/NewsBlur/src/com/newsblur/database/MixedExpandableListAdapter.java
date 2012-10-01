@@ -342,7 +342,10 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		// This 'if' is for an edge case, where we've no intialised the child-from to cursor-column mapping yet because we've initialised the adapter but 
 		// it contained no group cursor yet. This happens when first registering, assuming the user initially has no data.
 		if (childFrom == null) {
-			initialiseChildBinds(childFromNames);
+			MyCursorHelper tmpCursorHelper = getChildrenCursorHelper(0, true);
+			if (tmpCursorHelper != null) {
+				initChildrenFromColumns(childFromNames, tmpCursorHelper.getCursor());
+			}
 		}
 		bindView(view, context, cursor, childFrom, childTo, groupViewBinder);
 	}

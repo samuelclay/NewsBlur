@@ -92,8 +92,7 @@ public class AddFollowFragment extends Fragment {
 
 					@Override
 					protected Void doInBackground(Void... arg0) {
-
-						boolean addedOkay = apiManager.addFeed("http://popular.newsblur.com/", null);
+						boolean addedOkay = apiManager.followUser("popular");
 						followingPopular = true;
 						return null;
 					}

@@ -100,7 +100,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		@Override
 		protected LoginResponse doInBackground(String... params) {
 			LoginResponse response = apiManager.login(username, password);
-			apiManager.updateUserProfile();
+			
 			try {
 				// We include this wait simply as a small UX convenience. Otherwise the user could be met with a disconcerting flicker when attempting to log in and failing.
 				Thread.sleep(700);
@@ -113,21 +113,20 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		@Override
 		protected void onPostExecute(LoginResponse result) {
 			if (result.authenticated) {
+				apiManager.updateUserProfile();
 				final Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
 				updateStatus.setText(R.string.login_logged_in);
 				loggingInProgress.setVisibility(View.GONE);
 				updateStatus.startAnimation(a);
 				
 				loginProfilePicture.setVisibility(View.VISIBLE);
-				loginProfilePicture.setImageBitmap(UIUtils.roundBitmap(PrefsUtils.getUserImage(getActivity())));
+				loginProfilePicture.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
 				feedProgress.setVisibility(View.VISIBLE);
 				
-				Log.d(TAG, "Authenticated. Starting receiver.");
 				final Animation b = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
 				retrievingFeeds.setText(R.string.login_retrieving_feeds);
 				retrievingFeeds.startAnimation(b);
 
-				Log.d(TAG, "Synchronisation finished.");
 				final Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity(), SyncService.class);
 				intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, receiver);
 				intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FOLDER_UPDATE);
@@ -139,6 +138,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 						Toast.makeText(getActivity(), getResources().getString(R.string.login_message_error), Toast.LENGTH_LONG).show();
 					}
 				}
+				getActivity().finish();
 			}
 		}
 

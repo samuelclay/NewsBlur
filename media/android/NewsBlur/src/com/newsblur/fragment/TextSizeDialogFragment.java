@@ -18,7 +18,7 @@ public class TextSizeDialogFragment extends DialogFragment {
 	
 	private static String CURRENT_SIZE = "currentSize";
 	private static String LISTENER = "listener";
-	private float currentValue = 1.5f;
+	private float currentValue = 1.0f;
 	private SeekBar seekBar;
 
 	public static TextSizeDialogFragment newInstance(float currentValue) {

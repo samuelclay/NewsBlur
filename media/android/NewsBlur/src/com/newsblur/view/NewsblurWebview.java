@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -67,13 +66,13 @@ public class NewsblurWebview extends WebView {
 		loadUrl("javascript:window.onload=webview.scroll(document.body.scrollHeight)");
 	}
 
-	public void setTextSize(float int1) {
-		loadUrl("javascript:document.body.style.fontSize='" + (0.5f + int1) + "em';");
+	public void setTextSize(float textSize) {
+		loadUrl("javascript:document.body.style.fontSize='" + (0.8f + textSize) + "em';");
 	}
 	
 	public void decreaseSize() {
 		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
-		if (currentSize > 0.5) {
+		if (currentSize > 0.8) {
 			currentSize -= 0.1f;
 		}
 	}
