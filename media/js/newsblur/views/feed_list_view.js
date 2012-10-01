@@ -124,7 +124,9 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             'opacity': 0
         });            
         $social_feeds.html($feeds);
-        $social_feeds.animate({'opacity': 1}, {'duration': 700});
+
+        var collapsed = NEWSBLUR.app.sidebar.check_river_blurblog_collapsed({skip_animation: true});
+        $social_feeds.animate({'opacity': 1}, {'duration': collapsed ? 0 : 700});
 
         // if (this.socket) {
         //     this.send_socket_active_feeds();

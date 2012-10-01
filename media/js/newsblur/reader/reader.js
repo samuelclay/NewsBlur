@@ -17,6 +17,7 @@
             this.$s = {
                 $body: $('body'),
                 $layout: $('.NB-layout'),
+                $sidebar: $('.NB-sidebar'),
                 $feed_lists: $('.NB-feedlists'),
                 $feed_list: $('#feed_list'),
                 $social_feeds: $('.NB-socialfeeds'),
@@ -104,7 +105,8 @@
             if (NEWSBLUR.Flags['start_import_from_google_reader']) {
                 this.start_import_from_google_reader();
             }
-            NEWSBLUR.app.feed_list_header = new NEWSBLUR.Views.FeedListHeader({collection: NEWSBLUR.assets.feeds});
+            NEWSBLUR.app.sidebar_header = new NEWSBLUR.Views.SidebarHeader({collection: NEWSBLUR.assets.feeds});
+            NEWSBLUR.app.sidebar = new NEWSBLUR.Views.Sidebar();
             NEWSBLUR.app.feed_list = new NEWSBLUR.Views.FeedList({el: this.$s.$feed_list[0]});
             NEWSBLUR.app.story_titles = new NEWSBLUR.Views.StoryTitlesView({collection: NEWSBLUR.assets.stories});
             NEWSBLUR.app.story_list = new NEWSBLUR.Views.StoryListView({collection: NEWSBLUR.assets.stories});
@@ -3460,7 +3462,7 @@
                 NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(true);
             }
             this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
-            NEWSBLUR.app.feed_list_header.toggle_hide_read_preference();
+            NEWSBLUR.app.sidebar_header.toggle_hide_read_preference();
             NEWSBLUR.app.feed_list.scroll_to_show_selected_feed();
             NEWSBLUR.app.feed_list.scroll_to_show_selected_folder();
             
@@ -3481,20 +3483,15 @@
         
         switch_feed_view_unread_view: function(unread_view) {
             if (!_.isNumber(unread_view)) unread_view = this.get_unread_view_score();
-            var $feed_list             = this.$s.$feed_list;
-            var $social_feeds          = this.$s.$social_feeds;
+            var $sidebar               = this.$s.$sidebar;
             var unread_view_name       = this.get_unread_view_name(unread_view);
             var $next_story_button     = $('.task_story_next_unread');
             var $story_title_indicator = $('.NB-story-title-indicator', this.$story_titles);
 
-            $feed_list.removeClass('unread_view_positive')
-                      .removeClass('unread_view_neutral')
-                      .removeClass('unread_view_negative')
-                      .addClass('unread_view_'+unread_view_name);
-            $social_feeds.removeClass('unread_view_positive')
-                         .removeClass('unread_view_neutral')
-                         .removeClass('unread_view_negative')
-                         .addClass('unread_view_'+unread_view_name);
+            $sidebar.removeClass('unread_view_positive')
+                    .removeClass('unread_view_neutral')
+                    .removeClass('unread_view_negative')
+                    .addClass('unread_view_'+unread_view_name);
 
             $next_story_button.removeClass('task_story_next_positive')
                               .removeClass('task_story_next_neutral')
@@ -4514,25 +4511,7 @@
             var self = this;
             var stopPropagation = false;
             
-            // NEWSBLUR.log(['click', e, e.button]);
-
-            // = Feed Header ==================================================
-            
-            $.targetIs(e, { tagSelector: '.NB-feeds-header-starred' }, function($t, $p){
-                e.preventDefault();
-                self.open_starred_stories();
-            });
-            $.targetIs(e, { tagSelector: '.NB-feeds-header-river-sites' }, function($t, $p){
-                e.preventDefault();
-                self.open_river_stories();
-            });
-            $.targetIs(e, { tagSelector: '.NB-feeds-header-river-blurblogs' }, function($t, $p){
-                e.preventDefault();
-                self.open_river_blurblogs_stories();
-            });
-            
-            // = Stories ======================================================
-            
+            // NEWSBLUR.log(['click', e, e.button]);            
             
             // = Taskbar ======================================================
             

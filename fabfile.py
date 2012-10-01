@@ -34,32 +34,43 @@ env.roledefs ={
     'app': ['app01.newsblur.com', 
             'app02.newsblur.com', 
             'app03.newsblur.com', 
-            'app04.newsblur.com'],
+            'app04.newsblur.com',
+            ],
     'dev': ['dev.newsblur.com'],
     'web': ['app01.newsblur.com', 
             'app02.newsblur.com', 
-            'app04.newsblur.com'],
+            'app04.newsblur.com',
+            ],
     'db': ['db01.newsblur.com', 
            'db02.newsblur.com', 
            'db03.newsblur.com', 
            'db04.newsblur.com', 
-           'db05.newsblur.com', 
-           'db06.newsblur.com'],
+           'db05.newsblur.com',
+           ],
     'task': ['task01.newsblur.com', 
              'task02.newsblur.com', 
              'task03.newsblur.com', 
              'task04.newsblur.com', 
              'task05.newsblur.com', 
              'task06.newsblur.com', 
-             'task07.newsblur.com', 
-             'db03.newsblur.com'],
+             'task07.newsblur.com',
+             'task08.newsblur.com',
+             'task09.newsblur.com',
+             'task10.newsblur.com',
+             'task11.newsblur.com',
+             ],
     'vps': ['task01.newsblur.com', 
             'task02.newsblur.com', 
             'task03.newsblur.com', 
             'task04.newsblur.com', 
+            'task08.newsblur.com', 
+            'task09.newsblur.com', 
+            'task10.newsblur.com', 
+            'task11.newsblur.com', 
             'app01.newsblur.com', 
             'app02.newsblur.com', 
-            'app03.newsblur.com'],
+            'app03.newsblur.com',
+            ],
 }
 
 # ================
@@ -292,7 +303,6 @@ def setup_db():
     
     if env.user == 'ubuntu':
         setup_db_mdadm()
-        setup_db_raid_mounts()
 
 def setup_task():
     setup_common()

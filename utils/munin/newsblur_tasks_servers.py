@@ -14,6 +14,7 @@ class NBMuninGraph(MuninGraph):
             'graph_vlabel'   : '# of fetches / server',
             'graph_args'     : '-l 0',
             'total.label'    : 'total',
+            'total.draw'     : 'LINE1',
         }
         stats = self.stats
         graph.update(dict((("%s.label" % s['_id'], s['_id']) for s in stats)))
