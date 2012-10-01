@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.opengl.Visibility;
 import android.os.Handler;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.text.TextUtils;
 import android.util.Config;
 import android.util.Log;
 import android.util.SparseArray;
@@ -290,8 +291,22 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 					((Activity) context).startActivityForResult(i, Activity.RESULT_OK);
 				}
 			});
-			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
-			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
+			String neutCount = sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
+			if (TextUtils.isEmpty(neutCount) || TextUtils.equals(neutCount, "0")) {
+				v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
+			} else {
+				v.findViewById(R.id.row_foldersumneu).setVisibility(View.VISIBLE);
+				((TextView) v.findViewById(R.id.row_foldersumneu)).setText(neutCount);	
+			}
+			
+			String posCount = sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS));
+			if (TextUtils.isEmpty(posCount) || TextUtils.equals(posCount, "0")) {
+				v.findViewById(R.id.row_foldersumpos).setVisibility(View.GONE);
+			} else {
+				v.findViewById(R.id.row_foldersumpos).setVisibility(View.VISIBLE);
+				((TextView) v.findViewById(R.id.row_foldersumpos)).setText(posCount);
+			}
+			
 			v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
 			((ImageView) v.findViewById(R.id.row_folder_indicator)).setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
 		} else if (groupPosition == 1) {
