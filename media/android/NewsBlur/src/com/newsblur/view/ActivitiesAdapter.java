@@ -29,7 +29,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
 	private final String startedFollowing, ago, repliedTo, sharedStory, withComment, likedComment;
-	private ForegroundColorSpan midgray, highlight, darkgray, lightblue;
+	private ForegroundColorSpan midgray, highlight, darkgray;
 	private String TAG = "ActivitiesAdapter";
 	private Context context;
 	private UserDetails userDetails;
@@ -54,7 +54,6 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		withComment = resources.getString(R.string.profile_with_comment);
 		ago = resources.getString(R.string.profile_ago);
 		
-		lightblue = new ForegroundColorSpan(resources.getColor(R.color.light_newsblur_blue));
 		highlight = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
 		midgray = new ForegroundColorSpan(resources.getColor(R.color.midgray));
 		darkgray = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
@@ -134,15 +133,13 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 				stringBuilder.append("\"");
 			}
 			stringBuilder.setSpan(darkgray, 0, sharedStory.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-			stringBuilder.setSpan(lightblue, sharedStory.length() + 1, sharedStory.length() + 1 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			stringBuilder.setSpan(highlight, sharedStory.length() + 1, sharedStory.length() + 1 + activity.title.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			if (!TextUtils.isEmpty(activity.content)) {
-				stringBuilder.setSpan(midgray, sharedStory.length() + 4 + activity.title.length() + withComment.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				stringBuilder.setSpan(darkgray, sharedStory.length() + 4 + activity.title.length() + withComment.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
 		
 			imageLoader.displayImage(userDetails.photoUrl, imageView);
 		}
-		
-		
 		
 		activityText.setText(stringBuilder);
 		activityText.setMovementMethod(LinkMovementMethod.getInstance());

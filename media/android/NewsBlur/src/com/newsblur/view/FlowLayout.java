@@ -3,6 +3,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -29,6 +30,7 @@ public class FlowLayout extends ViewGroup {
     
     // By default, flow left to right
     private int flowDirection = FLOW_RIGHT;
+	private String TAG = "FlowLayout";
     
     public static class LayoutParams extends ViewGroup.LayoutParams {
 
@@ -53,12 +55,17 @@ public class FlowLayout extends ViewGroup {
 
     public FlowLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        defaultImageLength = UIUtils.convertDPsToPixels(context, 25);
+        
         TypedArray styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout);
         String flowAttribute = styledAttributes.getString(R.styleable.FlowLayout_flow);
+        int defaultImageSizeAttribute = styledAttributes.getInt(R.styleable.FlowLayout_defaultImageSize, 25);
+        defaultImageLength = UIUtils.convertDPsToPixels(context, defaultImageSizeAttribute);
+        
         if (!TextUtils.isEmpty(flowAttribute) && TextUtils.equals(flowAttribute, "left")) { 
         	flowDirection = FLOW_LEFT;	
         }
+        
+        
         styledAttributes.recycle();
     }
 
@@ -93,6 +100,7 @@ public class FlowLayout extends ViewGroup {
                 	child.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), defaultImageLength);
                 	childw = defaultImageLength;
                 	line_height = Math.max(line_height, defaultImageLength + lp.vertical_spacing);
+                	Log.d("FlowLayout", "Measured line height:" + line_height);
                 } else {
                 	child.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), childHeightMeasureSpec);
                 	childw = child.getMeasuredWidth();
@@ -123,6 +131,7 @@ public class FlowLayout extends ViewGroup {
                 height = ypos + line_height;
             }
         }
+        
         setMeasuredDimension(width, height);
     }
 
@@ -142,6 +151,7 @@ public class FlowLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    	
         final int count = getChildCount();
         final int width = r - l;
         
@@ -154,8 +164,8 @@ public class FlowLayout extends ViewGroup {
             	int childw;
             	int childh;
             	if (child instanceof ImageView) {
-            		childw = UIUtils.convertDPsToPixels(getContext(), 25);
-            		childh = UIUtils.convertDPsToPixels(getContext(), 25);
+            		childw = defaultImageLength;
+            		childh = defaultImageLength;
             	} else {
             		childw = child.getMeasuredWidth();
                     childh = child.getMeasuredHeight();	

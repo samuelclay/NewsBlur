@@ -33,22 +33,31 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent" >
 
-        <ImageView
-            android:id="@+id/registerprogress_logo"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="50dp"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/logo" />
-
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/registerprogress_logo"
-            android:gravity="center"
-            android:layout_marginTop="20dp"
-            android:text="@string/faster_faster"
-            android:textColor="@color/darkgray" />
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            android:gravity="center_horizontal" >
+
+            <ImageView
+                android:id="@+id/registerprogress_logo"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:src="@drawable/logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/registerprogress_logo"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="@string/faster_faster"
+                android:textColor="@color/darkgray"
+                android:textSize="18sp" />
+        </LinearLayout>
 
         <Button
             android:id="@+id/registering_next_1"
@@ -58,7 +67,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginBottom="20dp"
             android:layout_marginRight="20dp"
-            android:text="Let&apos;s go!"
+            android:text="@string/login_lets_go"
             android:textSize="20sp" />
     </RelativeLayout>
 

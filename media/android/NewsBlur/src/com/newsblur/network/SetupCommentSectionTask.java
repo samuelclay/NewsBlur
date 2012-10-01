@@ -107,7 +107,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { id }, null);
 					UserProfile user = UserProfile.fromCursor(userCursor);
 
-					imageLoader.displayImage(user.photoUrl, favouriteImage);
+					imageLoader.displayImage(user.photoUrl, favouriteImage, 10f);
 					favouriteImage.setTag(id);
 					
 					favouriteContainer.addView(favouriteImage);
@@ -147,19 +147,20 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				replyText.setText(reply.text);
 				ImageView replyImage = (ImageView) replyView.findViewById(R.id.reply_user_image);
 
-				final ProfileResponse replyUser = apiManager.getUser(reply.userId);
-				imageLoader.displayImage(replyUser.user.photoUrl, replyImage);
+				Cursor replyCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { reply.userId }, null);
+				final UserProfile replyUser = UserProfile.fromCursor(replyCursor);
+				imageLoader.displayImage(replyUser.photoUrl, replyImage);
 				replyImage.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View view) {
 						Intent i = new Intent(context, Profile.class);
-						i.putExtra(Profile.USER_ID, replyUser.user.userId);
+						i.putExtra(Profile.USER_ID, replyUser.userId);
 						context.startActivity(i);
 					}
 				});
 
 				TextView replyUsername = (TextView) replyView.findViewById(R.id.reply_username);
-				replyUsername.setText(replyUser.user.username);
+				replyUsername.setText(replyUser.username);
 
 				TextView replySharedDate = (TextView) replyView.findViewById(R.id.reply_shareddate);
 				replySharedDate.setText(reply.shortDate.toUpperCase() + " AGO");
@@ -193,7 +194,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 					imageLoader.displayImage(userPhoto, usershareImage, 10f);
 				}
 			} else {
-				imageLoader.displayImage(userPhoto, commentImage);
+				imageLoader.displayImage(userPhoto, commentImage, 10f);
 			}
 
 			if (comment.byFriend) {

@@ -12,6 +12,7 @@ import com.newsblur.R;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 import com.newsblur.view.FlowLayout;
 
 public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
@@ -57,7 +58,7 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 				
 				ImageView favouriteImage = new ImageView(context);
 				favouriteImage.setTag(user.id);
-				
+				userImage = UIUtils.roundBitmap(userImage);
 				favouriteImage.setImageBitmap(userImage);
 				favouriteAvatarHolder.get().addView(favouriteImage);
 				

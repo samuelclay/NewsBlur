@@ -46,7 +46,7 @@ public class SocialFeedViewBinder implements ViewBinder {
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SOCIAL_FEED_ICON)) {
 			String url = cursor.getString(columnIndex);
-			imageLoader.displayImage(url, (ImageView) view, false);
+			imageLoader.displayImage(url, (ImageView) view);
 			return true;
 		} else if (TextUtils.equals(cursor.getColumnName(columnIndex), DatabaseConstants.SOCIAL_FEED_NEGATIVE_COUNT)) {
 			int feedNegative = cursor.getInt(columnIndex);

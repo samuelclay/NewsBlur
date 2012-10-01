@@ -83,25 +83,16 @@
             android:layout_toLeftOf="@id/comment_shareddate"
             android:scaleType="fitCenter"
             android:src="@drawable/favourite" />
-
-        <com.newsblur.view.FlowLayout
-            xmlns:newsblur="http://schemas.android.com/apk/res/com.newsblur"
-            android:id="@+id/comment_favourite_avatars"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/comment_shareddate"
-            android:layout_marginRight="4dp"
-            android:layout_toLeftOf="@id/comment_favourite_icon"
-            newsblur:flow="left" />
-
+        
         <TextView
             android:id="@+id/comment_username"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/comment_shareddate"
             android:layout_toRightOf="@id/comment_user_image"
             android:textColor="@color/newsblur_blue"
             android:textSize="14sp" />
+     
 
         <TextView
             android:id="@+id/comment_text"
@@ -115,6 +106,20 @@
             android:textColor="@color/darkgray"
             android:textSize="14dp" />
 
+           
+        <com.newsblur.view.FlowLayout
+            xmlns:newsblur="http://schemas.android.com/apk/res/com.newsblur"
+            android:id="@+id/comment_favourite_avatars"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            android:layout_toLeftOf="@id/comment_favourite_icon"
+            android:layout_toRightOf="@id/comment_username"
+            android:paddingTop="2dp"
+            newsblur:flow="left"
+            newsblur:defaultImageSize="20" />
+        
+        
     </RelativeLayout>
 
     <LinearLayout

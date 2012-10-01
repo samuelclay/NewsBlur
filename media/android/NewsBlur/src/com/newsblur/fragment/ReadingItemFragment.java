@@ -182,7 +182,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			itemFeed.setVisibility(View.GONE);
 			feedIcon.setVisibility(View.GONE);
 		} else {
-			imageLoader.displayImage(feedIconUrl, feedIcon);
+			imageLoader.displayImage(feedIconUrl, feedIcon, false);
 			itemFeed.setText(feedTitle);
 		}
 

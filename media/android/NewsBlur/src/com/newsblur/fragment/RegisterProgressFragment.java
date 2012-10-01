@@ -9,7 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -29,6 +32,7 @@ public class RegisterProgressFragment extends Fragment {
 	private RegisterTask registerTask;
 	private ViewSwitcher switcher;
 	private Button next;
+	private ImageView registerProgressLogo;
 
 	public static RegisterProgressFragment getInstance(String username, String password, String email) {
 		RegisterProgressFragment fragment = new RegisterProgressFragment();
@@ -57,6 +61,9 @@ public class RegisterProgressFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_registerprogress, null);
 		switcher = (ViewSwitcher) v.findViewById(R.id.register_viewswitcher);
+		
+		registerProgressLogo = (ImageView) v.findViewById(R.id.registerprogress_logo);
+		registerProgressLogo.startAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.rotate));
 		
 		next = (Button) v.findViewById(R.id.registering_next_1);
 		

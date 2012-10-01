@@ -122,6 +122,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	private void checkOpenFolderPreferences() {
 		for (int i = 0; i < folderAdapter.getGroupCount(); i++) {
 			long groupId = folderAdapter.getGroupId(i);
+			sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
 			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + groupId, true)) {
 				list.expandGroup(i);
 			}

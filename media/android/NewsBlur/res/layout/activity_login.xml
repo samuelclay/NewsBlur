@@ -1,28 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/item_background" >
+    android:background="@drawable/login_background"
+    android:orientation="vertical" >
 
-    <ImageView
-        android:id="@+id/login_logo"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/login_logo_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:contentDescription="@string/description_login_logo"
-        android:src="@drawable/logo_newsblur_blur" />
+        android:paddingTop="40dp"
+        android:paddingBottom="50dp"
+        android:background="@color/item_background"
+        android:gravity="center_horizontal" >
 
-    
+        <ImageView
+            android:id="@+id/login_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/description_login_logo"
+            android:src="@drawable/logo_newsblur_blur" />
+    </LinearLayout>
+
+    <View
+        android:layout_height="2dp" 
+        android:layout_width="match_parent"
+        android:background="@color/lightgray" />
     
     <FrameLayout
         android:id="@+id/login_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/login_logo"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
         android:gravity="center"
-        android:padding="30dp" />
+        android:paddingBottom="30dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp" />
 
-</RelativeLayout>
+</LinearLayout>

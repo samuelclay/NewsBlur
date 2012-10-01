@@ -8,6 +8,7 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.Handler;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.util.Config;
@@ -53,7 +54,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	private int[] blogTo;
 
 	private String[] childFromNames;
-	
+
 	private final int childLayout, expandedGroupLayout, collapsedGroupLayout, blogGroupLayout;
 	private final LayoutInflater inflater;
 	private ViewBinder groupViewBinder;
@@ -62,7 +63,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public int currentState = AppConstants.STATE_SOME;
 	private Cursor allStoriesCountCursor, sharedStoriesCountCursor;
 	private String TAG = "MixedExpandableAdapter";
-	
+
 	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final Cursor sharedCountCursor, final int collapsedGroupLayout,
 			int expandedGroupLayout, int blogGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, String[] blogFrom, int[] blogTo) {
 		this.context = context;
@@ -89,14 +90,14 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		this.groupTo = groupTo;
 		this.childTo = childTo;
 		this.blogTo = blogTo;
-		
+
 		initGroupFromColumns(groupFromNames);
 		initBlogFromColumns(blogFromNames);
 		initialiseChildBinds(childFromNames);
 	}
 
 	private void initialiseChildBinds(final String[] childFromNames) {
-		MyCursorHelper tmpCursorHelper = getChildrenCursorHelper(2, true);
+		MyCursorHelper tmpCursorHelper = getChildrenCursorHelper(0, true);
 		if (tmpCursorHelper != null) {
 			initChildrenFromColumns(childFromNames, tmpCursorHelper.getCursor());
 			deactivateChildrenCursorHelper(0);
@@ -118,7 +119,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		groupFrom = new int[groupFromNames.length];
 		initFromColumns(folderCursorHelper.getCursor(), groupFromNames, groupFrom);
 	}
-	
+
 	private void initBlogFromColumns(String[] blogFromNames) {
 		blogFrom = new int[blogFromNames.length];
 		initFromColumns(blogCursorHelper.getCursor(), blogFromNames, blogFrom);
@@ -146,7 +147,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			return FOLDER;
 		}
 	}
-	
+
 	public int getChildType(int groupPosition, int childPosition) {
 		if (groupPosition == 0) {
 			return BLOG;
@@ -190,13 +191,13 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 		View v;
 		if (groupPosition == 0) {
-				blogCursorHelper.moveTo(childPosition);
-				if (convertView == null) {
-					v = newBlogView(context, blogCursorHelper.getCursor(), parent);
-				} else {
-					v = convertView;
-				}
-				bindBlogView(v, context, blogCursorHelper.getCursor());
+			blogCursorHelper.moveTo(childPosition);
+			if (convertView == null) {
+				v = newBlogView(context, blogCursorHelper.getCursor(), parent);
+			} else {
+				v = convertView;
+			}
+			bindBlogView(v, context, blogCursorHelper.getCursor());
 		} else {
 			groupPosition = groupPosition - 2;
 
@@ -237,7 +238,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 	public Cursor getGroup(int groupPosition) {
 		return folderCursorHelper.moveTo(groupPosition - 2);
 	}
-	
+
 	public Cursor getBlogCursor(int childPosition) {
 		return blogCursorHelper.moveTo(childPosition);
 	}
@@ -284,13 +285,14 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 				@Override
 				public void onClick(View v) {
 					Intent i = new Intent(context, AllSharedStoriesItemsList.class);
-					
+
 					i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
 					((Activity) context).startActivityForResult(i, Activity.RESULT_OK);
 				}
 			});
 			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
 			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
+			v.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
 			((ImageView) v.findViewById(R.id.row_folder_indicator)).setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
 		} else if (groupPosition == 1) {
 			cursor = allStoriesCountCursor;
@@ -343,11 +345,11 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			initialiseChildBinds(childFromNames);
 		}
 		bindView(view, context, cursor, childFrom, childTo, groupViewBinder);
-		
 	}
 
 	protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
 		bindView(view, context, cursor, groupFrom, groupTo, groupViewBinder);
+		view.findViewById(R.id.row_foldersums).setVisibility(isExpanded ? View.INVISIBLE : View.VISIBLE);
 		((ImageView) view.findViewById(R.id.row_folder_icon)).setImageResource(isExpanded ? R.drawable.folder_open : R.drawable.folder_closed);
 		((ImageView) view.findViewById(R.id.row_folder_indicator)).setImageResource(isExpanded ? R.drawable.indicator_expanded : R.drawable.indicator_collapsed);
 	}
@@ -358,7 +360,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	private void bindView(View view, Context context, Cursor cursor, int[] from, int[] to, ViewBinder viewbinder) {
 		final ViewBinder binder = viewbinder;
-
 		for (int i = 0; i < to.length; i++) {
 			View v = view.findViewById(to[i]);
 			if (v != null) {

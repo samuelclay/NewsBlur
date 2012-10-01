@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -45,6 +46,20 @@ public class AddFollowFragment extends Fragment {
 		followingPopularText = (TextView) parentView.findViewById(R.id.addfollow_popular_text);
 		followingPopularCheckbox = (CheckBox) parentView.findViewById(R.id.addfollow_popular_checkbox);
 		
+		followingPopularLayout.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				followingPopularCheckbox.toggle();
+			}
+		});
+		
+		followingNewsblurLayout.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				followingNewsblurCheckbox.toggle();
+			}
+		});
+		
 		setupUI();
 		
 		followingNewsblurCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -56,7 +71,6 @@ public class AddFollowFragment extends Fragment {
 					@Override
 					protected Void doInBackground(Void... arg0) {
 						boolean addedOkay = apiManager.addFeed("http://blog.newsblur.com", null);
-						Log.d(TAG, "Added okay: " + addedOkay);
 						followingNewsblur = true;
 						return null;
 					}
