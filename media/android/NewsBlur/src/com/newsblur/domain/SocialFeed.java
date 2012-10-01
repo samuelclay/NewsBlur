@@ -2,6 +2,7 @@ package com.newsblur.domain;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
@@ -41,7 +42,9 @@ public class SocialFeed {
 	}
 	
 	public static SocialFeed fromCursor(final Cursor cursor) {
-		cursor.moveToFirst();
+		if (cursor.isBeforeFirst()) {
+			cursor.moveToFirst();
+		}
 		SocialFeed socialFeed = new SocialFeed();
 		socialFeed.userId = cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID));
 		socialFeed.username = cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_USERNAME));
@@ -51,6 +54,17 @@ public class SocialFeed {
 		socialFeed.positiveCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT));
 		socialFeed.neutralCount = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT));
 		return socialFeed;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		SocialFeed otherFeed = (SocialFeed) o;
+		boolean equals = (TextUtils.equals(userId, otherFeed.userId) && 
+				positiveCount == otherFeed.positiveCount && 
+				neutralCount == otherFeed.neutralCount && 
+				negativeCount == otherFeed.negativeCount &&
+				TextUtils.equals(photoUrl, otherFeed.photoUrl));
+		return equals;
 	}
 	
 }

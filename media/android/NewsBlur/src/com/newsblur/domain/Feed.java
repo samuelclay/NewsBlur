@@ -2,6 +2,8 @@ package com.newsblur.domain;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
@@ -90,8 +92,17 @@ public class Feed {
 		feed.positiveCount = childCursor.getInt(childCursor.getColumnIndex(DatabaseConstants.FEED_POSITIVE_COUNT));
 		feed.subscribers = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_SUBSCRIBERS));
 		feed.title = childCursor.getString(childCursor.getColumnIndex(DatabaseConstants.FEED_TITLE));
-		childCursor.close();
 		return feed;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		Feed otherFeed = (Feed) o;
+		boolean isEquals = (TextUtils.equals(feedId, otherFeed.feedId) && 
+				negativeCount == otherFeed.negativeCount && 
+				neutralCount == otherFeed.neutralCount && 
+				positiveCount == otherFeed.positiveCount);
+		return isEquals;
 	}
 
 }

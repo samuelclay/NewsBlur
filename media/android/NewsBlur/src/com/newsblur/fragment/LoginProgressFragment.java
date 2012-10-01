@@ -25,6 +25,7 @@ import com.newsblur.service.DetachableResultReceiver;
 import com.newsblur.service.DetachableResultReceiver.Receiver;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 
 public class LoginProgressFragment extends Fragment implements Receiver {
 
@@ -34,7 +35,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 	private TextView updateStatus, retrievingFeeds, letsGo;
 	private ImageView loginProfilePicture;
 	private int CURRENT_STATUS = -1;
-	private ProgressBar feedProgress;
+	private ProgressBar feedProgress, loggingInProgress;
 	private LoginTask loginTask;
 	private String username;
 	private String password;
@@ -72,6 +73,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		retrievingFeeds = (TextView) v.findViewById(R.id.login_retrieving_feeds);
 		letsGo = (TextView) v.findViewById(R.id.login_lets_go);
 		feedProgress = (ProgressBar) v.findViewById(R.id.login_feed_progress);
+		loggingInProgress = (ProgressBar) v.findViewById(R.id.login_logging_in_progress);
 		loginProfilePicture = (ImageView) v.findViewById(R.id.login_profile_picture);
 		// password.setOnEditorActionListener(this);
 		
@@ -113,9 +115,11 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 			if (result.authenticated) {
 				final Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
 				updateStatus.setText(R.string.login_logged_in);
+				loggingInProgress.setVisibility(View.GONE);
 				updateStatus.startAnimation(a);
 				
-				loginProfilePicture.setImageBitmap(PrefsUtils.getUserImage(getActivity()));
+				loginProfilePicture.setVisibility(View.VISIBLE);
+				loginProfilePicture.setImageBitmap(UIUtils.roundBitmap(PrefsUtils.getUserImage(getActivity())));
 				feedProgress.setVisibility(View.VISIBLE);
 				
 				Log.d(TAG, "Authenticated. Starting receiver.");

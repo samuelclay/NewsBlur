@@ -407,6 +407,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	private synchronized void releaseCursorHelpers() {
 		for (int pos = mChildrenCursorHelpers.size() - 1; pos >= 0; pos--) {
+			
 			mChildrenCursorHelpers.valueAt(pos).deactivate();
 		}
 		mChildrenCursorHelpers.clear();
@@ -521,6 +522,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 			mCursor.unregisterContentObserver(mContentObserver);
 			mCursor.unregisterDataSetObserver(mDataSetObserver);
+			mCursor.close();
 			mCursor.deactivate();
 			mCursor = null;
 		}

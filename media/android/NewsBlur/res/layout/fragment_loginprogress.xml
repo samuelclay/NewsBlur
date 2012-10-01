@@ -24,14 +24,24 @@
                 android:textColor="@color/white"
                 android:textSize="16dp" />
 
+            <ProgressBar
+                android:id="@+id/login_logging_in_progress"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@id/login_logging_in"
+                android:indeterminateOnly="true"
+                android:visibility="visible" />
+            
             <ImageView
                 android:id="@+id/login_profile_picture"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
-                android:layout_toLeftOf="@id/login_logging_in"
-                android:src="@drawable/world" />
+                android:visibility="gone"
+                android:layout_toLeftOf="@id/login_logging_in" />
         </RelativeLayout>
 
         <RelativeLayout

@@ -24,8 +24,6 @@ import com.newsblur.service.DetachableResultReceiver;
 
 public class LoginRegisterFragment extends Fragment implements OnClickListener {
 
-	private static final String TAG = "LoginFragment";
-
 	public APIManager apiManager;
 	private EditText username, password;
 	private ViewSwitcher viewSwitcher;

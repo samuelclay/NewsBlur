@@ -80,7 +80,6 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 
 	@Override
 	public void updateAfterSync() {
-		Log.d(TAG , "Redrawing UI");
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
 		} else {

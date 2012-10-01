@@ -2,6 +2,7 @@ package com.newsblur.domain;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.text.TextUtils;
 
 import com.newsblur.database.DatabaseConstants;
 
@@ -32,5 +33,9 @@ public class Folder {
 		return folder;
 	}
 	
+	@Override
+	public boolean equals(Object otherFolder) {
+		return TextUtils.equals(((Folder) otherFolder).getId(), getId());
+	}
 	
 }
