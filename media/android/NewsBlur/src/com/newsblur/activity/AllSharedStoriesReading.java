@@ -113,4 +113,7 @@ public class AllSharedStoriesReading extends Reading {
 		stopLoading = true;
 	}
 
+	@Override
+	public void closeAfterUpdate() { }
+
 }

@@ -138,4 +138,7 @@ public class AllStoriesReading extends Reading {
 		stopLoading = true;
 	}
 
+	@Override
+	public void closeAfterUpdate() { }
+
 }

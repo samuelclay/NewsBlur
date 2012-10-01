@@ -7,10 +7,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
@@ -56,7 +60,31 @@ public class FeedItemsList extends ItemsList {
 			triggerRefresh();
 		}
 	}
+	
+	public void deleteFeed() {
+		setSupportProgressBarIndeterminateVisibility(true);
+		final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
+		intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
+		intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_DELETE_FEED);
+		intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, Long.parseLong(feedId));
+		startService(intent);
+	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (!super.onOptionsItemSelected(item)) {
+			switch (item.getItemId()) {
+				case R.id.menu_delete_feed:
+					deleteFeed();
+					return true;
+				default:
+					return false;
+			}
+		} else {
+			return true;
+		}
+	}
+	
 	@Override
 	public void markItemListAsRead() {
 		new MarkFeedAsReadTask(this, apiManager) {
@@ -83,7 +111,7 @@ public class FeedItemsList extends ItemsList {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getSupportMenuInflater();
-		inflater.inflate(R.menu.itemslist, menu);
+		inflater.inflate(R.menu.feed_itemslist, menu);
 		return true;
 	}
 
@@ -109,6 +137,11 @@ public class FeedItemsList extends ItemsList {
 	public void setNothingMoreToUpdate() {
 		Log.d(TAG, "Stop loading");
 		stopLoading = true;
+	}
+
+	@Override
+	public void closeAfterUpdate() {
+		finish();
 	}
 
 

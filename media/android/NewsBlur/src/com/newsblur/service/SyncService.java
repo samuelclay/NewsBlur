@@ -51,6 +51,7 @@ public class SyncService extends IntentService {
 	public final static int STATUS_FINISHED = 0x03;
 	public final static int STATUS_ERROR = 0x04;
 	public static final int STATUS_NO_MORE_UPDATES = 0x05;
+	public static final int STATUS_FINISHED_CLOSE = 0x06;
 	public static final int NOT_RUNNING = 0x01;
 
 	public static final int EXTRA_TASK_FOLDER_UPDATE = 30;
@@ -210,6 +211,8 @@ public class SyncService extends IntentService {
 						Log.d(TAG, "Deleted feed");
 						Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedToBeDeleted)).build();
 						contentResolver.delete(feedUri, null, null);
+						receiver.send(STATUS_FINISHED_CLOSE, Bundle.EMPTY);
+						return;
 					} else {
 						Log.e(TAG, "Error deleting feed");
 						Toast.makeText(this, getResources().getString(R.string.error_deleting_feed), Toast.LENGTH_LONG).show();

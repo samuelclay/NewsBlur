@@ -135,5 +135,8 @@ public class FeedReading extends Reading {
 		stopLoading = true;
 	}
 
+	@Override
+	public void closeAfterUpdate() { }
+
 
 }

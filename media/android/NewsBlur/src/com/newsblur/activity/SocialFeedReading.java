@@ -131,5 +131,8 @@ public class SocialFeedReading extends Reading {
 	public void setNothingMoreToUpdate() {
 		stopLoading = true;
 	}
+
+	@Override
+	public void closeAfterUpdate() { }
 	
 }

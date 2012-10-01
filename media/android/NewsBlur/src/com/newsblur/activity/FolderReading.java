@@ -99,4 +99,7 @@ public class FolderReading extends Reading {
 		stopLoading = true;
 	}
 
+	@Override
+	public void closeAfterUpdate() { }
+
 }

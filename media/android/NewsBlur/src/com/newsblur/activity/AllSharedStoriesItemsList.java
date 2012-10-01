@@ -83,4 +83,8 @@ public class AllSharedStoriesItemsList extends ItemsList {
 		stopLoading = true;
 	}
 
+
+	@Override
+	public void closeAfterUpdate() { }
+
 }
