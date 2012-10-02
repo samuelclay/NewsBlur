@@ -118,8 +118,8 @@
     } else if ([category isEqualToString:@"comment_like"]) {
         withUserUsername = [[activity objectForKey:@"with_user"] objectForKey:@"username"];
         txt = [NSString stringWithFormat:@"%@ favorited %@'s comment on %@:\n%@", username, withUserUsername, title, comment];
-    } else if ([category isEqualToString:@"sharedstory"]) {        
-        if ([content isEqualToString:@""] || content == nil) {
+    } else if ([category isEqualToString:@"sharedstory"]) {
+        if ([content class] == [NSNull class] || [content isEqualToString:@""] || content == nil) {
             txt = [NSString stringWithFormat:@"%@ shared %@.", username, title]; 
         } else {
             txt = [NSString stringWithFormat:@"%@ shared %@:\n%@", username, title, comment];      
@@ -130,7 +130,7 @@
     } else if ([category isEqualToString:@"feedsub"]) {
         txt = [NSString stringWithFormat:@"You subscribed to %@.", content];
     } else if ([category isEqualToString:@"signup"]) {
-        txt = [NSString stringWithFormat:@"You signed up for NewsBlur.", content];
+        txt = [NSString stringWithFormat:@"You signed up for NewsBlur."];
     }
 
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];

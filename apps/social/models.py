@@ -449,7 +449,6 @@ class MSocialProfile(mongo.Document):
             logging.user(user, "~FMDisabled emails, skipping.")
             return
         if self.user_id == follower_user_id:
-            logging.user(user, "~FMDisabled emails, skipping.")
             return
         
         emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,
@@ -918,7 +917,7 @@ class MSocialSubscription(mongo.Document):
             read_stories = MUserStory.objects(user_id=self.user_id,
                                               feed_id__in=story_feed_ids,
                                               story_id__in=story_ids)
-            read_stories_ids = [rs.story_id for rs in read_stories]
+            read_stories_ids = list(set(rs.story_id for rs in read_stories))
 
         oldest_unread_story_date = now
         unread_stories_db = []
@@ -953,7 +952,7 @@ class MSocialSubscription(mongo.Document):
         for story in stories:
             scores = {
                 'feed'   : apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
-                                                  social_user_id=self.subscription_user_id),
+                                                  social_user_ids=self.subscription_user_id),
                 'author' : apply_classifier_authors(classifier_authors, story),
                 'tags'   : apply_classifier_tags(classifier_tags, story),
                 'title'  : apply_classifier_titles(classifier_titles, story),

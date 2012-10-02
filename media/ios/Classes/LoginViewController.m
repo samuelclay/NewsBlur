@@ -90,8 +90,6 @@
     // Return YES for supported orientations
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         return YES;
-    } else if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-        return YES;
     }
     return NO;
 }
@@ -145,7 +143,7 @@
 }
 
 #pragma mark -
-#pragma mark Loginp
+#pragma mark Login
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];

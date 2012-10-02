@@ -1,6 +1,8 @@
 import datetime
 import struct
 from HTMLParser import HTMLParser
+from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
+from lxml.etree import ParserError
 from itertools import chain
 from django.utils.dateformat import DateFormat
 from django.utils.html import strip_tags as strip_tags_django
@@ -248,3 +250,14 @@ def image_size(datastream):
 
     return content_type, width, height
 
+def htmldiff(old_html, new_html):
+    try:
+        old_html_tokens = tokenize(old_html, include_hrefs=False) 
+        new_html_tokens = tokenize(new_html, include_hrefs=False) 
+    except (KeyError, ParserError):
+        return new_html
+    
+    result = htmldiff_tokens(old_html_tokens, new_html_tokens) 
+    result = ''.join(result).strip() 
+    
+    return fixup_ins_del_tags(result)

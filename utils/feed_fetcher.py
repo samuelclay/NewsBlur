@@ -227,7 +227,7 @@ class ProcessFeed:
             # story_guid__in=story_guids,
             story_date__gte=start_date,
             story_feed_id=self.feed_id
-        ).limit(len(story_guids)))
+        ).limit(max(int(len(story_guids)*1.5), 10)))
         
         # MStory.objects(
         #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))

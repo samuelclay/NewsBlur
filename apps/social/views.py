@@ -145,7 +145,7 @@ def load_social_stories(request, user_id, username=None):
 
         story['intelligence'] = {
             'feed': apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
-                                           social_user_id=social_user_id),
+                                           social_user_ids=social_user_id),
             'author': apply_classifier_authors(classifier_authors, story),
             'tags': apply_classifier_tags(classifier_tags, story),
             'title': apply_classifier_titles(classifier_titles, story),
@@ -248,6 +248,8 @@ def load_river_blurblog(request):
     # Intelligence classifiers for all feeds involved
     if story_feed_ids:
         classifier_feeds = list(MClassifierFeed.objects(user_id=user.pk,
+                                                        social_user_id__in=social_user_ids))
+        classifier_feeds = classifier_feeds + list(MClassifierFeed.objects(user_id=user.pk,
                                                    feed_id__in=story_feed_ids))
         classifier_authors = list(MClassifierAuthor.objects(user_id=user.pk, 
                                                        feed_id__in=story_feed_ids))
@@ -260,11 +262,6 @@ def load_river_blurblog(request):
         classifier_authors = []
         classifier_titles = []
         classifier_tags = []
-    classifiers = sort_classifiers_by_feed(user=user, feed_ids=story_feed_ids,
-                                           classifier_feeds=classifier_feeds,
-                                           classifier_authors=classifier_authors,
-                                           classifier_titles=classifier_titles,
-                                           classifier_tags=classifier_tags)
     
     # Just need to format stories
     for story in stories:
@@ -282,7 +279,8 @@ def load_river_blurblog(request):
             starred_date = localtime_for_timezone(starred_stories[story['id']], user.profile.timezone)
             story['starred_date'] = format_story_link_date__long(starred_date, now)
         story['intelligence'] = {
-            'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id']),
+            'feed':   apply_classifier_feeds(classifier_feeds, story['story_feed_id'],
+                                             social_user_ids=story['friend_user_ids']),
             'author': apply_classifier_authors(classifier_authors, story),
             'tags':   apply_classifier_tags(classifier_tags, story),
             'title':  apply_classifier_titles(classifier_titles, story),
@@ -294,6 +292,11 @@ def load_river_blurblog(request):
             story['shared_date'] = format_story_link_date__long(shared_date, now)
             story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
 
+    classifiers = sort_classifiers_by_feed(user=user, feed_ids=story_feed_ids,
+                                           classifier_feeds=classifier_feeds,
+                                           classifier_authors=classifier_authors,
+                                           classifier_titles=classifier_titles,
+                                           classifier_tags=classifier_tags)
 
     diff = time.time() - start
     timediff = round(float(diff), 2)

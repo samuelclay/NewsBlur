@@ -227,18 +227,20 @@ class GoogleReaderImporter(Importer):
             feeds_xml = self.send_request(sub_url)
         else:
             feeds_xml = self.xml
-        self.process_feeds(feeds_xml)
+        if feeds_xml:
+            self.process_feeds(feeds_xml)
         
     def send_request(self, url):
         user_tokens = OAuthToken.objects.filter(user=self.user)
 
         if user_tokens.count():
             user_token = user_tokens[0]
-            credential = pickle.loads(base64.b64decode(user_token.credential))
-            http = httplib2.Http()
-            http = credential.authorize(http)
-            content = http.request(url)
-            return content and content[1]
+            if user_token.credential:
+                credential = pickle.loads(base64.b64decode(user_token.credential))
+                http = httplib2.Http()
+                http = credential.authorize(http)
+                content = http.request(url)
+                return content and content[1]
         
     def process_feeds(self, feeds_xml):
         self.clear_feeds()

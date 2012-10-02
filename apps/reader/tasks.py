@@ -41,7 +41,6 @@ class CollectStats(Task):
     def run(self, **kwargs):
         logging.debug(" ---> Collecting stats...")
         MStatistics.collect_statistics()
-        MStatistics.delete_old_stats()
         
         
 class CollectFeedback(Task):
@@ -50,4 +49,19 @@ class CollectFeedback(Task):
     def run(self, **kwargs):
         logging.debug(" ---> Collecting feedback...")
         MFeedback.collect_feedback()
-        
+
+class CleanAnalytics(Task):
+    name = 'clean-analytics'
+
+    def run(self, **kwargs):
+        logging.debug(" ---> Cleaning analytics... %s page loads and %s feed fetches" % (
+            settings.MONGOANALYTICSDB.nbanalytics.page_loads.count(),
+            settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.count(),
+        ))
+        day_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.remove({
+            "date": {"$lt": day_ago},
+        })
+        settings.MONGOANALYTICSDB.nbanalytics.page_loads.remove({
+            "date": {"$lt": day_ago},
+        })

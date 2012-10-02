@@ -1,8 +1,14 @@
+import pymongo
+
 PRIMARY_STATE = 1
 SECONDARY_STATE = 2
 
 def mongo_max_replication_lag(connection):
-    status = connection.admin.command('replSetGetStatus')
+    try:
+        status = connection.admin.command('replSetGetStatus')
+    except pymongo.errors.OperationFailure:
+        return 0
+        
     members = status['members']
     primary_optime = None
     oldest_secondary_optime = None
@@ -16,6 +22,6 @@ def mongo_max_replication_lag(connection):
                 oldest_secondary_optime = optime.time
 
     if not primary_optime or not oldest_secondary_optime:
-        raise Exception("Replica set is not healthy")
+        return 0
 
     return primary_optime - oldest_secondary_optime
