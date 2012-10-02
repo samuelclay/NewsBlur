@@ -409,8 +409,6 @@
         
         show_splash_page: function(skip_router) {
             this.reset_feed();
-            NEWSBLUR.app.original_tab_view.unload_feed_iframe();
-            NEWSBLUR.app.story_tab_view.unload_story_iframe();
             $('.right-pane').hide();
             $('.NB-splash-info').show();
             $('#NB-splash,.NB-splash').show();
@@ -1051,6 +1049,8 @@
             
             NEWSBLUR.assets.stories.reset();
             NEWSBLUR.app.feed_selector.hide_feed_selector();
+            NEWSBLUR.app.original_tab_view.unload_feed_iframe();
+            NEWSBLUR.app.story_tab_view.unload_story_iframe();
         },
         
         open_feed: function(feed_id, options) {
@@ -1106,6 +1106,7 @@
                     }, this), options.delay || 0);
                 } else {
                     NEWSBLUR.app.original_tab_view.unload_feed_iframe();
+                    NEWSBLUR.app.story_tab_view.unload_story_iframe();
                     this.flags['iframe_prevented_from_loading'] = true;
                 }
                 this.setup_mousemove_on_views();
