@@ -47,9 +47,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		bundle.putString("password", password);
 		fragment.setArguments(bundle);
 		return fragment;
-
 	}
-
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -58,11 +56,9 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		apiManager = new APIManager(getActivity());
 		receiver = new DetachableResultReceiver(new Handler());
 		receiver.setReceiver(this);
-		Log.d(TAG , "Creating new fragment instance");
 
 		username = getArguments().getString("username");
 		password = getArguments().getString("password");
-
 	}
 
 	@Override
@@ -145,6 +141,9 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 	private void refreshUI() {
 		switch (CURRENT_STATUS) {
 		case SyncService.NOT_RUNNING:
+			break;
+		case SyncService.STATUS_NO_MORE_UPDATES:
+			Log.d(TAG, "Nothing to update here.");
 			break;
 		case SyncService.STATUS_FINISHED:
 			final Animation b = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);

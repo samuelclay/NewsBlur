@@ -69,10 +69,4 @@
         android:textSize="16dp"
         android:textStyle="bold" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_alignParentBottom="true"
-        android:background="#F0F0F0" />
-
 </RelativeLayout>

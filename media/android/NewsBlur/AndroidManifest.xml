@@ -20,7 +20,9 @@
         
         <activity
             android:name=".activity.Login"
-            android:label="@string/newsblur">
+            android:label="@string/newsblur"
+            android:noHistory="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +31,7 @@
         
         <activity
             android:name=".activity.LoginProgress"
+            android:noHistory="true"
             android:label="@string/newsblur" />
        	
 		<activity

@@ -95,7 +95,9 @@ public class SyncService extends IntentService {
 
 			switch (intent.getIntExtra(SYNCSERVICE_TASK , -1)) {
 			case EXTRA_TASK_FOLDER_UPDATE:
-				apiManager.getFolderFeedMapping();
+				if (!apiManager.getFolderFeedMapping()) {
+					receiver.send(STATUS_NO_MORE_UPDATES, null);
+				}
 				break;
 
 			case EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT:

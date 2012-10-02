@@ -3,6 +3,7 @@ package com.newsblur.view;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -49,6 +50,9 @@ public class SocialItemViewBinder implements ViewBinder {
 			if (!TextUtils.isEmpty(authors)) {
 				((TextView) view).setText(authors.toUpperCase());
 			}
+			return true;
+		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_TITLE)) {
+			((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
 			return true;
 		}
 		return false;

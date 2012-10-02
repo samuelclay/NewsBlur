@@ -420,26 +420,34 @@ public class APIManager {
 		}
 	}
 
-	public void getFolderFeedMapping() {
-		getFolderFeedMapping(false);		
+	public boolean getFolderFeedMapping() {
+		return getFolderFeedMapping(false);		
 	}
-
-	public void getFolderFeedMapping(boolean doUpdateCounts) {
+	
+	public boolean checkForFolders() {
 		final APIClient client = new APIClient(context);
-		long currentTime = System.currentTimeMillis();
+		final APIResponse response = client.get(APIConstants.URL_FEEDS);
+		FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
+		return (feedUpdate.folders.entrySet().size() > 1);
+	}
+	
+
+	public boolean getFolderFeedMapping(boolean doUpdateCounts) {
+		
+		
+		final APIClient client = new APIClient(context);
 		final APIResponse response = client.get(doUpdateCounts ? APIConstants.URL_FEEDS : APIConstants.URL_FEEDS_NO_UPDATE);
 		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
-		Log.d(TAG, "Took " + (System.currentTimeMillis() - currentTime) + "ms to retrieve feeds");
-		currentTime = System.currentTimeMillis();
 		
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			HashMap<String, Feed> existingFeeds = getExistingFeeds();
+			if (feedUpdate.folders.size() == 0) {
+				return false;
+			}
 			
-			int insertionCount = 0;
+			HashMap<String, Feed> existingFeeds = getExistingFeeds();
 			
 			for (String newFeedId : feedUpdate.feeds.keySet()) {
 				if (existingFeeds.get(newFeedId) == null || !feedUpdate.feeds.get(newFeedId).equals(existingFeeds.get(newFeedId))) {
-					insertionCount += 1;
 					contentResolver.insert(FeedProvider.FEEDS_URI, feedUpdate.feeds.get(newFeedId).getValues());
 				}
 			}
@@ -485,6 +493,7 @@ public class APIManager {
 				}
 			}
 		}
+		return true;
 	}
 
 	private HashMap<String, Feed> getExistingFeeds() {
