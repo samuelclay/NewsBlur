@@ -130,7 +130,7 @@
     } else if ([category isEqualToString:@"feedsub"]) {
         txt = [NSString stringWithFormat:@"You subscribed to %@.", content];
     } else if ([category isEqualToString:@"signup"]) {
-        txt = [NSString stringWithFormat:@"You signed up for NewsBlur.", content];
+        txt = [NSString stringWithFormat:@"You signed up for NewsBlur."];
     }
 
     NSString *txtWithTime = [NSString stringWithFormat:@"%@\n%@", txt, time];

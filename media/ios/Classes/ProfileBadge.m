@@ -307,12 +307,10 @@
     
     if ([self.followButton.currentTitle isEqualToString:@"Follow"]) {
         urlString = [NSString stringWithFormat:@"http://%@/social/follow",
-                               NEWSBLUR_URL,
-                               [self.activeProfile objectForKey:@"user_id"]];
+                               NEWSBLUR_URL];
     } else {
         urlString = [NSString stringWithFormat:@"http://%@/social/unfollow",
-                               NEWSBLUR_URL,
-                               [self.activeProfile objectForKey:@"user_id"]];
+                               NEWSBLUR_URL];
     }
     
     NSURL *url = [NSURL URLWithString:urlString];
