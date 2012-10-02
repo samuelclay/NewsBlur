@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/selector_feed_background"
+    android:orientation="vertical"
+    android:paddingBottom="6dp"
+    android:paddingTop="6dp" >
+
+    <LinearLayout
+        android:id="@+id/row_feedcounters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:padding="2dp"
+        android:gravity="right"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/row_feedneutral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/neutral_count_rect"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingBottom="1dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/row_feedpositive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/positive_count_rect"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:paddingTop="1dp"
+            android:paddingBottom="2dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/row_feedfavicon"
+        android:layout_width="17dp"
+        android:layout_height="17dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="19dp"
+        android:contentDescription="@string/description_favicon" />
+
+    <TextView
+        android:id="@+id/row_feedname"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@id/row_feedcounters"
+        android:layout_toRightOf="@id/row_feedfavicon"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/black"
+        android:textSize="16dp" />
+
+</RelativeLayout>

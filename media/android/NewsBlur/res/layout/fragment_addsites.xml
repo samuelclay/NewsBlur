@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/login_add_reader_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/newsblur_blue"
+        android:text="@string/login_google_reader"
+        android:textColor="@color/white"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="@string/login_add_sites_from_google_reader"
+        android:textColor="@color/lightgray"
+        android:textSize="12sp" />
+
+    <LinearLayout
+        android:id="@+id/login_categories_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        
+        <ProgressBar 
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="20dp"
+            android:id="@+id/login_categories_progress" 
+            android:indeterminateOnly="true" 
+            android:layout_gravity="center_horizontal" />
+        
+    </LinearLayout>
+
+</LinearLayout>

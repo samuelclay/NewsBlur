@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="250dip"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|center_horizontal"
+    android:orientation="vertical"
+    android:layout_marginTop="10dp"
+    android:paddingLeft="25dip"
+    android:paddingRight="25dip"
+    android:paddingBottom="10dip"
+    android:paddingTop="10dip"
+    >
+    
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        
+        <TextView
+            android:id="@+id/smalltext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A"
+            android:textSize="16dip"
+            android:layout_marginLeft="10dip"
+            android:layout_alignParentLeft="true" 
+            android:layout_alignBaseline="@+id/largetext" />
+        
+        <TextView
+            android:id="@+id/largetext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A"
+            android:textSize="28dip"
+            android:layout_marginRight="10dip"
+            android:layout_alignParentRight="true" />
+        
+    </RelativeLayout>
+    
+    <SeekBar
+        android:id="@+id/textSizeSlider"
+        android:background="@android:color/transparent"
+        android:layout_width="fill_parent"
+        android:progress="3"
+        android:max="5"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

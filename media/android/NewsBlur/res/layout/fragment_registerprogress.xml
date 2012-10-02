@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/register_viewswitcher"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out" >
+
+    <LinearLayout
+        android:id="@+id/registering_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <ProgressBar
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:indeterminateOnly="true" />
+
+        <TextView
+            android:id="@+id/registering_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registering..."
+            android:textColor="@color/lightorange"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/getting_started"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent" >
+
+        <ImageView
+            android:id="@+id/registerprogress_logo"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="50dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/registerprogress_logo"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:text="@string/faster_faster"
+            android:textColor="@color/darkgray" />
+
+        <Button
+            android:id="@+id/registering_next_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="20dp"
+            android:text="Let&apos;s go!"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+</ViewSwitcher>

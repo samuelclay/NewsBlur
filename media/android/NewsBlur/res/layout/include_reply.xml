@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/item_background"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingBottom="12dp"
+    android:paddingLeft="60dp"
+    android:paddingRight="10dp"
+    android:paddingTop="12dp" >
+
+    <View
+        android:id="@+id/reply_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="5dp"
+        android:background="#A6A6A6" />
+
+    <ImageView
+        android:id="@+id/reply_user_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_below="@id/reply_divider"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:contentDescription="@string/description_comment_user"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/reply_shareddate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="26dp"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/lightgray"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/reply_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/reply_shareddate"
+        android:layout_toRightOf="@id/reply_user_image"
+        android:textColor="@color/newsblur_blue"
+        android:layout_marginTop="5dp"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/reply_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/reply_shareddate"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/reply_user_image"
+        android:textColor="@color/darkgray"
+        android:textSize="14dp" />
+
+</RelativeLayout>

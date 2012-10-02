@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="20dp" >
+
+    <TextView
+        android:id="@+id/addfollow_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:text="@string/wonderful_things"
+        android:textColor="@color/darkgray"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/addfollow_newsblur"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/addfollow_text"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="20dp"
+        android:background="@drawable/newsblur_background"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="5dp" >
+
+        <TextView
+            android:id="@+id/addfollow_newsblur_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/addfollow_add_newsblur"
+            android:textColor="@color/white"
+            android:layout_marginRight="10dp"
+            android:textSize="16sp" />
+
+        <CheckBox
+            android:id="@+id/addfollow_newsblur_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/addfollow_popular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/addfollow_newsblur"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="20dp"
+        android:gravity="center"
+        android:background="@drawable/newsblur_background"
+        android:orientation="horizontal"
+        android:padding="5dp" >
+
+        <TextView
+            android:id="@+id/addfollow_popular_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/addfollow_add_popular"
+            android:textColor="@color/white"
+            android:layout_marginRight="10dp"
+            android:textSize="16sp" />
+
+        <CheckBox
+            android:id="@+id/addfollow_popular_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</RelativeLayout>
