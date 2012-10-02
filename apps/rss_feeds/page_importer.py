@@ -80,6 +80,9 @@ class PageImporter(object):
                         response = requests.get(feed_link, headers=self.headers)
                     except requests.exceptions.TooManyRedirects:
                         response = requests.get(feed_link)
+                    except AttributeError:
+                        self.save_no_page()
+                        return
                     try:
                         data = response.text
                     except (LookupError, TypeError):
