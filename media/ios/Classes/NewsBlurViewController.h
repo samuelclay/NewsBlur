@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
+#import "FolderTitleView.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
 #import "BaseViewController.h"
@@ -27,7 +28,6 @@
     NSMutableDictionary *visibleFeeds;
     NSMutableDictionary *stillVisibleFeeds;
     BOOL viewShowingAllFeeds;
-    BOOL hasNoSites;
     PullToRefreshView *pull;
     NSDate *lastUpdate;
     NSCache *imageCache;
@@ -52,7 +52,6 @@
 @property (nonatomic) NSMutableDictionary *visibleFeeds;
 @property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
-@property (nonatomic, readwrite) BOOL hasNoSites;
 @property (nonatomic) PullToRefreshView *pull;
 @property (nonatomic) NSDate *lastUpdate;
 @property (nonatomic) NSCache *imageCache;

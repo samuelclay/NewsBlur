@@ -26,6 +26,7 @@
 #define kTableViewRowHeight 36;
 #define kBlurblogTableViewRowHeight 47;
 #define kPhoneBlurblogTableViewRowHeight 39;
+static const CGFloat kFolderTitleHeight = 28;
 
 @interface NewsBlurViewController () 
 
@@ -55,7 +56,6 @@
 @synthesize currentRowAtIndexPath;
 @synthesize noFocusMessage;
 @synthesize toolbarLeftMargin;
-@synthesize hasNoSites;
 @synthesize updatedDictFeeds_;
 @synthesize updatedDictSocialFeeds_;
 @synthesize inPullToRefresh_;
@@ -295,7 +295,7 @@
         return [self informError:@"The server barfed!"];
     }
     
-    self.hasNoSites = NO;
+    appDelegate.hasNoSites = NO;
     NSString *responseString = [request responseString];   
     NSData *responseData=[responseString dataUsingEncoding:NSUTF8StringEncoding];    
     NSError *error;
@@ -445,7 +445,7 @@
     
     if ([[appDelegate.dictFeeds allKeys] count] == 0 &&
         [[appDelegate.dictSocialFeeds allKeys] count] == 0) {
-        self.hasNoSites = YES;
+        appDelegate.hasNoSites = YES;
     }
     
     [self.feedTitlesTable reloadData];
@@ -644,7 +644,7 @@
 #pragma mark Table View - Feed List
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (self.hasNoSites) {
+    if (appDelegate.hasNoSites) {
         return 2;
     }
     return [appDelegate.dictFoldersArray count];
@@ -655,7 +655,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (self.hasNoSites) {
+    if (appDelegate.hasNoSites) {
         return 1;
     }
 
@@ -667,7 +667,7 @@
                      cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     // messaging when there are no sites
-    if (self.hasNoSites) {
+    if (appDelegate.hasNoSites) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EmptyCell"];    
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:nil];
@@ -732,7 +732,7 @@
 - (void)tableView:(UITableView *)tableView 
         didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (self.hasNoSites) {
+    if (appDelegate.hasNoSites) {
         return;
     }
     
@@ -772,7 +772,7 @@
 - (CGFloat)tableView:(UITableView *)tableView 
            heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (self.hasNoSites) {
+    if (appDelegate.hasNoSites) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             return kBlurblogTableViewRowHeight;            
         } else {
@@ -800,113 +800,11 @@
 - (UIView *)tableView:(UITableView *)tableView 
             viewForHeaderInSection:(NSInteger)section {
     
-    int headerLabelHeight, folderImageViewY, disclosureImageViewY;
     
-//    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        headerLabelHeight = 27;
-        folderImageViewY = 3;
-        disclosureImageViewY = 7;
-//    } else {
-//        headerLabelHeight = 20;
-//        folderImageViewY = 0;
-//        disclosureImageViewY = 4;
-//    }
-        
-    // create the parent view that will hold header Label
-    UIControl* customView = [[UIControl alloc] 
-                              initWithFrame:CGRectMake(0.0, 0.0, 
-                                                       tableView.bounds.size.width, headerLabelHeight + 1)];
-    UIView *borderTop = [[UIView alloc] 
-                            initWithFrame:CGRectMake(0.0, 0, 
-                                                     tableView.bounds.size.width, 1.0)];
-    borderTop.backgroundColor = UIColorFromRGB(0xe0e0e0);
-    borderTop.opaque = NO;
-    [customView addSubview:borderTop];
+    CGRect rect = CGRectMake(0.0, 0.0, tableView.bounds.size.width, kFolderTitleHeight);
+    UIView *folderTitle = [[FolderTitleView alloc] drawWithRect:rect inSection:section];
     
-    
-    UIView *borderBottom = [[UIView alloc] 
-                             initWithFrame:CGRectMake(0.0, headerLabelHeight, 
-                                                      tableView.bounds.size.width, 1.0)];
-    borderBottom.backgroundColor = [UIColorFromRGB(0xB7BDC6) colorWithAlphaComponent:0.5];
-    borderBottom.opaque = NO;
-    [customView addSubview:borderBottom];
-    
-    UILabel * headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    customView.opaque = NO;
-    headerLabel.backgroundColor = [UIColor clearColor];
-    headerLabel.opaque = NO;
-    headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-    headerLabel.highlightedTextColor = [UIColor whiteColor];
-    headerLabel.font = [UIFont boldSystemFontOfSize:11];
-    headerLabel.frame = CGRectMake(36.0, 1.0, 286.0, headerLabelHeight);
-    headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
-    headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-    if (section == 0) {
-        headerLabel.text = @"ALL BLURBLOG STORIES";
-//        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-//                                      colorWithAlphaComponent:0.8];
-    } else if (section == 1) {
-        headerLabel.text = @"ALL STORIES";
-//        customView.backgroundColor = [UIColorFromRGB(0xE6DDD7)
-//                                      colorWithAlphaComponent:0.8];
-    } else {
-        headerLabel.text = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
-//        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-//                                      colorWithAlphaComponent:0.8];
-    }
-    
-    customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-                                  colorWithAlphaComponent:0.8];
-    [customView addSubview:headerLabel];
-    
-    UIImage *folderImage;
-    int folderImageViewX = 10;
-    
-    if (section == 0) {
-        folderImage = [UIImage imageNamed:@"group.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 8;
-        }
-    } else if (section == 1) {
-        folderImage = [UIImage imageNamed:@"archive.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            folderImageViewX = 10;
-        } else {
-            folderImageViewX = 7;
-        }
-    } else {
-        folderImage = [UIImage imageNamed:@"folder_2.png"];
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        } else {
-            folderImageViewX = 7;
-        }
-    }
-    UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
-    folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
-    [customView addSubview:folderImageView];
-
-    if (!self.hasNoSites) {    
-        UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
-        UIImageView *disclosureImageView = [[UIImageView alloc] initWithImage:disclosureImage];
-        disclosureImageView.frame = CGRectMake(customView.frame.size.width - 20, disclosureImageViewY, 9.0, 14.0);
-        [customView addSubview:disclosureImageView];
-    }
-
-    UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
-    invisibleHeaderButton.alpha = .1;
-    invisibleHeaderButton.tag = section;
-    [invisibleHeaderButton addTarget:self action:@selector(didSelectSectionHeader:) forControlEvents:UIControlEventTouchUpInside];
-    [customView addSubview:invisibleHeaderButton];
-    
-    [invisibleHeaderButton addTarget:self action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
-    [invisibleHeaderButton addTarget:self action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpInside];
-    [invisibleHeaderButton addTarget:self action:@selector(sectionUntappedOutside:) forControlEvents:UIControlEventTouchUpOutside];
-    
-    [customView setAutoresizingMask:UIViewAutoresizingNone];
-    return customView;
+    return folderTitle;
 }
 
 - (IBAction)sectionTapped:(UIButton *)button {

@@ -70,6 +70,7 @@
 @synthesize activeUsername;
 @synthesize activeUserProfileId;
 @synthesize activeUserProfileName;
+@synthesize hasNoSites;
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isSocialRiverView;
