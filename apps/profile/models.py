@@ -195,7 +195,10 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         if not self.user.email or not self.send_emails:
             return
         
-        if self.is_premium and not force:
+        sent_email, created = MSentEmail.objects.get_or_create(receiver_user_id=self.user.pk,
+                                                               email_type='new_premium')
+        
+        if not created and not force:
             return
         
         user    = self.user
