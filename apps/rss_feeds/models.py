@@ -19,7 +19,6 @@ from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from mongoengine.queryset import OperationError
 from mongoengine.base import ValidationError
-from lxml.html.diff import htmldiff
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
 from utils import json_functions as json
 from utils import feedfinder, feedparser
@@ -30,7 +29,7 @@ from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
-from utils.story_functions import strip_tags
+from utils.story_functions import strip_tags, htmldiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
