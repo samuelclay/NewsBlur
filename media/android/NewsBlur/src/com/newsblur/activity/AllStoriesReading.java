@@ -26,6 +26,7 @@ public class AllStoriesReading extends Reading {
 	private int currentPage;
 	private ArrayList<String> feedIds;
 	private boolean stopLoading = false;
+	private boolean requestedPage = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
@@ -82,27 +83,12 @@ public class AllStoriesReading extends Reading {
 
 	@Override
 	public void checkStoryCount(int position) {
-		if (position == stories.getCount() - 1) {
-			boolean loadMore = false;
-
-			switch (currentState) {
-			case AppConstants.STATE_ALL:
-				loadMore = positiveCount + neutralCount + negativeCount > stories.getCount();
-				break;
-			case AppConstants.STATE_BEST:
-				loadMore = positiveCount > stories.getCount();
-				break;
-			case AppConstants.STATE_SOME:
-				loadMore = positiveCount + neutralCount > stories.getCount();
-				break;	
-			}
-
-			if (loadMore) {
-				currentPage += 1;
-				triggerRefresh(currentPage);
-			} else {
-				Log.d(TAG, "No need");
-			}
+		if (position == stories.getCount() - 1 && !stopLoading && !requestedPage) {
+			requestedPage = true;
+			currentPage += 1;
+			triggerRefresh(currentPage);
+		} else {
+			Log.d(TAG, "No need");
 		}
 	}
 
@@ -129,6 +115,7 @@ public class AllStoriesReading extends Reading {
 	public void updateAfterSync() {
 		setSupportProgressBarIndeterminateVisibility(false);
 		stories.requery();
+		requestedPage = false;
 		readingAdapter.notifyDataSetChanged();
 		checkStoryCount(pager.getCurrentItem());
 	}
