@@ -94,8 +94,6 @@ public class FeedReading extends Reading {
 			requestedPage = true;
 			currentPage += 1;
 			triggerRefresh(currentPage);
-		} else {
-			Log.d(TAG, "No need");
 		}
 	}
 

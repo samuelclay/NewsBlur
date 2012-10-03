@@ -14,15 +14,11 @@ import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.MarkMixedStoriesAsReadTask;
 import com.newsblur.service.SyncService;
-import com.newsblur.util.AppConstants;
 
 public class AllStoriesReading extends Reading {
 
 	private Cursor stories;
 	private ValueMultimap storiesToMarkAsRead;
-	private int negativeCount;
-	private int neutralCount;
-	private int positiveCount;
 	private int currentPage;
 	private ArrayList<String> feedIds;
 	private boolean stopLoading = false;
@@ -48,18 +44,11 @@ public class AllStoriesReading extends Reading {
 	}
 
 	private void setupCountCursor() {
-		Cursor countCursor = contentResolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
-		countCursor.moveToFirst();
-		negativeCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEG));
-		neutralCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
-		positiveCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_POS));
-
 		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		feedIds = new ArrayList<String>();
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
 		}
-
 	}
 
 	@Override
@@ -87,8 +76,6 @@ public class AllStoriesReading extends Reading {
 			requestedPage = true;
 			currentPage += 1;
 			triggerRefresh(currentPage);
-		} else {
-			Log.d(TAG, "No need");
 		}
 	}
 

@@ -223,7 +223,7 @@ public class FeedProvider extends ContentProvider {
 			break;		
 
 		case UriMatcher.NO_MATCH:
-			Log.d(TAG, "No match found for URI: " + uri.toString());
+			Log.e(TAG, "No match found for URI: " + uri.toString());
 			break;
 		}
 		return resultUri;
@@ -231,7 +231,6 @@ public class FeedProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
-		Log.d(TAG, "Creating provider and database.");
 		databaseHelper = new BlurDatabase(getContext().getApplicationContext());
 		return true;
 	}

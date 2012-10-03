@@ -17,7 +17,6 @@ import com.newsblur.view.FlowLayout;
 
 public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 	
-	private static final String TAG = "LikeCommentTask";
 	final WeakReference<ImageView> favouriteIconViewHolder;
 	
 	private final APIManager apiManager;

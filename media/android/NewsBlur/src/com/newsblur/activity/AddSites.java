@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -23,7 +22,6 @@ public class AddSites extends SherlockFragmentActivity {
 	private String currentTag = "addsitesFragment";
 	private AddSitesListFragment sitesList;
 	private APIManager apiManager;
-	private String TAG = "AddSites";
 	
 	@Override
 	protected void onCreate(Bundle arg0) {
@@ -49,7 +47,7 @@ public class AddSites extends SherlockFragmentActivity {
 					@Override
 					protected Void doInBackground(Void... params) {
 						final ArrayList<String> categories = sitesList.getSelectedCategories();
-						Log.d(TAG, "Returned response to adding sites: "  + apiManager.addCategories(categories));
+						apiManager.addCategories(categories);
 						return null;
 					}
 				}.execute();

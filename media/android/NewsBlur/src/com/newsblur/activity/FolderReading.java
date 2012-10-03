@@ -89,8 +89,6 @@ public class FolderReading extends Reading {
 			currentPage += 1;
 			requestedPage = true;
 			triggerRefresh(currentPage);
-		} else {
-			Log.d(TAG, "No need");
 		}
 	}
 

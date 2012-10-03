@@ -51,7 +51,6 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d(TAG, "Returned okay.");
 		if (resultCode == RESULT_OK) {
 			itemListFragment.hasUpdated();
 		}
@@ -97,7 +96,6 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 
 	@Override
 	public void changedState(int state) {
-		Log.d(TAG, "Changed state.");
 		itemListFragment.changeState(state);
 	}
 

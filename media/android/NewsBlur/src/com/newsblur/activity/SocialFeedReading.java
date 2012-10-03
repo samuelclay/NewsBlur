@@ -7,7 +7,6 @@ import java.util.Set;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.newsblur.database.FeedProvider;
 import com.newsblur.database.MixedFeedsReadingAdapter;
@@ -17,7 +16,7 @@ import com.newsblur.network.MarkSocialStoryAsReadTask;
 import com.newsblur.service.SyncService;
 
 public class SocialFeedReading extends Reading {
-	
+
 	MarkSocialAsReadUpdate markSocialAsReadList;
 	private String userId;
 	private String username;
@@ -25,20 +24,20 @@ public class SocialFeedReading extends Reading {
 	private boolean requestedPage;
 	private boolean stopLoading = false;
 	private int currentPage;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
 		super.onCreate(savedInstanceBundle);
-		
+
 		setResult(RESULT_OK);
-		
+
 		userId = getIntent().getStringExtra(Reading.EXTRA_USERID);
 		username = getIntent().getStringExtra(Reading.EXTRA_USERNAME);
 		markSocialAsReadList = new MarkSocialAsReadUpdate(userId);
-		
+
 		Uri socialFeedUri = FeedProvider.SOCIAL_FEEDS_URI.buildUpon().appendPath(userId).build();
 		socialFeed = SocialFeed.fromCursor(contentResolver.query(socialFeedUri, null, null, null, null));
-		
+
 		Uri storiesURI = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 		stories = contentResolver.query(storiesURI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		setTitle(getIntent().getStringExtra(EXTRA_USERNAME));
@@ -51,7 +50,7 @@ public class SocialFeedReading extends Reading {
 		addStoryToMarkAsRead(story);
 		markSocialAsReadList.add(story.feedId, story.id);
 	}
-	
+
 	@Override
 	public void onPageSelected(int position) {
 		super.onPageSelected(position);
@@ -68,16 +67,16 @@ public class SocialFeedReading extends Reading {
 		new MarkSocialStoryAsReadTask(this, syncFragment, markSocialAsReadList).execute();
 		super.onDestroy();
 	}
-	
+
 	public class MarkSocialAsReadUpdate {
 		public String userId;
 		HashMap<String, Set<String>> feedStoryMap;
-		
+
 		public MarkSocialAsReadUpdate(final String userId) {
 			this.userId = userId;
 			feedStoryMap = new HashMap<String, Set<String>>();
 		}
-		
+
 		public void add(final String feedId, final String storyId) {
 			if (feedStoryMap.get(feedId) == null) {
 				Set<String> storiesForFeed = new HashSet<String>();
@@ -87,7 +86,7 @@ public class SocialFeedReading extends Reading {
 				feedStoryMap.get(feedId).add(storyId);
 			}
 		}
-		
+
 		public Object getJsonObject() {
 			HashMap<String, HashMap<String, Set<String>>> jsonMap = new HashMap<String, HashMap<String, Set<String>>>();
 			jsonMap.put(userId, feedStoryMap);
@@ -117,14 +116,10 @@ public class SocialFeedReading extends Reading {
 
 	@Override
 	public void checkStoryCount(int position) {
-		if (position == stories.getCount() - 1) {
-			if (!requestedPage && !stopLoading) {
-				currentPage += 1;
-				requestedPage = true;
-				triggerRefresh(currentPage);
-			} else {
-				Log.d(TAG, "No need");
-			}
+		if (position == stories.getCount() - 1 && !requestedPage && !stopLoading) {
+			currentPage += 1;
+			requestedPage = true;
+			triggerRefresh(currentPage);
 		}
 	}
 
@@ -135,5 +130,5 @@ public class SocialFeedReading extends Reading {
 
 	@Override
 	public void closeAfterUpdate() { }
-	
+
 }

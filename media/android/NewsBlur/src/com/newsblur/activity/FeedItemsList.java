@@ -6,10 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
-import android.view.ContextMenu;
-import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
@@ -135,7 +131,6 @@ public class FeedItemsList extends ItemsList {
 
 	@Override
 	public void setNothingMoreToUpdate() {
-		Log.d(TAG, "Stop loading");
 		stopLoading = true;
 	}
 
