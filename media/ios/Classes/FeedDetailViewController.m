@@ -122,7 +122,9 @@
     
 	[super viewWillAppear:animated];
         
-    if ((appDelegate.isSocialRiverView || appDelegate.isRiverView || appDelegate.isSocialView)) {
+    if ((appDelegate.isSocialRiverView ||
+         appDelegate.isSocialView ||
+         [appDelegate.activeFolder isEqualToString:@"everything"])) {
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
@@ -959,10 +961,11 @@
         self.actionSheet_ = nil;
         return;
     }
-    NSString *title = appDelegate.isRiverView ? 
-    appDelegate.activeFolder : 
-    [appDelegate.activeFeed objectForKey:@"feed_title"];
-    UIActionSheet *options = [[UIActionSheet alloc] 
+    NSString *title = appDelegate.isRiverView ?
+                        appDelegate.activeFolder :
+                        [appDelegate.activeFeed objectForKey:@"feed_title"];
+    
+    UIActionSheet *options = [[UIActionSheet alloc]
                               initWithTitle:title
                               delegate:self
                               cancelButtonTitle:nil
@@ -971,20 +974,19 @@
     
     self.actionSheet_ = options;
     
-    if (![title isEqualToString:@"Everything"]) {
-        NSString *deleteText = [NSString stringWithFormat:@"Delete %@", 
-                                appDelegate.isRiverView ? 
-                                @"this entire folder" : 
-                                @"this site"];
-        [options addButtonWithTitle:deleteText];
-        options.destructiveButtonIndex = 0;
-        
-        NSString *moveText = @"Move to another folder";
-        [options addButtonWithTitle:moveText];
-        
+    NSString *deleteText = [NSString stringWithFormat:@"Delete %@", 
+                            appDelegate.isRiverView ? 
+                            @"this entire folder" : 
+                            @"this site"];
+    [options addButtonWithTitle:deleteText];
+    options.destructiveButtonIndex = 0;
+    
+    NSString *moveText = @"Move to another folder";
+    [options addButtonWithTitle:moveText];
+    
+    if (!appDelegate.isRiverView) {
         NSString *fetchText = @"Insta-fetch stories";
         [options addButtonWithTitle:fetchText];
-
     }
     
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];

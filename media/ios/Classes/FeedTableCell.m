@@ -143,7 +143,7 @@ static CGFloat *psColors = nil;
                 rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 10, psWidth, 17);
             }
         } else {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 9, psWidth, 17);
+            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, 17);
         }
         
         ;
@@ -170,7 +170,7 @@ static CGFloat *psColors = nil;
                 rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 10, ntWidth, 17);
             }
         } else {
-            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 9, ntWidth, 17);
+            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, 17);
         }
 
         [UIView drawRoundRectangleInRect:rr withRadius:4];
@@ -186,7 +186,7 @@ static CGFloat *psColors = nil;
     }
     if(_negativeCount > 0 && appDelegate.selectedIntelligence <= -1){       
         [negativeBackgroundColor set];
-        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntWidth - ntPadding - ngOffset, self.isSocial ? 14: 9, ngWidth, 17);
+        CGRect rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntWidth - ntPadding - ngOffset, self.isSocial ? 14: 7, ngWidth, 17);
         [UIView drawRoundRectangleInRect:rr withRadius:4];
 //        [UIView drawLinearGradientInRect:rr colors:ngColors];
         
@@ -232,14 +232,14 @@ static CGFloat *psColors = nil;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
             [feedTitle 
-             drawInRect:CGRectMake(36.0, 9.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
+             drawInRect:CGRectMake(36.0, 7.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
             [feedTitle 
-             drawInRect:CGRectMake(34.0, 9.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
+             drawInRect:CGRectMake(34.0, 7.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];
