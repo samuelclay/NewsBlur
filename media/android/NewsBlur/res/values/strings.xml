@@ -110,7 +110,6 @@
     <string name="menu_search">Search</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
-    <string name="menu_delete_feed">Delete feed</string>
     
     <string name="feed_deleted">Feed deleted</string>
     <string name="error_deleting_feed">There was an error deleting the feed.</string>

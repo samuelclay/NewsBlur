@@ -48,6 +48,7 @@ public class SocialFeedReading extends Reading {
 		setupPager();
 
 		Story story = readingAdapter.getStory(passedPosition);
+		addStoryToMarkAsRead(story);
 		markSocialAsReadList.add(story.feedId, story.id);
 	}
 	
