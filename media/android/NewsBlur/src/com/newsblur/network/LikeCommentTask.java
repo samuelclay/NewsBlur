@@ -58,7 +58,7 @@ public class LikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 				
 				ImageView favouriteImage = new ImageView(context);
 				favouriteImage.setTag(user.id);
-				userImage = UIUtils.roundBitmap(userImage);
+				userImage = UIUtils.roundCorners(userImage, 10f);
 				favouriteImage.setImageBitmap(userImage);
 				favouriteAvatarHolder.get().addView(favouriteImage);
 				

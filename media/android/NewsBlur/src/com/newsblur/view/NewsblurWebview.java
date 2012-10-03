@@ -1,7 +1,6 @@
 package com.newsblur.view;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -9,18 +8,13 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.newsblur.util.AppConstants;
-import com.newsblur.util.PrefConstants;
 
 public class NewsblurWebview extends WebView {
 
-	private SharedPreferences preferences;
 	private Handler handler;
-	private float currentSize;
 
 	public NewsblurWebview(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		
-		preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		
 		getSettings().setJavaScriptEnabled(true);
 		getSettings().setLoadWithOverviewMode(true);
