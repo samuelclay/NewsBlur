@@ -39,8 +39,8 @@
 	<string name="description_follow_button">Follow or unfollow a user</string>
 	<string name="description_comment_user">Comment user image</string>
 	
-	<string name="reading_shared_count" formatted="false">%s SHARES</string>
-	<string name="reading_comment_count" formatted="false">%s COMMENTS</string>
+	<string name="reading_shared_count">%s SHARES</string>
+	<string name="reading_comment_count">%s COMMENTS</string>
 	
 	<string name="all_stories">ALL STORIES</string>
 	<string name="all_shared_stories">ALL SHARED STORIES</string>
@@ -57,9 +57,9 @@
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="shared">Story shared</string>
 	<string name="error_sharing">There was an problem sharing this story.</string>
-	<string name="share_newsblur" formatted="false">Share \"%s\" to your Blurblog?</string>
+	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
 	
-	<string name="reply_to" formatted="false">Reply to \"%s\"</string>
+	<string name="reply_to">Reply to \"%s\"</string>
 	
 	<string name="alert_dialog_ok">Okay</string>
 	<string name="alert_dialog_cancel">Cancel</string>
