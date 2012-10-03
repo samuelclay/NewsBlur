@@ -775,15 +775,16 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     display: block;
 }
 #feed_list.NB-feedlist.NB-selector-active .feed,
-.NB-feedlist.NB-socialfeeds.NB-selector-active .feed {
+.NB-socialfeeds-folder.NB-selector-active .feed {
     display: none;
 }
 #feed_list.NB-feedlist.NB-selector-active .feed.NB-feed-selector-active,
-.NB-feedlist.NB-socialfeeds.NB-selector-active .feed.NB-feed-selector-active {
+.NB-socialfeeds-folder.NB-selector-active .feed.NB-feed-selector-active {
     display: block;
     opacity: 1;
 }
-.NB-feedlist.NB-selector-active .NB-folder-collapsed .folder {
+.NB-feedlist.NB-selector-active .NB-folder-collapsed .folder,
+.NB-socialfeeds-folder.NB-selector-active {
     display: block !important;
     opacity: 1 !important;
 }

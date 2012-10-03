@@ -20,7 +20,7 @@
                 $sidebar: $('.NB-sidebar'),
                 $feed_lists: $('.NB-feedlists'),
                 $feed_list: $('#feed_list'),
-                $social_feeds: $('.NB-socialfeeds'),
+                $social_feeds: $('.NB-socialfeeds-folder'),
                 $story_titles: $('#story_titles'),
                 $content_pane: $('.content-pane'),
                 $story_taskbar: $('#story_taskbar'),
