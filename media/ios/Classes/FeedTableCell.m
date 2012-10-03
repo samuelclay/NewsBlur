@@ -230,14 +230,14 @@ static CGFloat *psColors = nil;
 
     } else {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.feedFavicon drawInRect:CGRectMake(12.0, 9.0, 16.0, 16.0)];
+            [self.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
             [feedTitle 
              drawInRect:CGRectMake(36.0, 9.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];
         } else {
-            [self.feedFavicon drawInRect:CGRectMake(9.0, 9.0, 16.0, 16.0)];
+            [self.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
             [feedTitle 
              drawInRect:CGRectMake(34.0, 9.0, rect.size.width - psWidth - psPadding - ntWidth - ntPadding - ngWidth - 10, 20.0) 
              withFont:font

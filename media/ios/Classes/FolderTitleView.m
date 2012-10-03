@@ -25,10 +25,16 @@
 - (UIControl *)drawWithRect:(CGRect)rect inSection:(NSInteger)section {
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
-    
-    int folderImageViewY;
-    
-    folderImageViewY = 3;
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+
+    NSString *folderName;
+    if (section == 0) {
+        folderName = @"river_blurblogs";
+    } else {
+        folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
+    }
+    NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
+    bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     
     // create the parent view that will hold header Label
     UIControl* customView = [[UIControl alloc]
@@ -76,6 +82,40 @@
                                   colorWithAlphaComponent:0.8];
     [customView addSubview:headerLabel];
     
+    UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
+    invisibleHeaderButton.alpha = .1;
+    invisibleHeaderButton.tag = section;
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(didSelectSectionHeader:) forControlEvents:UIControlEventTouchUpInside];
+    [customView addSubview:invisibleHeaderButton];
+    
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpInside];
+    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionUntappedOutside:) forControlEvents:UIControlEventTouchUpOutside];
+    
+    if (!appDelegate.hasNoSites) {
+        if (section != 1) {
+            UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
+            UIImageView *disclosureBorderView = [[UIImageView alloc] initWithImage:disclosureBorder];
+            disclosureBorderView.frame = CGRectMake(customView.frame.size.width - 30, -1, 29, 29);
+            [customView addSubview:disclosureBorderView];
+        }
+        
+        UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
+        [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
+        disclosureButton.frame = CGRectMake(customView.frame.size.width - 30, -1, 29, 29);
+        if (section != 1) {
+            if (!isFolderCollapsed) {
+                disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
+            }
+            
+            disclosureButton.tag = section;
+            [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
+        }
+        [customView addSubview:disclosureButton];
+    }
+    
     UIImage *folderImage;
     int folderImageViewX = 10;
     
@@ -94,48 +134,19 @@
             folderImageViewX = 7;
         }
     } else {
-        folderImage = [UIImage imageNamed:@"folder_2.png"];
+        if (isFolderCollapsed) {
+            folderImage = [UIImage imageNamed:@"folder_collapsed.png"];
+        } else {
+            folderImage = [UIImage imageNamed:@"folder_2.png"];
+        }
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         } else {
             folderImageViewX = 7;
         }
     }
     UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
-    folderImageView.frame = CGRectMake(folderImageViewX, folderImageViewY, 20, 20);
+    folderImageView.frame = CGRectMake(folderImageViewX, 3, 20, 20);
     [customView addSubview:folderImageView];
-    
-    
-    UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
-    invisibleHeaderButton.alpha = .1;
-    invisibleHeaderButton.tag = section;
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(didSelectSectionHeader:) forControlEvents:UIControlEventTouchUpInside];
-    [customView addSubview:invisibleHeaderButton];
-    
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpInside];
-    [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionUntappedOutside:) forControlEvents:UIControlEventTouchUpOutside];
-    
-    if (!appDelegate.hasNoSites) {
-        if (section != 1) {
-            UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
-            UIImageView *disclosureBorderView = [[UIImageView alloc] initWithImage:disclosureBorder];
-            disclosureBorderView.frame = CGRectMake(customView.frame.size.width - 30, 0, 29, 29);
-            [customView addSubview:disclosureBorderView];
-        }
-        
-        UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
-        UIImageView *disclosureImageView = [[UIImageView alloc] initWithImage:disclosureImage];
-        [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
-        disclosureButton.frame = CGRectMake(customView.frame.size.width - 30, 0, 29, 29);
-        if (section != 1) {
-            disclosureImageView.transform = CGAffineTransformMakeRotation(M_PI_2);
-        }
-        [customView addSubview:disclosureButton];
-        
-        //        [disclosureImageView addTarget]
-    }
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     
