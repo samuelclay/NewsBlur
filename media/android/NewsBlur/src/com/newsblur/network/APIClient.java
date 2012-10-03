@@ -1,6 +1,5 @@
 package com.newsblur.network;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
@@ -74,7 +73,6 @@ public class APIClient {
 
 			final URL urlFeeds = new URL(urlString + "?" + parameterString);
 			connection = (HttpURLConnection) urlFeeds.openConnection();
-			Log.d(TAG, urlFeeds.toString());
 			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 			if (cookie != null) {
@@ -104,7 +102,6 @@ public class APIClient {
 			final URL urlFeeds = new URL(urlString + "?" + parameterString);
 			connection = (HttpURLConnection) urlFeeds.openConnection();
 
-			Log.d(TAG, urlFeeds.toString());
 			final SharedPreferences preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 			final String cookie = preferences.getString(PrefConstants.PREF_COOKIE, null);
 			if (cookie != null) {
@@ -152,7 +149,6 @@ public class APIClient {
 			parameters.add(builder.toString());
 		}
 		final String parameterString = TextUtils.join("&", parameters);
-		Log.d(TAG, "Parameter string: " + parameterString);
 		try {
 			final URL url = new URL(urlString);
 			connection = (HttpURLConnection) url.openConnection();
@@ -200,7 +196,6 @@ public class APIClient {
 			connection.setDoOutput(true);
 			connection.setRequestMethod("POST");
 			String parameterString = jsonIfy ? valueMap.getJsonString() : valueMap.getParameterString();
-			Log.d(TAG, "Parameter string: " + parameterString);
 			connection.setFixedLengthStreamingMode(parameterString.getBytes().length);
 			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 			

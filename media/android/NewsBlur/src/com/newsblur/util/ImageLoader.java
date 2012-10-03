@@ -111,7 +111,6 @@ public class ImageLoader {
 		Bitmap bitmap = BitmapFactory.decodeFile(f.getAbsolutePath());
 		
 		if (bitmap != null) {
-			Log.d(TAG, "Retrieving bitmap From file cache");
 			memoryCache.put(url, bitmap);			
 			bitmap = UIUtils.roundCorners(bitmap, 5);
 			return bitmap;

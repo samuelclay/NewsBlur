@@ -120,7 +120,6 @@ public class SocialFeedItemListFragment extends ItemListFragment implements Load
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.d(TAG, "Loader reset");
 		adapter.notifyDataSetInvalidated();
 	}
 	

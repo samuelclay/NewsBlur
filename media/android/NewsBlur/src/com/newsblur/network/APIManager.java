@@ -270,8 +270,7 @@ public class APIManager {
 			// If we've successfully retrieved the latest stories for all shared feeds (the first page), delete all previous shared feeds
 			if (TextUtils.equals(pageNumber,"1")) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
-				int deleted = contentResolver.delete(storyUri, null, null);
-				Log.d(TAG, "Deleted " + deleted + " stories");
+				contentResolver.delete(storyUri, null, null);
 			}
 
 			for (Story story : storiesResponse.stories) {

@@ -101,7 +101,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 				// We include this wait simply as a small UX convenience. Otherwise the user could be met with a disconcerting flicker when attempting to log in and failing.
 				Thread.sleep(700);
 			} catch (InterruptedException e) {
-				Log.d(TAG, "Error sleeping during login.");
+				Log.e(TAG, "Error sleeping during login.");
 			}
 			return response;
 		}
@@ -143,7 +143,6 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		case SyncService.NOT_RUNNING:
 			break;
 		case SyncService.STATUS_NO_MORE_UPDATES:
-			Log.d(TAG, "Nothing to update here.");
 			break;
 		case SyncService.STATUS_FINISHED:
 			final Animation b = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
@@ -170,7 +169,6 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		case SyncService.STATUS_RUNNING:
 			break;
 		case SyncService.STATUS_ERROR:
-			Log.d(TAG, "Error synchronising feeds.");
 			updateStatus.setText("Error synchronising.");
 			break;
 		}
@@ -186,7 +184,6 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 
 	@Override
 	public void onReceiverResult(int resultCode, Bundle resultData) {
-		Log.d(TAG, "Received result");
 		CURRENT_STATUS = resultCode;
 		refreshUI();
 	}

@@ -240,7 +240,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		builder.append("<html><head><meta name=\"viewport\" content=\"target-densitydpi=device-dpi\" />");
 		builder.append("<style style=\"text/css\">");
 		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
-		Log.d(TAG, "Setting initial size: " + Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND));
 		builder.append("</style>");
 		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body>");
 		builder.append(story.content);
@@ -252,7 +251,6 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 	private class TextSizeReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.d(TAG, "Size: " + (AppConstants.FONT_SIZE_LOWER_BOUND + intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f)));
 			web.setTextSize(intent.getFloatExtra(TEXT_SIZE_VALUE, 1.0f));
 		}   
 	}

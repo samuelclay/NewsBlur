@@ -96,7 +96,7 @@ public class RegisterProgressFragment extends Fragment {
 				// We include this wait simply as a small UX convenience. Otherwise the user could be met with a disconcerting flicker when attempting to register and failing.
 				Thread.sleep(700);
 			} catch (InterruptedException e) {
-				Log.d(TAG, "Error sleeping during login.");
+				Log.e(TAG, "Error sleeping during login.");
 			}
 			response = apiManager.signup(username, password, email);
 			if (response.authenticated) {

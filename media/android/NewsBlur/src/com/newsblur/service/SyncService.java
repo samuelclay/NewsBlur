@@ -86,7 +86,6 @@ public class SyncService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		Log.d(TAG, "Received SyncService handleIntent call.");
 		final ResultReceiver receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
 		try {
 			if (receiver != null) {
@@ -210,7 +209,6 @@ public class SyncService extends IntentService {
 				if (intent.getLongExtra(EXTRA_TASK_FEED_ID, -1) != -1) {
 					Long feedToBeDeleted = intent.getLongExtra(EXTRA_TASK_FEED_ID, -1);
 					if (apiManager.deleteFeed(feedToBeDeleted, intent.getStringExtra(EXTRA_TASK_FOLDER_NAME))) {
-						Log.d(TAG, "Deleted feed");
 						Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedToBeDeleted)).build();
 						contentResolver.delete(feedUri, null, null);
 						receiver.send(STATUS_FINISHED_CLOSE, Bundle.EMPTY);

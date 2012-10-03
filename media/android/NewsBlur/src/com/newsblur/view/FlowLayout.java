@@ -3,7 +3,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,7 +29,6 @@ public class FlowLayout extends ViewGroup {
     
     // By default, flow left to right
     private int flowDirection = FLOW_RIGHT;
-	private String TAG = "FlowLayout";
     
     public static class LayoutParams extends ViewGroup.LayoutParams {
 
@@ -100,7 +98,6 @@ public class FlowLayout extends ViewGroup {
                 	child.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), defaultImageLength);
                 	childw = defaultImageLength;
                 	line_height = Math.max(line_height, defaultImageLength + lp.vertical_spacing);
-                	Log.d("FlowLayout", "Measured line height:" + line_height);
                 } else {
                 	child.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), childHeightMeasureSpec);
                 	childw = child.getMeasuredWidth();

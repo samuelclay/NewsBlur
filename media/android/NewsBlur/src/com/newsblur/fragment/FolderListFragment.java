@@ -99,7 +99,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.d(TAG, "Creating folder fragment view");
 		View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
 		list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
 		list.setGroupIndicator(getResources().getDrawable(R.drawable.transparent));
