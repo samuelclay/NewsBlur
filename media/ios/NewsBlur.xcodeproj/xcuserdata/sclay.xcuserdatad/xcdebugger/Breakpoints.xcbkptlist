@@ -7,13 +7,13 @@
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "Classes/ActivityCell.m"
-         timestampString = "370898006.367348"
+         filePath = "Classes/NewsBlurViewController.m"
+         timestampString = "370996140.882983"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "122"
-         endingLineNumber = "122"
-         landmarkName = "-setActivity:withUserProfile:withWidth:"
+         startingLineNumber = "594"
+         endingLineNumber = "594"
+         landmarkName = "-switchSitesUnread"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

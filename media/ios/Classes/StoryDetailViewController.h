@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import "WEPopoverController.h"
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
 @interface StoryDetailViewController : UIViewController 
-<UIPopoverControllerDelegate, WEPopoverControllerDelegate> {
+<UIPopoverControllerDelegate, WEPopoverControllerDelegate,
+UIScrollViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;
@@ -29,7 +31,7 @@
     UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
 	Class popoverClass;
-
+    BOOL pullingScrollview;
 }
 
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
@@ -53,6 +55,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
 @property (nonatomic) IBOutlet UILabel *noStorySelectedLabel;
+@property (nonatomic, assign) BOOL pullingScrollview;
 
 
 - (void)setNextPreviousButtons;

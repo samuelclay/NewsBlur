@@ -107,7 +107,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     },
     
     make_social_feeds: function() {
-        var $social_feeds = this.$s.$social_feeds;
+        var $social_feeds = $('.NB-socialfeeds', this.$s.$social_feeds);
         var profile = NEWSBLUR.assets.user_profile;
         var $feeds = NEWSBLUR.assets.social_feeds.map(function(feed) {
             var feed_view = new NEWSBLUR.Views.FeedTitleView({

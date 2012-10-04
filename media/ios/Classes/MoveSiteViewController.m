@@ -235,6 +235,8 @@
     [self.folders addObject:@"— Top Level —"];
     
     for (NSString *folder in appDelegate.dictFoldersArray) {
+        if ([folder isEqualToString:@"everything"]) continue;
+        if ([folder isEqualToString:@"river_blurblogs"]) continue;
         if ([[folder trim] isEqualToString:@""]) continue;
         if (appDelegate.isRiverView) {
             if (![folder containsString:appDelegate.activeFolder]) {

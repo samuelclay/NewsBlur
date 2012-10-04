@@ -163,8 +163,6 @@
         if(textField == usernameInput) {
             [passwordInput becomeFirstResponder];
         } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 0) {
-            NSLog(@"Password return");
-            NSLog(@"appdelegate:: %@", [self appDelegate]);
             [self checkPassword];
         } else if (textField == passwordInput && [self.loginControl selectedSegmentIndex] == 1) {
             [emailInput becomeFirstResponder];

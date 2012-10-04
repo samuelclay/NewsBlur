@@ -401,20 +401,12 @@ header {
 
 .NB-story-date {
     position: absolute;
-    right: 24px;
+    right: 28px;
     top: 12px;
     font-size: 15px;
     font-weight: bold;
-    color: silver;
+    color: #D0D4D7;
     text-transform: uppercase;
-}
-@media all and (max-width: 800px) {
-    .NB-story-date {
-        top: 6px;
-    }
-    .NB-story-date-break {
-        display: block;
-    }
 }
 @media all and (max-width: 500px) {
     .NB-story-date {
@@ -971,7 +963,6 @@ header {
 }
 .NB-story-share-label {
     display: inline-block;
-    margin: 0 4px 0 0;
 }
 .NB-story-share-profiles {
     display: inline-block;
