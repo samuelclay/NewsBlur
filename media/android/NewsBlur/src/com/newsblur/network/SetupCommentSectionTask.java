@@ -142,7 +142,7 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				Reply reply = Reply.fromCursor(replies);
 				View replyView = inflater.inflate(R.layout.include_reply, null);
 				TextView replyText = (TextView) replyView.findViewById(R.id.reply_text);
-				replyText.setText(reply.text);
+				replyText.setText(Html.fromHtml(reply.text));
 				ImageView replyImage = (ImageView) replyView.findViewById(R.id.reply_user_image);
 
 				Cursor replyCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { reply.userId }, null);
