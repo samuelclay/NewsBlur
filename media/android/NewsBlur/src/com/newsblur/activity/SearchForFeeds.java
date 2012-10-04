@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -45,7 +46,7 @@ public class SearchForFeeds extends SherlockFragmentActivity implements LoaderCa
 		resultsList = (ListView) findViewById(R.id.feed_result_list);
 		resultsList.setEmptyView(emptyView);
 		resultsList.setOnItemClickListener(this);
-		
+		resultsList.setItemsCanFocus(false);
 		searchLoader = getSupportLoaderManager().initLoader(LOADER_TWITTER_SEARCH, new Bundle(), this);
 		
 		onSearchRequested();
