@@ -3,7 +3,5 @@
         android:id="@+id/folderfeed_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:dividerHeight="1px"
-        android:childDivider="@drawable/divider_light"
-        android:background="@drawable/list_background"
-        />
+        android:divider="@null"
+        android:background="@drawable/list_background" />

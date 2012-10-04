@@ -1,26 +1,20 @@
 package com.newsblur.view;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.newsblur.util.PrefConstants;
+import com.newsblur.util.AppConstants;
 
 public class NewsblurWebview extends WebView {
 
-	private SharedPreferences preferences;
 	private Handler handler;
-	private float currentSize;
 
 	public NewsblurWebview(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		
-		preferences = context.getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		
 		getSettings().setJavaScriptEnabled(true);
 		getSettings().setLoadWithOverviewMode(true);
@@ -35,16 +29,6 @@ public class NewsblurWebview extends WebView {
 		setHorizontalScrollBarEnabled(false);
 	}
 	
-	
-	
-	public void increaseSize() {
-		
-		if (currentSize < 2.0) {
-			currentSize += 0.1f;
-			preferences.edit().putFloat(PrefConstants.PREFERENCE_TEXT_SIZE, currentSize).commit();
-			setTextSize(currentSize);
-		}
-	}
 	
 	public class JavaScriptInterface {
 		NewsblurWebview view;
@@ -67,16 +51,10 @@ public class NewsblurWebview extends WebView {
 		loadUrl("javascript:window.onload=webview.scroll(document.body.scrollHeight)");
 	}
 
-	public void setTextSize(float int1) {
-		loadUrl("javascript:document.body.style.fontSize='" + (0.5f + int1) + "em';");
+	public void setTextSize(float textSize) {
+		loadUrl("javascript:document.body.style.fontSize='" + (AppConstants.FONT_SIZE_LOWER_BOUND + textSize) + "em';");
 	}
 	
-	public void decreaseSize() {
-		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
-		if (currentSize > 0.5) {
-			currentSize -= 0.1f;
-		}
-	}
 	
 	
 }

@@ -10,7 +10,6 @@ import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -162,7 +161,6 @@ public class ShareDialogFragment extends DialogFragment {
 		}
 		
 		if (!hasShared && commentEditText.length() > 0) {
-			Log.d("ShareDialog", "settingPreviouslySharedText");
 			previouslySavedShareText = commentEditText.getText().toString();
 			callback.setPreviouslySavedShareText(previouslySavedShareText);
 		}

@@ -114,4 +114,8 @@ public class FolderItemsList extends ItemsList {
 	public void setNothingMoreToUpdate() {
 		stopLoading = true;
 	}
+
+
+	@Override
+	public void closeAfterUpdate() { }
 }

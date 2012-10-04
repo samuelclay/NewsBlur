@@ -15,7 +15,6 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
 	public BlurDatabase(Context context) {
 		super(context, DB_NAME, null, VERSION);
-		Log.d(TAG, "Initiating database");
 	}
 
 	private final String FOLDER_SQL = "CREATE TABLE " + DatabaseConstants.FOLDER_TABLE + " (" +
@@ -87,7 +86,7 @@ public class BlurDatabase extends SQLiteOpenHelper {
 		DatabaseConstants.STORY_AUTHORS + TEXT + ", " +
 		DatabaseConstants.STORY_CONTENT + TEXT + ", " +
 		DatabaseConstants.STORY_DATE + TEXT + ", " +
-		DatabaseConstants.STORY_SHARED_DATE + TEXT + ", " +
+		DatabaseConstants.STORY_SHARED_DATE + INTEGER + ", " +
 		DatabaseConstants.STORY_SHORTDATE + TEXT + ", " +
 		DatabaseConstants.STORY_LONGDATE + TEXT + ", " +
 		DatabaseConstants.STORY_FEED_ID + INTEGER + ", " +

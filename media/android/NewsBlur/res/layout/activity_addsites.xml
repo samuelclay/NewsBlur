@@ -4,9 +4,30 @@
     android:layout_height="match_parent"
     android:background="@color/item_background" >
 
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/newsblur_blue"
+        android:id="@+id/addsites_button_bar"
+        android:gravity="right" 
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/login_addsites_nextstep"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:text="Next Step"
+            android:textSize="14sp" />
+        
+    </LinearLayout>
+    
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:layout_above="@id/addsites_button_bar" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,24 +58,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/newsblur_blue"
-        android:id="@+id/addsites_button_bar"
-        android:gravity="right" 
-        android:padding="10dp">
-
-        <Button
-            android:id="@+id/login_addsites_nextstep"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:text="Next Step"
-            android:textSize="14sp" />
-        
-    </LinearLayout>
 
     <View
         android:layout_width="fill_parent"

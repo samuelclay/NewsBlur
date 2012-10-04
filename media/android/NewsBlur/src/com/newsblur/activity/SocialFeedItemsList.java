@@ -101,4 +101,8 @@ public class SocialFeedItemsList extends ItemsList {
 		stopLoading = true;
 	}
 
+
+	@Override
+	public void closeAfterUpdate() { }
+
 }

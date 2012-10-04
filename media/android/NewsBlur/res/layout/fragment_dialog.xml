@@ -18,6 +18,7 @@
         android:layout_below="@id/dialog_message"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="5dp"
+        android:inputType="textCapSentences"
         android:hint="@string/share_comment_hint"
         android:textSize="11sp" />
 

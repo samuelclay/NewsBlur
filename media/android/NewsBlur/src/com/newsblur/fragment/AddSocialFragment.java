@@ -85,17 +85,10 @@ public class AddSocialFragment extends Fragment {
 			@Override
 			public void onCheckedChanged(CompoundButton compoundButton, final boolean checked) {
 				new AsyncTask<Void, Void, Boolean>() {
-					
 					@Override
 					protected Boolean doInBackground(Void... params) {
 						return apiManager.setAutoFollow(checked);
 					}
-					
-					@Override
-					protected void onPostExecute(Boolean result) {
-						Toast.makeText(getActivity(), "SetPreference: " + result.toString(), Toast.LENGTH_LONG).show();
-					};
-					
 				}.execute();
 			}
 		});

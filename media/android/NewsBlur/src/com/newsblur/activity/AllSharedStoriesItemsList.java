@@ -29,7 +29,6 @@ public class AllSharedStoriesItemsList extends ItemsList {
 		feedIds = new ArrayList<String>();
 
 		Cursor cursor = getContentResolver().query(FeedProvider.SOCIAL_FEEDS_URI, null, null, null, null);
-		startManagingCursor(cursor);
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.SOCIAL_FEED_ID)));
 		}
@@ -49,6 +48,7 @@ public class AllSharedStoriesItemsList extends ItemsList {
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
 			triggerRefresh();
 		}
+		cursor.close();
 	}
 
 
@@ -82,5 +82,9 @@ public class AllSharedStoriesItemsList extends ItemsList {
 	public void setNothingMoreToUpdate() {
 		stopLoading = true;
 	}
+
+
+	@Override
+	public void closeAfterUpdate() { }
 
 }

@@ -10,7 +10,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedItemsAdapter;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Feed;
-import com.newsblur.util.AppConstants;
 import com.newsblur.util.NetworkUtils;
 import com.newsblur.view.FeedItemViewBinder;
 
@@ -130,7 +128,6 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		Log.d(TAG, "Loader reset");
 		adapter.notifyDataSetInvalidated();
 	}
 
@@ -152,12 +149,10 @@ public class FeedItemListFragment extends ItemListFragment implements LoaderMana
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisible, int visibleCount, int totalCount) {
-		if (firstVisible + visibleCount == totalCount) {
+		if (firstVisible + visibleCount == totalCount && !requestedPage) {
 			currentPage += 1;
 			requestedPage = true;
 			((ItemsList) getActivity()).triggerRefresh(currentPage);
-		} else {
-			Log.d(TAG, "No need");
 		}
 	}
 

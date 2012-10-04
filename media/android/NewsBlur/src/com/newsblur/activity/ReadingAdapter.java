@@ -36,7 +36,6 @@ public abstract class ReadingAdapter extends FragmentStatePagerAdapter {
 		if (stories != null && stories.getCount() > 0) {
 			return stories.getCount();
 		} else {
-			Log.d(TAG , "No cursor - use loading view.");
 			return 1;
 		}
 	}

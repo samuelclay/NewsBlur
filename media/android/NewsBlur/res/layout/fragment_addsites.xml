@@ -18,8 +18,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
+        android:gravity="center_horizontal"
         android:text="@string/login_add_sites_from_google_reader"
-        android:textColor="@color/lightgray"
+        android:textColor="@color/darkgray"
         android:textSize="12sp" />
 
     <LinearLayout
