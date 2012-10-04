@@ -66,7 +66,6 @@ static UIFont *indicatorFont = nil;
     [backgroundColor set];
     
     CGContextFillRect(context, r);
-    NSLog(@"WIDTH is %f", rect.size.width);
     // set site title
     UIColor *textColor;
     UIFont *font;

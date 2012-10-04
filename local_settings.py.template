@@ -39,6 +39,8 @@ OAUTH_SECRET = 'SECRET_KEY_FROM_GOOGLE'
 S3_ACCESS_KEY = 'XXX'
 S3_SECRET = 'SECRET'
 S3_BACKUP_BUCKET = 'newsblur_backups'
+S3_PAGES_BUCKET_NAME = 'pages-XXX.newsblur.com'
+S3_ICONS_BUCKET_NAME = 'icons-XXX.newsblur.com'
 
 STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
@@ -76,19 +78,19 @@ MONGODB_SLAVE = {
     'host': '127.0.0.1'
 }
 
-# Celery RabbitMQ Broker
-BROKER_HOST = "127.0.0.1"
+# Celery RabbitMQ/Redis Broker
+CELERY_REDIS_HOST = "127.0.0.1"
+BROKER_URL = "redis://127.0.0.1:6379/0"
 
 REDIS = {
     'host': '127.0.0.1',
 }
 
-# AMQP - RabbitMQ server
-BROKER_HOST     = "db01.newsblur.com"
-BROKER_PORT     = 5672
-BROKER_USER     = "newsblur"
-BROKER_PASSWORD = "newsblur"
-BROKER_VHOST    = "newsblurvhost"
+BACKED_BY_AWS = {
+    'pages_on_s3': False,
+    'icons_on_s3': False,
+    'stories_on_dynamodb': False,
+}
 
 # ===========
 # = Logging =

@@ -122,14 +122,16 @@
     
 	[super viewWillAppear:animated];
         
-    if ((appDelegate.isSocialRiverView || appDelegate.isRiverView || appDelegate.isSocialView)) {
+    if ((appDelegate.isSocialRiverView ||
+         appDelegate.isSocialView ||
+         [appDelegate.activeFolder isEqualToString:@"everything"])) {
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
     }
     
     if (appDelegate.isSocialRiverView || 
-        [appDelegate.activeFolder isEqualToString:@"All Stories"]) {
+        [appDelegate.activeFolder isEqualToString:@"everything"]) {
         feedMarkReadButton.enabled = NO;
     } else {
         feedMarkReadButton.enabled = YES;
@@ -152,11 +154,6 @@
         [appDelegate.storyDetailViewController clearStory];
         [self checkScroll];
     }
-    
-    NSString *title = appDelegate.isRiverView ?
-    appDelegate.activeFolder :
-    [appDelegate.activeFeed objectForKey:@"feed_title"];
-    NSLog(@"title %@", title);
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -266,14 +263,6 @@
             [self.storyTitlesTable reloadData];
             [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
         }
-        int readStoriesCount = 0;
-        if (self.feedPage > 1) {
-            for (id story in appDelegate.activeFeedStories) {
-                if ([[story objectForKey:@"read_status"] intValue] == 1) {
-                    readStoriesCount += 1;
-                }
-            }
-        }
         
         NSString *theFeedDetailURL;
         
@@ -284,11 +273,10 @@
                                 self.feedPage];
         } else {
             theFeedDetailURL = [NSString stringWithFormat:
-                                @"http://%@/reader/river_stories/?feeds=%@&page=%d&read_stories_count=%d", 
+                                @"http://%@/reader/river_stories/?feeds=%@&page=%d", 
                                 NEWSBLUR_URL,
                                 [appDelegate.activeFolderFeeds componentsJoinedByString:@"&feeds="],
-                                self.feedPage,
-                                readStoriesCount];
+                                self.feedPage];
         }
         
         [self cancelRequests];
@@ -973,10 +961,11 @@
         self.actionSheet_ = nil;
         return;
     }
-    NSString *title = appDelegate.isRiverView ? 
-    appDelegate.activeFolder : 
-    [appDelegate.activeFeed objectForKey:@"feed_title"];
-    UIActionSheet *options = [[UIActionSheet alloc] 
+    NSString *title = appDelegate.isRiverView ?
+                        appDelegate.activeFolder :
+                        [appDelegate.activeFeed objectForKey:@"feed_title"];
+    
+    UIActionSheet *options = [[UIActionSheet alloc]
                               initWithTitle:title
                               delegate:self
                               cancelButtonTitle:nil
@@ -985,20 +974,19 @@
     
     self.actionSheet_ = options;
     
-    if (![title isEqualToString:@"Everything"]) {
-        NSString *deleteText = [NSString stringWithFormat:@"Delete %@", 
-                                appDelegate.isRiverView ? 
-                                @"this entire folder" : 
-                                @"this site"];
-        [options addButtonWithTitle:deleteText];
-        options.destructiveButtonIndex = 0;
-        
-        NSString *moveText = @"Move to another folder";
-        [options addButtonWithTitle:moveText];
-        
+    NSString *deleteText = [NSString stringWithFormat:@"Delete %@", 
+                            appDelegate.isRiverView ? 
+                            @"this entire folder" : 
+                            @"this site"];
+    [options addButtonWithTitle:deleteText];
+    options.destructiveButtonIndex = 0;
+    
+    NSString *moveText = @"Move to another folder";
+    [options addButtonWithTitle:moveText];
+    
+    if (!appDelegate.isRiverView) {
         NSString *fetchText = @"Insta-fetch stories";
         [options addButtonWithTitle:fetchText];
-
     }
     
     options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];

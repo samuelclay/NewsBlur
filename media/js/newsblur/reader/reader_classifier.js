@@ -57,7 +57,6 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
     this.runner_story();
-    console.log(["init story", feed_id, this.feed_id, options, this.options]);
 };
 
 var classifier_prototype = {
@@ -121,7 +120,7 @@ var classifier_prototype = {
         this.handle_cancel();
         this.open_modal();
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
-        console.log(["runner story", this.options, this.feed_id]);
+
         if (!this.options.feed_loaded) {
             _.defer(_.bind(function() {
                 this.load_single_feed_trainer();

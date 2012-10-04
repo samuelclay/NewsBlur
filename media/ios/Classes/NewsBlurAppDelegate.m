@@ -70,6 +70,7 @@
 @synthesize activeUsername;
 @synthesize activeUserProfileId;
 @synthesize activeUserProfileName;
+@synthesize hasNoSites;
 @synthesize isRiverView;
 @synthesize isSocialView;
 @synthesize isSocialRiverView;
@@ -509,9 +510,8 @@
 - (void)adjustStoryDetailWebView {
     // change UIWebView
     int contentWidth = storyDetailViewController.view.frame.size.width;
-    NSLog(@"contentWidth is %i", contentWidth);
+//    NSLog(@"contentWidth is %i", contentWidth);
     [storyDetailViewController changeWebViewWidth:contentWidth];
-    
 }
 
 - (void)calibrateStoryTitles {
@@ -545,7 +545,13 @@
 - (void)loadStoryDetailView {
     NSString *feedTitle;
     if (self.isRiverView) {
-        feedTitle = self.activeFolder;
+        if ([self.activeFolder isEqualToString:@"river_blurblogs"]) {
+            feedTitle = @"All Shared Stories";
+        } else if ([self.activeFolder isEqualToString:@"everything"]) {
+            feedTitle = @"All Stories";
+        } else {
+            feedTitle = self.activeFolder;
+        }
     } else {
         feedTitle = [activeFeed objectForKey:@"feed_title"];
     }
@@ -758,11 +764,11 @@
     int total = 0;
     NSArray *folder;
     
-    if (!folderName && self.activeFolder == @"ALL BLURBLOG STORIES") {
+    if (!folderName && self.activeFolder == @"river_blurblogs") {
         for (id feedId in self.dictSocialFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
-    } else if (!folderName && self.activeFolder == @"ALL STORIES STORIES") {
+    } else if (!folderName && self.activeFolder == @"everything") {
         for (id feedId in self.dictFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
@@ -960,7 +966,7 @@
 }
 
 - (void)markActiveFolderAllRead {
-    if (self.activeFolder == @"Everything") {
+    if (self.activeFolder == @"everything") {
         for (NSString *folderName in self.dictFoldersArray) {
             for (id feedId in [self.dictFolders objectForKey:folderName]) {
                 [self markFeedAllRead:feedId];
@@ -1153,9 +1159,11 @@
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
     UILabel *titleLabel = [[UILabel alloc] init];
     if (self.isSocialRiverView) {
-        titleLabel.text = [NSString stringWithFormat:@"     All Blurblog Stories"]; 
+        titleLabel.text = [NSString stringWithFormat:@"     All Shared Stories"];
+    } else if (self.isRiverView && [self.activeFolder isEqualToString:@"everything"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     All Stories"];
     } else if (self.isRiverView) {
-        titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder]; 
+        titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder];
     } else if (self.isSocialView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", [feed objectForKey:@"feed_title"]];
     } else {

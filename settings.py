@@ -3,6 +3,7 @@ import logging
 import os
 import datetime
 from mongoengine import connect
+from boto.s3.connection import S3Connection
 import redis
 from utils import jammit
 
@@ -351,6 +352,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=1),
         'options': {'queue': 'beat_tasks'},
     },
+    'clean-analytics': {
+        'task': 'clean-analytics',
+        'schedule': datetime.timedelta(hours=12),
+        'options': {'queue': 'beat_tasks'},
+    },
 }
 
 # =========
@@ -408,6 +414,21 @@ FACEBOOK_APP_ID = '111111111111111'
 FACEBOOK_SECRET = '99999999999999999999999999999999'
 TWITTER_CONSUMER_KEY = 'ooooooooooooooooooooo'
 TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+
+# ===============
+# = AWS Backing =
+# ===============
+
+BACKED_BY_AWS = {
+    'pages_on_s3': False,
+    'icons_on_s3': False,
+    'stories_on_dynamodb': False,
+}
+
+PROXY_S3_PAGES = True
+S3_BACKUP_BUCKET = 'newsblur_backups'
+S3_PAGES_BUCKET_NAME = 'pages.newsblur.com'
+S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
 
 # ==================
 # = Configurations =
@@ -470,3 +491,12 @@ if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 
+# =======
+# = AWS =
+# =======
+
+S3_CONN = None
+if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
+    S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET)
+    S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
+    S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)

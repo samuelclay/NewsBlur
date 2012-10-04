@@ -1,4 +1,4 @@
-NEWSBLUR.Views.FeedListHeader = Backbone.View.extend({
+NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
 
     options: {
         el: '.NB-feeds-header-dashboard'

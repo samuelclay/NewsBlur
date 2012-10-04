@@ -1,0 +1,601 @@
+.NB-welcome .NB-body-inner {
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+.NB-welcome .NB-splash-info.NB-splash-top .NB-splash-title {
+    display: none;
+}
+.NB-welcome .NB-splash-info.NB-splash-top,
+.NB-welcome .NB-splash-info.NB-splash-bottom {
+    height: 6px;
+    position: absolute;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4B638C), to(#23364D));
+    background: -moz-linear-gradient(center top , #4B638C 0%, #23364D 100%);
+    border-bottom: 1px solid #000D41;
+    border-top: none;
+}
+.NB-welcome .NB-splash-info.NB-splash-bottom {
+    position: static;
+}
+.NB-welcome .NB-splash-info.NB-splash-bottom .NB-splash-links {
+    display: none;
+}
+
+.NB-welcome .NB-taskbar-sidebar-toggle-open {
+    display: none;
+}
+
+/* ========== */
+/* = Common = */
+/* ========== */
+
+.NB-welcome .NB-inner {
+    width: 960px;
+    margin: 0 auto;
+    position: relative;
+    height: 100%;
+}
+.NB-welcome .NB-splash-links {
+    overflow: hidden;
+}
+.NB-button {
+    border: 1px solid #07360F;
+    font-size: 12px;
+    padding: 4px 12px;
+    text-transform: uppercase;
+    margin: 2px 4px 2px;
+    -moz-box-shadow:2px 2px 0 rgba(35, 35, 35, 0.4);
+    -webkit-box-shadow:2px 2px 0 rgba(35, 35, 35, 0.4);
+    box-shadow:2px 2px 0 rgba(35, 35, 35, 0.4);
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #404040;
+}
+.NB-button:active {
+    -moz-box-shadow:1px 1px 0 rgba(35, 35, 35, 0.6);
+    -webkit-box-shadow:1px 1px 0 rgba(35, 35, 35, 0.6);
+    box-shadow:1px 1px 0 rgba(35, 35, 35, 0.6);
+}
+.NB-welcome-container.NB-welcome-tryout {
+    overflow-x: hidden;
+}
+
+/* ========== */
+/* = Header = */
+/* ========== */
+
+.NB-welcome-header {
+    background-color: #238232;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#69A1D1), to(#E5B568));
+    background: -moz-linear-gradient(center top , #69A1D1 0%, #E5B568 100%) repeat scroll 0 0 transparent;
+    height: 400px;
+    color: white;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(10, 10, 10, 0.3);
+}
+
+.NB-welcome-header .NB-welcome-header-logo {
+    padding: 108px 0 0 0;
+    text-align: center;
+    width: 460px;
+}
+.NB-welcome-header .NB-welcome-header-tagline {
+    margin: 36px 0 0 0;
+    font-size: 22px;
+    text-shadow: 0 1px 0 rgba(35,35,35,0.35);
+    text-align: center;
+    width: 460px;
+}
+.NB-welcome-header .NB-welcome-header-tagline b {
+    padding: 2px 8px;
+    background-color: rgba(205, 205, 205, 0.1);
+    font-weight: normal;
+    border-radius: 4px;
+}
+
+.NB-welcome-header-image {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+.NB-welcome-header-image img.NB-1 {
+    height: 300px;
+    position: absolute;
+    bottom: -350px;
+    right: -40px;
+    border-radius: 2px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.NB-welcome-header-image.NB-active img.NB-1 {
+    bottom: 0px;
+}
+.NB-welcome-header-image img.NB-2 {
+    opacity: 0;
+    height: 300px;
+    position: absolute;
+    bottom: -300px;
+    right: 0;
+    border-radius: 2px;
+    margin-right: 100px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.NB-welcome-header-image img.NB-3 {
+    opacity: 0;
+    height: 300px;
+    position: absolute;
+    bottom: -300px;
+    right: -24px;
+    border-radius: 2px;
+    margin-right: 140px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.NB-welcome-header-captions {
+    text-align: center;
+    margin: 0 auto;
+    position: absolute;
+    top: 0;
+    right: 32px;
+    overflow: hidden;
+    text-shadow: 0 1px 0 rgba(35,35,35,0.35);
+    padding-left: 64px;
+}
+.NB-welcome-header-caption {
+    float: left;
+    color: white;
+    cursor: pointer;
+    padding: 36px 12px 12px;
+    text-transform: uppercase;
+}
+.NB-welcome-header-caption.NB-welcome-header-caption-signin {
+    color: #E8F64A;
+}
+.NB-welcome-header-caption span {
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: block;
+    -webkit-transition: all 1s ease-in-out;
+    -moz-transition: all 1s ease-in-out;
+    -o-transition: all 1s ease-in-out;
+    -ms-transition: all 1s ease-in-out;
+}
+.NB-welcome-header-caption:hover span {
+    -webkit-transition: all .25s ease-in-out;
+    -moz-transition: all .25s ease-in-out;
+    -o-transition: all .25s ease-in-out;
+    -ms-transition: all .25s ease-in-out;
+}
+.NB-welcome-header-caption.NB-active span {
+    color: #FDC85B;
+    background-color: rgba(235, 235, 235, 0.1);
+}
+
+.NB-welcome-header-actions {
+    margin: 36px 0 0;
+    line-height: 16px;
+}
+.NB-welcome-header-action {
+    float: left;
+}
+.NB-welcome-header-action-subtext {
+    text-align: center;
+    line-height: 24px;
+    padding: 0 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: white;
+    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.4);
+}
+.NB-welcome-header-actions img {
+    vertical-align: top;
+    width: 16px;
+    height: 16px;
+}
+.NB-welcome-header-actions .NB-welcome-header-action-arrow {
+    display: none;
+}
+.NB-welcome-header-actions .NB-active .NB-welcome-header-action-bolt {
+    display: none;
+}
+.NB-welcome-header-actions .NB-active .NB-welcome-header-action-arrow {
+    display: block;
+}
+.NB-welcome-header-actions .NB-button {
+    float: left;
+    font-size: 16px;
+    padding: 6px 10px;
+    margin: 0 24px;
+    text-transform: none;
+    text-shadow: 0 1px 0 rgba(235, 235, 235, 0.4);
+    background-color: #F5FFE2;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F5FFE2), to(#E8FACA));
+    background: -moz-linear-gradient(center top, #F5FFE2 0%, #E8FACA 100%);
+}
+.NB-welcome-header-actions .NB-button:hover {
+    background-color: #F4DD43;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F4DD43), to(#F1D526));
+    background: -moz-linear-gradient(center top, #F4DD43 0%, #F1D526 100%);
+}
+.NB-welcome-header-actions .NB-button:active {
+    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.4);
+    background-color: #E97326;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E97326), to(#D94B0D));
+    background: -moz-linear-gradient(center top, #E97326 0%, #D94B0D 100%);
+    color: white;
+}
+
+/* ================== */
+/* = Login / Signup = */
+/* ================== */
+
+.NB-welcome-header-account {
+    position: absolute;
+    bottom: -350px;
+    right: 12px;
+    width: 400px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: rgba(245, 245, 245, 0.4);
+    padding: 36px 36px 12px;
+}
+.NB-welcome-header-account.NB-active {
+    bottom: 0;
+}
+.NB-welcome-header-account .NB-module-header-login {
+    width: 142px;
+    margin: 0 50px 0 0;
+    padding: 0 4px;
+    float: left;
+    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.3);
+}
+
+.NB-welcome-header-account .NB-module-header-signup {
+    width: 142px;
+    margin: 0;
+    padding: 0 4px;
+    float: left;
+    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.3);
+}
+
+.NB-welcome-header-account .NB-login {
+    padding: 0 4px;
+    margin: 12px 50px 0 12px;
+    width: 146px;
+    float: left;
+}
+
+.NB-welcome-header-account .NB-signup {
+    float: left;
+    width: 146px;
+    padding: 0 4px;
+    margin: 12px 0 0;
+    height: 206px;
+    overflow: hidden;
+}
+
+.NB-welcome-header-account .NB-import-signup {
+    float: left;
+    width: 146px;
+    padding: 0 0 64px 0;
+    margin: 0 24px 0 12px;
+    height: 206px;
+    overflow: hidden;
+}
+
+.NB-welcome-header-account .NB-import-signup-text {
+    text-align: center;
+    width: 190px;
+}
+.NB-welcome-header-account .NB-import-signup-text h3 {
+    margin-top: 48px;
+    color: #20843D;
+}
+.NB-welcome-header-account .NB-import-signup-text p {
+    color: #636363;
+}
+
+.NB-welcome-header-account .NB-signup-orline {
+    margin: 30px auto 24px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 10px;
+    color: #F9F9F9;
+    font-weight: bold;
+}
+
+.NB-welcome-header-account .NB-signup-orline-reduced {
+    margin: 0px auto 0px;
+}
+.NB-welcome-header-account .NB-signup-orline .NB-signup-orline-or {
+    padding: 0 4px;
+}
+
+.NB-welcome-header-account .NB-signup-optional {
+    float: right;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: bold;
+    font-size: 9px;
+    line-height: 17px;
+}
+.NB-welcome-header-account .NB-signup-hidden {
+    display: none;
+}
+
+.NB-welcome-header-account .NB-import-signup {
+    height: auto;
+}
+
+.NB-welcome-header-account .NB-signup .NB-signup-google {
+    margin: 12px auto;
+    display: block;
+    font-size: 12px;
+    text-align: center;
+}
+
+.NB-welcome-header-account input[type=text],
+.NB-welcome-header-account input[type=password] {
+    border: 1px solid rgba(35, 35, 35, 0.5);
+    display:block;
+    font-size:13px;
+    margin:0 0 12px;
+    padding:5px;
+    width:134px;
+}
+
+.NB-welcome-header-account input[type=text]:focus,
+.NB-welcome-header-account input[type=password]:focus {
+    border-color: #739BBE;
+}
+
+.NB-welcome-header-account input[type=submit] {
+    outline: none;
+    width: 146px; /* 174=input-width + 5*2=padding + 2=border */
+    margin: 4px 5px 0 0;
+    padding: 4px 10px 5px;
+    text-shadow: 0 -1px 0 rgba(35, 35, 35, 0.4);
+    font-weight: bold;
+    font-size: 12px;
+    border: 1px solid rgba(35, 35, 35, 0.5);
+    color: white;
+    cursor: pointer;
+}
+
+.NB-welcome-header-account input[type=hidden] {
+    display: none;
+}
+
+.NB-welcome-header-account label,
+.NB-welcome-header-account .NB-account-label {
+    margin: 0;
+    color: #FFFFD5;
+    text-shadow: 0 1px 0 rgba(35, 35, 35, 0.3);
+    font-size: 12px;
+    display: block;
+    text-transform: uppercase;
+}
+
+.NB-welcome-header-account .NB-account-label {
+    font-weight: bold;
+}
+
+.NB-welcome-header-account .NB-account-text {
+    font-size: 13px;
+    color: #90A0B0;
+    margin-bottom: 30px;
+}
+
+.NB-welcome-header-account .NB-account-text a {
+    text-decoration: none;
+    color: #3E4773;
+}
+
+.NB-welcome-header-account .NB-account-text a:hover {
+    color: #0E1763;
+}
+
+.NB-welcome-header-account .errorlist {
+    list-style: none;
+    font-size: 12px;
+    color: #AF4D18;
+    font-weight: bold;
+    padding: 0;
+}
+
+
+
+/* ============ */
+/* = Features = */
+/* ============ */
+
+.NB-welcome-features {
+    margin: 48px 0;
+    overflow: hidden;
+}
+
+.NB-welcome-features .NB-feature {
+    float: left;
+    width: 204px;
+    margin: 0 36px 0 0;
+    text-align: center;
+}
+
+.NB-welcome-features img {
+    width: 200px;
+    height: 175px;
+    box-shadow: 0 0 3px rgba(30, 30, 30, 0.3);
+}
+.NB-welcome-features .NB-feature-caption {
+    font-weight: bold;
+    font-size: 24px;
+    margin: 24px 0 0;
+}
+.NB-welcome-features .NB-feature-text {
+    color: #808080;
+    margin: 24px 0 0;
+    font-size: 15px;
+    line-height: 22px;
+}
+
+/* =========== */
+/* = Pricing = */
+/* =========== */
+
+.NB-welcome-pricing {
+    overflow: hidden;
+    clear: both;
+    margin: 48px 0 0;
+    padding: 36px 0;
+    
+    background-color: #FAFAFA;
+    border-top: 1px solid #F0F0F0;
+    border-bottom: 1px solid #F0F0F0;
+}
+.NB-welcome-pricing p {
+    line-height: 24px;
+}
+.NB-welcome-pricing .NB-price {
+    float: right;
+    margin: 0;
+    padding: 0;
+    line-height: 16px;
+}
+.NB-pricing {
+    margin: 12px 0;
+    width: 100%;
+    font-size: 14px;
+}
+.NB-pricing th,
+.NB-pricing td {
+    padding: 10px 8px;
+    text-align: left;
+    line-height: 16px;
+    width: 33%;
+    vertical-align: top;
+}
+.NB-pricing th {
+    border-right: 1px solid #E4E4E4;
+}
+.NB-pricing td {
+    border-top: 1px solid #E4E4E4;
+    border-right: 1px solid #E4E4E4;
+}
+.NB-pricing .NB-last {
+    border-right: none;
+}
+.NB-pricing .NB-bold {
+    font-weight: bold;
+}
+.NB-pricing .NB-shiloh {
+    display: block;
+    float: left;
+    border: 1px solid #606060;
+    height: 54px;
+    margin: 0 12px 0 0;
+}
+
+/* ============ */
+/* = Activity = */
+/* ============ */
+
+.NB-welcome-activity {
+    overflow: hidden;
+    clear: both;
+    padding: 36px 0;
+}
+.NB-welcome-activity .NB-module {
+    width: 47%;
+}
+.NB-welcome-activity .NB-module-features {
+    float: right;
+}
+.NB-welcome-activity .NB-module-stats {
+    float: left;
+    margin-right: 3%;
+}
+.NB-welcome-activity .NB-module .NB-module-header {
+    display: none;
+}
+.NB-welcome-activity .NB-module .NB-module-stats-counts {
+    overflow: hidden;
+}
+.NB-welcome-activity .NB-module-stats .NB-module-content-header-hour {
+    margin-top: 36px;
+}
+.NB-welcome-activity .NB-module-stats-count-graph {
+    margin-left: 4px;
+}
+.NB-welcome-activity .NB-graph-bar {
+    width: 4px;
+}
+.NB-welcome-activity .NB-graph-value {
+    width: 4px;
+}
+
+/* ========== */
+/* = Footer = */
+/* ========== */
+
+.NB-welcome-footer {
+    overflow: hidden;
+    clear: both;
+    padding: 48px 0 52px;
+    color: #363C53;
+    line-height: 24px;
+    background-color: #FAFAFA;
+    border-top: 1px solid #F0F0F0;
+}
+.NB-welcome-footer .NB-footer-logo {
+    vertical-align: text-bottom;
+    position: relative;
+    bottom: -4px;
+}
+.NB-welcome-footer .NB-splash-link {
+    color: #363C53;
+    font-weight: bold;
+    text-shadow: 0 1px 0 rgba(245, 245, 245, 0.4);
+}
+.NB-welcome-footer .NB-splash-link:hover {
+    color: #822216;
+}
+.NB-welcome-footer .NB-footer-icons {
+    float: right;
+}
+.NB-welcome-footer .NB-footer-icons a {
+    line-height: 0;
+    margin: 0 12px 0 0;
+    float: right;
+}
+.NB-welcome-footer .NB-footer-icons a img {
+    vertical-align: middle;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    bottom: -4px;
+    opacity: .8;
+    -webkit-transition: all .25s ease-in-out;
+    -moz-transition: all .25s ease-in-out;
+    -o-transition: all .25s ease-in-out;
+    -ms-transition: all .25s ease-in-out;
+}
+.NB-welcome-footer .NB-footer-icons a img:hover {
+    opacity: 1;
+}
+
+.NB-welcome-footer .NB-twitter-avatar {
+    width: 24px;
+    height: 24px;
+    border: none;
+    box-shadow: 0 0 1px #C0C0C0;
+    vertical-align: bottom;
+    position: relative;
+    bottom: 0;
+    margin: 0 2px 0 4px;
+    border-radius: 2px;
+}

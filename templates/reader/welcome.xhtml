@@ -7,224 +7,215 @@
         $(document).ready(function() {
 
             NEWSBLUR.reader = new NEWSBLUR.Reader();
-            NEWSBLUR.reader.init();
+            NEWSBLUR.reader.init({
+                hide_sidebar: true
+            });
 
+            NEWSBLUR.welcome = new NEWSBLUR.Welcome();
         });
     </script>
-
-    {% if user.is_staff %}
-        <script>
-            $(document).ready(function() {
-              $('#add-feature-button').click(function(e) {
-                e.preventDefault();
-                $('#add-feature-form').fadeIn(500);
-              });
-            });
-        </script>
-    {% endif %}
 {% endblock %}
 
-{% block bodyclass %}NB-body-main{% endblock %}
+{% block bodyclass %}NB-welcome{% endblock %}
+
+{% block header %}
+    {% render_feeds_skeleton %}
+{% endblock header %}
+
 {% block content %}
 
-
-<h1 class="NB-splash-heading">NewsBlur</h1>
-<h2 class="NB-splash-heading">- The best stories from your friends and favorite blogs, all in one place.</h2>
-
-<div id="NB-splash" style="left: {% firstof user_profile.feed_pane_size 240 %}px">
-
-  <div class="NB-modules-center">
+<div class="NB-welcome-container NB-splash">
     
-    <div class="NB-module NB-module-logo">
-        <img src="{{ MEDIA_URL }}img/logo_newsblur.png" class="NB-module-logo-image" style="width: 312px; height: 55px;" />
-        <div class="NB-module-logo-tagline">
-            Focus on the best stories from<br><b>your friends</b> and <b>favorite blogs</b>
-        </div>
-        <div class="NB-module-logo-elsewhere">
-            FOR WEB, <a href="{% url ios-static %}" class="NB-splash-link">iOS</a>, AND <a href="https://market.android.com/details?id=bitwrit.Blar" class="NB-splash-link">ANDROID</a>
+    <div class="NB-welcome-header">
+        <div class="NB-inner">
+            <div class="NB-welcome-header-logo">
+                <a href="/"><img src="{{ MEDIA_URL }}img/logo_newsblur.png" class="NB-module-logo-image" style="height: 55px;" /></a>
+            </div>
+            <div class="NB-welcome-header-tagline">
+                Focus on the best stories from<br><b>your friends</b> and <b>favorite blogs</b>
+            </div>
+            <div class="NB-welcome-header-captions">
+                <div class="NB-welcome-header-caption NB-1 {% if not post_request %}NB-active{% endif %}" data-ss="1"><span>Web</span></div>
+                <div class="NB-welcome-header-caption NB-2" data-ss="2"><span>iPad &amp; iPhone</span></div>
+                <div class="NB-welcome-header-caption NB-3" data-ss="3"><span>Android</span></div>
+                <div class="NB-welcome-header-caption NB-welcome-header-caption-signin {% if post_request %}NB-active{% endif %}"><span>Sign in</span></div>
+            </div>
+            <div class="NB-welcome-header-actions">
+                <div class="NB-welcome-header-action">
+                    <div class="NB-welcome-header-action-subtext">First</div>
+                    <div class="NB-button NB-button-tryout">
+                        <img src="{{ MEDIA_URL }}img/reader/search_icon2.png" style="width: 16px; height: 16px">
+                        Try out NewsBlur
+                    </div>
+                </div>
+                <div class="NB-welcome-header-action">
+                    <div class="NB-welcome-header-action-subtext">Then</div>
+                    <div class="NB-button NB-button-login">
+                        <img src="{{ MEDIA_URL }}img/reader/32-Power.png" class="NB-welcome-header-action-bolt">
+                        <img src="{{ MEDIA_URL }}img/reader/32-Arrow-Right.png" class="NB-welcome-header-action-arrow">
+                        Sign up or Log in
+                    </div>
+                </div>
+            </div>
+            <div class="NB-welcome-header-image {% if not post_request %}NB-active{% endif %}">
+                <img src="{{ MEDIA_URL }}img/welcome/header-web.png" class="NB-1">
+                <img src="{{ MEDIA_URL }}img/welcome/header-ios.png" class="NB-2">
+                <img src="{{ MEDIA_URL }}img/welcome/header-android.png" class="NB-3">
+            </div>
+
+            <div class="NB-welcome-header-account {% if post_request %}NB-active{% endif %}">
+                <div class="NB-account-header">
+                    <div class="NB-module-header-login">Log in</div>
+                    <div class="NB-module-header-signup">Sign up</div>
+                </div>
+                <div class="NB-login">
+                    <form method="post" action="{% url login %}">
+                        <div>
+                            {{ login_form.username.label_tag }}
+                            {{ login_form.username }}
+                        </div>
+                        <div>
+                            <div class="NB-signup-optional">
+                                {% if login_form.errors and login_form.errors|length %}
+                                    <a href="mailto:password@newsblur.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot?</a>
+                                {% else %}
+                                    Optional
+                                {% endif %}
+                            </div>
+                            {{ login_form.password.label_tag }}
+                            {{ login_form.password }}
+                        </div>
+                        <input name="submit" type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="log in" />
+                        <input type="hidden" name="next" value="/" />
+                    </form>
+                    {% if login_form.errors %}
+                        {% for field, error in login_form.errors.items %}
+                            {{ error|safe }}
+                        {% endfor %}
+                    {% else %}
+                        <img src="{{ MEDIA_URL }}img/welcome/fleuron.png" style="width: 36px; height: 36px; opacity: .35; margin: 24px auto; display: block">
+                    {% endif %}
+                </div>
+            
+                <div class="NB-signup">
+                    <form method="post" action="{% url signup %}">
+                        <div>
+                            {{ signup_form.username.label_tag }}
+                            {{ signup_form.username }}
+                        </div>
+                        <div class="NB-signup-hidden">
+                            <div class="NB-signup-optional">Optional</div>
+                            {{ signup_form.password.label_tag }}
+                            {{ signup_form.password }}
+                        </div>
+                        <div class="NB-signup-hidden">
+                            {{ signup_form.email.label_tag }}
+                            {{ signup_form.email }}
+                        </div>
+
+                        <input name="submit" type="submit" class="NB-modal-submit-button NB-modal-submit-green" value="create account" />
+                        <input type="hidden" name="next" value="/" />
+                    </form>
+                    {% if signup_form.errors %}
+                        {% for field, error in signup_form.errors.items %}
+                            {{ error|safe }}
+                        {% endfor %}
+                    {% endif %}
+                    <div class="NB-signup-orline {% if signup_form.errors %}NB-signup-orline-reduced{% endif %}">&mdash; <span class="NB-signup-orline-or">or</span> &mdash;</div>
+                    <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from<br /><img src="{{ MEDIA_URL }}img/welcome/Google_Reader_logo.png" width="16" height="16" style="vertical-align: bottom;"> Google Reader</a>
+                </div>
+            </div>
+
         </div>
     </div>
     
-    {% render_features_module %}
-
-    <div class="NB-module NB-module-howitworks" style="display: none">
-        <h5 class="NB-module-header">
-            <div class="NB-module-header-right">
-                <a href="#" class="NB-module-direction NB-module-next-page"></a>
-                <a href="#" class="NB-module-direction NB-module-previous-page NB-disabled"></a>
+    <div class="NB-welcome-features">
+        <div class="NB-inner">
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/feature_1.png">
+                <div class="NB-feature-caption">Real-time RSS</div>
+                <div class="NB-feature-text">Stories are pushed directly to you, so you can read news as it comes in.</div>
             </div>
-            <div class="NB-module-header-left">
-                How It Works
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/feature_2.png">
+                <div class="NB-feature-caption">Original site</div>
+                <div class="NB-feature-text">Read the content in context, the way it was meant to be seen.</div>
             </div>
-        </h5>
-
-        <div class="NB-howitworks-page-indicators">
-            <a href="#" class="NB-module-page-indicator NB-active"></a>
-            <a href="#" class="NB-module-page-indicator"></a>
-            <a href="#" class="NB-module-page-indicator"></a>
-            <a href="#" class="NB-module-page-indicator"></a>
-            <a href="#" class="NB-module-page-indicator"></a>
-            <a href="#" class="NB-module-page-indicator"></a>
-        </div>
-
-        <div class="NB-howitworks-page NB-active">
-            <div class="NB-howitworks-page-image">
-                <img src="{{ MEDIA_URL }}img/reader/howitworks_original.png" />
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/feature_3.png">
+                <div class="NB-feature-caption">Shared stories</div>
+                <div class="NB-feature-text">Reading news is better with friends. Shares stories on your blurblog.</div>
             </div>
-            <table class="NB-howitworks-page-description">
-                <tr>
-                    <td>
-                        Read the original site.
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="NB-howitworks-page">
-            <div class="NB-howitworks-page-image">
-                <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_like.png" />
+            <div class="NB-feature">
+                <img src="{{ MEDIA_URL }}img/welcome/feature_4.png">
+                <div class="NB-feature-caption">Training</div>
+                <div class="NB-feature-text">Hide the stories you don't like and highlight the stories you do.</div>
             </div>
-            <table class="NB-howitworks-page-description">
-                <tr>
-                    <td>
-                        Easily train NewsBlur to highlight stories you like.
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="NB-howitworks-page">
-            <div class="NB-howitworks-page-image">
-                <img src="{{ MEDIA_URL }}img/reader/howitworks_intelligence_dislike.png" />
-            </div>
-            <table class="NB-howitworks-page-description">
-                <tr>
-                    <td>
-                        NewsBlur will filter out stories which you don't like.
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="NB-howitworks-page">
-            <div class="NB-howitworks-page-image">
-                <img src="{{ MEDIA_URL }}img/reader/howitworks_import.png" />
-            </div>
-            <table class="NB-howitworks-page-description">
-                <tr>
-                    <td>
-                        Quickly import your sites from Google Reader.
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="NB-howitworks-page">
-            <div class="NB-howitworks-page-image">
-                <img src="{{ MEDIA_URL }}img/reader/howitworks_iphone.png" />
-            </div>
-            <table class="NB-howitworks-page-description">
-                <tr>
-                    <td>
-                        Use the free iPhone app.
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="NB-howitworks-page">
-            <div class="NB-howitworks-page-image">
-                <img src="{{ MEDIA_URL }}img/reader/howitworks_github.png" />
-            </div>
-            <table class="NB-howitworks-page-description">
-                <tr>
-                    <td>
-                        Open source, regularly improved, attention to detail.
-                    </td>
-                </tr>
-            </table>
-        </div>
-
+        </div>    
     </div>
 
-  </div>
+    <div class="NB-welcome-pricing">
+        <div class="NB-inner">
+            <h2>Pricing</h2>
+            <p>NewsBlur is free on the web, iPad, iPhone, and Android. By subscribing to a <br> premium account, you support a growing service and unlock a few restrictions.</p>
+            <table class="NB-pricing">
+                <tr>
+                    <th></th>
+                    <th>Free Account</th>
+                    <th class="NB-last">
+                        <div class="NB-price">$1 / month</div>
+                        Premium Account
+                    </th>
+                </tr>
+                <tr>
+                    <td class="NB-bold">Number of Sites</td>
+                    <td>Up to 64 sites</td>
+                    <td class="NB-last">Unlimited sites</td>
+                </tr>
+                <tr>
+                    <td class="NB-bold">River of News</td>
+                    <td>Only 10 stories at a time</td>
+                    <td class="NB-last">All stories at once</td>
+                </tr>
+                <tr>
+                    <td class="NB-bold">Site updates</td>
+                    <td>1X</td>
+                    <td class="NB-last">Up to 10X as often</td>
+                </tr>
+                <tr>
+                    <td class="NB-bold">
+                        Feed poor Shiloh
+                    </td>
+                    <td>She goes hungry</td>
+                    <td class="NB-last">
+                        <img src="{{ MEDIA_URL }}img/reader/shiloh.jpg" class="NB-shiloh">Home cooked meals of green beans, sweet potatoes, carrots, and brown rice</td>
+                </tr>
+            </table>
+        </div>
+    </div>
 
-  <div class="NB-account">
+    <div class="NB-welcome-activity">
+        <div class="NB-inner">
+            {% render_features_module %}
+            <h2>Real-time Stats</h2>
+            {% render_statistics_graphs statistics %}
+        </div>
+    </div>
     
-      <div class="NB-module NB-module-login">
-        <h5>
-          <div class="NB-module-header-login">Login</div>
-          <div class="NB-module-header-signup">Signup</div>
-        </h5>
-
-        <div class="NB-login">
-          {% if login_form.errors %}
-            {% for field, error in login_form.errors.items %}
-              {{ error|safe }}
-            {% endfor %}
-          {% endif %}
-      
-          <form method="post" action="{% url login %}">
-            <div>
-              {{ login_form.username.label_tag }}
-              {{ login_form.username }}
+    <footer class="NB-welcome-footer">
+        <div class="NB-inner">
+            <div class="NB-footer-icons">
+                <a href="http://github.com/samuelclay" title="GitHub"><img src="{{ MEDIA_URL }}img/welcome/github_favicon.png"></a>
+                <a href="http://twitter.com/newsblur" title="Twitter"><img src="{{ MEDIA_URL }}img/welcome/twitter_favicon.png"></a>
             </div>
-            <div>
-              <div class="NB-signup-optional">
-                {% if login_form.errors %}
-                  {% for field, error in login_form.errors.items %}
-                    <a href="mailto:password@newsblur.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot?</a>
-                  {% endfor %}
-                {% else %}
-                  Optional
-                {% endif %}
-              </div>
-              {{ login_form.password.label_tag }}
-              {{ login_form.password }}
-            </div>
-
-            <input name="submit" type="submit" value="login" />
-            <input type="hidden" name="next" value="/" />
-          </form>
+            <a href="{% url index %}"><img src="{{ MEDIA_URL }}/img/logo_newsblur_blur.png" style="height: 32px; width: 183px;" class="NB-footer-logo" title="NewsBlur" alt="NewsBlur" /></a>
+            is built in New York City and San Francisco by 
+            <a href="http://twitter.com/samuelclay" class="NB-splash-link">
+                <img src="http://a0.twimg.com/profile_images/1382021023/Campeche_Steps_reasonably_small.jpg" class="NB-twitter-avatar">
+                @samuelclay
+            </a>
         </div>
-
-        <div class="NB-signup">
-          <form method="post" action="{% url signup %}">
-            <div>
-              {{ signup_form.username.label_tag }}
-              {{ signup_form.username }}
-            </div>
-            <div class="NB-signup-hidden">
-              <div class="NB-signup-optional">Optional</div>
-              {{ signup_form.password.label_tag }}
-              {{ signup_form.password }}
-            </div>
-            <div class="NB-signup-hidden">
-              {{ signup_form.email.label_tag }}
-              {{ signup_form.email }}
-            </div>
-
-            <input name="submit" type="submit" value="create account" />
-            <input type="hidden" name="next" value="/" />
-          </form>
-          
-          {% if signup_form.errors %}
-            {% for field, error in signup_form.errors.items %}
-              {{ error|safe }}
-            {% endfor %}
-          {% endif %}
-      
-          <div class="NB-signup-orline {% if signup_form.errors %}NB-signup-orline-reduced{% endif %}">&mdash; <span class="NB-signup-orline-or">or</span> &mdash;</div>
-          <a href="{% url google-reader-authorize %}" class="NB-splash-link NB-signup-google">Import from <img src="{{ MEDIA_URL }}img/reader/google-reader-logo.png" width="112" height="24" /></a>
-        </div>
-      </div>
-
-    {% render_statistics_graphs statistics %}
-
-  </div>
-  
+    </footer>
 </div>
-
-{% render_feeds_skeleton %}
 
 {% endblock %}

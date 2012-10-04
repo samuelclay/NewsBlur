@@ -32,10 +32,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     has_modifications: function() {
-        if (this.get('story_content').indexOf('<ins') != -1) {
-            return true;
-        } else if (NEWSBLUR.assets.preference('hide_story_changes') && 
-                   this.get('story_content').indexOf('<del') != -1) {
+        if (this.get('story_content').indexOf('<ins') != -1 ||
+            this.get('story_content').indexOf('<del') != -1) {
             return true;
         }
         return false;
@@ -72,9 +70,9 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // = Actions =
     // ===========
     
-    deselect: function(selected_story) {
+    deselect_other_stories: function(selected_story) {
         this.any(function(story) {
-            if (story.get('selected') && story != selected_story) {
+            if (story.get('selected') && story.id != selected_story.id) {
                 story.set('selected', false);
                 return true;
             }
@@ -140,27 +138,27 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         
         if (story.score() > 0) {
             var active_count = Math.max(active_feed.get('ps') + (options.unread?1:-1), 0);
-            var story_count = Math.max(story_feed.get('ps') + (options.unread?1:-1), 0);
+            var story_count = story_feed && Math.max(story_feed.get('ps') + (options.unread?1:-1), 0);
             active_feed.set('ps', active_count, {instant: true});
-            story_feed.set('ps', story_count, {instant: true});
+            if (story_feed) story_feed.set('ps', story_count, {instant: true});
             _.each(friend_feeds, function(socialsub) { 
                 var socialsub_count = Math.max(socialsub.get('ps') + (options.unread?1:-1), 0);
                 socialsub.set('ps', socialsub_count, {instant: true});
             });
         } else if (story.score() == 0) {
             var active_count = Math.max(active_feed.get('nt') + (options.unread?1:-1), 0);
-            var story_count = Math.max(story_feed.get('nt') + (options.unread?1:-1), 0);
+            var story_count = story_feed && Math.max(story_feed.get('nt') + (options.unread?1:-1), 0);
             active_feed.set('nt', active_count, {instant: true});
-            story_feed.set('nt', story_count, {instant: true});
+            if (story_feed) story_feed.set('nt', story_count, {instant: true});
             _.each(friend_feeds, function(socialsub) { 
                 var socialsub_count = Math.max(socialsub.get('nt') + (options.unread?1:-1), 0);
                 socialsub.set('nt', socialsub_count, {instant: true});
             });
         } else if (story.score() < 0) {
             var active_count = Math.max(active_feed.get('ng') + (options.unread?1:-1), 0);
-            var story_count = Math.max(story_feed.get('ng') + (options.unread?1:-1), 0);
+            var story_count = story_feed && Math.max(story_feed.get('ng') + (options.unread?1:-1), 0);
             active_feed.set('ng', active_count, {instant: true});
-            story_feed.set('ng', story_count, {instant: true});
+            if (story_feed) story_feed.set('ng', story_count, {instant: true});
             _.each(friend_feeds, function(socialsub) { 
                 var socialsub_count = Math.max(socialsub.get('ng') + (options.unread?1:-1), 0);
                 socialsub.set('ng', socialsub_count, {instant: true});
@@ -304,7 +302,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     detect_selected_story: function(selected_story, selected) {
         if (selected) {
-            this.deselect(selected_story);
+            this.deselect_other_stories(selected_story);
             this.active_story = selected_story;
             NEWSBLUR.reader.active_story = selected_story;
             this.previous_stories_stack.push(selected_story);

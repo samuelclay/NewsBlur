@@ -4,6 +4,8 @@ logs/*.pid
 *.pyc
 static/*
 local_settings.py
+celerybeat-schedule
+celerybeat.pid
 media/iphone/NewsBlur/build
 media/iphone/build
 build/
@@ -24,8 +26,8 @@ media/maintenance.html.unused
 config/settings
 static.tgz
 media/css/circular
-
 config/settings
+config/secrets
 
 # ----------------------
 # Android
