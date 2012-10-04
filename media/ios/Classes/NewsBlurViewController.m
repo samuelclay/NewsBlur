@@ -172,7 +172,7 @@ static const CGFloat kFolderTitleHeight = 28;
 //                                scrollPosition:UITableViewScrollPositionNone];
     
     [super viewDidAppear:animated];
-    [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.6];
+    [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
     self.navigationController.navigationBar.backItem.title = @"All Sites";
 }
 
@@ -839,7 +839,8 @@ static const CGFloat kFolderTitleHeight = 28;
     
     
     CGRect rect = CGRectMake(0.0, 0.0, tableView.bounds.size.width, kFolderTitleHeight);
-    UIView *folderTitle = [[FolderTitleView alloc] drawWithRect:rect inSection:section];
+    FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
+    folderTitle.section = section;
     
     return folderTitle;
 }

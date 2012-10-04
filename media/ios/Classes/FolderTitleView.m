@@ -13,21 +13,13 @@
 @implementation FolderTitleView
 
 @synthesize appDelegate;
+@synthesize section;
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        
-    }
-    return self;
-}
-
-- (UIControl *)drawWithRect:(CGRect)rect inSection:(NSInteger)section {
+- (void) drawRect:(CGRect)rect {
     
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-
+    
     NSString *folderName;
     if (section == 0) {
         folderName = @"river_blurblogs";
@@ -36,27 +28,25 @@
     }
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
-    
+
     // create the parent view that will hold header Label
-    UIControl* customView = [[UIControl alloc]
-                             initWithFrame:rect];
+    UIView* customView = [[UIView alloc] initWithFrame:rect];
     UIView *borderTop = [[UIView alloc]
                          initWithFrame:CGRectMake(rect.origin.x, rect.origin.y,
                                                   rect.size.width, 1.0)];
     borderTop.backgroundColor = UIColorFromRGB(0xe0e0e0);
-    borderTop.opaque = NO;
+    borderTop.opaque = YES;
     [customView addSubview:borderTop];
-    
     
     UIView *borderBottom = [[UIView alloc]
                             initWithFrame:CGRectMake(rect.origin.x, rect.size.height-1,
                                                      rect.size.width, 1.0)];
     borderBottom.backgroundColor = [UIColorFromRGB(0xB7BDC6) colorWithAlphaComponent:0.5];
-    borderBottom.opaque = NO;
+    borderBottom.opaque = YES;
     [customView addSubview:borderBottom];
     
     UILabel * headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    customView.opaque = NO;
+    customView.opaque = YES;
     headerLabel.backgroundColor = [UIColor clearColor];
     headerLabel.opaque = NO;
     headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
@@ -78,9 +68,10 @@
         //        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
         //                                      colorWithAlphaComponent:0.8];
     }
-    
     customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-                                  colorWithAlphaComponent:0.8];
+                                  colorWithAlphaComponent:.99];
+    [self setBackgroundColor:[UIColor whiteColor]];
+//    customView.backgroundColor = UIColorFromRGB(0xD7DDE6);
     [customView addSubview:headerLabel];
     
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -151,14 +142,14 @@
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextFillRect(context, rect);
+    [self addSubview:customView];
     
-    UnreadCountView *unreadCount = [UnreadCountView alloc];
-    [unreadCount drawInRect:rect ps:123 nt:321
-                   listType:NBFeedListFolder];
-    
-    return customView;
+    if (isFolderCollapsed) {
+        UnreadCountView *unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
+        [unreadCount drawInRect:rect ps:123 nt:321
+                       listType:NBFeedListFolder];
+        [self addSubview:unreadCount];
+    }
 }
 
 @end

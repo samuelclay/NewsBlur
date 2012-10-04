@@ -144,7 +144,7 @@
         if (indexPath) {
             [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         } 
-        [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.6];
+        [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.4];
     }
 }
 

@@ -70,14 +70,14 @@ static UIFont *textFont = nil;
     
     UIColor *backgroundColor;
     
-    backgroundColor = self.selected || self.highlighted ? 
+    backgroundColor = highlighted ?
                       UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR) : 
                       [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
 
     [backgroundColor set];
     CGContextFillRect(context, r);
     
-    if (self.highlighted || self.selected) {
+    if (highlighted) {
         // top border
         UIColor *blue = UIColorFromRGB(0x6eadf5);
         CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
@@ -98,7 +98,7 @@ static UIFont *textFont = nil;
     [unreadCount drawInRect:r ps:_positiveCount nt:_neutralCount
                    listType:(isSocial ? NBFeedListSocial : NBFeedListFeed)];
     
-    UIColor *textColor = self.selected || self.highlighted ? 
+    UIColor *textColor = highlighted ? 
                          [UIColor blackColor]:
                          [UIColor blackColor];
 

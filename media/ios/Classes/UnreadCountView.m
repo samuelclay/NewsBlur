@@ -47,19 +47,25 @@ static UIColor *negativeBackgroundColor = nil;
     }
 }
 
+- (void)drawRect:(CGRect)rect {
+    
+}
+
 - (void)drawInRect:(CGRect)r ps:(int)ps nt:(int)nt listType:(NBFeedListType)listType {
+    
     rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
+    
     
     psWidth = ps == 0 ? 0 : ps < 10 ? 14 : ps < 100 ? 22 : 28;
     ntWidth = nt == 0 ? 0 : nt < 10 ? 14 : nt < 100 ? 22 : 28;
     
     int psOffset = ps == 0 ? 0 : psWidth - 20;
-    int ntOffset = nt  == 0 ? 0 : ntWidth - 20;
+    int ntOffset = nt == 0 ? 0 : ntWidth - 20;
     
     psPadding = ps == 0 ? 0 : 2;
     ntPadding = nt == 0 ? 0 : 2;
-    
+    self.opaque = NO;
     if (ps > 0){
         [positiveBackgroundColor set];
         CGRect rr;
@@ -70,6 +76,8 @@ static UIColor *negativeBackgroundColor = nil;
             } else {
                 rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 10, psWidth, 17);
             }
+        } else if (listType == NBFeedListFolder) {
+            rr = CGRectMake(rect.size.width + rect.origin.x - psOffset - 22, 5, psWidth, 17);
         } else {
             rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, 17);
         }
@@ -97,6 +105,8 @@ static UIColor *negativeBackgroundColor = nil;
             } else {
                 rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 10, ntWidth, 17);
             }
+        } else if (listType == NBFeedListFolder) {
+            rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset - 22, 5, ntWidth, 17);
         } else {
             rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, 17);
         }

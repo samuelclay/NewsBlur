@@ -838,7 +838,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     
     if (keyPath == @"contentOffset") {
-        if (self.webView.scrollView.contentOffset.y < -20) {
+        if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1)) {
             // Pulling
             if (!pullingScrollview) {
                 pullingScrollview = YES;
@@ -854,7 +854,7 @@
                     }
                 }
             }
-            float y = -1 * self.webView.scrollView.contentOffset.y - 20 - 1;
+            float y = -1 * self.webView.scrollView.contentOffset.y - self.feedTitleGradient.frame.size.height;
             self.feedTitleGradient.frame = CGRectMake(0, y,
                                                       self.feedTitleGradient.frame.size.width,
                                                       self.feedTitleGradient.frame.size.height);

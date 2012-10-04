@@ -1117,8 +1117,6 @@
 		431B857315A131C300DCE497 /* Feeds */ = {
 			isa = PBXGroup;
 			children = (
-				43F44B1A159D8D7200F48F8A /* FeedTableCell.h */,
-				43F44B1B159D8D7200F48F8A /* FeedTableCell.m */,
 				28D7ACF60DDB3853001CB0EB /* NewsBlurViewController.h */,
 				28D7ACF70DDB3853001CB0EB /* NewsBlurViewController.m */,
 				439DAB1D1590DA350019B0EB /* FeedsMenuViewController.h */,
@@ -1129,6 +1127,8 @@
 				FF5EA47D143B691000B7563D /* AddSiteViewController.m */,
 				FFDE35CA161B8F870034BFDE /* FolderTitleView.h */,
 				FFDE35CB161B8F870034BFDE /* FolderTitleView.m */,
+				43F44B1A159D8D7200F48F8A /* FeedTableCell.h */,
+				43F44B1B159D8D7200F48F8A /* FeedTableCell.m */,
 				FFDE35D8161D12250034BFDE /* UnreadCountView.h */,
 				FFDE35D9161D12250034BFDE /* UnreadCountView.m */,
 			);
