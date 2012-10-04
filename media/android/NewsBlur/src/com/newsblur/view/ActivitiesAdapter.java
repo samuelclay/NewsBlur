@@ -22,19 +22,18 @@ import com.newsblur.activity.Profile;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.util.ImageLoader;
-import com.newsblur.util.PrefsUtils;
 
 public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 
 	private LayoutInflater inflater;
 	private ImageLoader imageLoader;
 	private final String startedFollowing, ago, repliedTo, sharedStory, withComment, likedComment;
-	private ForegroundColorSpan midgray, highlight, darkgray;
+	private ForegroundColorSpan highlight, darkgray;
 	private String TAG = "ActivitiesAdapter";
 	private Context context;
-	private UserDetails userDetails;
+	private UserDetails currentUserDetails;
 	
-	public ActivitiesAdapter(final Context context, final ActivitiesResponse[] activities) {
+	public ActivitiesAdapter(final Context context, final ActivitiesResponse[] activities, UserDetails user) {
 		super(context, R.id.row_activity_text);
 		inflater = LayoutInflater.from(context);
 		imageLoader = ((NewsBlurApplication) context.getApplicationContext()).getImageLoader();
@@ -44,7 +43,7 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 			add(response);
 		}
 		
-		userDetails = PrefsUtils.getUserDetails(context);
+		currentUserDetails = user;
 		
 		Resources resources = context.getResources();
 		startedFollowing = resources.getString(R.string.profile_started_following);
@@ -55,7 +54,6 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		ago = resources.getString(R.string.profile_ago);
 		
 		highlight = new ForegroundColorSpan(resources.getColor(R.color.linkblue));
-		midgray = new ForegroundColorSpan(resources.getColor(R.color.midgray));
 		darkgray = new ForegroundColorSpan(resources.getColor(R.color.darkgray));
 	}
 	
@@ -86,6 +84,8 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 		activityTime.setText(activity.timeSince.toUpperCase() + " " + ago);
 		if (activity.user != null) {
 			imageLoader.displayImage(activity.user.photoUrl, imageView);
+		} else if (TextUtils.equals(activity.category, "sharedstory")) {
+			imageLoader.displayImage(currentUserDetails.photoUrl, imageView, 10f);
 		} else {
 			imageView.setImageResource(R.drawable.logo);
 		}
@@ -137,8 +137,6 @@ public class ActivitiesAdapter extends ArrayAdapter<ActivitiesResponse> {
 			if (!TextUtils.isEmpty(activity.content)) {
 				stringBuilder.setSpan(darkgray, sharedStory.length() + 4 + activity.title.length() + withComment.length(), stringBuilder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
-		
-			imageLoader.displayImage(userDetails.photoUrl, imageView);
 		}
 		
 		activityText.setText(stringBuilder);
