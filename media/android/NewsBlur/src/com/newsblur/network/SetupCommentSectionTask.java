@@ -13,7 +13,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,7 +30,6 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.domain.UserProfile;
 import com.newsblur.fragment.ReplyDialogFragment;
-import com.newsblur.network.domain.ProfileResponse;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefsUtils;
 import com.newsblur.util.ViewUtils;
@@ -171,7 +169,6 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			Cursor userCursor = resolver.query(FeedProvider.USERS_URI, null, DatabaseConstants.USER_USERID + " IN (?)", new String[] { comment.userId }, null);
 			UserProfile commentUser = UserProfile.fromCursor(userCursor);
 
-
 			TextView commentUsername = (TextView) commentView.findViewById(R.id.comment_username);
 			commentUsername.setText(commentUser.username);
 			String userPhoto = commentUser.photoUrl;
@@ -221,6 +218,9 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 			FlowLayout sharedGrid = (FlowLayout) viewHolder.get().findViewById(R.id.reading_social_shareimages);
 			FlowLayout commentGrid = (FlowLayout) viewHolder.get().findViewById(R.id.reading_social_commentimages);
 
+			TextView friendCommentTotal = ((TextView) viewHolder.get().findViewById(R.id.reading_friend_comment_total));
+			TextView publicCommentTotal = ((TextView) viewHolder.get().findViewById(R.id.reading_public_comment_total));
+			
 			ViewUtils.setupCommentCount(context, viewHolder.get(), commentCursor.getCount());
 			ViewUtils.setupShareCount(context, viewHolder.get(), story.sharedUserIds.length);
 
@@ -255,6 +255,22 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				commentGrid.addView(image);
 				commentCursor.moveToNext();
 			}
+			
+			if (publicCommentViews.size() > 0) {
+				String commentCount = context.getString(R.string.public_comment_count);
+				if (publicCommentViews.size() == 1) {
+					commentCount = commentCount.substring(0, commentCount.length() - 1);
+				}
+				publicCommentTotal.setText(String.format(commentCount, publicCommentViews.size()));
+			}
+			
+			if (friendCommentViews.size() > 0) {
+				String commentCount = context.getString(R.string.friends_comments_count);
+				if (friendCommentViews.size() == 1) {
+					commentCount = commentCount.substring(0, commentCount.length() - 1);
+				}
+				friendCommentTotal.setText(String.format(commentCount, friendCommentViews.size()));
+			}
 
 			for (int i = 0; i < publicCommentViews.size(); i++) {
 				if (i == publicCommentViews.size() - 1) {
@@ -262,14 +278,15 @@ public class SetupCommentSectionTask extends AsyncTask<Void, Void, Void> {
 				}
 				((LinearLayout) viewHolder.get().findViewById(R.id.reading_public_comment_container)).addView(publicCommentViews.get(i));
 			}
+			
 			for (int i = 0; i < friendCommentViews.size(); i++) {
 				if (i == friendCommentViews.size() - 1) {
 					friendCommentViews.get(i).findViewById(R.id.comment_divider).setVisibility(View.GONE);
 				}
 				((LinearLayout) viewHolder.get().findViewById(R.id.reading_friend_comment_container)).addView(friendCommentViews.get(i));
 			}
+			
 		}
-
 		commentCursor.close();
 	}
 }

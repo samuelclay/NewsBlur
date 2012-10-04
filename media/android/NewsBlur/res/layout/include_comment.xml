@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/com.newsblur"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/item_background"
@@ -93,7 +92,6 @@
             android:textColor="@color/newsblur_blue"
             android:textSize="14sp" />
      
-
         <TextView
             android:id="@+id/comment_text"
             android:layout_width="match_parent"
@@ -106,7 +104,6 @@
             android:textColor="@color/darkgray"
             android:textSize="14dp" />
 
-           
         <com.newsblur.view.FlowLayout
             xmlns:newsblur="http://schemas.android.com/apk/res/com.newsblur"
             android:id="@+id/comment_favourite_avatars"
@@ -118,7 +115,6 @@
             android:paddingTop="2dp"
             newsblur:flow="left"
             newsblur:defaultImageSize="20" />
-        
         
     </RelativeLayout>
 

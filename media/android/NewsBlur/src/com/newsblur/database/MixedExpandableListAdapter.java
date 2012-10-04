@@ -8,7 +8,6 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.os.Handler;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
@@ -63,7 +62,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	public int currentState = AppConstants.STATE_SOME;
 	private Cursor allStoriesCountCursor, sharedStoriesCountCursor;
-	private String TAG = "MixedExpandableAdapter";
 
 	public MixedExpandableListAdapter(final Context context, final Cursor folderCursor, final Cursor blogCursor, final Cursor countCursor, final Cursor sharedCountCursor, final int collapsedGroupLayout,
 			int expandedGroupLayout, int blogGroupLayout, String[] groupFrom, int[] groupTo, int childLayout, String[] childFrom, int[] childTo, String[] blogFrom, int[] blogTo) {
@@ -133,8 +131,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	protected Cursor getChildrenCursor(Cursor folderCursor) {
 		final Folder parentFolder = Folder.fromCursor(folderCursor);
-		Uri uri = null;
-		uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
+		Uri uri = FeedProvider.FEED_FOLDER_MAP_URI.buildUpon().appendPath(parentFolder.getName()).build();
 		return contentResolver.query(uri, null, null, new String[] { FeedProvider.getFolderSelectionFromState(currentState) }, null);
 	}
 
@@ -286,7 +283,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 				@Override
 				public void onClick(View v) {
 					Intent i = new Intent(context, AllSharedStoriesItemsList.class);
-
 					i.putExtra(AllStoriesItemsList.EXTRA_STATE, currentState);
 					((Activity) context).startActivityForResult(i, Activity.RESULT_OK);
 				}
@@ -425,7 +421,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 
 	private synchronized void releaseCursorHelpers() {
 		for (int pos = mChildrenCursorHelpers.size() - 1; pos >= 0; pos--) {
-			
 			mChildrenCursorHelpers.valueAt(pos).deactivate();
 		}
 		mChildrenCursorHelpers.clear();
@@ -523,12 +518,10 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 				cursor.registerDataSetObserver(mDataSetObserver);
 				mRowIDColumn = cursor.getColumnIndex("_id");
 				mDataValid = true;
-				// notify the observers about the new cursor
 				notifyDataSetChanged(releaseCursors);
 			} else {
 				mRowIDColumn = -1;
 				mDataValid = false;
-				// notify the observers about the lack of a data set
 				notifyDataSetInvalidated();
 			}
 		}
@@ -562,8 +555,6 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			@Override
 			public void onChange(boolean selfChange) {
 				if (mAutoRequery && mCursor != null) {
-					if (Config.LOGV) Log.v("Cursor", "Auto requerying " + mCursor +
-					" due to update");
 					mDataValid = mCursor.requery();
 				}
 			}

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android" >
-
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
     <Button
         android:id="@+id/share_story_button"
         style="@style/shareButton"
@@ -24,7 +23,18 @@
             android:id="@+id/reading_friend_comment_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical">
+        
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/darkgray"
+                android:id="@+id/reading_friend_comment_total"
+                android:paddingTop="3dp"
+                android:textStyle="bold"
+                android:paddingBottom="3dp" />
+            
+		</LinearLayout>
 
         <View
             android:id="@+id/comment_divider"
@@ -38,7 +48,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/comment_divider"
-            android:orientation="vertical" />
+            android:orientation="vertical">
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/darkgray"
+                android:paddingTop="3dp"
+                android:textStyle="bold"
+                android:id="@+id/reading_public_comment_total"
+                android:paddingBottom="3dp" />
+            
+		</LinearLayout>
+		
     </RelativeLayout>
-
 </merge>

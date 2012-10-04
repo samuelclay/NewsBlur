@@ -137,5 +137,7 @@
     <string name="comment_favourited">Comment favorited</string>
     <string name="error_liking_comment">Error favoriting comment</string>
     <string name="let_s_go_">Let&amp;apos;s go!</string>
+    <string name="public_comment_count">%d PUBLIC COMMENTS</string>
+    <string name="friends_comments_count">%d FRIENDS COMMENTS</string>
     
 </resources>
