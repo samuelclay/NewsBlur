@@ -29,8 +29,7 @@ from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
-from utils.story_functions import strip_tags
-from utils.diff import HTMLDiff
+from utils.story_functions import strip_tags, htmldiff
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -89,10 +88,14 @@ class Feed(models.Model):
         
     @property
     def favicon_url(self):
+        if settings.BACKED_BY_AWS['icons_on_s3'] and self.s3_icon:
+            return "http://%s/%s.png" % (settings.S3_ICONS_BUCKET_NAME, self.pk)
         return reverse('feed-favicon', kwargs={'feed_id': self.pk})
     
     @property
     def favicon_url_fqdn(self):
+        if settings.BACKED_BY_AWS['icons_on_s3'] and self.s3_icon:
+            return self.favicon_url
         return "http://%s%s" % (
             Site.objects.get_current().domain,
             self.favicon_url
@@ -101,6 +104,10 @@ class Feed(models.Model):
     @property
     def s3_pages_key(self):
         return "%s.gz.html" % self.pk
+        
+    @property
+    def s3_icons_key(self):
+        return "%s.png" % self.pk
         
     def canonical(self, full=False, include_favicon=True):
         feed = {
@@ -121,6 +128,8 @@ class Feed(models.Model):
             'favicon_text_color': self.favicon_text_color(),
             'favicon_fetching': self.favicon_fetching,
             'favicon_url': self.favicon_url,
+            's3_page': self.s3_page,
+            's3_icon': self.s3_icon,
         }
         
         if include_favicon:
@@ -787,8 +796,7 @@ class Feed(models.Model):
                     original_content = zlib.decompress(existing_story.story_content_z)
                 # print 'Type: %s %s' % (type(original_content), type(story_content))
                 if story_content and len(story_content) > 10:
-                    diff = HTMLDiff(unicode(original_content), story_content)
-                    story_content_diff = diff.getDiff()
+                    story_content_diff = htmldiff(unicode(original_content), unicode(story_content))
                 else:
                     story_content_diff = original_content
                 # logging.debug("\t\tDiff: %s %s %s" % diff.getStats())

@@ -30,7 +30,7 @@ from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
 from apps.statistics.models import MStatistics
 try:
-    from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory, FeedLoadtime
+    from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory
 except:
     pass
 from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
@@ -542,7 +542,6 @@ def load_single_feed(request, feed_id):
         if timediff > 0.50 else "")
     logging.user(request, "~FYLoading feed: ~SB%s%s (%s/%s) %s" % (
         feed.feed_title[:22], ('~SN/p%s' % page) if page > 1 else '', order, read_filter, time_breakdown))
-    FeedLoadtime.objects.create(feed=feed, loadtime=timediff)
     
     data = dict(stories=stories, 
                 user_profiles=user_profiles,
@@ -565,7 +564,10 @@ def load_feed_page(request, feed_id):
     
     feed = Feed.get_by_id(feed_id)
     
-    if feed.has_page and not feed.has_page_exception and feed.s3_page:
+    if (feed.has_page and 
+        not feed.has_page_exception and 
+        settings.BACKED_BY_AWS['pages_on_s3'] and 
+        feed.s3_page):
         if settings.PROXY_S3_PAGES:
             key = settings.S3_PAGES_BUCKET.get_key(feed.s3_pages_key)
             compressed_data = key.get_contents_as_string()

@@ -3,9 +3,11 @@
 <html>
 <head>
   <title>{% block title %}NewsBlur{% endblock %}</title>
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-  <link rel="shortcut icon" HREF="/media/img/favicon.png">
+  <link rel="shortcut icon" href="{{ MEDIA_URL }}img/favicon.ico" type="image/x-icon" />
   <link rel="apple-touch-icon" href="/media/img/mobile/apple-touch-icon-precomposed.png" />
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <meta name="msapplication-TileImage" content="{{ MEDIA_URL }}img/logo_144.png" />
+  <meta name="msapplication-TileColor" content="#F7E5A8"/>
 
   <script type="text/javascript" charset="utf-8">
     window.NEWSBLUR = {};

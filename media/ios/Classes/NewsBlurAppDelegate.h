@@ -73,6 +73,7 @@
     NSString * activeUsername;
     NSString * activeUserProfileId;
     NSString * activeUserProfileName;
+    BOOL hasNoSites;
     BOOL isRiverView;
     BOOL isSocialView;
     BOOL isSocialRiverView;
@@ -147,6 +148,7 @@
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
 @property (readwrite) NSString * activeUserProfileName;
+@property (nonatomic, readwrite) BOOL hasNoSites;
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
