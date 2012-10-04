@@ -21,24 +21,25 @@
         android:layout_gravity="center_vertical"
         android:layout_margin="20dp"
         android:background="@drawable/newsblur_background"
-        android:orientation="horizontal"
         android:gravity="center"
+        android:orientation="horizontal"
         android:padding="5dp" >
 
         <TextView
             android:id="@+id/addfollow_newsblur_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
             android:gravity="center_vertical"
             android:text="@string/addfollow_add_newsblur"
             android:textColor="@color/white"
-            android:layout_marginRight="10dp"
             android:textSize="16sp" />
 
         <CheckBox
             android:id="@+id/addfollow_newsblur_checkbox"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="right" />
     </LinearLayout>
 
     <LinearLayout
@@ -48,8 +49,8 @@
         android:layout_below="@id/addfollow_newsblur"
         android:layout_gravity="center_vertical"
         android:layout_margin="20dp"
-        android:gravity="center"
         android:background="@drawable/newsblur_background"
+        android:gravity="center"
         android:orientation="horizontal"
         android:padding="5dp" >
 
@@ -57,16 +58,17 @@
             android:id="@+id/addfollow_popular_text"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
             android:gravity="center_vertical"
             android:text="@string/addfollow_add_popular"
             android:textColor="@color/white"
-            android:layout_marginRight="10dp"
             android:textSize="16sp" />
 
         <CheckBox
             android:id="@+id/addfollow_popular_checkbox"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="right" />
     </LinearLayout>
 
 </RelativeLayout>

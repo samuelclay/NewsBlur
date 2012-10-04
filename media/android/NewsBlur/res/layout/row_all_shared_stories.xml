@@ -2,10 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/selector_folder_background"
-    >
+    android:background="@drawable/selector_folder_background" >
 
-    
     <ImageView
         android:id="@+id/row_everything_icon"
         android:layout_width="25dp"
@@ -16,7 +14,7 @@
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/group" />
-    
+
     <ImageView
         android:id="@+id/row_folder_indicator"
         android:layout_width="20dp"
@@ -26,7 +24,7 @@
         android:layout_marginRight="12dp"
         android:contentDescription="@string/description_row_folder_icon"
         android:src="@drawable/indicator_collapsed" />
-    
+
     <LinearLayout
         android:id="@+id/row_foldersums"
         android:layout_width="wrap_content"
@@ -59,19 +57,25 @@
             android:textSize="14dp"
             android:textStyle="bold" />
     </LinearLayout>
-    
+
     <TextView
         android:id="@+id/row_everythingtext"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/row_everything_icon"
         android:layout_toLeftOf="@id/row_foldersums"
+        android:layout_toRightOf="@id/row_everything_icon"
+        android:paddingBottom="15dp"
+        android:paddingTop="15dp"
         android:text="@string/all_shared_stories"
         android:textColor="@color/folder_text"
         android:textSize="16dp"
-        android:paddingBottom="15dp"
-    	android:paddingTop="15dp" 
         android:textStyle="bold" />
-    
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/midgray" />
+
 </RelativeLayout>

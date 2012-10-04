@@ -28,6 +28,7 @@ public class FeedReading extends Reading {
 	private Feed feed;
 	private int currentPage;
 	private boolean stopLoading = false;
+	private boolean requestedPage = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
@@ -55,16 +56,13 @@ public class FeedReading extends Reading {
 
 		setupPager();
 
-		Story story = readingAdapter.getStory(passedPosition);
-
-		updateReadStories(story);
-
 		syncFragment = (SyncUpdateFragment) fragmentManager.findFragmentByTag(SyncUpdateFragment.TAG);
 		if (syncFragment == null) {
 			syncFragment = new SyncUpdateFragment();
 			fragmentManager.beginTransaction().add(syncFragment, SyncUpdateFragment.TAG).commit();
 		}
 
+		updateReadStories(readingAdapter.getStory(passedPosition));
 	}
 
 	private void updateReadStories(Story story) {
@@ -80,30 +78,22 @@ public class FeedReading extends Reading {
 			checkStoryCount(position);
 		}
 	}
+	
+	@Override
+	public void updateAfterSync() {
+		setSupportProgressBarIndeterminateVisibility(false);
+		stories.requery();
+		requestedPage = false;
+		readingAdapter.notifyDataSetChanged();
+		checkStoryCount(pager.getCurrentItem());
+	}
 
 	@Override
 	public void checkStoryCount(int position) {
-		if (position == stories.getCount() - 1) {
-			boolean loadMore = false;
-
-			switch (currentState) {
-			case AppConstants.STATE_ALL:
-				loadMore = feed.positiveCount + feed.neutralCount + feed.negativeCount > stories.getCount();
-				break;
-			case AppConstants.STATE_BEST:
-				loadMore = feed.positiveCount > stories.getCount();
-				break;
-			case AppConstants.STATE_SOME:
-				loadMore = feed.positiveCount + feed.neutralCount > stories.getCount();
-				break;	
-			}
-
-			if (loadMore) {
-				currentPage += 1;
-				triggerRefresh(currentPage);
-			} else {
-				Log.d(TAG, "No need");
-			}
+		if (position == stories.getCount() - 1 && !stopLoading && !requestedPage) {
+			requestedPage = true;
+			currentPage += 1;
+			triggerRefresh(currentPage);
 		}
 	}
 
@@ -127,8 +117,10 @@ public class FeedReading extends Reading {
 			final Intent intent = new Intent(Intent.ACTION_SYNC, null, this, SyncService.class);
 			intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, syncFragment.receiver);
 			intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FEED_UPDATE);
-			intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
 			intent.putExtra(SyncService.EXTRA_TASK_FEED_ID, feedId);
+			if (page > 1) {
+				intent.putExtra(SyncService.EXTRA_TASK_PAGE_NUMBER, Integer.toString(page));
+			}
 			startService(intent);
 		}
 	}
@@ -137,6 +129,9 @@ public class FeedReading extends Reading {
 	public void setNothingMoreToUpdate() {
 		stopLoading = true;
 	}
+
+	@Override
+	public void closeAfterUpdate() { }
 
 
 }

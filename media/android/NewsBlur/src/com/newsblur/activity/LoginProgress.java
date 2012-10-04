@@ -27,7 +27,6 @@ public class LoginProgress extends FragmentActivity {
 		if (fragmentManager.findFragmentByTag(currentTag ) == null) {
 			String username = getIntent().getStringExtra("username");
 			String password = getIntent().getStringExtra("password");
-			Log.d(TAG , "Adding current new fragment");
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			LoginProgressFragment login = LoginProgressFragment.getInstance(username, password);
 			transaction.add(R.id.login_progress_container, login, currentTag);

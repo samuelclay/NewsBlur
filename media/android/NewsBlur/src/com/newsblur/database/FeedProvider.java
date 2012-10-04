@@ -223,7 +223,7 @@ public class FeedProvider extends ContentProvider {
 			break;		
 
 		case UriMatcher.NO_MATCH:
-			Log.d(TAG, "No match found for URI: " + uri.toString());
+			Log.e(TAG, "No match found for URI: " + uri.toString());
 			break;
 		}
 		return resultUri;
@@ -231,7 +231,6 @@ public class FeedProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
-		Log.d(TAG, "Creating provider and database.");
 		databaseHelper = new BlurDatabase(getContext().getApplicationContext());
 		return true;
 	}
@@ -246,7 +245,6 @@ public class FeedProvider extends ContentProvider {
 			return db.rawQuery("SELECT " + TextUtils.join(",", DatabaseConstants.FEED_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + 
 					" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 					" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FEED_ID +
-					" WHERE (" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 " +
 					" ORDER BY " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_TITLE + " COLLATE NOCASE", selectionArgs);
 
 			// Query for a specific feed	
@@ -415,7 +413,10 @@ public class FeedProvider extends ContentProvider {
 				allSharedBuilder.append(" WHERE ");
 				allSharedBuilder.append(selection);
 			}
-			allSharedBuilder.append(" ORDER BY " + DatabaseConstants.STORY_DATE + " DESC");
+			allSharedBuilder.append("GROUP BY " + DatabaseConstants.STORY_TABLE + "." + DatabaseConstants.STORY_ID);
+			if (!TextUtils.isEmpty(sortOrder)) {
+				allSharedBuilder.append(" ORDER BY " + sortOrder);
+			}
 			return db.rawQuery(allSharedBuilder.toString(), null);
 			
 		case SOCIALFEED_STORIES:
@@ -437,7 +438,9 @@ public class FeedProvider extends ContentProvider {
 				storyBuilder.append("AND ");
 				storyBuilder.append(selection);
 			}
-			storyBuilder.append(" ORDER BY " + DatabaseConstants.STORY_DATE + " DESC");
+			if (!TextUtils.isEmpty(sortOrder)) {
+				storyBuilder.append(" ORDER BY " + sortOrder);
+			}
 			return db.rawQuery(storyBuilder.toString(), userArgument);
 		default:
 			throw new UnsupportedOperationException("Unknown URI: " + uri);

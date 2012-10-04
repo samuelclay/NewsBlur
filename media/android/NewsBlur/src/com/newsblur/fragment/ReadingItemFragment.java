@@ -30,6 +30,7 @@ import com.newsblur.domain.Story;
 import com.newsblur.domain.UserDetails;
 import com.newsblur.network.APIManager;
 import com.newsblur.network.SetupCommentSectionTask;
+import com.newsblur.util.AppConstants;
 import com.newsblur.util.ImageLoader;
 import com.newsblur.util.PrefConstants;
 import com.newsblur.util.PrefsUtils;
@@ -182,7 +183,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 			itemFeed.setVisibility(View.GONE);
 			feedIcon.setVisibility(View.GONE);
 		} else {
-			imageLoader.displayImage(feedIconUrl, feedIcon);
+			imageLoader.displayImage(feedIconUrl, feedIcon, false);
 			itemFeed.setText(feedTitle);
 		}
 
@@ -237,7 +238,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		StringBuilder builder = new StringBuilder();
 		builder.append("<html><head><meta name=\"viewport\" content=\"target-densitydpi=device-dpi\" />");
 		builder.append("<style style=\"text/css\">");
-		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + 0.5f)));
+		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
 		builder.append("</style>");
 		builder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"reading.css\" /></head><body>");
 		builder.append(story.content);

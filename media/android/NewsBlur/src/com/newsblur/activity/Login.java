@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Window;
 
 import com.newsblur.R;
@@ -17,7 +16,6 @@ public class Login extends FragmentActivity {
 	
 	private FragmentManager fragmentManager;
 	private final static String currentTag = "currentFragment";
-	private static final String TAG = "LoginActivity";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +26,6 @@ public class Login extends FragmentActivity {
 		fragmentManager = getSupportFragmentManager();
 		
 		if (fragmentManager.findFragmentByTag(currentTag) == null) {
-			Log.d(TAG, "Adding current new fragment");
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			LoginRegisterFragment login = new LoginRegisterFragment();
 			transaction.add(R.id.login_container, login, currentTag);

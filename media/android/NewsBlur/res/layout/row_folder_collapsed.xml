@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/selector_folder_background"
-    >
+    android:background="@drawable/selector_folder_background">
 
     <ImageView
         android:id="@+id/row_folder_icon"
@@ -61,15 +60,21 @@
     
     <TextView
         android:id="@+id/row_foldername"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/row_folder_icon"
-        android:layout_toLeftOf="@id/row_foldersums"
+        android:paddingLeft="49dp"
+        android:layout_alignRight="@id/row_foldersums"
         android:textColor="@color/folder_text"
         android:paddingBottom="15dp"
     	android:paddingTop="15dp" 
         android:textSize="16dp"
         android:textStyle="bold" />
+    
+    <View 
+        android:layout_height="1dp"
+        android:layout_width="match_parent" 
+        android:background="@color/midgray"
+        android:layout_alignParentBottom="true" />
    
 </RelativeLayout>

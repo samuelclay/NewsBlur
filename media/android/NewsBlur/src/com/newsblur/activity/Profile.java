@@ -103,7 +103,7 @@ public class Profile extends SherlockFragmentActivity {
 		protected void onPostExecute(Void result) {
 			if (user != null && detailsFragment != null && activitiesFragment != null) {
 				detailsFragment.setUser(user, TextUtils.isEmpty(userId));
-				activitiesFragment.setActivities(activities);
+				activitiesFragment.setActivitiesAndUser(activities, user);
 			}
 		}
 	}

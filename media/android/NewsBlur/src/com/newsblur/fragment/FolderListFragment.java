@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
@@ -53,7 +52,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	private int currentState = AppConstants.STATE_SOME;
 	private int FEEDCHECK = 0x01;
 	private SocialFeedViewBinder blogViewBinder;
-	private String TAG = "FolderListFragment";
 	private SharedPreferences sharedPreferences;
 
 
@@ -99,7 +97,6 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.d(TAG, "Creating folder fragment view");
 		View v = inflater.inflate(R.layout.fragment_folderfeedlist, container);
 		list = (ExpandableListView) v.findViewById(R.id.folderfeed_list);
 		list.setGroupIndicator(getResources().getDrawable(R.drawable.transparent));
@@ -120,6 +117,9 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 	}
 
 	private void checkOpenFolderPreferences() {
+		if (sharedPreferences == null) {
+			sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
+		}
 		for (int i = 0; i < folderAdapter.getGroupCount(); i++) {
 			long groupId = folderAdapter.getGroupId(i);
 			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + groupId, true)) {

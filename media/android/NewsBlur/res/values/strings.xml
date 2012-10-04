@@ -39,8 +39,8 @@
 	<string name="description_follow_button">Follow or unfollow a user</string>
 	<string name="description_comment_user">Comment user image</string>
 	
-	<string name="reading_shared_count" formatted="false">%s SHARES</string>
-	<string name="reading_comment_count" formatted="false">%s COMMENTS</string>
+	<string name="reading_shared_count">%s SHARES</string>
+	<string name="reading_comment_count">%s COMMENTS</string>
 	
 	<string name="all_stories">ALL STORIES</string>
 	<string name="all_shared_stories">ALL SHARED STORIES</string>
@@ -57,9 +57,9 @@
 	<string name="share_comment_hint">Comment (Optional)</string>
 	<string name="shared">Story shared</string>
 	<string name="error_sharing">There was an problem sharing this story.</string>
-	<string name="share_newsblur" formatted="false">Share \"%s\" to your Blurblog?</string>
+	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
 	
-	<string name="reply_to" formatted="false">Reply to \"%s\"</string>
+	<string name="reply_to">Reply to \"%s\"</string>
 	
 	<string name="alert_dialog_ok">Okay</string>
 	<string name="alert_dialog_cancel">Cancel</string>
@@ -86,10 +86,11 @@
     <string name="menu_profile">Profile</string>
     <string name="menu_refresh">Refresh</string>
     <string name="menu_original">View original</string>
-    <string name="menu_share">Share</string>
+    <string name="menu_share">Send to…</string>
     <string name="menu_mark_feed_as_read">Mark feed as read</string>
+    <string name="menu_delete_feed">Delete feed</string>
     <string name="menu_mark_folder_as_read">Mark folder as read</string>
-    <string name="menu_sharenewsblur">Share on NewsBlur</string>
+    <string name="menu_sharenewsblur">Share this story</string>
     <string name="menu_textsize">Adjust text size</string>
     
     <string name="toast_marked_folder_as_read">Folder marked as read</string>
@@ -109,7 +110,6 @@
     <string name="menu_search">Search</string>
     <string name="menu_mark_all_as_read">Mark all as read</string>
     <string name="menu_logout">Log out</string>
-    <string name="menu_delete_feed">Delete feed</string>
     
     <string name="feed_deleted">Feed deleted</string>
     <string name="error_deleting_feed">There was an error deleting the feed.</string>
@@ -129,12 +129,15 @@
     <string name="need_to_login"><u>I need to log in!</u></string>
     <string name="need_to_register"><u>I need to register</u></string>
     <string name="wonderful_things">Wonderful things are happening at Newsblur. Add our blog for the latest news.</string>
-    <string name="addfollow_add_newsblur">Follow NewsBlur</string>
-    <string name="addfollow_add_popular">Follow Popular</string>
+    <string name="addfollow_add_newsblur">Follow the NewsBlur blog</string>
+    <string name="addfollow_add_popular">Follow Popular Stories</string>
     <string name="add_follow">All Done!</string>
     <string name="share_with_comments">Share with comments</string>
     <string name="share_this_story">Share this story</string>
     <string name="comment_favourited">Comment favorited</string>
     <string name="error_liking_comment">Error favoriting comment</string>
+    <string name="let_s_go_">Let&amp;apos;s go!</string>
+    <string name="public_comment_count">%d PUBLIC COMMENTS</string>
+    <string name="friends_comments_count">%d FRIENDS COMMENTS</string>
     
 </resources>

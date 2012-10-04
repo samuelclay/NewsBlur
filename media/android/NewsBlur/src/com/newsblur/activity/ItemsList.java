@@ -51,7 +51,6 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d(TAG, "Returned okay.");
 		if (resultCode == RESULT_OK) {
 			itemListFragment.hasUpdated();
 		}
@@ -59,7 +58,8 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 
 	public abstract void triggerRefresh();
 	public abstract void triggerRefresh(int page);
-
+	public abstract void markItemListAsRead();
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -75,12 +75,10 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 		return false;
 	}
 	
-	public abstract void markItemListAsRead();
 	
 
 	@Override
 	public void updateAfterSync() {
-		Log.d(TAG , "Redrawing UI");
 		if (itemListFragment != null) {
 			itemListFragment.hasUpdated();
 		} else {
@@ -98,7 +96,6 @@ public abstract class ItemsList extends SherlockFragmentActivity implements Sync
 
 	@Override
 	public void changedState(int state) {
-		Log.d(TAG, "Changed state.");
 		itemListFragment.changeState(state);
 	}
 

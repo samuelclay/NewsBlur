@@ -14,18 +14,15 @@ import com.newsblur.database.MixedFeedsReadingAdapter;
 import com.newsblur.domain.ValueMultimap;
 import com.newsblur.network.MarkMixedStoriesAsReadTask;
 import com.newsblur.service.SyncService;
-import com.newsblur.util.AppConstants;
 
 public class AllStoriesReading extends Reading {
 
 	private Cursor stories;
 	private ValueMultimap storiesToMarkAsRead;
-	private int negativeCount;
-	private int neutralCount;
-	private int positiveCount;
 	private int currentPage;
 	private ArrayList<String> feedIds;
 	private boolean stopLoading = false;
+	private boolean requestedPage = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceBundle) {
@@ -47,18 +44,11 @@ public class AllStoriesReading extends Reading {
 	}
 
 	private void setupCountCursor() {
-		Cursor countCursor = contentResolver.query(FeedProvider.FEED_COUNT_URI, null, DatabaseConstants.SOCIAL_INTELLIGENCE_SOME, null, null);
-		countCursor.moveToFirst();
-		negativeCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEG));
-		neutralCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
-		positiveCount = countCursor.getInt(countCursor.getColumnIndex(DatabaseConstants.SUM_POS));
-
 		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
 		feedIds = new ArrayList<String>();
 		while (cursor.moveToNext()) {
 			feedIds.add(cursor.getString(cursor.getColumnIndex(DatabaseConstants.FEED_ID)));
 		}
-
 	}
 
 	@Override
@@ -82,27 +72,10 @@ public class AllStoriesReading extends Reading {
 
 	@Override
 	public void checkStoryCount(int position) {
-		if (position == stories.getCount() - 1) {
-			boolean loadMore = false;
-
-			switch (currentState) {
-			case AppConstants.STATE_ALL:
-				loadMore = positiveCount + neutralCount + negativeCount > stories.getCount();
-				break;
-			case AppConstants.STATE_BEST:
-				loadMore = positiveCount > stories.getCount();
-				break;
-			case AppConstants.STATE_SOME:
-				loadMore = positiveCount + neutralCount > stories.getCount();
-				break;	
-			}
-
-			if (loadMore) {
-				currentPage += 1;
-				triggerRefresh(currentPage);
-			} else {
-				Log.d(TAG, "No need");
-			}
+		if (position == stories.getCount() - 1 && !stopLoading && !requestedPage) {
+			requestedPage = true;
+			currentPage += 1;
+			triggerRefresh(currentPage);
 		}
 	}
 
@@ -129,6 +102,7 @@ public class AllStoriesReading extends Reading {
 	public void updateAfterSync() {
 		setSupportProgressBarIndeterminateVisibility(false);
 		stories.requery();
+		requestedPage = false;
 		readingAdapter.notifyDataSetChanged();
 		checkStoryCount(pager.getCurrentItem());
 	}
@@ -137,5 +111,8 @@ public class AllStoriesReading extends Reading {
 	public void setNothingMoreToUpdate() {
 		stopLoading = true;
 	}
+
+	@Override
+	public void closeAfterUpdate() { }
 
 }

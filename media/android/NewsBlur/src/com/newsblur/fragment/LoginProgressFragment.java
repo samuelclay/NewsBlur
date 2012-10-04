@@ -25,6 +25,7 @@ import com.newsblur.service.DetachableResultReceiver;
 import com.newsblur.service.DetachableResultReceiver.Receiver;
 import com.newsblur.service.SyncService;
 import com.newsblur.util.PrefsUtils;
+import com.newsblur.util.UIUtils;
 
 public class LoginProgressFragment extends Fragment implements Receiver {
 
@@ -34,7 +35,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 	private TextView updateStatus, retrievingFeeds, letsGo;
 	private ImageView loginProfilePicture;
 	private int CURRENT_STATUS = -1;
-	private ProgressBar feedProgress;
+	private ProgressBar feedProgress, loggingInProgress;
 	private LoginTask loginTask;
 	private String username;
 	private String password;
@@ -46,10 +47,8 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		bundle.putString("password", password);
 		fragment.setArguments(bundle);
 		return fragment;
-		
 	}
-	
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -57,34 +56,33 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		apiManager = new APIManager(getActivity());
 		receiver = new DetachableResultReceiver(new Handler());
 		receiver.setReceiver(this);
-		Log.d(TAG , "Creating new fragment instance");
-		
+
 		username = getArguments().getString("username");
 		password = getArguments().getString("password");
-		
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_loginprogress, null);
-		
+
 		updateStatus = (TextView) v.findViewById(R.id.login_logging_in);
 		retrievingFeeds = (TextView) v.findViewById(R.id.login_retrieving_feeds);
 		letsGo = (TextView) v.findViewById(R.id.login_lets_go);
 		feedProgress = (ProgressBar) v.findViewById(R.id.login_feed_progress);
+		loggingInProgress = (ProgressBar) v.findViewById(R.id.login_logging_in_progress);
 		loginProfilePicture = (ImageView) v.findViewById(R.id.login_profile_picture);
 		// password.setOnEditorActionListener(this);
-		
+
 		if (loginTask != null) {
 			refreshUI();
 		} else {
 			loginTask = new LoginTask();
 			loginTask.execute();
 		}
-		
+
 		return v;
 	}
-	
+
 	private class LoginTask extends AsyncTask<String, Void, LoginResponse> {
 
 		private static final String TAG = "LoginTask";
@@ -103,7 +101,7 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 				// We include this wait simply as a small UX convenience. Otherwise the user could be met with a disconcerting flicker when attempting to log in and failing.
 				Thread.sleep(700);
 			} catch (InterruptedException e) {
-				Log.d(TAG, "Error sleeping during login.");
+				Log.e(TAG, "Error sleeping during login.");
 			}
 			return response;
 		}
@@ -113,35 +111,38 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 			if (result.authenticated) {
 				final Animation a = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
 				updateStatus.setText(R.string.login_logged_in);
+				loggingInProgress.setVisibility(View.GONE);
 				updateStatus.startAnimation(a);
-				
-				loginProfilePicture.setImageBitmap(PrefsUtils.getUserImage(getActivity()));
+
+				loginProfilePicture.setVisibility(View.VISIBLE);
+				loginProfilePicture.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
 				feedProgress.setVisibility(View.VISIBLE);
-				
-				Log.d(TAG, "Authenticated. Starting receiver.");
+
 				final Animation b = AnimationUtils.loadAnimation(getActivity(), R.anim.text_up);
 				retrievingFeeds.setText(R.string.login_retrieving_feeds);
 				retrievingFeeds.startAnimation(b);
 
-				Log.d(TAG, "Synchronisation finished.");
 				final Intent intent = new Intent(Intent.ACTION_SYNC, null, getActivity(), SyncService.class);
 				intent.putExtra(SyncService.EXTRA_STATUS_RECEIVER, receiver);
 				intent.putExtra(SyncService.SYNCSERVICE_TASK, SyncService.EXTRA_TASK_FOLDER_UPDATE);
 				getActivity().startService(intent);
 			} else {
 				if (result.errors != null && result.errors.message != null) {
-						Toast.makeText(getActivity(), result.errors.message[0], Toast.LENGTH_LONG).show();
-					} else {
-						Toast.makeText(getActivity(), getResources().getString(R.string.login_message_error), Toast.LENGTH_LONG).show();
-					}
+					Toast.makeText(getActivity(), result.errors.message[0], Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(getActivity(), getResources().getString(R.string.login_message_error), Toast.LENGTH_LONG).show();
 				}
+				getActivity().finish();
 			}
 		}
+	}
 
 
 	private void refreshUI() {
 		switch (CURRENT_STATUS) {
 		case SyncService.NOT_RUNNING:
+			break;
+		case SyncService.STATUS_NO_MORE_UPDATES:
 			break;
 		case SyncService.STATUS_FINISHED:
 			final Animation b = AnimationUtils.loadAnimation(getActivity(), R.anim.text_down);
@@ -168,12 +169,11 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 		case SyncService.STATUS_RUNNING:
 			break;
 		case SyncService.STATUS_ERROR:
-			Log.d(TAG, "Error synchronising feeds.");
 			updateStatus.setText("Error synchronising.");
 			break;
 		}
 	}
-	
+
 
 	// Interface for Host 
 	public interface LoginFragmentInterface {
@@ -184,9 +184,8 @@ public class LoginProgressFragment extends Fragment implements Receiver {
 
 	@Override
 	public void onReceiverResult(int resultCode, Bundle resultData) {
-		Log.d(TAG, "Received result");
 		CURRENT_STATUS = resultCode;
 		refreshUI();
 	}
-	
+
 }

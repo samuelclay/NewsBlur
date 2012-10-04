@@ -146,5 +146,10 @@ public class Main extends SherlockFragmentActivity implements StateChangedListen
 	}
 
 	@Override
-	public void setNothingMoreToUpdate() { }			
+	public void setNothingMoreToUpdate() { }
+
+	@Override
+	public void closeAfterUpdate() {
+		updateAfterSync();
+	}			
 }

@@ -84,4 +84,8 @@ public class AllStoriesItemsList extends ItemsList {
 		stopLoading = true;
 	}
 
+
+	@Override
+	public void closeAfterUpdate() { }
+
 }

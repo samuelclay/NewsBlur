@@ -51,6 +51,7 @@ public class SyncService extends IntentService {
 	public final static int STATUS_FINISHED = 0x03;
 	public final static int STATUS_ERROR = 0x04;
 	public static final int STATUS_NO_MORE_UPDATES = 0x05;
+	public static final int STATUS_FINISHED_CLOSE = 0x06;
 	public static final int NOT_RUNNING = 0x01;
 
 	public static final int EXTRA_TASK_FOLDER_UPDATE = 30;
@@ -85,7 +86,6 @@ public class SyncService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		Log.d(TAG, "Received SyncService handleIntent call.");
 		final ResultReceiver receiver = intent.getParcelableExtra(EXTRA_STATUS_RECEIVER);
 		try {
 			if (receiver != null) {
@@ -94,7 +94,9 @@ public class SyncService extends IntentService {
 
 			switch (intent.getIntExtra(SYNCSERVICE_TASK , -1)) {
 			case EXTRA_TASK_FOLDER_UPDATE:
-				apiManager.getFolderFeedMapping();
+				if (!apiManager.getFolderFeedMapping()) {
+					receiver.send(STATUS_NO_MORE_UPDATES, null);
+				}
 				break;
 
 			case EXTRA_TASK_FOLDER_UPDATE_WITH_COUNT:
@@ -207,9 +209,10 @@ public class SyncService extends IntentService {
 				if (intent.getLongExtra(EXTRA_TASK_FEED_ID, -1) != -1) {
 					Long feedToBeDeleted = intent.getLongExtra(EXTRA_TASK_FEED_ID, -1);
 					if (apiManager.deleteFeed(feedToBeDeleted, intent.getStringExtra(EXTRA_TASK_FOLDER_NAME))) {
-						Log.d(TAG, "Deleted feed");
 						Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(Long.toString(feedToBeDeleted)).build();
 						contentResolver.delete(feedUri, null, null);
+						receiver.send(STATUS_FINISHED_CLOSE, Bundle.EMPTY);
+						return;
 					} else {
 						Log.e(TAG, "Error deleting feed");
 						Toast.makeText(this, getResources().getString(R.string.error_deleting_feed), Toast.LENGTH_LONG).show();
