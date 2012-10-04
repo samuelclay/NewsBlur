@@ -775,7 +775,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     display: block;
 }
 #feed_list.NB-feedlist.NB-selector-active .feed,
-.NB-socialfeeds-folder.NB-selector-active .feed {
+.NB-sidebar .NB-socialfeeds-folder.NB-selector-active .feed {
     display: none;
 }
 #feed_list.NB-feedlist.NB-selector-active .feed.NB-feed-selector-active,
