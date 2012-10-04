@@ -52,6 +52,7 @@
 @synthesize noStorySelectedLabel;
 @synthesize buttonBack;
 @synthesize bottomPlaceholderToolbar;
+@synthesize pullingScrollview;
 
 // private
 @synthesize inTouchMove;
@@ -799,34 +800,86 @@
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
     }
     
-    self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed 
+    self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed
                                  withRect:CGRectMake(0, -1, 1024, 21)]; // 1024 hack for self.webView.frame.size.width
     
     self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
+    [self.feedTitleGradient.layer setShadowColor:[[UIColor blackColor] CGColor]];
+    [self.feedTitleGradient.layer setShadowOffset:CGSizeMake(0, 0)];
+    [self.feedTitleGradient.layer setShadowOpacity:0];
+    [self.feedTitleGradient.layer setShadowRadius:12.0];
+    
     for (UIView *subview in self.webView.subviews) {
         if (subview.tag == FEED_TITLE_GRADIENT_TAG) {
             [subview removeFromSuperview];
         }
     }
-    
-    for (NSObject *aSubView in [self.webView subviews]) {
-        if ([aSubView isKindOfClass:[UIScrollView class]]) {
-            UIScrollView * theScrollView = (UIScrollView *)aSubView;
-            if (appDelegate.isRiverView || appDelegate.isSocialView) {
-                theScrollView.contentInset = UIEdgeInsetsMake(19, 0, 0, 0);
-                theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(19, 0, 0, 0);
-            } else {
-                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
-                theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
-            }
-            [self.webView insertSubview:feedTitleGradient aboveSubview:theScrollView];
-            [theScrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView || appDelegate.isSocialView) ? -19 : -9) animated:NO];
-                        
-            break;
-        }
+
+    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+        self.webView.scrollView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
+        self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
+    } else {
+        self.webView.scrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
+        self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
+    [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
+    [self.webView.scrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView ||
+                                                              appDelegate.isSocialView) ? -20 : -9)
+                                     animated:NO];
+    [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
+                                 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+                                 context:nil];
+
+                
     
     [self setNextPreviousButtons];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    
+    if (keyPath == @"contentOffset") {
+        if (self.webView.scrollView.contentOffset.y < -20) {
+            // Pulling
+            if (!pullingScrollview) {
+                pullingScrollview = YES;
+                [self.feedTitleGradient.layer setShadowOpacity:.5];
+                [self.webView insertSubview:self.feedTitleGradient belowSubview:self.webView.scrollView];
+                
+                for (id subview in self.webView.scrollView.subviews) {
+                    UIImageView *imgView = [subview isKindOfClass:[UIImageView class]] ?
+                    (UIImageView*)subview : nil;
+                    // image views whose image is 1px wide are shadow images, hide them
+                    if (imgView && imgView.image.size.width == 1) {
+                        imgView.hidden = YES;
+                    }
+                }
+            }
+            float y = -1 * self.webView.scrollView.contentOffset.y - 20 - 1;
+            self.feedTitleGradient.frame = CGRectMake(0, y,
+                                                      self.feedTitleGradient.frame.size.width,
+                                                      self.feedTitleGradient.frame.size.height);
+        } else {
+            // Normal reading
+            if (pullingScrollview) {
+                pullingScrollview = NO;
+                [self.feedTitleGradient.layer setShadowOpacity:0];
+                [self.webView insertSubview:self.feedTitleGradient aboveSubview:self.webView.scrollView];
+                
+                self.feedTitleGradient.frame = CGRectMake(0, -1,
+                                                          self.feedTitleGradient.frame.size.width,
+                                                          self.feedTitleGradient.frame.size.height);
+                
+                for (id subview in self.webView.scrollView.subviews) {
+                    UIImageView *imgView = [subview isKindOfClass:[UIImageView class]] ?
+                    (UIImageView*)subview : nil;
+                    // image views whose image is 1px wide are shadow images, hide them
+                    if (imgView && imgView.image.size.width == 1) {
+                        imgView.hidden = NO;
+                    }
+                }
+            }
+        }
+    }
 }
 
 - (void)setActiveStory {
@@ -994,8 +1047,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // only adjust for the bar if user is scrolling
         if (appDelegate.isRiverView || appDelegate.isSocialView) {
-            if (self.webView.scrollView.contentOffset.y == -19) {
-                y = y + 19;
+            if (self.webView.scrollView.contentOffset.y == -20) {
+                y = y + 20;
             }
         } else {
             if (self.webView.scrollView.contentOffset.y == -9) {
@@ -1231,11 +1284,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
-    NSLog(@"results in mark as read is %@", results);
-} 
+//    NSString *responseString = [request responseString];
+//    NSDictionary *results = [[NSDictionary alloc] 
+//                             initWithDictionary:[responseString JSONValue]];
+//    NSLog(@"results in mark as read is %@", results);
+}
 
 # pragma mark
 # pragma mark Subscribing to blurblog

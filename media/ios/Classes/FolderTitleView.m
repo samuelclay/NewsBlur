@@ -8,6 +8,7 @@
 
 #import "NewsBlurAppDelegate.h"
 #import "FolderTitleView.h"
+#import "UnreadCountView.h"
 
 @implementation FolderTitleView
 
@@ -149,6 +150,13 @@
     [customView addSubview:folderImageView];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextFillRect(context, rect);
+    
+    UnreadCountView *unreadCount = [UnreadCountView alloc];
+    [unreadCount drawInRect:rect ps:123 nt:321
+                   listType:NBFeedListFolder];
     
     return customView;
 }

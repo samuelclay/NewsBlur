@@ -2310,7 +2310,6 @@
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
-					"-fobjc-exceptions",
 				);
 				PRODUCT_NAME = NewsBlur;
 				PROVISIONING_PROFILE = "";
@@ -2348,7 +2347,6 @@
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-all_load",
-					"-fobjc-exceptions",
 				);
 				PRODUCT_NAME = NewsBlur;
 				PROVISIONING_PROFILE = "";

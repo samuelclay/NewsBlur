@@ -113,6 +113,10 @@ static UIColor *negativeBackgroundColor = nil;
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withFont:indicatorFont];
+        
+        if (listType == NBFeedListFolder) {
+            NSLog(@"Drawing: %@", NSStringFromCGRect(r));
+        }
     }
 }
 

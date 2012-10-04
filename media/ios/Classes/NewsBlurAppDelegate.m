@@ -510,9 +510,8 @@
 - (void)adjustStoryDetailWebView {
     // change UIWebView
     int contentWidth = storyDetailViewController.view.frame.size.width;
-    NSLog(@"contentWidth is %i", contentWidth);
+//    NSLog(@"contentWidth is %i", contentWidth);
     [storyDetailViewController changeWebViewWidth:contentWidth];
-    
 }
 
 - (void)calibrateStoryTitles {
