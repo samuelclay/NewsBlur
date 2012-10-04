@@ -1,11 +1,15 @@
 package com.newsblur.domain;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.newsblur.database.DatabaseConstants;
@@ -15,22 +19,22 @@ public class Story implements Serializable {
 	private static final long serialVersionUID = 7629596752129163308L;
 
 	public String id;
-	
+
 	@SerializedName("story_permalink")
 	public String permalink;
 
 	@SerializedName("share_count")
 	public String shareCount;
-	
+
 	@SerializedName("share_user_ids")
 	public String[] sharedUserIds;
 
 	@SerializedName("shared_by_friends")
 	public String[] friendUserIds = new String[]{};
-	
+
 	@SerializedName("shared_by_public")
 	public String[] publicUserIds = new String[]{};
-	
+
 	@SerializedName("comment_count")
 	public int commentCount;
 
@@ -45,13 +49,13 @@ public class Story implements Serializable {
 
 	@SerializedName("source_user_id")
 	public String sourceUserId;
-	
+
 	@SerializedName("story_title")
 	public String title;
 
 	@SerializedName("story_date")
 	public Date date;
-	
+
 	@SerializedName("shared_date")
 	public Date sharedDate;
 
@@ -66,7 +70,7 @@ public class Story implements Serializable {
 
 	@SerializedName("public_comments")
 	public Comment[] publicComments;
-	
+
 	@SerializedName("friend_comments")
 	public Comment[] friendsComments;
 
@@ -75,10 +79,10 @@ public class Story implements Serializable {
 
 	@SerializedName("short_parsed_date")
 	public String shortDate;
-	
+
 	@SerializedName("long_parsed_date")
 	public String longDate;
-	
+
 	public ContentValues getValues() {
 		final ContentValues values = new ContentValues();
 		values.put(DatabaseConstants.STORY_ID, id);
@@ -106,7 +110,7 @@ public class Story implements Serializable {
 		values.put(DatabaseConstants.STORY_FEED_ID, feedId);
 		return values;
 	}
-	
+
 	public static Story fromCursor(final Cursor cursor) {
 		Story story = new Story();
 		story.authors = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_AUTHORS));
@@ -134,24 +138,41 @@ public class Story implements Serializable {
 		story.id = cursor.getString(cursor.getColumnIndex(DatabaseConstants.STORY_ID));
 		return story;
 	}
-	
+
 	public class Intelligence implements Serializable {
 		private static final long serialVersionUID = -1314486209455376730L;
 
 		@SerializedName("feed")
 		public int intelligenceFeed = 0;
-		
+
 		@SerializedName("author")
 		public int intelligenceAuthors = 0;
-		
+
 		@SerializedName("tags")
 		public int intelligenceTags = 0;
-		
+
 		@SerializedName("title")
 		public int intelligenceTitle = 0;
 	}
 	
 	public int getIntelligenceTotal() {
-		return (intelligence.intelligenceAuthors + intelligence.intelligenceFeed + intelligence.intelligenceTags + intelligence.intelligenceTitle);
+		return getIntelligenceTotal(intelligence.intelligenceTitle, intelligence.intelligenceAuthors, intelligence.intelligenceTags, intelligence.intelligenceFeed);
+	}
+
+	public static int getIntelligenceTotal(int title, int authors, int tags, int feed) {
+		int score = 0;
+		List<Integer> list = Arrays.asList(title, authors, tags);
+		int max = Collections.max(list);
+		int min = Collections.min(list);
+
+		if (max > 0) {
+			score = max;
+		} else if (min < 0) {
+			score = min;
+		} else {
+			score = feed;
+		}
+		return score;
+
 	}
 }

@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
+import com.newsblur.domain.Story;
 
 public class FeedItemViewBinder implements ViewBinder {
 
@@ -45,13 +46,14 @@ public class FeedItemViewBinder implements ViewBinder {
 			return true;
 		} else if (TextUtils.equals(columnName, DatabaseConstants.STORY_INTELLIGENCE_AUTHORS)) {
 			int authors = cursor.getInt(columnIndex);
-			
 			int tags = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TAGS));
 			int feed = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_FEED));
 			int title = cursor.getInt(cursor.getColumnIndex(DatabaseConstants.STORY_INTELLIGENCE_TITLE));
-			if (authors + tags + feed + title > 0) {
+			int score = Story.getIntelligenceTotal(title, authors, tags, feed);
+			
+			if (score > 0) {
 				view.setBackgroundResource(hasBeenRead == 0 ? R.drawable.positive_count_circle : R.drawable.positive_count_circle_read);
-			} else if (authors + tags + feed + title == 0) {
+			} else if (score == 0) {
 				view.setBackgroundResource(hasBeenRead == 0 ? R.drawable.neutral_count_circle : R.drawable.neutral_count_circle_read);
 			} else {
 				view.setBackgroundResource(R.drawable.negative_count_circle);
