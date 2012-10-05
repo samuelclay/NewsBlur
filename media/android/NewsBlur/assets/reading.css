@@ -6,20 +6,11 @@ p {
 	line-height: 1.4em;
 }
 
-img {
+img, video, embed, object, iframe {
 	max-width: 100%;
 	height: auto;	
 }
 
-embed {
-	width: 75%;
-	height: 75%;	
-}
-
-object {
-	width: 75%;
-	height: 75%;	
-}
 
 a {
 	color: #405BA8;	
