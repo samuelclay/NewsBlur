@@ -1,5 +1,4 @@
 body {
-	padding: 4%;	
 	background-color: #f5f5f5;
 }
 
@@ -10,6 +9,16 @@ p {
 img {
 	max-width: 100%;
 	height: auto;	
+}
+
+embed {
+	width: 75%;
+	height: 75%;	
+}
+
+object {
+	width: 75%;
+	height: 75%;	
 }
 
 a {
