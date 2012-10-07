@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "NewsBlurAppDelegate.h"
 #import "FolderTitleView.h"
 #import "UnreadCountView.h"
@@ -28,7 +29,21 @@
     }
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
-
+    int countWidth = 0;
+    UnreadCountView *unreadCount;
+    if (isFolderCollapsed) {
+        UnreadCount *counts = [appDelegate splitUnreadCountForFolder:folderName];
+        unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
+        unreadCount.appDelegate = appDelegate;
+        unreadCount.opaque = NO;
+        unreadCount.psCount = counts.ps;
+        unreadCount.ntCount = counts.nt;
+        
+        [unreadCount calculateOffsets:counts.ps nt:counts.nt];
+        countWidth = [unreadCount offsetWidth];
+        [self addSubview:unreadCount];
+    }
+    
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:rect];
     UIView *borderTop = [[UIView alloc]
@@ -52,7 +67,8 @@
     headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
     headerLabel.highlightedTextColor = [UIColor whiteColor];
     headerLabel.font = [UIFont boldSystemFontOfSize:11];
-    headerLabel.frame = CGRectMake(36.0, 1.0, rect.size.width - 36, rect.size.height);
+    headerLabel.frame = CGRectMake(36.0, 1.0, rect.size.width - 36 - 36 - countWidth, rect.size.height);
+    headerLabel.lineBreakMode = UILineBreakModeTailTruncation;
     headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
     headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
     if (section == 0) {
@@ -68,10 +84,10 @@
         //        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
         //                                      colorWithAlphaComponent:0.8];
     }
-    customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-                                  colorWithAlphaComponent:.99];
+//    customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
+//                                  colorWithAlphaComponent:.96];
     [self setBackgroundColor:[UIColor whiteColor]];
-//    customView.backgroundColor = UIColorFromRGB(0xD7DDE6);
+    customView.backgroundColor = UIColorFromRGB(0xD7DDE6);
     [customView addSubview:headerLabel];
     
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -89,14 +105,14 @@
         if (section != 1) {
             UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
             UIImageView *disclosureBorderView = [[UIImageView alloc] initWithImage:disclosureBorder];
-            disclosureBorderView.frame = CGRectMake(customView.frame.size.width - 30, -1, 29, 29);
+            disclosureBorderView.frame = CGRectMake(customView.frame.size.width - 32, -1, 29, 29);
             [customView addSubview:disclosureBorderView];
         }
         
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
-        disclosureButton.frame = CGRectMake(customView.frame.size.width - 30, -1, 29, 29);
+        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, -1, 29, 29);
         if (section != 1) {
             if (!isFolderCollapsed) {
                 disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
@@ -142,13 +158,10 @@
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     
-    [self addSubview:customView];
-    
     if (isFolderCollapsed) {
-        UnreadCountView *unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
-        [unreadCount drawInRect:rect ps:123 nt:321
-                       listType:NBFeedListFolder];
-        [self addSubview:unreadCount];
+        [self insertSubview:customView belowSubview:unreadCount];
+    } else {
+        [self addSubview:customView];
     }
 }
 

@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "UnreadCountView.h"
 #import "UIView+TKCategory.h"
 
@@ -20,6 +21,7 @@ static UIColor *negativeBackgroundColor = nil;
 
 @synthesize appDelegate;
 @synthesize psWidth, psPadding, ntWidth, ntPadding;
+@synthesize psCount, ntCount;
 @synthesize rect;
 
 + (void) initialize {
@@ -47,8 +49,10 @@ static UIColor *negativeBackgroundColor = nil;
     }
 }
 
-- (void)drawRect:(CGRect)rect {
+- (void)drawRect:(CGRect)r {
+    self.userInteractionEnabled = NO;
     
+    return [self drawInRect:r ps:psCount nt:ntCount listType:NBFeedListFolder];
 }
 
 - (void)drawInRect:(CGRect)r ps:(int)ps nt:(int)nt listType:(NBFeedListType)listType {
@@ -56,17 +60,14 @@ static UIColor *negativeBackgroundColor = nil;
     rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
     
-    
-    psWidth = ps == 0 ? 0 : ps < 10 ? 14 : ps < 100 ? 22 : 28;
-    ntWidth = nt == 0 ? 0 : nt < 10 ? 14 : nt < 100 ? 22 : 28;
+    psCount = ps;
+    ntCount = nt;
+    [self calculateOffsets:ps nt:nt];
     
     int psOffset = ps == 0 ? 0 : psWidth - 20;
     int ntOffset = nt == 0 ? 0 : ntWidth - 20;
     
-    psPadding = ps == 0 ? 0 : 2;
-    ntPadding = nt == 0 ? 0 : 2;
-    self.opaque = NO;
-    if (ps > 0){
+    if (ps > 0) {
         [positiveBackgroundColor set];
         CGRect rr;
         
@@ -95,7 +96,7 @@ static UIColor *negativeBackgroundColor = nil;
          withFont:indicatorFont];
     }
 
-    if (nt > 0 && appDelegate.selectedIntelligence <= 0){
+    if (nt > 0 && appDelegate.selectedIntelligence <= 0) {
         [neutralBackgroundColor set];
         
         CGRect rr;
@@ -123,15 +124,26 @@ static UIColor *negativeBackgroundColor = nil;
         [ntStr
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withFont:indicatorFont];
-        
-        if (listType == NBFeedListFolder) {
-            NSLog(@"Drawing: %@", NSStringFromCGRect(r));
-        }
     }
 }
 
+- (void)calculateOffsets:(int)ps nt:(int)nt {
+    psWidth = ps == 0 ? 0 : ps < 10 ? 14 : ps < 100 ? 22 : 28;
+    ntWidth = nt == 0 ? 0 : nt < 10 ? 14 : nt < 100 ? 22 : 28;
+    
+    psPadding = ps == 0 ? 0 : 2;
+    ntPadding = nt == 0 ? 0 : 2;
+}
+
 - (int)offsetWidth {
-    return rect.size.width - psWidth - psPadding - ntWidth - ntPadding;
+    int width = 0;
+    if (self.psCount > 0) {
+        width += psWidth + psPadding;
+    }
+    if (self.ntCount > 0 && appDelegate.selectedIntelligence <= 0) {
+        width += ntWidth + ntPadding;
+    }
+    return width;
 }
 
 @end

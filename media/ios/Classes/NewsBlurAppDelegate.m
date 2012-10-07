@@ -739,7 +739,7 @@
 
     if (feedId) {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-        if (self.isSocialView || self.isSocialRiverView) {
+        if ([feedIdStr containsString:@"social:"]) {
             feed = [self.dictSocialFeeds objectForKey:feedIdStr];
         } else {
             feed = [self.dictFeeds objectForKey:feedIdStr];
@@ -764,11 +764,13 @@
     int total = 0;
     NSArray *folder;
     
-    if (!folderName && self.activeFolder == @"river_blurblogs") {
+    if (folderName == @"river_blurblogs" ||
+        (!folderName && self.activeFolder == @"river_blurblogs")) {
         for (id feedId in self.dictSocialFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
-    } else if (!folderName && self.activeFolder == @"everything") {
+    } else if (folderName == @"everything" ||
+            (!folderName && self.activeFolder == @"everything")) {
         for (id feedId in self.dictFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
@@ -785,6 +787,63 @@
     }
     
     return total;
+}
+
+
+- (UnreadCount *)splitUnreadCountForFeed:(NSString *)feedId {
+    UnreadCount *counts = [UnreadCount alloc];
+    NSDictionary *feed;
+    
+    if (feedId) {
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+        if ([feedIdStr containsString:@"social:"]) {
+            feed = [self.dictSocialFeeds objectForKey:feedIdStr];
+        } else {
+            feed = [self.dictFeeds objectForKey:feedIdStr];
+        }
+        
+    } else {
+        feed = self.activeFeed;
+    }
+    
+    counts.ps += [[feed objectForKey:@"ps"] intValue];
+    if ([self selectedIntelligence] <= 0) {
+        counts.nt += [[feed objectForKey:@"nt"] intValue];
+    }
+    if ([self selectedIntelligence] <= -1) {
+        counts.ng += [[feed objectForKey:@"ng"] intValue];
+    }
+    
+    return counts;
+}
+
+- (UnreadCount *)splitUnreadCountForFolder:(NSString *)folderName {
+    UnreadCount *counts = [UnreadCount alloc];
+    NSArray *folder;
+    
+    if (folderName == @"river_blurblogs" ||
+        (!folderName && self.activeFolder == @"river_blurblogs")) {
+        for (id feedId in self.dictSocialFeeds) {
+            [counts addCounts:[self splitUnreadCountForFeed:feedId]];
+        }
+    } else if (folderName == @"everything" ||
+               (!folderName && self.activeFolder == @"everything")) {
+        for (id feedId in self.dictFeeds) {
+            [counts addCounts:[self splitUnreadCountForFeed:feedId]];
+        }
+    } else {
+        if (!folderName) {
+            folder = [self.dictFolders objectForKey:self.activeFolder];
+        } else {
+            folder = [self.dictFolders objectForKey:folderName];
+        }
+        
+        for (id feedId in folder) {
+            [counts addCounts:[self splitUnreadCountForFeed:feedId]];
+        }
+    }
+    
+    return counts;
 }
 
 - (void)addStories:(NSArray *)stories {
@@ -1210,6 +1269,29 @@
 
     [titleImageButton setImage:titleImage forState:UIControlStateNormal];
     return titleImageButton;
+}
+
+@end
+
+
+@implementation UnreadCount
+
+@synthesize ps, nt, ng;
+
+
+- (id)init {
+    if (self = [super init]) {
+        ps = 0;
+        nt = 0;
+        ng = 0;
+    }
+    return self;
+}
+
+- (void)addCounts:(UnreadCount *)counts {
+    ps += counts.ps;
+    nt += counts.nt;
+    ng += counts.ng;
 }
 
 @end

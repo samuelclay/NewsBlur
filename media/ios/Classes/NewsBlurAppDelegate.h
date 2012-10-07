@@ -37,7 +37,7 @@
 @class UserProfileViewController;
 @class NBContainerViewController;
 @class FindSitesViewController;
-
+@class UnreadCount;
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate>  {
     UIWindow *window;
@@ -241,6 +241,8 @@
 - (int)allUnreadCount;
 - (int)unreadCountForFeed:(NSString *)feedId;
 - (int)unreadCountForFolder:(NSString *)folderName;
+- (UnreadCount *)splitUnreadCountForFeed:(NSString *)feedId;
+- (UnreadCount *)splitUnreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
 - (NSDictionary *)markVisibleStoriesRead;
 - (void)markStoryRead:(NSString *)storyId feedId:(id)feedId;
@@ -256,5 +258,19 @@
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
 - (UIButton *)makeRightFeedTitle:(NSDictionary *)feed;
+@end
+
+@interface UnreadCount : NSObject {
+    int ps;
+    int nt;
+    int ng;
+}
+
+@property (readwrite) int ps;
+@property (readwrite) int nt;
+@property (readwrite) int ng;
+
+- (void)addCounts:(UnreadCount *)counts;
+
 @end
 

@@ -1142,6 +1142,11 @@ static const CGFloat kFolderTitleHeight = 28;
     for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
         [cell setNeedsDisplay];
     }
+    for (UIView *view in self.feedTitlesTable.subviews) {
+        if ([view class] == [FolderTitleView class]) {
+            [view setNeedsDisplay];
+        }
+    }
 }
 
 - (void)calculateFeedLocations:(BOOL)markVisible {

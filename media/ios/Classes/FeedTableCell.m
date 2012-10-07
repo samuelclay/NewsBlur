@@ -95,6 +95,7 @@ static UIFont *textFont = nil;
     }
     
     UnreadCountView *unreadCount = [UnreadCountView alloc];
+    unreadCount.appDelegate = appDelegate;
     [unreadCount drawInRect:r ps:_positiveCount nt:_neutralCount
                    listType:(isSocial ? NBFeedListSocial : NBFeedListFeed)];
     
@@ -114,14 +115,14 @@ static UIFont *textFont = nil;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.feedFavicon drawInRect:CGRectMake(12.0, 5.0, 36.0, 36.0)];
             [feedTitle 
-             drawInRect:CGRectMake(56, 13, [unreadCount offsetWidth] - 10 - 20, 20.0)
+             drawInRect:CGRectMake(56, 13, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 20, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft]; 
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 32.0, 32.0)];
             [feedTitle 
-             drawInRect:CGRectMake(50, 11, [unreadCount offsetWidth] - 10 - 20, 20.0)
+             drawInRect:CGRectMake(50, 11, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 20, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];
@@ -131,14 +132,14 @@ static UIFont *textFont = nil;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
             [feedTitle 
-             drawInRect:CGRectMake(36.0, 7.0, [unreadCount offsetWidth] - 10, 20.0)
+             drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
             [feedTitle 
-             drawInRect:CGRectMake(34.0, 7.0, [unreadCount offsetWidth] - 10, 20.0)
+             drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];
