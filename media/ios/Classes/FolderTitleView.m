@@ -21,6 +21,8 @@
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
     NSString *folderName;
     if (section == 0) {
         folderName = @"river_blurblogs";
@@ -46,67 +48,64 @@
     
     // create the parent view that will hold header Label
     UIView* customView = [[UIView alloc] initWithFrame:rect];
-    UIView *borderTop = [[UIView alloc]
-                         initWithFrame:CGRectMake(rect.origin.x, rect.origin.y,
-                                                  rect.size.width, 1.0)];
-    borderTop.backgroundColor = UIColorFromRGB(0xe0e0e0);
-    borderTop.opaque = YES;
-    [customView addSubview:borderTop];
+
+    // Background
+    UIColor *backgroundColor = UIColorFromRGB(0xD7DDE6);
+    [backgroundColor set];
+    CGContextFillRect(context, rect);
     
-    UIView *borderBottom = [[UIView alloc]
-                            initWithFrame:CGRectMake(rect.origin.x, rect.size.height-1,
-                                                     rect.size.width, 1.0)];
-    borderBottom.backgroundColor = [UIColorFromRGB(0xB7BDC6) colorWithAlphaComponent:0.5];
-    borderBottom.opaque = YES;
-    [customView addSubview:borderBottom];
+    // Borders
+    UIColor *topColor = UIColorFromRGB(0xE7EDF6);
+    CGContextSetStrokeColor(context, CGColorGetComponents([topColor CGColor]));
     
-    UILabel * headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    customView.opaque = YES;
-    headerLabel.backgroundColor = [UIColor clearColor];
-    headerLabel.opaque = NO;
-    headerLabel.textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
-    headerLabel.highlightedTextColor = [UIColor whiteColor];
-    headerLabel.font = [UIFont boldSystemFontOfSize:11];
-    headerLabel.frame = CGRectMake(36.0, 1.0, rect.size.width - 36 - 36 - countWidth, rect.size.height);
-    headerLabel.lineBreakMode = UILineBreakModeTailTruncation;
-    headerLabel.shadowColor = [UIColor colorWithRed:.94 green:0.94 blue:0.97 alpha:1.0];
-    headerLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, 0, 0.5f);
+    CGContextAddLineToPoint(context, rect.size.width, 0.5f);
+    CGContextStrokePath(context);
+    
+    // bottom border
+    UIColor *bottomColor = UIColorFromRGB(0xB7BDC6);
+    CGContextSetStrokeColor(context, CGColorGetComponents([bottomColor CGColor]));
+    CGContextBeginPath(context);
+    CGContextMoveToPoint(context, 0, rect.size.height - .5f);
+    CGContextAddLineToPoint(context, rect.size.width, rect.size.height - .5f);
+    CGContextStrokePath(context);
+    
+    // Folder title
+    UIColor *textColor = [UIColor colorWithRed:0.3 green:0.3 blue:0.3 alpha:1.0];
+    [textColor set];
+    UIFont *font = [UIFont boldSystemFontOfSize:11];
+    NSString *folderTitle;
     if (section == 0) {
-        headerLabel.text = @"ALL BLURBLOG STORIES";
-        //        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-        //                                      colorWithAlphaComponent:0.8];
+        folderTitle = @"ALL BLURBLOG STORIES";
     } else if (section == 1) {
-        headerLabel.text = @"ALL STORIES";
-        //        customView.backgroundColor = [UIColorFromRGB(0xE6DDD7)
-        //                                      colorWithAlphaComponent:0.8];
+        folderTitle = @"ALL STORIES";
     } else {
-        headerLabel.text = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
-        //        customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-        //                                      colorWithAlphaComponent:0.8];
+        folderTitle = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
     }
-//    customView.backgroundColor = [UIColorFromRGB(0xD7DDE6)
-//                                  colorWithAlphaComponent:.96];
-    [self setBackgroundColor:[UIColor whiteColor]];
-    customView.backgroundColor = UIColorFromRGB(0xD7DDE6);
-    [customView addSubview:headerLabel];
+    UIColor *shadowColor = UIColorFromRGB(0xE7EDF6);
+    CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
     
+    [folderTitle
+     drawInRect:CGRectMake(36.0, 7, rect.size.width - 36 - 36 - countWidth, 14)
+     withFont:font
+     lineBreakMode:UILineBreakModeTailTruncation
+     alignment:UITextAlignmentLeft];
+        
     UIButton *invisibleHeaderButton = [UIButton buttonWithType:UIButtonTypeCustom];
     invisibleHeaderButton.frame = CGRectMake(0, 0, customView.frame.size.width, customView.frame.size.height);
     invisibleHeaderButton.alpha = .1;
     invisibleHeaderButton.tag = section;
     [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(didSelectSectionHeader:) forControlEvents:UIControlEventTouchUpInside];
-    [customView addSubview:invisibleHeaderButton];
-    
     [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionTapped:) forControlEvents:UIControlEventTouchDown];
     [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionUntapped:) forControlEvents:UIControlEventTouchUpInside];
     [invisibleHeaderButton addTarget:appDelegate.feedsViewController action:@selector(sectionUntappedOutside:) forControlEvents:UIControlEventTouchUpOutside];
+    [customView addSubview:invisibleHeaderButton];
     
     if (!appDelegate.hasNoSites) {
         if (section != 1) {
             UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
-            UIImageView *disclosureBorderView = [[UIImageView alloc] initWithImage:disclosureBorder];
-            disclosureBorderView.frame = CGRectMake(customView.frame.size.width - 32, -1, 29, 29);
-            [customView addSubview:disclosureBorderView];
+            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, -1, 29, 29)];
         }
         
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -152,9 +151,7 @@
             folderImageViewX = 7;
         }
     }
-    UIImageView *folderImageView = [[UIImageView alloc] initWithImage:folderImage];
-    folderImageView.frame = CGRectMake(folderImageViewX, 3, 20, 20);
-    [customView addSubview:folderImageView];
+    [folderImage drawInRect:CGRectMake(folderImageViewX, 3, 20, 20)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     
