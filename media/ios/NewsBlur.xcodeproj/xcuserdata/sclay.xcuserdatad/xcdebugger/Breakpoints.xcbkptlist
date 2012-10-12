@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/NewsBlurViewController.m"
-         timestampString = "370996140.882983"
+         timestampString = "371696871.955155"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "594"
-         endingLineNumber = "594"
+         startingLineNumber = "595"
+         endingLineNumber = "595"
          landmarkName = "-switchSitesUnread"
          landmarkType = "5">
       </FileBreakpoint>

@@ -1,8 +1,8 @@
 //
-//  FeedsMenuViewController.h
+//  FeedDetailMenuViewController.h
 //  NewsBlur
 //
-//  Created by Roy Yang on 6/19/12.
+//  Created by Samuel Clay on 10/10/12.
 //  Copyright (c) 2012 NewsBlur. All rights reserved.
 //
 
@@ -10,9 +10,9 @@
 
 @class NewsBlurAppDelegate;
 
-@interface FeedsMenuViewController : UIViewController 
-                                    <UITableViewDelegate, 
-                                    UITableViewDataSource> {
+@interface FeedDetailMenuViewController : UIViewController
+<UITableViewDelegate,
+UITableViewDataSource> {
     NewsBlurAppDelegate *appDelegate;
 }
 

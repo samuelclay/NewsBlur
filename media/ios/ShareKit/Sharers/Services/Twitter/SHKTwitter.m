@@ -586,7 +586,7 @@ static NSString *const kSHKTwitterUserInfo=@"kSHKTwitterUserInfo";
 		// no ops
 	} else {
 		[body appendData:[[NSString stringWithFormat:@"--%@\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-		[body appendData:[[NSString stringWithString:@"Content-Disposition: form-data; name=\"message\"\r\n\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+		[body appendData:[@"Content-Disposition: form-data; name=\"message\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
 		[body appendData:[[item customValueForKey:@"status"] dataUsingEncoding:NSUTF8StringEncoding]];
 		[body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];	
 	}

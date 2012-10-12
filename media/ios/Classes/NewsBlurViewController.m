@@ -12,6 +12,7 @@
 #import "DashboardViewController.h"
 #import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
+#import "FeedDetailMenuViewController.h"
 #import "UserProfileViewController.h"
 #import "StoryDetailViewController.h"
 #import "ASIHTTPRequest.h"
@@ -558,7 +559,7 @@ static const CGFloat kFolderTitleHeight = 28;
         }
         [self.popoverController setPopoverContentSize:CGSizeMake(200, 86)];
         [self.popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
-                                       permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                       permittedArrowDirections:UIPopoverArrowDirectionUp
                                                        animated:YES];
     }
 }

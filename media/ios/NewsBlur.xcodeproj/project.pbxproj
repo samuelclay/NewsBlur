@@ -371,6 +371,8 @@
 		FFDE35D6161CCABC0034BFDE /* folder_collapsed.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDE35D4161CCABC0034BFDE /* folder_collapsed.png */; };
 		FFDE35D7161CCABC0034BFDE /* folder_collapsed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FFDE35D5161CCABC0034BFDE /* folder_collapsed@2x.png */; };
 		FFDE35DA161D12250034BFDE /* UnreadCountView.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDE35D9161D12250034BFDE /* UnreadCountView.m */; };
+		FFDE35EA162799B90034BFDE /* FeedDetailMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFDE35E9162799B90034BFDE /* FeedDetailMenuViewController.m */; };
+		FFDE35ED1627A1C40034BFDE /* FeedDetailMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */; };
 		FFE5322F144C8AC300ACFDE0 /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = FFE5322E144C8AC300ACFDE0 /* Utilities.m */; };
 /* End PBXBuildFile section */
 
@@ -892,6 +894,9 @@
 		FFDE35D5161CCABC0034BFDE /* folder_collapsed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "folder_collapsed@2x.png"; sourceTree = "<group>"; };
 		FFDE35D8161D12250034BFDE /* UnreadCountView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnreadCountView.h; sourceTree = "<group>"; };
 		FFDE35D9161D12250034BFDE /* UnreadCountView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnreadCountView.m; sourceTree = "<group>"; };
+		FFDE35E8162799B90034BFDE /* FeedDetailMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeedDetailMenuViewController.h; sourceTree = "<group>"; };
+		FFDE35E9162799B90034BFDE /* FeedDetailMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeedDetailMenuViewController.m; sourceTree = "<group>"; };
+		FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FeedDetailMenuViewController.xib; sourceTree = "<group>"; };
 		FFE5322D144C8AC300ACFDE0 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		FFE5322E144C8AC300ACFDE0 /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -924,9 +929,9 @@
 			children = (
 				43D8189F15B9404D00733444 /* Models */,
 				437F974715ACA0C50007136B /* Dashboard */,
-				431B857415A1324200DCE497 /* Story */,
 				431B857315A131C300DCE497 /* Feeds */,
 				431B857215A131B200DCE497 /* Feed-Detail */,
+				431B857415A1324200DCE497 /* Story */,
 				431B857115A1317000DCE497 /* FTUX */,
 				431B857015A1315F00DCE497 /* Social */,
 				FFD1D72F1459B63500E46F89 /* BaseViewController.h */,
@@ -1110,6 +1115,8 @@
 				7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */,
 				787A0CD811CE65330056422D /* FeedDetailViewController.h */,
 				787A0CD911CE65330056422D /* FeedDetailViewController.m */,
+				FFDE35E8162799B90034BFDE /* FeedDetailMenuViewController.h */,
+				FFDE35E9162799B90034BFDE /* FeedDetailMenuViewController.m */,
 			);
 			name = "Feed-Detail";
 			sourceTree = "<group>";
@@ -1422,6 +1429,7 @@
 				43B8F019156603170008733D /* AddSiteViewController.xib */,
 				43B8F01B156603170008733D /* FeedDetailViewController.xib */,
 				439DAB1F1590DA350019B0EB /* FeedsMenuViewController.xib */,
+				FFDE35EC1627A1C40034BFDE /* FeedDetailMenuViewController.xib */,
 				43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */,
 				43B8F01C156603170008733D /* LoginViewController.xib */,
 				43B8F01D156603170008733D /* MainWindow.xib */,
@@ -2126,6 +2134,7 @@
 				FFDE35D2161B9E600034BFDE /* disclosure_border.png in Resources */,
 				FFDE35D6161CCABC0034BFDE /* folder_collapsed.png in Resources */,
 				FFDE35D7161CCABC0034BFDE /* folder_collapsed@2x.png in Resources */,
+				FFDE35ED1627A1C40034BFDE /* FeedDetailMenuViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2273,6 +2282,7 @@
 				43CE0F5F15DADB7F00608ED8 /* SiteCell.m in Sources */,
 				FFDE35CC161B8F870034BFDE /* FolderTitleView.m in Sources */,
 				FFDE35DA161D12250034BFDE /* UnreadCountView.m in Sources */,
+				FFDE35EA162799B90034BFDE /* FeedDetailMenuViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

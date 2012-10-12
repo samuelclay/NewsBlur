@@ -19,8 +19,9 @@
 
 @class NewsBlurViewController;
 @class DashboardViewController;
-@class FeedDetailViewController;
 @class FeedsMenuViewController;
+@class FeedDetailViewController;
+@class FeedDetailMenuViewController;
 @class FeedDashboardViewController;
 @class FirstTimeUserViewController;
 @class FirstTimeUserAddSitesViewController;
@@ -56,11 +57,12 @@
     DashboardViewController *dashboardViewController;
     NewsBlurViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
+    FeedDetailViewController *feedDetailViewController;
+    FeedDetailMenuViewController *feedDetailMenuViewController;
     FeedDashboardViewController *feedDashboardViewController;
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
-    FeedDetailViewController *feedDetailViewController;
-
+    
     StoryDetailViewController *storyDetailViewController;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
@@ -127,8 +129,9 @@
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic) IBOutlet FeedsMenuViewController *feedsMenuViewController;
-@property (nonatomic) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
+@property (nonatomic) IBOutlet FeedDetailMenuViewController *feedDetailMenuViewController;
+@property (nonatomic) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;

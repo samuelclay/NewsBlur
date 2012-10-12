@@ -12,6 +12,7 @@
 #import "FeedDetailViewController.h"
 #import "DashboardViewController.h"
 #import "FeedsMenuViewController.h"
+#import "FeedDetailMenuViewController.h"
 #import "StoryDetailViewController.h"
 #import "FirstTimeUserViewController.h"
 #import "FriendsListViewController.h"
@@ -49,6 +50,7 @@
 @synthesize feedsViewController;
 @synthesize feedsMenuViewController;
 @synthesize feedDetailViewController;
+@synthesize feedDetailMenuViewController;
 @synthesize feedDashboardViewController;
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;

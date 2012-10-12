@@ -10,7 +10,7 @@
 #import "WEPopoverParentView.h"
 #import "UIBarButtonItem+WEPopover.h"
 
-#define FADE_DURATION 0.25
+#define FADE_DURATION 0.3
 
 @interface WEPopoverController(Private)
 
@@ -32,6 +32,7 @@
 @synthesize popoverArrowDirection;
 @synthesize delegate;
 @synthesize view;
+@synthesize parentView;
 @synthesize containerViewProperties;
 @synthesize context;
 @synthesize passthroughViews;
@@ -66,6 +67,10 @@
 	}
 }
 
+- (BOOL)forwardAppearanceMethods {
+    return ![contentViewController respondsToSelector:@selector(automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers)];
+}
+
 //Overridden setter to copy the passthroughViews to the background view if it exists already
 - (void)setPassthroughViews:(NSArray *)array {
 	[passthroughViews release];
@@ -81,10 +86,16 @@
 	if ([animationID isEqual:@"FadeIn"]) {
 		self.view.userInteractionEnabled = YES;
 		popoverVisible = YES;
-		[contentViewController viewDidAppear:YES];
-	} else {
+        
+        if ([self forwardAppearanceMethods]) {
+            [contentViewController viewDidAppear:YES];
+        }
+	} else if ([animationID isEqual:@"FadeOut"]) {
 		popoverVisible = NO;
-		[contentViewController viewDidDisappear:YES];
+        
+        if ([self forwardAppearanceMethods]) {
+            [contentViewController viewDidDisappear:YES];
+        }
 		[self.view removeFromSuperview];
 		self.view = nil;
 		[backgroundView removeFromSuperview];
@@ -124,7 +135,7 @@
 	[self dismissPopoverAnimated:NO];
 	
 	//First force a load view for the contentViewController so the popoverContentSize is properly initialized
-	contentViewController.view;
+	[contentViewController view];
 	
 	if (CGSizeEqualToSize(popoverContentSize, CGSizeZero)) {
 		popoverContentSize = contentViewController.contentSizeForViewInPopover;
@@ -162,40 +173,72 @@
 	self.view = containerView;
 	[self updateBackgroundPassthroughViews];
 	
-	[contentViewController viewWillAppear:animated];
-	
+    if ([self forwardAppearanceMethods]) {
+        [contentViewController viewWillAppear:animated];
+    }
 	[self.view becomeFirstResponder];
-	
+	popoverVisible = YES;
 	if (animated) {
 		self.view.alpha = 0.0;
-		
-		[UIView beginAnimations:@"FadeIn" context:nil];
-		
-		[UIView setAnimationDelegate:self];
-		[UIView setAnimationDidStopSelector:@selector(animationDidStop:finished:context:)];
-		[UIView setAnimationDuration:FADE_DURATION];
-		
-		self.view.alpha = 1.0;
-		
-		[UIView commitAnimations];
+        
+        [UIView animateWithDuration:FADE_DURATION
+                              delay:0.0
+                            options:UIViewAnimationCurveLinear
+                         animations:^{
+                             
+                             self.view.alpha = 1.0;
+                             
+                         } completion:^(BOOL finished) {
+                             
+                             [self animationDidStop:@"FadeIn" finished:[NSNumber numberWithBool:finished] context:nil];
+                         }];
+        		
 	} else {
-		popoverVisible = YES;
-		[contentViewController viewDidAppear:animated];
+        if ([self forwardAppearanceMethods]) {
+            [contentViewController viewDidAppear:animated];
+        }
 	}	
 }
 
 - (void)repositionPopoverFromRect:(CGRect)rect
 						   inView:(UIView *)theView
-		 permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections {
+		 permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections
+{
+
+    [self repositionPopoverFromRect:rect 
+                             inView:theView 
+           permittedArrowDirections:arrowDirections 
+                           animated:NO];
+}
+
+- (void)repositionPopoverFromRect:(CGRect)rect
+						   inView:(UIView *)theView
+		 permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections
+                         animated:(BOOL)animated {
+    
+    if (animated) {
+        [UIView beginAnimations:nil context:nil];
+        [UIView setAnimationDuration:FADE_DURATION];
+        [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+    }
+    
+    if (CGSizeEqualToSize(popoverContentSize, CGSizeZero)) {
+		popoverContentSize = contentViewController.contentSizeForViewInPopover;
+	}
 	
 	CGRect displayArea = [self displayAreaForView:theView];
 	WEPopoverContainerView *containerView = (WEPopoverContainerView *)self.view;
-	[containerView updatePositionWithAnchorRect:rect
+	[containerView updatePositionWithSize:self.popoverContentSize
+                               anchorRect:rect
 									displayArea:displayArea
 					   permittedArrowDirections:arrowDirections];
 	
 	popoverArrowDirection = containerView.arrowDirection;
 	containerView.frame = [theView convertRect:containerView.frame toView:backgroundView];
+    
+    if (animated) {
+        [UIView commitAnimations];
+    }
 }
 
 #pragma mark -
@@ -209,18 +252,37 @@
 	}
 }
 
+- (BOOL)isPopoverVisible {
+    if (!popoverVisible) {
+        return NO;
+    }
+    UIView *sv = self.view;
+    BOOL foundWindowAsSuperView = NO;
+    while ((sv = sv.superview) != nil) {
+        if ([sv isKindOfClass:[UIWindow class]]) {
+            foundWindowAsSuperView = YES;
+            break;
+        }
+    }
+    return foundWindowAsSuperView;
+}
+
 @end
 
 
 @implementation WEPopoverController(Private)
 
 - (UIView *)keyView {
-	UIWindow *w = [[UIApplication sharedApplication] keyWindow];
-	if (w.subviews.count > 0) {
-		return [w.subviews objectAtIndex:0];
-	} else {
-		return w;
-	}
+    if (self.parentView) {
+        return self.parentView;
+    } else {
+        UIWindow *w = [[UIApplication sharedApplication] keyWindow];
+        if (w.subviews.count > 0) {
+            return [w.subviews objectAtIndex:0];
+        } else {
+            return w;
+        }    
+    }
 }
 
 - (void)setView:(UIView *)v {
@@ -237,28 +299,36 @@
 
 - (void)dismissPopoverAnimated:(BOOL)animated userInitiated:(BOOL)userInitiated {
 	if (self.view) {
-		[contentViewController viewWillDisappear:animated];
+        if ([self forwardAppearanceMethods]) {
+            [contentViewController viewWillDisappear:animated];
+        }
 		popoverVisible = NO;
 		[self.view resignFirstResponder];
 		if (animated) {
-			
 			self.view.userInteractionEnabled = NO;
-			[UIView beginAnimations:@"FadeOut" context:[NSNumber numberWithBool:userInitiated]];
-			[UIView setAnimationDelegate:self];
-			[UIView setAnimationDidStopSelector:@selector(animationDidStop:finished:context:)];
-			
-			[UIView setAnimationDuration:FADE_DURATION];
-			
-			self.view.alpha = 0.0;
-			
-			[UIView commitAnimations];
+            
+            [UIView animateWithDuration:FADE_DURATION
+                                  delay:0.0
+                                options:UIViewAnimationCurveLinear
+                             animations:^{
+                                 
+                                 self.view.alpha = 0.0;
+                                 
+                             } completion:^(BOOL finished) {
+                                 
+                                 [self animationDidStop:@"FadeOut" finished:[NSNumber numberWithBool:finished] context:[NSNumber numberWithBool:userInitiated]];
+                             }];
+
+            
 		} else {
-			[contentViewController viewDidDisappear:animated];
+            if ([self forwardAppearanceMethods]) {
+                [contentViewController viewDidDisappear:animated];
+            }
 			[self.view removeFromSuperview];
 			self.view = nil;
 			[backgroundView removeFromSuperview];
 			[backgroundView release];
-			backgroundView = nil;
+			backgroundView = nil;            
 		}
 	}
 }
@@ -268,7 +338,8 @@
 	if ([theView conformsToProtocol:@protocol(WEPopoverParentView)] && [theView respondsToSelector:@selector(displayAreaForPopover)]) {
 		displayArea = [(id <WEPopoverParentView>)theView displayAreaForPopover];
 	} else {
-		displayArea = [[[UIApplication sharedApplication] keyWindow] convertRect:[[UIScreen mainScreen] applicationFrame] toView:theView];
+        UIView *keyView = [self keyView];
+		displayArea = [keyView convertRect:keyView.bounds toView:theView];
 	}
 	return displayArea;
 }

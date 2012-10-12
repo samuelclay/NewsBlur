@@ -20,6 +20,8 @@
 #import "JSON.h"
 #import "StringHelper.h"
 #import "Utilities.h"
+#import "UIBarButtonItem+WEPopover.h"
+#import "WEPopoverController.h"
 
 
 #define kTableViewRowHeight 61;
@@ -57,6 +59,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    popoverClass = [WEPopoverController class];
     self.storyTitlesTable.backgroundColor = UIColorFromRGB(0xf4f4f4);
 }
 
@@ -159,6 +162,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.popoverController dismissPopoverAnimated:YES];
+    self.popoverController = nil;
 }
 
 
@@ -954,48 +958,29 @@
     actionSheet_ = nil;
 }
 
-- (IBAction)doOpenSettingsActionSheet {
-    // already displaying action sheet?
-    if (self.actionSheet_) {
-        [self.actionSheet_ dismissWithClickedButtonIndex:-1 animated:YES];
-        self.actionSheet_ = nil;
-        return;
-    }
-    NSString *title = appDelegate.isRiverView ?
-                        appDelegate.activeFolder :
-                        [appDelegate.activeFeed objectForKey:@"feed_title"];
-    
-    UIActionSheet *options = [[UIActionSheet alloc]
-                              initWithTitle:title
-                              delegate:self
-                              cancelButtonTitle:nil
-                              destructiveButtonTitle:nil
-                              otherButtonTitles:nil];
-    
-    self.actionSheet_ = options;
-    
-    NSString *deleteText = [NSString stringWithFormat:@"Delete %@", 
-                            appDelegate.isRiverView ? 
-                            @"this entire folder" : 
-                            @"this site"];
-    [options addButtonWithTitle:deleteText];
-    options.destructiveButtonIndex = 0;
-    
-    NSString *moveText = @"Move to another folder";
-    [options addButtonWithTitle:moveText];
-    
-    if (!appDelegate.isRiverView) {
-        NSString *fetchText = @"Insta-fetch stories";
-        [options addButtonWithTitle:fetchText];
-    }
-    
-    options.cancelButtonIndex = [options addButtonWithTitle:@"Cancel"];
-    options.tag = kSettingsActionSheet;
+- (IBAction)doOpenSettingsActionSheet:(id)sender {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [options showFromBarButtonItem:self.settingsButton animated:YES];
+        [appDelegate.masterContainerViewController showFeedDetailMenuPopover:sender];
     } else {
-        [options showInView:self.view];
+        if (self.popoverController == nil) {
+            self.popoverController = [[WEPopoverController alloc]
+                                      initWithContentViewController:appDelegate.feedDetailMenuViewController];
+            
+            self.popoverController.delegate = self;
+        } else {
+            [self.popoverController dismissPopoverAnimated:YES];
+            self.popoverController = nil;
+        }
+        
+        if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
+            [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
+        }
+        [self.popoverController setPopoverContentSize:CGSizeMake(200, 86)];
+        [self.popoverController presentPopoverFromBarButtonItem:self.settingsButton
+                                       permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                       animated:YES];
     }
+
 }
 
 - (void)confirmDeleteSite {
@@ -1227,5 +1212,60 @@
     NSError *error = [request error];
     NSLog(@"Error: %@", error);
 }
+
+#pragma mark -
+#pragma mark WEPopoverControllerDelegate implementation
+
+- (void)popoverControllerDidDismissPopover:(WEPopoverController *)thePopoverController {
+	//Safe to release the popover here
+	self.popoverController = nil;
+}
+
+- (BOOL)popoverControllerShouldDismissPopover:(WEPopoverController *)thePopoverController {
+	//The popover is automatically dismissed if you click outside it, unless you return NO here
+	return YES;
+}
+
+- (WEPopoverContainerViewProperties *)improvedContainerViewProperties {
+	
+	WEPopoverContainerViewProperties *props = [WEPopoverContainerViewProperties alloc];
+	NSString *bgImageName = nil;
+	CGFloat bgMargin = 0.0;
+	CGFloat bgCapSize = 0.0;
+	CGFloat contentMargin = 5.0;
+	
+	bgImageName = @"popoverBg.png";
+	
+	// These constants are determined by the popoverBg.png image file and are image dependent
+	bgMargin = 13; // margin width of 13 pixels on all sides popoverBg.png (62 pixels wide - 36 pixel background) / 2 == 26 / 2 == 13
+	bgCapSize = 31; // ImageSize/2  == 62 / 2 == 31 pixels
+	
+	props.leftBgMargin = bgMargin;
+	props.rightBgMargin = bgMargin;
+	props.topBgMargin = bgMargin;
+	props.bottomBgMargin = bgMargin;
+	props.leftBgCapSize = bgCapSize;
+	props.topBgCapSize = bgCapSize;
+	props.bgImageName = bgImageName;
+	props.leftContentMargin = contentMargin;
+	props.rightContentMargin = contentMargin - 1; // Need to shift one pixel for border to look correct
+	props.topContentMargin = contentMargin;
+	props.bottomContentMargin = contentMargin;
+	
+	props.arrowMargin = 4.0;
+	
+	props.upArrowImageName = @"popoverArrowUp.png";
+	props.downArrowImageName = @"popoverArrowDown.png";
+	props.leftArrowImageName = @"popoverArrowLeft.png";
+	props.rightArrowImageName = @"popoverArrowRight.png";
+	return props;
+}
+
+- (void)resetToolbar {
+    self.navigationItem.leftBarButtonItem = nil;
+    self.navigationItem.titleView = nil;
+    self.navigationItem.rightBarButtonItem = nil;
+}
+
 
 @end
