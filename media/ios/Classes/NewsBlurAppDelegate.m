@@ -792,8 +792,8 @@
 }
 
 
-- (UnreadCount *)splitUnreadCountForFeed:(NSString *)feedId {
-    UnreadCount *counts = [UnreadCount alloc];
+- (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId {
+    UnreadCounts *counts = [UnreadCounts alloc];
     NSDictionary *feed;
     
     if (feedId) {
@@ -819,8 +819,8 @@
     return counts;
 }
 
-- (UnreadCount *)splitUnreadCountForFolder:(NSString *)folderName {
-    UnreadCount *counts = [UnreadCount alloc];
+- (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName {
+    UnreadCounts *counts = [UnreadCounts alloc];
     NSArray *folder;
     
     if (folderName == @"river_blurblogs" ||
@@ -1276,7 +1276,7 @@
 @end
 
 
-@implementation UnreadCount
+@implementation UnreadCounts
 
 @synthesize ps, nt, ng;
 
@@ -1290,7 +1290,7 @@
     return self;
 }
 
-- (void)addCounts:(UnreadCount *)counts {
+- (void)addCounts:(UnreadCounts *)counts {
     ps += counts.ps;
     nt += counts.nt;
     ng += counts.ng;

@@ -15,6 +15,13 @@
 
 @synthesize appDelegate;
 @synthesize section;
+@synthesize unreadCount;
+
+- (void)setNeedsDisplay {
+    [unreadCount setNeedsDisplay];
+    
+    [super setNeedsDisplay];
+}
 
 - (void) drawRect:(CGRect)rect {
     
@@ -22,7 +29,7 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     CGContextRef context = UIGraphicsGetCurrentContext();
-    
+
     NSString *folderName;
     if (section == 0) {
         folderName = @"river_blurblogs";
@@ -32,9 +39,9 @@
     NSString *collapseKey = [NSString stringWithFormat:@"folderCollapsed:%@", folderName];
     bool isFolderCollapsed = [userPreferences boolForKey:collapseKey];
     int countWidth = 0;
-    UnreadCountView *unreadCount;
+    
     if (isFolderCollapsed) {
-        UnreadCount *counts = [appDelegate splitUnreadCountForFolder:folderName];
+        UnreadCounts *counts = [appDelegate splitUnreadCountForFolder:folderName];
         unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
         unreadCount.appDelegate = appDelegate;
         unreadCount.opaque = NO;

@@ -56,7 +56,6 @@ static UIColor *negativeBackgroundColor = nil;
 }
 
 - (void)drawInRect:(CGRect)r ps:(int)ps nt:(int)nt listType:(NBFeedListType)listType {
-    
     rect = CGRectInset(r, 12, 12);
     rect.size.width -= 18; // Scrollbar padding
     
@@ -95,7 +94,7 @@ static UIColor *negativeBackgroundColor = nil;
          drawAtPoint:CGPointMake(rr.origin.x + x_pos, rr.origin.y + y_pos)
          withFont:indicatorFont];
     }
-
+    
     if (nt > 0 && appDelegate.selectedIntelligence <= 0) {
         [neutralBackgroundColor set];
         

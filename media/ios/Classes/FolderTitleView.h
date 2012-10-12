@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
+#import "UnreadCountView.h"
 
 
 @class NewsBlurAppDelegate;
@@ -18,5 +19,6 @@
 
 @property (assign, nonatomic) int section;
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
+@property (nonatomic) UnreadCountView *unreadCount;
 
 @end
