@@ -117,6 +117,8 @@
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, -1, 29, 29);
+
+        // Add collapse button to all folders except Everything
         if (section != 1) {
             if (!isFolderCollapsed) {
                 disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
@@ -127,6 +129,9 @@
 
             UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
             [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, -1, 29, 29)];
+        } else {
+            // Everything folder doesn't get a button
+            [disclosureButton setUserInteractionEnabled:NO];
         }
         [customView addSubview:disclosureButton];
     }

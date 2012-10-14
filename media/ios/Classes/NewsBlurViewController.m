@@ -563,7 +563,7 @@ static const CGFloat kFolderTitleHeight = 28;
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(200, 86)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(200, 76)];
         [self.popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
                                        permittedArrowDirections:UIPopoverArrowDirectionUp
                                                        animated:YES];

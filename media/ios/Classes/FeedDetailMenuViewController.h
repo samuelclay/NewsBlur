@@ -20,4 +20,6 @@ UITableViewDataSource> {
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITableView *menuTableView;
 
+- (void)buildMenuOptions;
+
 @end

@@ -2,7 +2,7 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1536</int>
-		<string key="IBDocument.SystemVersion">12C54</string>
+		<string key="IBDocument.SystemVersion">12C60</string>
 		<string key="IBDocument.InterfaceBuilderVersion">2840</string>
 		<string key="IBDocument.AppKitVersion">1187.34</string>
 		<string key="IBDocument.HIToolboxVersion">625.00</string>
@@ -42,7 +42,6 @@
 						<string key="NSFrameSize">{320, 460}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -51,6 +50,7 @@
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						<bool key="IBUIAlwaysBounceVertical">YES</bool>
+						<bool key="IBUIShowsVerticalScrollIndicator">NO</bool>
 						<int key="IBUISeparatorStyle">1</int>
 						<int key="IBUISectionIndexMinimumDisplayRowCount">0</int>
 						<bool key="IBUIShowsSelectionImmediatelyOnTouchBegin">YES</bool>
@@ -1155,6 +1155,7 @@
 						<string key="addSiteViewController">AddSiteViewController</string>
 						<string key="dashboardViewController">DashboardViewController</string>
 						<string key="feedDashboardViewController">FeedDashboardViewController</string>
+						<string key="feedDetailMenuViewController">FeedDetailMenuViewController</string>
 						<string key="feedDetailViewController">FeedDetailViewController</string>
 						<string key="feedsMenuViewController">FeedsMenuViewController</string>
 						<string key="feedsViewController">NewsBlurViewController</string>
@@ -1188,6 +1189,10 @@
 						<object class="IBToOneOutletInfo" key="feedDashboardViewController">
 							<string key="name">feedDashboardViewController</string>
 							<string key="candidateClassName">FeedDashboardViewController</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="feedDetailMenuViewController">
+							<string key="name">feedDetailMenuViewController</string>
+							<string key="candidateClassName">FeedDetailMenuViewController</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="feedDetailViewController">
 							<string key="name">feedDetailViewController</string>

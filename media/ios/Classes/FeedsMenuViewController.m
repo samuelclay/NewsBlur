@@ -33,7 +33,11 @@
     // Do any additional setup after loading the view from its nib.
     
     self.menuOptions = [[NSArray alloc]
-                        initWithObjects:@"Find Friends", @"Logout", nil];
+                        initWithObjects:[@"Find Friends" uppercaseString],
+                                        [@"Logout" uppercaseString], nil];
+    
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xF0FFF0);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x8AA378);
 }
 
 - (void)viewDidUnload
@@ -70,15 +74,31 @@
     }
     
     cell.textLabel.text = [self.menuOptions objectAtIndex:[indexPath row]];
+    cell.contentView.backgroundColor = UIColorFromRGB(0xBAE3A8);
+    cell.textLabel.backgroundColor = UIColorFromRGB(0xBAE3A8);
+    cell.textLabel.textColor = UIColorFromRGB(0x303030);
+    cell.textLabel.shadowColor = UIColorFromRGB(0xF0FFF0);
+    cell.textLabel.shadowOffset = CGSizeMake(0, 1);
+    cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    
+    if (indexPath.row == 0) {
+        cell.imageView.image = [UIImage imageNamed:@"rainbow.png"];
+    } else if (indexPath.row == 1) {
+        cell.imageView.image = [UIImage imageNamed:@"user_orange.png"];
+    }
     
     return cell;
+}
+
+- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 38;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
     if (indexPath.row == 0) {
         [appDelegate showFindFriends];
-    } if (indexPath.row == 1) {
+    } else if (indexPath.row == 1) {
         [appDelegate confirmLogout];
     }
     
