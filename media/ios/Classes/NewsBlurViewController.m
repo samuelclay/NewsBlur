@@ -408,8 +408,14 @@ static const CGFloat kFolderTitleHeight = 28;
     // sort all the folders
     appDelegate.dictFoldersArray = [NSMutableArray array];
     for (id f in appDelegate.dictFolders) {
-        [appDelegate.dictFoldersArray addObject:f];
         NSArray *folder = [appDelegate.dictFolders objectForKey:f];
+        NSString *folderTitle;
+        if ([f isEqualToString:@" "]) {
+            folderTitle = @"everything";
+        } else {
+            folderTitle = f;
+        }
+        [appDelegate.dictFoldersArray addObject:folderTitle];
         sortedArray = [folder sortedArrayUsingComparator:^NSComparisonResult(id id1, id id2) {
             NSString *feedTitleA;
             NSString *feedTitleB;
@@ -431,7 +437,7 @@ static const CGFloat kFolderTitleHeight = 28;
             }
             return [feedTitleA caseInsensitiveCompare:feedTitleB];
         }];
-        [sortedFolders setValue:sortedArray forKey:f];
+        [sortedFolders setValue:sortedArray forKey:folderTitle];
     }
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];

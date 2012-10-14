@@ -245,6 +245,7 @@ def sync_time():
 def setup_time_calibration():
     sudo('apt-get -y install ntp')
     put('config/ntpdate.cron', '%s/' % env.NEWSBLUR_PATH)
+    sudo('chown root.root %s/ntpdate.cron' % env.NEWSBLUR_PATH)
     sudo('chmod 755 %s/ntpdate.cron' % env.NEWSBLUR_PATH)
     sudo('mv %s/ntpdate.cron /etc/cron.hourly/ntpdate' % env.NEWSBLUR_PATH)
     with settings(warn_only=True):

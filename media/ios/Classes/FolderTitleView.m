@@ -29,7 +29,10 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     CGContextRef context = UIGraphicsGetCurrentContext();
-
+    for (UIView *subview in self.subviews) {
+        [subview removeFromSuperview];
+    }
+    
     NSString *folderName;
     if (section == 0) {
         folderName = @"river_blurblogs";
@@ -110,11 +113,6 @@
     [customView addSubview:invisibleHeaderButton];
     
     if (!appDelegate.hasNoSites) {
-        if (section != 1) {
-            UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
-            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, -1, 29, 29)];
-        }
-        
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
@@ -126,6 +124,9 @@
             
             disclosureButton.tag = section;
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
+
+            UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
+            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, -1, 29, 29)];
         }
         [customView addSubview:disclosureButton];
     }
