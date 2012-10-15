@@ -101,8 +101,6 @@
     
     <string name="logout_warning">Are you sure you want to log out?</string>
     
-    <string name="unsorted_folder_name">Unsorted</string>
-    
     <string name="feed_search_hint">Search for new feeds</string>
     <string name="empty_list_notice">Loading stories…</string>
     <string name="empty_search_notice">Type a search term to begin</string>

@@ -11,8 +11,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
-import android.util.Config;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -276,7 +274,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		Cursor cursor = null;
 		View v;
 		if (groupPosition == 0) {
-			cursor = allStoriesCountCursor;
+			cursor = sharedStoriesCountCursor;
 			v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
 			sharedStoriesCountCursor.moveToFirst();
 			((TextView) v.findViewById(R.id.row_everythingtext)).setOnClickListener(new OnClickListener() {
