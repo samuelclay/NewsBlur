@@ -99,6 +99,7 @@
             android:layout_below="@id/comment_shareddate"
             android:layout_marginRight="10dp"
             android:layout_marginTop="4dp"
+        	android:autoLink="web"
             android:layout_marginBottom="4dp"
             android:layout_toRightOf="@id/comment_user_image"
             android:textColor="@color/darkgray"

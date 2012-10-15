@@ -236,7 +236,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
 
 		StringBuilder builder = new StringBuilder();
-		builder.append("<html><head><meta name=\"viewport\" content=\"target-densitydpi=device-dpi\" />");
+		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width; initial-scale=0.75; maximum-scale=0.75; minimum-scale=0.75; user-scalable=0;\" />");
 		builder.append("<style style=\"text/css\">");
 		builder.append(String.format("body { font-size: %s em; } ", Float.toString(currentSize + AppConstants.FONT_SIZE_LOWER_BOUND)));
 		builder.append("</style>");

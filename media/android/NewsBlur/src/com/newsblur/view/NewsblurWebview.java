@@ -15,7 +15,9 @@ public class NewsblurWebview extends WebView {
 
 	public NewsblurWebview(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		
+
+		setVerticalScrollBarEnabled(false);
+		setHorizontalScrollBarEnabled(false);
 		getSettings().setJavaScriptEnabled(true);
 		getSettings().setLoadWithOverviewMode(true);
 		getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
@@ -25,8 +27,7 @@ public class NewsblurWebview extends WebView {
 		getSettings().setAppCachePath("/data/data/com.newsblur/cache");
 		getSettings().setAllowFileAccess(true);
 		getSettings().setAppCacheEnabled(true);
-		setVerticalScrollBarEnabled(false);
-		setHorizontalScrollBarEnabled(false);
+		
 	}
 	
 	

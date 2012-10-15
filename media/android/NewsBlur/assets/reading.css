@@ -1,5 +1,4 @@
 body {
-	padding: 4%;	
 	background-color: #f5f5f5;
 }
 
@@ -7,10 +6,11 @@ p {
 	line-height: 1.4em;
 }
 
-img {
+img, video, embed, object, iframe {
 	max-width: 100%;
 	height: auto;	
 }
+
 
 a {
 	color: #405BA8;	
