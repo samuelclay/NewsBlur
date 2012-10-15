@@ -103,6 +103,7 @@
 @synthesize recentlyReadStories;
 @synthesize recentlyReadFeeds;
 @synthesize readStories;
+@synthesize folderCountCache;
 
 @synthesize dictFolders;
 @synthesize dictFeeds;
@@ -823,6 +824,13 @@
     UnreadCounts *counts = [UnreadCounts alloc];
     NSArray *folder;
     
+    if ([[self.folderCountCache objectForKey:folderName] boolValue]) {
+        counts.ps = [[self.folderCountCache objectForKey:[NSString stringWithFormat:@"%@-ps", folderName]] intValue];
+        counts.nt = [[self.folderCountCache objectForKey:[NSString stringWithFormat:@"%@-nt", folderName]] intValue];
+        counts.ng = [[self.folderCountCache objectForKey:[NSString stringWithFormat:@"%@-ng", folderName]] intValue];
+        return counts;
+    }
+    
     if (folderName == @"river_blurblogs" ||
         (!folderName && self.activeFolder == @"river_blurblogs")) {
         for (id feedId in self.dictSocialFeeds) {
@@ -845,6 +853,14 @@
         }
     }
     
+    if (!self.folderCountCache) {
+        self.folderCountCache = [[NSMutableDictionary alloc] init];
+    }
+    [self.folderCountCache setObject:[NSNumber numberWithBool:YES] forKey:folderName];
+    [self.folderCountCache setObject:[NSNumber numberWithInt:counts.ps] forKey:[NSString stringWithFormat:@"%@-ps", folderName]];
+    [self.folderCountCache setObject:[NSNumber numberWithInt:counts.nt] forKey:[NSString stringWithFormat:@"%@-nt", folderName]];
+    [self.folderCountCache setObject:[NSNumber numberWithInt:counts.ng] forKey:[NSString stringWithFormat:@"%@-ng", folderName]];
+        
     return counts;
 }
 

@@ -317,7 +317,6 @@
 //    } else if ([[appDelegate.activeStory objectForKey:@"reply_count"] intValue] == 1) {
 //        replyStr = [NSString stringWithFormat:@" and <b>%@ replies</b>", [appDelegate.activeStory objectForKey:@"reply_count"]];
 //    }
-    NSLog(@"[appDelegate.activeStory objectForKey:@'comment_count'] %@", [[appDelegate.activeStory objectForKey:@"comment_count"] class]);
     if (![[appDelegate.activeStory objectForKey:@"comment_count"] isKindOfClass:[NSNull class]] &&
         [[appDelegate.activeStory objectForKey:@"comment_count"] intValue]) {
         commentLabel = [commentLabel stringByAppendingString:[NSString stringWithFormat:@
@@ -336,7 +335,6 @@
                                                               //replyStr,
                                                               [self getAvatars:@"commented_by_friends"],
                                                               [self getAvatars:@"commented_by_public"]]];
-        NSLog(@"commentLabel is %@", commentLabel);
     }
     
     if (![[appDelegate.activeStory objectForKey:@"share_count"] isKindOfClass:[NSNull class]] &&
@@ -357,7 +355,6 @@
                                                               [[appDelegate.activeStory objectForKey:@"share_count"] intValue] == 1
                                                               ? [NSString stringWithFormat:@"<b>1 share</b>"] : 
                                                               [NSString stringWithFormat:@"<b>%@ shares</b>", [appDelegate.activeStory objectForKey:@"share_count"]]]];
-        NSLog(@"commentLabel is %@", commentLabel);
     }
     
     if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] &&
@@ -637,7 +634,6 @@
 
 - (void)showStory {
     appDelegate.inStoryDetail = YES;
-    NSLog(@"in showStory");
     // when we show story, we mark it as read
     [self markStoryAsRead]; 
     self.noStorySelectedLabel.hidden = YES;
@@ -776,7 +772,7 @@
                             footerString
                             ];
 
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -1168,7 +1164,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         if (appDelegate.isSocialRiverView) {
             // grab the user id from the shared_by_friends
             NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
-            NSLog(@"[appDelegate.activeStory objectForKey:@shared_by_friends] %@", [appDelegate.activeStory objectForKey:@"shared_by_friends"]);
             NSString *friendUserId;
             
             if ([[appDelegate.activeStory objectForKey:@"shared_by_friends"] count]) {
@@ -1432,8 +1427,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (IBAction)doNextStory {
     
     int nextIndex = [appDelegate indexOfNextStory];
-    
-    NSLog(@"nextIndex is %i", nextIndex);
     
     [self.loadingIndicator stopAnimating];
     

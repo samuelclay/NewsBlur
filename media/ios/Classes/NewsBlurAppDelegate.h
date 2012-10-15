@@ -105,6 +105,7 @@
     NSMutableArray * recentlyReadStories;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
+    NSMutableDictionary *folderCountCache;
     
 	NSDictionary * dictFolders;
     NSMutableDictionary * dictFeeds;
@@ -181,6 +182,7 @@
 @property (readwrite) NSMutableArray * recentlyReadStories;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
 @property (readwrite) NSMutableArray * readStories;
+@property (nonatomic) NSMutableDictionary *folderCountCache;
 
 @property (nonatomic) NSDictionary *dictFolders;
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;

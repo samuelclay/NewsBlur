@@ -92,7 +92,6 @@ static const CGFloat kFolderTitleHeight = 28;
     [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
     [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
     self.intelligenceControl.hidden = YES;
-    
 
 }
 
@@ -797,7 +796,8 @@ static const CGFloat kFolderTitleHeight = 28;
     appDelegate.readStories = [NSMutableArray array];
     appDelegate.isRiverView = NO;
     appDelegate.isSocialRiverView = NO;
-        
+    [appDelegate.folderCountCache removeObjectForKey:folderName];
+
     [appDelegate loadFeedDetailView];
 }
 
@@ -931,7 +931,9 @@ static const CGFloat kFolderTitleHeight = 28;
 
     }
     appDelegate.activeFolderFeeds = feeds;
-
+    
+    [appDelegate.folderCountCache removeObjectForKey:appDelegate.activeFolder];
+    
     [appDelegate loadRiverFeedDetailView];
 }
 
@@ -1366,6 +1368,8 @@ static const CGFloat kFolderTitleHeight = 28;
 
     appDelegate.dictSocialFeeds = updatedDictSocialFeeds;
     appDelegate.dictFeeds = updatedDictFeeds;
+    
+    [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
 }
 
