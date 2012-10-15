@@ -1155,12 +1155,12 @@
 		431B857415A1324200DCE497 /* Story */ = {
 			isa = PBXGroup;
 			children = (
+				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
+				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 				43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */,
 				43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */,
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
-				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
-				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 			);
 			name = Story;
 			sourceTree = "<group>";

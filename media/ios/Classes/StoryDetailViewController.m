@@ -21,6 +21,7 @@
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
 #import "JSON.h"
+#import "SHK.h"
 
 @interface StoryDetailViewController ()
 
@@ -987,29 +988,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             }
             return NO; 
         } else if ([action isEqualToString:@"share"]) {
-            // test to see if the user has commented
-            // search for the comment from friends comments
-            NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
-            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-            for (int i = 0; i < friendComments.count; i++) {
-                NSString *userId = [NSString stringWithFormat:@"%@", 
-                                    [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
-                if([userId isEqualToString:currentUserId]){
-                    appDelegate.activeComment = [friendComments objectAtIndex:i];
-                }
-            }
-            
-            if (appDelegate.activeComment == nil) {
-                [appDelegate showShareView:@"share"
-                                 setUserId:nil
-                               setUsername:nil
-                           setReplyId:nil];
-            } else {
-                [appDelegate showShareView:@"edit-share"
-                                 setUserId:nil
-                               setUsername:nil
-                           setReplyId:nil];
-            }
+            [self openShareDialog];
             return NO; 
         } else if ([action isEqualToString:@"show-profile"]) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
@@ -1283,6 +1262,49 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 //    NSDictionary *results = [[NSDictionary alloc] 
 //                             initWithDictionary:[responseString JSONValue]];
 //    NSLog(@"results in mark as read is %@", results);
+}
+
+- (void)openSendToDialog {
+    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
+                                       objectForKey:@"story_permalink"]];
+    SHKItem *item = [SHKItem URL:url title:[appDelegate.activeStory
+                                            objectForKey:@"story_title"]];
+    SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
+    [actionSheet showInView:self.view];
+}
+
+- (void)openShareDialog {
+    // test to see if the user has commented
+    // search for the comment from friends comments
+    NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    for (int i = 0; i < friendComments.count; i++) {
+        NSString *userId = [NSString stringWithFormat:@"%@",
+                            [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
+        if([userId isEqualToString:currentUserId]){
+            appDelegate.activeComment = [friendComments objectAtIndex:i];
+        }
+    }
+    
+    if (appDelegate.activeComment == nil) {
+        [appDelegate showShareView:@"share"
+                         setUserId:nil
+                       setUsername:nil
+                        setReplyId:nil];
+    } else {
+        [appDelegate showShareView:@"edit-share"
+                         setUserId:nil
+                       setUsername:nil
+                        setReplyId:nil];
+    }
+}
+
+- (void)markStoryAsSaved {
+    
+}
+
+- (void)markStoryAsUnread {
+    
 }
 
 # pragma mark
@@ -1579,7 +1601,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(274, 130)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(240, 228)];
         [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionAny 
                                                        animated:YES];

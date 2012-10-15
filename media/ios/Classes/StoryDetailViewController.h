@@ -76,6 +76,10 @@ UIScrollViewDelegate> {
 - (void)showShareHUD:(NSString *)msg;
 - (void)refreshComments:(NSString *)replyId;
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
+- (void)openSendToDialog;
+- (void)markStoryAsUnread;
+- (void)markStoryAsSaved;
+- (void)openShareDialog;
 - (void)finishLikeComment:(ASIHTTPRequest *)request;
 - (void)subscribeToBlurblog;
 - (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request;

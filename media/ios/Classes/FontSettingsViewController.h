@@ -10,7 +10,9 @@
 
 @class NewsBlurAppDelegate;
 
-@interface FontSettingsViewController : UIViewController {
+@interface FontSettingsViewController : UIViewController
+<UITableViewDelegate,
+UITableViewDataSource>  {
     NewsBlurAppDelegate *appDelegate;
     
     IBOutlet UILabel *smallFontSizeLabel;
@@ -20,10 +22,13 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property ( nonatomic) IBOutlet UISegmentedControl *fontStyleSegment;
 @property ( nonatomic) IBOutlet UISegmentedControl *fontSizeSegment;
+@property (nonatomic) IBOutlet UITableView *menuTableView;
 
 - (IBAction)changeFontStyle:(id)sender;
 - (IBAction)changeFontSize:(id)sender;
 - (void)setSanSerif;
 - (void)setSerif;
+- (UITableViewCell *)makeFontSelectionTableCell;
+- (UITableViewCell *)makeFontSizeTableCell;
 
 @end

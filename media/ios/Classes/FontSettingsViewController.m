@@ -12,9 +12,12 @@
 
 @implementation FontSettingsViewController
 
+#define kMenuOptionHeight 38
+
 @synthesize appDelegate;
 @synthesize fontStyleSegment;
 @synthesize fontSizeSegment;
+@synthesize menuTableView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -28,10 +31,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xF0FFF0);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x8AA378);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
+    self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
@@ -111,5 +116,106 @@
     [fontStyleSegment setSelectedSegmentIndex:1];
     [appDelegate.storyDetailViewController setFontStyle:@"Georgia"];
 }
+
+#pragma mark -
+#pragma mark - Table view data source
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 6;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIndentifier = @"Cell";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
+    
+    if (indexPath.row == 4) {
+        return [self makeFontSelectionTableCell];
+    } else if (indexPath.row == 5) {
+        return [self makeFontSizeTableCell];
+    }
+    
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc]
+                initWithStyle:UITableViewCellStyleDefault
+                reuseIdentifier:CellIndentifier];
+    }
+    
+    cell.contentView.backgroundColor = UIColorFromRGB(0xBAE3A8);
+    cell.textLabel.backgroundColor = UIColorFromRGB(0xBAE3A8);
+    cell.textLabel.textColor = UIColorFromRGB(0x303030);
+    cell.textLabel.shadowColor = UIColorFromRGB(0xF0FFF0);
+    cell.textLabel.shadowOffset = CGSizeMake(0, 1);
+    cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
+    
+    if (cell.selected) {
+        cell.contentView.backgroundColor = UIColorFromRGB(0x639510);
+        cell.textLabel.backgroundColor = UIColorFromRGB(0x639510);
+        cell.selectedBackgroundView.backgroundColor = UIColorFromRGB(0x639510);
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    
+    if (indexPath.row == 0) {
+        cell.textLabel.text = [@"Save this story" uppercaseString];
+        cell.imageView.image = [UIImage imageNamed:@"bin_closed"];
+    } else if (indexPath.row == 1) {
+        cell.textLabel.text = [@"Mark as unread" uppercaseString];
+        cell.imageView.image = [UIImage imageNamed:@"arrow_branch"];
+    } else if (indexPath.row == 2) {
+        cell.textLabel.text = [@"Share this story" uppercaseString];
+        cell.imageView.image = [UIImage imageNamed:@"car"];
+    } else if (indexPath.row == 3) {
+        cell.textLabel.text = [@"Send to..." uppercaseString];
+        cell.imageView.image = [UIImage imageNamed:@"car"];
+    }
+    
+    return cell;
+}
+
+- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return kMenuOptionHeight;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        [appDelegate.storyDetailViewController markStoryAsSaved];
+    } else if (indexPath.row == 1) {
+        [appDelegate.storyDetailViewController markStoryAsUnread];
+    } else if (indexPath.row == 2) {
+        [appDelegate.storyDetailViewController openShareDialog];
+    } else if (indexPath.row == 3) {
+        [appDelegate.storyDetailViewController openSendToDialog];
+    }
+    
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//        [appDelegate.masterContainerViewController hidePopover];
+    } else {
+        [appDelegate.storyDetailViewController.popoverController dismissPopoverAnimated:YES];
+        appDelegate.storyDetailViewController.popoverController = nil;
+    }
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+}
+
+- (UITableViewCell *)makeFontSelectionTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    
+    cell.backgroundColor = [UIColor redColor];
+    return cell;
+}
+
+- (UITableViewCell *)makeFontSizeTableCell {
+    UITableViewCell *cell = [[UITableViewCell alloc] init];
+    cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    
+    cell.backgroundColor = [UIColor redColor];
+    return cell;    
+}
+
 
 @end

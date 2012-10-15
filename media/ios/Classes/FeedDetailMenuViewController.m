@@ -140,15 +140,14 @@
         [appDelegate.feedDetailViewController openMoveView];
     } else if (indexPath.row == 2) {
         [appDelegate.feedDetailViewController instafetchFeed];
-        [appDelegate.feedDetailViewController.popoverController dismissPopoverAnimated:YES];
     }
     
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        [appDelegate.masterContainerViewController hidePopover];
-//    } else {
-//        [appDelegate.feedDetailViewController.popoverController dismissPopoverAnimated:YES];
-//        appDelegate.feedDetailViewController.popoverController = nil;
-//    }
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController hidePopover];
+    } else {
+        [appDelegate.feedDetailViewController.popoverController dismissPopoverAnimated:YES];
+        appDelegate.feedDetailViewController.popoverController = nil;
+    }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
 }
