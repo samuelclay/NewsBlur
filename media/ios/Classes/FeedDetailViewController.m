@@ -127,14 +127,16 @@
         
     if ((appDelegate.isSocialRiverView ||
          appDelegate.isSocialView ||
-         [appDelegate.activeFolder isEqualToString:@"everything"])) {
+         (appDelegate.isRiverView &&
+          [appDelegate.activeFolder isEqualToString:@"everything"]))) {
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
     }
     
     if (appDelegate.isSocialRiverView || 
-        [appDelegate.activeFolder isEqualToString:@"everything"]) {
+        (appDelegate.isRiverView &&
+         [appDelegate.activeFolder isEqualToString:@"everything"])) {
         feedMarkReadButton.enabled = NO;
     } else {
         feedMarkReadButton.enabled = YES;
@@ -923,7 +925,7 @@
         int totalUnreadCount = [appDelegate unreadCount];
         BOOL showVisible = YES;
         BOOL showEntire = YES;
-        if ([appDelegate.activeFolder isEqualToString:@"Everything"]) showEntire = NO;
+        if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
         if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
 //        NSLog(@"Counts: %d %d = %d", visibleUnreadCount, totalUnreadCount, visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0);
 
@@ -964,7 +966,7 @@
     } else {
         if (self.popoverController == nil) {
             self.popoverController = [[WEPopoverController alloc]
-                                      initWithContentViewController:appDelegate.feedDetailMenuViewController];
+                                      initWithContentViewController:(UIViewController *)appDelegate.feedDetailMenuViewController];
             self.popoverController.delegate = self;
         } else {
             [self.popoverController dismissPopoverAnimated:YES];

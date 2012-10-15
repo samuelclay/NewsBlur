@@ -825,6 +825,7 @@
     NSArray *folder;
     
     if ([[self.folderCountCache objectForKey:folderName] boolValue]) {
+        NSLog(@"In folder count cache: %@", folderName);
         counts.ps = [[self.folderCountCache objectForKey:[NSString stringWithFormat:@"%@-ps", folderName]] intValue];
         counts.nt = [[self.folderCountCache objectForKey:[NSString stringWithFormat:@"%@-nt", folderName]] intValue];
         counts.ng = [[self.folderCountCache objectForKey:[NSString stringWithFormat:@"%@-ng", folderName]] intValue];
@@ -856,6 +857,7 @@
     if (!self.folderCountCache) {
         self.folderCountCache = [[NSMutableDictionary alloc] init];
     }
+    NSLog(@"Saving to folder cache: %@", folderName);
     [self.folderCountCache setObject:[NSNumber numberWithBool:YES] forKey:folderName];
     [self.folderCountCache setObject:[NSNumber numberWithInt:counts.ps] forKey:[NSString stringWithFormat:@"%@-ps", folderName]];
     [self.folderCountCache setObject:[NSNumber numberWithInt:counts.nt] forKey:[NSString stringWithFormat:@"%@-nt", folderName]];
@@ -1109,7 +1111,8 @@
 
 
 - (NSString *)extractParentFolderName:(NSString *)folderName {
-    if ([folderName containsString:@"Top Level"]) {
+    if ([folderName containsString:@"Top Level"] ||
+        folderName == @"everything") {
         folderName = @"";
     }
     
@@ -1124,10 +1127,10 @@
 }
 
 - (NSString *)extractFolderName:(NSString *)folderName {
-    if ([folderName containsString:@"Top Level"]) {
+    if ([folderName containsString:@"Top Level"] ||
+        folderName == @"everything") {
         folderName = @"";
     }
-    
     if ([folderName containsString:@" - "]) {
         int folder_loc = [folderName rangeOfString:@" - " options:NSBackwardsSearch].location;
         folderName = [folderName substringFromIndex:(folder_loc + 3)];

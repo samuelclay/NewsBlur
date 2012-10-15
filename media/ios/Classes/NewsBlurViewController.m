@@ -23,8 +23,8 @@
 #import "UIBarButtonItem+WEPopover.h"
 
 
-#define kPhoneTableViewRowHeight 32;
-#define kTableViewRowHeight 32;
+#define kPhoneTableViewRowHeight 31;
+#define kTableViewRowHeight 31;
 #define kBlurblogTableViewRowHeight 47;
 #define kPhoneBlurblogTableViewRowHeight 39;
 static const CGFloat kFolderTitleHeight = 28;

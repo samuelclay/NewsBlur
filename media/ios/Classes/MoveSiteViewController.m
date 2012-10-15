@@ -85,7 +85,7 @@
 
 
 - (void)reload {
-    BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""];
+    BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""] || appDelegate.activeFolder == @"everything";
     int row = 0;
     [toFolderInput setText:@""];
     

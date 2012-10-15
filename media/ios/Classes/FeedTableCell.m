@@ -84,13 +84,13 @@ static UIFont *textFont = nil;
         
         CGContextBeginPath(context);
         CGContextMoveToPoint(context, 0, 0.5f);
-        CGContextAddLineToPoint(context, self.bounds.size.width, 0.5f);
+        CGContextAddLineToPoint(context, r.size.width, 0.5f);
         CGContextStrokePath(context);
         
         // bottom border    
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, self.bounds.size.height - 1.5f);
-        CGContextAddLineToPoint(context, self.bounds.size.width, self.bounds.size.height - 1.5f);
+        CGContextMoveToPoint(context, 0, r.size.height - .5f);
+        CGContextAddLineToPoint(context, r.size.width, r.size.height - .5f);
         CGContextStrokePath(context);
     }
     

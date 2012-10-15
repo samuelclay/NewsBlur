@@ -269,7 +269,7 @@
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(200, 186)];
+    [popoverController setPopoverContentSize:CGSizeMake(260, 38*3)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
                                               animated:YES];
@@ -288,7 +288,7 @@
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
+    [popoverController setPopoverContentSize:CGSizeMake(240, 228)];
     //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
     //                                       initWithCustomView:sender];
     [popoverController presentPopoverFromBarButtonItem:sender 
