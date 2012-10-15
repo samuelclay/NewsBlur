@@ -68,7 +68,11 @@
 }
 
 - (BOOL)forwardAppearanceMethods {
-    return ![contentViewController respondsToSelector:@selector(automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers)];
+//    NSLog(@"forwardAppearanceMethods: %d", [contentViewController automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers]);
+    if ([contentViewController respondsToSelector:@selector(automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers)]) {
+        return [contentViewController respondsToSelector:@selector(automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers)];
+    }
+    return NO;
 }
 
 //Overridden setter to copy the passthroughViews to the background view if it exists already
@@ -86,7 +90,6 @@
 	if ([animationID isEqual:@"FadeIn"]) {
 		self.view.userInteractionEnabled = YES;
 		popoverVisible = YES;
-        
         if ([self forwardAppearanceMethods]) {
             [contentViewController viewDidAppear:YES];
         }

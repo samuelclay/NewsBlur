@@ -965,7 +965,6 @@
         if (self.popoverController == nil) {
             self.popoverController = [[WEPopoverController alloc]
                                       initWithContentViewController:appDelegate.feedDetailMenuViewController];
-            
             self.popoverController.delegate = self;
         } else {
             [self.popoverController dismissPopoverAnimated:YES];
@@ -975,7 +974,7 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(260, 114)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 2 : 38 *3)];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];

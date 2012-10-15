@@ -43,12 +43,19 @@
     self.menuTableView = nil;
 }
 
-- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
+- (void)viewWillAppear:(BOOL)animated {
+    [self.menuTableView reloadData];
+}
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return YES;
+}
+
+- (BOOL)automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers {
     return YES;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
+- (BOOL)shouldAutomaticallyForwardAppearanceMethods {
+    return YES;
 }
 
 - (void)buildMenuOptions {    
