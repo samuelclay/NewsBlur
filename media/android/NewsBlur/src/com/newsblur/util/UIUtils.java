@@ -3,12 +3,8 @@ package com.newsblur.util;
 import static android.graphics.Bitmap.Config.ARGB_8888;
 import static android.graphics.Color.WHITE;
 import static android.graphics.PorterDuff.Mode.DST_IN;
-
-import com.newsblur.R;
-
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;

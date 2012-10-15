@@ -51,7 +51,7 @@
 	
 	<string name="replied">Reply posted</string>
 	<string name="error_replying">There was an error replying</string>
-	<string name="share" formatted="false">\"%s\" - %s (via NewsBlur)</string>
+	<string name="share">\"%1$s\" - %2$s (via NewsBlur)</string>
 	<string name="shared_title">Share</string>
 	<string name="share_this">Share this story</string>
 	<string name="share_comment_hint">Comment (Optional)</string>

@@ -145,10 +145,10 @@ public class DatabaseConstants {
 
 
 	private static String STORY_SUM_TOTAL = " CASE " + 
-	"WHEN MAX(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_FEED + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 " + 
-	"THEN MAX(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_FEED + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") " +
-	"WHEN MIN(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_FEED + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") < 0 " + 
-	"THEN MIN(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_FEED + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") " +
+	"WHEN MAX(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 " + 
+	"THEN MAX(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") " +
+	"WHEN MIN(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") < 0 " + 
+	"THEN MIN(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") " +
 	"ELSE " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " " +
 	"END AS " + DatabaseConstants.SUM_STORY_TOTAL;
 
