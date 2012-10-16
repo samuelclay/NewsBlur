@@ -159,16 +159,16 @@
     
     if (indexPath.row == 0) {
         cell.textLabel.text = [@"Save this story" uppercaseString];
-        cell.imageView.image = [UIImage imageNamed:@"bin_closed"];
+        cell.imageView.image = [UIImage imageNamed:@"time"];
     } else if (indexPath.row == 1) {
         cell.textLabel.text = [@"Mark as unread" uppercaseString];
-        cell.imageView.image = [UIImage imageNamed:@"arrow_branch"];
+        cell.imageView.image = [UIImage imageNamed:@"bullet_orange"];
     } else if (indexPath.row == 2) {
         cell.textLabel.text = [@"Share this story" uppercaseString];
-        cell.imageView.image = [UIImage imageNamed:@"car"];
+        cell.imageView.image = [UIImage imageNamed:@"rainbow"];
     } else if (indexPath.row == 3) {
         cell.textLabel.text = [@"Send to..." uppercaseString];
-        cell.imageView.image = [UIImage imageNamed:@"car"];
+        cell.imageView.image = [UIImage imageNamed:@"email"];
     }
     
     return cell;
@@ -205,7 +205,13 @@
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     
-    cell.backgroundColor = [UIColor redColor];
+    fontStyleSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
+    [fontStyleSegment setTitle:@"Helvetica" forSegmentAtIndex:0];
+    [fontStyleSegment setTitle:@"Georgia" forSegmentAtIndex:1];
+    [fontStyleSegment setTintColor:UIColorFromRGB(0x738570)];
+    
+    [cell addSubview:fontStyleSegment];
+    
     return cell;
 }
 
@@ -213,7 +219,16 @@
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
     
-    cell.backgroundColor = [UIColor redColor];
+    fontSizeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
+    [fontSizeSegment setTitle:@"11pt" forSegmentAtIndex:0];
+    [fontSizeSegment setTitle:@"12pt" forSegmentAtIndex:1];
+    [fontSizeSegment setTitle:@"14pt" forSegmentAtIndex:2];
+    [fontSizeSegment setTitle:@"16pt" forSegmentAtIndex:3];
+    [fontSizeSegment setTitle:@"18pt" forSegmentAtIndex:4];
+    [fontSizeSegment setTintColor:UIColorFromRGB(0x738570)];
+    
+    [cell addSubview:fontSizeSegment];
+    
     return cell;    
 }
 
