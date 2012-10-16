@@ -608,14 +608,26 @@ def setup_db_firewall():
     sudo('ufw delete allow from 23.22.0.0/16 to any port 27017') # MongoDB
     sudo('ufw delete allow from 23.22.0.0/16 to any port 6379 ') # Redis
     sudo('ufw delete allow from 23.22.0.0/16 to any port 11211 ') # Memcached
-    sudo('ufw delete allow from 23.20.0.0/16 to any port 5432 ') # PostgreSQL
-    sudo('ufw delete allow from 23.20.0.0/16 to any port 27017') # MongoDB
-    sudo('ufw delete allow from 23.20.0.0/16 to any port 6379 ') # Redis
-    sudo('ufw delete allow from 23.20.0.0/16 to any port 11211 ') # Memcached
-    sudo('ufw allow from 54.242.38.48/20 to any port 5432 ') # PostgreSQL
-    sudo('ufw allow from 54.242.38.48/20 to any port 27017') # MongoDB
-    sudo('ufw allow from 54.242.38.48/20 to any port 6379 ') # Redis
-    sudo('ufw allow from 54.242.38.48/20 to any port 11211 ') # Memcached
+    sudo('ufw delete allow from 54.242.38.48/20 to any port 5432 ') # PostgreSQL
+    sudo('ufw delete allow from 54.242.38.48/20 to any port 27017') # MongoDB
+    sudo('ufw delete allow from 54.242.38.48/20 to any port 6379 ') # Redis
+    sudo('ufw delete allow from 54.242.38.48/20 to any port 11211 ') # Memcached
+    sudo('ufw delete allow from 184.73.115.5/20 to any port 5432 ') # PostgreSQL
+    sudo('ufw delete allow from 184.73.115.5/20 to any port 27017') # MongoDB
+    sudo('ufw delete allow from 184.73.115.5/20 to any port 6379 ') # Redis
+    sudo('ufw delete allow from 184.73.115.5/20 to any port 11211 ') # Memcached
+    sudo('ufw allow from 54.242.38.48 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 54.242.38.48 to any port 27017') # MongoDB
+    sudo('ufw allow from 54.242.38.48 to any port 6379 ') # Redis
+    sudo('ufw allow from 54.242.38.48 to any port 11211 ') # Memcached
+    sudo('ufw allow from 184.73.115.5 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 184.73.115.5 to any port 27017') # MongoDB
+    sudo('ufw allow from 184.73.115.5 to any port 6379 ') # Redis
+    sudo('ufw allow from 184.73.115.5 to any port 11211 ') # Memcached
+    sudo('ufw allow from 54.242.137.224 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 54.242.137.224 to any port 27017') # MongoDB
+    sudo('ufw allow from 54.242.137.224 to any port 6379 ') # Redis
+    sudo('ufw allow from 54.242.137.224 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -742,9 +754,9 @@ def copy_task_settings():
 # ===============
 
 def setup_ec2_task():
-    AMI_NAME = 'ami-3c994355' # Ubuntu 64-bit 12.04 LTS
+    AMI_NAME = 'ami-834cf1ea' # Ubuntu 64-bit 12.04 LTS
     # INSTANCE_TYPE = 'c1.medium'
-    INSTANCE_TYPE = 'm1.small'
+    INSTANCE_TYPE = 'm1.medium'
     conn = EC2Connection(django_settings.AWS_ACCESS_KEY_ID, django_settings.AWS_SECRET_ACCESS_KEY)
     reservation = conn.run_instances(AMI_NAME, instance_type=INSTANCE_TYPE,
                                      key_name='sclay',
