@@ -9,6 +9,7 @@
 #import "FontSettingsViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "StoryDetailViewController.h"
+#import "MenuTableViewCell.h"
 
 @implementation FontSettingsViewController
 
@@ -62,7 +63,8 @@
             [fontSizeSegment setSelectedSegmentIndex:4];
         }
     }
-    // Do any additional setup after loading the view from its nib.
+    
+    [self.menuTableView reloadData];
 }
 
 - (void)viewDidUnload
@@ -138,25 +140,11 @@
     }
     
     if (cell == nil) {
-        cell = [[UITableViewCell alloc]
+        cell = [[MenuTableViewCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIndentifier];
     }
-    
-    cell.contentView.backgroundColor = UIColorFromRGB(0xBAE3A8);
-    cell.textLabel.backgroundColor = UIColorFromRGB(0xBAE3A8);
-    cell.textLabel.textColor = UIColorFromRGB(0x303030);
-    cell.textLabel.shadowColor = UIColorFromRGB(0xF0FFF0);
-    cell.textLabel.shadowOffset = CGSizeMake(0, 1);
-    cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
-    
-    if (cell.selected) {
-        cell.contentView.backgroundColor = UIColorFromRGB(0x639510);
-        cell.textLabel.backgroundColor = UIColorFromRGB(0x639510);
-        cell.selectedBackgroundView.backgroundColor = UIColorFromRGB(0x639510);
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
-    
+        
     if (indexPath.row == 0) {
         cell.textLabel.text = [@"Save this story" uppercaseString];
         cell.imageView.image = [UIImage imageNamed:@"time"];
@@ -170,12 +158,19 @@
         cell.textLabel.text = [@"Send to..." uppercaseString];
         cell.imageView.image = [UIImage imageNamed:@"email"];
     }
-    
+
     return cell;
 }
 
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return kMenuOptionHeight;
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row >= 4) {
+        return nil;
+    }
+    return indexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -204,7 +199,8 @@
 - (UITableViewCell *)makeFontSelectionTableCell {
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
-    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
     fontStyleSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
     [fontStyleSegment setTitle:@"Helvetica" forSegmentAtIndex:0];
     [fontStyleSegment setTitle:@"Georgia" forSegmentAtIndex:1];
@@ -218,6 +214,7 @@
 - (UITableViewCell *)makeFontSizeTableCell {
     UITableViewCell *cell = [[UITableViewCell alloc] init];
     cell.frame = CGRectMake(0, 0, 240, kMenuOptionHeight);
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     fontSizeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
     [fontSizeSegment setTitle:@"11pt" forSegmentAtIndex:0];
