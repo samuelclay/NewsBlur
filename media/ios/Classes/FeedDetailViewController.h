@@ -66,6 +66,7 @@
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 
 - (void)fadeSelectedCell;
+- (void)redrawUnreadStory;
 - (IBAction)doOpenMarkReadActionSheet:(id)sender;
 - (IBAction)doOpenSettingsActionSheet:(id)sender;
 - (void)confirmDeleteSite;

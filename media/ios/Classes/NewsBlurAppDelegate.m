@@ -890,7 +890,6 @@
 
 - (void)markActiveStoryRead {
     int activeLocation = [self locationOfActiveStory];
-    NSLog(@"activeLocation is %i", activeLocation);
     if (activeLocation == -1) {
         return;
     }
@@ -960,6 +959,82 @@
 
     [self.recentlyReadStories addObject:[NSNumber numberWithInt:activeLocation]];
     [self markStoryRead:story feed:feed];
+    self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
+}
+
+- (void)markActiveStoryUnread {
+    int activeLocation = [self locationOfActiveStory];
+    if (activeLocation == -1) {
+        return;
+    }
+    
+    // changes the story layout in story feed detail
+    [self.feedDetailViewController changeActiveStoryTitleCellLayout];
+    
+    int activeIndex = [[activeFeedStoryLocations objectAtIndex:activeLocation] intValue];
+    
+    NSDictionary *feed;
+    NSDictionary *friendFeed;
+    id feedId;
+    NSString *feedIdStr;
+    NSDictionary *story = [activeFeedStories objectAtIndex:activeIndex];
+    NSMutableArray *otherFriendShares = [[self.activeStory objectForKey:@"shared_by_friends"] mutableCopy];
+    NSMutableArray *otherFriendComments = [[self.activeStory objectForKey:@"commented_by_friends"] mutableCopy];
+    
+    if (self.isSocialView) {
+        feedId = [self.activeStory objectForKey:@"social_user_id"];
+        feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];
+        feed = [self.dictSocialFeeds objectForKey:feedIdStr];
+        
+        [otherFriendShares removeObject:feedId];
+        NSLog(@"otherFriendFeeds is %@", otherFriendShares);
+        [otherFriendComments removeObject:feedId];
+        NSLog(@"otherFriendFeeds is %@", otherFriendComments);
+        
+        // make sure we set the active feed
+        self.activeFeed = feed;
+    } else if (self.isSocialRiverView) {
+        feedId = [[self.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0];
+        feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];
+        feed = [self.dictSocialFeeds objectForKey:feedIdStr];
+        
+        [otherFriendShares removeObject:feedId];
+        NSLog(@"otherFriendFeeds is %@", otherFriendShares);
+        [otherFriendComments removeObject:feedId];
+        NSLog(@"otherFriendFeeds is %@", otherFriendComments);
+        
+        // make sure we set the active feed
+        self.activeFeed = feed;
+    } else {
+        feedId = [self.activeStory objectForKey:@"story_feed_id"];
+        feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+        feed = [self.dictFeeds objectForKey:feedIdStr];
+        
+        // make sure we set the active feed
+        self.activeFeed = feed;
+    }
+    
+    // decrement all other friend feeds if they have the same story
+    if (self.isSocialView || self.isSocialRiverView) {
+        for (int i = 0; i < otherFriendShares.count; i++) {
+            feedIdStr = [NSString stringWithFormat:@"social:%@",
+                         [otherFriendShares objectAtIndex:i]];
+            friendFeed = [self.dictSocialFeeds objectForKey:feedIdStr];
+            [self markStoryUnread:story feed:friendFeed];
+        }
+        
+        for (int i = 0; i < otherFriendComments.count; i++) {
+            feedIdStr = [NSString stringWithFormat:@"social:%@",
+                         [otherFriendComments objectAtIndex:i]];
+            friendFeed = [self.dictSocialFeeds objectForKey:feedIdStr];
+            [self markStoryUnread:story feed:friendFeed];
+        }
+    }
+    
+    [self.recentlyReadStories removeObject:[NSNumber numberWithInt:activeLocation]];
+    [self markStoryUnread:story feed:feed];
+
+    self.activeStory = [self.activeFeedStories objectAtIndex:activeIndex];
 }
 
 - (NSDictionary *)markVisibleStoriesRead {
@@ -1011,7 +1086,7 @@
         }
     }
     self.activeFeedStories = newActiveFeedStories;
-
+    
     self.visibleUnreadCount -= 1;
     if (![self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
         [self.recentlyReadFeeds addObject:[newStory objectForKey:@"story_feed_id"]];
@@ -1039,7 +1114,67 @@
     self.activeFeed = newFeed;
 }
 
-- (void)markActiveFeedAllRead {    
+
+- (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    NSDictionary *feed = [self.dictFeeds objectForKey:feedIdStr];
+    NSDictionary *story = nil;
+    for (NSDictionary *s in self.activeFeedStories) {
+        if ([[s objectForKey:@"story_guid"] isEqualToString:storyId]) {
+            story = s;
+            break;
+        }
+    }
+    [self markStoryUnread:story feed:feed];
+}
+
+- (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
+    
+    NSMutableDictionary *newStory = [story mutableCopy];
+    [newStory setValue:[NSNumber numberWithInt:0] forKey:@"read_status"];
+    
+    // make the story as read in self.activeFeedStories
+    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
+    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
+    for (int i = 0; i < [newActiveFeedStories count]; i++) {
+        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
+        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
+            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
+            break;
+        }
+    }
+    self.activeFeedStories = newActiveFeedStories;
+    
+    self.visibleUnreadCount += 1;
+//    if ([self.recentlyReadFeeds containsObject:[newStory objectForKey:@"story_feed_id"]]) {
+        [self.recentlyReadFeeds removeObject:[newStory objectForKey:@"story_feed_id"]];
+//    }
+    
+    NSMutableDictionary *newFeed = [feed mutableCopy];
+    int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+    if (score > 0) {
+        int unreads = MAX(1, [[newFeed objectForKey:@"ps"] intValue] + 1);
+        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ps"];
+    } else if (score == 0) {
+        int unreads = MAX(1, [[newFeed objectForKey:@"nt"] intValue] + 1);
+        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"nt"];
+    } else if (score < 0) {
+        int unreads = MAX(1, [[newFeed objectForKey:@"ng"] intValue] + 1);
+        [newFeed setValue:[NSNumber numberWithInt:unreads] forKey:@"ng"];
+    }
+    
+    if (self.isSocialView || self.isSocialRiverView) {
+        [self.dictSocialFeeds setValue:newFeed forKey:feedIdStr];
+    } else {
+        [self.dictFeeds setValue:newFeed forKey:feedIdStr];
+    }
+    
+    self.activeFeed = newFeed;
+}
+
+- (void)markActiveFeedAllRead {
     id feedId = [self.activeFeed objectForKey:@"id"];
     [self markFeedAllRead:feedId];
 }

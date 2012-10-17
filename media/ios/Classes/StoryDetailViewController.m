@@ -1304,6 +1304,30 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)markStoryAsUnread {
+    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] == 1) {
+        NSLog(@"Read status: %@", [appDelegate.activeStory objectForKey:@"read_status"]);
+    
+        [appDelegate markActiveStoryUnread];
+        
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_unread",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        
+        [request setPostValue:[appDelegate.activeStory
+                               objectForKey:@"id"]
+                       forKey:@"story_id"];
+        [request setPostValue:[appDelegate.activeStory
+                               objectForKey:@"story_feed_id"]
+                       forKey:@"feed_id"];
+        
+        [request setDidFinishSelector:@selector(finishMarkAsRead:)];
+        [request setDidFailSelector:@selector(finishedWithError:)];
+        [request setDelegate:self];
+        [request startAsynchronous];
+        
+        [appDelegate.feedDetailViewController redrawUnreadStory];
+    }
     
 }
 

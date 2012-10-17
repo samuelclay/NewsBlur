@@ -623,7 +623,7 @@
     
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
-
+    
     cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -650,9 +650,17 @@
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(int)row {
     cell.isRead = YES;
     [cell setNeedsLayout];
-    [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:row]];
+    appDelegate.activeStory = [[appDelegate activeFeedStories] objectAtIndex:row];
     [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
     [appDelegate loadStoryDetailView];
+}
+
+- (void)redrawUnreadStory {
+    int rowIndex = [appDelegate locationOfActiveStory];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
+    FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
+    cell.isRead = NO;
+    [cell setNeedsDisplay];
 }
 
 - (void)changeActiveStoryTitleCellLayout {

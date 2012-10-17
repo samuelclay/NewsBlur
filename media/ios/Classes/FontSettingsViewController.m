@@ -10,6 +10,7 @@
 #import "NewsBlurAppDelegate.h"
 #import "StoryDetailViewController.h"
 #import "MenuTableViewCell.h"
+#import "NBContainerViewController.h"
 
 @implementation FontSettingsViewController
 
@@ -187,7 +188,7 @@
     
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        [appDelegate.masterContainerViewController hidePopover];
+        [appDelegate.masterContainerViewController hidePopover];
     } else {
         [appDelegate.storyDetailViewController.popoverController dismissPopoverAnimated:YES];
         appDelegate.storyDetailViewController.popoverController = nil;

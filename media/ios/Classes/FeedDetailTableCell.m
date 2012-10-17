@@ -69,7 +69,7 @@ static UIFont *indicatorFont = nil;
     // set site title
     UIColor *textColor;
     UIFont *font;
-    
+
     if (self.isRead) {
         font = [UIFont fontWithName:@"Helvetica" size:11];
         textColor = UIColorFromRGB(0xc0c0c0);

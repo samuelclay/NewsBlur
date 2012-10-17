@@ -249,9 +249,12 @@
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
 - (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
+- (void)markActiveStoryUnread;
 - (NSDictionary *)markVisibleStoriesRead;
 - (void)markStoryRead:(NSString *)storyId feedId:(id)feedId;
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
+- (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
+- (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
 - (void)markActiveFeedAllRead;
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;
