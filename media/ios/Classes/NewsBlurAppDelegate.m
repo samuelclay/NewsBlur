@@ -1195,6 +1195,12 @@
         }
     }
     self.activeFeedStories = newActiveFeedStories;
+    
+    if (saved) {
+        self.savedStoriesCount += 1;
+    } else {
+        self.savedStoriesCount -= 1;
+    }
 }
 
 - (void)markActiveFeedAllRead {
