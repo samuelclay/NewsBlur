@@ -16,12 +16,13 @@ static UIColor *indicatorBlackColor = nil;
 static UIColor *positiveBackgroundColor = nil;
 static UIColor *neutralBackgroundColor = nil;
 static UIColor *negativeBackgroundColor = nil;
+static UIColor *blueBackgroundColor = nil;
 
 @implementation UnreadCountView
 
 @synthesize appDelegate;
 @synthesize psWidth, psPadding, ntWidth, ntPadding;
-@synthesize psCount, ntCount;
+@synthesize psCount, ntCount, blueCount;
 @synthesize rect;
 
 + (void) initialize {
@@ -33,9 +34,11 @@ static UIColor *negativeBackgroundColor = nil;
         UIColor *ps = UIColorFromRGB(0x3B7613);
         UIColor *nt = UIColorFromRGB(0xF9C72A);
         UIColor *ng = UIColorFromRGB(0xCC2A2E);
+        UIColor *blue = UIColorFromRGB(0x11448B);
         positiveBackgroundColor = ps;
         neutralBackgroundColor = nt;
         negativeBackgroundColor = ng;
+        blueBackgroundColor = blue;
         //        UIColor *psGrad = UIColorFromRGB(0x559F4D);
         //        UIColor *ntGrad = UIColorFromRGB(0xE4AB00);
         //        UIColor *ngGrad = UIColorFromRGB(0x9B181B);
@@ -66,8 +69,12 @@ static UIColor *negativeBackgroundColor = nil;
     int psOffset = ps == 0 ? 0 : psWidth - 20;
     int ntOffset = nt == 0 ? 0 : ntWidth - 20;
     
-    if (ps > 0) {
-        [positiveBackgroundColor set];
+    if (ps > 0 || blueCount) {
+        if (blueCount) {
+            [blueBackgroundColor set];
+        } else {
+            [positiveBackgroundColor set];
+        }
         CGRect rr;
         
         if (listType == NBFeedListSocial) {

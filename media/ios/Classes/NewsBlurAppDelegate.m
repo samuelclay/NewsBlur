@@ -97,6 +97,7 @@
 @synthesize activeStory;
 @synthesize storyCount;
 @synthesize visibleUnreadCount;
+@synthesize savedStoriesCount;
 @synthesize originalStoryCount;
 @synthesize selectedIntelligence;
 @synthesize activeOriginalStoryURL;
@@ -150,6 +151,7 @@
 
 - (void)viewDidLoad {
     self.visibleUnreadCount = 0;
+    self.savedStoriesCount = 0;
     [self setRecentlyReadStories:[NSMutableArray array]];
 }
 
@@ -552,6 +554,8 @@
             feedTitle = @"All Shared Stories";
         } else if ([self.activeFolder isEqualToString:@"everything"]) {
             feedTitle = @"All Stories";
+        } else if ([self.activeFolder isEqualToString:@"saved_stories"]) {
+            feedTitle = @"Saved Stories";
         } else {
             feedTitle = self.activeFolder;
         }
@@ -825,7 +829,6 @@
     NSArray *folder;
     
     if ([[self.folderCountCache objectForKey:folderName] boolValue]) {
-        NSLog(@"In folder count cache: %@", folderName);
         counts.ps = [[self.folderCountCache objectForKey:[NSString stringWithFormat:@"%@-ps", folderName]] intValue];
         counts.nt = [[self.folderCountCache objectForKey:[NSString stringWithFormat:@"%@-nt", folderName]] intValue];
         counts.ng = [[self.folderCountCache objectForKey:[NSString stringWithFormat:@"%@-ng", folderName]] intValue];
@@ -857,7 +860,6 @@
     if (!self.folderCountCache) {
         self.folderCountCache = [[NSMutableDictionary alloc] init];
     }
-    NSLog(@"Saving to folder cache: %@", folderName);
     [self.folderCountCache setObject:[NSNumber numberWithBool:YES] forKey:folderName];
     [self.folderCountCache setObject:[NSNumber numberWithInt:counts.ps] forKey:[NSString stringWithFormat:@"%@-ps", folderName]];
     [self.folderCountCache setObject:[NSNumber numberWithInt:counts.nt] forKey:[NSString stringWithFormat:@"%@-nt", folderName]];
@@ -1174,6 +1176,27 @@
     self.activeFeed = newFeed;
 }
 
+- (void)markActiveStorySaved:(BOOL)saved {
+    NSLog(@"Save story: %@ --- %d", self.activeStory, saved);
+    NSMutableDictionary *newStory = [self.activeStory mutableCopy];
+    [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
+    
+    self.activeStory = newStory;
+    
+    // make the story as read in self.activeFeedStories
+    NSString *newStoryIdStr = [NSString stringWithFormat:@"%@", [newStory valueForKey:@"id"]];
+    NSMutableArray *newActiveFeedStories = [self.activeFeedStories mutableCopy];
+    for (int i = 0; i < [newActiveFeedStories count]; i++) {
+        NSMutableArray *thisStory = [[newActiveFeedStories objectAtIndex:i] mutableCopy];
+        NSString *thisStoryIdStr = [NSString stringWithFormat:@"%@", [thisStory valueForKey:@"id"]];
+        if ([newStoryIdStr isEqualToString:thisStoryIdStr]) {
+            [newActiveFeedStories replaceObjectAtIndex:i withObject:newStory];
+            break;
+        }
+    }
+    self.activeFeedStories = newActiveFeedStories;
+}
+
 - (void)markActiveFeedAllRead {
     id feedId = [self.activeFeed objectForKey:@"id"];
     [self markFeedAllRead:feedId];
@@ -1377,6 +1400,8 @@
         titleLabel.text = [NSString stringWithFormat:@"     All Shared Stories"];
     } else if (self.isRiverView && [self.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Stories"];
+    } else if (self.isRiverView && [self.activeFolder isEqualToString:@"saved_stories"]) {
+        titleLabel.text = [NSString stringWithFormat:@"     Saved Stories"];
     } else if (self.isRiverView) {
         titleLabel.text = [NSString stringWithFormat:@"     %@", self.activeFolder];
     } else if (self.isSocialView) {
@@ -1401,6 +1426,10 @@
         UIImage *titleImage;
         if (self.isSocialRiverView) {
             titleImage = [UIImage imageNamed:@"group_white.png"];
+        } else if (self.isRiverView && [self.activeFolder isEqualToString:@"everything"]) {
+            titleImage = [UIImage imageNamed:@"archive_white.png"];
+        } else if (self.isRiverView && [self.activeFolder isEqualToString:@"saved_stories"]) {
+            titleImage = [UIImage imageNamed:@"clock_white.png"];
         } else if (self.isRiverView) {
             titleImage = [UIImage imageNamed:@"folder_white.png"];
         } else {

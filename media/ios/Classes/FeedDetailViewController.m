@@ -128,7 +128,8 @@
     if ((appDelegate.isSocialRiverView ||
          appDelegate.isSocialView ||
          (appDelegate.isRiverView &&
-          [appDelegate.activeFolder isEqualToString:@"everything"]))) {
+          [appDelegate.activeFolder isEqualToString:@"everything"]) ||
+         [appDelegate.activeFolder isEqualToString:@"saved_stories"])) {
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
@@ -136,7 +137,8 @@
     
     if (appDelegate.isSocialRiverView || 
         (appDelegate.isRiverView &&
-         [appDelegate.activeFolder isEqualToString:@"everything"])) {
+         [appDelegate.activeFolder isEqualToString:@"everything"]) ||
+        [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
         feedMarkReadButton.enabled = NO;
     } else {
         feedMarkReadButton.enabled = YES;
@@ -275,6 +277,11 @@
         if (appDelegate.isSocialRiverView) {
             theFeedDetailURL = [NSString stringWithFormat:
                                 @"http://%@/social/river_stories/?page=%d&order=newest", 
+                                NEWSBLUR_URL,
+                                self.feedPage];
+        } else if (appDelegate.activeFolder == @"saved_stories") {
+            theFeedDetailURL = [NSString stringWithFormat:
+                                @"http://%@/reader/starred_stories/?page=%d",
                                 NEWSBLUR_URL,
                                 self.feedPage];
         } else {
@@ -892,8 +899,8 @@
     NSArray *buttonTitles = nil;
     BOOL showVisible = YES;
     BOOL showEntire = YES;
-    if ([appDelegate.activeFolder isEqualToString:@"Everything"]) showEntire = NO;
-    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;  
+    if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
+    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
     NSString *entireText = [NSString stringWithFormat:@"Mark %@ read", 
                             appDelegate.isRiverView ? 
                             @"entire folder" : 

@@ -622,7 +622,7 @@ def load_starred_stories(request):
         story['read_status']       = 1
         story['starred']           = True
         story['intelligence']      = {
-            'feed':   0,
+            'feed':   1,
             'author': 0,
             'tags':   0,
             'title':  0,

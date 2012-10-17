@@ -102,6 +102,7 @@
     int originalStoryCount;
     NSInteger selectedIntelligence;
     int visibleUnreadCount;
+    int savedStoriesCount;
     NSMutableArray * recentlyReadStories;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
@@ -178,6 +179,7 @@
 @property (readwrite) int storyCount;
 @property (readwrite) int originalStoryCount;
 @property (readwrite) int visibleUnreadCount;
+@property (readwrite) int savedStoriesCount;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableArray * recentlyReadStories;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
@@ -255,6 +257,7 @@
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
 - (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
 - (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
+- (void)markActiveStorySaved:(BOOL)saved;
 - (void)markActiveFeedAllRead;
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;

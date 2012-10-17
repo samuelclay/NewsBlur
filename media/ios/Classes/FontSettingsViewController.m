@@ -147,17 +147,27 @@
     }
         
     if (indexPath.row == 0) {
-        cell.textLabel.text = [@"Save this story" uppercaseString];
+        bool isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
+        if (isSaved) {
+            cell.textLabel.text = [@"Unsave this story" uppercaseString];
+        } else {
+            cell.textLabel.text = [@"Save this story" uppercaseString];
+        }
         cell.imageView.image = [UIImage imageNamed:@"time"];
     } else if (indexPath.row == 1) {
-        cell.textLabel.text = [@"Mark as unread" uppercaseString];
+        bool isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
+        if (isRead) {
+            cell.textLabel.text = [@"Mark as unread" uppercaseString];
+        } else {
+            cell.textLabel.text = [@"Mark as read" uppercaseString];
+        }
         cell.imageView.image = [UIImage imageNamed:@"bullet_orange"];
     } else if (indexPath.row == 2) {
-        cell.textLabel.text = [@"Share this story" uppercaseString];
-        cell.imageView.image = [UIImage imageNamed:@"rainbow"];
-    } else if (indexPath.row == 3) {
         cell.textLabel.text = [@"Send to..." uppercaseString];
         cell.imageView.image = [UIImage imageNamed:@"email"];
+    } else if (indexPath.row == 3) {
+        cell.textLabel.text = [@"Share this story" uppercaseString];
+        cell.imageView.image = [UIImage imageNamed:@"rainbow"];
     }
 
     return cell;
@@ -177,13 +187,23 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0) {
-        [appDelegate.storyDetailViewController markStoryAsSaved];
+        bool isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
+        if (isSaved) {
+            [appDelegate.storyDetailViewController markStoryAsUnsaved];
+        } else {
+            [appDelegate.storyDetailViewController markStoryAsSaved];
+        }
     } else if (indexPath.row == 1) {
-        [appDelegate.storyDetailViewController markStoryAsUnread];
+        bool isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
+        if (isRead) {
+            [appDelegate.storyDetailViewController markStoryAsUnread];
+        } else {
+            [appDelegate.storyDetailViewController markStoryAsRead];
+        }
     } else if (indexPath.row == 2) {
-        [appDelegate.storyDetailViewController openShareDialog];
-    } else if (indexPath.row == 3) {
         [appDelegate.storyDetailViewController openSendToDialog];
+    } else if (indexPath.row == 3) {
+        [appDelegate.storyDetailViewController openShareDialog];
     }
     
     
