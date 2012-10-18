@@ -1807,7 +1807,7 @@ class MSocialServices(mongo.Document):
                 'syncing': self.syncing_facebook,
             },
             'gravatar': {
-                'gravatar_picture_url': "http://www.gravatar.com/avatar/" + \
+                'gravatar_picture_url': "https://www.gravatar.com/avatar/" + \
                                         hashlib.md5(user.email).hexdigest()
             },
             'upload': {
@@ -2006,7 +2006,7 @@ class MSocialServices(mongo.Document):
             profile.photo_url = self.upload_picture_url
         elif service == 'gravatar':
             user = User.objects.get(pk=self.user_id)
-            profile.photo_url = "http://www.gravatar.com/avatar/" + \
+            profile.photo_url = "https://www.gravatar.com/avatar/" + \
                                 hashlib.md5(user.email).hexdigest()
         profile.save()
         return profile
