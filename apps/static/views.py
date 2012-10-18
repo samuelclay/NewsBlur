@@ -45,6 +45,10 @@ def ios(request):
     return render_to_response('static/ios.xhtml', {},
                               context_instance=RequestContext(request))
     
+def android(request):
+    return render_to_response('static/android.xhtml', {},
+                              context_instance=RequestContext(request))
+    
 def ios_download(request):
     return render_to_response('static/ios_download.xhtml', {},
                               context_instance=RequestContext(request))
