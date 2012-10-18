@@ -1177,7 +1177,6 @@
 }
 
 - (void)markActiveStorySaved:(BOOL)saved {
-    NSLog(@"Save story: %@ --- %d", self.activeStory, saved);
     NSMutableDictionary *newStory = [self.activeStory mutableCopy];
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
     

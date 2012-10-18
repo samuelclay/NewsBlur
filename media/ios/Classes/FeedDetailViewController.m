@@ -212,10 +212,14 @@
 #pragma mark Regular and Social Feeds
 
 - (void)fetchNextPage:(void(^)())callback {
-    [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
+    if (appDelegate.isRiverView) {
+        [self fetchRiverPage:self.feedPage+1 withCallback:callback];
+    } else {
+        [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
+    }
 }
 
-- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback { 
+- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     NSString *theFeedDetailURL;
     
     if (!self.pageFetching && !self.pageFinished) {
@@ -437,7 +441,7 @@
         [self.storyTitlesTable reloadData];
         
     } else if (newStoriesCount == 0 || 
-               (self.feedPage > 15 && 
+               (self.feedPage > 25 &&
                 existingStoriesCount >= [appDelegate unreadCount])) {
         self.pageFinished = YES;
         [self.storyTitlesTable reloadData];
@@ -666,7 +670,7 @@
     int rowIndex = [appDelegate locationOfActiveStory];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
     FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
-    cell.isRead = NO;
+    cell.isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
     [cell setNeedsDisplay];
 }
 
