@@ -357,7 +357,7 @@ def setup_repo():
     with settings(warn_only=True):
         run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
     sudo('mkdir -p /srv')
-    sudo('ln -s /home/ubuntu/newsblur /srv/newsblur')
+    sudo('ln -f -s /home/%s/newsblur /srv/newsblur' % env.user)
 
 def setup_repo_local_settings():
     with cd(env.NEWSBLUR_PATH):

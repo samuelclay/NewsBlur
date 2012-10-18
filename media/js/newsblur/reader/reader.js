@@ -2109,6 +2109,9 @@
         },    
             
         open_friends_modal: function() {
+            NEWSBLUR.assets.preference('has_found_friends', true);
+            NEWSBLUR.reader.check_hide_getting_started();
+
             NEWSBLUR.reader_friends = new NEWSBLUR.ReaderFriends();
         },
         
@@ -2510,11 +2513,11 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-profile-editor' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Profile')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Profile &amp; Blurblog')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-friends' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Friends')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Friends &amp; Followers')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-preferences' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

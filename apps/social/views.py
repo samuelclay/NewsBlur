@@ -6,10 +6,12 @@ from bson.objectid import ObjectId
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.conf import settings
 from django.template import RequestContext
+from django.utils import feedgenerator
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
 from apps.social.models import MInteraction, MActivity
@@ -21,7 +23,6 @@ from apps.reader.models import MUserStory, UserSubscription
 from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
-from utils import PyRSS2Gen as RSS
 from utils.user_functions import get_user, ajax_login_required
 from utils.view_functions import render_to
 from utils.story_functions import format_story_link_date__short
@@ -1017,37 +1018,55 @@ def shared_stories_rss_feed(request, user_id, username):
     
     username = username and username.lower()
     profile = MSocialProfile.get_user(user.pk)
+    params = {'username': profile.username_slug, 'user_id': user.pk}
     if not username or profile.username_slug.lower() != username:
-        params = {'username': profile.username_slug, 'user_id': user.pk}
         return HttpResponseRedirect(reverse('shared-stories-rss-feed', kwargs=params))
 
     social_profile = MSocialProfile.get_user(user_id)
-
+    current_site = Site.objects.get_current()
+    current_site = current_site and current_site.domain
+    
     data = {}
     data['title'] = social_profile.title
     data['link'] = social_profile.blurblog_url
     data['description'] = "Stories shared by %s on NewsBlur." % user.username
     data['lastBuildDate'] = datetime.datetime.utcnow()
-    data['items'] = []
-    data['generator'] = 'NewsBlur'
+    data['generator'] = 'NewsBlur - http://www.newsblur.com'
     data['docs'] = None
+    data['author_name'] = user.username
+    data['feed_url'] = "http://%s%s" % (
+        current_site,
+        reverse('shared-stories-rss-feed', kwargs=params),
+    )
+    rss = feedgenerator.Atom1Feed(**data)
 
     shared_stories = MSharedStory.objects.filter(user_id=user.pk).order_by('-shared_date')[:25]
     for shared_story in shared_stories:
+        feed = Feed.get_by_id(shared_story.story_feed_id)
+        content = render_to_string('social/rss_story.xhtml', {
+            'feed': feed,
+            'user': user,
+            'social_profile': social_profile,
+            'shared_story': shared_story,
+            'content': (shared_story.story_content_z and
+                        zlib.decompress(shared_story.story_content_z))
+        })
         story_data = {
             'title': shared_story.story_title,
             'link': shared_story.story_permalink,
-            'description': shared_story.story_content_z and zlib.decompress(shared_story.story_content_z),
-            'author': shared_story.story_author_name,
+            'description': content,
+            'author_name': shared_story.story_author_name,
             'categories': shared_story.story_tags,
-            'guid': shared_story.story_guid,
-            'pubDate': shared_story.shared_date,
+            'unique_id': shared_story.story_guid,
+            'pubdate': shared_story.shared_date,
         }
-        data['items'].append(RSS.RSSItem(**story_data))
+        rss.add_item(**story_data)
         
-    rss = RSS.RSS2(**data)
-    
-    return HttpResponse(rss.to_xml())
+    logging.user(request, "~FBGenerating ~SB%s~SN's RSS feed: ~FM%s" % (
+        user.username,
+        request.META['HTTP_USER_AGENT'][:100]
+    ))
+    return HttpResponse(rss.writeString('utf-8'))
 
 @json.json_view
 def social_feed_trainer(request):
