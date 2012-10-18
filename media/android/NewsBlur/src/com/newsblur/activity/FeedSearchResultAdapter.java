@@ -50,10 +50,17 @@ public class FeedSearchResultAdapter extends ArrayAdapter<FeedResult>{
 			bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.world);
 		}
 		
-		favicon.setImageBitmap(UIUtils.roundCorners(bitmap, 5));
+		favicon.setImageBitmap(bitmap);
 		
 		((TextView) v.findViewById(R.id.row_result_title)).setText(result.label);
 		((TextView) v.findViewById(R.id.row_result_tagline)).setText(result.tagline);
+		if (!TextUtils.isEmpty(result.url)) {
+			((TextView) v.findViewById(R.id.row_result_address)).setText(result.url);
+		} else {
+			v.findViewById(R.id.row_result_address).setVisibility(View.GONE);
+		}
+		((TextView) v.findViewById(R.id.row_result_subscribercount)).setText(result.numberOfSubscriber + " subscribers");
+		
 		
 		return v;
 	}

@@ -1,13 +1,13 @@
 from fabric.api import cd, env, local, parallel, serial
 from fabric.api import put, run, settings, sudo
 # from fabric.colors import red, green, blue, cyan, magenta, white, yellow
-try:
-    from boto.s3.connection import S3Connection
-    from boto.s3.key import Key
-except ImportError:
-    print " ---> Boto not installed yet. No S3 connections available."
+from boto.s3.connection import S3Connection
+from boto.s3.key import Key
+from boto.ec2.connection import EC2Connection
 from fabric.contrib import django
 import os
+import time
+import sys
 
 django.settings_module('settings')
 try:
@@ -245,6 +245,7 @@ def sync_time():
 def setup_time_calibration():
     sudo('apt-get -y install ntp')
     put('config/ntpdate.cron', '%s/' % env.NEWSBLUR_PATH)
+    sudo('chown root.root %s/ntpdate.cron' % env.NEWSBLUR_PATH)
     sudo('chmod 755 %s/ntpdate.cron' % env.NEWSBLUR_PATH)
     sudo('mv %s/ntpdate.cron /etc/cron.hourly/ntpdate' % env.NEWSBLUR_PATH)
     with settings(warn_only=True):
@@ -355,6 +356,8 @@ def add_machine_to_ssh():
 def setup_repo():
     with settings(warn_only=True):
         run('git clone https://github.com/samuelclay/NewsBlur.git newsblur')
+    sudo('mkdir -p /srv')
+    sudo('ln -s /home/ubuntu/newsblur /srv/newsblur')
 
 def setup_repo_local_settings():
     with cd(env.NEWSBLUR_PATH):
@@ -605,10 +608,26 @@ def setup_db_firewall():
     sudo('ufw delete allow from 23.22.0.0/16 to any port 27017') # MongoDB
     sudo('ufw delete allow from 23.22.0.0/16 to any port 6379 ') # Redis
     sudo('ufw delete allow from 23.22.0.0/16 to any port 11211 ') # Memcached
-    sudo('ufw allow from 23.20.0.0/16 to any port 5432 ') # PostgreSQL
-    sudo('ufw allow from 23.20.0.0/16 to any port 27017') # MongoDB
-    sudo('ufw allow from 23.20.0.0/16 to any port 6379 ') # Redis
-    sudo('ufw allow from 23.20.0.0/16 to any port 11211 ') # Memcached
+    sudo('ufw delete allow from 54.242.38.48/20 to any port 5432 ') # PostgreSQL
+    sudo('ufw delete allow from 54.242.38.48/20 to any port 27017') # MongoDB
+    sudo('ufw delete allow from 54.242.38.48/20 to any port 6379 ') # Redis
+    sudo('ufw delete allow from 54.242.38.48/20 to any port 11211 ') # Memcached
+    sudo('ufw delete allow from 184.73.115.5/20 to any port 5432 ') # PostgreSQL
+    sudo('ufw delete allow from 184.73.115.5/20 to any port 27017') # MongoDB
+    sudo('ufw delete allow from 184.73.115.5/20 to any port 6379 ') # Redis
+    sudo('ufw delete allow from 184.73.115.5/20 to any port 11211 ') # Memcached
+    sudo('ufw allow from 54.242.38.48 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 54.242.38.48 to any port 27017') # MongoDB
+    sudo('ufw allow from 54.242.38.48 to any port 6379 ') # Redis
+    sudo('ufw allow from 54.242.38.48 to any port 11211 ') # Memcached
+    sudo('ufw allow from 184.73.115.5 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 184.73.115.5 to any port 27017') # MongoDB
+    sudo('ufw allow from 184.73.115.5 to any port 6379 ') # Redis
+    sudo('ufw allow from 184.73.115.5 to any port 11211 ') # Memcached
+    sudo('ufw allow from 54.242.137.224 to any port 5432 ') # PostgreSQL
+    sudo('ufw allow from 54.242.137.224 to any port 27017') # MongoDB
+    sudo('ufw allow from 54.242.137.224 to any port 6379 ') # Redis
+    sudo('ufw allow from 54.242.137.224 to any port 11211 ') # Memcached
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -730,7 +749,40 @@ def copy_task_settings():
         put('config/settings/task_settings.py', '%s/local_settings.py' % env.NEWSBLUR_PATH)
         run('echo "\nSERVER_NAME = \\\\"`hostname`\\\\"" >> %s/local_settings.py' % env.NEWSBLUR_PATH)
 
+# ===============
+# = Setup - EC2 =
+# ===============
 
+def setup_ec2_task():
+    AMI_NAME = 'ami-834cf1ea' # Ubuntu 64-bit 12.04 LTS
+    # INSTANCE_TYPE = 'c1.medium'
+    INSTANCE_TYPE = 'm1.medium'
+    conn = EC2Connection(django_settings.AWS_ACCESS_KEY_ID, django_settings.AWS_SECRET_ACCESS_KEY)
+    reservation = conn.run_instances(AMI_NAME, instance_type=INSTANCE_TYPE,
+                                     key_name='sclay',
+                                     security_groups=['db-mongo'])
+    instance = reservation.instances[0]
+    print "Booting reservation: %s/%s (size: %s)" % (reservation, instance, INSTANCE_TYPE)
+    while True:
+        if instance.state == 'pending':
+            print ".",
+            sys.stdout.flush()
+            instance.update()
+            time.sleep(1)
+        elif instance.state == 'running':
+            print "...booted: %s" % instance.public_dns_name
+            time.sleep(5)
+            break
+        else:
+            print "!!! Error: %s" % instance.state
+            return
+    
+    host = instance.public_dns_name
+    env.host_string = host
+    
+    setup_task()
+    
+    
 # ==============
 # = Tasks - DB =
 # ==============

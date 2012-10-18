@@ -3,11 +3,13 @@ package com.newsblur.fragment;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -38,8 +40,10 @@ public class AddSitesListFragment extends Fragment {
 	private APIManager apiManager;
 	private View parentView;
 	private boolean readerImported = false;
-	
+
 	HashSet<String> categoriesToAdd = new HashSet<String>();
+	private int darkGray;
+	private int midGray;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +51,7 @@ public class AddSitesListFragment extends Fragment {
 		setRetainInstance(true);
 		apiManager = new APIManager(getActivity());
 	}
-	
+
 	public ArrayList<String> getSelectedCategories() {
 		ArrayList<String> categoriesArrayList = new ArrayList<String>();
 		categoriesArrayList.addAll(categoriesToAdd);
@@ -58,6 +62,9 @@ public class AddSitesListFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		parentView = inflater.inflate(R.layout.fragment_addsites, null);
 
+		darkGray = getResources().getColor(R.color.darkgray);
+		midGray = getResources().getColor(R.color.midgray);
+		
 		importReaderButton = (Button) parentView.findViewById(R.id.login_add_reader_button);
 		importReaderButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -88,7 +95,7 @@ public class AddSitesListFragment extends Fragment {
 			importReaderButton.setEnabled(false);
 			importReaderButton.setText("Feeds imported!");
 		}
-		
+
 		return parentView;
 	}
 
@@ -102,30 +109,37 @@ public class AddSitesListFragment extends Fragment {
 			LinearLayout categoryView = (LinearLayout) inflater.inflate(R.layout.include_category, null);
 			TextView categoryTitle = (TextView) categoryView.findViewById(R.id.category_title);
 
-			CheckBox categoryCheckbox = (CheckBox) categoryView.findViewById(R.id.category_checkbox);
-			categoryCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			final CheckBox categoryCheckbox = (CheckBox) categoryView.findViewById(R.id.category_checkbox);
+
+			View container = categoryView.findViewById(R.id.category_container);
+			container.setOnClickListener(new OnClickListener() {
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if (isChecked) {
-						categoriesToAdd.add(category.title);
-					} else {
-						categoriesToAdd.remove(category.title);
-					
-					}
+				public void onClick(View arg0) {
+					categoryCheckbox.toggle();
 				}
 			});
-			
+
 			categoryCheckbox.setChecked(categoriesToAdd.contains(category.title));
-			
+
 			categoryTitle.setText(category.title);
+
+			final ArrayList<TextView> feedTitleViews = new ArrayList<TextView>();
+			final ArrayList<View> feedBorderViews = new ArrayList<View>();
+			final ArrayList<ImageView> feedIconViews = new ArrayList<ImageView>();
+
 			for (String feedId : category.feedIds) {
 				Feed feed = response.feeds.get(feedId);
 				View feedView = inflater.inflate(R.layout.merge_category_feed, null);
 				TextView feedTitle = (TextView) feedView.findViewById(R.id.login_category_feed_title);
 				feedTitle.setText(feed.title);
 
+				feedTitleViews.add(feedTitle);
+
 				View borderOne = feedView.findViewById(R.id.login_category_feed_leftbar);
 				View borderTwo = feedView.findViewById(R.id.login_category_feed_rightbar);
+
+				feedBorderViews.add(borderTwo);
+				feedBorderViews.add(borderOne);
 
 				if (!TextUtils.isEmpty(feed.faviconColour) && !TextUtils.equals(feed.faviconColour, "null")) {
 					borderOne.setBackgroundColor(Color.parseColor("#".concat(feed.faviconColour)));
@@ -142,12 +156,60 @@ public class AddSitesListFragment extends Fragment {
 				} else {
 					bitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.world);
 				}
-				((ImageView) feedView.findViewById(R.id.login_category_feed_icon)).setImageBitmap(bitmap);
+				ImageView feedIcon = (ImageView) feedView.findViewById(R.id.login_category_feed_icon);
+				feedIcon.setImageBitmap(bitmap);
+				feedIconViews.add(feedIcon);
 
 				categoryView.addView(feedView);
 			}
 
+
+			categoryCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if (isChecked) {
+						displayFull(feedBorderViews, feedIconViews, feedTitleViews);
+						categoriesToAdd.add(category.title);
+					} else {
+						displayHalf(feedBorderViews, feedIconViews, feedTitleViews);
+						categoriesToAdd.remove(category.title);
+					}
+				}
+			});
+			
+			displayHalf(feedBorderViews, feedIconViews, feedTitleViews);
 			categoryContainer.addView(categoryView);
+		}
+	}
+	
+
+	@TargetApi(11)
+	private void displayHalf(final ArrayList<View> feedBorderViews, final ArrayList<ImageView> feedIconViews, final ArrayList<TextView> feedTitleViews) {
+		for (TextView feedTitle : feedTitleViews) {
+			feedTitle.setTextColor(midGray);
+		}
+		
+		for (ImageView feedImage : feedIconViews) {
+			feedImage.setAlpha(125);
+		}
+		
+		for (View feedBorder : feedBorderViews) {
+			feedBorder.setAlpha(125);
+		}
+	}
+
+	@TargetApi(11)
+	private void displayFull(final ArrayList<View> feedBorderViews, final ArrayList<ImageView> feedIconViews, final ArrayList<TextView> feedTitleViews) {
+		for (TextView feedTitle : feedTitleViews) {
+			feedTitle.setTextColor(darkGray);
+		}
+		
+		for (ImageView feedImage : feedIconViews) {
+			feedImage.setAlpha(255);
+		}
+		
+		for (View feedBorder : feedBorderViews) {
+			feedBorder.setAlpha(255);
 		}
 	}
 

@@ -31,7 +31,7 @@ public class AllSharedStoriesReading extends Reading {
 
 		setupCountCursor();
 
-		stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+		stories = contentResolver.query(FeedProvider.ALL_SHARED_STORIES_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
 		setTitle(getResources().getString(R.string.all_shared_stories));
 		storiesToMarkAsRead = new ValueMultimap();
 		readingAdapter = new MixedFeedsReadingAdapter(getSupportFragmentManager(), getContentResolver(), stories);
@@ -43,7 +43,7 @@ public class AllSharedStoriesReading extends Reading {
 	}
 
 	private void setupCountCursor() {
-		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, null);
+		Cursor cursor = getContentResolver().query(FeedProvider.FEEDS_URI, null, FeedProvider.getStorySelectionFromState(currentState), null, DatabaseConstants.STORY_DATE + " desc");
 		startManagingCursor(cursor);
 		feedIds = new ArrayList<String>();
 		while (cursor.moveToNext()) {
@@ -112,5 +112,8 @@ public class AllSharedStoriesReading extends Reading {
 	public void setNothingMoreToUpdate() {
 		stopLoading = true;
 	}
+
+	@Override
+	public void closeAfterUpdate() { }
 
 }

@@ -58,7 +58,7 @@ static UIFont *indicatorFont = nil;
 
     // set the background color
     UIColor *backgroundColor;
-    if (self.selected || self.highlighted) {
+    if (highlighted) {
         backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
     } else {
         backgroundColor = UIColorFromRGB(0xf4f4f4);
@@ -69,7 +69,7 @@ static UIFont *indicatorFont = nil;
     // set site title
     UIColor *textColor;
     UIFont *font;
-    
+
     if (self.isRead) {
         font = [UIFont fontWithName:@"Helvetica" size:11];
         textColor = UIColorFromRGB(0xc0c0c0);
@@ -78,7 +78,7 @@ static UIFont *indicatorFont = nil;
         textColor = UIColorFromRGB(0x606060);
         
     }
-    if (self.selected || self.highlighted) {
+    if (highlighted) {
         textColor = UIColorFromRGB(0x686868); //0x686868 
     }
     [textColor set];
@@ -98,7 +98,7 @@ static UIFont *indicatorFont = nil;
             textColor = UIColorFromRGB(0x333333);
             font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
         }
-        if (self.selected || self.highlighted) {
+        if (highlighted) {
             textColor = UIColorFromRGB(0x686868);
         }
         [textColor set];
@@ -133,7 +133,7 @@ static UIFont *indicatorFont = nil;
         textColor = UIColorFromRGB(0x959595);
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
-    if (self.selected || self.highlighted) {
+    if (highlighted) {
         textColor = UIColorFromRGB(0x686868);
     }
     [textColor set];
@@ -153,7 +153,7 @@ static UIFont *indicatorFont = nil;
         font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     }
     
-    if (self.selected || self.highlighted) {
+    if (highlighted) {
         textColor = UIColorFromRGB(0x686868);
     }
     [textColor set];
@@ -186,7 +186,7 @@ static UIFont *indicatorFont = nil;
     
     CGContextSetAlpha(context, 1.0);
     CGContextSetLineWidth(context, 1.0f);
-    if (self.highlighted || self.selected) {
+    if (highlighted) {
         // top border
         UIColor *blue = UIColorFromRGB(0x6eadf5);
         

@@ -3,6 +3,8 @@ package com.newsblur.network;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -11,6 +13,7 @@ import org.apache.http.HttpStatus;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,6 +29,7 @@ import com.newsblur.domain.Classifier;
 import com.newsblur.domain.Comment;
 import com.newsblur.domain.Feed;
 import com.newsblur.domain.FeedResult;
+import com.newsblur.domain.Folder;
 import com.newsblur.domain.Reply;
 import com.newsblur.domain.SocialFeed;
 import com.newsblur.domain.Story;
@@ -203,7 +207,7 @@ public class APIManager {
 				contentResolver.insert(storyUri, story.getValues());
 				insertComments(story);
 			}
-			
+
 			for (UserProfile user : storiesResponse.users) {
 				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
@@ -230,7 +234,6 @@ public class APIManager {
 			if (TextUtils.equals(pageNumber,"1")) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
 				int deleted = contentResolver.delete(storyUri, null, null);
-				Log.d(TAG, "Deleted " + deleted + " stories");
 			}
 
 			for (Story story : storiesResponse.stories) {
@@ -238,11 +241,11 @@ public class APIManager {
 				contentResolver.insert(storyUri, story.getValues());
 				insertComments(story);
 			}
-			
+
 			for (UserProfile user : storiesResponse.users) {
 				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
-			
+
 			return storiesResponse;
 		} else {
 			return null;
@@ -258,21 +261,20 @@ public class APIManager {
 		if (!TextUtils.isEmpty(pageNumber)) {
 			values.put(APIConstants.PARAMETER_PAGE_NUMBER, "" + pageNumber);
 		}
-		
+
 		final APIResponse response = client.get(APIConstants.URL_SHARED_RIVER_STORIES, values);
-		
+
 		SocialFeedResponse storiesResponse = gson.fromJson(response.responseString, SocialFeedResponse.class);
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
 
 			// If we've successfully retrieved the latest stories for all shared feeds (the first page), delete all previous shared feeds
 			if (TextUtils.equals(pageNumber,"1")) {
 				Uri storyUri = FeedProvider.ALL_STORIES_URI;
-				int deleted = contentResolver.delete(storyUri, null, null);
-				Log.d(TAG, "Deleted " + deleted + " stories");
+				contentResolver.delete(storyUri, null, null);
 			}
 
 			for (Story story : storiesResponse.stories) {
-				for (String userId : story.friendUserIds) {
+				for (String userId : story.sharedUserIds) {
 					Uri storySocialUri = FeedProvider.SOCIALFEED_STORIES_URI.buildUpon().appendPath(userId).build();
 					contentResolver.insert(storySocialUri, story.getValues());
 				}
@@ -281,6 +283,10 @@ public class APIManager {
 				contentResolver.insert(storyUri, story.getValues());
 
 				insertComments(story);
+			}
+
+			for (UserProfile user : storiesResponse.userProfiles) {
+				contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
 			}
 
 			if (storiesResponse != null && storiesResponse.feeds!= null) {
@@ -320,7 +326,7 @@ public class APIManager {
 				contentResolver.insert(storyUri, story.getValues());
 				contentResolver.insert(storySocialUri, story.getValues());
 			}
-			
+
 			if (socialFeedResponse.userProfiles != null) {
 				for (UserProfile user : socialFeedResponse.userProfiles) {
 					contentResolver.insert(FeedProvider.USERS_URI, user.getValues());
@@ -413,43 +419,94 @@ public class APIManager {
 		}
 	}
 
-	public void getFolderFeedMapping() {
-		getFolderFeedMapping(false);		
+	public boolean getFolderFeedMapping() {
+		return getFolderFeedMapping(false);		
 	}
+	
+	public boolean checkForFolders() {
+		final APIClient client = new APIClient(context);
+		final APIResponse response = client.get(APIConstants.URL_FEEDS);
+		FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
+		return (feedUpdate.folders.entrySet().size() > 1);
+	}
+	
 
-	public void getFolderFeedMapping(boolean doUpdateCounts) {
+	public boolean getFolderFeedMapping(boolean doUpdateCounts) {
+		
+		
 		final APIClient client = new APIClient(context);
 		final APIResponse response = client.get(doUpdateCounts ? APIConstants.URL_FEEDS : APIConstants.URL_FEEDS_NO_UPDATE);
 		final FeedFolderResponse feedUpdate = gson.fromJson(response.responseString, FeedFolderResponse.class);
-
+		
 		if (response.responseCode == HttpStatus.SC_OK && !response.hasRedirected) {
-			for (final Entry<String, Feed> entry : feedUpdate.feeds.entrySet()) {
-				final Feed feed = entry.getValue();
-				contentResolver.insert(FeedProvider.FEEDS_URI, feed.getValues());
+			if (feedUpdate.folders.size() == 0) {
+				return false;
 			}
-
+			
+			HashMap<String, Feed> existingFeeds = getExistingFeeds();
+			
+			for (String newFeedId : feedUpdate.feeds.keySet()) {
+				if (existingFeeds.get(newFeedId) == null || !feedUpdate.feeds.get(newFeedId).equals(existingFeeds.get(newFeedId))) {
+					contentResolver.insert(FeedProvider.FEEDS_URI, feedUpdate.feeds.get(newFeedId).getValues());
+				}
+			}
+			
+			for (String olderFeedId : existingFeeds.keySet()) {
+				if (feedUpdate.feeds.get(olderFeedId) == null) {
+					Uri feedUri = FeedProvider.FEEDS_URI.buildUpon().appendPath(olderFeedId).build();
+					contentResolver.delete(feedUri, null, null);
+				}
+			}
+			
 			for (final SocialFeed feed : feedUpdate.socialFeeds) {
 				contentResolver.insert(FeedProvider.SOCIAL_FEEDS_URI, feed.getValues());
 			}
-
+			
 			String unsortedFolderName = context.getResources().getString(R.string.unsorted_folder_name);
 
+			Cursor folderCursor = contentResolver.query(FeedProvider.FOLDERS_URI, null, null, null, null);
+			folderCursor.moveToFirst();
+			HashSet<String> existingFolders = new HashSet<String>();
+			while (!folderCursor.isAfterLast()) {
+				existingFolders.add(Folder.fromCursor(folderCursor).getName());
+				folderCursor.moveToNext();
+			}
+			folderCursor.close();
+			
 			for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
 				String folderName = TextUtils.isEmpty(entry.getKey()) ? unsortedFolderName : entry.getKey();
-				final ContentValues folderValues = new ContentValues();
-				folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
-				contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
+
+				if (!existingFolders.contains(folderName)) {
+					final ContentValues folderValues = new ContentValues();
+					folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
+					contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
+				}
 
 				for (Long feedId : entry.getValue()) {
-					ContentValues values = new ContentValues(); 
-					values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
-					values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
-					contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
+					if (!existingFeeds.containsKey(Long.toString(feedId))) {
+						ContentValues values = new ContentValues(); 
+						values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
+						values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
+						contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
+					}
 				}
 			}
 		}
+		return true;
 	}
 
+	private HashMap<String, Feed> getExistingFeeds() {
+		Cursor feedCursor = contentResolver.query(FeedProvider.FEEDS_URI, null, null, null, null);
+		feedCursor.moveToFirst();
+		HashMap<String, Feed> existingFeeds = new HashMap<String, Feed>();
+		while (!feedCursor.isAfterLast()) {
+			existingFeeds.put(Feed.fromCursor(feedCursor).feedId, Feed.fromCursor(feedCursor));
+			feedCursor.moveToNext();
+		}
+		feedCursor.close();
+		return existingFeeds;
+	}
+	
 	public boolean trainClassifier(String feedId, String key, int type, int action) {
 		String typeText = null;
 		String actionText = null;

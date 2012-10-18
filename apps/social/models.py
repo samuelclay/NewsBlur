@@ -291,13 +291,14 @@ class MSocialProfile(mongo.Document):
                 'follower_user_ids': self.follower_user_ids_without_self[:48],
             })
         if common_follows_with_user:
+            FOLLOWERS_LIMIT = 128
             with_user = MSocialProfile.get_user(common_follows_with_user)
             followers_youknow, followers_everybody = with_user.common_follows(self.user_id, direction='followers')
             following_youknow, following_everybody = with_user.common_follows(self.user_id, direction='following')
-            params['followers_youknow'] = followers_youknow[:48]
-            params['followers_everybody'] = followers_everybody[:48]
-            params['following_youknow'] = following_youknow[:48]
-            params['following_everybody'] = following_everybody[:48]
+            params['followers_youknow'] = followers_youknow[:FOLLOWERS_LIMIT]
+            params['followers_everybody'] = followers_everybody[:FOLLOWERS_LIMIT]
+            params['following_youknow'] = following_youknow[:FOLLOWERS_LIMIT]
+            params['following_everybody'] = following_everybody[:FOLLOWERS_LIMIT]
         if include_following_user or common_follows_with_user:
             if not include_following_user:
                 include_following_user = common_follows_with_user

@@ -68,9 +68,9 @@ public class UnLikeCommentTask extends AsyncTask<Void, Void, Boolean>{
 				likingUsers.toArray(newArray);
 				comment.likingUsers = newArray;
 				
-				Toast.makeText(context, "Removed like", Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, "Removed favourite", Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(context, "Error removing like from comment", Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, "Error removing favorite from comment", Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

@@ -55,6 +55,7 @@
         android:layout_below="@id/reply_shareddate"
         android:layout_marginRight="10dp"
         android:layout_marginTop="5dp"
+        android:autoLink="web"
         android:layout_toRightOf="@id/reply_user_image"
         android:textColor="@color/darkgray"
         android:textSize="14dp" />

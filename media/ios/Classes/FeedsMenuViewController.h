@@ -18,6 +18,6 @@
 
 @property (nonatomic, strong) NSArray *menuOptions;
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property ( nonatomic) IBOutlet UITableView *menuTableView;
+@property (nonatomic) IBOutlet UITableView *menuTableView;
 
 @end

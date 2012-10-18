@@ -36,6 +36,7 @@ public class AddFollow extends SherlockFragmentActivity {
 			@Override
 			public void onClick(View v) {
 			Intent i = new Intent(AddFollow.this, Main.class);
+			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(i);
 			}
 		});

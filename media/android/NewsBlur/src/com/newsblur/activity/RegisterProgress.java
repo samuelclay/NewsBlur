@@ -26,7 +26,6 @@ public class RegisterProgress extends SherlockFragmentActivity {
 			final String username = getIntent().getStringExtra("username");
 			final String password = getIntent().getStringExtra("password");
 			final String email = getIntent().getStringExtra("email");
-			Log.d(TAG , "Adding current new fragment");
 			FragmentTransaction transaction = fragmentManager.beginTransaction();
 			RegisterProgressFragment register = RegisterProgressFragment.getInstance(username, password, email);
 			transaction.add(R.id.login_progress_container, register, currentTag);

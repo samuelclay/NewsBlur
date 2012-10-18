@@ -54,7 +54,7 @@ public class ViewUtils {
 		image.setMaxWidth(imageLength);
 		
 		image.setLayoutParams(imageParameters);
-		imageLoader.displayImageByUid(photoUrl, image);
+		imageLoader.displayImage(photoUrl, image, 10f);
 		image.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {

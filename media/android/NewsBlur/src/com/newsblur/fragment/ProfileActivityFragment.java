@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.newsblur.R;
+import com.newsblur.domain.UserDetails;
 import com.newsblur.network.domain.ActivitiesResponse;
 import com.newsblur.view.ActivitiesAdapter;
 
@@ -31,9 +32,9 @@ public class ProfileActivityFragment extends Fragment {
 		return v;
 	}
 	
-	public void setActivities(final ActivitiesResponse[] activities ) {
+	public void setActivitiesAndUser(final ActivitiesResponse[] activities, UserDetails user ) {
 		// Set the activities, create the adapter
-		adapter = new ActivitiesAdapter(getActivity(), activities);
+		adapter = new ActivitiesAdapter(getActivity(), activities, user);
 		displayActivities();
 	}
 	

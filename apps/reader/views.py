@@ -279,7 +279,7 @@ def load_feeds_flat(request):
     
     feeds = {}
     flat_folders = {" ": []}
-    iphone_version = "1.2"
+    iphone_version = "1.5"
     
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
@@ -331,6 +331,7 @@ def load_feeds_flat(request):
     }
     social_feeds = MSocialSubscription.feeds(**social_params)
     social_profile = MSocialProfile.profile(user.pk)
+    starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     categories = None
     if not user_subs:
@@ -348,6 +349,7 @@ def load_feeds_flat(request):
         "user_profile": user.profile,
         "iphone_version": iphone_version,
         "categories": categories,
+        'starred_count': starred_count,
     }
     return data
 
@@ -620,7 +622,7 @@ def load_starred_stories(request):
         story['read_status']       = 1
         story['starred']           = True
         story['intelligence']      = {
-            'feed':   0,
+            'feed':   1,
             'author': 0,
             'tags':   0,
             'title':  0,

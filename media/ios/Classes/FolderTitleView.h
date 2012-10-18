@@ -8,16 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
+#import "UnreadCountView.h"
 
 
 @class NewsBlurAppDelegate;
 
-@interface FolderTitleView : UIControl {
+@interface FolderTitleView : UIView {
     NewsBlurAppDelegate *appDelegate;
 }
 
+@property (assign, nonatomic) int section;
 @property (nonatomic) NewsBlurAppDelegate *appDelegate;
-
-- (UIControl *)drawWithRect:(CGRect)rect inSection:(NSInteger)section;
+@property (nonatomic) UnreadCountView *unreadCount;
 
 @end

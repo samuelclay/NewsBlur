@@ -14,9 +14,9 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="5dp"
-        android:padding="2dp"
         android:gravity="right"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:padding="2dp" >
 
         <TextView
             android:id="@+id/row_feedneutral"
@@ -25,11 +25,10 @@
             android:layout_marginRight="5dp"
             android:background="@drawable/neutral_count_rect"
             android:gravity="center"
-            android:textColor="@color/black"
-            android:textSize="14sp"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
-            android:paddingBottom="1dp"
+            android:textColor="@color/black"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
@@ -39,12 +38,10 @@
             android:layout_marginRight="5dp"
             android:background="@drawable/positive_count_rect"
             android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:paddingTop="1dp"
-            android:paddingBottom="2dp"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
+            android:textColor="@color/white"
+            android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -61,13 +58,15 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_marginBottom="6dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="5dp"
         android:layout_toLeftOf="@id/row_feedcounters"
         android:layout_toRightOf="@id/row_feedfavicon"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textColor="@color/black"
-        android:textSize="16dp" />
+        android:textColor="@color/folder_text"
+        android:textSize="16dp"
+        android:textStyle="bold" />
 
 </RelativeLayout>

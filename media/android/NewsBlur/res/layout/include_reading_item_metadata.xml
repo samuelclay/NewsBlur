@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <View
+        android:id="@+id/row_item_favicon_borderbar_1"
+        android:layout_width="8dp"
+        android:layout_height="match_parent" />
+
+    <View
+        android:id="@+id/row_item_favicon_borderbar_2"
+        android:layout_width="8dp"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp" >
+
+        <ImageView
+            android:id="@+id/reading_feed_icon"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/description_row_folder_icon" />
+
+        <TextView
+            android:id="@+id/reading_feed_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="@id/reading_feed_icon"
+            android:layout_marginTop="7dp"
+            android:layout_toRightOf="@id/reading_feed_icon"
+            android:textColor="@color/newsblur_blue"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/reading_item_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/reading_feed_title"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="10dp"
+            android:paddingTop="10dp"
+            android:textColor="@color/linkblue"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/reading_item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/reading_item_date"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/darkgray"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/reading_item_authors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/reading_item_title"
+            android:layout_marginTop="10dp"
+            android:maxLines="1"
+            android:minWidth="80dp"
+            android:textColor="@color/darkgray"
+            android:textSize="11dp" />
+
+        <com.newsblur.view.FlowLayout
+            android:id="@+id/reading_item_tags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/reading_item_authors"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp" />
+    </RelativeLayout>
+</LinearLayout>

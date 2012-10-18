@@ -11,6 +11,7 @@
 #import "MBProgressHUD.h"
 #import "NBContainerViewController.h"
 #import "NewsBlurViewController.h"
+#import "MenuTableViewCell.h"
 
 @implementation FeedsMenuViewController
 
@@ -33,7 +34,11 @@
     // Do any additional setup after loading the view from its nib.
     
     self.menuOptions = [[NSArray alloc]
-                        initWithObjects:@"Find Friends", @"Logout", nil];
+                        initWithObjects:[@"Find Friends" uppercaseString],
+                                        [@"Logout" uppercaseString], nil];
+    
+    self.menuTableView.backgroundColor = UIColorFromRGB(0xF0FFF0);
+    self.menuTableView.separatorColor = UIColorFromRGB(0x8AA378);
 }
 
 - (void)viewDidUnload
@@ -43,6 +48,10 @@
     // e.g. self.myOutlet = nil;
     self.menuOptions = nil;
     self.menuTableView = nil;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [self.menuTableView reloadData];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -64,21 +73,31 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier]; 
     
     if (cell == nil) {
-        cell = [[UITableViewCell alloc]
+        cell = [[MenuTableViewCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIndentifier];
     }
     
     cell.textLabel.text = [self.menuOptions objectAtIndex:[indexPath row]];
     
+    if (indexPath.row == 0) {
+        cell.imageView.image = [UIImage imageNamed:@"rainbow.png"];
+    } else if (indexPath.row == 1) {
+        cell.imageView.image = [UIImage imageNamed:@"user_orange.png"];
+    }
+    
     return cell;
+}
+
+- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 38;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath 
 {
     if (indexPath.row == 0) {
         [appDelegate showFindFriends];
-    } if (indexPath.row == 1) {
+    } else if (indexPath.row == 1) {
         [appDelegate confirmLogout];
     }
     

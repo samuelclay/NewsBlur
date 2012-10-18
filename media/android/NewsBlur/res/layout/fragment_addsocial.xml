@@ -8,10 +8,11 @@
         android:id="@+id/addsocial_connect_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
+        android:layout_margin="20dp"
         android:text="@string/connect_with_your_friends"
         android:textColor="@color/darkgray"
-        android:textSize="16sp" />
+        android:textSize="18sp"
+        android:gravity="center" />
 
     <LinearLayout
         android:id="@+id/addsocial_twitter"

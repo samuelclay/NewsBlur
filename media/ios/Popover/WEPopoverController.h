@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import "WEPopoverContainerView.h"
 #import "WETouchableView.h"
 
@@ -25,6 +26,7 @@
 @interface WEPopoverController : NSObject<WETouchableViewDelegate> {
 	UIViewController *contentViewController;
 	UIView *view;
+    UIView *parentView;
 	WETouchableView *backgroundView;
 	
 	BOOL popoverVisible;
@@ -45,6 +47,7 @@
 @property (nonatomic, assign) CGSize popoverContentSize;
 @property (nonatomic, retain) WEPopoverContainerViewProperties *containerViewProperties;
 @property (nonatomic, retain) id <NSObject> context;
+@property (nonatomic, assign) UIView *parentView;
 @property (nonatomic, copy) NSArray *passthroughViews;
 
 - (id)initWithContentViewController:(UIViewController *)theContentViewController;
@@ -63,5 +66,10 @@
 - (void)repositionPopoverFromRect:(CGRect)rect
 						   inView:(UIView *)view
 		 permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections;
+
+- (void)repositionPopoverFromRect:(CGRect)rect
+						   inView:(UIView *)view
+		 permittedArrowDirections:(UIPopoverArrowDirection)arrowDirections
+                         animated:(BOOL)animated;
 
 @end

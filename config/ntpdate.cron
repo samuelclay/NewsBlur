@@ -1,3 +1,5 @@
+#!/bin/sh
+
 /etc/init.d/ntp stop
-ntpdate ntp.ubuntu.com
+/usr/sbin/ntpdate pool.ntp.org
 /etc/init.d/ntp start

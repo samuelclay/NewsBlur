@@ -70,35 +70,36 @@ static UIFont *textFont = nil;
     
     UIColor *backgroundColor;
     
-    backgroundColor = self.selected || self.highlighted ? 
+    backgroundColor = highlighted ?
                       UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR) : 
                       [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
 
     [backgroundColor set];
     CGContextFillRect(context, r);
     
-    if (self.highlighted || self.selected) {
+    if (highlighted) {
         // top border
         UIColor *blue = UIColorFromRGB(0x6eadf5);
         CGContextSetStrokeColor(context, CGColorGetComponents([blue CGColor]));
         
         CGContextBeginPath(context);
         CGContextMoveToPoint(context, 0, 0.5f);
-        CGContextAddLineToPoint(context, self.bounds.size.width, 0.5f);
+        CGContextAddLineToPoint(context, r.size.width, 0.5f);
         CGContextStrokePath(context);
         
         // bottom border    
         CGContextBeginPath(context);
-        CGContextMoveToPoint(context, 0, self.bounds.size.height - 1.5f);
-        CGContextAddLineToPoint(context, self.bounds.size.width, self.bounds.size.height - 1.5f);
+        CGContextMoveToPoint(context, 0, r.size.height - .5f);
+        CGContextAddLineToPoint(context, r.size.width, r.size.height - .5f);
         CGContextStrokePath(context);
     }
     
     UnreadCountView *unreadCount = [UnreadCountView alloc];
+    unreadCount.appDelegate = appDelegate;
     [unreadCount drawInRect:r ps:_positiveCount nt:_neutralCount
                    listType:(isSocial ? NBFeedListSocial : NBFeedListFeed)];
     
-    UIColor *textColor = self.selected || self.highlighted ? 
+    UIColor *textColor = highlighted ? 
                          [UIColor blackColor]:
                          [UIColor blackColor];
 
@@ -114,14 +115,14 @@ static UIFont *textFont = nil;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.feedFavicon drawInRect:CGRectMake(12.0, 5.0, 36.0, 36.0)];
             [feedTitle 
-             drawInRect:CGRectMake(56, 13, [unreadCount offsetWidth] - 10 - 20, 20.0)
+             drawInRect:CGRectMake(56, 13, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 20, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft]; 
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 32.0, 32.0)];
             [feedTitle 
-             drawInRect:CGRectMake(50, 11, [unreadCount offsetWidth] - 10 - 20, 20.0)
+             drawInRect:CGRectMake(50, 11, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 20, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];
@@ -131,14 +132,14 @@ static UIFont *textFont = nil;
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             [self.feedFavicon drawInRect:CGRectMake(12.0, 7.0, 16.0, 16.0)];
             [feedTitle 
-             drawInRect:CGRectMake(36.0, 7.0, [unreadCount offsetWidth] - 10, 20.0)
+             drawInRect:CGRectMake(36.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];
         } else {
             [self.feedFavicon drawInRect:CGRectMake(9.0, 7.0, 16.0, 16.0)];
             [feedTitle 
-             drawInRect:CGRectMake(34.0, 7.0, [unreadCount offsetWidth] - 10, 20.0)
+             drawInRect:CGRectMake(34.0, 7.0, r.size.width - ([unreadCount offsetWidth] + 36) - 10, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];

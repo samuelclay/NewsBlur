@@ -37,7 +37,7 @@ public class DatabaseConstants {
 	public static final String FEED_FOLDER_MAP_TABLE = "feed_folder_map";
 	public static final String FEED_FOLDER_FEED_ID = "feed_feed_id";
 	public static final String FEED_FOLDER_FOLDER_NAME = "feed_folder_name";
-	
+
 	public static final String SOCIALFEED_STORY_MAP_TABLE = "socialfeed_story_map";
 	public static final String SOCIALFEED_STORY_USER_ID = "socialfeed_story_user_id";
 	public static final String SOCIALFEED_STORY_STORYID = "socialfeed_story_storyid";
@@ -59,7 +59,7 @@ public class DatabaseConstants {
 	public static final String USER_USERID = BaseColumns._ID;
 	public static final String USER_USERNAME = "username";
 	public static final String USER_PHOTO_URL = "photo_url";
-	
+
 	public static final String STORY_TABLE = "stories";
 	public static final String STORY_ID = BaseColumns._ID;
 	public static final String STORY_AUTHORS = "authors";
@@ -96,14 +96,14 @@ public class DatabaseConstants {
 	public static final String COMMENT_USERID = "comment_userid";
 
 	public static final String REPLY_TABLE = "comment_replies";
-	
+
 	public static final String REPLY_ID = BaseColumns._ID;
 	public static final String REPLY_COMMENTID = "comment_id"; 
 	public static final String REPLY_TEXT = "reply_text";
 	public static final String REPLY_USERID = "reply_userid";
 	public static final String REPLY_DATE = "reply_date";
 	public static final String REPLY_SHORTDATE = "reply_shortdate";
-	
+
 	// Aggregated columns
 	public static final String SUM_POS = "sum_postive";
 	public static final String SUM_NEUT = "sum_neutral";
@@ -112,7 +112,7 @@ public class DatabaseConstants {
 	public static final String[] UPDATE_COLUMNS = {
 		UPDATE_ID, UPDATE_TYPE, UPDATE_ARGUMENTS
 	};
-	
+
 	public static final String[] FEED_COLUMNS = {
 		FEED_TABLE + "." + FEED_ACTIVE, FEED_TABLE + "." + FEED_ID, FEED_TABLE + "." + FEED_FAVICON_URL, FEED_TABLE + "." + FEED_TITLE, FEED_TABLE + "." + FEED_LINK, FEED_TABLE + "." + FEED_ADDRESS, FEED_TABLE + "." + FEED_SUBSCRIBERS, FEED_TABLE + "." + FEED_UPDATED_SECONDS, FEED_TABLE + "." + FEED_FAVICON_FADE, FEED_TABLE + "." + FEED_FAVICON_COLOUR, FEED_TABLE + "." + FEED_FAVICON_BORDER,
 		FEED_TABLE + "." + FEED_FAVICON, FEED_TABLE + "." + FEED_POSITIVE_COUNT, FEED_TABLE + "." + FEED_NEUTRAL_COUNT, FEED_TABLE + "." + FEED_NEGATIVE_COUNT
@@ -125,7 +125,7 @@ public class DatabaseConstants {
 	public static final String[] COMMENT_COLUMNS = {
 		COMMENT_ID, COMMENT_STORYID, COMMENT_TEXT, COMMENT_BYFRIEND, COMMENT_USERID, COMMENT_DATE, COMMENT_LIKING_USERS, COMMENT_SHAREDDATE, COMMENT_SOURCE_USERID
 	};
-	
+
 	public static final String[] REPLY_COLUMNS = {
 		REPLY_COMMENTID, REPLY_DATE, REPLY_ID, REPLY_SHORTDATE, REPLY_TEXT, REPLY_USERID
 	};
@@ -134,23 +134,33 @@ public class DatabaseConstants {
 		FOLDER_TABLE + "." + FOLDER_ID, FOLDER_TABLE + "." + FOLDER_NAME, " SUM(" + FEED_POSITIVE_COUNT + ") AS " + SUM_POS, " SUM(" + FEED_NEUTRAL_COUNT + ") AS " + SUM_NEUT, " SUM(" + FEED_NEGATIVE_COUNT + ") AS " + SUM_NEG
 	};
 
-	public static final String[] STORY_COLUMNS = {
-		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_DATE, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_LONGDATE, STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TITLE,
-		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE, STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_PUBLIC_USER_IDS
-	};
-
 	public static final String FOLDER_INTELLIGENCE_ALL = " HAVING SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + " + " + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") >= 0 ";
 	public static final String FOLDER_INTELLIGENCE_SOME = " HAVING SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
 	public static final String FOLDER_INTELLIGENCE_BEST = " HAVING SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") > 0 ";
-	
+
 	public static final String SOCIAL_INTELLIGENCE_ALL = "";
 	public static final String SOCIAL_INTELLIGENCE_SOME = " (" + DatabaseConstants.SOCIAL_FEED_NEUTRAL_COUNT + " + " + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
 	public static final String SOCIAL_INTELLIGENCE_BEST = " (" + DatabaseConstants.SOCIAL_FEED_POSITIVE_COUNT + ") > 0 ";
+	private static final String SUM_STORY_TOTAL = "storyTotal";
 
-	public static final String STORY_INTELLIGENCE_BEST = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 ";
-	public static final String STORY_INTELLIGENCE_SOME = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 ";
-	public static final String STORY_INTELLIGENCE_ALL = " (" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + " + " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " + " + DatabaseConstants.STORY_INTELLIGENCE_TAGS + " + " + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") >= 0 ";
-	
-	
-	
+
+	private static String STORY_SUM_TOTAL = " CASE " + 
+	"WHEN MAX(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_FEED + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") > 0 " + 
+	"THEN MAX(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_FEED + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") " +
+	"WHEN MIN(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_FEED + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") < 0 " + 
+	"THEN MIN(" + DatabaseConstants.STORY_INTELLIGENCE_AUTHORS + "," + DatabaseConstants.STORY_INTELLIGENCE_FEED + "," + DatabaseConstants.STORY_INTELLIGENCE_TAGS + "," + DatabaseConstants.STORY_INTELLIGENCE_TITLE + ") " +
+	"ELSE " + DatabaseConstants.STORY_INTELLIGENCE_FEED + " " +
+	"END AS " + DatabaseConstants.SUM_STORY_TOTAL;
+
+	public static final String STORY_INTELLIGENCE_BEST = DatabaseConstants.SUM_STORY_TOTAL + " > 0 ";
+	public static final String STORY_INTELLIGENCE_SOME = DatabaseConstants.SUM_STORY_TOTAL + " >= 0 ";
+	public static final String STORY_INTELLIGENCE_ALL = DatabaseConstants.SUM_STORY_TOTAL + " >= 0 ";
+
+	public static final String[] STORY_COLUMNS = {
+		STORY_AUTHORS, STORY_COMMENT_COUNT, STORY_CONTENT, STORY_DATE, STORY_SHARED_DATE, STORY_SHORTDATE, STORY_LONGDATE, STORY_TABLE + "." + STORY_FEED_ID, STORY_TABLE + "." + STORY_ID, STORY_INTELLIGENCE_AUTHORS, STORY_INTELLIGENCE_FEED, STORY_INTELLIGENCE_TAGS, STORY_INTELLIGENCE_TITLE,
+		STORY_PERMALINK, STORY_READ, STORY_SHARE_COUNT, STORY_TAGS, STORY_TITLE, STORY_SOCIAL_USER_ID, STORY_SOURCE_USER_ID, STORY_SHARED_USER_IDS, STORY_FRIEND_USER_IDS, STORY_PUBLIC_USER_IDS, STORY_SUM_TOTAL
+	};
+
+
+
 }

@@ -12,6 +12,7 @@
 #import "DashboardViewController.h"
 #import "FeedTableCell.h"
 #import "FeedsMenuViewController.h"
+#import "FeedDetailMenuViewController.h"
 #import "UserProfileViewController.h"
 #import "StoryDetailViewController.h"
 #import "ASIHTTPRequest.h"
@@ -22,8 +23,8 @@
 #import "UIBarButtonItem+WEPopover.h"
 
 
-#define kPhoneTableViewRowHeight 32;
-#define kTableViewRowHeight 32;
+#define kPhoneTableViewRowHeight 31;
+#define kTableViewRowHeight 31;
 #define kBlurblogTableViewRowHeight 47;
 #define kPhoneBlurblogTableViewRowHeight 39;
 static const CGFloat kFolderTitleHeight = 28;
@@ -91,7 +92,6 @@ static const CGFloat kFolderTitleHeight = 28;
     [self.intelligenceControl setWidth:68 forSegmentAtIndex:1];
     [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
     self.intelligenceControl.hidden = YES;
-    
 
 }
 
@@ -172,7 +172,7 @@ static const CGFloat kFolderTitleHeight = 28;
 //                                scrollPosition:UITableViewScrollPositionNone];
     
     [super viewDidAppear:animated];
-    [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.6];
+    [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.2];
     self.navigationController.navigationBar.backItem.title = @"All Sites";
 }
 
@@ -274,7 +274,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [request setDidFailSelector:@selector(finishedWithError:)];
     [request setTimeOutSeconds:30];
     [request startAsynchronous];
-    NSLog(@"urlFeedList is %@", urlFeedList);
+
     self.lastUpdate = [NSDate date];
 }
 
@@ -303,7 +303,8 @@ static const CGFloat kFolderTitleHeight = 28;
                              JSONObjectWithData:responseData
                              options:kNilOptions 
                              error:&error];
-
+    appDelegate.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
+    
 //    NSLog(@"results are %@", results);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
@@ -399,6 +400,10 @@ static const CGFloat kFolderTitleHeight = 28;
         [allFolders setValue:[[NSArray alloc] init] forKey:@"everything"];
     }
     
+    if (appDelegate.savedStoriesCount) {
+        [allFolders setValue:[[NSArray alloc] init] forKey:@"saved_stories"];
+    }
+    
     appDelegate.dictFolders = allFolders;
     
     // set up dictFeeds
@@ -407,8 +412,14 @@ static const CGFloat kFolderTitleHeight = 28;
     // sort all the folders
     appDelegate.dictFoldersArray = [NSMutableArray array];
     for (id f in appDelegate.dictFolders) {
-        [appDelegate.dictFoldersArray addObject:f];
         NSArray *folder = [appDelegate.dictFolders objectForKey:f];
+        NSString *folderTitle;
+        if ([f isEqualToString:@" "]) {
+            folderTitle = @"everything";
+        } else {
+            folderTitle = f;
+        }
+        [appDelegate.dictFoldersArray addObject:folderTitle];
         sortedArray = [folder sortedArrayUsingComparator:^NSComparisonResult(id id1, id id2) {
             NSString *feedTitleA;
             NSString *feedTitleB;
@@ -430,7 +441,7 @@ static const CGFloat kFolderTitleHeight = 28;
             }
             return [feedTitleA caseInsensitiveCompare:feedTitleB];
         }];
-        [sortedFolders setValue:sortedArray forKey:f];
+        [sortedFolders setValue:sortedArray forKey:folderTitle];
     }
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
@@ -443,6 +454,12 @@ static const CGFloat kFolderTitleHeight = 28;
     if ([appDelegate.dictFoldersArray containsObject:@"everything"]) {
         [appDelegate.dictFoldersArray removeObject:@"everything"];
         [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:1];
+    }
+    
+    // Add Saved Stories folder
+    if (appDelegate.savedStoriesCount) {
+        [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
+        [appDelegate.dictFoldersArray insertObject:@"saved_stories" atIndex:appDelegate.dictFoldersArray.count];
     }
 
     if (self.viewShowingAllFeeds) {
@@ -556,9 +573,9 @@ static const CGFloat kFolderTitleHeight = 28;
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(200, 86)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(200, 76)];
         [self.popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem 
-                                       permittedArrowDirections:UIPopoverArrowDirectionAny 
+                                       permittedArrowDirections:UIPopoverArrowDirectionUp
                                                        animated:YES];
     }
 }
@@ -677,7 +694,7 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
-
+    
     return [[self.activeFeedLocations objectForKey:folderName] count];
 }
 
@@ -790,7 +807,8 @@ static const CGFloat kFolderTitleHeight = 28;
     appDelegate.readStories = [NSMutableArray array];
     appDelegate.isRiverView = NO;
     appDelegate.isSocialRiverView = NO;
-        
+    [appDelegate.folderCountCache removeObjectForKey:folderName];
+
     [appDelegate loadFeedDetailView];
 }
 
@@ -839,7 +857,8 @@ static const CGFloat kFolderTitleHeight = 28;
     
     
     CGRect rect = CGRectMake(0.0, 0.0, tableView.bounds.size.width, kFolderTitleHeight);
-    UIView *folderTitle = [[FolderTitleView alloc] drawWithRect:rect inSection:section];
+    FolderTitleView *folderTitle = [[FolderTitleView alloc] initWithFrame:rect];
+    folderTitle.section = section;
     
     return folderTitle;
 }
@@ -860,13 +879,13 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-//    NSString *folder = [appDelegate.dictFoldersArray objectAtIndex:section];
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
 //    if ([[folder stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
 //        return 0;
 //    }
     
-    if ([tableView.dataSource tableView:tableView numberOfRowsInSection:section] == 0 &&
-        section != 1) {
+    int rows = [tableView.dataSource tableView:tableView numberOfRowsInSection:section];
+    if (rows == 0 && section != 1 && folderName != @"saved_stories") {
         return 0;
     }
     
@@ -923,7 +942,9 @@ static const CGFloat kFolderTitleHeight = 28;
 
     }
     appDelegate.activeFolderFeeds = feeds;
-
+    
+    [appDelegate.folderCountCache removeObjectForKey:appDelegate.activeFolder];
+    
     [appDelegate loadRiverFeedDetailView];
 }
 
@@ -1141,6 +1162,11 @@ static const CGFloat kFolderTitleHeight = 28;
     for (UITableViewCell *cell in self.feedTitlesTable.visibleCells) {
         [cell setNeedsDisplay];
     }
+    for (UIView *view in self.feedTitlesTable.subviews) {
+        if ([view class] == [FolderTitleView class]) {
+            [view setNeedsDisplay];
+        }
+    }
 }
 
 - (void)calculateFeedLocations:(BOOL)markVisible {
@@ -1353,6 +1379,8 @@ static const CGFloat kFolderTitleHeight = 28;
 
     appDelegate.dictSocialFeeds = updatedDictSocialFeeds;
     appDelegate.dictFeeds = updatedDictFeeds;
+    
+    [appDelegate.folderCountCache removeAllObjects];
     [self.feedTitlesTable reloadData];
 }
 
