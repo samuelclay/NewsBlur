@@ -193,7 +193,6 @@ def strip_comments(html_string):
         'annoying_tags': False,
         'remove_tags': None,
         'allow_tags': None,
-        'kill_tags': None,
         'remove_unknown_tags': True,
         'safe_attrs_only': False,
     }
