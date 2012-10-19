@@ -747,7 +747,7 @@ class Feed(models.Model):
                 continue
                 
             story_content = story.get('story_content')
-            story_content = strip_comments(story_content)
+            # story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
                 
