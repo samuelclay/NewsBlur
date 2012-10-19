@@ -1,3 +1,4 @@
+import re
 import datetime
 import struct
 from HTMLParser import HTMLParser
@@ -12,6 +13,8 @@ from django.conf import settings
 from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 from vendor import reseekfile
+
+COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 
 def story_score(story, bottom_delta=None):
     # A) Date - Assumes story is unread and within unread range
@@ -178,6 +181,9 @@ def strip_tags(html):
     return s.get_data()
 
 def strip_comments(html_string):
+    return COMMENTS_RE.sub('', html_string)
+    
+def strip_comments__lxml(html_string):
     params = {
         'comments': True,
         'scripts': False,
