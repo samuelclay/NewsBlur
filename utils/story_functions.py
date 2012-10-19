@@ -2,7 +2,7 @@ import datetime
 import struct
 from HTMLParser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
-from lxml.etree import ParserError
+from lxml.etree import ParserError, XMLSyntaxError
 import lxml.html, lxml.etree
 from lxml.html.clean import Cleaner
 from itertools import chain
@@ -196,11 +196,14 @@ def strip_comments(html_string):
         'remove_unknown_tags': True,
         'safe_attrs_only': False,
     }
-    cleaner = Cleaner(**params)
-    html = lxml.html.fromstring(html_string)
-    clean_html = cleaner.clean_html(html)
+    try:
+        cleaner = Cleaner(**params)
+        html = lxml.html.fromstring(html_string)
+        clean_html = cleaner.clean_html(html)
 
-    return lxml.etree.tostring(clean_html)
+        return lxml.etree.tostring(clean_html)
+    except XMLSyntaxError:
+        return html_string
 
 def linkify(*args, **kwargs):
     return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
