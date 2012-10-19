@@ -29,7 +29,7 @@ from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
-from utils.story_functions import strip_tags, htmldiff
+from utils.story_functions import strip_tags, htmldiff, strip_comments
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -747,6 +747,7 @@ class Feed(models.Model):
                 continue
                 
             story_content = story.get('story_content')
+            story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
                 
