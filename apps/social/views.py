@@ -186,20 +186,25 @@ def load_river_blurblog(request):
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     relative_user_id  = request.REQUEST.get('relative_user_id', None)
+    user_perspective  = request.REQUEST.get('user_perspective', None)
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-
+    
+    if user_perspective:
+        up = User.objects.get(username=settings.HOMEPAGE_USERNAME)
+        relative_user_id = up.pk
+    
     if not relative_user_id:
         relative_user_id = get_user(request).pk
 
     if not social_user_ids:
-        socialsubs = MSocialSubscription.objects.filter(user_id=user.pk) 
+        socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id) 
         social_user_ids = [s.subscription_user_id for s in socialsubs]
         
     offset = (page-1) * limit
     limit = page * limit - 1
     
-    story_ids, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
+    story_ids, story_dates = MSocialSubscription.feed_stories(relative_user_id, social_user_ids, 
                                                  offset=offset, limit=limit,
                                                  order=order, read_filter=read_filter)
     mstories = MStory.objects(id__in=story_ids)

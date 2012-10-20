@@ -1,7 +1,7 @@
 <table style="border: 1px solid #E0E0E0; margin: 0; padding: 0; background-color: #F0F0F0" valign="top" align="left" cellpadding="0" width="100%">
     <tr>
         <td rowspan="2" style="padding: 6px;width: 36px;white-space:nowrap" width="36"><img src="{{ social_profile.photo_url }}" style="width: 36px; height: 36px; border-radius: 4px;"></td>
-        <td width="100%" style="padding: 6px;">
+        <td width="100%" style="padding-top: 6px;">
             <b>
                 {{ user.username }} 
                 <a href="{{ shared_story.blurblog_permalink }}">shared this story</a>
@@ -11,7 +11,7 @@
     {% if shared_story.comments %}
     <tr>
         <td>
-            <p>{{ shared_story.comments }}</p>
+            {{ shared_story.comments }}
         </td>
     </tr>
     {% endif %}

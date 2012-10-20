@@ -1430,7 +1430,7 @@
             this.hide_splash_page();
             
             this.active_folder = new Backbone.Model({
-                folder_title: "All Blurblog Stories",
+                folder_title: "All Shared Stories",
                 fake: true
             });
             this.active_feed = 'river:blurblogs';

@@ -923,6 +923,7 @@ class Feed(models.Model):
             except IndexError, e:
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(self)[:30], e))
                 return
+                
             extra_stories = MStory.objects(story_feed_id=self.pk, 
                                            story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
@@ -932,7 +933,19 @@ class Feed(models.Model):
                 existing_story_count = MStory.objects(story_feed_id=self.pk).count()
                 print "Deleted %s stories, %s left." % (extra_stories_count,
                                                         existing_story_count)
-                        
+
+    @staticmethod
+    def clean_invalid_ids():
+        history = MFeedFetchHistory.objects(status_code=500, exception__contains='InvalidId:').limit(1)[0]
+        urls = set()
+        for h in history:
+            u = re.split('InvalidId: (.*?) is not a valid ObjectId\\n$', h.exception)[1]
+            urls.add((h.feed_id, u))
+        
+        for f, u in urls:
+            print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
+
+        
     def get_stories(self, offset=0, limit=25, force=False):
         stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
         stories = self.format_stories(stories_db, self.pk)

@@ -15,7 +15,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="folder_title_text"><%= folder_title %></div>\
                 </div>\
             ', {
-                folder_title: NEWSBLUR.reader.flags['social_view'] ? "All Blurblog Stories" : "All Site Stories"
+                folder_title: NEWSBLUR.reader.flags['social_view'] ? "All Shared Stories" : "All Site Stories"
             }));
         } else if (NEWSBLUR.reader.flags['river_view'] && NEWSBLUR.reader.active_folder && NEWSBLUR.reader.active_folder.get('folder_title')) {
             var $view = new NEWSBLUR.Views.Folder({
