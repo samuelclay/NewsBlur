@@ -606,6 +606,8 @@ def setup_db_firewall():
     # EC2
     sudo('ufw allow proto tcp from 54.242.38.48 to any port 5432,27017,6379,11211')
     sudo('ufw allow proto tcp from 184.72.214.147 to any port 5432,27017,6379,11211')
+    sudo('ufw allow proto tcp from 107.20.103.16 to any port 5432,27017,6379,11211')
+    sudo('ufw allow proto tcp from 50.17.12.16 to any port 5432,27017,6379,11211')
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -741,12 +743,14 @@ def setup_ec2_task():
                                      security_groups=['db-mongo'])
     instance = reservation.instances[0]
     print "Booting reservation: %s/%s (size: %s)" % (reservation, instance, INSTANCE_TYPE)
+    i = 0
     while True:
         if instance.state == 'pending':
             print ".",
             sys.stdout.flush()
             instance.update()
-            time.sleep(1)
+            i += 1
+            time.sleep(i)
         elif instance.state == 'running':
             print "...booted: %s" % instance.public_dns_name
             time.sleep(5)

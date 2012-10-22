@@ -3698,9 +3698,26 @@
                 this.socket.on('connect', _.bind(function() {
                     var active_feeds = this.send_socket_active_feeds();
                     // NEWSBLUR.log(["Connected to real-time pubsub with " + active_feeds.length + " feeds."]);
+                    this.socket.removeAllListeners('feed:update');
                     this.socket.on('feed:update', _.bind(function(feed_id, message) {
                         NEWSBLUR.log(['Real-time feed update', feed_id, message]);
                         this.force_feeds_refresh(false, false, feed_id);
+                    }, this));
+                    
+                    this.socket.removeAllListeners(NEWSBLUR.Globals.username);
+                    this.socket.on('user:update', _.bind(function(username, message) {
+                        if (_.string.contains(message, 'feed:')) {
+                            var feed_id = parseInt(message.replace('feed:', ''), 10);
+                            var active_feed_ids = [];
+                            if (this.active_folder) {
+                                active_feed_ids = this.active_folder.feed_ids_in_folder();
+                            }
+                            if (feed_id != this.active_feed && 
+                                !_.contains(active_feed_ids, feed_id)) {
+                                NEWSBLUR.log(['Real-time user update', username, message]);
+                                this.force_feeds_refresh(false, false, feed_id);
+                            }
+                        }
                     }, this));
                 
                     this.flags.feed_refreshing_in_realtime = true;
@@ -3738,7 +3755,7 @@
             if (active_feeds.length) {
                 this.socket.emit('subscribe:feeds', active_feeds, NEWSBLUR.Globals.username);
             }
-            
+
             return active_feeds;
         },
         
@@ -5360,7 +5377,7 @@
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();
-                if (!self.flags.river_view && self.flags.social_view) {
+                if (self.flags.social_view) {
                     self.mark_feed_as_read();
                 } else if (self.flags.river_view) {
                     if (self.active_feed == 'river:') {
