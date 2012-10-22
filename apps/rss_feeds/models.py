@@ -936,7 +936,7 @@ class Feed(models.Model):
 
     @staticmethod
     def clean_invalid_ids():
-        history = MFeedFetchHistory.objects(status_code=500, exception__contains='InvalidId:').limit(1)[0]
+        history = MFeedFetchHistory.objects(status_code=500, exception__contains='InvalidId:')
         urls = set()
         for h in history:
             u = re.split('InvalidId: (.*?) is not a valid ObjectId\\n$', h.exception)[1]
