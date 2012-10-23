@@ -2504,7 +2504,7 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-goodies' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-account' }, [
@@ -3706,10 +3706,11 @@
                     
                     this.socket.removeAllListeners(NEWSBLUR.Globals.username);
                     this.socket.on('user:update', _.bind(function(username, feed_id) {
+                        if (this.flags.social_view) return;
                         if (_.string.contains(feed_id, 'feed:')) {
                             feed_id = parseInt(feed_id.replace('feed:', ''), 10);
                             var active_feed_ids = [];
-                            if (this.active_folder) {
+                            if (this.active_folder && this.active_folder.length) {
                                 active_feed_ids = this.active_folder.feed_ids_in_folder();
                             }
                             if (feed_id != this.active_feed && 

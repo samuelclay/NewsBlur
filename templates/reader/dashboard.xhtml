@@ -160,65 +160,6 @@
           </div>
       </div>
       {% endif %}
-      
-      {% if not user_profile.hide_mobile %}
-        <div class="NB-module NB-module-mobile">
-          <h5 class="NB-module-header">
-            <div class="NB-module-header-right">
-              <a href="#" class="NB-splash-link NB-module-mobile-hide">Hide</a>
-            </div>
-            Mobile Apps
-          </h5>
-          <div class="NB-module-item {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
-            <div class="NB-module-mobile-image">
-                <img src="{{ MEDIA_URL }}/img/mobile/iphone-icon-newsblur.png" />
-            </div>
-            <h3 class="NB-module-content-header">
-                <span class="NB-module-content-subtitle">
-                  Official Client
-                </span>
-                <div class="NB-module-mobile-title">NewsBlur</div>
-                <div class="NB-module-mobile-device">iPhone</div>
-            </h3>
-            <div class="NB-module-item-title">
-                <span class="NB-raquo">&raquo;</span>
-                <a href="/iphone/" class="NB-splash-link">See the free NewsBlur iPhone App</a>
-            </div>
-          </div>
-          <div class="NB-module-item {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
-            <div class="NB-module-mobile-image">
-                <img src="{{ MEDIA_URL }}/img/mobile/android-icon-blar.png" />
-            </div>
-            <h3 class="NB-module-content-header">
-                <span class="NB-module-content-subtitle">
-                  User-Built Client
-                </span>
-                <div class="NB-module-mobile-title">Blar</div>
-                <div class="NB-module-mobile-device">Android</div>
-            </h3>
-            <div class="NB-module-item-title">
-                <span class="NB-raquo">&raquo;</span>
-                <a href="https://market.android.com/details?id=bitwrit.Blar" class="NB-splash-link">Download Blar on the Android Market</a>
-            </div>
-          </div>
-          <div class="NB-module-item NB-last {% if user_profile.hide_mobile %}NB-hidden{% endif %}">
-            <div class="NB-module-mobile-image">
-                <img src="{{ MEDIA_URL }}/img/mobile/meego-icon-webfeeds.png" />
-            </div>
-            <h3 class="NB-module-content-header">
-                <span class="NB-module-content-subtitle">
-                  User-Built Client
-                </span>
-                <div class="NB-module-mobile-title">Web Feeds</div>
-                <div class="NB-module-mobile-device">Nokia MeeGo</div>
-            </h3>
-            <div class="NB-module-item-title">
-                <span class="NB-raquo">&raquo;</span>
-                <a href="http://projects.developer.nokia.com/feed_reader" class="NB-splash-link">Download Web Feeds on the Nokia Store</a>
-            </div>
-          </div>
-        </div>
-      {% endif %}
     
     {% if user_profile.hide_getting_started %}
         {% render_features_module %}

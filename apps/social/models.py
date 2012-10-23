@@ -920,7 +920,7 @@ class MSocialSubscription(mongo.Document):
         if story_feed_ids:
             read_stories = MUserStory.objects(user_id=self.user_id,
                                               feed_id__in=story_feed_ids,
-                                              story_id__in=story_ids)
+                                              story_id__in=story_ids).only('story_id')
             read_stories_ids = list(set(rs.story_id for rs in read_stories))
 
         oldest_unread_story_date = now
