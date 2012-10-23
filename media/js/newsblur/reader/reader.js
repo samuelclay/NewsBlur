@@ -3956,6 +3956,7 @@
             }
 
             this.$s.$mouse_indicator.css('top', position);
+            // console.log(["position_mouse_indicator", NEWSBLUR.reader.cache.mouse_position_y, position]);
             this.cache.mouse_position_y = position;
         },
         
