@@ -353,7 +353,7 @@ def load_feeds_flat(request):
     }
     return data
 
-@ratelimit(minutes=1, requests=20)
+@ratelimit(minutes=1, requests=10)
 @never_cache
 @json.json_view
 def refresh_feeds(request):
@@ -407,6 +407,33 @@ def refresh_feeds(request):
         
     return {'feeds': feeds, 'social_feeds': social_feeds}
 
+@never_cache
+@json.json_view
+def feed_unread_count(request):
+    user = get_user(request)
+    feed_ids = request.REQUEST.getlist('feed_id')
+    social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
+    feed_ids = list(set(feed_ids) - set(social_feed_ids))
+    
+    feeds = {}
+    if feed_ids:
+        feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids)
+
+    social_feeds = {}
+    if social_feed_ids:
+        social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
+    
+    if settings.DEBUG:
+        if len(feed_ids):
+            feed_title = Feed.get_by_id(feed_ids[0]).feed_title
+        elif len(social_feed_ids) == 1:
+            feed_title = MSocialProfile.objects.get(user_id=social_feed_ids[0].replace('social:', '')).username
+        else:
+            feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
+        logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
+    
+    return {'feeds': feeds, 'social_feeds': social_feeds}
+    
 def refresh_feed(request, feed_id):
     user = get_user(request)
     feed = get_object_or_404(Feed, pk=feed_id)
@@ -768,11 +795,15 @@ def mark_story_as_read(request):
     else:
         data = dict(code=-1, errors=["User is not subscribed to this feed."])
 
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r.publish(request.user.username, 'feed:%s' % feed_id)
+
     return data
     
 @ajax_login_required
 @json.json_view
 def mark_feed_stories_as_read(request):
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
     feeds_stories = request.REQUEST.get('feeds_stories', "{}")
     feeds_stories = json.decode(feeds_stories)
     for feed_id, story_ids in feeds_stories.items():
@@ -791,6 +822,8 @@ def mark_feed_stories_as_read(request):
                 data = usersub.mark_story_ids_as_read(story_ids)
             except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
                 return dict(code=-1, error="No feed exists for feed_id: %d" % feed_id)
+
+        r.publish(request.user.username, 'feed:%s' % feed_id)
     
     return data
     
@@ -800,6 +833,7 @@ def mark_social_stories_as_read(request):
     code = 1
     errors = []
     data = {}
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
     users_feeds_stories = request.REQUEST.get('users_feeds_stories', "{}")
     users_feeds_stories = json.decode(users_feeds_stories)
 
@@ -828,6 +862,8 @@ def mark_social_stories_as_read(request):
                         errors.append("No feed exists for feed_id %d." % feed_id)
                 else:
                     continue
+            r.publish(request.user.username, 'feed:%s' % feed_id)
+        r.publish(request.user.username, 'social:%s' % social_user_id)
 
     data.update(code=code, errors=errors)
     return data
@@ -880,7 +916,10 @@ def mark_story_as_unread(request):
         m.delete()
     except MUserStory.DoesNotExist:
         logging.user(request, "~BY~SB~FRCouldn't find read story to mark as unread.")
-    
+
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r.publish(request.user.username, 'feed:%s' % feed_id)
+
     logging.user(request, "~FY~SBUnread~SN story in feed: %s %s" % (feed, dirty_count))
     
     return data

@@ -742,9 +742,12 @@ class MSocialSubscription(mongo.Document):
         return [story_id for story_id in story_ids if story_id and story_id != 'None']
         
     @classmethod
-    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all'):
+    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         
+        if not relative_user_id:
+            relative_user_id = user_id
+            
         if order == 'oldest':
             range_func = r.zrange
         else:
@@ -764,9 +767,9 @@ class MSocialSubscription(mongo.Document):
             r.delete(unread_ranked_stories_keys)
 
         for social_user_id in social_user_ids:
-            us = cls.objects.get(user_id=user_id, subscription_user_id=social_user_id)
+            us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
             story_guids = us.get_stories(offset=0, limit=100, 
-                                         # order=order, read_filter=read_filter, 
+                                         order=order, read_filter=read_filter, 
                                          withscores=True)
             if story_guids:
                 r.zadd(unread_ranked_stories_keys, **dict(story_guids))
@@ -1807,7 +1810,7 @@ class MSocialServices(mongo.Document):
                 'syncing': self.syncing_facebook,
             },
             'gravatar': {
-                'gravatar_picture_url': "http://www.gravatar.com/avatar/" + \
+                'gravatar_picture_url': "https://www.gravatar.com/avatar/" + \
                                         hashlib.md5(user.email).hexdigest()
             },
             'upload': {
@@ -2006,7 +2009,7 @@ class MSocialServices(mongo.Document):
             profile.photo_url = self.upload_picture_url
         elif service == 'gravatar':
             user = User.objects.get(pk=self.user_id)
-            profile.photo_url = "http://www.gravatar.com/avatar/" + \
+            profile.photo_url = "https://www.gravatar.com/avatar/" + \
                                 hashlib.md5(user.email).hexdigest()
         profile.save()
         return profile

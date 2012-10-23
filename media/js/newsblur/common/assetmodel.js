@@ -90,7 +90,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 if (errorThrown == 'abort') {
                     return;
                 }
-                NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown, !!error_callback, error_callback]);
+                NEWSBLUR.log(['AJAX Error', e, e.status, textStatus, errorThrown, 
+                              !!error_callback, error_callback]);
                 
                 if (error_callback) {
                     error_callback(e, textStatus, errorThrown);
@@ -648,6 +649,20 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         if (NEWSBLUR.Globals.is_authenticated || feed_id) {
             this.make_request('/reader/refresh_feeds', data, pre_callback, error_callback);
+        }
+    },
+    
+    feed_unread_count: function(feed_id, callback, error_callback) {
+        var self = this;
+        
+        var pre_callback = function(data) {
+            self.post_refresh_feeds(data, callback);
+        };
+        
+        if (NEWSBLUR.Globals.is_authenticated || feed_id) {
+            this.make_request('/reader/feed_unread_count',  {
+                'feed_id': feed_id
+            }, pre_callback, error_callback);
         }
     },
     

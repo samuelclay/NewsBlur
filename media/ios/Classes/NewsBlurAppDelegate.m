@@ -1177,7 +1177,6 @@
 }
 
 - (void)markActiveStorySaved:(BOOL)saved {
-    NSLog(@"Save story: %@ --- %d", self.activeStory, saved);
     NSMutableDictionary *newStory = [self.activeStory mutableCopy];
     [newStory setValue:[NSNumber numberWithBool:saved] forKey:@"starred"];
     
@@ -1195,6 +1194,12 @@
         }
     }
     self.activeFeedStories = newActiveFeedStories;
+    
+    if (saved) {
+        self.savedStoriesCount += 1;
+    } else {
+        self.savedStoriesCount -= 1;
+    }
 }
 
 - (void)markActiveFeedAllRead {

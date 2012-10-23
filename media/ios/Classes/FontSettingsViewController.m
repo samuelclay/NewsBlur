@@ -9,6 +9,7 @@
 #import "FontSettingsViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "StoryDetailViewController.h"
+#import "FeedDetailViewController.h"
 #import "MenuTableViewCell.h"
 #import "NBContainerViewController.h"
 
@@ -199,6 +200,7 @@
             [appDelegate.storyDetailViewController markStoryAsUnread];
         } else {
             [appDelegate.storyDetailViewController markStoryAsRead];
+            [appDelegate.feedDetailViewController redrawUnreadStory];
         }
     } else if (indexPath.row == 2) {
         [appDelegate.storyDetailViewController openSendToDialog];

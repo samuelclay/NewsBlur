@@ -188,7 +188,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     flash_changes: function() {
         var $highlight = this.$('.NB-feed-highlight');
-
+        $highlight.stop();
         $highlight.css({
             'backgroundColor': '#F0F076',
             'display': 'block'

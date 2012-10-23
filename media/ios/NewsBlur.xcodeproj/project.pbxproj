@@ -2345,8 +2345,8 @@
 				);
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (G9HFWP68T7)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2368,8 +2368,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "7B9F5761-3D49-495A-9090-AFC4AC7BF03D";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7B9F5761-3D49-495A-9090-AFC4AC7BF03D";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
 			};
@@ -2385,7 +2385,7 @@
 				);
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Samuel Clay (G9HFWP68T7)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2405,8 +2405,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "3674B4BA-9006-4099-A608-673EC3103906";
+				PROVISIONING_PROFILE = "7B9F5761-3D49-495A-9090-AFC4AC7BF03D";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7B9F5761-3D49-495A-9090-AFC4AC7BF03D";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -2416,8 +2416,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Samuel Clay";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Samuel Clay";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2425,8 +2425,8 @@
 				HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-ObjC";
-				PROVISIONING_PROFILE = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -2437,8 +2437,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Samuel Clay";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Samuel Clay";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -2447,8 +2447,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
-				PROVISIONING_PROFILE = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "382118CB-42EB-4479-93DB-9963EFFA6DDD";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
 			};

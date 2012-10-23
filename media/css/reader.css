@@ -7887,6 +7887,19 @@ form.opml_import_form input {
     border: 2px solid #39518B;
 }
 
+.NB-static-android .NB-ios-features .NB-ios-feature {
+    width: 138px;
+}
+.NB-static-android .NB-ios-features .NB-ios-feature img.NB-ios-ipad-screenshot {
+    width: 100px;
+    height: 160px;
+}
+.NB-static-android .NB-ios-features .NB-ios-feature img.NB-ios-iphone-screenshot {
+    width: 60px;
+    height: 106px;
+    top: 68px;
+}
+
 /* ========== */
 /* = Mockup = */
 /* ========== */
@@ -7993,6 +8006,53 @@ form.opml_import_form input {
     }
 }
 
+.NB-static-android .NB-ios-mockup .NB-ios-ipad-skeleton {
+    height: 729px;
+}
+.NB-static-android .NB-ios-mockup .NB-ios-iphone-skeleton {
+    width: 270px;
+    height: 469px;
+}
+.NB-static-android .NB-ios-mockup .NB-ios-features-ipad {
+    top: 42px;
+    left: 147px;
+    width: 302px;
+    height: 442px;
+}
+.NB-static-android .NB-ios-mockup .NB-ios-features-iphone {
+    top: 279px;
+    left: 50px;
+    width: 172px;
+    height: 268px;
+}
+.NB-static-android .NB-ios-mockup .NB-ios-feature img.NB-ios-ipad-screenshot {
+    width: 302px;
+    height: 484px;
+    top: -13px;
+    left: 0;
+    border-left: none;
+    border-top: none;
+    border-bottom: none;
+    border-right: 1px solid #505050;
+}
+.NB-static-android .NB-ios-mockup .NB-ios-feature img.NB-ios-iphone-screenshot {
+    width: 172px;
+    height: 300px;
+    top: -10px;
+    left: 0;
+    border-left: none;
+    border-top: none;
+    border-bottom: none;
+    border-right: 1px solid #505050;
+}
+@media screen and (max-width: 1100px) {
+    .NB-static-android .NB-ios-mockup .NB-ios-features-ipad {
+        left: 214px;
+    }
+    .NB-static-android .NB-ios-mockup .NB-ios-features-iphone {
+        left: -13px;
+    }
+}
 /* ================= */
 /* = Friends Modal = */
 /* ================= */
