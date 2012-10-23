@@ -3701,21 +3701,26 @@
                     this.socket.removeAllListeners('feed:update');
                     this.socket.on('feed:update', _.bind(function(feed_id, message) {
                         NEWSBLUR.log(['Real-time feed update', feed_id, message]);
-                        this.force_feeds_refresh(false, false, feed_id);
+                        this.feed_unread_count(feed_id);
                     }, this));
                     
                     this.socket.removeAllListeners(NEWSBLUR.Globals.username);
-                    this.socket.on('user:update', _.bind(function(username, message) {
-                        if (_.string.contains(message, 'feed:')) {
-                            var feed_id = parseInt(message.replace('feed:', ''), 10);
+                    this.socket.on('user:update', _.bind(function(username, feed_id) {
+                        if (_.string.contains(feed_id, 'feed:')) {
+                            feed_id = parseInt(feed_id.replace('feed:', ''), 10);
                             var active_feed_ids = [];
                             if (this.active_folder) {
                                 active_feed_ids = this.active_folder.feed_ids_in_folder();
                             }
                             if (feed_id != this.active_feed && 
                                 !_.contains(active_feed_ids, feed_id)) {
-                                NEWSBLUR.log(['Real-time user update', username, message]);
-                                this.force_feeds_refresh(false, false, feed_id);
+                                NEWSBLUR.log(['Real-time user update', username, feed_id]);
+                                this.feed_unread_count(feed_id);
+                            }
+                        } else if (_.string.contains(feed_id, 'social:')) {
+                            if (feed_id != this.active_feed) {
+                                NEWSBLUR.log(['Real-time user update', username, feed_id]);
+                                this.feed_unread_count(feed_id);
                             }
                         }
                     }, this));
@@ -3840,6 +3845,10 @@
             this.flags['refresh_inline_feed_delay'] = false;
             this.flags['pause_feed_refreshing'] = false;
             this.check_feed_fetch_progress();
+        },
+        
+        feed_unread_count: function(feed_id) {
+            this.model.feed_unread_count(feed_id || this.active_feed);
         },
         
         // ===================

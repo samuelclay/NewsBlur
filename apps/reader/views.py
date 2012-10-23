@@ -353,7 +353,7 @@ def load_feeds_flat(request):
     }
     return data
 
-@ratelimit(minutes=1, requests=20)
+@ratelimit(minutes=1, requests=10)
 @never_cache
 @json.json_view
 def refresh_feeds(request):
@@ -407,6 +407,33 @@ def refresh_feeds(request):
         
     return {'feeds': feeds, 'social_feeds': social_feeds}
 
+@never_cache
+@json.json_view
+def feed_unread_count(request):
+    user = get_user(request)
+    feed_ids = request.REQUEST.getlist('feed_id')
+    social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
+    feed_ids = list(set(feed_ids) - set(social_feed_ids))
+    
+    feeds = {}
+    if feed_ids:
+        feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids)
+
+    social_feeds = {}
+    if social_feed_ids:
+        social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
+    
+    if settings.DEBUG:
+        if len(feed_ids):
+            feed_title = Feed.get_by_id(feed_ids[0]).feed_title
+        elif len(social_feed_ids) == 1:
+            feed_title = MSocialProfile.objects.get(user_id=social_feed_ids[0].replace('social:', '')).username
+        else:
+            feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
+        logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
+    
+    return {'feeds': feeds, 'social_feeds': social_feeds}
+    
 def refresh_feed(request, feed_id):
     user = get_user(request)
     feed = get_object_or_404(Feed, pk=feed_id)
@@ -836,7 +863,7 @@ def mark_social_stories_as_read(request):
                 else:
                     continue
             r.publish(request.user.username, 'feed:%s' % feed_id)
-
+        r.publish(request.user.username, 'social:%s' % social_user_id)
 
     data.update(code=code, errors=errors)
     return data
