@@ -219,12 +219,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         
         if (onlySelected) return;
         
-        // if (this.model.changedAttributes()) {
-        //     NEWSBLUR.log(["Story changed", this.model.changedAttributes(), this.model.previousAttributes()]);
-        // }
+        if (this.model.changedAttributes()) {
+            NEWSBLUR.log(["Story changed", this.model.changedAttributes(), this.model.previousAttributes()]);
+        }
         
         var story = this.model;
-        var unread_view = NEWSBLUR.assets.preference('unread_view');
+        var unread_view = NEWSBLUR.reader.get_unread_view_score();
         var score = story.score();
         
         if (this.feed) {
