@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -53,6 +54,7 @@ public class NewsblurWebview extends WebView {
 	}
 
 	public void setTextSize(float textSize) {
+		Log.d("Reading", "Setting textsize to " + (AppConstants.FONT_SIZE_LOWER_BOUND + textSize));
 		loadUrl("javascript:document.body.style.fontSize='" + (AppConstants.FONT_SIZE_LOWER_BOUND + textSize) + "em';");
 	}
 	
