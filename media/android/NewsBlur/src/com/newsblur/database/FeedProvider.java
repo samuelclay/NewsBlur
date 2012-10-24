@@ -277,8 +277,7 @@ public class FeedProvider extends ContentProvider {
 			// Query for total feed counts
 		case FEED_COUNT:
 			String sumQuery = "SELECT SUM(" + DatabaseConstants.FEED_POSITIVE_COUNT + ") AS " + DatabaseConstants.SUM_POS + ", " +
-			"SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + ") AS " + DatabaseConstants.SUM_NEUT + ", " + 
-			"SUM(" + DatabaseConstants.FEED_NEGATIVE_COUNT + ") AS " + DatabaseConstants.SUM_NEG + " FROM " + DatabaseConstants.FEED_TABLE;
+			"SUM(" + DatabaseConstants.FEED_NEUTRAL_COUNT + ") AS " + DatabaseConstants.SUM_NEUT + " FROM " + DatabaseConstants.FEED_TABLE;
 			return db.rawQuery(sumQuery, selectionArgs);	
 			
 		case SOCIALFEED_COUNT:
@@ -377,9 +376,9 @@ public class FeedProvider extends ContentProvider {
 			// Querying for all folders with unread items
 		case ALL_FOLDERS:
 			String folderQuery = "SELECT " + TextUtils.join(",", DatabaseConstants.FOLDER_COLUMNS) + " FROM " + DatabaseConstants.FEED_FOLDER_MAP_TABLE  +
-			" LEFT JOIN " + DatabaseConstants.FOLDER_TABLE + 
+			" INNER JOIN " + DatabaseConstants.FOLDER_TABLE + 
 			" ON " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "." + DatabaseConstants.FEED_FOLDER_FOLDER_NAME + " = " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME +
-			" LEFT JOIN " + DatabaseConstants.FEED_TABLE + 
+			" INNER JOIN " + DatabaseConstants.FEED_TABLE + 
 			" ON " + DatabaseConstants.FEED_TABLE + "." + DatabaseConstants.FEED_ID + " = " + DatabaseConstants.FEED_FOLDER_MAP_TABLE + "."  + DatabaseConstants.FEED_FOLDER_FEED_ID + 
 			" GROUP BY " + DatabaseConstants.FOLDER_TABLE + "." + DatabaseConstants.FOLDER_NAME;
 

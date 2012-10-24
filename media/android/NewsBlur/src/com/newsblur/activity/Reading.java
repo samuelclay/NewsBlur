@@ -141,7 +141,7 @@ public abstract class Reading extends SherlockFragmentActivity implements OnPage
 			startActivity(Intent.createChooser(intent, "Share using"));
 			return true;
 		case R.id.menu_textsize:
-			float currentValue = getSharedPreferences(PrefConstants.PREFERENCES, 0).getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 2.0f);
+			float currentValue = getSharedPreferences(PrefConstants.PREFERENCES, 0).getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
 			TextSizeDialogFragment textSize = TextSizeDialogFragment.newInstance(currentValue);
 			textSize.show(getSupportFragmentManager(), TEXT_SIZE);
 			return true;	
