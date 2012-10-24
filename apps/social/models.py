@@ -57,16 +57,19 @@ class MSocialProfile(mongo.Document):
     following_user_ids   = mongo.ListField(mongo.IntField())
     follower_user_ids    = mongo.ListField(mongo.IntField())
     unfollowed_user_ids  = mongo.ListField(mongo.IntField())
+    requested_follow_user_ids = mongo.ListField(mongo.IntField())
     popular_publishers   = mongo.StringField()
     stories_last_month   = mongo.IntField(default=0)
     average_stories_per_month = mongo.IntField(default=0)
     story_count_history  = mongo.ListField()
     feed_classifier_counts = mongo.DictField()
     favicon_color        = mongo.StringField(max_length=6)
+    protected            = mongo.BooleanField()
+    private              = mongo.BooleanField()
     
     meta = {
         'collection': 'social_profile',
-        'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids'],
+        'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids', 'requested_follow_user_ids'],
         'allow_inheritance': False,
         'index_drop_dups': True,
     }
@@ -266,6 +269,8 @@ class MSocialProfile(mongo.Document):
             'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
                                     kwargs={'user_id': self.user_id, 'username': self.username_slug})),
             'feed_link': self.blurblog_url,
+            'protected': self.protected,
+            'private': self.private,
         }
         if not compact:
             params.update({
@@ -299,6 +304,7 @@ class MSocialProfile(mongo.Document):
             params['followers_everybody'] = followers_everybody[:FOLLOWERS_LIMIT]
             params['following_youknow'] = following_youknow[:FOLLOWERS_LIMIT]
             params['following_everybody'] = following_everybody[:FOLLOWERS_LIMIT]
+            params['requested_follow'] = common_follows_with_user in self.requested_follow_user_ids
         if include_following_user or common_follows_with_user:
             if not include_following_user:
                 include_following_user = common_follows_with_user
@@ -337,28 +343,40 @@ class MSocialProfile(mongo.Document):
         
         if check_unfollowed and user_id in self.unfollowed_user_ids:
             return
+            
+        if self.user_id == user_id:
+            followee = self
+        else:
+            followee = MSocialProfile.get_user(user_id)
         
         logging.debug(" ---> ~FB~SB%s~SN (%s) following %s" % (self.username, self.user_id, user_id))
-
-        if user_id not in self.following_user_ids:
-            self.following_user_ids.append(user_id)
-        elif not force:
-            return
+        
+        if not followee.protected:
+            if user_id not in self.following_user_ids:
+                self.following_user_ids.append(user_id)
+            elif not force:
+                return
             
         if user_id in self.unfollowed_user_ids:
             self.unfollowed_user_ids.remove(user_id)
         self.count_follows()
         self.save()
         
-        if self.user_id == user_id:
-            followee = self
-        else:
-            followee = MSocialProfile.get_user(user_id)
-        if self.user_id not in followee.follower_user_ids:
+        if followee.protected and not force:
+            if self.user_id not in followee.requested_follow_user_ids:
+                followee.requested_follow_user_ids.append(self.user_id)
+        elif self.user_id not in followee.follower_user_ids:
             followee.follower_user_ids.append(self.user_id)
-            followee.count_follows()
-            followee.save()
-        
+        followee.count_follows()
+        followee.save()
+
+        if self.protected:
+            from apps.social.tasks import EmailFollowRequest
+            EmailFollowRequest.apply_async(kwargs=dict(follower_user_id=self.user_id,
+                                                       followee_user_id=user_id),
+                                           countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
+            return
+            
         following_key = "F:%s:F" % (self.user_id)
         r.sadd(following_key, user_id)
         follower_key = "F:%s:f" % (user_id)
@@ -408,6 +426,10 @@ class MSocialProfile(mongo.Document):
         followee = MSocialProfile.get_user(user_id)
         if self.user_id in followee.follower_user_ids:
             followee.follower_user_ids.remove(self.user_id)
+            followee.count_follows()
+            followee.save()
+        if self.user_id in followee.requested_follow_user_ids:
+            followee.requested_follow_user_ids.remove(self.user_id)
             followee.count_follows()
             followee.save()
         
@@ -491,6 +513,60 @@ class MSocialProfile(mongo.Document):
                           email_type='new_follower')
                 
         logging.user(user, "~BB~FR~SBSending email for new follower: %s" % follower_profile.username)
+
+    def send_email_for_follow_request(self, follower_user_id):
+        user = User.objects.get(pk=self.user_id)
+        if follower_user_id not in self.requested_follow_user_ids:
+            logging.user(user, "~FMNo longer being followed by %s" % follower_user_id)
+            return
+        if not user.email:
+            logging.user(user, "~FMNo email to send to, skipping.")
+            return
+        elif not user.profile.send_emails:
+            logging.user(user, "~FMDisabled emails, skipping.")
+            return
+        if self.user_id == follower_user_id:
+            return
+        
+        emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,
+                                                sending_user_id=follower_user_id,
+                                                email_type='follow_request')
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+        for email in emails_sent:
+            if email.date_sent > day_ago:
+                logging.user(user, "~SK~FMNot sending follow request email, already sent before. NBD.")
+                return
+        
+        follower_profile = MSocialProfile.get_user(follower_user_id)
+        common_followers, _ = self.common_follows(follower_user_id, direction='followers')
+        common_followings, _ = self.common_follows(follower_user_id, direction='following')
+        if self.user_id in common_followers:
+            common_followers.remove(self.user_id)
+        if self.user_id in common_followings:
+            common_followings.remove(self.user_id)
+        common_followers = MSocialProfile.profiles(common_followers)
+        common_followings = MSocialProfile.profiles(common_followings)
+        
+        data = {
+            'user': user,
+            'follower_profile': follower_profile,
+            'common_followers': common_followers,
+            'common_followings': common_followings,
+        }
+        
+        text    = render_to_string('mail/email_follow_request.txt', data)
+        html    = render_to_string('mail/email_follow_request.xhtml', data)
+        subject = "%s has requested to follow your Blurblog on NewsBlur" % follower_profile.username
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user.username, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+        
+        MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
+                          email_type='follow_request')
+                
+        logging.user(user, "~BB~FR~SBSending email for follow request: %s" % follower_profile.username)
             
     def save_feed_story_history_statistics(self):
         """

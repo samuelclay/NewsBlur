@@ -8276,10 +8276,25 @@ form.opml_import_form input {
     cursor: pointer;
 }
 .NB-modal-profile-editor .NB-friends-profile .NB-profile-username,
-.NB-modal-profile-editor input[type=text] {
+.NB-modal-profile-editor input[type=text],
+.NB-modal-profile-editor .NB-profile-privacy-option input[type=radio] {
     float: left;
     width: 200px;
     margin: 12px 8px 0 0;
+}
+.NB-modal-profile-editor .NB-profile-privacy-option input[type=radio] {
+    width: auto;
+    margin: 18px 0 0;
+}
+.NB-modal-profile-editor .NB-profile-privacy-options {
+    float: left;
+}
+.NB-modal-profile-editor .NB-profile-privacy-option {
+    float: left;
+    clear: left;
+}
+.NB-modal-profile-editor .NB-profile-privacy-option b {
+    padding: 0 6px 0 0;
 }
 .NB-modal-profile-editor .NB-friends-profile .NB-count {
     float: left;
@@ -8297,8 +8312,19 @@ form.opml_import_form input {
 .NB-modal-profile-editor .NB-friends-profile label {
     clear: both;
     float: left;
-    width: 100px;
+    width: 140px;
     padding: 12px 8px 0 12px;
+    cursor: pointer;
+}
+.NB-modal-profile-editor .NB-friends-profile label img {
+    padding-right: 6px;
+    vertical-align: bottom;
+}
+.NB-modal-profile-editor .NB-friends-profile .NB-profile-protected-label {
+    clear: none;
+    width: auto;
+    font-size: 13px;
+    padding: 16px 0 0 8px;
 }
 .NB-modal-profile-editor .NB-account-link {
     margin-left: 12px;
@@ -8497,6 +8523,10 @@ form.opml_import_form input {
 }
 .NB-profile-badge-actions .NB-profile-badge-action-preview.NB-disabled:hover {
     background: white;
+}
+.NB-profile-badge-actions .NB-profile-badge-action-protected-follow img {
+    vertical-align: top;
+    margin-right: 6px;
 }
 .NB-profile-badge-actions .NB-profile-badge-action-edit {
     color: #404040;
