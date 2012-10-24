@@ -34,7 +34,6 @@ class Profile(models.Model):
     has_setup_feeds   = models.NullBooleanField(default=False, null=True, blank=True)
     has_found_friends = models.NullBooleanField(default=False, null=True, blank=True)
     has_trained_intelligence = models.NullBooleanField(default=False, null=True, blank=True)
-    hide_mobile       = models.BooleanField(default=False)
     last_seen_on      = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip      = models.CharField(max_length=50, blank=True, null=True)
     dashboard_date    = models.DateTimeField(default=datetime.datetime.now)
@@ -55,7 +54,6 @@ class Profile(models.Model):
             'has_setup_feeds': self.has_setup_feeds,
             'has_found_friends': self.has_found_friends,
             'has_trained_intelligence': self.has_trained_intelligence,
-            'hide_mobile': self.hide_mobile,
             'dashboard_date': self.dashboard_date
         }
         

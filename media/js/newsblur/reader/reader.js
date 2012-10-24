@@ -2173,20 +2173,6 @@
             }
         },
         
-        hide_mobile: function() {
-          var $mobile = $('.NB-module-mobile');
-          
-          this.model.preference('hide_mobile', true);
-          $mobile.animate({
-            'opacity': 0
-          }, {
-            'duration': 500,
-            'complete': function() {
-              $mobile.slideUp(350);
-            }
-          });
-        },
-        
         // ==========================
         // = Story Pane - Feed View =
         // ==========================
@@ -4927,12 +4913,6 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.check_hide_getting_started(true);
-                }
-            });  
-            $.targetIs(e, { tagSelector: '.NB-module-mobile-hide' }, function($t, $p){
-                e.preventDefault();
-                if (!$t.hasClass('NB-disabled')) {
-                    self.hide_mobile();
                 }
             });  
             

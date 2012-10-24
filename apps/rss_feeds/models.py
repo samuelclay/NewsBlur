@@ -1558,14 +1558,6 @@ class MFeedPushHistory(mongo.Document):
         return push_history
         
         
-class FeedLoadtime(models.Model):
-    feed = models.ForeignKey(Feed)
-    date_accessed = models.DateTimeField(auto_now=True)
-    loadtime = models.FloatField()
-    
-    def __unicode__(self):
-        return "%s: %s sec" % (self.feed, self.loadtime)
-    
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, db_index=True)
     duplicate_link = models.CharField(max_length=255, null=True, db_index=True)
