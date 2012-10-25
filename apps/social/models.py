@@ -1328,9 +1328,15 @@ class MSharedStory(mongo.Document):
         return shared
             
     @classmethod
-    def sync_all_redis(cls):
+    def sync_all_redis(cls, drop=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         s = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        if drop:
+            for key_name in ["C", "S"]:
+                keys = r.keys("%s:*" % key_name)
+                print " ---> Removing %s keys named %s:*" % (len(keys), key_name)
+                for key in keys:
+                    r.delete(key)
         for story in cls.objects.all():
             story.sync_redis_shares(redis_conn=r)
             story.sync_redis_story(redis_conn=s)

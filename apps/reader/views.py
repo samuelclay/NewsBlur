@@ -584,7 +584,7 @@ def load_single_feed(request, feed_id):
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
         data.update(feed.canonical())
-        
+    
     return data
 
 def load_feed_page(request, feed_id):
