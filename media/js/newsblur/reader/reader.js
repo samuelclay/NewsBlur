@@ -520,12 +520,16 @@
                 if (this.flags.river_view && !this.flags.social_view) {
                     var $next_folder = this.get_next_unread_folder(1);
                     var folder = NEWSBLUR.assets.folders.get_view($next_folder);
-                    this.open_river_stories($next_folder, folder && folder.model);
+                    if (folder != this.active_folder) {
+                        this.open_river_stories($next_folder, folder && folder.model);
+                    }
                 } else {
                     // Find next feed with unreads
                     var $next_feed = this.get_next_unread_feed(1);
                     if (!$next_feed || !$next_feed.length) return;
                     var next_feed_id = $next_feed.data('id');
+                    if (next_feed_id == this.active_feed) return;
+                    
                     if (NEWSBLUR.utils.is_feed_social(next_feed_id)) {
                         this.open_social_stories(next_feed_id, {force: true, $feed_link: $next_feed});
                     } else {

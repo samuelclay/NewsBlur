@@ -188,6 +188,7 @@ TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
+SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
 # ==============
 # = Subdomains =
@@ -219,6 +220,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'djcelery',
     'django_ses',
+    'raven.contrib.django',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
