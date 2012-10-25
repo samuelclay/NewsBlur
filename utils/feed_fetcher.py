@@ -35,7 +35,7 @@ def mtime(ttime):
     
 class FetchFeed:
     def __init__(self, feed_id, options):
-        self.feed = Feed.objects.get(pk=feed_id)
+        self.feed = Feed.get_by_id(feed_id)
         self.options = options
         self.fpf = None
     

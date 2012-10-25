@@ -244,7 +244,7 @@ def share_story(request, token):
             code = -1
     
     if feed_id:
-        feed = Feed.objects.get(pk=feed_id)
+        feed = Feed.get_by_id(feed_id)
     else:
         if rss_url:
             feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)

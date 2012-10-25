@@ -1344,7 +1344,7 @@ def send_story_email(request):
     else:
         story, _ = MStory.find_story(feed_id, story_id)
         story   = Feed.format_story(story, feed_id, text=True)
-        feed    = Feed.objects.get(pk=story['story_feed_id'])
+        feed    = Feed.get_by_id(story['story_feed_id'])
         text    = render_to_string('mail/email_story_text.xhtml', locals())
         html    = render_to_string('mail/email_story_html.xhtml', locals())
         subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])

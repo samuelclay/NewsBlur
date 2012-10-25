@@ -96,7 +96,7 @@ class MClassifierFeed(mongo.Document):
     def __unicode__(self):
         user = User.objects.get(pk=self.user_id)
         if self.feed_id:
-            feed = Feed.objects.get(pk=self.feed_id)
+            feed = Feed.get_by_id(self.feed_id)
         else:
             feed = User.objects.get(pk=self.social_user_id)
         return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, feed)

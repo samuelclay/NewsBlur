@@ -1596,7 +1596,7 @@ class MSharedStory(mongo.Document):
         reply_user_profile = MSocialProfile.get_user(reply.user_id)
         sent_emails = 0
 
-        story_feed = Feed.objects.get(pk=self.story_feed_id)
+        story_feed = Feed.get_by_id(self.story_feed_id)
         comment = self.comments_with_author()
         profile_user_ids = set([comment['user_id']])
         reply_user_ids = list(r['user_id'] for r in comment['replies'])
@@ -1668,7 +1668,7 @@ class MSharedStory(mongo.Document):
                 logging.user(original_user, "~FMDisabled emails, skipping.")
             return
             
-        story_feed = Feed.objects.get(pk=self.story_feed_id)
+        story_feed = Feed.get_by_id(self.story_feed_id)
         comment = self.comments_with_author()
         profile_user_ids = set([comment['user_id']])
         reply_user_ids = [reply['user_id'] for reply in comment['replies']]
