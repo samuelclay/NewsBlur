@@ -2216,6 +2216,13 @@ background: transparent;
     float: left;
     cursor: pointer;
 }
+#story_pane .NB-story-comment .NB-story-comment-reply-button img {
+    padding-right: 6px;
+    width: 9px;
+    height: 9px;
+    vertical-align: bottom;
+    float: left;
+}
 #story_pane .NB-story-comment .NB-story-comment-reply-button .NB-story-comment-reply-button-wrapper {
     text-transform: uppercase;
     background-color: #E9AF86;
@@ -2230,6 +2237,12 @@ background: transparent;
 }
 #story_pane .NB-story-comment .NB-story-comment-reply-button:active .NB-story-comment-reply-button-wrapper {
     background-color: #9F3A00;
+}
+#story_pane .NB-story-comment .NB-story-comment-error {
+    float: left;
+    font-size: 10px;
+    color: #6A1000;
+    font-weight: bold;
 }
 
 #story_pane .NB-story-comment-reply {

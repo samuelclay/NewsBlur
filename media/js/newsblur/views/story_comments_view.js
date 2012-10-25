@@ -70,7 +70,11 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
         this.$el.append($header);
         
         this.model.friend_comments.each(_.bind(function(comment) {
-            var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
+            var $comment = new NEWSBLUR.Views.StoryComment({
+                model: comment, 
+                story: this.model,
+                friend_comment: true
+            }).render().el;
             this.$el.append($comment);
         }, this));
     },
@@ -100,7 +104,11 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             this.$el.append($header);
         
             this.model.public_comments.each(_.bind(function(comment) {
-                var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
+                var $comment = new NEWSBLUR.Views.StoryComment({
+                    model: comment, 
+                    story: this.model,
+                    public_comment: true
+                }).render().el;
                 this.$el.append($comment);
             }, this));
         }
@@ -157,7 +165,11 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
             }, Inflector.pluralize(' public comment', public_comments.length, true))).prependTo($comments);
 
             _.each(public_comments, _.bind(function(comment) {
-                var $comment = new NEWSBLUR.Views.StoryComment({model: comment, story: this.model}).render().el;
+                var $comment = new NEWSBLUR.Views.StoryComment({
+                    model: comment, 
+                    story: this.model,
+                    public_comment: true
+                }).render().el;
                 $comments.append($comment);
             }, this));
             

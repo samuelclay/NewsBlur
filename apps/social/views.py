@@ -586,8 +586,18 @@ def save_comment_reply(request):
     original_message = None
     
     if not reply_comments:
-        return json.json_response(request, {'code': -1, 'message': 'Reply comments cannot be empty.'})
-        
+        return json.json_response(request, {
+            'code': -1, 
+            'message': 'Reply comments cannot be empty.',
+        })
+    
+    commenter_profile = MSocialProfile.get_user(comment_user_id)
+    if commenter_profile.protected and not commenter_profile.is_followed_by_user(request.user.pk):
+        return json.json_response(request, {
+            'code': -1, 
+            'message': 'You must be following %s to reply to them.' % commenter_profile.username,
+        })
+    
     shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
                                             story_feed_id=feed_id, 
                                             story_guid=story_id)
