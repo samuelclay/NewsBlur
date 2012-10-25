@@ -103,7 +103,7 @@ class MSocialProfile(mongo.Document):
             
         super(MSocialProfile, self).save(*args, **kwargs)
         if self.user_id not in self.following_user_ids:
-            self.follow_user(self.user_id)
+            self.follow_user(self.user_id, force=True)
             self.count_follows()
             
     @property
@@ -351,7 +351,7 @@ class MSocialProfile(mongo.Document):
         
         logging.debug(" ---> ~FB~SB%s~SN (%s) following %s" % (self.username, self.user_id, user_id))
         
-        if not followee.protected:
+        if not followee.protected or force:
             if user_id not in self.following_user_ids:
                 self.following_user_ids.append(user_id)
             elif not force:
@@ -2136,7 +2136,7 @@ class MInteraction(mongo.Document):
     
     meta = {
         'collection': 'interactions',
-        'indexes': [('user_id', '-date'), 'category'],
+        'indexes': [('user_id', '-date'), 'category', 'with_user_id'],
         'allow_inheritance': False,
         'index_drop_dups': True,
         'ordering': ['-date'],
@@ -2335,7 +2335,7 @@ class MActivity(mongo.Document):
     
     meta = {
         'collection': 'activities',
-        'indexes': [('user_id', '-date'), 'category'],
+        'indexes': [('user_id', '-date'), 'category', 'with_user_id'],
         'allow_inheritance': False,
         'index_drop_dups': True,
         'ordering': ['-date'],

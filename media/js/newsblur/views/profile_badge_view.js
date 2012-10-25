@@ -102,7 +102,11 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                 }, [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' }),
                     $.make('span', 'Follow')
-                ])
+                ]),
+                (!profile.get('private') && $.make('div', { 
+                    className: 'NB-profile-badge-action-preview NB-modal-submit-button NB-modal-submit-grey ' +
+                               (!profile.get('shared_stories_count') ? 'NB-disabled' : '')
+                }, 'Preview'))
             ]);            
         } else {
             $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [

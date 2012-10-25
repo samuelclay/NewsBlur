@@ -20,8 +20,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         var show_folder_counts = NEWSBLUR.assets.preference('folder_counts');
         var collapsed = _.contains(NEWSBLUR.Preferences.collapsed_folders, 'river_blurblog');
 
-        if (collapsed || show_folder_counts) {
+        if (collapsed) {
             this.show_collapsed_river_blurblog_count(options);
+        } else if (show_folder_counts) {
+            this.show_counts(options);
         }
         
         return collapsed;
@@ -51,6 +53,11 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
             });
         }
         
+        this.show_counts(options);
+    },
+    
+    show_counts: function(options) {
+        var $header = this.$('.NB-feeds-header-river-blurblogs');
         var $counts = new NEWSBLUR.Views.FolderCount({
             collection: NEWSBLUR.assets.social_feeds
         }).render().$el;
