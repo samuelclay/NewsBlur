@@ -440,8 +440,7 @@ def story_public_comments(request):
     stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id).limit(1)
     stories = Feed.format_stories(stories)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, relative_user_id, 
-                                                                        check_all=True,
-                                                                        public=True)
+                                                                        check_all=True)
 
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)

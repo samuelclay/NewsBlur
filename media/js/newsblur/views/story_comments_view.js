@@ -29,20 +29,21 @@ NEWSBLUR.Views.StoryCommentsView = Backbone.View.extend({
         
         var $comments_friends = this.$('.NB-story-share-profiles-comments-friends');
         var $comments_public = this.$('.NB-story-share-profiles-comments-public');
-        var comment_user_ids = [];
-        this.model.friend_comments.each(function(comment) { 
-            var $thumb = NEWSBLUR.Views.ProfileThumb.create(comment.get('user_id')).render().el;
+        _.each(this.model.get('commented_by_friends'), function(user_id) { 
+            var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id).render().el;
             $comments_friends.append($thumb);
-            comment_user_ids.push(comment.get('user_id'));
         });
-        this.model.public_comments.each(function(comment) { 
-            var $thumb = NEWSBLUR.Views.ProfileThumb.create(comment.get('user_id')).render().el;
+        _.each(this.model.get('commented_by_public'), function(user_id) { 
+            var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id).render().el;
             $comments_public.append($thumb);
-            comment_user_ids.push(comment.get('user_id'));
         });
+        if (!this.model.friend_comments.length && !this.model.public_comments.length) {
+            this.$el.hide();
+        }
         
         var $shares_friends = this.$('.NB-story-share-profiles-shares-friends');
         var $shares_public = this.$('.NB-story-share-profiles-shares-public');
+        var comment_user_ids = this.model.get('comment_user_ids');
         _.each(this.model.get('shared_by_friends'), function(user_id) { 
             if (_.contains(comment_user_ids, user_id)) return;
             var $thumb = NEWSBLUR.Views.ProfileThumb.create(user_id).render().el;

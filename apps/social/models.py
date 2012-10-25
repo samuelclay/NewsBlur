@@ -1488,7 +1488,7 @@ class MSharedStory(mongo.Document):
         return comment, profiles
         
     @classmethod
-    def stories_with_comments_and_profiles(cls, stories, user_id, check_all=False, public=False):
+    def stories_with_comments_and_profiles(cls, stories, user_id, check_all=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         friend_key = "F:%s:F" % (user_id)
         profile_user_ids = set()
@@ -1553,7 +1553,16 @@ class MSharedStory(mongo.Document):
             
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.to_json(compact=True) for profile in profiles]
-
+        
+        # Toss public comments by private profiles
+        profiles_dict = dict((profile['user_id'], profile) for profile in profiles)
+        for story in stories:
+            commented_by_public = story.get('commented_by_public') or [c['user_id'] for c in story['public_comments']]
+            for user_id in commented_by_public:
+                if profiles_dict[user_id]['private']:
+                    story['public_comments'] = [c for c in story['public_comments'] if c['user_id'] != user_id]
+                    story['comment_count_public'] -= 1
+        
         return stories, profiles
     
     @staticmethod
