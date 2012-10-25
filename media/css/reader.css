@@ -8625,10 +8625,9 @@ form.opml_import_form input {
 .NB-interaction:hover:not(.NB-disabled) {
     background-color: #F3F6FD;
     background-image: -moz-linear-gradient(top, #F5F7FB, #EBF1FE); /* FF3.6 */
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F7FB), to(#EBF1FE)); /* Saf4+, Chrome */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F9FAFE), to(#F2F6FE)); /* Saf4+, Chrome */
     background-image: linear-gradient(top, #F5F7FB, #EBF1FE);
-    border: 1px solid #C3CFE2;
-    border-bottom: 1px solid #B9C5DC;
+    border: 1px solid #DFE9FE;
 }
 .NB-interaction:active:not(.NB-disabled) {
     background-color: #FBE5C7;
