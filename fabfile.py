@@ -59,6 +59,11 @@ env.roledefs ={
              'task10.newsblur.com',
              'task11.newsblur.com',
              ],
+    'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
+                'ec2-184-72-214-147.compute-1.amazonaws.com',
+                'ec2-107-20-103-16.compute-1.amazonaws.com',
+                'ec2-50-17-12-16.compute-1.amazonaws.com',
+                ],
     'vps': ['task01.newsblur.com', 
             'task02.newsblur.com', 
             'task03.newsblur.com', 
@@ -100,6 +105,10 @@ def db():
 def task():
     server()
     env.roles = ['task']
+    
+def ec2task():
+    ec2()
+    env.roles = ['ec2task']
     
 def vps():
     server()
