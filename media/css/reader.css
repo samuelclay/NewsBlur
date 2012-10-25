@@ -8523,7 +8523,8 @@ form.opml_import_form input {
     clear: right;
     float: right;
 }
-.NB-profile-badge-actions .NB-profile-badge-action-preview {
+.NB-profile-badge-actions .NB-profile-badge-action-preview,
+.NB-profile-badge-actions .NB-profile-badge-action-ignore {
     color: #404040;
     line-height: 1;
     font-size: 11px;

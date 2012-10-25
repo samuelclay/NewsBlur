@@ -14,7 +14,7 @@ from django.template import RequestContext
 from django.utils import feedgenerator
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
-from apps.social.models import MInteraction, MActivity
+from apps.social.models import MInteraction, MActivity, MFollowRequest
 from apps.social.tasks import PostToService, EmailCommentReplies, EmailStoryReshares
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -842,6 +842,23 @@ def save_blurblog_settings(request):
     return dict(code=1, user_profile=profile.to_json(include_follows=True, include_settings=True))
 
 @json.json_view
+def load_follow_requests(request):
+    user = get_user(request.user)
+    follow_request_users = MFollowRequest.objects.filter(followee_user_id=user.pk)
+    follow_request_user_ids = [f.follower_user_id for f in follow_request_users]
+    request_profiles = MSocialProfile.profiles(follow_request_user_ids)
+    request_profiles = [p.to_json(include_following_user=user.pk) for p in request_profiles]
+
+    if len(request_profiles):
+        logging.user(request, "~BB~FRLoading Follow Requests (%s requests)" % (
+            len(request_profiles),
+        ))
+
+    return {
+        'request_profiles': request_profiles,
+    }
+
+@json.json_view
 def load_user_friends(request):
     user = get_user(request.user)
     social_profile     = MSocialProfile.get_user(user_id=user.pk)
@@ -898,9 +915,9 @@ def follow(request):
     follow_subscription = MSocialSubscription.feeds(calculate_all_scores=True, **social_params)
     
     if follow_profile.protected:
-        logging.user(request, "~BB~FRRequested follow from: %s" % follow_profile.username)
+        logging.user(request, "~BB~FR~SBRequested~SN follow from: ~SB%s" % follow_profile.username)
     else:
-        logging.user(request, "~BB~FRFollowing: %s" % follow_profile.username)
+        logging.user(request, "~BB~FRFollowing: ~SB%s" % follow_profile.username)
     
     return {
         "user_profile": profile.to_json(include_follows=True), 
@@ -930,12 +947,46 @@ def unfollow(request):
     profile.unfollow_user(unfollow_user_id)
     unfollow_profile = MSocialProfile.get_user(unfollow_user_id)
     
-    logging.user(request, "~BB~FRUnfollowing: %s" % unfollow_profile.username)
+    logging.user(request, "~BB~FRUnfollowing: ~SB%s" % unfollow_profile.username)
     
     return {
         'user_profile': profile.to_json(include_follows=True),
         'unfollow_profile': unfollow_profile.to_json(common_follows_with_user=request.user.pk),
     }
+
+
+@ajax_login_required
+@json.json_view
+def approve_follower(request):
+    profile = MSocialProfile.get_user(request.user.pk)
+    user_id = int(request.POST['user_id'])
+    follower_profile = MSocialProfile.get_user(user_id)
+    code = -1
+    
+    logging.user(request, "~BB~FRApproving follow: ~SB%s" % follower_profile.username)
+    
+    if user_id in profile.requested_follow_user_ids:
+        follower_profile.follow_user(request.user.pk, force=True)
+        code = 1
+        
+    return {'code': code}
+
+@ajax_login_required
+@json.json_view
+def ignore_follower(request):
+    profile = MSocialProfile.get_user(request.user.pk)
+    user_id = int(request.POST['user_id'])
+    follower_profile = MSocialProfile.get_user(user_id)
+    code = -1
+    
+    logging.user(request, "~BB~FR~SK~SBNOT~SN approving follow: ~SB%s" % follower_profile.username)
+    
+    if user_id in profile.requested_follow_user_ids:
+        follower_profile.unfollow_user(request.user.pk)
+        code = 1
+        
+    return {'code': code}
+
 
 @json.json_view
 def find_friends(request):

@@ -113,6 +113,7 @@
             NEWSBLUR.app.original_tab_view = new NEWSBLUR.Views.OriginalTabView({collection: NEWSBLUR.assets.stories});
             NEWSBLUR.app.story_tab_view = new NEWSBLUR.Views.StoryTabView({collection: NEWSBLUR.assets.stories});
             NEWSBLUR.app.feed_selector = new NEWSBLUR.Views.FeedSelector();
+            NEWSBLUR.app.follow_requests_module = new NEWSBLUR.Views.FollowRequestsModule();
             
             this.load_intelligence_slider();
             this.handle_mouse_indicator_hover();
