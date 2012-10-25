@@ -457,7 +457,7 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
-raven_client = raven.Client(SENTRY_DSN)
+RAVEN_CLIENT = raven.Client(SENTRY_DSN)
 
 # =========
 # = Mongo =

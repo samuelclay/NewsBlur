@@ -401,7 +401,7 @@ class Dispatcher:
                 feed_code = 500
                 fetched_feed = None
                 mail_feed_error_to_admin(feed, e, local_vars=locals())
-                settings.raven_client.captureException(e)
+                settings.RAVEN_CLIENT.captureException(e)
 
             if not feed_code:
                 if ret_feed == FEED_OK:
@@ -444,7 +444,7 @@ class Dispatcher:
                     fetched_feed = None
                     page_data = None
                     mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    settings.raven_client.captureException(e)
+                    settings.RAVEN_CLIENT.captureException(e)
 
                 feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
@@ -462,7 +462,7 @@ class Dispatcher:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     # feed.save_feed_history(560, "Icon Error", tb)
                     mail_feed_error_to_admin(feed, e, local_vars=locals())
-                    settings.raven_client.captureException(e)
+                    settings.RAVEN_CLIENT.captureException(e)
             else:
                 logging.debug(u'   ---> [%-30s] ~FBSkipping page fetch: (%s on %s stories) %s' % (feed.title[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
             
