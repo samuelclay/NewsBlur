@@ -599,13 +599,14 @@ def load_feed_page(request, feed_id):
         feed.s3_page):
         if settings.PROXY_S3_PAGES:
             key = settings.S3_PAGES_BUCKET.get_key(feed.s3_pages_key)
-            compressed_data = key.get_contents_as_string()
-            response = HttpResponse(compressed_data, mimetype="text/html; charset=utf-8")
-            response['Content-Encoding'] = 'gzip'
+            if key:
+                compressed_data = key.get_contents_as_string()
+                response = HttpResponse(compressed_data, mimetype="text/html; charset=utf-8")
+                response['Content-Encoding'] = 'gzip'
             
-            logging.user(request, "~FYLoading original page, proxied: ~SB%s bytes" %
-                         (len(compressed_data)))
-            return response
+                logging.user(request, "~FYLoading original page, proxied: ~SB%s bytes" %
+                             (len(compressed_data)))
+                return response
         else:
             logging.user(request, "~FYLoading original page, non-proxied")
             return HttpResponseRedirect('//%s/%s' % (settings.S3_PAGES_BUCKET_NAME,
@@ -1343,7 +1344,7 @@ def send_story_email(request):
     else:
         story, _ = MStory.find_story(feed_id, story_id)
         story   = Feed.format_story(story, feed_id, text=True)
-        feed    = Feed.objects.get(pk=story['story_feed_id'])
+        feed    = Feed.get_by_id(story['story_feed_id'])
         text    = render_to_string('mail/email_story_text.xhtml', locals())
         html    = render_to_string('mail/email_story_html.xhtml', locals())
         subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
