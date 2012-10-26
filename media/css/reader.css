@@ -8343,6 +8343,11 @@ form.opml_import_form input {
     padding: 12px 8px 0 12px;
     cursor: pointer;
 }
+.NB-modal-profile-editor .NB-friends-profile .NB-profile-privacy-notpremium {
+    font-size: 10px;
+    margin: 12px 0;
+    color: #808080;
+}
 .NB-modal-profile-editor .NB-friends-profile label img {
     padding-right: 6px;
     vertical-align: bottom;

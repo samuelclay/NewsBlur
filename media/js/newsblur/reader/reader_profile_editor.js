@@ -65,17 +65,40 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                             $.make('label', { 'for': 'NB-profile-bio' }, 'Bio'),
                             $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 520px', value: this.profile.get('bio'), "data-max": 160 }),
                             $.make('span', { className: 'NB-count NB-count-bio' }),
-                            $.make('label', { 'for': 'NB-profile-privacy-public' }, 'Privacy'),
+                            $.make('label', { 'for': 'NB-profile-privacy-public' }, [
+                                'Privacy',
+                                (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-profile-privacy-notpremium' }, [
+                                    'You must have a ',
+                                    $.make('div', { className: 'NB-splash-link NB-premium' }, 'premium account'),
+                                    ' to change privacy.'
+                                ]))
+                            ]),
                             $.make('div', { className: 'NB-profile-privacy-options' }, [
                                 $.make('div', { className: 'NB-profile-privacy-option' }, [
-                                    $.make('input', { id: 'NB-profile-privacy-public', name: 'protected', type: 'radio', value: 'public', checked: !this.profile.get('protected') && !this.profile.get('private') }),
+                                    $.make('input', { 
+                                        id: 'NB-profile-privacy-public', 
+                                        name: 'protected', 
+                                        type: 'radio', 
+                                        value: 'public', 
+                                        checked: !this.profile.get('protected') &&
+                                                 !this.profile.get('private'),
+                                        disabled: !NEWSBLUR.Globals.is_premium
+                                    }),
                                     $.make('label', { 'for': 'NB-profile-privacy-public', className: 'NB-profile-protected-label' }, [
                                         $.make('b', 'Public:'),
                                         $.make('span', 'My shared stories are public and anybody can reply to me')
                                     ])
                                 ]),
                                 $.make('div', { className: 'NB-profile-privacy-option' }, [
-                                    $.make('input', { id: 'NB-profile-privacy-protected', name: 'protected', type: 'radio', value: 'protected', checked: this.profile.get('protected') && !this.profile.get('private') }),
+                                    $.make('input', { 
+                                        id: 'NB-profile-privacy-protected', 
+                                        name: 'protected', 
+                                        type: 'radio', 
+                                        value: 'protected', 
+                                        checked: this.profile.get('protected') &&
+                                                 !this.profile.get('private'),
+                                        disabled: !NEWSBLUR.Globals.is_premium
+                                    }),
                                     $.make('label', { 'for': 'NB-profile-privacy-protected', className: 'NB-profile-protected-label' }, [
                                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' }),
                                         $.make('b', 'Protected:'),
@@ -83,7 +106,15 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                     ])
                                 ]),
                                 $.make('div', { className: 'NB-profile-privacy-option' }, [
-                                    $.make('input', { id: 'NB-profile-privacy-private', name: 'protected', type: 'radio', value: 'private', checked: this.profile.get('protected') && this.profile.get('private') }),
+                                    $.make('input', { 
+                                        id: 'NB-profile-privacy-private', 
+                                        name: 'protected', 
+                                        type: 'radio', 
+                                        value: 'private', 
+                                        checked: this.profile.get('protected') &&
+                                                 this.profile.get('private'),
+                                        disabled: !NEWSBLUR.Globals.is_premium
+                                    }),
                                     $.make('label', { 'for': 'NB-profile-privacy-private', className: 'NB-profile-protected-label' }, [
                                         $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' }),
                                         $.make('b', 'Private:'),
@@ -304,10 +335,16 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             NEWSBLUR.reader.open_account_modal();
         });
     },
-    
+
     close_and_load_friends: function() {
         this.close(function() {
             NEWSBLUR.reader.open_friends_modal();
+        });
+    },
+    
+    close_and_load_feedchooser: function() {
+        this.close(function() {
+            NEWSBLUR.reader.open_feedchooser_modal();
         });
     },
     
@@ -419,6 +456,10 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         $.targetIs(e, { tagSelector: '.NB-profile-blurblog-color' }, function($t, $p) {
             e.preventDefault();
             self.set_active_color($t);
+        });
+        $.targetIs(e, { tagSelector: '.NB-premium' }, function($t, $p) {
+            e.preventDefault();
+            self.close_and_load_feedchooser();
         });
     },
     
