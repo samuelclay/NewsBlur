@@ -1,6 +1,6 @@
 {% extends "mail/email_base.txt" %}
 
-{% block body %}{{ reshare_user_profile.username }} re-shared "{{ shared_story.story_title }}" from {{ story_feed.feed_title }}:
+{% block body %}{{ reshare_user_profile.username }} re-shared "{{ shared_story.story_title }}"{% if story_feed %} from {{ story_feed.feed_title }}{% endif %}:
 
 {{ comment.user.username }} ({{ comment.shared_date }} ago):
 {{ comment.comments|linebreaksbr }}
