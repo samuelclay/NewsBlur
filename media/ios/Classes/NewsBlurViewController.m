@@ -395,11 +395,7 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
-    
-    if (![[allFolders allKeys] containsObject:@"everything"]) {
-        [allFolders setValue:[[NSArray alloc] init] forKey:@"everything"];
-    }
-    
+        
     if (appDelegate.savedStoriesCount) {
         [allFolders setValue:[[NSArray alloc] init] forKey:@"saved_stories"];
     }
