@@ -1121,7 +1121,7 @@
                     var slug = _.string.words(_.string.clean(feed_title.replace(/[^a-z0-9\. ]/ig, ''))).join('-').toLowerCase();
                     var url = "site/" + feed.id + "/" + slug;
                     if (!_.string.include(window.location.pathname, url)) {
-                        // NEWSBLUR.log(["Navigating to url", url]);
+                        NEWSBLUR.log(["Navigating to url", url]);
                         NEWSBLUR.router.navigate(url);
                     }
                 }
@@ -1576,7 +1576,7 @@
                     if (_.string.include(window.location.pathname, "social/" + feed.get('user_id'))) {
                         params['replace'] = true;
                     }
-                    // NEWSBLUR.log(["Navigating to social", url, window.location.pathname]);
+                    NEWSBLUR.log(["Navigating to social", url, window.location.pathname]);
                     NEWSBLUR.router.navigate(url, params);
                 }
             } else if (!feed.get('feed_title')) {

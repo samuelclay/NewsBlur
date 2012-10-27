@@ -31,7 +31,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         
         this.$modal = $.make('div', { className: 'NB-modal-feedchooser NB-modal' }, [
             // $.make('h2', { className: 'NB-modal-title' }, 'Choose Your '+this.MAX_FEEDS),
-            $.make('div', { className: 'NB-feedchooser-type'}, [
+            $.make('div', { className: 'NB-feedchooser-type NB-feedchooser-left'}, [
               $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
                         $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Free'),
@@ -84,7 +84,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 ]),
                 $.make('li', { className: 'NB-4' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'First access to future features'
+                  'Privacy options for your blurblog'
                 ]),
                 $.make('li', { className: 'NB-5' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -203,13 +203,13 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     },
 
     resize_modal: function(previous_height) {
-        var height = this.$modal.height() + 16;
-        var parent_height = this.$modal.parent().height();
-        if (height > parent_height && previous_height != height) {
+        var content_height = $('.NB-feedchooser-left', this.$modal).height() + 32;
+        var container_height = this.$modal.parent().height();
+        if (content_height > container_height && previous_height != content_height) {
             var chooser_height = $('#NB-feedchooser-feeds').height();
-            var diff = Math.max(4, height - parent_height);
+            var diff = Math.max(4, content_height - container_height);
             $('#NB-feedchooser-feeds').css({'max-height': chooser_height - diff});
-            _.defer(_.bind(function() { this.resize_modal(height); }, this), 1);
+            _.defer(_.bind(function() { this.resize_modal(content_height); }, this), 1);
         }
     },
     

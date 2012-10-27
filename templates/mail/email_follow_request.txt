@@ -1,9 +1,11 @@
 {% extends "mail/email_base.txt" %}
+{% load utils_tags %}
 
-{% block body %}Somebody wants to follow your Blurblog: {{ follower_profile.username }}.
+{% block body %}You have a follow request: {{ follower_profile.username }}.
 
     {{ follower_profile.blurblog_url }} - {{ follower_profile.shared_stories_count }} shared {{ follower_profile.shared_stories_count|pluralize:"story,stories" }} - {{ follower_profile.follower_count }} follower{{ follower_profile.follower_count|pluralize }}
 
+Approve or ignore this follow request on NewsBlur: http://{% current_domain %}{{ user.profile.autologin_url }}
 {% if common_followers %}
 You follow {{ common_followers|length }} {{ common_followers|pluralize:"person,people" }} who follow{{ common_followers|pluralize:"s," }} {{ follower_profile.username }}:
 
