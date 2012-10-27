@@ -1,6 +1,4 @@
-{% load utils_tags %}
-
-{% block body %}{% endblock body %}
+{% load utils_tags %}{% block body %}{% endblock body %}
 
 -----------------------------------------------------------------------------
 

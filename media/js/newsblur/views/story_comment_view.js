@@ -45,11 +45,15 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
                     $.make('div', { className: 'NB-story-comment-edit-button-wrapper' }, 'edit')
                 ])),
                 $.make('div', { className: 'NB-story-comment-reply-button' }, [
-                    $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, 'reply')
+                    $.make('div', { className: 'NB-story-comment-reply-button-wrapper' }, [
+                        (this.user.get('protected') && $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png' })),
+                        'reply'
+                    ])
                 ]),
                 (!has_likes && this.model.get('user_id') != NEWSBLUR.Globals.user_id && $.make('div', { className: 'NB-story-comment-likes NB-left' }, [
                     $.make('div', { className: 'NB-story-comment-like' })
-                ]))
+                ])),
+                $.make('div', { className: 'NB-story-comment-error' })
             ]),
             $.make('div', { className: 'NB-story-comment-content' }, comments),
             this.make_story_share_comment_replies()
@@ -131,6 +135,12 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
     open_reply: function(options) {
         options = options || {};
         var current_user = NEWSBLUR.assets.user_profile;
+        
+        if (this.user.get('protected') && this.options.public_comment) {
+            var $error = this.$('.NB-story-comment-error');
+            $error.text("You must be following " + this.user.get('username') + " to reply");
+            return;
+        }
         
         var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
             $.make('img', { className: 'NB-story-comment-reply-photo', src: current_user.get('photo_url') }),

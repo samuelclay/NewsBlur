@@ -31,6 +31,8 @@
         'user_id'          : "{{ user.pk|safe }}",
         'blurblog_user_id' : "{{ social_profile.user_id|safe }}",
         'blurblog_username' : "{{ social_profile.username|safe }}",
+        'blurblog_protected': {{ social_profile.protected|yesno:"true,false" }},
+        'blurblog_following': {{ user_following_social_profile|yesno:"true,false" }},
         'email'            : "{{ user.email|safe }}",
         'MEDIA_URL'        : "{{ MEDIA_URL }}",
     };

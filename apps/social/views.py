@@ -14,7 +14,7 @@ from django.template import RequestContext
 from django.utils import feedgenerator
 from apps.rss_feeds.models import MStory, Feed, MStarredStory
 from apps.social.models import MSharedStory, MSocialServices, MSocialProfile, MSocialSubscription, MCommentReply
-from apps.social.models import MInteraction, MActivity
+from apps.social.models import MInteraction, MActivity, MFollowRequest
 from apps.social.tasks import PostToService, EmailCommentReplies, EmailStoryReshares
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
@@ -24,7 +24,7 @@ from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import get_user, ajax_login_required
-from utils.view_functions import render_to
+from utils.view_functions import render_to, is_true
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import strip_tags
@@ -44,6 +44,7 @@ def load_social_stories(request, user_id, username=None):
     order          = request.REQUEST.get('order', 'newest')
     read_filter    = request.REQUEST.get('read_filter', 'all')
     stories        = []
+    message        = ""
     
     if page: offset = limit * (int(page) - 1)
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
@@ -55,7 +56,9 @@ def load_social_stories(request, user_id, username=None):
     except MSocialSubscription.DoesNotExist:
         socialsub = None
     
-    if socialsub and (read_filter == 'unread' or order == 'oldest'):
+    if social_profile.private and not social_profile.is_followed_by_user(user.pk):
+        message = "%s has a private blurblog and you must be following them in order to read it." % social_profile.username
+    elif socialsub and (read_filter == 'unread' or order == 'oldest'):
         story_ids = socialsub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
         story_date_order = "%sshared_date" % ('' if order == 'oldest' else '-')
         if story_ids:
@@ -67,7 +70,7 @@ def load_social_stories(request, user_id, username=None):
         stories = Feed.format_stories(mstories)
 
     if not stories:
-        return dict(stories=[])
+        return dict(stories=[], message=message)
     
     checkpoint1 = time.time()
     
@@ -341,15 +344,19 @@ def load_social_page(request, user_id, username=None, **kwargs):
         user_social_services = MSocialServices.get_user(user.pk)
         user_following_social_profile = user_social_profile.is_following_user(social_user_id)
     social_profile = MSocialProfile.get_user(social_user_id)
-    
-    params = dict(user_id=social_user.pk)
-    if feed_id:
-        params['story_feed_id'] = feed_id
-    mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
-    stories = Feed.format_stories(mstories)
-    if len(stories) > limit:
-        has_next_page = True
-        stories = stories[:-1]
+
+    if social_profile.private and (not user.is_authenticated() or 
+                                   not social_profile.is_followed_by_user(user.pk)):
+        stories = []
+    else:
+        params = dict(user_id=social_user.pk)
+        if feed_id:
+            params['story_feed_id'] = feed_id
+        mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
+        stories = Feed.format_stories(mstories)
+        if len(stories) > limit:
+            has_next_page = True
+            stories = stories[:-1]
 
     checkpoint1 = time.time()
 
@@ -433,8 +440,7 @@ def story_public_comments(request):
     stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id).limit(1)
     stories = Feed.format_stories(stories)
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, relative_user_id, 
-                                                                        check_all=True,
-                                                                        public=True)
+                                                                        check_all=True)
 
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)
@@ -580,8 +586,18 @@ def save_comment_reply(request):
     original_message = None
     
     if not reply_comments:
-        return json.json_response(request, {'code': -1, 'message': 'Reply comments cannot be empty.'})
-        
+        return json.json_response(request, {
+            'code': -1, 
+            'message': 'Reply comments cannot be empty.',
+        })
+    
+    commenter_profile = MSocialProfile.get_user(comment_user_id)
+    if commenter_profile.protected and not commenter_profile.is_followed_by_user(request.user.pk):
+        return json.json_response(request, {
+            'code': -1, 
+            'message': 'You must be following %s to reply to them.' % commenter_profile.username,
+        })
+    
     shared_story = MSharedStory.objects.get(user_id=comment_user_id, 
                                             story_feed_id=feed_id, 
                                             story_guid=story_id)
@@ -749,11 +765,16 @@ def profile(request):
 
     user_profile = MSocialProfile.get_user(user_id)
     user_profile.count_follows()
+
+    activities = []
+    if not user_profile.private or user_profile.is_followed_by_user(user.pk):
+        activities, _ = MActivity.user(user_id, page=1, public=True, categories=categories)
+
     user_profile = user_profile.to_json(include_follows=True, common_follows_with_user=user.pk)
     profile_ids = set(user_profile['followers_youknow'] + user_profile['followers_everybody'] + 
                       user_profile['following_youknow'] + user_profile['following_everybody'])
     profiles = MSocialProfile.profiles(profile_ids)
-    activities, _ = MActivity.user(user_id, page=1, public=True, categories=categories)
+
     logging.user(request, "~BB~FRLoading social profile: %s" % user_profile['username'])
         
     payload = {
@@ -763,6 +784,7 @@ def profile(request):
         'followers_everybody': user_profile['followers_everybody'],
         'following_youknow': user_profile['following_youknow'],
         'following_everybody': user_profile['following_everybody'],
+        'requested_follow': user_profile['requested_follow'],
         'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
         'activities': activities,
     }
@@ -802,6 +824,8 @@ def save_user_profile(request):
     profile.location = data['location']
     profile.bio = data['bio']
     profile.website = website
+    profile.protected = is_true(data.get('protected', False))
+    profile.private = is_true(data.get('private', False))
     profile.save()
 
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
@@ -826,6 +850,23 @@ def save_blurblog_settings(request):
     logging.user(request, "~BB~FRSaving blurblog settings")
     
     return dict(code=1, user_profile=profile.to_json(include_follows=True, include_settings=True))
+
+@json.json_view
+def load_follow_requests(request):
+    user = get_user(request.user)
+    follow_request_users = MFollowRequest.objects.filter(followee_user_id=user.pk)
+    follow_request_user_ids = [f.follower_user_id for f in follow_request_users]
+    request_profiles = MSocialProfile.profiles(follow_request_user_ids)
+    request_profiles = [p.to_json(include_following_user=user.pk) for p in request_profiles]
+
+    if len(request_profiles):
+        logging.user(request, "~BB~FRLoading Follow Requests (%s requests)" % (
+            len(request_profiles),
+        ))
+
+    return {
+        'request_profiles': request_profiles,
+    }
 
 @json.json_view
 def load_user_friends(request):
@@ -883,7 +924,10 @@ def follow(request):
     }
     follow_subscription = MSocialSubscription.feeds(calculate_all_scores=True, **social_params)
     
-    logging.user(request, "~BB~FRFollowing: %s" % follow_profile.username)
+    if follow_profile.protected:
+        logging.user(request, "~BB~FR~SBRequested~SN follow from: ~SB%s" % follow_profile.username)
+    else:
+        logging.user(request, "~BB~FRFollowing: ~SB%s" % follow_profile.username)
     
     return {
         "user_profile": profile.to_json(include_follows=True), 
@@ -913,12 +957,46 @@ def unfollow(request):
     profile.unfollow_user(unfollow_user_id)
     unfollow_profile = MSocialProfile.get_user(unfollow_user_id)
     
-    logging.user(request, "~BB~FRUnfollowing: %s" % unfollow_profile.username)
+    logging.user(request, "~BB~FRUnfollowing: ~SB%s" % unfollow_profile.username)
     
     return {
         'user_profile': profile.to_json(include_follows=True),
         'unfollow_profile': unfollow_profile.to_json(common_follows_with_user=request.user.pk),
     }
+
+
+@ajax_login_required
+@json.json_view
+def approve_follower(request):
+    profile = MSocialProfile.get_user(request.user.pk)
+    user_id = int(request.POST['user_id'])
+    follower_profile = MSocialProfile.get_user(user_id)
+    code = -1
+    
+    logging.user(request, "~BB~FRApproving follow: ~SB%s" % follower_profile.username)
+    
+    if user_id in profile.requested_follow_user_ids:
+        follower_profile.follow_user(request.user.pk, force=True)
+        code = 1
+        
+    return {'code': code}
+
+@ajax_login_required
+@json.json_view
+def ignore_follower(request):
+    profile = MSocialProfile.get_user(request.user.pk)
+    user_id = int(request.POST['user_id'])
+    follower_profile = MSocialProfile.get_user(user_id)
+    code = -1
+    
+    logging.user(request, "~BB~FR~SK~SBNOT~SN approving follow: ~SB%s" % follower_profile.username)
+    
+    if user_id in profile.requested_follow_user_ids:
+        follower_profile.unfollow_user(request.user.pk)
+        code = 1
+        
+    return {'code': code}
+
 
 @json.json_view
 def find_friends(request):

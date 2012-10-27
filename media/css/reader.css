@@ -2216,6 +2216,13 @@ background: transparent;
     float: left;
     cursor: pointer;
 }
+#story_pane .NB-story-comment .NB-story-comment-reply-button img {
+    padding-right: 6px;
+    width: 9px;
+    height: 9px;
+    vertical-align: bottom;
+    float: left;
+}
 #story_pane .NB-story-comment .NB-story-comment-reply-button .NB-story-comment-reply-button-wrapper {
     text-transform: uppercase;
     background-color: #E9AF86;
@@ -2230,6 +2237,12 @@ background: transparent;
 }
 #story_pane .NB-story-comment .NB-story-comment-reply-button:active .NB-story-comment-reply-button-wrapper {
     background-color: #9F3A00;
+}
+#story_pane .NB-story-comment .NB-story-comment-error {
+    float: left;
+    font-size: 10px;
+    color: #6A1000;
+    font-weight: bold;
 }
 
 #story_pane .NB-story-comment-reply {
@@ -2445,10 +2458,10 @@ background: transparent;
     vertical-align: middle;
     height: 22px;
     width: 22px;
-    margin: 0 4px 0 0;
+    padding: 0 2px;
     cursor: pointer;
 }
-#story_pane .NB-story-share-profile .NB-user-avatar img {
+#story_pane .NB-story-share-profile .NB-user-avatar img.NB-user-avatar-image {
     width: 22px;
     height: 22px;
     border-radius: 3px;
@@ -2487,6 +2500,20 @@ background: transparent;
     display: none;
 }
 
+/* =============== */
+/* = User Avatar = */
+/* =============== */
+
+.NB-user-avatar {
+    position: relative;
+}
+.NB-user-avatar .NB-user-avatar-private {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    bottom: -2px;
+    left: -1px;
+}
 /* ============================= */
 /* = Side Options in Feed view = */
 /* ============================= */
@@ -6890,7 +6917,7 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/images.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-4 .NB-feedchooser-premium-bullet-image {
-    background: transparent url('/media/embed/icons/silk/magnifier.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/silk/lock.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-5 .NB-feedchooser-premium-bullet-image {
     background: transparent url('/media/embed/icons/silk/lorry.png') no-repeat 0 0;
@@ -8276,10 +8303,25 @@ form.opml_import_form input {
     cursor: pointer;
 }
 .NB-modal-profile-editor .NB-friends-profile .NB-profile-username,
-.NB-modal-profile-editor input[type=text] {
+.NB-modal-profile-editor input[type=text],
+.NB-modal-profile-editor .NB-profile-privacy-option input[type=radio] {
     float: left;
     width: 200px;
     margin: 12px 8px 0 0;
+}
+.NB-modal-profile-editor .NB-profile-privacy-option input[type=radio] {
+    width: auto;
+    margin: 18px 0 0;
+}
+.NB-modal-profile-editor .NB-profile-privacy-options {
+    float: left;
+}
+.NB-modal-profile-editor .NB-profile-privacy-option {
+    float: left;
+    clear: left;
+}
+.NB-modal-profile-editor .NB-profile-privacy-option b {
+    padding: 0 6px 0 0;
 }
 .NB-modal-profile-editor .NB-friends-profile .NB-count {
     float: left;
@@ -8297,8 +8339,24 @@ form.opml_import_form input {
 .NB-modal-profile-editor .NB-friends-profile label {
     clear: both;
     float: left;
-    width: 100px;
+    width: 140px;
     padding: 12px 8px 0 12px;
+    cursor: pointer;
+}
+.NB-modal-profile-editor .NB-friends-profile .NB-profile-privacy-notpremium {
+    font-size: 10px;
+    margin: 12px 0;
+    color: #808080;
+}
+.NB-modal-profile-editor .NB-friends-profile label img {
+    padding-right: 6px;
+    vertical-align: bottom;
+}
+.NB-modal-profile-editor .NB-friends-profile .NB-profile-protected-label {
+    clear: none;
+    width: auto;
+    font-size: 13px;
+    padding: 16px 0 0 8px;
 }
 .NB-modal-profile-editor .NB-account-link {
     margin-left: 12px;
@@ -8483,7 +8541,8 @@ form.opml_import_form input {
     clear: right;
     float: right;
 }
-.NB-profile-badge-actions .NB-profile-badge-action-preview {
+.NB-profile-badge-actions .NB-profile-badge-action-preview,
+.NB-profile-badge-actions .NB-profile-badge-action-ignore {
     color: #404040;
     line-height: 1;
     font-size: 11px;
@@ -8497,6 +8556,10 @@ form.opml_import_form input {
 }
 .NB-profile-badge-actions .NB-profile-badge-action-preview.NB-disabled:hover {
     background: white;
+}
+.NB-profile-badge-actions .NB-profile-badge-action-protected-follow img {
+    vertical-align: top;
+    margin-right: 6px;
 }
 .NB-profile-badge-actions .NB-profile-badge-action-edit {
     color: #404040;
