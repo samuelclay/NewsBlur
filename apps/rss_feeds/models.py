@@ -275,7 +275,11 @@ class Feed(models.Model):
         
     @classmethod
     def task_feeds(cls, feeds, queue_size=12):
-        logging.debug(" ---> Tasking %s feeds..." % feeds.count())
+        if isinstance(feeds, Feed):
+            logging.debug(" ---> Tasking feed: %s" % feeds)
+            feeds = [feeds]
+        else:
+            logging.debug(" ---> Tasking %s feeds..." % len(feeds))
         
         feed_queue = []
         for f in feeds:
@@ -1402,13 +1406,16 @@ class MStory(mongo.Document):
     def sync_all_redis(cls, story_feed_id=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        feed = None
+        if story_feed_id:
+            feed = Feed.get_by_id(story_feed_id)
         stories = cls.objects.filter(story_date__gte=DAYS_OF_UNREAD)
         if story_feed_id:
             stories = stories.filter(story_feed_id=story_feed_id)
             r.delete('F:%s' % story_feed_id)
             r.delete('zF:%s' % story_feed_id)
-        
-        print " ---> Syncing %s stories in %s" % (stories.count(), story_feed_id)
+
+        logging.info(" ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
         for story in stories:
             story.sync_redis(r)
         

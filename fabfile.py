@@ -653,7 +653,7 @@ def copy_postgres_to_standby():
     # Make sure you can ssh from master to slave and back.
     # Need to give postgres accounts keys in authroized_keys.
     
-    sudo('su postgres -c "psql -c \\"SELECT pg_start_backup(\'label\', true)\\""', pty=False)
+    # sudo('su postgres -c "psql -c \\"SELECT pg_start_backup(\'label\', true)\\""', pty=False)
     sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.1/main postgres@%s:/var/lib/postgresql/9.1/ --exclude postmaster.pid\"' % slave, pty=False)
     sudo('su postgres -c "psql -c \\"SELECT pg_stop_backup()\\""', pty=False)
     
@@ -668,7 +668,7 @@ def setup_mongo():
     sudo('/etc/init.d/mongodb restart')
 
 def setup_redis():
-    redis_version = '2.4.15'
+    redis_version = '2.6.2'
     with cd(env.VENDOR_PATH):
         run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)
