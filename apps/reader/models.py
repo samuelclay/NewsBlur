@@ -390,8 +390,8 @@ class UserSubscription(models.Model):
                 continue
             if story.get('story_guid', None) not in read_stories_ids:
                 unread_stories.append(story)
-                if story.story_date < oldest_unread_story_date:
-                    oldest_unread_story_date = story.story_date
+                if story['story_date'] < oldest_unread_story_date:
+                    oldest_unread_story_date = story['story_date']
 
         # if not silent:
         #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
