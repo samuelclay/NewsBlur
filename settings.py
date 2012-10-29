@@ -469,7 +469,15 @@ MONGO_DB_DEFAULTS = {
     'alias': 'default',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
+
+# if MONGO_DB.get('read_preference', pymongo.ReadPreference.PRIMARY) != pymongo.ReadPreference.PRIMARY:
+#     MONGO_PRIMARY_DB = MONGO_DB.copy()
+#     MONGO_PRIMARY_DB.update(read_preference=pymongo.ReadPreference.PRIMARY)
+#     MONGOPRIMARYDB = connect(MONGO_PRIMARY_DB.pop('name'), **MONGO_PRIMARY_DB)
+# else:
+#     MONGOPRIMARYDB = MONGODB
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
@@ -478,6 +486,7 @@ MONGO_ANALYTICS_DB_DEFAULTS = {
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
+
 
 # =========
 # = Redis =

@@ -455,12 +455,11 @@ def setup_mongoengine():
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             run('rm -fr mongoengine')
-            run('git clone https://github.com/mongoengine/mongoengine.git')
+            run('git clone https://github.com/MongoEngine/mongoengine.git')
             sudo('rm -f /usr/local/lib/python2.7/dist-packages/mongoengine')
+            sudo('rm -f /usr/local/lib/python2.7/dist-packages/mongoengine-*')
             sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
                  os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
-    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
-        run('git checkout -b dev origin/dev')
         
 def setup_pymongo_repo():
     with cd(env.VENDOR_PATH):
@@ -472,12 +471,10 @@ def setup_pymongo_repo():
 def setup_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         with settings(warn_only=True):
-            run('git checkout master')
-            run('git branch -D dev')
-            run('git remote add %s git://github.com/samuelclay/mongoengine.git' % env.user)
-            run('git fetch %s' % env.user)
-            run('git checkout -b dev %s/dev' % env.user)
-            run('git pull %s dev' % env.user)
+            run('git remote add clay https://github.com/samuelclay/mongoengine.git')
+            run('git pull')
+            run('git fetch clay')
+            run('git checkout -b clay_master clay/master')
 
 def switch_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):

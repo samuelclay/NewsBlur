@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.template.loader import render_to_string
-from django.http import HttpResponse, HttpResponseRedirect, Http404, Http403
+from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.conf import settings
 from django.template import RequestContext
 from django.utils import feedgenerator
@@ -1110,7 +1110,7 @@ def shared_stories_rss_feed(request, user_id, username):
     current_site = current_site and current_site.domain
     
     if social_profile.private:
-        return Http403
+        return HttpResponseForbidden
     
     data = {}
     data['title'] = social_profile.title

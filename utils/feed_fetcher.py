@@ -229,11 +229,6 @@ class ProcessFeed:
             story_feed_id=self.feed_id
         ).limit(max(int(len(story_guids)*1.5), 10)))
         
-        # MStory.objects(
-        #     (Q(story_date__gte=start_date) & Q(story_date__lte=end_date))
-        #     | (Q(story_guid__in=story_guids)),
-        #     story_feed=self.feed
-        # ).order_by('-story_date')
         ret_values = self.feed.add_update_stories(stories, existing_stories,
                                                   verbose=self.options['verbose'])
 
@@ -513,28 +508,32 @@ class Dispatcher:
                                                     active=True,
                                                     user__profile__last_seen_on__gte=UNREAD_CUTOFF)\
                                             .order_by('-last_read_date')
-
+        
+        if not user_subs.count():
+            return
+            
         for sub in user_subs:
             if not sub.needs_unread_recalc:
                 sub.needs_unread_recalc = True
                 sub.save()
 
         if self.options['compute_scores']:
-            stories_db = MStory.objects(story_feed_id=feed.pk,
-                                        story_date__gte=UNREAD_CUTOFF)
+            stories = MStory.objects(story_feed_id=feed.pk,
+                                     story_date__gte=UNREAD_CUTOFF)
+            stories = Feed.format_stories(stories, feed.pk)
             logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
-                          feed.title[:30], stories_db.count(), user_subs.count(),
+                          feed.title[:30], len(stories), user_subs.count(),
                           feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))        
-            self.calculate_feed_scores_with_stories(user_subs, stories_db)
+            self.calculate_feed_scores_with_stories(user_subs, stories)
         elif self.options.get('mongodb_replication_lag'):
             logging.debug(u'   ---> [%-30s] ~BR~FYSkipping computing scores: ~SB%s seconds~SN of mongodb lag' % (
               feed.title[:30], self.options.get('mongodb_replication_lag')))
     
     @timelimit(10)
-    def calculate_feed_scores_with_stories(self, user_subs, stories_db):
+    def calculate_feed_scores_with_stories(self, user_subs, stories):
         for sub in user_subs:
             silent = False if self.options['verbose'] >= 2 else True
-            sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
+            sub.calculate_feed_scores(silent=silent, stories=stories)
             
     def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool
