@@ -47,7 +47,7 @@
 
 + (NSString *)sharerTitle
 {
-	return @"Read It Later";
+	return @"Pocket";
 }
 
 + (BOOL)canShareURL
@@ -72,7 +72,7 @@
 
 + (NSString *)authorizationFormCaption
 {
-	return SHKLocalizedString(@"Create a free account at %@", @"Readitlaterlist.com");
+	return SHKLocalizedString(@"Create a free account at %@", @"getpocket.com");
 }
 
 - (void)authorizationFormValidate:(SHKFormController *)form
