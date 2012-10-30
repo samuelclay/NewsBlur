@@ -7,7 +7,6 @@ import xml.sax
 import redis
 import random
 import pymongo
-from django.core.cache import cache
 from django.conf import settings
 from django.db import IntegrityError
 from apps.reader.models import UserSubscription
@@ -369,7 +368,6 @@ class Dispatcher:
                         if self.options['verbose']:
                             logging.debug(u'   ---> [%-30s] ~FBTIME: unread count in ~FM%.4ss' % (
                                           feed.title[:30], time.time() - start))
-                    cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
                     # if ret_entries.get(ENTRY_NEW) or ret_entries.get(ENTRY_UPDATED) or self.options['force']:
                     #     feed.get_stories(force=True)
             except KeyboardInterrupt:
