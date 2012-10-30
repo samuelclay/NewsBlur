@@ -388,7 +388,7 @@ class UserSubscription(models.Model):
         for story in stories:
             if story['story_date'] < date_delta:
                 continue
-            if story.get('story_guid', None) not in read_stories_ids:
+            if story['id'] not in read_stories_ids:
                 unread_stories.append(story)
                 if story['story_date'] < oldest_unread_story_date:
                     oldest_unread_story_date = story['story_date']
