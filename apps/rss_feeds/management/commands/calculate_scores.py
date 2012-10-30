@@ -14,6 +14,8 @@ class Command(BaseCommand):
         make_option("-s", "--silent", dest="silent", default=False, action="store_true", help="Inverse verbosity."),
         make_option("-u", "--user", dest="user", nargs=1, help="Specify user id or username"),
         make_option("-d", "--daemon", dest="daemonize", action="store_true"),
+        make_option("-D", "--days", dest="days", nargs=1, default=1),
+        make_option("-O", "--offset", dest="offset", nargs=1, default=0),
     )
 
     def handle(self, *args, **options):
@@ -27,18 +29,22 @@ class Command(BaseCommand):
             else:
                 users = User.objects.filter(username=options['user'])
         else:
-            users = User.objects.filter(profile__last_seen_on__gte=datetime.datetime.now()-datetime.timedelta(days=1))
+            users = User.objects.filter(profile__last_seen_on__gte=datetime.datetime.now()-datetime.timedelta(days=int(options['days']))).order_by('pk')
         
         user_count = users.count()
         for i, u in enumerate(users):
+            if i < options['offset']: continue
             if options['all']:
                 usersubs = UserSubscription.objects.filter(user=u, active=True)
             else:
                 usersubs = UserSubscription.objects.filter(user=u, needs_unread_recalc=True)
             print " ---> %s has %s feeds (%s/%s)" % (u.username, usersubs.count(), i+1, user_count)
-
             for sub in usersubs:
-                sub.calculate_feed_scores(silent=options['silent'])
+                try:
+                    sub.calculate_feed_scores(silent=options['silent'])
+                except Exception, e:
+                    print " ***> Exception: %s" % e
+                    continue
         
 def daemonize():
     """
