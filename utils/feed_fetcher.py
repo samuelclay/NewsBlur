@@ -6,6 +6,7 @@ import urllib2
 import xml.sax
 import redis
 import random
+import pymongo
 from django.core.cache import cache
 from django.conf import settings
 from django.db import IntegrityError
@@ -519,7 +520,8 @@ class Dispatcher:
 
         if self.options['compute_scores']:
             stories = MStory.objects(story_feed_id=feed.pk,
-                                     story_date__gte=UNREAD_CUTOFF)
+                                     story_date__gte=UNREAD_CUTOFF)\
+                            .read_preference(pymongo.ReadPreference.PRIMARY)
             stories = Feed.format_stories(stories, feed.pk)
             logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
                           feed.title[:30], len(stories), user_subs.count(),

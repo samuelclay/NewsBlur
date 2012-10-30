@@ -456,8 +456,8 @@ def setup_mongoengine():
         with settings(warn_only=True):
             run('rm -fr mongoengine')
             run('git clone https://github.com/MongoEngine/mongoengine.git')
-            sudo('rm -f /usr/local/lib/python2.7/dist-packages/mongoengine')
-            sudo('rm -f /usr/local/lib/python2.7/dist-packages/mongoengine-*')
+            sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine')
+            sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine-*')
             sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
                  os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
         
