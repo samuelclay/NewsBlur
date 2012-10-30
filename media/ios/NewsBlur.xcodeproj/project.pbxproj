@@ -2346,7 +2346,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2368,8 +2368,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "6A726833-5150-4FDE-B99F-8589E8067855";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6A726833-5150-4FDE-B99F-8589E8067855";
+				PROVISIONING_PROFILE = "FCE20249-D83E-46AA-9389-9A2BAD00DDA8";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
 			};
@@ -2386,7 +2386,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
@@ -2405,8 +2405,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "6A726833-5150-4FDE-B99F-8589E8067855";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6A726833-5150-4FDE-B99F-8589E8067855";
+				PROVISIONING_PROFILE = "FCE20249-D83E-46AA-9389-9A2BAD00DDA8";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
