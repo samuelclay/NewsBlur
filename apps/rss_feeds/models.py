@@ -293,7 +293,7 @@ class Feed(models.Model):
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
         count_extra = False
-        if random.random() > .9 or not self.data.popular_tags or not self.data.popular_authors:
+        if random.random() > .98 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
         if force or (full and count_extra):
             self.count_stories()
@@ -600,7 +600,7 @@ class Feed(models.Model):
         for r in res:
             dates[r.key] = r.value
             year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
-            if year < min_year:
+            if year < min_year and year > 2000:
                 min_year = year
                 
         # Add on to existing months, always amending up, never down. (Current month
@@ -610,7 +610,7 @@ class Feed(models.Model):
             year = int(re.findall(r"(\d{4})-\d{1,2}", current_month)[0])
             if current_month not in dates or dates[current_month] < current_count:
                 dates[current_month] = current_count
-            if year < min_year:
+            if year < min_year and year > 2000:
                 min_year = year
         
         # Assemble a list with 0's filled in for missing months, 
