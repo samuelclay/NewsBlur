@@ -338,10 +338,10 @@ class UserSubscription(models.Model):
                 story = MStory.objects.filter(story_feed_id=self.feed_id, story_guid=story_id)[0]
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
-            m, _ = MUserStory.objects.get_or_create(story=story, user_id=self.user_id, 
+            m, _ = MUserStory.objects.get_or_create(story_id=story_id, user_id=self.user_id, 
                                                     feed_id=self.feed_id, defaults={
                 'read_date': date, 
-                'story_id': story_id, 
+                'story': story, 
                 'story_date': story.story_date,
             })
                 
