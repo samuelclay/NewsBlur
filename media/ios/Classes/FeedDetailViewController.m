@@ -208,6 +208,23 @@
     self.feedPage = 1;
 }
 
+- (void)reloadPage {
+    [self resetFeedDetail];
+
+    [appDelegate setStories:nil];
+    appDelegate.storyCount = 0;
+
+    [self.storyTitlesTable reloadData];
+    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+
+    
+    if (appDelegate.isRiverView) {
+        [self fetchRiverPage:1 withCallback:nil];
+    } else {
+        [self fetchFeedDetail:1 withCallback:nil];
+    }
+}
+
 #pragma mark -
 #pragma mark Regular and Social Feeds
 
@@ -221,6 +238,7 @@
 
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     NSString *theFeedDetailURL;
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if (!self.pageFetching && !self.pageFinished) {
     
@@ -242,6 +260,18 @@
                                 [appDelegate.activeFeed objectForKey:@"id"],
                                 self.feedPage];
         }
+        
+        if ([userPreferences stringForKey:[appDelegate orderKey]]) {
+            theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                                theFeedDetailURL,
+                                [userPreferences stringForKey:[appDelegate orderKey]]];
+        }
+        if ([userPreferences stringForKey:[appDelegate readFilterKey]]) {
+            theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                                theFeedDetailURL,
+                                [userPreferences stringForKey:[appDelegate readFilterKey]]];
+        }
+        
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
@@ -266,7 +296,9 @@
 #pragma mark -
 #pragma mark River of News
 
-- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {    
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
     if (!self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
         self.pageFetching = YES;
@@ -280,7 +312,7 @@
         
         if (appDelegate.isSocialRiverView) {
             theFeedDetailURL = [NSString stringWithFormat:
-                                @"http://%@/social/river_stories/?page=%d&order=newest", 
+                                @"http://%@/social/river_stories/?page=%d", 
                                 NEWSBLUR_URL,
                                 self.feedPage];
         } else if (appDelegate.activeFolder == @"saved_stories") {
@@ -296,6 +328,18 @@
                                 self.feedPage];
         }
         
+        
+        if ([userPreferences stringForKey:[appDelegate orderKey]]) {
+            theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                                theFeedDetailURL,
+                                [userPreferences stringForKey:[appDelegate orderKey]]];
+        }
+        if ([userPreferences stringForKey:[appDelegate readFilterKey]]) {
+            theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                                theFeedDetailURL,
+                                [userPreferences stringForKey:[appDelegate readFilterKey]]];
+        }
+
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
@@ -995,7 +1039,7 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 2 : 38 *3)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 3 : 38 * 5)];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];

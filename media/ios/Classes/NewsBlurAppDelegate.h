@@ -229,6 +229,8 @@
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
 - (BOOL)isPortrait;
+- (NSString *)orderKey;
+- (NSString *)readFilterKey;
 - (void)confirmLogout;
 
 - (int)indexOfNextUnreadStory;

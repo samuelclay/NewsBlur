@@ -284,9 +284,9 @@ div + p {
 }
 .NB-story img {
     margin: 20px auto;
-    height: auto !important;
-    width: auto !important;
-    max-width: 100%;
+    height: auto;
+    width: auto;
+    max-width: 100% !important;
     display: none;
 }
 
@@ -294,8 +294,8 @@ div + p {
 .NB-story img.NB-medium-image {
     margin: 20px auto !important;
     display: block !important;
-    width: auto !important;
-    height: auto !important;
+    width: auto;
+    height: auto;
     display: block;
     float: none;
     clear: both;

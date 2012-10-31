@@ -885,7 +885,7 @@ static const CGFloat kFolderTitleHeight = 28;
         return 0;
     }
     
-    return 28;
+    return 32;
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {

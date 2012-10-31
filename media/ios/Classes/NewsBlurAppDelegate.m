@@ -446,6 +446,22 @@
     }
 }
 
+- (NSString *)orderKey {
+    if (self.isRiverView) {
+        return [NSString stringWithFormat:@"folder:%@:order", self.activeFolder];
+    } else {
+        return [NSString stringWithFormat:@"%@:order", [self.activeFeed objectForKey:@"id"]];
+    }
+}
+
+- (NSString *)readFilterKey {
+    if (self.isRiverView) {
+        return [NSString stringWithFormat:@"folder:%@:read_filter", self.activeFolder];
+    } else {
+        return [NSString stringWithFormat:@"%@:read_filter", [self.activeFeed objectForKey:@"id"]];
+    }
+}
+
 - (void)confirmLogout {
     UIAlertView *logoutConfirm = [[UIAlertView alloc] initWithTitle:@"Positive?" 
                                                             message:nil 
