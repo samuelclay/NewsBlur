@@ -524,7 +524,6 @@
 		43A4C3CF15B00966008787B5 /* PullToRefreshView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PullToRefreshView.m; path = "Other Sources/PullToRefreshView.m"; sourceTree = "<group>"; };
 		43A4C3D015B00966008787B5 /* StringHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringHelper.h; path = "Other Sources/StringHelper.h"; sourceTree = "<group>"; };
 		43A4C3D115B00966008787B5 /* StringHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = StringHelper.m; path = "Other Sources/StringHelper.m"; sourceTree = "<group>"; };
-		43A4C3D215B00966008787B5 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestFlight.h; path = "Other Sources/TestFlight.h"; sourceTree = "<group>"; };
 		43A4C3D315B00966008787B5 /* TransparentToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransparentToolbar.h; path = "Other Sources/TransparentToolbar.h"; sourceTree = "<group>"; };
 		43A4C3D415B00966008787B5 /* TransparentToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TransparentToolbar.m; path = "Other Sources/TransparentToolbar.m"; sourceTree = "<group>"; };
 		43A4C3D515B00966008787B5 /* UIView+TKCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+TKCategory.h"; path = "Other Sources/UIView+TKCategory.h"; sourceTree = "<group>"; };
@@ -1021,7 +1020,6 @@
 				43A4C3CF15B00966008787B5 /* PullToRefreshView.m */,
 				43A4C3D015B00966008787B5 /* StringHelper.h */,
 				43A4C3D115B00966008787B5 /* StringHelper.m */,
-				43A4C3D215B00966008787B5 /* TestFlight.h */,
 				43A4C3D315B00966008787B5 /* TransparentToolbar.h */,
 				43A4C3D415B00966008787B5 /* TransparentToolbar.m */,
 				43A4C3D515B00966008787B5 /* UIView+TKCategory.h */,
@@ -2339,10 +2337,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
-				ARCHS = (
-					armv6,
-					"$(ARCHS_STANDARD_32_BIT)",
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
@@ -2368,9 +2363,10 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "FCE20249-D83E-46AA-9389-9A2BAD00DDA8";
+				PROVISIONING_PROFILE = "7B9F5761-3D49-495A-9090-AFC4AC7BF03D";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = armv7;
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
 			};
 			name = Debug;
@@ -2379,10 +2375,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					armv6,
-					"$(ARCHS_STANDARD_32_BIT)",
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
@@ -2405,10 +2398,11 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "FCE20249-D83E-46AA-9389-9A2BAD00DDA8";
+				PROVISIONING_PROFILE = "7B9F5761-3D49-495A-9090-AFC4AC7BF03D";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = armv7;
 			};
 			name = Release;
 		};
@@ -2430,6 +2424,7 @@
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
+				VALID_ARCHS = armv7;
 			};
 			name = Debug;
 		};
@@ -2451,6 +2446,7 @@
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = NO;
+				VALID_ARCHS = armv7;
 			};
 			name = Release;
 		};
