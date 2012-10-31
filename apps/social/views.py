@@ -1207,7 +1207,7 @@ def load_social_settings(request, social_user_id, username=None):
 def load_interactions(request):
     user_id = request.REQUEST.get('user_id', None)
     categories = request.GET.getlist('category')
-    if not user_id:
+    if not user_id or 'null' in user_id:
         user_id = get_user(request).pk
     page = max(1, int(request.REQUEST.get('page', 1)))
     limit = request.REQUEST.get('limit')
@@ -1231,7 +1231,7 @@ def load_interactions(request):
 def load_activities(request):
     user_id = request.REQUEST.get('user_id', None)
     categories = request.GET.getlist('category')
-    if user_id:
+    if user_id and 'null' not in user_id:
         user_id = int(user_id)
         user = User.objects.get(pk=user_id)
     else:

@@ -881,7 +881,11 @@ class MSocialSubscription(mongo.Document):
             logging.user(request, "~FYRead story in social subscription: %s" % (sub_username))
         
         for story_id in set(story_ids):
-            story = MSharedStory.objects.get(user_id=self.subscription_user_id, story_guid=story_id)
+            try:
+                story = MSharedStory.objects.get(user_id=self.subscription_user_id,
+                                                 story_guid=story_id)
+            except MSharedStory.DoesNotExist:
+                continue
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
             if not feed_id:
