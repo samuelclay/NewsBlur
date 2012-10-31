@@ -971,6 +971,20 @@ static const CGFloat kFolderTitleHeight = 28;
     [self.feedTitlesTable beginUpdates];
     [self.feedTitlesTable endUpdates];
     
+    // Scroll to section header if collapse causes it to scroll far off screen
+    NSArray *indexPathsVisibleCells = [self.feedTitlesTable indexPathsForVisibleRows];
+    BOOL firstFeedInFolderVisible = NO;
+    for (NSIndexPath *indexPath in indexPathsVisibleCells) {
+        if (indexPath.row == 0 && indexPath.section == button.tag) {
+            firstFeedInFolderVisible = YES;
+        }
+    }
+    if (!firstFeedInFolderVisible) {
+        CGRect headerRect = [self.feedTitlesTable rectForHeaderInSection:button.tag];
+        CGPoint headerPoint = CGPointMake(headerRect.origin.x, headerRect.origin.y);
+        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
+    }
+    
 }
 
 - (void)changeToAllMode {
