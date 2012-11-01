@@ -38,6 +38,8 @@
 
 @implementation NewsBlurAppDelegate
 
+#define IS_IPHONE_5 ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON )
+
 @synthesize window;
 
 @synthesize ftuxNavigationController;
@@ -145,6 +147,29 @@
     [window makeKeyAndVisible];
     [self.feedsViewController fetchFeedList:YES];
     
+    
+    splashView = [[UIImageView alloc] init];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        splashView.frame = self.view.frame;
+        splashView.image = [UIImage imageNamed:@"Default-Portrait.png"];
+    } else if (IS_IPHONE_5) {
+        splashView.frame = self.window.frame;
+        splashView.image = [UIImage imageNamed:@"Default-568h.png"];
+    } else {
+        splashView.frame = self.window.frame;
+        splashView.image = [UIImage imageNamed:@"Default.png"];
+    }
+    [window addSubview:splashView];
+    [window bringSubviewToFront:splashView];
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:.5];
+    [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:window cache:YES];
+    [UIView setAnimationDelegate:self];
+    [UIView setAnimationDidStopSelector:@selector(startupAnimationDone:finished:context:)];
+    splashView.alpha = 0.0;
+//    splashView.frame = CGRectMake(-60, -80, 440, 728);
+    [UIView commitAnimations];
+    
 //    [self showFirstTimeUser];
 	return YES;
 }
@@ -153,6 +178,10 @@
     self.visibleUnreadCount = 0;
     self.savedStoriesCount = 0;
     [self setRecentlyReadStories:[NSMutableArray array]];
+}
+
+- (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
+    [splashView removeFromSuperview];
 }
 
 
