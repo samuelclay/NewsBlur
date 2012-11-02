@@ -6,6 +6,7 @@
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out" >
 
+   
     <RelativeLayout
         android:id="@+id/login_form"
         android:layout_width="match_parent"
@@ -70,8 +71,8 @@
                 android:textSize="22dp" />
         </LinearLayout>
     </RelativeLayout>
-
-    <RelativeLayout
+    
+     <RelativeLayout
         android:id="@+id/registration_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
@@ -87,8 +88,8 @@
                 android:id="@+id/login_change_to_login"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
                 android:layout_weight="1"
+                android:gravity="center_vertical"
                 android:text="@string/need_to_login"
                 android:textColor="@color/lightorange"
                 android:textSize="15sp" />
@@ -102,48 +103,58 @@
                 android:text="@string/login_registration_register" />
         </LinearLayout>
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/registration_button_container"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:layout_above="@id/registration_button_container" >
 
-            <EditText
-                android:id="@+id/registration_username"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/login_username_hint"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/white"
-                android:textColorHint="@color/lightorange"
-                android:textSize="22dp" />
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:orientation="vertical" >
 
-            <EditText
-                android:id="@+id/registration_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:hint="@string/login_password_hint"
-                android:inputType="textPassword"
-                android:nextFocusDown="@+id/registration_email"
-                android:textColor="@color/white"
-                android:textColorHint="@color/lightorange"
-                android:textSize="22dp" />
+                <EditText
+                    android:id="@+id/registration_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/login_username_hint"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/lightorange"
+                    android:textSize="22dp" >
 
-            <EditText
-                android:id="@+id/registration_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:hint="@string/login_registration_email_hint"
-                android:imeOptions="actionDone"
-                android:inputType="textEmailAddress"
-                android:nextFocusDown="@+id/registration_button"
-                android:textColor="@color/white"
-                android:textColorHint="@color/lightorange"
-                android:textSize="22dp" />
-        </LinearLayout>
+                    <requestFocus />
+                </EditText>
+
+                <EditText
+                    android:id="@+id/registration_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:hint="@string/login_password_hint"
+                    android:inputType="textPassword"
+                    android:nextFocusDown="@+id/registration_email"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/lightorange"
+                    android:textSize="22dp" />
+
+                <EditText
+                    android:id="@+id/registration_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:hint="@string/login_registration_email_hint"
+                    android:imeOptions="actionDone"
+                    android:inputType="textEmailAddress"
+                    android:nextFocusDown="@+id/registration_button"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/lightorange"
+                    android:textSize="22dp" />
+            </LinearLayout>
+        </ScrollView>
     </RelativeLayout>
+    
 
 </ViewSwitcher>
