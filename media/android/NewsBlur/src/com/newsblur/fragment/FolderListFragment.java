@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Display;
@@ -116,7 +117,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		return v;
 	}
 
-	private void checkOpenFolderPreferences() {
+	public void checkOpenFolderPreferences() {
 		if (sharedPreferences == null) {
 			sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		}
@@ -124,6 +125,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			long groupId = folderAdapter.getGroupId(i);
 			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + groupId, true)) {
 				list.expandGroup(i);
+			} else {
+				list.collapseGroup(i);
 			}
 		}
 	}

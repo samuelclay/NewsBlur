@@ -5,12 +5,12 @@
     android:layout_height="fill_parent"
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out" >
-
    
     <RelativeLayout
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+    	android:paddingBottom="20dp">
 
         <LinearLayout
             android:id="@+id/login_button_container"
@@ -61,7 +61,7 @@
                 android:id="@+id/login_password"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="30dp"
                 android:hint="@string/login_password_hint"
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
@@ -75,7 +75,8 @@
      <RelativeLayout
         android:id="@+id/registration_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+    	android:paddingBottom="20dp">
 
         <LinearLayout
             android:id="@+id/registration_button_container"
@@ -125,14 +126,13 @@
                     android:textColorHint="@color/lightorange"
                     android:textSize="22dp" >
 
-                    <requestFocus />
                 </EditText>
 
                 <EditText
                     android:id="@+id/registration_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="30dp"
                     android:hint="@string/login_password_hint"
                     android:inputType="textPassword"
                     android:nextFocusDown="@+id/registration_email"
@@ -144,7 +144,7 @@
                     android:id="@+id/registration_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="30dp"
                     android:hint="@string/login_registration_email_hint"
                     android:imeOptions="actionDone"
                     android:inputType="textEmailAddress"
@@ -156,5 +156,4 @@
         </ScrollView>
     </RelativeLayout>
     
-
 </ViewSwitcher>
