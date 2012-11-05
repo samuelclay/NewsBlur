@@ -54,6 +54,7 @@
 @synthesize buttonBack;
 @synthesize bottomPlaceholderToolbar;
 @synthesize pullingScrollview;
+@synthesize pageIndex;
 
 // private
 @synthesize inTouchMove;
@@ -156,6 +157,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    NSLog(@"SD willAppear");
+    [self initStory];
 	[super viewWillAppear:animated];
     [appDelegate adjustStoryDetailWebView];
     [self setActiveStory];
@@ -211,7 +214,7 @@
 - (void)initStory {
     id storyId = [appDelegate.activeStory objectForKey:@"id"];
     [appDelegate pushReadStory:storyId];
-    [self showStory];  
+    [self showStory];
     self.webView.scalesPageToFit = YES;
     [self.loadingIndicator stopAnimating];    
 }
@@ -634,6 +637,8 @@
 }
 
 - (void)showStory {
+    
+    NSLog(@"showStory: %@", appDelegate.activeStory);
     appDelegate.inStoryDetail = YES;
     // when we show story, we mark it as read
     [self markStoryAsRead]; 
@@ -820,9 +825,9 @@
         self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
     [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
-    [self.webView.scrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView ||
-                                                              appDelegate.isSocialView) ? -20 : -9)
-                                     animated:NO];
+//    [self.webView.scrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView ||
+//                                                              appDelegate.isSocialView) ? -20 : -9)
+//                                     animated:NO];
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];

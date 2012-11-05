@@ -39,6 +39,7 @@
 @class NBContainerViewController;
 @class FindSitesViewController;
 @class UnreadCounts;
+@class StoryPageControl;
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate>  {
     UIWindow *window;
@@ -64,6 +65,7 @@
     FontSettingsViewController *fontSettingsViewController;
     
     StoryDetailViewController *storyDetailViewController;
+    StoryPageControl *storyPageControl;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
@@ -137,6 +139,7 @@
 @property (nonatomic) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
+@property (nonatomic) IBOutlet StoryPageControl *storyPageControl;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet FindSitesViewController *findSitesViewController;

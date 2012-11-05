@@ -14,6 +14,7 @@
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "FirstTimeUserViewController.h"
 #import "FriendsListViewController.h"
 #import "LoginViewController.h"
@@ -57,6 +58,7 @@
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
+@synthesize storyPageControl;
 @synthesize shareViewController;
 @synthesize loginViewController;
 @synthesize addSiteViewController;
@@ -593,6 +595,8 @@
 }
 
 - (void)loadStoryDetailView {
+//    [self.storyDetailViewController initStory];
+    
     NSString *feedTitle;
     if (self.isRiverView) {
         if ([self.activeFolder isEqualToString:@"river_blurblogs"]) {
@@ -611,15 +615,13 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
-        UINavigationController *navController = self.navigationController;   
-        [navController pushViewController:storyDetailViewController animated:YES];
+        UINavigationController *navController = self.navigationController;
+        [navController pushViewController:storyPageControl animated:YES];
         //self.storyDetailViewController.navigationItem.titleView = nil;
         [navController.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil]];
         navController.navigationItem.hidesBackButton = YES;
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
-    
-    [self.storyDetailViewController initStory];
 }
 
 - (void)navigationController:(UINavigationController *)navController 

@@ -372,6 +372,9 @@
 		FF5F3A87162B834E008DBE3E /* bin_closed.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A86162B834E008DBE3E /* bin_closed.png */; };
 		FF5F3A89162B8377008DBE3E /* arrow_branch.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A88162B8377008DBE3E /* arrow_branch.png */; };
 		FF5F3A8B162B8390008DBE3E /* car.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A8A162B8390008DBE3E /* car.png */; };
+		FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPageControl.m */; };
+		FF6A23381644932200E15989 /* PagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233516448F0400E15989 /* PagerViewController.m */; };
+		FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPageControl.xib */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FFAD4971144A386100BA6919 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FFAD4970144A386100BA6919 /* libz.dylib */; };
@@ -900,6 +903,11 @@
 		FF5F3A86162B834E008DBE3E /* bin_closed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bin_closed.png; sourceTree = "<group>"; };
 		FF5F3A88162B8377008DBE3E /* arrow_branch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_branch.png; sourceTree = "<group>"; };
 		FF5F3A8A162B8390008DBE3E /* car.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = car.png; sourceTree = "<group>"; };
+		FF6A233016448E0700E15989 /* StoryPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPageControl.h; sourceTree = "<group>"; };
+		FF6A233116448E0700E15989 /* StoryPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPageControl.m; sourceTree = "<group>"; };
+		FF6A233416448F0400E15989 /* PagerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PagerViewController.h; sourceTree = "<group>"; };
+		FF6A233516448F0400E15989 /* PagerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PagerViewController.m; sourceTree = "<group>"; };
+		FF6A23361644903900E15989 /* StoryPageControl.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoryPageControl.xib; sourceTree = "<group>"; };
 		FF793E1713F1A9F700F282D2 /* ASIDataCompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataCompressor.h; sourceTree = "<group>"; };
 		FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataCompressor.m; sourceTree = "<group>"; };
 		FF793E1913F1A9F700F282D2 /* ASIDataDecompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataDecompressor.h; sourceTree = "<group>"; };
@@ -1166,12 +1174,17 @@
 		431B857415A1324200DCE497 /* Story */ = {
 			isa = PBXGroup;
 			children = (
+				FF6A233416448F0400E15989 /* PagerViewController.h */,
+				FF6A233516448F0400E15989 /* PagerViewController.m */,
 				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
 				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 				43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */,
 				43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */,
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
+				FF6A233016448E0700E15989 /* StoryPageControl.h */,
+				FF6A233116448E0700E15989 /* StoryPageControl.m */,
+				FF6A23361644903900E15989 /* StoryPageControl.xib */,
 			);
 			name = Story;
 			sourceTree = "<group>";
@@ -2178,6 +2191,7 @@
 				FF4130A5162F3AA900DDB6A7 /* clock.png in Resources */,
 				FF4130A9162F3BD300DDB6A7 /* clock_white.png in Resources */,
 				FF4130AB162F3C2F00DDB6A7 /* archive_white.png in Resources */,
+				FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2327,6 +2341,8 @@
 				FFDE35DA161D12250034BFDE /* UnreadCountView.m in Sources */,
 				FFDE35EA162799B90034BFDE /* FeedDetailMenuViewController.m in Sources */,
 				FF4130A3162E10CF00DDB6A7 /* MenuTableViewCell.m in Sources */,
+				FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */,
+				FF6A23381644932200E15989 /* PagerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2340,8 +2356,8 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2363,8 +2379,8 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "EE8BC292-FFF2-41A0-AE29-C4B39D6A2C5A";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "EE8BC292-FFF2-41A0-AE29-C4B39D6A2C5A";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = armv7;
 				"WARNING_CFLAGS[arch=*]" = "-Wall";
@@ -2378,8 +2394,8 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = Entitlements.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: NewsBlur, Inc.";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: NewsBlur, Inc.";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = NewsBlur_Prefix.pch;
@@ -2398,8 +2414,8 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = NewsBlur;
-				PROVISIONING_PROFILE = "EE8BC292-FFF2-41A0-AE29-C4B39D6A2C5A";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "EE8BC292-FFF2-41A0-AE29-C4B39D6A2C5A";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = armv7;

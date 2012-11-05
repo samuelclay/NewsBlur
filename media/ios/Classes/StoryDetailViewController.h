@@ -32,6 +32,7 @@ UIScrollViewDelegate> {
     UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
 	Class popoverClass;
+    NSInteger pageIndex;
     BOOL pullingScrollview;
 }
 
@@ -57,6 +58,7 @@ UIScrollViewDelegate> {
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
 @property (nonatomic) IBOutlet UILabel *noStorySelectedLabel;
 @property (nonatomic, assign) BOOL pullingScrollview;
+@property NSInteger pageIndex;
 
 
 - (void)setNextPreviousButtons;
