@@ -55,8 +55,7 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
 	currentPage = [[StoryDetailViewController alloc] initWithNibName:@"StoryDetailViewController" bundle:nil];
 	nextPage = [[StoryDetailViewController alloc] initWithNibName:@"StoryDetailViewController" bundle:nil];
     currentPage.appDelegate = appDelegate;
@@ -142,8 +141,14 @@
                                              self.scrollView.frame.size.height);
 	self.scrollView.contentOffset = CGPointMake(0, 0);
     
-	[self applyNewIndex:0 pageController:currentPage];
-	[self applyNewIndex:1 pageController:nextPage];
+    int activeStoryIndex = [appDelegate indexOfActiveStory];
+    if (activeStoryIndex >= 0) {
+        [self changePage:activeStoryIndex];
+        [self setStory];
+        [self applyNewIndex:activeStoryIndex pageController:currentPage];
+        [self applyNewIndex:activeStoryIndex+1 pageController:nextPage];
+    }
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -174,8 +179,24 @@
     
 	pageController.pageIndex = newIndex;
     
-    [pageController setActiveStoryAtIndex:pageController.pageIndex];
-    [pageController initStory];
+    if (newIndex >= [appDelegate.activeFeedStories count]) {
+        if (self.appDelegate.feedDetailViewController.feedPage < 50 &&
+            !self.appDelegate.feedDetailViewController.pageFinished &&
+            !self.appDelegate.feedDetailViewController.pageFetching) {
+            [self.appDelegate.feedDetailViewController fetchNextPage:^() {
+                [self applyNewIndex:newIndex pageController:pageController];
+            }];
+        } else {
+            [appDelegate.navigationController
+             popToViewController:[appDelegate.navigationController.viewControllers
+                                  objectAtIndex:0]
+             animated:YES];
+            [appDelegate hideStoryDetailView];
+        }
+    } else {
+        [pageController setActiveStoryAtIndex:pageController.pageIndex];
+        [pageController initStory];
+    }
     
     [self.loadingIndicator stopAnimating];
 }
@@ -235,14 +256,26 @@
 		currentPage = nextPage;
 		nextPage = swapController;
 	}
+    [self setStory];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
 {
 	[self scrollViewDidEndScrollingAnimation:newScrollView];
-	self.pageControl.currentPage = currentPage.pageIndex;
-    appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:currentPage.pageIndex];
+}
+
+- (void)changePage:(NSInteger)pageIndex {
+	// update the scroll view to the appropriate page
+    CGRect frame = self.scrollView.frame;
+    frame.origin.x = frame.size.width * pageIndex;
+    frame.origin.y = 0;
+    [self.scrollView scrollRectToVisible:frame animated:YES];
+}
+
+- (void)setStory {
+    appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:currentPage.pageIndex];    
     [self markStoryAsRead];
+    [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
     self.bottomPlaceholderToolbar.hidden = YES;
     self.progressViewContainer.hidden = NO;
@@ -252,14 +285,6 @@
     }
     
     [self setNextPreviousButtons];
-}
-
-- (void)changePage:(NSInteger)pageIndex {
-	// update the scroll view to the appropriate page
-    CGRect frame = self.scrollView.frame;
-    frame.origin.x = frame.size.width * pageIndex;
-    frame.origin.y = 0;
-    [self.scrollView scrollRectToVisible:frame animated:YES];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
@@ -613,10 +638,10 @@
          animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
-                                     objectAtIndex:nextIndex]];
-        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
-        [appDelegate changeActiveFeedDetailRow];
+//        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
+//                                     objectAtIndex:nextIndex]];
+//        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
+//        [appDelegate changeActiveFeedDetailRow];
         [self changePage:nextIndex];
     }
 }
@@ -650,13 +675,13 @@
         hud.labelText = @"No stories left";
         [hud hide:YES afterDelay:0.8];
     } else {
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
-                                     objectAtIndex:nextIndex]];
-        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [appDelegate changeActiveFeedDetailRow];
-        }
+//        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
+//                                     objectAtIndex:nextIndex]];
+//        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
+//        
+//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+//            [appDelegate changeActiveFeedDetailRow];
+//        }
         [self changePage:nextIndex];
     }
 }
@@ -675,10 +700,10 @@
         if (previousIndex == -1) {
             return [self doPreviousStory];
         }
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
-                                     objectAtIndex:previousIndex]];
-        [appDelegate changeActiveFeedDetailRow];
-        
+//        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
+//                                     objectAtIndex:previousIndex]];
+//        [appDelegate changeActiveFeedDetailRow];
+//        
         [self changePage:previousIndex];
     }
 }

@@ -58,6 +58,7 @@
 
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
 
+- (void)setStory;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 

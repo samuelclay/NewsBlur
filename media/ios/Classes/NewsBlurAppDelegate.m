@@ -595,8 +595,6 @@
 }
 
 - (void)loadStoryDetailView {
-//    [self.storyDetailViewController initStory];
-    
     NSString *feedTitle;
     if (self.isRiverView) {
         if ([self.activeFolder isEqualToString:@"river_blurblogs"]) {
