@@ -149,6 +149,9 @@
         [self applyNewIndex:activeStoryIndex+1 pageController:nextPage];
     }
     
+    [self setNextPreviousButtons];
+    
+    [appDelegate adjustStoryDetailWebView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

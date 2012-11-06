@@ -75,7 +75,7 @@
 
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
-    self.webView.scalesPageToFit = NO; 
+    self.webView.scalesPageToFit = YES;
     self.webView.multipleTouchEnabled = NO;
 }
 
@@ -89,11 +89,9 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"SD willAppear");
+    NSLog(@"********************* SD willAppear");
     [self initStory];
 	[super viewWillAppear:animated];
-    [appDelegate adjustStoryDetailWebView];
-    [self setActiveStoryAtIndex:-1];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -133,13 +131,6 @@
     [super viewDidUnload];
 }
 
-- (void)initStory {
-    id storyId = [self.activeStory objectForKey:@"id"];
-    [appDelegate pushReadStory:storyId];
-    [self showStory];
-    self.webView.scalesPageToFit = YES; 
-}
-
 - (void)clearStory {
     [self.webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
     self.noStorySelectedLabel.hidden = NO;
@@ -165,6 +156,196 @@
 
 #pragma mark -
 #pragma mark Story layout
+
+
+- (void)initStory {
+    
+    appDelegate.inStoryDetail = YES;
+    // when we show story, we mark it as read
+    self.noStorySelectedLabel.hidden = YES;
+    
+    
+    appDelegate.shareViewController.commentField.text = nil;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [appDelegate.masterContainerViewController transitionFromShareView];
+    }
+    
+    self.webView.hidden = NO;
+    
+    [appDelegate hideShareView:YES];
+    
+    [appDelegate resetShareComments];
+    NSString *shareBarString = [self getShareBar];
+    NSString *commentString = [self getComments];
+    NSString *headerString;
+    NSString *sharingHtmlString;
+    NSString *footerString;
+    NSString *fontStyleClass = @"";
+    NSString *fontSizeClass = @"";
+    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    if ([userPreferences stringForKey:@"fontStyle"]){
+        fontStyleClass = [fontStyleClass stringByAppendingString:[userPreferences stringForKey:@"fontStyle"]];
+    } else {
+        fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-san-serif"];
+    }
+    if ([userPreferences stringForKey:@"fontSizing"]){
+        fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"fontSizing"]];
+    } else {
+        fontSizeClass = [fontSizeClass stringByAppendingString:@"NB-medium"];
+    }
+    
+    int contentWidth = self.view.frame.size.width;
+    NSString *contentWidthClass;
+    
+    if (contentWidth > 700) {
+        contentWidthClass = @"NB-ipad-wide";
+    } else if (contentWidth > 480) {
+        contentWidthClass = @"NB-ipad-narrow";
+    } else {
+        contentWidthClass = @"NB-iphone";
+    }
+    
+    
+    // set up layout values based on iPad/iPhone
+    headerString = [NSString stringWithFormat:@
+                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
+                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
+                    "<meta name=\"viewport\" id=\"viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
+                    
+                    
+                    contentWidth];
+    footerString = [NSString stringWithFormat:@
+                    "<script src=\"zepto.js\"></script>"
+                    "<script src=\"storyDetailView.js\"></script>"];
+    
+    sharingHtmlString = [NSString stringWithFormat:@
+                         "<div class='NB-share-header'></div>"
+                         "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
+                         "<div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
+                         "<a href=\"http://ios.newsblur.com/share\"><div>"
+                         "Share this story <span class=\"NB-share-icon\"></span>"
+                         "</div></a>"
+                         "</div>"
+                         "</div></div>"];
+    NSString *story_author = @"";
+    if ([self.activeStory objectForKey:@"story_authors"]) {
+        NSString *author = [NSString stringWithFormat:@"%@",
+                            [self.activeStory objectForKey:@"story_authors"]];
+        if (author && ![author isEqualToString:@"<null>"]) {
+            story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",author];
+        }
+    }
+    NSString *story_tags = @"";
+    if ([self.activeStory objectForKey:@"story_tags"]) {
+        NSArray *tag_array = [self.activeStory objectForKey:@"story_tags"];
+        if ([tag_array count] > 0) {
+            story_tags = [NSString
+                          stringWithFormat:@"<div class=\"NB-story-tags\">"
+                          "<div class=\"NB-story-tag\">"
+                          "%@</div></div>",
+                          [tag_array componentsJoinedByString:@"</div><div class=\"NB-story-tag\">"]];
+        }
+    }
+    NSString *storyHeader = [NSString stringWithFormat:@
+                             "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
+                             "<div class=\"NB-story-date\">%@</div>"
+                             "<div class=\"NB-story-title\">%@</div>"
+                             "%@"
+                             "%@"
+                             "</div></div>",
+                             [story_tags length] ?
+                             [self.activeStory
+                              objectForKey:@"long_parsed_date"] :
+                             [self.activeStory
+                              objectForKey:@"short_parsed_date"],
+                             [self.activeStory objectForKey:@"story_title"],
+                             story_author,
+                             story_tags];
+    NSString *htmlString = [NSString stringWithFormat:@
+                            "<html>"
+                            "<head>%@</head>" // header string
+                            "<body id=\"story_pane\" class=\"%@\">"
+                            "    %@" // storyHeader
+                            "    %@" // shareBar
+                            "    <div class=\"%@\" id=\"NB-font-style\">"
+                            "       <div class=\"%@\" id=\"NB-font-size\">"
+                            "           <div class=\"NB-story\">%@</div>"
+                            "       </div>" // font-size
+                            "    </div>" // font-style
+                            "    %@" // share
+                            "    <div id=\"NB-comments-wrapper\">"
+                            "       %@" // friends comments
+                            "    </div>"
+                            "    %@"
+                            "</body>"
+                            "</html>",
+                            headerString,
+                            contentWidthClass,
+                            storyHeader,
+                            shareBarString,
+                            fontStyleClass,
+                            fontSizeClass,
+                            [self.activeStory objectForKey:@"story_content"],
+                            sharingHtmlString,
+                            commentString,
+                            footerString
+                            ];
+    
+    //    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+    NSString *path = [[NSBundle mainBundle] bundlePath];
+    NSURL *baseURL = [NSURL fileURLWithPath:path];
+    
+    [webView loadHTMLString:htmlString
+     //baseURL:[NSURL URLWithString:feed_link]];
+                    baseURL:baseURL];
+    
+    
+    NSDictionary *feed;
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                           [self.activeStory
+                            objectForKey:@"story_feed_id"]];
+    
+    if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
+        feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
+        // this is to catch when a user is already subscribed
+        if (!feed) {
+            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+        }
+    } else {
+        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
+    }
+    
+    self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed
+                                                       withRect:CGRectMake(0, -1, 1024, 21)]; // 1024 hack for self.webView.frame.size.width
+    
+    self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
+    [self.feedTitleGradient.layer setShadowColor:[[UIColor blackColor] CGColor]];
+    [self.feedTitleGradient.layer setShadowOffset:CGSizeMake(0, 0)];
+    [self.feedTitleGradient.layer setShadowOpacity:0];
+    [self.feedTitleGradient.layer setShadowRadius:12.0];
+    
+    for (UIView *subview in self.webView.subviews) {
+        if (subview.tag == FEED_TITLE_GRADIENT_TAG) {
+            [subview removeFromSuperview];
+        }
+    }
+    
+    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+        self.webView.scrollView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
+        self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
+    } else {
+        self.webView.scrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
+        self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
+    }
+    [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
+    //    [self.webView.scrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView ||
+    //                                                              appDelegate.isSocialView) ? -20 : -9)
+    //                                     animated:NO];
+    [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
+                                 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+                                 context:nil];
+}
 
 - (NSString *)getAvatars:(NSString *)key {
     NSString *avatarString = @"";
@@ -558,193 +739,8 @@
 }
 
 - (void)showStory {
-    appDelegate.inStoryDetail = YES;
-    // when we show story, we mark it as read 
-    self.noStorySelectedLabel.hidden = YES;
-
-    
-    appDelegate.shareViewController.commentField.text = nil;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController transitionFromShareView];
-    }
-    
-    self.webView.hidden = NO;
-
-    [appDelegate hideShareView:YES];
-        
-    [appDelegate resetShareComments];
-    NSString *shareBarString = [self getShareBar]; 
-    NSString *commentString = [self getComments];       
-    NSString *headerString;
-    NSString *sharingHtmlString;
-    NSString *footerString;
-    NSString *fontStyleClass = @"";
-    NSString *fontSizeClass = @"";
-    
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
-    if ([userPreferences stringForKey:@"fontStyle"]){
-        fontStyleClass = [fontStyleClass stringByAppendingString:[userPreferences stringForKey:@"fontStyle"]];
-    } else {
-        fontStyleClass = [fontStyleClass stringByAppendingString:@"NB-san-serif"];
-    }    
-    if ([userPreferences stringForKey:@"fontSizing"]){
-        fontSizeClass = [fontSizeClass stringByAppendingString:[userPreferences stringForKey:@"fontSizing"]];
-    } else {
-        fontSizeClass = [fontSizeClass stringByAppendingString:@"NB-medium"];
-    }
-    
-    int contentWidth = self.view.frame.size.width;
-    NSString *contentWidthClass;
-    
-    if (contentWidth > 700) {
-        contentWidthClass = @"NB-ipad-wide";
-    } else if (contentWidth > 480) {
-        contentWidthClass = @"NB-ipad-narrow";
-    } else {
-        contentWidthClass = @"NB-iphone";
-    }
-    
-    
-    // set up layout values based on iPad/iPhone    
-    headerString = [NSString stringWithFormat:@
-                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"reader.css\" >"
-                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"storyDetailView.css\" >"
-                    "<meta name=\"viewport\" id=\"viewport\" content=\"width=%i, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"/>",
-
-
-                    contentWidth];
-    footerString = [NSString stringWithFormat:@
-                    "<script src=\"zepto.js\"></script>"
-                    "<script src=\"storyDetailView.js\"></script>"];
-
-    sharingHtmlString = [NSString stringWithFormat:@
-                         "<div class='NB-share-header'></div>"
-                         "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                         "<div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
-                         "<a href=\"http://ios.newsblur.com/share\"><div>"
-                         "Share this story <span class=\"NB-share-icon\"></span>"
-                         "</div></a>"
-                         "</div>"
-                         "</div></div>"];
-    NSString *story_author = @"";
-    if ([self.activeStory objectForKey:@"story_authors"]) {
-        NSString *author = [NSString stringWithFormat:@"%@",
-                            [self.activeStory objectForKey:@"story_authors"]];
-        if (author && ![author isEqualToString:@"<null>"]) {
-            story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",author];
-        }
-    }
-    NSString *story_tags = @"";
-    if ([self.activeStory objectForKey:@"story_tags"]) {
-        NSArray *tag_array = [self.activeStory objectForKey:@"story_tags"];
-        if ([tag_array count] > 0) {
-            story_tags = [NSString 
-                          stringWithFormat:@"<div class=\"NB-story-tags\">"
-                                            "<div class=\"NB-story-tag\">"
-                                            "%@</div></div>",
-                          [tag_array componentsJoinedByString:@"</div><div class=\"NB-story-tag\">"]];
-        }
-    }
-    NSString *storyHeader = [NSString stringWithFormat:@
-                             "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
-                             "<div class=\"NB-story-date\">%@</div>"
-                             "<div class=\"NB-story-title\">%@</div>"
-                             "%@"
-                             "%@"
-                             "</div></div>", 
-                             [story_tags length] ? 
-                             [self.activeStory
-                              objectForKey:@"long_parsed_date"] : 
-                             [self.activeStory
-                              objectForKey:@"short_parsed_date"],
-                             [self.activeStory objectForKey:@"story_title"],
-                             story_author,
-                             story_tags];
-    NSString *htmlString = [NSString stringWithFormat:@
-                            "<html>"
-                            "<head>%@</head>" // header string
-                            "<body id=\"story_pane\" class=\"%@\">"
-                            "    %@" // storyHeader
-                            "    %@" // shareBar
-                            "    <div class=\"%@\" id=\"NB-font-style\">"
-                            "       <div class=\"%@\" id=\"NB-font-size\">"
-                            "           <div class=\"NB-story\">%@</div>"
-                            "       </div>" // font-size
-                            "    </div>" // font-style
-                            "    %@" // share
-                            "    <div id=\"NB-comments-wrapper\">"
-                            "       %@" // friends comments
-                            "    </div>" 
-                            "    %@"
-                            "</body>"
-                            "</html>",
-                            headerString,
-                            contentWidthClass,
-                            storyHeader,
-                            shareBarString,
-                            fontStyleClass,
-                            fontSizeClass,
-                            [self.activeStory objectForKey:@"story_content"],
-                            sharingHtmlString,
-                            commentString,
-                            footerString
-                            ];
-
-//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
-    NSString *path = [[NSBundle mainBundle] bundlePath];
-    NSURL *baseURL = [NSURL fileURLWithPath:path];
-    
-    [webView loadHTMLString:htmlString
-                    //baseURL:[NSURL URLWithString:feed_link]];
-                    baseURL:baseURL];
-    
-    
-    NSDictionary *feed;
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@", 
-                           [self.activeStory
-                            objectForKey:@"story_feed_id"]];
-                           
-    if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
-        feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
-        // this is to catch when a user is already subscribed
-        if (!feed) {
-            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-        }
-    } else {
-        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-    }
-    
-    self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed
-                                 withRect:CGRectMake(0, -1, 1024, 21)]; // 1024 hack for self.webView.frame.size.width
-    
-    self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
-    [self.feedTitleGradient.layer setShadowColor:[[UIColor blackColor] CGColor]];
-    [self.feedTitleGradient.layer setShadowOffset:CGSizeMake(0, 0)];
-    [self.feedTitleGradient.layer setShadowOpacity:0];
-    [self.feedTitleGradient.layer setShadowRadius:12.0];
-    
-    for (UIView *subview in self.webView.subviews) {
-        if (subview.tag == FEED_TITLE_GRADIENT_TAG) {
-            [subview removeFromSuperview];
-        }
-    }
-
-    if (appDelegate.isRiverView || appDelegate.isSocialView) {
-        self.webView.scrollView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
-        self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
-    } else {
-        self.webView.scrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
-        self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
-    }
-    [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
-//    [self.webView.scrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView ||
-//                                                              appDelegate.isSocialView) ? -20 : -9)
-//                                     animated:NO];
-    [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
-                                 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-                                 context:nil];
-
-                
+    id storyId = [self.activeStory objectForKey:@"id"];
+    [appDelegate pushReadStory:storyId];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
