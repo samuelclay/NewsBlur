@@ -128,7 +128,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSInteger widthCount = self.appDelegate.originalStoryCount;
+    NSInteger widthCount = self.appDelegate.storyCount;
 	if (widthCount == 0) {
 		widthCount = 1;
 	}
@@ -166,7 +166,7 @@
 
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController
 {
-	NSInteger pageCount = appDelegate.originalStoryCount;
+	NSInteger pageCount = [[appDelegate activeFeedStoryLocations] count];
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
     
 	if (!outOfBounds) {
@@ -197,7 +197,8 @@
             [appDelegate hideStoryDetailView];
         }
     } else {
-        [pageController setActiveStoryAtIndex:pageController.pageIndex];
+        int location = [appDelegate indexFromLocation:pageController.pageIndex];
+        [pageController setActiveStoryAtIndex:location];
         [pageController initStory];
     }
     
@@ -276,7 +277,8 @@
 }
 
 - (void)setStory {
-    appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:currentPage.pageIndex];    
+    int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
+    appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
     [self markStoryAsRead];
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
@@ -615,7 +617,7 @@
 
 
 - (IBAction)doNextUnreadStory {
-    int nextIndex = [appDelegate indexOfNextUnreadStory];
+    int nextLocation = [appDelegate locationOfNextUnreadStory];
     int unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
     
@@ -623,7 +625,7 @@
         return;
     }
     
-    if (nextIndex == -1 && unreadCount > 0 &&
+    if (nextLocation == -1 && unreadCount > 0 &&
         self.appDelegate.feedDetailViewController.feedPage < 50 &&
         !self.appDelegate.feedDetailViewController.pageFinished &&
         !self.appDelegate.feedDetailViewController.pageFetching) {
@@ -634,24 +636,20 @@
         [self.appDelegate.feedDetailViewController fetchNextPage:^() {
             [self doNextUnreadStory];
         }];
-    } else if (nextIndex == -1) {
+    } else if (nextLocation == -1) {
         [appDelegate.navigationController
          popToViewController:[appDelegate.navigationController.viewControllers
                               objectAtIndex:0]
          animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
-//        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
-//                                     objectAtIndex:nextIndex]];
-//        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
-//        [appDelegate changeActiveFeedDetailRow];
-        [self changePage:nextIndex];
+        [self changePage:nextLocation];
     }
 }
 
 - (IBAction)doNextStory {
     
-    int nextIndex = [appDelegate indexOfNextStory];
+    int nextLocation = [appDelegate locationOfNextStory];
     
     [self.loadingIndicator stopAnimating];
     
@@ -659,7 +657,7 @@
         return;
     }
     
-    if (nextIndex == -1 &&
+    if (nextLocation == -1 &&
         self.appDelegate.feedDetailViewController.feedPage < 50 &&
         !self.appDelegate.feedDetailViewController.pageFinished &&
         !self.appDelegate.feedDetailViewController.pageFetching) {
@@ -670,7 +668,7 @@
         [self.appDelegate.feedDetailViewController fetchNextPage:^() {
             [self doNextStory];
         }];
-    } else if (nextIndex == -1) {
+    } else if (nextLocation == -1) {
         [MBProgressHUD hideHUDForView:self.view animated:NO];
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         hud.mode = MBProgressHUDModeText;
@@ -679,13 +677,13 @@
         [hud hide:YES afterDelay:0.8];
     } else {
 //        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
-//                                     objectAtIndex:nextIndex]];
+//                                     objectAtIndex:nextLocation]];
 //        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
 //        
 //        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 //            [appDelegate changeActiveFeedDetailRow];
 //        }
-        [self changePage:nextIndex];
+        [self changePage:nextLocation];
     }
 }
 
@@ -699,15 +697,15 @@
          animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
-        int previousIndex = [appDelegate locationOfStoryId:previousStoryId];
-        if (previousIndex == -1) {
+        int previousLocation = [appDelegate locationOfStoryId:previousStoryId];
+        if (previousLocation == -1) {
             return [self doPreviousStory];
         }
 //        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
 //                                     objectAtIndex:previousIndex]];
 //        [appDelegate changeActiveFeedDetailRow];
 //        
-        [self changePage:previousIndex];
+        [self changePage:previousLocation];
     }
 }
 

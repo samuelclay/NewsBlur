@@ -239,10 +239,13 @@
 - (void)confirmLogout;
 
 - (int)indexOfNextUnreadStory;
+- (int)locationOfNextUnreadStory;
 - (int)indexOfNextStory;
-- (int)indexOfPreviousStory;
+- (int)locationOfNextStory;
 - (int)indexOfActiveStory;
+- (int)indexOfStoryId:(id)storyId;
 - (int)locationOfActiveStory;
+- (int)indexFromLocation:(int)location;
 - (void)pushReadStory:(id)storyId;
 - (id)popReadStory;
 - (int)locationOfStoryId:(id)storyId;
