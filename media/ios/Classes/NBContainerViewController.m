@@ -11,6 +11,7 @@
 #import "FeedDetailViewController.h"
 #import "DashboardViewController.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
 #import "InteractionCell.h"
@@ -36,6 +37,7 @@
 @property (nonatomic, strong) FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) DashboardViewController *dashboardViewController;
 @property (nonatomic, strong) StoryDetailViewController *storyDetailViewController;
+@property (nonatomic, strong) StoryPageControl *storyPageControl;
 @property (nonatomic, strong) ShareViewController *shareViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) BOOL storyTitlesOnLeft;
@@ -58,6 +60,7 @@
 @synthesize feedDetailViewController;
 @synthesize dashboardViewController;
 @synthesize storyDetailViewController;
+@synthesize storyPageControl;
 @synthesize shareViewController;
 @synthesize feedDetailIsVisible;
 @synthesize storyNavigationController;
@@ -91,6 +94,7 @@
     self.dashboardViewController = appDelegate.dashboardViewController;
     self.feedDetailViewController = appDelegate.feedDetailViewController;
     self.storyDetailViewController = appDelegate.storyDetailViewController;
+    self.storyPageControl = appDelegate.storyPageControl;
     self.shareViewController = appDelegate.shareViewController;
     
     // adding dashboardViewController 
@@ -103,7 +107,7 @@
     [self.view addSubview:self.masterNavigationController.view];
     [self.masterNavigationController didMoveToParentViewController:self];
     
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.storyDetailViewController];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.storyPageControl];
     self.storyNavigationController = nav;
     
     UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
@@ -306,7 +310,7 @@
 
 
 - (void)syncNextPreviousButtons {
-    [self.storyDetailViewController setNextPreviousButtons];
+    [self.storyPageControl setNextPreviousButtons];
 }
 
 # pragma mark Screen Transitions and Layout
@@ -323,11 +327,11 @@
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // add the back button
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = self.storyDetailViewController.buttonBack;
+        self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
         
         // set center title
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-        self.storyDetailViewController.navigationItem.titleView = titleLabel;
+        self.storyPageControl.navigationItem.titleView = titleLabel;
         
         if ([[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
             [self.masterNavigationController popViewControllerAnimated:NO];
@@ -338,10 +342,10 @@
         [self.masterNavigationController.view removeFromSuperview];
     } else {
         // remove the back button
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = nil;
+        self.storyPageControl.navigationItem.leftBarButtonItem = nil;
         
         // remove center title
-        self.storyDetailViewController.navigationItem.titleView = nil;
+        self.storyPageControl.navigationItem.titleView = nil;
         
         if (![[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
             [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];        
@@ -366,10 +370,10 @@
             self.storyTitlesOnLeft = YES;
             
             // remove the back button
-            self.storyDetailViewController.navigationItem.leftBarButtonItem = nil;
+            self.storyPageControl.navigationItem.leftBarButtonItem = nil;
             
             // remove center title
-            self.storyDetailViewController.navigationItem.titleView = nil;
+            self.storyPageControl.navigationItem.titleView = nil;
             
             if (![[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
                 [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];        
@@ -399,11 +403,11 @@
         self.storyTitlesOnLeft = NO;
         
         // add the back button
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = self.storyDetailViewController.buttonBack;
+        self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
         
         // set center title
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-        self.storyDetailViewController.navigationItem.titleView = titleLabel;
+        self.storyPageControl.navigationItem.titleView = titleLabel;
         
         [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 //            self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
@@ -437,27 +441,27 @@
     [self.view addSubview:self.feedDetailViewController.view];
     [self.feedDetailViewController didMoveToParentViewController:self];
     
-    // adding storyDetailViewController 
+    // adding storyDetailViewController
     [self addChildViewController:self.storyNavigationController];
     [self.view addSubview:self.storyNavigationController.view];
     [self.storyNavigationController didMoveToParentViewController:self];
     
     // reset the storyDetailViewController components
     self.storyDetailViewController.webView.hidden = YES;
-    self.storyDetailViewController.bottomPlaceholderToolbar.hidden = NO;
-    self.storyDetailViewController.progressViewContainer.hidden = YES;
-    self.storyDetailViewController.navigationItem.rightBarButtonItems = nil;
+    self.storyPageControl.bottomPlaceholderToolbar.hidden = NO;
+    self.storyPageControl.progressViewContainer.hidden = YES;
+    self.storyPageControl.navigationItem.rightBarButtonItems = nil;
     int unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
-        self.storyDetailViewController.progressView.progress = 1;
+        self.storyPageControl.progressView.progress = 1;
     } else {
-        self.storyDetailViewController.progressView.progress = 0;
+        self.storyPageControl.progressView.progress = 0;
     }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // CASE: story titles on bottom
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = self.storyDetailViewController.buttonBack;
+        self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
         
         self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, storyTitlesYCoordinate);
         self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
@@ -488,7 +492,7 @@
         
         // set center title
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-        self.storyDetailViewController.navigationItem.titleView = titleLabel;
+        self.storyPageControl.navigationItem.titleView = titleLabel;
         
 //        // set right avatar title image
 //        if (appDelegate.isSocialView) {
@@ -496,14 +500,14 @@
 //            [titleImageButton addTarget:self action:@selector(showUserProfilePopover) forControlEvents:UIControlEventTouchUpInside];
 //            UIBarButtonItem *titleImageBarButton = [[UIBarButtonItem alloc] 
 //                                                    initWithCustomView:titleImageButton];
-//            self.storyDetailViewController.navigationItem.rightBarButtonItem = titleImageBarButton;
+//            self.storyPageControl.navigationItem.rightBarButtonItem = titleImageBarButton;
 //        } else {
-//            self.storyDetailViewController.navigationItem.rightBarButtonItem = nil;
+//            self.storyPageControl.navigationItem.rightBarButtonItem = nil;
 //        }
         
     } else {
         // CASE: story titles on left
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = nil;
+        self.storyPageControl.navigationItem.leftBarButtonItem = nil;
         
         [self.masterNavigationController pushViewController:self.feedDetailViewController animated:YES];
         self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
@@ -520,7 +524,7 @@
         }];
 
         // remove center title
-        self.storyDetailViewController.navigationItem.titleView = nil;
+        self.storyPageControl.navigationItem.titleView = nil;
     }
 }
 

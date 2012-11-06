@@ -9,6 +9,7 @@
 #import "FontSettingsViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "FeedDetailViewController.h"
 #import "MenuTableViewCell.h"
 #import "NBContainerViewController.h"
@@ -190,20 +191,20 @@
     if (indexPath.row == 0) {
         bool isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
-            [appDelegate.storyDetailViewController markStoryAsUnsaved];
+            [appDelegate.storyPageControl markStoryAsUnsaved];
         } else {
-            [appDelegate.storyDetailViewController markStoryAsSaved];
+            [appDelegate.storyPageControl markStoryAsSaved];
         }
     } else if (indexPath.row == 1) {
         bool isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
-            [appDelegate.storyDetailViewController markStoryAsUnread];
+            [appDelegate.storyPageControl markStoryAsUnread];
         } else {
-            [appDelegate.storyDetailViewController markStoryAsRead];
+            [appDelegate.storyPageControl markStoryAsRead];
             [appDelegate.feedDetailViewController redrawUnreadStory];
         }
     } else if (indexPath.row == 2) {
-        [appDelegate.storyDetailViewController openSendToDialog];
+        [appDelegate.storyPageControl openSendToDialog];
     } else if (indexPath.row == 3) {
         [appDelegate.storyDetailViewController openShareDialog];
     }
@@ -212,8 +213,8 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController hidePopover];
     } else {
-        [appDelegate.storyDetailViewController.popoverController dismissPopoverAnimated:YES];
-        appDelegate.storyDetailViewController.popoverController = nil;
+        [appDelegate.storyPageControl.popoverController dismissPopoverAnimated:YES];
+        appDelegate.storyPageControl.popoverController = nil;
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     

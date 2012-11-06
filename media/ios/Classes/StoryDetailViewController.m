@@ -34,25 +34,11 @@
 
 @synthesize appDelegate;
 @synthesize activeStoryId;
-@synthesize progressView;
-@synthesize progressViewContainer;
+@synthesize activeStory;
 @synthesize innerView;
 @synthesize webView;
-@synthesize toolbar;
-@synthesize buttonPrevious;
-@synthesize buttonNext;
-@synthesize buttonAction;
-@synthesize activity;
-@synthesize loadingIndicator;
 @synthesize feedTitleGradient;
-@synthesize buttonNextStory;
-@synthesize popoverController;
-@synthesize fontSettingsButton;
-@synthesize originalStoryButton;
-@synthesize subscribeButton;
 @synthesize noStorySelectedLabel;
-@synthesize buttonBack;
-@synthesize bottomPlaceholderToolbar;
 @synthesize pullingScrollview;
 @synthesize pageIndex;
 
@@ -75,14 +61,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    popoverClass = [WEPopoverController class];
     
-    // adding HUD for progress bar
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
-
-    [self.progressViewContainer addGestureRecognizer:tap];
-    self.progressViewContainer.hidden = YES;
-
 
     // settings button to right
 //    UIImage *settingsImage = [UIImage imageNamed:@"settings.png"];
@@ -94,57 +73,10 @@
 //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
 //                                       initWithCustomView:settings];
 
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleFontSize:)];
-    
-    self.fontSettingsButton = settingsButton;
-    
-    // original button for iPhone
-    
-    UIBarButtonItem *originalButton = [[UIBarButtonItem alloc] 
-                                       initWithTitle:@"Original" 
-                                       style:UIBarButtonItemStyleBordered 
-                                       target:self 
-                                       action:@selector(showOriginalSubview:)
-                                       ];
-    
-    self.originalStoryButton = originalButton;
-    
-    UIBarButtonItem *subscribeBtn = [[UIBarButtonItem alloc] 
-                                       initWithTitle:@"Follow User" 
-                                       style:UIBarButtonSystemItemAction 
-                                       target:self 
-                                       action:@selector(subscribeToBlurblog)
-                                       ];
-    
-    self.subscribeButton = subscribeBtn;
-    
-    // back button
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] 
-                                   initWithTitle:@"All Sites" style:UIBarButtonItemStyleBordered target:self action:@selector(transitionFromFeedDetail)];
-    self.buttonBack = backButton;
-    
-    // loading indicator
-    self.loadingIndicator = [[UIActivityIndicatorView alloc] 
-                             initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
     self.webView.scalesPageToFit = NO; 
     self.webView.multipleTouchEnabled = NO;
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        backBtn.frame = CGRectMake(0, 0, 51, 31);
-        [backBtn setImage:[UIImage imageNamed:@"nav_btn_back.png"] forState:UIControlStateNormal];
-        [backBtn addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
-        UIBarButtonItem *back = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
-        self.navigationItem.backBarButtonItem = back; 
-        
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalButton, settingsButton, nil];
-    } else {
-        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-        self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    }
 }
 
 - (void)transitionFromFeedDetail {
@@ -161,17 +93,10 @@
     [self initStory];
 	[super viewWillAppear:animated];
     [appDelegate adjustStoryDetailWebView];
-    [self setActiveStory];
+    [self setActiveStoryAtIndex:-1];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    // set the subscribeButton flag
-    if (appDelegate.isTryFeedView) {
-        self.subscribeButton.title = [NSString stringWithFormat:@"Follow %@", [appDelegate.activeFeed objectForKey:@"username"]]; 
-        self.navigationItem.leftBarButtonItem = self.subscribeButton;
-        //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
-    }
-    appDelegate.isTryFeedView = NO;
 
 }
 
@@ -203,20 +128,16 @@
 }
 
 - (void)viewDidUnload {
-    [self setButtonNextStory:nil];
     [self setInnerView:nil];
-    [self setBottomPlaceholderToolbar:nil];
-    [self setProgressViewContainer:nil];
     [self setNoStorySelectedLabel:nil];
     [super viewDidUnload];
 }
 
 - (void)initStory {
-    id storyId = [appDelegate.activeStory objectForKey:@"id"];
+    id storyId = [self.activeStory objectForKey:@"id"];
     [appDelegate pushReadStory:storyId];
     [self showStory];
-    self.webView.scalesPageToFit = YES;
-    [self.loadingIndicator stopAnimating];    
+    self.webView.scalesPageToFit = YES; 
 }
 
 - (void)clearStory {
@@ -247,7 +168,7 @@
 
 - (NSString *)getAvatars:(NSString *)key {
     NSString *avatarString = @"";
-    NSArray *share_user_ids = [appDelegate.activeStory objectForKey:key];
+    NSArray *share_user_ids = [self.activeStory objectForKey:key];
     
     for (int i = 0; i < share_user_ids.count; i++) {
         NSDictionary *user = [self getUser:[[share_user_ids objectAtIndex:i] intValue]];
@@ -273,10 +194,10 @@
 - (NSString *)getComments {
     NSString *comments = @"<div class=\"NB-feed-story-comments\">";
 
-    if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] &&
-        [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
+    if ([self.activeStory objectForKey:@"share_count"] != [NSNull null] &&
+        [[self.activeStory objectForKey:@"share_count"] intValue] > 0) {
         
-        NSDictionary *story = appDelegate.activeStory;
+        NSDictionary *story = self.activeStory;
         NSArray *friendsCommentsArray =  [story objectForKey:@"friend_comments"];   
         NSArray *publicCommentsArray =  [story objectForKey:@"public_comments"];   
 
@@ -316,13 +237,13 @@
     NSString *shareLabel = @"";
 //    NSString *replyStr = @"";
     
-//    if ([[appDelegate.activeStory objectForKey:@"reply_count"] intValue] == 1) {
+//    if ([[self.activeStory objectForKey:@"reply_count"] intValue] == 1) {
 //        replyStr = [NSString stringWithFormat:@" and <b>1 reply</b>"];        
-//    } else if ([[appDelegate.activeStory objectForKey:@"reply_count"] intValue] == 1) {
-//        replyStr = [NSString stringWithFormat:@" and <b>%@ replies</b>", [appDelegate.activeStory objectForKey:@"reply_count"]];
+//    } else if ([[self.activeStory objectForKey:@"reply_count"] intValue] == 1) {
+//        replyStr = [NSString stringWithFormat:@" and <b>%@ replies</b>", [self.activeStory objectForKey:@"reply_count"]];
 //    }
-    if (![[appDelegate.activeStory objectForKey:@"comment_count"] isKindOfClass:[NSNull class]] &&
-        [[appDelegate.activeStory objectForKey:@"comment_count"] intValue]) {
+    if (![[self.activeStory objectForKey:@"comment_count"] isKindOfClass:[NSNull class]] &&
+        [[self.activeStory objectForKey:@"comment_count"] intValue]) {
         commentLabel = [commentLabel stringByAppendingString:[NSString stringWithFormat:@
                                                               "<div class=\"NB-story-comments-label\">"
                                                               "%@" // comment count
@@ -332,17 +253,17 @@
                                                               "%@" // friend avatars
                                                               "%@" // public avatars
                                                               "</div>",
-                                                              [[appDelegate.activeStory objectForKey:@"comment_count"] intValue] == 1
+                                                              [[self.activeStory objectForKey:@"comment_count"] intValue] == 1
                                                               ? [NSString stringWithFormat:@"<b>1 comment</b>"] : 
-                                                              [NSString stringWithFormat:@"<b>%@ comments</b>", [appDelegate.activeStory objectForKey:@"comment_count"]],
+                                                              [NSString stringWithFormat:@"<b>%@ comments</b>", [self.activeStory objectForKey:@"comment_count"]],
                                                               
                                                               //replyStr,
                                                               [self getAvatars:@"commented_by_friends"],
                                                               [self getAvatars:@"commented_by_public"]]];
     }
     
-    if (![[appDelegate.activeStory objectForKey:@"share_count"] isKindOfClass:[NSNull class]] &&
-        [[appDelegate.activeStory objectForKey:@"share_count"] intValue]) {
+    if (![[self.activeStory objectForKey:@"share_count"] isKindOfClass:[NSNull class]] &&
+        [[self.activeStory objectForKey:@"share_count"] intValue]) {
         shareLabel = [shareLabel stringByAppendingString:[NSString stringWithFormat:@
 
                                                               "<div class=\"NB-right\">"
@@ -356,13 +277,13 @@
                                                               "</div>",
                                                               [self getAvatars:@"shared_by_public"],
                                                               [self getAvatars:@"shared_by_friends"],
-                                                              [[appDelegate.activeStory objectForKey:@"share_count"] intValue] == 1
+                                                              [[self.activeStory objectForKey:@"share_count"] intValue] == 1
                                                               ? [NSString stringWithFormat:@"<b>1 share</b>"] : 
-                                                              [NSString stringWithFormat:@"<b>%@ shares</b>", [appDelegate.activeStory objectForKey:@"share_count"]]]];
+                                                              [NSString stringWithFormat:@"<b>%@ shares</b>", [self.activeStory objectForKey:@"share_count"]]]];
     }
     
-    if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] &&
-        [[appDelegate.activeStory objectForKey:@"share_count"] intValue] > 0) {
+    if ([self.activeStory objectForKey:@"share_count"] != [NSNull null] &&
+        [[self.activeStory objectForKey:@"share_count"] intValue] > 0) {
         
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@
                                                       "<div class=\"NB-story-shares\">"
@@ -637,11 +558,8 @@
 }
 
 - (void)showStory {
-    
-    NSLog(@"showStory: %@", appDelegate.activeStory);
     appDelegate.inStoryDetail = YES;
-    // when we show story, we mark it as read
-    [self markStoryAsRead]; 
+    // when we show story, we mark it as read 
     self.noStorySelectedLabel.hidden = YES;
 
     
@@ -651,12 +569,6 @@
     }
     
     self.webView.hidden = NO;
-    self.bottomPlaceholderToolbar.hidden = YES;
-    self.progressViewContainer.hidden = NO;
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects: originalStoryButton, fontSettingsButton, nil];
-    }
 
     [appDelegate hideShareView:YES];
         
@@ -715,16 +627,16 @@
                          "</div>"
                          "</div></div>"];
     NSString *story_author = @"";
-    if ([appDelegate.activeStory objectForKey:@"story_authors"]) {
+    if ([self.activeStory objectForKey:@"story_authors"]) {
         NSString *author = [NSString stringWithFormat:@"%@",
-                            [appDelegate.activeStory objectForKey:@"story_authors"]];
+                            [self.activeStory objectForKey:@"story_authors"]];
         if (author && ![author isEqualToString:@"<null>"]) {
             story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",author];
         }
     }
     NSString *story_tags = @"";
-    if ([appDelegate.activeStory objectForKey:@"story_tags"]) {
-        NSArray *tag_array = [appDelegate.activeStory objectForKey:@"story_tags"];
+    if ([self.activeStory objectForKey:@"story_tags"]) {
+        NSArray *tag_array = [self.activeStory objectForKey:@"story_tags"];
         if ([tag_array count] > 0) {
             story_tags = [NSString 
                           stringWithFormat:@"<div class=\"NB-story-tags\">"
@@ -741,11 +653,11 @@
                              "%@"
                              "</div></div>", 
                              [story_tags length] ? 
-                             [appDelegate.activeStory 
+                             [self.activeStory
                               objectForKey:@"long_parsed_date"] : 
-                             [appDelegate.activeStory 
+                             [self.activeStory
                               objectForKey:@"short_parsed_date"],
-                             [appDelegate.activeStory objectForKey:@"story_title"],
+                             [self.activeStory objectForKey:@"story_title"],
                              story_author,
                              story_tags];
     NSString *htmlString = [NSString stringWithFormat:@
@@ -772,7 +684,7 @@
                             shareBarString,
                             fontStyleClass,
                             fontSizeClass,
-                            [appDelegate.activeStory objectForKey:@"story_content"],
+                            [self.activeStory objectForKey:@"story_content"],
                             sharingHtmlString,
                             commentString,
                             footerString
@@ -789,7 +701,7 @@
     
     NSDictionary *feed;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@", 
-                           [appDelegate.activeStory 
+                           [self.activeStory
                             objectForKey:@"story_feed_id"]];
                            
     if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
@@ -833,8 +745,6 @@
                                  context:nil];
 
                 
-    
-    [self setNextPreviousButtons];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -884,11 +794,16 @@
     }
 }
 
-- (void)setActiveStory {
-    self.activeStoryId = [appDelegate.activeStory objectForKey:@"id"];  
+- (void)setActiveStoryAtIndex:(NSInteger)activeStoryIndex {
+    if (activeStoryIndex >= 0) {
+        self.activeStory = [appDelegate.activeFeedStories objectAtIndex:activeStoryIndex];
+    } else {
+        self.activeStory = appDelegate.activeStory;
+    }
+    self.activeStoryId = [self.activeStory objectForKey:@"id"];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!appDelegate.isSocialView) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"story_feed_id"]];
             
             
             UIImage *titleImage;
@@ -948,7 +863,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             [action isEqualToString:@"unlike-comment"]) {
 
             // search for the comment from friends comments
-            NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
+            NSArray *friendComments = [self.activeStory objectForKey:@"friend_comments"];
             for (int i = 0; i < friendComments.count; i++) {
                 NSString *userId = [NSString stringWithFormat:@"%@", 
                                     [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
@@ -959,7 +874,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             }
             
             if (appDelegate.activeComment == nil) {
-                NSArray *publicComments = [appDelegate.activeStory objectForKey:@"public_comments"];
+                NSArray *publicComments = [self.activeStory objectForKey:@"public_comments"];
                 for (int i = 0; i < publicComments.count; i++) {
                     NSString *userId = [NSString stringWithFormat:@"%@", 
                                         [[publicComments objectAtIndex:i] objectForKey:@"user_id"]];
@@ -1068,7 +983,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true, true);", currentUserId];
             [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
         } else if ([appDelegate.tryFeedCategory isEqualToString:@"story_reshare"]) {
-            NSString *blurblogUserId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"social_user_id"]];
+            NSString *blurblogUserId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"social_user_id"]];
             NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", blurblogUserId];
             [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
 
@@ -1077,125 +992,36 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 }
 
+- (void)setFontStyle:(NSString *)fontStyle {
+    NSString *jsString;
+    NSString *fontStyleStr;
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    if ([fontStyle isEqualToString:@"Helvetica"]) {
+        [userPreferences setObject:@"NB-san-serif" forKey:@"fontStyle"];
+        fontStyleStr = @"NB-san-serif";
+    } else {
+        [userPreferences setObject:@"NB-serif" forKey:@"fontStyle"];
+        fontStyleStr = @"NB-serif";
+    }
+    [userPreferences synchronize];
+    
+    jsString = [NSString stringWithFormat:@
+                "document.getElementById('NB-font-style').setAttribute('class', '%@')",
+                fontStyleStr];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+}
+
+- (void)changeFontSize:(NSString *)fontSize {
+    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-size').setAttribute('class', '%@')",
+                          fontSize];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+}
+
 #pragma mark -
 #pragma mark Actions
-
-- (IBAction)tapProgressBar:(id)sender {
-    [MBProgressHUD hideHUDForView:self.view animated:NO];
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	hud.mode = MBProgressHUDModeText;
-	hud.removeFromSuperViewOnHide = YES;  
-    int unreadCount = appDelegate.unreadCount;
-    if (unreadCount == 0) {
-        hud.labelText = @"No unread stories";
-    } else if (unreadCount == 1) {
-        hud.labelText = @"1 story left";
-    } else {
-        hud.labelText = [NSString stringWithFormat:@"%i stories left", unreadCount]; 
-    }
-	[hud hide:YES afterDelay:0.8];
-}
-
-- (void)setNextPreviousButtons {
-    // setting up the PREV BUTTON
-    int readStoryCount = [appDelegate.readStories count];
-    if (readStoryCount == 0 || 
-        (readStoryCount == 1 && 
-        [appDelegate.readStories lastObject] == [appDelegate.activeStory objectForKey:@"id"])) {
-        [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-        [buttonPrevious setTitle:@"Previous"];
-        [buttonPrevious setEnabled:NO];
-    } else {
-        [buttonPrevious setStyle:UIBarButtonItemStyleBordered];
-        [buttonPrevious setTitle:@"Previous"];
-        [buttonPrevious setEnabled:YES];
-    }
-
-    // setting up the NEXT UNREAD STORY BUTTON
-    int nextIndex = [appDelegate indexOfNextUnreadStory];
-    int unreadCount = [appDelegate unreadCount];
-    if (nextIndex == -1 && unreadCount > 0) {
-        [buttonNext setStyle:UIBarButtonItemStyleBordered];
-        [buttonNext setTitle:@"Next Unread"];        
-    } else if (nextIndex == -1) {
-        [buttonNext setStyle:UIBarButtonItemStyleDone];
-        [buttonNext setTitle:@"Done"];
-    } else {
-        [buttonNext setStyle:UIBarButtonItemStyleBordered];
-        [buttonNext setTitle:@"Next Unread"];
-    }
-    
-    float unreads = (float)[appDelegate unreadCount];
-    float total = [appDelegate originalStoryCount];
-    float progress = (total - unreads) / total;
-    [progressView setProgress:progress];
-}
-
-- (void)markStoryAsRead {
-//    NSLog(@"[appDelegate.activeStory objectForKey:@read_status] intValue] %i", [[appDelegate.activeStory objectForKey:@"read_status"] intValue]);
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] != 1) {
-        
-        [appDelegate markActiveStoryRead];
-
-        NSString *urlString;        
-        if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
-            urlString = [NSString stringWithFormat:@"http://%@/reader/mark_social_stories_as_read",
-                        NEWSBLUR_URL];
-        } else {
-            urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_read",
-                         NEWSBLUR_URL];
-        }
-
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        
-        if (appDelegate.isSocialRiverView) {
-            // grab the user id from the shared_by_friends
-            NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
-            NSString *friendUserId;
-            
-            if ([[appDelegate.activeStory objectForKey:@"shared_by_friends"] count]) {
-                friendUserId = [NSString stringWithFormat:@"%@", 
-                                          [[appDelegate.activeStory objectForKey:@"shared_by_friends"] objectAtIndex:0]];
-            } else {
-                friendUserId = [NSString stringWithFormat:@"%@", 
-                                          [[appDelegate.activeStory objectForKey:@"commented_by_friends"] objectAtIndex:0]];
-            }
-
-            NSDictionary *feedStory = [NSDictionary dictionaryWithObject:storyId 
-                                                                  forKey:[NSString stringWithFormat:@"%@", 
-                                                                          [appDelegate.activeStory objectForKey:@"story_feed_id"]]];
-            
-            NSDictionary *usersFeedsStories = [NSDictionary dictionaryWithObject:feedStory 
-                                                                          forKey:friendUserId];
-            
-            [request setPostValue:[usersFeedsStories JSONRepresentation] forKey:@"users_feeds_stories"]; 
-        } else if (appDelegate.isSocialView) {
-            NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
-            NSDictionary *feedStory = [NSDictionary dictionaryWithObject:storyId 
-                                                                     forKey:[NSString stringWithFormat:@"%@", 
-                                                                             [appDelegate.activeStory objectForKey:@"story_feed_id"]]];
-                                         
-            NSDictionary *usersFeedsStories = [NSDictionary dictionaryWithObject:feedStory 
-                                                                          forKey:[NSString stringWithFormat:@"%@",
-                                                                                  [appDelegate.activeStory objectForKey:@"social_user_id"]]];
-            
-            [request setPostValue:[usersFeedsStories JSONRepresentation] forKey:@"users_feeds_stories"]; 
-        } else {
-            [request setPostValue:[appDelegate.activeStory 
-                                   objectForKey:@"id"] 
-                           forKey:@"story_id"];
-            [request setPostValue:[appDelegate.activeStory 
-                                   objectForKey:@"story_feed_id"] 
-                           forKey:@"feed_id"]; 
-        }
-                         
-        [request setDidFinishSelector:@selector(finishMarkAsRead:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request setDelegate:self];
-        [request startAsynchronous];
-    }
-}
 
 - (void)toggleLikeComment:(BOOL)likeComment {
     [self showShareHUD:@"Favoriting"];
@@ -1212,10 +1038,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
     
-    [request setPostValue:[appDelegate.activeStory 
+    [request setPostValue:[self.activeStory
                    objectForKey:@"id"] 
            forKey:@"story_id"];
-    [request setPostValue:[appDelegate.activeStory 
+    [request setPostValue:[self.activeStory
                            objectForKey:@"story_feed_id"] 
                    forKey:@"story_feed_id"];
     
@@ -1242,13 +1068,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
     // update the current story and the activeFeedStories
     appDelegate.activeStory = newStory;
+    [self setActiveStoryAtIndex:-1];
     
     NSMutableArray *newActiveFeedStories = [[NSMutableArray alloc] init];
     
     for (int i = 0; i < appDelegate.activeFeedStories.count; i++)  {
         NSDictionary *feedStory = [appDelegate.activeFeedStories objectAtIndex:i];
         NSString *storyId = [NSString stringWithFormat:@"%@", [feedStory objectForKey:@"id"]];
-        NSString *currentStoryId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory objectForKey:@"id"]];
+        NSString *currentStoryId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"id"]];
         if ([storyId isEqualToString: currentStoryId]){
             [newActiveFeedStories addObject:newStory];
         } else {
@@ -1273,26 +1100,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self informError:error];
 }
 
-- (void)finishMarkAsRead:(ASIHTTPRequest *)request {
-    //    NSString *responseString = [request responseString];
-    //    NSDictionary *results = [[NSDictionary alloc]
-    //                             initWithDictionary:[responseString JSONValue]];
-    //    NSLog(@"results in mark as read is %@", results);
-}
-
-- (void)openSendToDialog {
-    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
-                                       objectForKey:@"story_permalink"]];
-    SHKItem *item = [SHKItem URL:url title:[appDelegate.activeStory
-                                            objectForKey:@"story_title"]];
-    SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
-    [actionSheet showInView:self.view];
-}
-
 - (void)openShareDialog {
     // test to see if the user has commented
     // search for the comment from friends comments
-    NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
+    NSArray *friendComments = [self.activeStory objectForKey:@"friend_comments"];
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
     for (int i = 0; i < friendComments.count; i++) {
         NSString *userId = [NSString stringWithFormat:@"%@",
@@ -1313,99 +1124,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                        setUsername:nil
                         setReplyId:nil];
     }
-}
-
-- (void)markStoryAsSaved {
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_starred",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"id"]
-                   forKey:@"story_id"];
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
-    
-    [request setDidFinishSelector:@selector(finishMarkAsSaved:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
-}
-
-- (void)finishMarkAsSaved:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self requestFailed:request];
-    }
-    
-    [appDelegate markActiveStorySaved:YES];
-    [self informMessage:@"This story is now saved"];
-}
-
-- (void)markStoryAsUnsaved {
-    //    [appDelegate markActiveStoryUnread];
-    
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_unstarred",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"id"]
-                   forKey:@"story_id"];
-    [request setPostValue:[appDelegate.activeStory
-                           objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
-    
-    [request setDidFinishSelector:@selector(finishMarkAsUnsaved:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
-}
-
-- (void)finishMarkAsUnsaved:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self requestFailed:request];
-    }
-    
-    //    [appDelegate markActiveStoryUnread];
-    //    [appDelegate.feedDetailViewController redrawUnreadStory];
-    
-    [appDelegate markActiveStorySaved:NO];
-    [self informMessage:@"This story is no longer saved"];
-}
-
-- (void)markStoryAsUnread {
-    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] == 1) {
-        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_unread",
-                               NEWSBLUR_URL];
-        NSURL *url = [NSURL URLWithString:urlString];
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        
-        [request setPostValue:[appDelegate.activeStory
-                               objectForKey:@"id"]
-                       forKey:@"story_id"];
-        [request setPostValue:[appDelegate.activeStory
-                               objectForKey:@"story_feed_id"]
-                       forKey:@"feed_id"];
-        
-        [request setDidFinishSelector:@selector(finishMarkAsUnread:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
-        [request setDelegate:self];
-        [request startAsynchronous];
-    }
-}
-
-- (void)finishMarkAsUnread:(ASIHTTPRequest *)request {
-    if ([request responseStatusCode] != 200) {
-        return [self requestFailed:request];
-    }
-    
-    [appDelegate markActiveStoryUnread];
-    [appDelegate.feedDetailViewController redrawUnreadStory];
-    
-    [self informMessage:@"This story is now unread"];
 }
 
 # pragma mark
@@ -1503,126 +1221,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
 }
 
-- (IBAction)doNextUnreadStory {
-    int nextIndex = [appDelegate indexOfNextUnreadStory];
-    int unreadCount = [appDelegate unreadCount];
-    [self.loadingIndicator stopAnimating];
-    
-    if (self.appDelegate.feedDetailViewController.pageFetching) {
-        return;
-    }
-    
-    if (nextIndex == -1 && unreadCount > 0 && 
-        self.appDelegate.feedDetailViewController.feedPage < 50 &&
-        !self.appDelegate.feedDetailViewController.pageFinished &&
-        !self.appDelegate.feedDetailViewController.pageFetching) {
-
-        // Fetch next page and see if it has the unreads.
-        [self.loadingIndicator startAnimating];
-        self.activity.customView = self.loadingIndicator;
-        [self.appDelegate.feedDetailViewController fetchNextPage:^() {
-            [self doNextUnreadStory];
-        }];
-    } else if (nextIndex == -1) {
-        [appDelegate.navigationController 
-         popToViewController:[appDelegate.navigationController.viewControllers 
-                              objectAtIndex:0]  
-         animated:YES];
-        [appDelegate hideStoryDetailView];
-    } else {
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
-                                     objectAtIndex:nextIndex]];
-        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
-        [self setActiveStory];
-        [self showStory];
-
-        [appDelegate changeActiveFeedDetailRow];
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:.5];
-        [UIView setAnimationBeginsFromCurrentState:NO];
-        [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp 
-                               forView:self.webView 
-                                 cache:NO];
-        [UIView commitAnimations];
-    }
-}
-
-- (IBAction)doNextStory {
-    
-    int nextIndex = [appDelegate indexOfNextStory];
-    
-    [self.loadingIndicator stopAnimating];
-    
-    if (self.appDelegate.feedDetailViewController.pageFetching) {
-        return;
-    }
-    
-    if (nextIndex == -1 && 
-        self.appDelegate.feedDetailViewController.feedPage < 50 &&
-        !self.appDelegate.feedDetailViewController.pageFinished &&
-        !self.appDelegate.feedDetailViewController.pageFetching) {
-                
-        // Fetch next page and see if it has the unreads.
-        [self.loadingIndicator startAnimating];
-        self.activity.customView = self.loadingIndicator;
-        [self.appDelegate.feedDetailViewController fetchNextPage:^() {
-            [self doNextStory];
-        }];
-    } else if (nextIndex == -1) {
-        [MBProgressHUD hideHUDForView:self.view animated:NO];
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        hud.mode = MBProgressHUDModeText;
-        hud.removeFromSuperViewOnHide = YES;  
-        hud.labelText = @"No stories left";
-        [hud hide:YES afterDelay:0.8];
-    } else {
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
-                                     objectAtIndex:nextIndex]];
-        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
-        [self setActiveStory];
-        [self showStory];
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [appDelegate changeActiveFeedDetailRow];        
-        }
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:.5];
-        [UIView setAnimationBeginsFromCurrentState:NO];
-        [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp 
-                               forView:self.webView 
-                                 cache:NO];
-        [UIView commitAnimations];
-    }
-}
-
-- (IBAction)doPreviousStory {
-    [self.loadingIndicator stopAnimating];
-    id previousStoryId = [appDelegate popReadStory];
-    if (!previousStoryId || previousStoryId == [appDelegate.activeStory objectForKey:@"id"]) {
-        [appDelegate.navigationController 
-         popToViewController:[appDelegate.navigationController.viewControllers 
-                              objectAtIndex:0]  
-         animated:YES];
-        [appDelegate hideStoryDetailView];
-    } else {
-        int previousIndex = [appDelegate locationOfStoryId:previousStoryId];
-        if (previousIndex == -1) {
-            return [self doPreviousStory];
-        }
-        [appDelegate setActiveStory:[[appDelegate activeFeedStories] 
-                                     objectAtIndex:previousIndex]];
-        [self setActiveStory];
-        [self showStory];
-        [appDelegate changeActiveFeedDetailRow];
-        
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:.5];
-        [UIView setAnimationBeginsFromCurrentState:NO];
-        [UIView setAnimationTransition:UIViewAnimationTransitionCurlDown 
-                               forView:self.webView 
-                                 cache:NO];
-        [UIView commitAnimations];
-    }
+- (NSString *)textToHtml:(NSString*)htmlString {
+    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"'"  withString:@"&#039;"];
+    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"\n"  withString:@"<br/>"];
+    return htmlString;
 }
 
 - (void)changeWebViewWidth:(int)width {
@@ -1644,166 +1246,5 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           contentWidth];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
 }
-
-- (IBAction)toggleFontSize:(id)sender {
-//    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        if (popoverController == nil) {
-//            popoverController = [[UIPopoverController alloc]
-//                                 initWithContentViewController:appDelegate.fontSettingsViewController];
-//            
-//            popoverController.delegate = self;
-//        } else {
-//            if (popoverController.isPopoverVisible) {
-//                [popoverController dismissPopoverAnimated:YES];
-//                return;
-//            }
-//            
-//            [popoverController setContentViewController:appDelegate.fontSettingsViewController];
-//        }
-//        
-//        [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
-//        UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-//                                           initWithCustomView:sender];
-//        
-//        [popoverController presentPopoverFromBarButtonItem:settingsButton
-//                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-//    } else {
-//        FontSettingsViewController *fontSettings = [[FontSettingsViewController alloc] init];
-//        appDelegate.fontSettingsViewController = fontSettings;
-//        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:appDelegate.fontSettingsViewController];
-//        
-//        // adding Done button
-//        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-//                                       initWithTitle:@"Done" 
-//                                       style:UIBarButtonItemStyleDone 
-//                                       target:self 
-//                                       action:@selector(hideToggleFontSize)];
-//        
-//        appDelegate.fontSettingsViewController.navigationItem.rightBarButtonItem = donebutton;
-//        appDelegate.fontSettingsViewController.navigationItem.title = @"Style";
-//        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-//        [self presentModalViewController:navController animated:YES];
-//        
-//    }
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [appDelegate.masterContainerViewController showFontSettingsPopover:sender];
-    } else {
-        if (self.popoverController == nil) {
-            self.popoverController = [[WEPopoverController alloc]
-                                      initWithContentViewController:appDelegate.fontSettingsViewController];
-            
-            self.popoverController.delegate = self;
-        } else {
-            [self.popoverController dismissPopoverAnimated:YES];
-            self.popoverController = nil;
-        }
-        
-        if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
-            [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
-        }
-        [self.popoverController setPopoverContentSize:CGSizeMake(240, 154)];
-        [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
-                                       permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                                       animated:YES];
-    }
-}
-
-
-
-- (void)changeFontSize:(NSString *)fontSize {
-    NSString *jsString = [[NSString alloc] initWithFormat:@"document.getElementById('NB-font-size').setAttribute('class', '%@')", 
-                          fontSize];
-    
-    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-}
- 
-- (void)setFontStyle:(NSString *)fontStyle {
-    NSString *jsString;
-    NSString *fontStyleStr;
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    
-    if ([fontStyle isEqualToString:@"Helvetica"]) {
-        [userPreferences setObject:@"NB-san-serif" forKey:@"fontStyle"];
-        fontStyleStr = @"NB-san-serif";
-    } else {
-        [userPreferences setObject:@"NB-serif" forKey:@"fontStyle"];
-        fontStyleStr = @"NB-serif";
-    }
-    [userPreferences synchronize];
-    
-    jsString = [NSString stringWithFormat:@
-                "document.getElementById('NB-font-style').setAttribute('class', '%@')", 
-                fontStyleStr];
-    
-    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-}
-
-- (IBAction)showOriginalSubview:(id)sender {
-    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory 
-                                       objectForKey:@"story_permalink"]];
-    [appDelegate showOriginalStory:url];
-}
-
-- (NSString *)textToHtml:(NSString*)htmlString {
-    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"'"  withString:@"&#039;"];
-    htmlString = [htmlString stringByReplacingOccurrencesOfString:@"\n"  withString:@"<br/>"];
-    return htmlString;
-}
-
-#pragma mark -
-#pragma mark WEPopoverControllerDelegate implementation
-
-- (void)popoverControllerDidDismissPopover:(WEPopoverController *)thePopoverController {
-	//Safe to release the popover here
-	self.popoverController = nil;
-}
-
-- (BOOL)popoverControllerShouldDismissPopover:(WEPopoverController *)thePopoverController {
-	//The popover is automatically dismissed if you click outside it, unless you return NO here
-	return YES;
-}
-
-
-/**
- Thanks to Paul Solt for supplying these background images and container view properties
- */
-- (WEPopoverContainerViewProperties *)improvedContainerViewProperties {
-	
-	WEPopoverContainerViewProperties *props = [WEPopoverContainerViewProperties alloc];
-	NSString *bgImageName = nil;
-	CGFloat bgMargin = 0.0;
-	CGFloat bgCapSize = 0.0;
-	CGFloat contentMargin = 5.0;
-	
-	bgImageName = @"popoverBg.png";
-	
-	// These constants are determined by the popoverBg.png image file and are image dependent
-	bgMargin = 13; // margin width of 13 pixels on all sides popoverBg.png (62 pixels wide - 36 pixel background) / 2 == 26 / 2 == 13 
-	bgCapSize = 31; // ImageSize/2  == 62 / 2 == 31 pixels
-	
-	props.leftBgMargin = bgMargin;
-	props.rightBgMargin = bgMargin;
-	props.topBgMargin = bgMargin;
-	props.bottomBgMargin = bgMargin;
-	props.leftBgCapSize = bgCapSize;
-	props.topBgCapSize = bgCapSize;
-	props.bgImageName = bgImageName;
-	props.leftContentMargin = contentMargin;
-	props.rightContentMargin = contentMargin - 1; // Need to shift one pixel for border to look correct
-	props.topContentMargin = contentMargin; 
-	props.bottomContentMargin = contentMargin;
-	
-	props.arrowMargin = 4.0;
-	
-	props.upArrowImageName = @"popoverArrowUp.png";
-	props.downArrowImageName = @"popoverArrowDown.png";
-	props.leftArrowImageName = @"popoverArrowLeft.png";
-	props.rightArrowImageName = @"popoverArrowRight.png";
-	return props;	
-}
-
-
-
 
 @end

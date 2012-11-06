@@ -30,6 +30,7 @@
 @class FriendsListViewController;
 @class FontSettingsViewController;
 @class StoryDetailViewController;
+@class StoryPageControl;
 @class ShareViewController;
 @class LoginViewController;
 @class AddSiteViewController;
@@ -39,7 +40,6 @@
 @class NBContainerViewController;
 @class FindSitesViewController;
 @class UnreadCounts;
-@class StoryPageControl;
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate>  {
     UIWindow *window;
