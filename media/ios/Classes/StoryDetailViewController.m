@@ -317,7 +317,7 @@
     }
     
     self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed
-                                                       withRect:CGRectMake(0, -1, 1024, 21)]; // 1024 hack for self.webView.frame.size.width
+                                                       withRect:CGRectMake(0, -1, self.view.frame.size.width, 21)]; // 1024 hack for self.webView.frame.size.width
     
     self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
     [self.feedTitleGradient.layer setShadowColor:[[UIColor blackColor] CGColor]];

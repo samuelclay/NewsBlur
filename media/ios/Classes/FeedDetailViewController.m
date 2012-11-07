@@ -14,6 +14,7 @@
 #import "ASIFormDataRequest.h"
 #import "UserProfileViewController.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
@@ -156,8 +157,10 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    if (appDelegate.inStoryDetail = YES && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (appDelegate.inStoryDetail && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         appDelegate.inStoryDetail = NO;
+        [appDelegate.storyPageControl.currentPage clearStory];
+        [appDelegate.storyPageControl.nextPage clearStory];
         [appDelegate.storyDetailViewController clearStory];
         [self checkScroll];
     }
@@ -240,7 +243,7 @@
     NSString *theFeedDetailURL;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    if (!self.pageFetching && !self.pageFinished) {
+    if (callback || (!self.pageFetching && !self.pageFinished)) {
     
         self.feedPage = page;
         self.pageFetching = YES;
@@ -455,6 +458,7 @@
     }
     
     [self renderStories:confirmedNewStories];
+    [appDelegate.storyPageControl resizeScrollView];
 }
 
 #pragma mark - 
@@ -705,7 +709,8 @@
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(int)row {
     cell.isRead = YES;
     [cell setNeedsLayout];
-    appDelegate.activeStory = [[appDelegate activeFeedStories] objectAtIndex:row];
+    int storyIndex = [appDelegate indexFromLocation:row];
+    appDelegate.activeStory = [[appDelegate activeFeedStories] objectAtIndex:storyIndex];
     [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
     [appDelegate loadStoryDetailView];
 }
@@ -730,8 +735,7 @@
     if (indexPath.row < [appDelegate.activeFeedStoryLocations count]) {
         // mark the cell as read
         FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];        
-        int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
-        [self loadStory:cell atRow:location]; 
+        [self loadStory:cell atRow:indexPath.row];
     }
 }
 

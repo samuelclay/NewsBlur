@@ -73,6 +73,7 @@
     // loading indicator
     self.loadingIndicator = [[UIActivityIndicatorView alloc]
                              initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    self.activity.customView = self.loadingIndicator;
     
     // adding HUD for progress bar
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapProgressBar:)];
@@ -128,25 +129,20 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSInteger widthCount = self.appDelegate.storyCount;
-	if (widthCount == 0) {
-		widthCount = 1;
-	}
-    
     currentPage.view.frame = self.scrollView.frame;
     nextPage.view.frame = self.scrollView.frame;
     
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width
-                                             * widthCount,
-                                             self.scrollView.frame.size.height);
+    [currentPage clearStory];
+    [nextPage clearStory];
+    [self resizeScrollView];
 	self.scrollView.contentOffset = CGPointMake(0, 0);
     
-    int activeStoryIndex = [appDelegate indexOfActiveStory];
-    if (activeStoryIndex >= 0) {
-        [self changePage:activeStoryIndex];
+    int activeStoryLocation = [appDelegate locationOfActiveStory];
+    if (activeStoryLocation >= 0) {
+        [self changePage:activeStoryLocation];
         [self setStory];
-        [self applyNewIndex:activeStoryIndex pageController:currentPage];
-        [self applyNewIndex:activeStoryIndex+1 pageController:nextPage];
+        [self applyNewIndex:activeStoryLocation pageController:currentPage];
+        [self applyNewIndex:activeStoryLocation+1 pageController:nextPage];
     }
     
     [self setNextPreviousButtons];
@@ -162,6 +158,16 @@
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
+}
+
+- (void)resizeScrollView {
+    NSInteger widthCount = self.appDelegate.storyCount;
+	if (widthCount == 0) {
+		widthCount = 1;
+	}
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width
+                                             * widthCount,
+                                             self.scrollView.frame.size.height);
 }
 
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController
@@ -182,7 +188,7 @@
     
 	pageController.pageIndex = newIndex;
     
-    if (newIndex >= [appDelegate.activeFeedStories count]) {
+    if (newIndex >= [appDelegate.activeFeedStoryLocations count]) {
         if (self.appDelegate.feedDetailViewController.feedPage < 50 &&
             !self.appDelegate.feedDetailViewController.pageFinished &&
             !self.appDelegate.feedDetailViewController.pageFetching) {
@@ -190,11 +196,11 @@
                 [self applyNewIndex:newIndex pageController:pageController];
             }];
         } else {
-            [appDelegate.navigationController
-             popToViewController:[appDelegate.navigationController.viewControllers
-                                  objectAtIndex:0]
-             animated:YES];
-            [appDelegate hideStoryDetailView];
+//            [appDelegate.navigationController
+//             popToViewController:[appDelegate.navigationController.viewControllers
+//                                  objectAtIndex:0]
+//             animated:YES];
+//            [appDelegate hideStoryDetailView];
         }
     } else {
         int location = [appDelegate indexFromLocation:pageController.pageIndex];
@@ -202,6 +208,7 @@
         [pageController initStory];
     }
     
+    [self resizeScrollView];
     [self.loadingIndicator stopAnimating];
 }
 
@@ -270,6 +277,8 @@
 
 - (void)changePage:(NSInteger)pageIndex {
 	// update the scroll view to the appropriate page
+    [self resizeScrollView];
+
     CGRect frame = self.scrollView.frame;
     frame.origin.x = frame.size.width * pageIndex;
     frame.origin.y = 0;
@@ -337,6 +346,7 @@
         [buttonNext setStyle:UIBarButtonItemStyleBordered];
         [buttonNext setTitle:@"Next Unread"];
     }
+    buttonNext.enabled = YES;
     
     float unreads = (float)[appDelegate unreadCount];
     float total = [appDelegate originalStoryCount];
@@ -614,26 +624,19 @@
 #pragma mark -
 #pragma mark Story Traversal
 
-
-
 - (IBAction)doNextUnreadStory {
+    FeedDetailViewController *fdvc = self.appDelegate.feedDetailViewController;
     int nextLocation = [appDelegate locationOfNextUnreadStory];
     int unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
     
-    if (self.appDelegate.feedDetailViewController.pageFetching) {
-        return;
-    }
-    
     if (nextLocation == -1 && unreadCount > 0 &&
-        self.appDelegate.feedDetailViewController.feedPage < 50 &&
-        !self.appDelegate.feedDetailViewController.pageFinished &&
-        !self.appDelegate.feedDetailViewController.pageFetching) {
-        
-        // Fetch next page and see if it has the unreads.
+        fdvc.feedPage < 50) {
         [self.loadingIndicator startAnimating];
         self.activity.customView = self.loadingIndicator;
-        [self.appDelegate.feedDetailViewController fetchNextPage:^() {
+        self.buttonNext.enabled = NO;
+        // Fetch next page and see if it has the unreads.
+        [fdvc fetchNextPage:^() {
             [self doNextUnreadStory];
         }];
     } else if (nextLocation == -1) {

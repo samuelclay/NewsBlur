@@ -460,7 +460,7 @@ def load_single_feed(request, feed_id):
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     if page: offset = limit * (page-1)
     if not feed_id: raise Http404
-
+    if page > 1: time.sleep(6)
     feed_address = request.REQUEST.get('feed_address')
     feed = Feed.get_by_id(feed_id, feed_address=feed_address)
     if not feed:

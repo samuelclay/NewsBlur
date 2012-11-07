@@ -128,8 +128,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     
-//    [TestFlight takeOff:@"101dd20fb90f7355703b131d9af42633_MjQ0NTgyMDExLTA4LTIxIDIzOjU3OjEzLjM5MDcyOA"];
-    
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
     self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
@@ -1452,7 +1450,7 @@
         [gradientView addSubview:titleImageView];
     } else {
         gradientView = [NewsBlurAppDelegate 
-                        makeGradientView:CGRectMake(0, -1, 1024, 10) 
+                        makeGradientView:CGRectMake(0, -1, rect.size.width, 10)
                         // hard coding the 1024 as a hack for window.frame.size.width
                         startColor:[feed objectForKey:@"favicon_fade"] 
                         endColor:[feed objectForKey:@"favicon_color"]];

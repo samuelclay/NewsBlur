@@ -56,6 +56,7 @@
 
 @property (nonatomic, strong) WEPopoverController *popoverController;
 
+- (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
 
 - (void)setStory;

@@ -15,6 +15,7 @@
 #import "FeedDetailMenuViewController.h"
 #import "UserProfileViewController.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
@@ -132,7 +133,7 @@ static const CGFloat kFolderTitleHeight = 28;
     appDelegate.isSocialView = NO;
     appDelegate.isRiverView = NO;
     appDelegate.inFindingStoryMode = NO;
-    [MBProgressHUD hideHUDForView:appDelegate.storyDetailViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
     if (appDelegate.activeFeed || appDelegate.isRiverView) {        
         [self.feedTitlesTable beginUpdates];
