@@ -52,6 +52,7 @@
 @property (nonatomic, readwrite) BOOL pageFinished;
 
 - (void)resetFeedDetail;
+- (void)reloadPage;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;

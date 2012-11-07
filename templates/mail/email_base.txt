@@ -1,6 +1,4 @@
-{% load utils_tags %}
-
-{% block body %}{% endblock body %}
+{% load utils_tags %}{% block body %}{% endblock body %}
 
 -----------------------------------------------------------------------------
 
@@ -18,8 +16,8 @@ Stay up to date and in touch with us, yr. developers, in a few different ways:
 
 There's plenty of ways to use NewsBlur beyond the website:
 
-    * Download the free iPad/iPhone App: http://{% current_domain %}/ipad/
-    * Download the Android App on the Android Market: https://market.android.com/details?id=bitwrit.Blar
+    * Download the free iPad/iPhone App: http://{% current_domain %}/ios/
+    * Download the free Android App: http://{% current_domain %}/android/
     * Download browser extensions for Safari, Firefox, and Chrome: http://{% current_domain %}{{ user.profile.autologin_url }}?next=goodies
 
 -----------------------------------------------------------------------------

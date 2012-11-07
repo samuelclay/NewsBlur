@@ -275,7 +275,11 @@ class Feed(models.Model):
         
     @classmethod
     def task_feeds(cls, feeds, queue_size=12):
-        logging.debug(" ---> Tasking %s feeds..." % feeds.count())
+        if isinstance(feeds, Feed):
+            logging.debug(" ---> Tasking feed: %s" % feeds)
+            feeds = [feeds]
+        else:
+            logging.debug(" ---> Tasking %s feeds..." % len(feeds))
         
         feed_queue = []
         for f in feeds:
@@ -289,7 +293,7 @@ class Feed(models.Model):
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
         count_extra = False
-        if random.random() > .9 or not self.data.popular_tags or not self.data.popular_authors:
+        if random.random() > .98 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
         if force or (full and count_extra):
             self.count_stories()
@@ -596,7 +600,7 @@ class Feed(models.Model):
         for r in res:
             dates[r.key] = r.value
             year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
-            if year < min_year:
+            if year < min_year and year > 2000:
                 min_year = year
                 
         # Add on to existing months, always amending up, never down. (Current month
@@ -606,7 +610,7 @@ class Feed(models.Model):
             year = int(re.findall(r"(\d{4})-\d{1,2}", current_month)[0])
             if current_month not in dates or dates[current_month] < current_count:
                 dates[current_month] = current_count
-            if year < min_year:
+            if year < min_year and year > 2000:
                 min_year = year
         
         # Assemble a list with 0's filled in for missing months, 
@@ -703,14 +707,7 @@ class Feed(models.Model):
         disp.add_jobs([[self.pk]])
         feed = disp.run_jobs()
         
-        try:
-            feed = Feed.objects.get(pk=feed.pk)
-        except Feed.DoesNotExist:
-            # Feed has been merged after updating. Find the right feed.
-            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=feed.pk)
-            if duplicate_feeds:
-                feed = duplicate_feeds[0].feed
-            
+        feed = Feed.get_by_id(feed.pk)
         feed.last_update = datetime.datetime.utcnow()
         feed.set_next_scheduled_update()
         
@@ -1409,13 +1406,16 @@ class MStory(mongo.Document):
     def sync_all_redis(cls, story_feed_id=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        feed = None
+        if story_feed_id:
+            feed = Feed.get_by_id(story_feed_id)
         stories = cls.objects.filter(story_date__gte=DAYS_OF_UNREAD)
         if story_feed_id:
             stories = stories.filter(story_feed_id=story_feed_id)
             r.delete('F:%s' % story_feed_id)
             r.delete('zF:%s' % story_feed_id)
-        
-        print " ---> Syncing %s stories in %s" % (stories.count(), story_feed_id)
+
+        logging.info(" ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
         for story in stories:
             story.sync_redis(r)
         
@@ -1558,14 +1558,6 @@ class MFeedPushHistory(mongo.Document):
         return push_history
         
         
-class FeedLoadtime(models.Model):
-    feed = models.ForeignKey(Feed)
-    date_accessed = models.DateTimeField(auto_now=True)
-    loadtime = models.FloatField()
-    
-    def __unicode__(self):
-        return "%s: %s sec" % (self.feed, self.loadtime)
-    
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, db_index=True)
     duplicate_link = models.CharField(max_length=255, null=True, db_index=True)

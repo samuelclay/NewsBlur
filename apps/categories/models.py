@@ -100,7 +100,7 @@ class MCategorySite(mongo.Document):
     }
     
     def __unicode__(self):
-        feed = Feed.objects.get(pk=self.feed_id)
+        feed = Feed.get_by_id(self.feed_id)
         return "%s: %s" % (self.category_title, feed)
     
     @classmethod

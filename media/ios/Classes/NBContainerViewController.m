@@ -269,7 +269,7 @@
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(260, 38*3)];
+    [popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38*3 : 38*5)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
                                               animated:YES];

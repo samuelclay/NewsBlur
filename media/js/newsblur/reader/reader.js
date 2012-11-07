@@ -113,6 +113,7 @@
             NEWSBLUR.app.original_tab_view = new NEWSBLUR.Views.OriginalTabView({collection: NEWSBLUR.assets.stories});
             NEWSBLUR.app.story_tab_view = new NEWSBLUR.Views.StoryTabView({collection: NEWSBLUR.assets.stories});
             NEWSBLUR.app.feed_selector = new NEWSBLUR.Views.FeedSelector();
+            NEWSBLUR.app.follow_requests_module = new NEWSBLUR.Views.FollowRequestsModule();
             
             this.load_intelligence_slider();
             this.handle_mouse_indicator_hover();
@@ -519,12 +520,16 @@
                 if (this.flags.river_view && !this.flags.social_view) {
                     var $next_folder = this.get_next_unread_folder(1);
                     var folder = NEWSBLUR.assets.folders.get_view($next_folder);
-                    this.open_river_stories($next_folder, folder && folder.model);
+                    if (folder != this.active_folder) {
+                        this.open_river_stories($next_folder, folder && folder.model);
+                    }
                 } else {
                     // Find next feed with unreads
                     var $next_feed = this.get_next_unread_feed(1);
                     if (!$next_feed || !$next_feed.length) return;
                     var next_feed_id = $next_feed.data('id');
+                    if (next_feed_id == this.active_feed) return;
+                    
                     if (NEWSBLUR.utils.is_feed_social(next_feed_id)) {
                         this.open_social_stories(next_feed_id, {force: true, $feed_link: $next_feed});
                     } else {
@@ -1116,7 +1121,7 @@
                     var slug = _.string.words(_.string.clean(feed_title.replace(/[^a-z0-9\. ]/ig, ''))).join('-').toLowerCase();
                     var url = "site/" + feed.id + "/" + slug;
                     if (!_.string.include(window.location.pathname, url)) {
-                        // NEWSBLUR.log(["Navigating to url", url]);
+                        NEWSBLUR.log(["Navigating to url", url]);
                         NEWSBLUR.router.navigate(url);
                     }
                 }
@@ -1571,7 +1576,7 @@
                     if (_.string.include(window.location.pathname, "social/" + feed.get('user_id'))) {
                         params['replace'] = true;
                     }
-                    // NEWSBLUR.log(["Navigating to social", url, window.location.pathname]);
+                    NEWSBLUR.log(["Navigating to social", url, window.location.pathname]);
                     NEWSBLUR.router.navigate(url, params);
                 }
             } else if (!feed.get('feed_title')) {
@@ -2173,20 +2178,6 @@
             }
         },
         
-        hide_mobile: function() {
-          var $mobile = $('.NB-module-mobile');
-          
-          this.model.preference('hide_mobile', true);
-          $mobile.animate({
-            'opacity': 0
-          }, {
-            'duration': 500,
-            'complete': function() {
-              $mobile.slideUp(350);
-            }
-          });
-        },
-        
         // ==========================
         // = Story Pane - Feed View =
         // ==========================
@@ -2504,7 +2495,7 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-goodies' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
-                        $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies')
+                        $.make('div', { className: 'NB-menu-manage-title' }, 'Goodies &amp; Mobile Apps')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-account' }, [
@@ -3706,10 +3697,11 @@
                     
                     this.socket.removeAllListeners(NEWSBLUR.Globals.username);
                     this.socket.on('user:update', _.bind(function(username, feed_id) {
+                        if (this.flags.social_view) return;
                         if (_.string.contains(feed_id, 'feed:')) {
                             feed_id = parseInt(feed_id.replace('feed:', ''), 10);
                             var active_feed_ids = [];
-                            if (this.active_folder) {
+                            if (this.active_folder && this.active_folder.length) {
                                 active_feed_ids = this.active_folder.feed_ids_in_folder();
                             }
                             if (feed_id != this.active_feed && 
@@ -3955,6 +3947,7 @@
             }
 
             this.$s.$mouse_indicator.css('top', position);
+            // console.log(["position_mouse_indicator", NEWSBLUR.reader.cache.mouse_position_y, position]);
             this.cache.mouse_position_y = position;
         },
         
@@ -4925,12 +4918,6 @@
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
                     self.check_hide_getting_started(true);
-                }
-            });  
-            $.targetIs(e, { tagSelector: '.NB-module-mobile-hide' }, function($t, $p){
-                e.preventDefault();
-                if (!$t.hasClass('NB-disabled')) {
-                    self.hide_mobile();
                 }
             });  
             

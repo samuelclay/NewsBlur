@@ -119,6 +119,7 @@
     
     NSArray *categories;
     NSDictionary *categoryFeeds;
+    UIImageView *splashView;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -199,6 +200,7 @@
 @property (nonatomic) NSDictionary *categoryFeeds;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
+- (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;
@@ -229,6 +231,8 @@
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
 - (BOOL)isPortrait;
+- (NSString *)orderKey;
+- (NSString *)readFilterKey;
 - (void)confirmLogout;
 
 - (int)indexOfNextUnreadStory;

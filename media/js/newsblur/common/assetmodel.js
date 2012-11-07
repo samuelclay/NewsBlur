@@ -1227,6 +1227,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
+    fetch_follow_requests: function(callback) {
+        this.make_request('/social/load_follow_requests', null, _.bind(function(data) {
+            this.user_profile.set(data.user_profile);
+            callback(data);
+        }, this), null, {
+            request_type: 'GET'
+        });
+    },
+    
     fetch_user_profile: function(user_id, callback) {
         this.make_request('/social/profile', {
             'user_id': user_id,
@@ -1299,6 +1308,18 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 return profile.get('user_id') == data.unfollow_profile.user_id;
             });
             this.social_feeds.remove(data.unfollow_profile.id);
+            callback(data);
+        }, this));
+    },
+    
+    approve_follower: function(user_id, callback) {
+        this.make_request('/social/approve_follower', {'user_id': user_id}, _.bind(function(data) {
+            callback(data);
+        }, this));
+    },
+    
+    ignore_follower: function(user_id, callback) {
+        this.make_request('/social/ignore_follower', {'user_id': user_id}, _.bind(function(data) {
             callback(data);
         }, this));
     },

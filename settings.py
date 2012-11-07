@@ -4,6 +4,7 @@ import os
 import datetime
 from mongoengine import connect
 from boto.s3.connection import S3Connection
+import raven
 import redis
 from utils import jammit
 
@@ -188,6 +189,7 @@ TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
+SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
 # ==============
 # = Subdomains =
@@ -219,6 +221,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'djcelery',
     'django_ses',
+    'raven.contrib.django',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
@@ -454,6 +457,7 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
+RAVEN_CLIENT = raven.Client(SENTRY_DSN)
 
 # =========
 # = Mongo =
@@ -465,7 +469,15 @@ MONGO_DB_DEFAULTS = {
     'alias': 'default',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
+
+# if MONGO_DB.get('read_preference', pymongo.ReadPreference.PRIMARY) != pymongo.ReadPreference.PRIMARY:
+#     MONGO_PRIMARY_DB = MONGO_DB.copy()
+#     MONGO_PRIMARY_DB.update(read_preference=pymongo.ReadPreference.PRIMARY)
+#     MONGOPRIMARYDB = connect(MONGO_PRIMARY_DB.pop('name'), **MONGO_PRIMARY_DB)
+# else:
+#     MONGOPRIMARYDB = MONGODB
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
@@ -474,6 +486,7 @@ MONGO_ANALYTICS_DB_DEFAULTS = {
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
+
 
 # =========
 # = Redis =

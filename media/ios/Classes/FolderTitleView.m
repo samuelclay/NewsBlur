@@ -109,7 +109,7 @@
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
     
     [folderTitle
-     drawInRect:CGRectMake(36.0, 7, rect.size.width - 36 - 36 - countWidth, 14)
+     drawInRect:CGRectMake(36.0, 9, rect.size.width - 36 - 36 - countWidth, 14)
      withFont:font
      lineBreakMode:UILineBreakModeTailTruncation
      alignment:UITextAlignmentLeft];
@@ -128,7 +128,7 @@
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
-        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, -1, 29, 29);
+        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 1, 29, 29);
 
         // Add collapse button to all folders except Everything
         if (section != 1 && folderName != @"saved_stories") {
@@ -140,7 +140,7 @@
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
 
             UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
-            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, -1, 29, 29)];
+            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, 1, 29, 29)];
         } else {
             // Everything/Saved folder doesn't get a button
             [disclosureButton setUserInteractionEnabled:NO];
@@ -183,7 +183,7 @@
             folderImageViewX = 7;
         }
     }
-    [folderImage drawInRect:CGRectMake(folderImageViewX, 3, 20, 20)];
+    [folderImage drawInRect:CGRectMake(folderImageViewX, 5, 20, 20)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     

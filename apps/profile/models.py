@@ -12,7 +12,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.tasks import NewFeeds
 from utils import log as logging
 from utils import json_functions as json
@@ -34,7 +34,6 @@ class Profile(models.Model):
     has_setup_feeds   = models.NullBooleanField(default=False, null=True, blank=True)
     has_found_friends = models.NullBooleanField(default=False, null=True, blank=True)
     has_trained_intelligence = models.NullBooleanField(default=False, null=True, blank=True)
-    hide_mobile       = models.BooleanField(default=False)
     last_seen_on      = models.DateTimeField(default=datetime.datetime.now)
     last_seen_ip      = models.CharField(max_length=50, blank=True, null=True)
     dashboard_date    = models.DateTimeField(default=datetime.datetime.now)
@@ -55,7 +54,6 @@ class Profile(models.Model):
             'has_setup_feeds': self.has_setup_feeds,
             'has_found_friends': self.has_found_friends,
             'has_trained_intelligence': self.has_trained_intelligence,
-            'hide_mobile': self.hide_mobile,
             'dashboard_date': self.dashboard_date
         }
         
@@ -91,6 +89,11 @@ class Profile(models.Model):
         shared_stories = MSharedStory.objects.filter(user_id=self.user.pk)
         print " ---> Deleting %s shared stories" % shared_stories.count()
         for story in shared_stories:
+            try:
+                original_story = MStory.objects.get(pk=story.story_db_id)
+                original_story.sync_redis()
+            except MStory.DoesNotExist:
+                pass
             story.delete()
             
         subscriptions = MSocialSubscription.objects.filter(subscription_user_id=self.user.pk)

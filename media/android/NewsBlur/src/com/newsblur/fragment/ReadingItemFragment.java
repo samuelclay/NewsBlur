@@ -233,7 +233,7 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 
 	private void setupWebview(NewsblurWebview web) {
 		final SharedPreferences preferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
-		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 1.0f);
+		float currentSize = preferences.getFloat(PrefConstants.PREFERENCE_TEXT_SIZE, 0.5f);
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("<html><head><meta name=\"viewport\" content=\"width=device-width; initial-scale=0.75; maximum-scale=0.75; minimum-scale=0.75; user-scalable=0;\" />");

@@ -338,16 +338,16 @@ class UserSubscription(models.Model):
                 story = MStory.objects.filter(story_feed_id=self.feed_id, story_guid=story_id)[0]
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
-            m, _ = MUserStory.objects.get_or_create(story=story, user_id=self.user_id, 
+            m, _ = MUserStory.objects.get_or_create(story_id=story_id, user_id=self.user_id, 
                                                     feed_id=self.feed_id, defaults={
                 'read_date': date, 
-                'story_id': story_id, 
+                'story': story, 
                 'story_date': story.story_date,
             })
                 
         return data
     
-    def calculate_feed_scores(self, silent=False, stories_db=None):
+    def calculate_feed_scores(self, silent=False, stories=None):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
         UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -376,23 +376,23 @@ class UserSubscription(models.Model):
         read_stories = MUserStory.objects(user_id=self.user_id,
                                           feed_id=self.feed_id,
                                           read_date__gte=self.mark_read_date)
-        # if not silent:
-        #     logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
         read_stories_ids = [us.story_id for us in read_stories]
-        stories_db = stories_db or MStory.objects(story_feed_id=self.feed_id,
-                                                  story_date__gte=date_delta)
-        # if not silent:
-        #     logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
+        
+        if not stories:
+            stories_db = MStory.objects(story_feed_id=self.feed_id,
+                                        story_date__gte=date_delta)
+            stories = Feed.format_stories(stories_db, self.feed_id)
+
         oldest_unread_story_date = now
-        unread_stories_db = []
-        for story in stories_db:
-            if story.story_date < date_delta:
+        unread_stories = []
+        for story in stories:
+            if story['story_date'] < date_delta:
                 continue
-            if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
-                unread_stories_db.append(story)
-                if story.story_date < oldest_unread_story_date:
-                    oldest_unread_story_date = story.story_date
-        stories = Feed.format_stories(unread_stories_db, self.feed_id)
+            if story['id'] not in read_stories_ids:
+                unread_stories.append(story)
+                if story['story_date'] < oldest_unread_story_date:
+                    oldest_unread_story_date = story['story_date']
+
         # if not silent:
         #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         
@@ -408,7 +408,7 @@ class UserSubscription(models.Model):
             'feed': apply_classifier_feeds(classifier_feeds, self.feed),
         }
         
-        for story in stories:
+        for story in unread_stories:
             scores.update({
                 'author' : apply_classifier_authors(classifier_authors, story),
                 'tags'   : apply_classifier_tags(classifier_tags, story),

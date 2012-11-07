@@ -395,11 +395,7 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
-    
-    if (![[allFolders allKeys] containsObject:@"everything"]) {
-        [allFolders setValue:[[NSArray alloc] init] forKey:@"everything"];
-    }
-    
+        
     if (appDelegate.savedStoriesCount) {
         [allFolders setValue:[[NSArray alloc] init] forKey:@"saved_stories"];
     }
@@ -889,7 +885,7 @@ static const CGFloat kFolderTitleHeight = 28;
         return 0;
     }
     
-    return 28;
+    return 32;
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {
@@ -974,6 +970,20 @@ static const CGFloat kFolderTitleHeight = 28;
                         withRowAnimation:UITableViewRowAnimationFade];
     [self.feedTitlesTable beginUpdates];
     [self.feedTitlesTable endUpdates];
+    
+    // Scroll to section header if collapse causes it to scroll far off screen
+    NSArray *indexPathsVisibleCells = [self.feedTitlesTable indexPathsForVisibleRows];
+    BOOL firstFeedInFolderVisible = NO;
+    for (NSIndexPath *indexPath in indexPathsVisibleCells) {
+        if (indexPath.row == 0 && indexPath.section == button.tag) {
+            firstFeedInFolderVisible = YES;
+        }
+    }
+    if (!firstFeedInFolderVisible) {
+        CGRect headerRect = [self.feedTitlesTable rectForHeaderInSection:button.tag];
+        CGPoint headerPoint = CGPointMake(headerRect.origin.x, headerRect.origin.y);
+        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
+    }
     
 }
 

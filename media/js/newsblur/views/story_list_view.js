@@ -154,7 +154,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             this.$el.removeClass('NB-feed-view-story').addClass('NB-feed-view-feed');
             NEWSBLUR.reader.show_story_titles_above_intelligence_level({'animate': false});
         }
-        this.cache.story_pane_position = null;
+        this.cache.story_pane_position = NEWSBLUR.reader.$s.$story_pane.offset().top;;
     },
 
     // =============
@@ -319,9 +319,10 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         if (parseInt(NEWSBLUR.assets.preference('lock_mouse_indicator'), 10)) {
             return;
         }
-
-        NEWSBLUR.reader.cache.mouse_position_y = e.pageY;
-        NEWSBLUR.reader.$s.$mouse_indicator.css('top', NEWSBLUR.reader.cache.mouse_position_y - this.cache.story_pane_position - 8);
+        
+        // console.log(["mousemove", e.pageY, this.cache.story_pane_position, NEWSBLUR.reader.cache.mouse_position_y]);
+        NEWSBLUR.reader.cache.mouse_position_y = e.pageY - this.cache.story_pane_position;
+        NEWSBLUR.reader.$s.$mouse_indicator.css('top', NEWSBLUR.reader.cache.mouse_position_y - 8);
         
         if (this.flags['mousemove_timeout'] ||
             NEWSBLUR.reader.flags['scrolling_by_selecting_story_title']) {
@@ -330,7 +331,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
         
         var from_top = NEWSBLUR.reader.cache.mouse_position_y + this.$el.scrollTop();
         var offset = this.cache.story_pane_position;
-        var position = from_top - offset;
+        var position = from_top; // - offset;
         var positions = this.cache.feed_view_story_positions_keys;
         var closest = $.closest(position, positions);
         var story = this.cache.feed_view_story_positions[positions[closest]];
@@ -352,13 +353,13 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             !NEWSBLUR.assets.preference('feed_view_single_story')) {
             var from_top = NEWSBLUR.reader.cache.mouse_position_y + this.$el.scrollTop();
             var offset = this.cache.story_pane_position;
-            var position = from_top - offset;
+            var position = from_top; // - offset;
             var positions = this.cache.feed_view_story_positions_keys;
             var closest = $.closest(position, positions);
             var story = this.cache.feed_view_story_positions[positions[closest]];
 
             if (!story) return;
-            // NEWSBLUR.log(["Scroll Feed", from_top, offset, position, closest, story.get('story_title')]);
+            // NEWSBLUR.log(["Scroll Feed", NEWSBLUR.reader.cache.mouse_position_y, this.$el.scrollTop(), from_top, offset, position, closest, story.get('story_title')]);
             if (!story.get('selected')) {
                 story.set('selected', true, {selected_by_scrolling: true, mouse: true, immediate: true});
             }

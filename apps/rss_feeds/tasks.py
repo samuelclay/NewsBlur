@@ -63,7 +63,7 @@ class UpdateFeeds(Task):
             
         for feed_pk in feed_pks:
             try:
-                feed = Feed.objects.get(pk=feed_pk)
+                feed = Feed.get_by_id(feed_pk)
                 feed.update(**options)
             except Feed.DoesNotExist:
                 logging.info(" ---> Feed doesn't exist: [%s]" % feed_pk)
@@ -83,7 +83,7 @@ class NewFeeds(Task):
             'force': True,
         }
         for feed_pk in feed_pks:
-            feed = Feed.objects.get(pk=feed_pk)
+            feed = Feed.get_by_id(feed_pk)
             feed.update(options=options)
 
 class PushFeeds(Task):
@@ -103,5 +103,5 @@ class PushFeeds(Task):
             'compute_scores': compute_scores,
             'mongodb_replication_lag': mongodb_replication_lag,
         }
-        feed = Feed.objects.get(pk=feed_id)
+        feed = Feed.get_by_id(feed_id)
         feed.update(options=options)

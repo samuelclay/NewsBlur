@@ -68,7 +68,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         })) return;
         
         var story = this.model;
-        var unread_view = NEWSBLUR.assets.preference('unread_view');
+        var unread_view = NEWSBLUR.reader.get_unread_view_score();
         var score = story.score();
 
         this.$el.toggleClass('NB-story-starred', !!story.get('starred'));

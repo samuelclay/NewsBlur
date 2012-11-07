@@ -17,6 +17,12 @@ class EmailNewFollower(Task):
     def run(self, follower_user_id, followee_user_id):
         user_profile = MSocialProfile.get_user(followee_user_id)
         user_profile.send_email_for_new_follower(follower_user_id)
+                    
+class EmailFollowRequest(Task):
+    
+    def run(self, follower_user_id, followee_user_id):
+        user_profile = MSocialProfile.get_user(followee_user_id)
+        user_profile.send_email_for_follow_request(follower_user_id)
         
 class EmailCommentReplies(Task):
     

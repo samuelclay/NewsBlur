@@ -78,7 +78,7 @@ def _mongodb_decode_wire_protocol(message):
     try:
         if message[zidx:]:
             msg = bson.decode_all(message[zidx:])
-    except InvalidBSON:
+    except:
         msg = 'invalid bson'
     return { 'op': op, 'collection': collection_name,
              'msg_id': msg_id, 'skip': skip, 'limit': limit,

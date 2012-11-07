@@ -2,6 +2,7 @@ package com.newsblur.network;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -145,7 +146,12 @@ public class APIClient {
 			
 			builder.append((String) entry.getKey());
 			builder.append("=");
-			builder.append((String) entry.getValue());
+			try {
+				builder.append(URLEncoder.encode((String) entry.getValue(), "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				Log.e(TAG, e.getLocalizedMessage());
+				return new APIResponse();
+			}
 			parameters.add(builder.toString());
 		}
 		final String parameterString = TextUtils.join("&", parameters);

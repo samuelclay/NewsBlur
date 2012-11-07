@@ -33,7 +33,6 @@ env.roledefs ={
     'local': ['localhost'],
     'app': ['app01.newsblur.com', 
             'app02.newsblur.com', 
-            'app03.newsblur.com', 
             'app04.newsblur.com',
             ],
     'dev': ['dev.newsblur.com'],
@@ -48,17 +47,22 @@ env.roledefs ={
            'db05.newsblur.com',
            ],
     'task': ['task01.newsblur.com', 
-             'task02.newsblur.com', 
+             # 'task02.newsblur.com', 
              'task03.newsblur.com', 
              'task04.newsblur.com', 
              'task05.newsblur.com', 
              'task06.newsblur.com', 
              'task07.newsblur.com',
-             'task08.newsblur.com',
-             'task09.newsblur.com',
-             'task10.newsblur.com',
-             'task11.newsblur.com',
+             # 'task08.newsblur.com',
+             # 'task09.newsblur.com',
+             # 'task10.newsblur.com',
+             # 'task11.newsblur.com',
              ],
+    'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
+                'ec2-184-72-214-147.compute-1.amazonaws.com',
+                'ec2-107-20-103-16.compute-1.amazonaws.com',
+                'ec2-50-17-12-16.compute-1.amazonaws.com',
+                ],
     'vps': ['task01.newsblur.com', 
             'task02.newsblur.com', 
             'task03.newsblur.com', 
@@ -100,6 +104,10 @@ def db():
 def task():
     server()
     env.roles = ['task']
+    
+def ec2task():
+    ec2()
+    env.roles = ['ec2task']
     
 def vps():
     server()
@@ -268,9 +276,9 @@ def setup_common():
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
-    # setup_mongoengine()
-    # setup_forked_mongoengine()
-    # setup_pymongo_repo()
+    setup_mongoengine()
+    setup_forked_mongoengine()
+    setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
     configure_nginx()
@@ -394,7 +402,7 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil python-gflags cssutils')
+    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil python-gflags cssutils raven')
     
     put('config/pystartup.py', '.pystartup')
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -447,29 +455,31 @@ def setup_mongoengine():
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             run('rm -fr mongoengine')
-            run('git clone https://github.com/mongoengine/mongoengine.git')
-            sudo('rm -f /usr/local/lib/python2.7/dist-packages/mongoengine')
+            run('git clone https://github.com/MongoEngine/mongoengine.git')
+            sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine')
+            sudo('rm -fr /usr/local/lib/python2.7/dist-packages/mongoengine-*')
             sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/mongoengine' % 
                  os.path.join(env.VENDOR_PATH, 'mongoengine/mongoengine'))
-    with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
-        run('git checkout -b dev origin/dev')
         
 def setup_pymongo_repo():
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
-    with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
-        sudo('python setup.py install')
+    # with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
+    #     sudo('python setup.py install')
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridgs*')
+    sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/' % 
+         os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
         
 def setup_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
         with settings(warn_only=True):
-            run('git checkout master')
-            run('git branch -D dev')
-            run('git remote add %s git://github.com/samuelclay/mongoengine.git' % env.user)
-            run('git fetch %s' % env.user)
-            run('git checkout -b dev %s/dev' % env.user)
-            run('git pull %s dev' % env.user)
+            run('git remote add clay https://github.com/samuelclay/mongoengine.git')
+            run('git pull')
+            run('git fetch clay')
+            run('git checkout -b clay_master clay/master')
 
 def switch_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
@@ -648,7 +658,7 @@ def copy_postgres_to_standby():
     # Make sure you can ssh from master to slave and back.
     # Need to give postgres accounts keys in authroized_keys.
     
-    sudo('su postgres -c "psql -c \\"SELECT pg_start_backup(\'label\', true)\\""', pty=False)
+    # sudo('su postgres -c "psql -c \\"SELECT pg_start_backup(\'label\', true)\\""', pty=False)
     sudo('su postgres -c \"rsync -a --stats --progress /var/lib/postgresql/9.1/main postgres@%s:/var/lib/postgresql/9.1/ --exclude postmaster.pid\"' % slave, pty=False)
     sudo('su postgres -c "psql -c \\"SELECT pg_stop_backup()\\""', pty=False)
     
@@ -663,7 +673,7 @@ def setup_mongo():
     sudo('/etc/init.d/mongodb restart')
 
 def setup_redis():
-    redis_version = '2.4.15'
+    redis_version = '2.6.2'
     with cd(env.VENDOR_PATH):
         run('wget http://redis.googlecode.com/files/redis-%s.tar.gz' % redis_version)
         run('tar -xzf redis-%s.tar.gz' % redis_version)

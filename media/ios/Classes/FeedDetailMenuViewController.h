@@ -19,7 +19,15 @@ UITableViewDataSource> {
 @property (nonatomic, strong) NSArray *menuOptions;
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UITableView *menuTableView;
+@property (nonatomic) IBOutlet UISegmentedControl *orderSegmentedControl;
+@property (nonatomic) IBOutlet UISegmentedControl *readFilterSegmentedControl;
+
 
 - (void)buildMenuOptions;
+- (UITableViewCell *)makeOrderCell;
+- (UITableViewCell *)makeReadFilterCell;
+- (IBAction)changeOrder:(id)sender;
+- (IBAction)changeReadFilter:(id)sender;
+
 
 @end
