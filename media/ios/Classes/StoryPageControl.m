@@ -44,7 +44,7 @@
 @synthesize bottomPlaceholderToolbar;
 @synthesize popoverController;
 @synthesize loadingIndicator;
-
+@synthesize inTouchMove;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -67,6 +67,10 @@
 	[self.scrollView setShowsHorizontalScrollIndicator:NO];
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
 //    [self.scrollView setDelegate:self];
+    
+    self.scrollView.frame = self.view.frame;
+    currentPage.view.frame = self.scrollView.frame;
+    nextPage.view.frame = self.scrollView.frame;
     
     popoverClass = [WEPopoverController class];
 
@@ -129,25 +133,15 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    currentPage.view.frame = self.scrollView.frame;
-    nextPage.view.frame = self.scrollView.frame;
-    
-    [currentPage clearStory];
-    [nextPage clearStory];
-    [self resizeScrollView];
+    [self clearStory];
 	self.scrollView.contentOffset = CGPointMake(0, 0);
-    
+    [self initStory];
     int activeStoryLocation = [appDelegate locationOfActiveStory];
     if (activeStoryLocation >= 0) {
-        [self changePage:activeStoryLocation];
         [self setStory];
         [self applyNewIndex:activeStoryLocation pageController:currentPage];
         [self applyNewIndex:activeStoryLocation+1 pageController:nextPage];
     }
-    
-    [self setNextPreviousButtons];
-    
-    [appDelegate adjustStoryDetailWebView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -160,6 +154,20 @@
     appDelegate.isTryFeedView = NO;
 }
 
+- (void)transitionFromFeedDetail {
+    [self performSelector:@selector(clearStory) withObject:self afterDelay:0.5];
+    [appDelegate.masterContainerViewController transitionFromFeedDetail];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [appDelegate adjustStoryDetailWebView];
+}
+
+- (void)clearStory {
+    [currentPage clearStory];
+    [nextPage clearStory];
+}
+
 - (void)resizeScrollView {
     NSInteger widthCount = self.appDelegate.storyCount;
 	if (widthCount == 0) {
@@ -169,6 +177,37 @@
                                              * widthCount,
                                              self.scrollView.frame.size.height);
 }
+
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
+        UITouch *theTouch = [touches anyObject];
+        if ([theTouch.view isKindOfClass: UIToolbar.class] || [theTouch.view isKindOfClass: UIView.class]) {
+            self.inTouchMove = YES;
+            CGPoint touchLocation = [theTouch locationInView:self.view];
+            CGFloat y = touchLocation.y;
+            [appDelegate.masterContainerViewController dragStoryToolbar:y];
+        }
+    }
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
+        UITouch *theTouch = [touches anyObject];
+        
+        if (([theTouch.view isKindOfClass: UIToolbar.class] || [theTouch.view isKindOfClass: UIView.class]) && self.inTouchMove) {
+            self.inTouchMove = NO;
+            [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];
+        }
+    }
+}
+
+#pragma mark -
+#pragma mark Side scroll view
 
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController
 {
@@ -285,6 +324,17 @@
     [self.scrollView scrollRectToVisible:frame animated:YES];
 }
 
+- (void)initStory {
+    int activeStoryLocation = [appDelegate locationOfActiveStory];
+    if (activeStoryLocation >= 0) {
+        [self changePage:activeStoryLocation];
+    }
+    
+    [self setNextPreviousButtons];
+    
+    [appDelegate adjustStoryDetailWebView];
+}
+
 - (void)setStory {
     int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
     appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
@@ -299,6 +349,7 @@
     }
     
     [self setNextPreviousButtons];
+    [appDelegate changeActiveFeedDetailRow];
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {

@@ -197,7 +197,7 @@
     } else {
         CGRect frame = [sender CGRectValue];
         [popoverController presentPopoverFromRect:frame 
-                                           inView:self.storyDetailViewController.view
+                                           inView:self.storyPageControl.view
                          permittedArrowDirections:UIPopoverArrowDirectionAny 
                                          animated:YES];
     } 
@@ -447,7 +447,8 @@
     [self.storyNavigationController didMoveToParentViewController:self];
     
     // reset the storyDetailViewController components
-    self.storyDetailViewController.webView.hidden = YES;
+    self.storyPageControl.currentPage.webView.hidden = YES;
+    self.storyPageControl.nextPage.webView.hidden = YES;
     self.storyPageControl.bottomPlaceholderToolbar.hidden = NO;
     self.storyPageControl.progressViewContainer.hidden = YES;
     self.storyPageControl.navigationItem.rightBarButtonItems = nil;
@@ -612,7 +613,7 @@
 
     self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
                                                            vb.size.height, 
-                                                           self.storyDetailViewController.view.frame.size.width, 
+                                                           self.storyPageControl.view.frame.size.width,
                                                            NB_DEFAULT_SHARE_HEIGHT);
     
     self.shareViewController.view.frame = CGRectMake(0, 
@@ -802,7 +803,7 @@
                      } completion:^(BOOL finished) {
                          if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
                              self.storyNavigationController.view.frame = storyNavigationFrame;
-                             [self.storyDetailViewController scrolltoComment];
+                             [self.storyPageControl.currentPage scrolltoComment];
                          } else {
                              // remove the shareNavigationController after keyboard slides down
                              if (self.isHidingStory) {

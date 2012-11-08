@@ -53,12 +53,16 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
+@property (readwrite) CGFloat inTouchMove;
 
 @property (nonatomic, strong) WEPopoverController *popoverController;
 
 - (void)resizeScrollView;
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
 
+- (void)transitionFromFeedDetail;
+- (void)clearStory;
+- (void)initStory;
 - (void)setStory;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)requestFailed:(ASIHTTPRequest *)request;

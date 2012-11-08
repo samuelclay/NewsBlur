@@ -13,6 +13,7 @@
 #import "FontSettingsViewController.h"
 #import "UserProfileViewController.h"
 #import "ShareViewController.h"
+#import "StoryPageControl.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "Base64.h"
@@ -25,7 +26,6 @@
 
 @interface StoryDetailViewController ()
 
-@property (readwrite) CGFloat inTouchMove;
 @property (nonatomic) MBProgressHUD *storyHUD;
 
 @end
@@ -43,7 +43,6 @@
 @synthesize pageIndex;
 
 // private
-@synthesize inTouchMove;
 @synthesize storyHUD;
 
 
@@ -79,11 +78,6 @@
     self.webView.multipleTouchEnabled = NO;
 }
 
-- (void)transitionFromFeedDetail {
-    [self performSelector:@selector(clearStory) withObject:self afterDelay:0.5];
-    [appDelegate.masterContainerViewController transitionFromFeedDetail];
-}
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;
 }
@@ -96,33 +90,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
-        UITouch *theTouch = [touches anyObject];
-        if ([theTouch.view isKindOfClass: UIToolbar.class] || [theTouch.view isKindOfClass: UIView.class]) {
-            self.inTouchMove = YES;
-            CGPoint touchLocation = [theTouch locationInView:self.view];
-            CGFloat y = touchLocation.y;
-            [appDelegate.masterContainerViewController dragStoryToolbar:y];  
-        }
-    }
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad && UIInterfaceOrientationIsPortrait(orientation)) {
-        UITouch *theTouch = [touches anyObject];
-        
-        if (([theTouch.view isKindOfClass: UIToolbar.class] || [theTouch.view isKindOfClass: UIView.class]) && self.inTouchMove) {
-            self.inTouchMove = NO;
-            [appDelegate.masterContainerViewController adjustFeedDetailScreenForStoryTitles];  
-        }
-    }
 }
 
 - (void)viewDidUnload {
@@ -143,10 +110,6 @@
 ////        self.activeStoryId = nil;
 //        [webView loadHTMLString:@"" baseURL:[NSURL URLWithString:@""]];
 //    }
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [appDelegate adjustStoryDetailWebView];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
@@ -195,7 +158,7 @@
         fontSizeClass = [fontSizeClass stringByAppendingString:@"NB-medium"];
     }
     
-    int contentWidth = self.view.frame.size.width;
+    int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
     NSString *contentWidthClass;
     
     if (contentWidth > 700) {
@@ -1223,8 +1186,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return htmlString;
 }
 
-- (void)changeWebViewWidth:(int)width {
-    int contentWidth = self.view.frame.size.width;
+- (void)changeWebViewWidth {
+    int contentWidth = self.appDelegate.storyPageControl.view.frame.size.width;
     NSString *contentWidthClass;
     
     if (contentWidth > 740) {

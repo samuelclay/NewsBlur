@@ -559,9 +559,8 @@
 
 - (void)adjustStoryDetailWebView {
     // change UIWebView
-    int contentWidth = storyDetailViewController.view.frame.size.width;
-//    NSLog(@"contentWidth is %i", contentWidth);
-    [storyDetailViewController changeWebViewWidth:contentWidth];
+    [storyPageControl.currentPage changeWebViewWidth];
+    [storyPageControl.nextPage changeWebViewWidth];
 }
 
 - (void)calibrateStoryTitles {
@@ -618,6 +617,8 @@
         navController.navigationItem.hidesBackButton = YES;
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
+    
+    [storyPageControl initStory];
 }
 
 - (void)navigationController:(UINavigationController *)navController 

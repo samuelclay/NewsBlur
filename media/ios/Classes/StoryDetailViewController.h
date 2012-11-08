@@ -39,7 +39,7 @@
 - (void)toggleLikeComment:(BOOL)likeComment;
 - (void)showStory;
 - (void)scrolltoComment;
-- (void)changeWebViewWidth:(int)width;
+- (void)changeWebViewWidth;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
@@ -61,7 +61,6 @@
 - (NSString *)getReplies:(NSArray *)replies forUserId:(NSString *)commentUserId;
 - (NSString *)getAvatars:(NSString *)key;
 - (NSDictionary *)getUser:(int)user_id;
-- (void)transitionFromFeedDetail;
 
 
 
