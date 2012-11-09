@@ -236,6 +236,8 @@ def backup_mongo():
         run('python backup_mongo.py')
 
 def backup_postgresql():
+    # 0 4 * * * python /home/sclay/newsblur/utils/backups/backup_psql.py
+    # 0 * * * * sudo find /var/lib/postgresql/9.1/archive -mtime +1 -exec rm {} \;
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         # run('./postgresql_backup.sh')
         run('python backup_psql.py')
