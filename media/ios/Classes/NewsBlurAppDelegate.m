@@ -638,7 +638,8 @@
     
     int activeStoryLocation = [self locationOfActiveStory];
     if (activeStoryLocation >= 0) {
-        [self.storyPageControl changePage:activeStoryLocation];
+        BOOL animated = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+        [self.storyPageControl changePage:activeStoryLocation animated:animated];
 //        [self.storyPageControl updatePageWithActiveStory:activeStoryLocation];
     }
 }

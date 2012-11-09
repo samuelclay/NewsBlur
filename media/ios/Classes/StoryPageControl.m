@@ -328,6 +328,10 @@
 }
 
 - (void)changePage:(NSInteger)pageIndex {
+    [self changePage:pageIndex animated:YES];
+}
+
+- (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated {
 	// update the scroll view to the appropriate page
     [self resizeScrollView];
 
@@ -338,7 +342,10 @@
         [self applyNewIndex:pageIndex pageController:currentPage];
         [self setStoryFromScroll];
     } else {
-        [self.scrollView scrollRectToVisible:frame animated:YES];
+        [self.scrollView scrollRectToVisible:frame animated:animated];
+        if (!animated) {
+            [self setStoryFromScroll];
+        }
     }
 }
 

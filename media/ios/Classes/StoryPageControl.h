@@ -67,6 +67,7 @@
 - (void)setStoryFromScroll;
 - (void)updatePageWithActiveStory:(int)location;
 - (void)changePage:(NSInteger)pageIndex;
+- (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 
 - (void)setNextPreviousButtons;
