@@ -148,11 +148,6 @@
     appDelegate.isTryFeedView = NO;
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [self.currentPage hideStory];
-    [self.nextPage hideStory];
-}
-
 - (void)transitionFromFeedDetail {
     [self performSelector:@selector(resetPages) withObject:self afterDelay:0.5];
     [appDelegate.masterContainerViewController transitionFromFeedDetail];
