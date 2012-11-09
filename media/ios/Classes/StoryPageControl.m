@@ -159,7 +159,13 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [self resizeScrollView];
     [appDelegate adjustStoryDetailWebView];
+    int pageIndex = currentPage.pageIndex;
+    currentPage.pageIndex = -1;
+    nextPage.pageIndex = -1;
+    [self changePage:pageIndex animated:NO];
+//    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
 }
 
 - (void)resetPages {
@@ -339,6 +345,7 @@
     CGRect frame = self.scrollView.frame;
     frame.origin.x = frame.size.width * pageIndex;
     frame.origin.y = 0;
+
     if (self.scrollView.contentOffset.x == frame.origin.x) {
         [self applyNewIndex:pageIndex pageController:currentPage];
         [self setStoryFromScroll];

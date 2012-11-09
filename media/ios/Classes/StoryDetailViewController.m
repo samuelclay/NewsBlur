@@ -925,8 +925,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         appDelegate.tryFeedCategory &&
         [[appDelegate.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId]) {
         [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:YES];
-        NSLog(@"Comparing %@ = %@ - %d", [appDelegate.activeStory objectForKey:@"id"], appDelegate.tryFeedStoryId, [[appDelegate.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId]);
-        NSLog(@"Category %@", appDelegate.tryFeedCategory);
+
         if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
             [appDelegate.tryFeedCategory isEqualToString:@"comment_reply"]) {
             NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
@@ -1188,7 +1187,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           contentWidth];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
-    self.webView.hidden = NO;
+//    self.webView.hidden = NO;
 }
 
 @end
