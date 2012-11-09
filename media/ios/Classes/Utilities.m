@@ -45,7 +45,7 @@ static NSMutableDictionary *imageCache;
     if (image) {
         [imageCache setObject:image forKey:filename];
     } else {
-        NSLog(@"%@ has no image!!!", filename);
+//        NSLog(@"%@ has no image!!!", filename);
     }
 }
 

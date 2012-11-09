@@ -76,6 +76,7 @@
     
     self.webView.scalesPageToFit = YES;
     self.webView.multipleTouchEnabled = NO;
+    self.pageIndex = -1;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -83,8 +84,10 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSLog(@"********************* SD willAppear");
-    [self initStory];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        [self initStory];
+        [self drawStory];
+    }
 	[super viewWillAppear:animated];
 }
 
@@ -96,11 +99,6 @@
     [self setInnerView:nil];
     [self setNoStorySelectedLabel:nil];
     [super viewDidUnload];
-}
-
-- (void)clearStory {
-    [self.webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
-    self.noStorySelectedLabel.hidden = NO;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -116,28 +114,25 @@
 //    [appDelegate.shareViewController.commentField resignFirstResponder];
 }
 
-
 #pragma mark -
-#pragma mark Story layout
-
+#pragma mark Story setup
 
 - (void)initStory {
     
     appDelegate.inStoryDetail = YES;
-    // when we show story, we mark it as read
     self.noStorySelectedLabel.hidden = YES;
-    
-    
     appDelegate.shareViewController.commentField.text = nil;
+    self.webView.hidden = NO;
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController transitionFromShareView];
     }
     
-    self.webView.hidden = NO;
-    
     [appDelegate hideShareView:YES];
-    
     [appDelegate resetShareComments];
+}
+
+- (void)drawStory {
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
     NSString *headerString;
@@ -168,7 +163,6 @@
     } else {
         contentWidthClass = @"NB-iphone";
     }
-    
     
     // set up layout values based on iPad/iPhone
     headerString = [NSString stringWithFormat:@
@@ -309,6 +303,23 @@
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
 }
+
+- (void)showStory {
+    id storyId = [self.activeStory objectForKey:@"id"];
+    [appDelegate pushReadStory:storyId];
+}
+
+- (void)clearStory {
+    [self.webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
+}
+
+- (void)hideStory {
+    self.webView.hidden = YES;
+    self.noStorySelectedLabel.hidden = NO;
+}
+
+#pragma mark -
+#pragma mark Story layout
 
 - (NSString *)getAvatars:(NSString *)key {
     NSString *avatarString = @"";
@@ -699,11 +710,6 @@
         }
     }
     return nil;
-}
-
-- (void)showStory {
-    id storyId = [self.activeStory objectForKey:@"id"];
-    [appDelegate pushReadStory:storyId];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -1204,6 +1210,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           contentWidthClass,
                           contentWidth];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    self.webView.hidden = NO;
 }
 
 @end

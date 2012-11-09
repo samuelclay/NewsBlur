@@ -35,17 +35,18 @@
 @property (nonatomic, assign) BOOL pullingScrollview;
 @property NSInteger pageIndex;
 
+- (void)initStory;
+- (void)drawStory;
+- (void)showStory;
+- (void)clearStory;
+- (void)hideStory;
 
 - (void)toggleLikeComment:(BOOL)likeComment;
-- (void)showStory;
 - (void)scrolltoComment;
 - (void)changeWebViewWidth;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
-- (void)initStory;
-- (void)clearStory;
-
 - (void)showShareHUD:(NSString *)msg;
 - (void)refreshComments:(NSString *)replyId;
 

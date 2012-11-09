@@ -8,7 +8,6 @@
 
 #import "StoryPageControl.h"
 #import "StoryDetailViewController.h"
-#import "PagerViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "NewsBlurViewController.h"
 #import "FeedDetailViewController.h"
@@ -66,11 +65,10 @@
 	[self.scrollView setScrollEnabled:YES];
 	[self.scrollView setShowsHorizontalScrollIndicator:NO];
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
-//    [self.scrollView setDelegate:self];
     
-    self.scrollView.frame = self.view.frame;
-    currentPage.view.frame = self.scrollView.frame;
-    nextPage.view.frame = self.scrollView.frame;
+//    self.scrollView.frame = self.view.frame;
+//    currentPage.view.frame = self.scrollView.frame;
+//    nextPage.view.frame = self.scrollView.frame;
     
     popoverClass = [WEPopoverController class];
 
@@ -134,13 +132,13 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [self clearStory];
-	self.scrollView.contentOffset = CGPointMake(0, 0);
-    [self initStory];
-    int activeStoryLocation = [appDelegate locationOfActiveStory];
-    if (activeStoryLocation >= 0) {
-        [self setStory];
-        [self applyNewIndex:activeStoryLocation pageController:currentPage];
-        [self applyNewIndex:activeStoryLocation+1 pageController:nextPage];
+    [self setNextPreviousButtons];
+    [appDelegate adjustStoryDetailWebView];
+    self.scrollView.contentOffset = CGPointMake(0, 0);
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        [self.currentPage hideStory];
+        [self.nextPage hideStory];
     }
 }
 
@@ -152,6 +150,11 @@
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [self.currentPage hideStory];
+    [self.nextPage hideStory];
 }
 
 - (void)transitionFromFeedDetail {
@@ -177,7 +180,6 @@
                                              * widthCount,
                                              self.scrollView.frame.size.height);
 }
-
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -221,7 +223,7 @@
 		pageController.view.frame = pageFrame;
 	} else {
 		CGRect pageFrame = pageController.view.frame;
-		pageFrame.origin.y = self.scrollView.frame.size.height;
+		pageFrame.origin.y = self.scrollView.frame.size.height / 2;
 		pageController.view.frame = pageFrame;
 	}
     
@@ -235,6 +237,7 @@
                 [self applyNewIndex:newIndex pageController:pageController];
             }];
         } else {
+            
 //            [appDelegate.navigationController
 //             popToViewController:[appDelegate.navigationController.viewControllers
 //                                  objectAtIndex:0]
@@ -245,6 +248,7 @@
         int location = [appDelegate indexFromLocation:pageController.pageIndex];
         [pageController setActiveStoryAtIndex:location];
         [pageController initStory];
+        [pageController drawStory];
     }
     
     [self resizeScrollView];
@@ -260,8 +264,6 @@
 	NSInteger lowerNumber = floor(fractionalPage);
 	NSInteger upperNumber = lowerNumber + 1;
 	
-//    NSLog(@"Scroll to %@", NSStringFromCGPoint(sender.contentOffset));
-    
 	if (lowerNumber == currentPage.pageIndex)
 	{
 		if (upperNumber != nextPage.pageIndex)
@@ -296,17 +298,7 @@
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
-    CGFloat pageWidth = self.scrollView.frame.size.width;
-    float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
-	NSInteger nearestNumber = lround(fractionalPage);
-    
-	if (currentPage.pageIndex != nearestNumber)
-	{
-		StoryDetailViewController *swapController = currentPage;
-		currentPage = nextPage;
-		nextPage = swapController;
-	}
-    [self setStory];
+    [self setStoryFromScroll];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
@@ -321,23 +313,32 @@
     CGRect frame = self.scrollView.frame;
     frame.origin.x = frame.size.width * pageIndex;
     frame.origin.y = 0;
-    [self.scrollView scrollRectToVisible:frame animated:YES];
-}
-
-- (void)initStory {
-    int activeStoryLocation = [appDelegate locationOfActiveStory];
-    if (activeStoryLocation >= 0) {
-        [self changePage:activeStoryLocation];
+    if (self.scrollView.contentOffset.x == frame.origin.x) {
+        [self applyNewIndex:pageIndex pageController:currentPage];
+        [self setStoryFromScroll];
+    } else {
+        [self.scrollView scrollRectToVisible:frame animated:YES];
     }
-    
-    [self setNextPreviousButtons];
-    
-    [appDelegate adjustStoryDetailWebView];
 }
 
-- (void)setStory {
+- (void)setStoryFromScroll {
+    CGFloat pageWidth = self.scrollView.frame.size.width;
+    float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
+	NSInteger nearestNumber = lround(fractionalPage);
+    
+	if (currentPage.pageIndex != nearestNumber)
+	{
+		StoryDetailViewController *swapController = currentPage;
+		currentPage = nextPage;
+		nextPage = swapController;
+	}
+    
     int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
     appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
+    [self updatePageWithActiveStory:currentPage.pageIndex];
+}
+
+- (void)updatePageWithActiveStory:(int)location {
     [self markStoryAsRead];
     [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
     
@@ -350,6 +351,14 @@
     
     [self setNextPreviousButtons];
     [appDelegate changeActiveFeedDetailRow];
+    
+    
+    if (self.currentPage.pageIndex != location) {
+        [self applyNewIndex:location pageController:self.currentPage];
+    }
+    if (self.nextPage.pageIndex != location+1) {
+        [self applyNewIndex:location+1 pageController:self.nextPage];
+    }
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request {
@@ -363,11 +372,8 @@
     [self informError:error];
 }
 
-
-
 #pragma mark -
 #pragma mark Actions
-
 
 - (void)setNextPreviousButtons {
     // setting up the PREV BUTTON

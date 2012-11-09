@@ -148,8 +148,23 @@
     [self.feedsViewController fetchFeedList:YES];
     
     
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     splashView = [[UIImageView alloc] init];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    int rotate = 0;
+    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
+        NSLog(@"UPSIDE DOWN");
+        rotate = -2;
+    } else if (orientation == UIInterfaceOrientationLandscapeLeft) {
+        rotate = -1;
+    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
+        rotate = 1;
+    }
+    splashView.transform = CGAffineTransformMakeRotation(M_PI * rotate * 90.0 / 180);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        UIInterfaceOrientationIsLandscape(orientation)) {
+        splashView.frame = self.view.frame;
+        splashView.image = [UIImage imageNamed:@"Default-Landscape.png"];
+    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         splashView.frame = self.view.frame;
         splashView.image = [UIImage imageNamed:@"Default-Portrait.png"];
     } else if (IS_IPHONE_5) {
@@ -159,6 +174,9 @@
         splashView.frame = self.window.frame;
         splashView.image = [UIImage imageNamed:@"Default.png"];
     }
+    
+    [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+
     [window addSubview:splashView];
     [window bringSubviewToFront:splashView];
     [UIView beginAnimations:nil context:nil];
@@ -618,7 +636,11 @@
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
     
-    [storyPageControl initStory];
+    int activeStoryLocation = [self locationOfActiveStory];
+    if (activeStoryLocation >= 0) {
+        [self.storyPageControl changePage:activeStoryLocation];
+//        [self.storyPageControl updatePageWithActiveStory:activeStoryLocation];
+    }
 }
 
 - (void)navigationController:(UINavigationController *)navController 
@@ -663,7 +685,6 @@
 }
 
 - (void)hideStoryDetailView {
-//    [self.storyDetailViewController clearStory];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromFeedDetail];
     } else {

@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "BaseViewController.h"
 #import "NewsBlurAppDelegate.h"
-#import "PagerViewController.h"
 #import "WEPopoverController.h"
 
 @class NewsBlurAppDelegate;
@@ -62,8 +61,8 @@
 
 - (void)transitionFromFeedDetail;
 - (void)clearStory;
-- (void)initStory;
-- (void)setStory;
+- (void)setStoryFromScroll;
+- (void)updatePageWithActiveStory:(int)location;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 

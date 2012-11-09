@@ -373,7 +373,6 @@
 		FF5F3A89162B8377008DBE3E /* arrow_branch.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A88162B8377008DBE3E /* arrow_branch.png */; };
 		FF5F3A8B162B8390008DBE3E /* car.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A8A162B8390008DBE3E /* car.png */; };
 		FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPageControl.m */; };
-		FF6A23381644932200E15989 /* PagerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233516448F0400E15989 /* PagerViewController.m */; };
 		FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPageControl.xib */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		FF793E1C13F1A9F700F282D2 /* ASIDataDecompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1A13F1A9F700F282D2 /* ASIDataDecompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -906,8 +905,6 @@
 		FF5F3A8A162B8390008DBE3E /* car.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = car.png; sourceTree = "<group>"; };
 		FF6A233016448E0700E15989 /* StoryPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPageControl.h; sourceTree = "<group>"; };
 		FF6A233116448E0700E15989 /* StoryPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPageControl.m; sourceTree = "<group>"; };
-		FF6A233416448F0400E15989 /* PagerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PagerViewController.h; sourceTree = "<group>"; };
-		FF6A233516448F0400E15989 /* PagerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PagerViewController.m; sourceTree = "<group>"; };
 		FF6A23361644903900E15989 /* StoryPageControl.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StoryPageControl.xib; path = ../Classes/StoryPageControl.xib; sourceTree = "<group>"; };
 		FF793E1713F1A9F700F282D2 /* ASIDataCompressor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASIDataCompressor.h; sourceTree = "<group>"; };
 		FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ASIDataCompressor.m; sourceTree = "<group>"; };
@@ -1176,8 +1173,6 @@
 		431B857415A1324200DCE497 /* Story */ = {
 			isa = PBXGroup;
 			children = (
-				FF6A233416448F0400E15989 /* PagerViewController.h */,
-				FF6A233516448F0400E15989 /* PagerViewController.m */,
 				7842ECF511D44A530066CF9D /* StoryDetailViewController.h */,
 				7842ECF611D44A530066CF9D /* StoryDetailViewController.m */,
 				43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */,
@@ -2346,7 +2341,6 @@
 				FFDE35EA162799B90034BFDE /* FeedDetailMenuViewController.m in Sources */,
 				FF4130A3162E10CF00DDB6A7 /* MenuTableViewCell.m in Sources */,
 				FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */,
-				FF6A23381644932200E15989 /* PagerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

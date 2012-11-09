@@ -353,6 +353,7 @@
         [self.view addSubview:self.masterNavigationController.view];
         self.masterNavigationController.view.frame = CGRectMake(0, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
         self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
+        NSLog(@"storyPage Nav: %@", NSStringFromCGRect(self.storyNavigationController.view.frame));
     }
 }
 
@@ -431,14 +432,13 @@
 }
 
 - (void)transitionToFeedDetail {
-    NSLog(@"in transitionToFeedDetail");
     [self hidePopover];
     self.feedDetailIsVisible = YES;
     CGRect vb = [self.view bounds];
         
     // adding feedDetailViewController 
     [self addChildViewController:self.feedDetailViewController];
-    [self.view addSubview:self.feedDetailViewController.view];
+//    [self.view addSubview:self.feedDetailViewController.view];
     [self.feedDetailViewController didMoveToParentViewController:self];
     
     // adding storyDetailViewController
@@ -511,10 +511,10 @@
         self.storyPageControl.navigationItem.leftBarButtonItem = nil;
         
         [self.masterNavigationController pushViewController:self.feedDetailViewController animated:YES];
-        self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
+        self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0,
+                                                               vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1,
+                                                               vb.size.height);
         
-        
-        // CASE: story titles on left
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 
                                                                    0, 
@@ -540,7 +540,7 @@
         [self transitionFromShareView];
     }
     
-    [self.storyDetailViewController clearStory];
+    [self.storyPageControl clearStory];
     self.feedDetailIsVisible = NO;
     CGRect vb = [self.view bounds];
     

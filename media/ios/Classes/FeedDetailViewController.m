@@ -172,6 +172,9 @@
     self.popoverController = nil;
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    
+}
 
 - (void)fadeSelectedCell {
     // have the selected cell deselect
