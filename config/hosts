@@ -23,3 +23,8 @@
 199.15.251.154  task09  task09.newsblur.com
 199.15.251.137  task10  task10.newsblur.com
 199.15.251.155  task11  task11.newsblur.com
+
+54.242.38.48    task01a task01a.newsblur.com   ec2-54-242-38-48.compute-1.amazonaws.com
+184.72.214.147  task02a task02a.newsblur.com   ec2-184-72-214-147.compute-1.amazonaws.com
+107.20.103.16   task03a task03a.newsblur.com   ec2-107-20-103-16.compute-1.amazonaws.com
+50.17.12.16     task04a task04a.newsblur.com   ec2-50-17-12-16.compute-1.amazonaws.com

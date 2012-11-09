@@ -50,13 +50,13 @@ env.roledefs ={
              # 'task02.newsblur.com', 
              'task03.newsblur.com', 
              'task04.newsblur.com', 
-             'task05.newsblur.com', 
-             'task06.newsblur.com', 
-             'task07.newsblur.com',
-             # 'task08.newsblur.com',
-             # 'task09.newsblur.com',
-             # 'task10.newsblur.com',
-             # 'task11.newsblur.com',
+             # 'task05.newsblur.com', 
+             # 'task06.newsblur.com', 
+             # 'task07.newsblur.com',
+             'task08.newsblur.com',
+             'task09.newsblur.com',
+             'task10.newsblur.com',
+             'task11.newsblur.com',
              ],
     'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
@@ -276,9 +276,9 @@ def setup_common():
     setup_supervisor()
     setup_hosts()
     config_pgbouncer()
-    # setup_mongoengine()
-    # setup_forked_mongoengine()
-    # setup_pymongo_repo()
+    setup_mongoengine()
+    setup_forked_mongoengine()
+    setup_pymongo_repo()
     setup_logrotate()
     setup_nginx()
     configure_nginx()
@@ -465,8 +465,13 @@ def setup_pymongo_repo():
     with cd(env.VENDOR_PATH):
         with settings(warn_only=True):
             run('git clone git://github.com/mongodb/mongo-python-driver.git pymongo')
-    with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
-        sudo('python setup.py install')
+    # with cd(os.path.join(env.VENDOR_PATH, 'pymongo')):
+    #     sudo('python setup.py install')
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
+    sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridgs*')
+    sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/' % 
+         os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
         
 def setup_forked_mongoengine():
     with cd(os.path.join(env.VENDOR_PATH, 'mongoengine')):
