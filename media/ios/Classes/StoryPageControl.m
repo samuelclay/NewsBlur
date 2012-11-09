@@ -44,6 +44,7 @@
 @synthesize popoverController;
 @synthesize loadingIndicator;
 @synthesize inTouchMove;
+@synthesize isDraggingScrollview;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -127,11 +128,14 @@
         self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
         self.bottomPlaceholderToolbar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
-
+    
+    [self.scrollView addObserver:self forKeyPath:@"contentOffset"
+                         options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+                         context:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self clearStory];
+    [self resetPages];
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
     self.scrollView.contentOffset = CGPointMake(0, 0);
@@ -158,7 +162,7 @@
 }
 
 - (void)transitionFromFeedDetail {
-    [self performSelector:@selector(clearStory) withObject:self afterDelay:0.5];
+    [self performSelector:@selector(resetPages) withObject:self afterDelay:0.5];
     [appDelegate.masterContainerViewController transitionFromFeedDetail];
 }
 
@@ -166,9 +170,14 @@
     [appDelegate adjustStoryDetailWebView];
 }
 
-- (void)clearStory {
+- (void)resetPages {
     [currentPage clearStory];
     [nextPage clearStory];
+    
+    currentPage.pageIndex = -1;
+    nextPage.pageIndex = -1;
+    
+    self.scrollView.contentOffset = CGPointMake(0, 0);
 }
 
 - (void)resizeScrollView {
@@ -296,10 +305,28 @@
 	}
 }
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    self.isDraggingScrollview = YES;
+}
+
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
+    self.isDraggingScrollview = NO;
     [self setStoryFromScroll];
 }
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (keyPath == @"contentOffset" && self.isDraggingScrollview) {
+        CGFloat pageWidth = self.scrollView.frame.size.width;
+        float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
+        NSInteger nearestNumber = lround(fractionalPage);
+        
+        int storyIndex = [appDelegate indexFromLocation:nearestNumber];
+        appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
+        [appDelegate changeActiveFeedDetailRow];
+    }
+}
+
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
 {
@@ -332,6 +359,8 @@
 		currentPage = nextPage;
 		nextPage = swapController;
 	}
+    
+    if (currentPage.pageIndex == -1) return;
     
     int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
     appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];

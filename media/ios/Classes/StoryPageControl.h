@@ -30,6 +30,8 @@
     
     WEPopoverController *popoverController;
 	Class popoverClass;
+    
+    BOOL isDraggingScrollview;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -53,6 +55,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
 @property (readwrite) CGFloat inTouchMove;
+@property (assign) BOOL isDraggingScrollview;
 
 @property (nonatomic, strong) WEPopoverController *popoverController;
 
@@ -60,7 +63,7 @@
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(StoryDetailViewController *)pageController;
 
 - (void)transitionFromFeedDetail;
-- (void)clearStory;
+- (void)resetPages;
 - (void)setStoryFromScroll;
 - (void)updatePageWithActiveStory:(int)location;
 - (void)changePage:(NSInteger)pageIndex;

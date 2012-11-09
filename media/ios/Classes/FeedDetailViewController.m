@@ -159,9 +159,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     if (appDelegate.inStoryDetail && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         appDelegate.inStoryDetail = NO;
-        [appDelegate.storyPageControl.currentPage clearStory];
-        [appDelegate.storyPageControl.nextPage clearStory];
-        [appDelegate.storyDetailViewController clearStory];
+        [appDelegate.storyPageControl resetPages];
         [self checkScroll];
     }
 }
