@@ -34,6 +34,7 @@
 @property (nonatomic) IBOutlet UILabel *noStorySelectedLabel;
 @property (nonatomic, assign) BOOL pullingScrollview;
 @property NSInteger pageIndex;
+@property (nonatomic) MBProgressHUD *storyHUD;
 
 - (void)initStory;
 - (void)drawStory;
@@ -47,7 +48,6 @@
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
-- (void)showShareHUD:(NSString *)msg;
 - (void)refreshComments:(NSString *)replyId;
 
 - (void)openShareDialog;

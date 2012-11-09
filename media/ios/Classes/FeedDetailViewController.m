@@ -519,7 +519,7 @@
                 [self loadStory:cell atRow:indexPath.row];
                 
                 // found the story, reset the two flags.
-                appDelegate.tryFeedStoryId = nil;
+//                appDelegate.tryFeedStoryId = nil;
                 appDelegate.inFindingStoryMode = NO;
             }
         }

@@ -435,11 +435,11 @@
     }
 }
 
-- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD {
-    if (showHUD) {
-        [self.storyDetailViewController showShareHUD:@"Loading story"];        
-    }
-    
+- (void)loadTryFeedDetailView:(NSString *)feedId
+                    withStory:(NSString *)contentId
+                     isSocial:(BOOL)social
+                     withUser:(NSDictionary *)user
+             showFindingStory:(BOOL)showHUD {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissModalViewControllerAnimated:YES];
@@ -472,6 +472,10 @@
     [self setActiveFolder:nil];
     
     [self loadFeedDetailView];
+    
+    if (showHUD) {
+        [self.storyPageControl showShareHUD:@"Loading story"];
+    }
 }
 
 - (BOOL)isSocialFeed:(NSString *)feedIdStr {
@@ -638,7 +642,8 @@
     
     int activeStoryLocation = [self locationOfActiveStory];
     if (activeStoryLocation >= 0) {
-        BOOL animated = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+        BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+                         !self.tryFeedCategory);
         [self.storyPageControl changePage:activeStoryLocation animated:animated];
 //        [self.storyPageControl updatePageWithActiveStory:activeStoryLocation];
     }

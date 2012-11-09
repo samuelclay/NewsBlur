@@ -24,12 +24,6 @@
 #import "JSON.h"
 #import "SHK.h"
 
-@interface StoryDetailViewController ()
-
-@property (nonatomic) MBProgressHUD *storyHUD;
-
-@end
-
 @implementation StoryDetailViewController
 
 @synthesize appDelegate;
@@ -41,8 +35,6 @@
 @synthesize noStorySelectedLabel;
 @synthesize pullingScrollview;
 @synthesize pageIndex;
-
-// private
 @synthesize storyHUD;
 
 
@@ -298,7 +290,7 @@
 }
 
 - (void)clearStory {
-    [self.webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
 }
 
 - (void)hideStory {
@@ -923,13 +915,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];    
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([userPreferences integerForKey:@"fontSizing"]){
         [self changeFontSize:[userPreferences stringForKey:@"fontSizing"]];
     }
     
     // see if it's a tryfeed for animation
-    if (appDelegate.tryFeedCategory) {
+    if (!self.webView.hidden &&
+        appDelegate.tryFeedCategory &&
+        [[appDelegate.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId]) {
+        [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:YES];
+        NSLog(@"Comparing %@ = %@ - %d", [appDelegate.activeStory objectForKey:@"id"], appDelegate.tryFeedStoryId, [[appDelegate.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId]);
+        NSLog(@"Category %@", appDelegate.tryFeedCategory);
         if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
             [appDelegate.tryFeedCategory isEqualToString:@"comment_reply"]) {
             NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
@@ -977,7 +974,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark Actions
 
 - (void)toggleLikeComment:(BOOL)likeComment {
-    [self showShareHUD:@"Favoriting"];
+    [appDelegate.storyPageControl showShareHUD:@"Favoriting"];
     NSString *urlString;
     if (likeComment) {
         urlString = [NSString stringWithFormat:@"http://%@/social/like_comment",
@@ -1083,7 +1080,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 # pragma mark Subscribing to blurblog
 
 - (void)subscribeToBlurblog {
-    [self showShareHUD:@"Following"];
+    [appDelegate.storyPageControl showShareHUD:@"Following"];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/follow",
                      NEWSBLUR_URL];
     
@@ -1110,14 +1107,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [appDelegate reloadFeedsView:NO];
 //    [appDelegate.feedDetailViewController resetFeedDetail];
 //    [appDelegate.feedDetailViewController fetchFeedDetail:1 withCallback:nil];
-}
-
-- (void)showShareHUD:(NSString *)msg {
-    [MBProgressHUD hideHUDForView:self.view animated:NO];
-    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    self.storyHUD.labelText = msg;
-    self.storyHUD.margin = 20.0f;
-    self.noStorySelectedLabel.hidden = YES;
 }
 
 - (void)refreshComments:(NSString *)replyId {

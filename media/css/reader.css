@@ -1826,7 +1826,7 @@ background: transparent;
 #story_pane .NB-feed-stories .NB-feed-story .NB-feed-story-content img {
   max-width: 100% !important;
   width: auto;
-  height: auto;
+  height: auto !important;
 }
 #story_pane .NB-feed-story {
     position: relative;

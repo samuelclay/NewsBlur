@@ -45,6 +45,7 @@
 @synthesize loadingIndicator;
 @synthesize inTouchMove;
 @synthesize isDraggingScrollview;
+@synthesize storyHUD;
 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -706,6 +707,25 @@
                                        permittedArrowDirections:UIPopoverArrowDirectionAny
                                                        animated:YES];
     }
+}
+
+- (void)setFontStyle:(NSString *)fontStyle {
+    [self.currentPage setFontStyle:fontStyle];
+    [self.nextPage setFontStyle:fontStyle];
+}
+
+- (void)changeFontSize:(NSString *)fontSize {
+    [self.currentPage changeFontSize:fontSize];
+    [self.nextPage changeFontSize:fontSize];
+}
+
+- (void)showShareHUD:(NSString *)msg {
+//    [MBProgressHUD hideHUDForView:self.view animated:NO];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.storyHUD.labelText = msg;
+    self.storyHUD.margin = 20.0f;
+    self.currentPage.noStorySelectedLabel.hidden = YES;
+    self.nextPage.noStorySelectedLabel.hidden = YES;
 }
 
 #pragma mark -

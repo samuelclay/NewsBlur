@@ -9,6 +9,7 @@
 #import "ShareViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Utilities.h"
 #import "DataUtilities.h"
@@ -221,7 +222,7 @@
 # pragma mark Share Story
 
 - (IBAction)doShareThisStory:(id)sender {
-    [appDelegate.storyDetailViewController showShareHUD:@"Sharing"];
+    [appDelegate.storyPageControl showShareHUD:@"Sharing"];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
                            NEWSBLUR_URL];
 
@@ -287,7 +288,7 @@
 # pragma mark Reply to Story
 
 - (IBAction)doReplyToComment:(id)sender {
-    [appDelegate.storyDetailViewController showShareHUD:@"Replying"];
+    [appDelegate.storyPageControl showShareHUD:@"Replying"];
     NSString *comments = commentField.text;
     if ([comments length] == 0) {
         return;
@@ -316,7 +317,7 @@
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
     [appDelegate hideShareView:YES];
-    [appDelegate.storyDetailViewController showShareHUD:@"Replying"];
+    [appDelegate.storyPageControl showShareHUD:@"Replying"];
 }
 
 - (void)finishAddReply:(ASIHTTPRequest *)request {
@@ -378,7 +379,6 @@
     NSString *text = self.commentField.text;
     if ([self.submitButton.title isEqualToString:@"Share this story"] || 
         [self.submitButton.title isEqualToString:@"Share with comments"]) {
-        NSLog(@"text.length is %i", text.length);
         if (text.length) {
             self.submitButton.title = @"Share with comments";
         } else {

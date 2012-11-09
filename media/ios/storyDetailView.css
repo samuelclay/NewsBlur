@@ -284,7 +284,7 @@ div + p {
 }
 .NB-story img {
     margin: 20px auto;
-    height: auto;
+    height: auto !important;
     width: auto;
     max-width: 100% !important;
     display: none;

@@ -94,19 +94,19 @@
 - (IBAction)changeFontSize:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
-        [appDelegate.storyDetailViewController changeFontSize:@"NB-extra-small"];
+        [appDelegate.storyPageControl changeFontSize:@"NB-extra-small"];
         [userPreferences setObject:@"NB-extra-small" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 1) {
-        [appDelegate.storyDetailViewController changeFontSize:@"NB-small"];
+        [appDelegate.storyPageControl changeFontSize:@"NB-small"];
         [userPreferences setObject:@"NB-small" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 2) {
-        [appDelegate.storyDetailViewController changeFontSize:@"NB-medium"];
+        [appDelegate.storyPageControl changeFontSize:@"NB-medium"];
         [userPreferences setObject:@"NB-medium" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 3) {
-        [appDelegate.storyDetailViewController changeFontSize:@"NB-large"];
+        [appDelegate.storyPageControl changeFontSize:@"NB-large"];
         [userPreferences setObject:@"NB-large" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 4) {
-        [appDelegate.storyDetailViewController changeFontSize:@"NB-extra-large"];
+        [appDelegate.storyPageControl changeFontSize:@"NB-extra-large"];
         [userPreferences setObject:@"NB-extra-large" forKey:@"fontSizing"];
     }
     [userPreferences synchronize];
@@ -114,12 +114,12 @@
 
 - (void)setSanSerif {
     [fontStyleSegment setSelectedSegmentIndex:0];
-    [appDelegate.storyDetailViewController setFontStyle:@"Helvetica"];
+    [appDelegate.storyPageControl setFontStyle:@"Helvetica"];
 }
         
 - (void)setSerif {
     [fontStyleSegment setSelectedSegmentIndex:1];
-    [appDelegate.storyDetailViewController setFontStyle:@"Georgia"];
+    [appDelegate.storyPageControl setFontStyle:@"Georgia"];
 }
 
 #pragma mark -
@@ -206,7 +206,7 @@
     } else if (indexPath.row == 2) {
         [appDelegate.storyPageControl openSendToDialog];
     } else if (indexPath.row == 3) {
-        [appDelegate.storyDetailViewController openShareDialog];
+        [appDelegate.storyPageControl.currentPage openShareDialog];
     }
     
     

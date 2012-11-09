@@ -56,6 +56,7 @@
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
 @property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
+@property (nonatomic) MBProgressHUD *storyHUD;
 
 @property (nonatomic, strong) WEPopoverController *popoverController;
 
@@ -82,6 +83,9 @@
 - (void)finishMarkAsUnsaved:(ASIHTTPRequest *)request;
 
 - (IBAction)toggleFontSize:(id)sender;
+- (void)setFontStyle:(NSString *)fontStyle;
+- (void)changeFontSize:(NSString *)fontSize;
+- (void)showShareHUD:(NSString *)msg;
 
 - (IBAction)showOriginalSubview:(id)sender;
 - (IBAction)doNextUnreadStory;
