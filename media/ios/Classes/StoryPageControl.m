@@ -60,16 +60,14 @@
 	nextPage = [[StoryDetailViewController alloc] initWithNibName:@"StoryDetailViewController" bundle:nil];
     currentPage.appDelegate = appDelegate;
     nextPage.appDelegate = appDelegate;
+    currentPage.view.frame = self.scrollView.frame;
+    nextPage.view.frame = self.scrollView.frame;
 	[self.scrollView addSubview:currentPage.view];
 	[self.scrollView addSubview:nextPage.view];
     [self.scrollView setPagingEnabled:YES];
 	[self.scrollView setScrollEnabled:YES];
 	[self.scrollView setShowsHorizontalScrollIndicator:NO];
 	[self.scrollView setShowsVerticalScrollIndicator:NO];
-    
-//    self.scrollView.frame = self.view.frame;
-//    currentPage.view.frame = self.scrollView.frame;
-//    nextPage.view.frame = self.scrollView.frame;
     
     popoverClass = [WEPopoverController class];
 
@@ -135,15 +133,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [self resetPages];
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
-    self.scrollView.contentOffset = CGPointMake(0, 0);
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        [self.currentPage hideStory];
-        [self.nextPage hideStory];
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -173,7 +164,10 @@
 - (void)resetPages {
     [currentPage clearStory];
     [nextPage clearStory];
-    
+
+    [currentPage hideStory];
+    [nextPage hideStory];
+
     currentPage.pageIndex = -1;
     nextPage.pageIndex = -1;
     

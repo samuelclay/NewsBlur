@@ -452,6 +452,7 @@
     self.storyPageControl.bottomPlaceholderToolbar.hidden = NO;
     self.storyPageControl.progressViewContainer.hidden = YES;
     self.storyPageControl.navigationItem.rightBarButtonItems = nil;
+    [self.storyPageControl resetPages];
     int unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
         self.storyPageControl.progressView.progress = 1;

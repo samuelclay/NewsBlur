@@ -83,18 +83,6 @@
     return YES;
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        [self initStory];
-        [self drawStory];
-    }
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-
-}
-
 - (void)viewDidUnload {
     [self setInnerView:nil];
     [self setNoStorySelectedLabel:nil];
