@@ -154,13 +154,7 @@
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    [self resizeScrollView];
-    [appDelegate adjustStoryDetailWebView];
-    int pageIndex = currentPage.pageIndex;
-    currentPage.pageIndex = -1;
-    nextPage.pageIndex = -1;
-    [self changePage:pageIndex animated:NO];
-//    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
+    [self refreshPages];
 }
 
 - (void)resetPages {
@@ -174,6 +168,17 @@
     nextPage.pageIndex = -1;
     
     self.scrollView.contentOffset = CGPointMake(0, 0);
+}
+
+- (void)refreshPages {
+    [self resizeScrollView];
+    [appDelegate adjustStoryDetailWebView];
+    int pageIndex = currentPage.pageIndex;
+    currentPage.pageIndex = -1;
+    nextPage.pageIndex = -1;
+    [self changePage:pageIndex animated:NO];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
 }
 
 - (void)resizeScrollView {
@@ -364,7 +369,13 @@
 		nextPage = swapController;
 	}
     
+    NSLog(@"setStoryFromScroll, currentPage index: %d -- %d", currentPage.pageIndex, nearestNumber);
+
     if (currentPage.pageIndex == -1) return;
+    
+    nextPage.webView.scrollView.scrollsToTop = NO;
+    currentPage.webView.scrollView.scrollsToTop = YES;
+    self.scrollView.scrollsToTop = NO;
     
     int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
     appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];

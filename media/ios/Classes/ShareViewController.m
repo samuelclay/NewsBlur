@@ -317,7 +317,6 @@
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
     [appDelegate hideShareView:YES];
-    [appDelegate.storyPageControl showShareHUD:@"Replying"];
 }
 
 - (void)finishAddReply:(ASIHTTPRequest *)request {
@@ -343,7 +342,6 @@
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
     NSMutableDictionary *newStoryParsed = [newStory mutableCopy];
     [newStoryParsed setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
-    [newStoryParsed setValue:[appDelegate.activeStory objectForKey:@"short_parsed_date"] forKey:@"short_parsed_date"] ;
 
     // update the current story and the activeFeedStories
     appDelegate.activeStory = newStoryParsed;
@@ -364,7 +362,8 @@
     appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     self.commentField.text = nil;
-    [appDelegate.storyDetailViewController refreshComments:replyId];
+    [appDelegate.storyPageControl refreshPages];
+    [appDelegate.storyPageControl.currentPage refreshComments:replyId];
 }
 
 

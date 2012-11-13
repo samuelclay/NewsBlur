@@ -467,9 +467,9 @@
         [self setInFindingStoryMode:NO];
     }
             
-    [self setTryFeedStoryId:contentId];
-    [self setActiveFeed:feed];
-    [self setActiveFolder:nil];
+    self.tryFeedStoryId = contentId;
+    self.activeFeed = feed;
+    self.activeFolder = nil;
     
     [self loadFeedDetailView];
     

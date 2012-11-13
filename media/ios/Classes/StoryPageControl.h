@@ -65,6 +65,7 @@
 
 - (void)transitionFromFeedDetail;
 - (void)resetPages;
+- (void)refreshPages;
 - (void)setStoryFromScroll;
 - (void)updatePageWithActiveStory:(int)location;
 - (void)changePage:(NSInteger)pageIndex;

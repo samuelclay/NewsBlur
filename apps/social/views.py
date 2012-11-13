@@ -509,7 +509,10 @@ def mark_story_as_shared(request):
     story = stories[0]
     story['shared_comments'] = strip_tags(shared_story['comments'] or "")
     story['shared_by_user'] = True
-    
+    shared_date = localtime_for_timezone(shared_story['shared_date'], request.user.profile.timezone)
+    story['short_parsed_date'] = format_story_link_date__short(shared_date)
+    story['long_parsed_date'] = format_story_link_date__long(shared_date)
+            
     if post_to_services:
         for service in post_to_services:
             if service not in shared_story.posted_to_services:

@@ -291,7 +291,8 @@ static const CGFloat kFolderTitleHeight = 28;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
         return [appDelegate showLogin];
-    } else if ([request responseStatusCode] >= 500) {
+    } else if ([request responseStatusCode] == 404 ||
+               [request responseStatusCode] >= 500) {
         [pull finishedLoading];
         return [self informError:@"The server barfed!"];
     }

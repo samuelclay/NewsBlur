@@ -52,14 +52,14 @@ function slideToComment(commentId, highlight) {
         //Get comment
         var $comment = $('#' + commentString);
         if ($comment.length) {
-            $.scroll($comment.offset().top - 32, 1000);
+            $.scroll($comment.offset().top - 32, 1000, 'ease-in-out');
         } else {
             var $shareBar = $('#' + shareString);
             if ($shareBar.length) {
-                $.scroll($shareBar.offset().top - 32, 1000);
+                $.scroll($shareBar.offset().top - 32, 1000, 'ease-in-out');
             } else {
                 var $shareButton =$("#NB-share-button-id");
-                $.scroll($shareButton.offset().top - 32, 1000);
+                $.scroll($shareButton.offset().top - 32, 1000, 'ease-in-out');
             }
         }
 

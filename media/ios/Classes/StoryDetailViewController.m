@@ -767,7 +767,7 @@
             UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
             titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
             titleImageView.hidden = YES;
-            self.navigationItem.titleView = titleImageView; 
+            appDelegate.storyPageControl.navigationItem.titleView = titleImageView;
             titleImageView.hidden = NO;
         } else {
             
@@ -778,7 +778,7 @@
             UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
             imageView.frame = CGRectMake(0.0, 0.0, 28.0, 28.0);
             [imageView setImage:titleImage];
-            self.navigationItem.titleView = imageView;        
+            appDelegate.storyPageControl.navigationItem.titleView = imageView;
         }
     }
 }
@@ -920,12 +920,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [self changeFontSize:[userPreferences stringForKey:@"fontSizing"]];
     }
     
+    [self checkTryFeedStory];
+}
+
+- (void)checkTryFeedStory {
     // see if it's a tryfeed for animation
     if (!self.webView.hidden &&
         appDelegate.tryFeedCategory &&
         [[appDelegate.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId]) {
         [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:YES];
-
+        
         if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
             [appDelegate.tryFeedCategory isEqualToString:@"comment_reply"]) {
             NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
@@ -935,7 +939,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             NSString *blurblogUserId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"social_user_id"]];
             NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", blurblogUserId];
             [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
-
+            
         }
         appDelegate.tryFeedCategory = nil;
     }
@@ -1102,7 +1106,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.storyHUD.removeFromSuperViewOnHide = YES;  
     self.storyHUD.labelText = @"Followed";
     [self.storyHUD hide:YES afterDelay:1];
-    self.navigationItem.leftBarButtonItem = nil;
+    appDelegate.storyPageControl.navigationItem.leftBarButtonItem = nil;
     [appDelegate reloadFeedsView:NO];
 //    [appDelegate.feedDetailViewController resetFeedDetail];
 //    [appDelegate.feedDetailViewController fetchFeedDetail:1 withCallback:nil];
@@ -1114,27 +1118,33 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *commentString = [self getComments];  
     NSString *jsString = [[NSString alloc] initWithFormat:@
                           "document.getElementById('NB-comments-wrapper').innerHTML = '%@';"
-                          "document.getElementById('NB-share-bar-wrapper').innerHTML = '%@';",
+                          "document.getElementById('NB-share-bar-wrapper').innerHTML = '<div>LALALALALA</div> %@';",
                           commentString, 
                           shareBarString];
     NSString *shareType = appDelegate.activeShareType;
-    
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
-    
-    if (!replyId) {
-        NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-        NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
-        [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
-    } else if ([replyId isEqualToString:@"like"]) {
+
+    // HACK to make the scroll event happen after the replace innerHTML event above happens.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
+                   dispatch_get_current_queue(), ^{
+        if (!replyId) {
+            NSString *currentUserId = [NSString stringWithFormat:@"%@",
+                                       [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+            NSString *jsFlashString = [[NSString alloc]
+                                       initWithFormat:@"slideToComment('%@', true);", currentUserId];
+            [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
+        } else if ([replyId isEqualToString:@"like"]) {
+            
+        } else {
+            NSString *jsFlashString = [[NSString alloc]
+                                       initWithFormat:@"slideToComment('%@', true);", replyId];
+            [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
+        }
+    });
         
-    } else {
-        NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", replyId];
-        [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
-    }
-    
 
 //    // adding in a simulated delay
-//    sleep(4);
+//    sleep(1);
     
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
@@ -1157,7 +1167,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)scrolltoComment {
-    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    NSString *currentUserId = YES ? @"50a2a61620abf55b0cb56b05" : [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
     NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
     [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
 }

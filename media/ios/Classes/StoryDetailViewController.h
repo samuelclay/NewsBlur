@@ -46,6 +46,7 @@
 - (void)scrolltoComment;
 - (void)changeWebViewWidth;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;
+- (void)checkTryFeedStory;
 - (void)setFontStyle:(NSString *)fontStyle;
 - (void)changeFontSize:(NSString *)fontSize;
 - (void)refreshComments:(NSString *)replyId;
