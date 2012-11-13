@@ -673,6 +673,8 @@
     [label setBackgroundColor:[UIColor clearColor]];
     [label setTextColor:[UIColor whiteColor]];
     [label setText:title];
+    [label setShadowOffset:CGSizeMake(0, -1)];
+    [label setShadowColor:UIColorFromRGB(0x306070)];
     [label sizeToFit];
     [navigationController.navigationBar.topItem setTitleView:label];
 }

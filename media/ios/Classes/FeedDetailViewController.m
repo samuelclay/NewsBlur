@@ -87,7 +87,8 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
             
     // set center title
-    UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+    UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
+    titleLabel.shadowColor = UIColorFromRGB(0x306070);
     self.navigationItem.titleView = titleLabel;
     
     // set right avatar title image
