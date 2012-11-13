@@ -746,41 +746,6 @@
         self.activeStory = appDelegate.activeStory;
     }
     self.activeStoryId = [self.activeStory objectForKey:@"id"];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        if (!appDelegate.isSocialView) {
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"story_feed_id"]];
-            
-            
-            UIImage *titleImage;
-            if (appDelegate.isSocialRiverView) {
-                titleImage = [UIImage imageNamed:@"group_white.png"];
-            } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
-                titleImage = [UIImage imageNamed:@"archive_white.png"];
-            } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
-                titleImage = [UIImage imageNamed:@"clock_white.png"];
-            } else if (appDelegate.isRiverView) {
-                titleImage = [UIImage imageNamed:@"folder_white.png"];
-            } else {
-                titleImage = [Utilities getImage:feedIdStr];
-            }
-
-            UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
-            titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
-            titleImageView.hidden = YES;
-            appDelegate.storyPageControl.navigationItem.titleView = titleImageView;
-            titleImageView.hidden = NO;
-        } else {
-            
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
-            UIImage *titleImage  = [Utilities getImage:feedIdStr];
-            titleImage = [Utilities roundCorneredImage:titleImage radius:6];
-            
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-            imageView.frame = CGRectMake(0.0, 0.0, 28.0, 28.0);
-            [imageView setImage:titleImage];
-            appDelegate.storyPageControl.navigationItem.titleView = imageView;
-        }
-    }
 }
 
 - (BOOL)webView:(UIWebView *)webView 

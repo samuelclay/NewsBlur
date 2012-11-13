@@ -136,6 +136,48 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
+
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        if (!appDelegate.isSocialView) {
+            UIImage *titleImage;
+            if (appDelegate.isSocialRiverView) {
+                titleImage = [UIImage imageNamed:@"group_white.png"];
+            } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
+                titleImage = [UIImage imageNamed:@"archive_white.png"];
+            } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
+                titleImage = [UIImage imageNamed:@"clock_white.png"];
+            } else if (appDelegate.isRiverView) {
+                titleImage = [UIImage imageNamed:@"folder_white.png"];
+            } else {
+                NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                                       [appDelegate.activeStory objectForKey:@"story_feed_id"]];
+                titleImage = [Utilities getImage:feedIdStr];
+            }
+            
+            UIImageView *titleImageView = [[UIImageView alloc] initWithImage:titleImage];
+            if (appDelegate.isRiverView) {
+                titleImageView.frame = CGRectMake(0.0, 2.0, 22.0, 22.0);
+            } else {
+                titleImageView.frame = CGRectMake(0.0, 2.0, 16.0, 16.0);
+            }
+            titleImageView.hidden = YES;
+            titleImageView.contentMode = UIViewContentModeScaleAspectFit;
+            self.navigationItem.titleView = titleImageView;
+            titleImageView.hidden = NO;
+        } else {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@",
+                                   [appDelegate.activeFeed objectForKey:@"id"]];
+            UIImage *titleImage  = [Utilities getImage:feedIdStr];
+            titleImage = [Utilities roundCorneredImage:titleImage radius:6];
+            
+            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+            imageView.frame = CGRectMake(0.0, 0.0, 28.0, 28.0);
+            imageView.contentMode = UIViewContentModeScaleAspectFit;
+            [imageView setImage:titleImage];
+            self.navigationItem.titleView = imageView;
+        }
+    }
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -369,8 +411,6 @@
 		nextPage = swapController;
 	}
     
-    NSLog(@"setStoryFromScroll, currentPage index: %d -- %d", currentPage.pageIndex, nearestNumber);
-
     if (currentPage.pageIndex == -1) return;
     
     nextPage.webView.scrollView.scrollsToTop = NO;

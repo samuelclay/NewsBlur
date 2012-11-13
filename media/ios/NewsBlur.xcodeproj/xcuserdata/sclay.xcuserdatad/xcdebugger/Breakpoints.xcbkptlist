@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/StoryPageControl.m"
-         timestampString = "374530790.020931"
+         timestampString = "374533637.198323"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "795"
-         endingLineNumber = "795"
+         startingLineNumber = "835"
+         endingLineNumber = "835"
          landmarkName = "-doNextStory"
          landmarkType = "5">
       </FileBreakpoint>
