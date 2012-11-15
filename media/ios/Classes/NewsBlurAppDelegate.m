@@ -583,6 +583,7 @@
     // change UIWebView
     [storyPageControl.currentPage changeWebViewWidth];
     [storyPageControl.nextPage changeWebViewWidth];
+    [storyPageControl.previousPage changeWebViewWidth];
 }
 
 - (void)calibrateStoryTitles {

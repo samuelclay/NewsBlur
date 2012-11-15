@@ -37,6 +37,7 @@
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) StoryDetailViewController *currentPage;
 @property (nonatomic) StoryDetailViewController *nextPage;
+@property (nonatomic) StoryDetailViewController *previousPage;
 @property (nonatomic, strong) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, strong) IBOutlet UIPageControl *pageControl;
 
@@ -57,6 +58,7 @@
 @property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
 @property (nonatomic) MBProgressHUD *storyHUD;
+@property (nonatomic) int scrollingToPage;
 
 @property (nonatomic, strong) WEPopoverController *popoverController;
 

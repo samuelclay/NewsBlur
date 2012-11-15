@@ -68,7 +68,7 @@
     
     self.webView.scalesPageToFit = YES;
     self.webView.multipleTouchEnabled = NO;
-    self.pageIndex = -1;
+    self.pageIndex = -2;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -113,6 +113,11 @@
 }
 
 - (void)drawStory {
+    if (self.activeStoryId == [self.activeStory objectForKey:@"id"]) {
+        NSLog(@"Already drawn story. Ignoring.");
+//        return;
+    }
+    
     NSString *shareBarString = [self getShareBar];
     NSString *commentString = [self getComments];
     NSString *headerString;
@@ -282,6 +287,8 @@
     [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
                                  options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                                  context:nil];
+
+    self.activeStoryId = [self.activeStory objectForKey:@"id"];
 }
 
 - (void)showStory {
@@ -290,10 +297,12 @@
 }
 
 - (void)clearStory {
+    self.activeStoryId = nil;
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]]];
 }
 
 - (void)hideStory {
+    self.activeStoryId = nil;
     self.webView.hidden = YES;
     self.noStorySelectedLabel.hidden = NO;
 }
@@ -745,7 +754,6 @@
     } else {
         self.activeStory = appDelegate.activeStory;
     }
-    self.activeStoryId = [self.activeStory objectForKey:@"id"];
 }
 
 - (BOOL)webView:(UIWebView *)webView 
