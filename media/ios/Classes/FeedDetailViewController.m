@@ -151,8 +151,8 @@
         int location = appDelegate.locationOfActiveStory;
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
         if (indexPath) {
-            [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-        } 
+            [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionMiddle];
+        }
         [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.4];
     }
 }
