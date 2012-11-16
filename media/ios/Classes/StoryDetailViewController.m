@@ -1186,7 +1186,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         }
                          
         [request setDidFinishSelector:@selector(finishMarkAsRead:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
+        [request setDidFailSelector:@selector(requestFailedMarkAsRead:)];
         [request setDelegate:self];
         [request startAsynchronous];
     }
@@ -1268,11 +1268,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self informError:error];
 }
 
+- (void)requestFailedMarkAsRead:(ASIHTTPRequest *)request {
+    [self informError:@"Failed marking as read"];
+}
+
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request {
-    //    NSString *responseString = [request responseString];
-    //    NSDictionary *results = [[NSDictionary alloc]
-    //                             initWithDictionary:[responseString JSONValue]];
-    //    NSLog(@"results in mark as read is %@", results);
+    if ([request responseStatusCode] != 200) {
+        [self requestFailedMarkAsRead:request];
+    }
 }
 
 - (void)openSendToDialog {

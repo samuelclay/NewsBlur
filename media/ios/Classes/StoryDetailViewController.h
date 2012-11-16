@@ -89,6 +89,7 @@ UIScrollViewDelegate> {
 - (void)subscribeToBlurblog;
 - (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)requestFailedMarkAsRead:(ASIHTTPRequest *)request;
 - (void)setActiveStory;
 - (IBAction)toggleFontSize:(id)sender;
 - (void)setFontStyle:(NSString *)fontStyle;
