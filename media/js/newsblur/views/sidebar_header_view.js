@@ -41,9 +41,9 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
             </div>\
         ', {
             feeds_count     : (this.feeds_count ? Inflector.pluralize(' site', this.feeds_count, true) : '&nbsp;'),
-            positive_count  : this.unread_counts['positive'],
-            neutral_count   : this.unread_counts['neutral'],
-            negative_count  : this.unread_counts['negative'],
+            positive_count  : this.unread_counts['ps'],
+            neutral_count   : this.unread_counts['nt'],
+            negative_count  : this.unread_counts['ng'],
             hide_read_feeds : !!hide_read_feeds
         });
             
@@ -61,7 +61,8 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     },
     
     count: function() {
-        this.unread_counts = this.count_unreads_across_all_sites();
+        // this.unread_counts = this.count_unreads_across_all_sites();
+        this.unread_counts = NEWSBLUR.assets.folders.unread_counts();
         this.feeds_count = this.count_feeds();
           
         if (NEWSBLUR.assets.preference('show_unread_counts_in_title')) {
@@ -69,16 +70,16 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
             var counts = [];
             var unread_view = _.isNumber(this.options.unread_view) && this.options.unread_view || NEWSBLUR.assets.preference('unread_view');
             if (unread_view <= -1) {
-                counts.push(this.unread_counts['negative']);
+                counts.push(this.unread_counts['ng']);
             }
             if (unread_view <= 0) {
-                counts.push(this.unread_counts['neutral']);
+                counts.push(this.unread_counts['nt']);
             }
             if (unread_view <= 1) {
-                counts.push(this.unread_counts['positive']);
+                counts.push(this.unread_counts['ps']);
             }
-            if (!this.unread_counts['negative'] && !this.unread_counts['positive']) {
-                counts = [this.unread_counts['neutral']];
+            if (!this.unread_counts['ng'] && !this.unread_counts['ps']) {
+                counts = [this.unread_counts['nt']];
             }
             title += counts.join('/') + ') NewsBlur';
             document.title = title;

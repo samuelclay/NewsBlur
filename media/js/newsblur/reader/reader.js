@@ -2029,10 +2029,20 @@
             }
             
             if (feed) {
-                NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FeedCount({model: feed}).render();
+                NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FeedCount({
+                    model: feed
+                }).render();
             } else if (folder) {
-                if (!folder.folder_view) return; // No counter for river blurblog yet.
-                NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FolderCount({collection: folder.folder_view.collection}).render();
+                var collection;
+                if (!folder.folder_view) {
+                    // River blurblog gets a special collection
+                    collection = NEWSBLUR.assets.folders;
+                } else {
+                    collection = folder.folder_view.collection;
+                }
+                NEWSBLUR.app.story_unread_counter = new NEWSBLUR.Views.FolderCount({
+                    collection: collection
+                }).render();
             }
 
             NEWSBLUR.app.story_unread_counter.$el.css({'opacity': 0});
