@@ -73,6 +73,7 @@
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
 - (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)requestFailedMarkStoryRead:(ASIHTTPRequest *)request;
 
 - (void)setNextPreviousButtons;
 - (void)markStoryAsRead;

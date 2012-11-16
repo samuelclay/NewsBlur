@@ -514,6 +514,11 @@
     [self informError:error];
 }
 
+- (void)requestFailedMarkStoryRead:(ASIHTTPRequest *)request {
+    [self informError:@"Failed to mark story as read"];
+}
+
+
 #pragma mark -
 #pragma mark Actions
 
@@ -613,7 +618,7 @@
         }
         
         [request setDidFinishSelector:@selector(finishMarkAsRead:)];
-        [request setDidFailSelector:@selector(requestFailed:)];
+        [request setDidFailSelector:@selector(requestFailedMarkStoryRead:)];
         [request setDelegate:self];
         [request startAsynchronous];
     }
@@ -621,6 +626,10 @@
 
 
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self requestFailedMarkStoryRead:request];
+    }
+    
     //    NSString *responseString = [request responseString];
     //    NSDictionary *results = [[NSDictionary alloc]
     //                             initWithDictionary:[responseString JSONValue]];
