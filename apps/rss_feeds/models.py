@@ -1469,7 +1469,11 @@ class MStarredStory(mongo.Document):
             self.story_original_content = None
         super(MStarredStory, self).save(*args, **kwargs)
     
+    @property
+    def guid_hash(self):
+        return hashlib.sha1(self.story_guid).hexdigest()
     
+
 class MFeedFetchHistory(mongo.Document):
     feed_id = mongo.IntField()
     status_code = mongo.IntField()
