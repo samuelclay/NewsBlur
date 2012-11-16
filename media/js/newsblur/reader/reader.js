@@ -2736,7 +2736,7 @@
                 var feed          = this.model.get_feed(feed_id);
                 var story         = this.model.get_story(story_id);
                 var starred_class = story.get('starred') ? ' NB-story-starred ' : '';
-                var starred_title = story.get('starred') ? 'Remove bookmark' : 'Save This Story';
+                var starred_title = story.get('starred') ? 'Unsave this story' : 'Save this story';
                 var shared_class = story.get('shared') ? ' NB-story-shared ' : '';
                 var shared_title = story.get('shared') ? 'Shared' : 'Share to your Blurblog';
                 story.story_share_menu_view = new NEWSBLUR.Views.StoryShareView({
