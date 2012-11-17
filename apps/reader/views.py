@@ -634,12 +634,21 @@ def load_starred_stories(request):
         
     mstories       = MStarredStory.objects(user_id=user.pk).order_by('-starred_date')[offset:offset+limit]
     stories        = Feed.format_stories(mstories)
+    
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
+    
+    story_ids      = [story['id'] for story in stories]
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     usersub_ids    = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids).values('feed__pk')
     usersub_ids    = [us['feed__pk'] for us in usersub_ids]
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
     unsub_feeds    = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds    = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
+    shared_stories = MSharedStory.objects(user_id=user.pk, 
+                                          story_guid__in=story_ids)\
+                                 .only('story_guid', 'shared_date', 'comments')
+    shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
+                           for story in shared_stories])
 
     for story in stories:
         story_date                 = localtime_for_timezone(story['story_date'], user.profile.timezone)
@@ -655,10 +664,17 @@ def load_starred_stories(request):
             'tags':   0,
             'title':  0,
         }
+        if story['id'] in shared_stories:
+            story['shared'] = True
+            story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
     
     logging.user(request, "~FCLoading starred stories: ~SB%s stories" % (len(stories)))
     
-    return dict(stories=stories, feeds=unsub_feeds)
+    return {
+        "stories": stories,
+        "user_profiles": user_profiles,
+        "feeds": unsub_feeds,
+    }
 
 @json.json_view
 def load_river_stories__redis(request):
