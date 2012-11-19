@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.tasks import NewFeeds
+from apps.feed_import.models import GoogleReaderImporter
 from utils import log as logging
 from utils import json_functions as json
 from utils.user_functions import generate_secret_token
@@ -168,6 +169,10 @@ class Profile(models.Model):
             stale_feeds = list(set([f.feed_id for f in stale_feeds]))
             self.queue_new_feeds(new_feeds=stale_feeds)
     
+    def import_reader_starred_items(self, count=20):
+        importer = GoogleReaderImporter(self.user)
+        importer.import_starred_items(count=count)
+        
     def send_new_user_email(self):
         if not self.user.email or not self.send_emails:
             return
