@@ -516,7 +516,7 @@ class MSocialProfile(mongo.Document):
         MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
                           email_type='new_follower')
                 
-        logging.user(user, "~BB~FR~SBSending email for new follower: %s" % follower_profile.username)
+        logging.user(user, "~BB~FM~SBSending email for new follower: %s" % follower_profile.username)
 
     def send_email_for_follow_request(self, follower_user_id):
         user = User.objects.get(pk=self.user_id)
@@ -570,7 +570,7 @@ class MSocialProfile(mongo.Document):
         MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
                           email_type='follow_request')
                 
-        logging.user(user, "~BB~FR~SBSending email for follow request: %s" % follower_profile.username)
+        logging.user(user, "~BB~FM~SBSending email for follow request: %s" % follower_profile.username)
             
     def save_feed_story_history_statistics(self):
         """
@@ -1645,7 +1645,7 @@ class MSharedStory(mongo.Document):
         social_service = MSocialServices.objects.get(user_id=self.user_id)
         user = User.objects.get(pk=self.user_id)
         
-        logging.user(user, "~BM~FBPosting to %s: ~SB%s" % (service, message))
+        logging.user(user, "~BM~FGPosting to %s: ~SB%s" % (service, message))
         
         if service == 'twitter':
             posted = social_service.post_to_twitter(message)
@@ -1952,18 +1952,18 @@ class MSocialServices(mongo.Document):
 
     def sync_twitter_friends(self):
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRTwitter import starting...")
+        logging.user(user, "~BG~FMTwitter import starting...")
         
         api = self.twitter_api()
         if not api:
-            logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no api access.")
+            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: no api access.")
             self.syncing_twitter = False
             self.save()
             return
             
         friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
         if not friend_ids:
-            logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no friend_ids.")
+            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: no friend_ids.")
             self.syncing_twitter = False
             self.save()
             return
@@ -2013,24 +2013,24 @@ class MSocialServices(mongo.Document):
         #         followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BM~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
+        logging.user(user, "~BG~FMTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
         
         return following
         
     def sync_facebook_friends(self):
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRFacebook import starting...")
+        logging.user(user, "~BG~FMFacebook import starting...")
         
         graph = self.facebook_api()
         if not graph:
-            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no api access.")
+            logging.user(user, "~BG~FMFacebook import ~SBfailed~SN: no api access.")
             self.syncing_facebook = False
             self.save()
             return
 
         friends = graph.get_connections("me", "friends")
         if not friends:
-            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no friend_ids.")
+            logging.user(user, "~BG~FMFacebook import ~SBfailed~SN: no friend_ids.")
             self.syncing_facebook = False
             self.save()
             return
@@ -2080,7 +2080,7 @@ class MSocialServices(mongo.Document):
         #         followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRFacebook import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.facebook_friend_ids), len(following), followers))
+        logging.user(user, "~BG~FMFacebook import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.facebook_friend_ids), len(following), followers))
         
         return following
         
