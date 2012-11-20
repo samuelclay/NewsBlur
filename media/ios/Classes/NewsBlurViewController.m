@@ -729,23 +729,20 @@ static const CGFloat kFolderTitleHeight = 28;
         
     FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];    
     if (cell == nil) {
-        cell = [[FeedTableCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:CellIdentifier];
-        cell.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+        cell = [[FeedTableCell alloc]
+                initWithStyle:UITableViewCellStyleDefault
+                reuseIdentifier:CellIdentifier];
+        cell.appDelegate = appDelegate;
     }
-    
-
     
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
     NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
     int location = [[activeFolderFeeds objectAtIndex:indexPath.row] intValue];
-    id feedId = [feeds objectAtIndex:location];
-    
+    id feedId = [feeds objectAtIndex:location];    
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
-    
 
-    
     if (isSocial) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
         cell.feedFavicon = [Utilities getImage:feedIdStr isSocial:YES];
@@ -758,6 +755,8 @@ static const CGFloat kFolderTitleHeight = 28;
     cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];
     cell.negativeCount = [[feed objectForKey:@"ng"] intValue];
     cell.isSocial      = isSocial;
+    
+    [cell setNeedsDisplay];
     
     return cell;
 }

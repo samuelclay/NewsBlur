@@ -125,21 +125,15 @@
 - (IBAction)doToggleButton:(id)sender {
     UIButton *button = (UIButton *)sender;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    if (button.selected) {
-        button.selected = NO;
-        if ([[button currentTitle] isEqualToString: @"Facebook"]) {
-            [userPreferences setInteger:0 forKey:@"shareToFacebook"];
-        } else if ([[button currentTitle] isEqualToString: @"Twitter"]) {
-            [userPreferences setInteger:0 forKey:@"shareToTwitter"];
-        }
-    } else {
-        button.selected = YES;
-        if ([[button currentTitle] isEqualToString: @"Facebook"]) {
-            [userPreferences setInteger:1 forKey:@"shareToFacebook"];
-        } else if ([[button currentTitle] isEqualToString: @"Twitter"]) {
-            [userPreferences setInteger:1 forKey:@"shareToTwitter"];
-        }
+    button.selected = !button.selected;
+    int selected = button.selected ? 1 : 0;
+    
+    if (button.tag == 1) {
+        [userPreferences setInteger:selected forKey:@"shareToTwitter"];
+    } else if (button.tag == 2) {
+        [userPreferences setInteger:selected forKey:@"shareToFacebook"];
     }
+    
     [userPreferences synchronize];
 }
 

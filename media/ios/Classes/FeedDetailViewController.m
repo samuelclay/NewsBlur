@@ -1149,6 +1149,7 @@
 }
 
 - (void)changeActiveFeedDetailRow {
+    NSLog(@"changeActiveFeedDetailRow in feed detail view");
     int rowIndex = [appDelegate locationOfActiveStory];
                     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];

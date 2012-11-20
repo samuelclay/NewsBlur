@@ -222,7 +222,7 @@
     nextPage.pageIndex = -2;
     previousPage.pageIndex = -2;
     
-    self.scrollView.contentOffset = CGPointMake(0, 0);
+//    self.scrollView.contentOffset = CGPointMake(0, 0);
 }
 
 - (void)refreshPages {
@@ -283,7 +283,6 @@
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
     
 	if (!outOfBounds) {
-//        NSLog(@"Apply index was: %d, now %d", pageController.pageIndex, newIndex);
 		CGRect pageFrame = pageController.view.frame;
 		pageFrame.origin.y = 0;
 		pageFrame.origin.x = self.scrollView.frame.size.width * newIndex;
@@ -321,7 +320,8 @@
         int location = [appDelegate indexFromLocation:pageController.pageIndex];
         [pageController setActiveStoryAtIndex:location];
         [pageController clearStory];
-        if (self.isDraggingScrollview || abs(newIndex - self.scrollingToPage) <= 1) {
+        if (self.isDraggingScrollview ||
+            abs(newIndex - self.scrollingToPage) <= 1) {
             [pageController initStory];
             [pageController drawStory];
         } else {
@@ -405,14 +405,18 @@
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if (keyPath == @"contentOffset" && self.isDraggingScrollview) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        keyPath == @"contentOffset" &&
+        self.isDraggingScrollview) {
         CGFloat pageWidth = self.scrollView.frame.size.width;
         float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
         NSInteger nearestNumber = lround(fractionalPage);
         
         int storyIndex = [appDelegate indexFromLocation:nearestNumber];
-        appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
-        [appDelegate changeActiveFeedDetailRow];
+        if (storyIndex != [appDelegate indexOfActiveStory]) {
+            appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
+            [appDelegate changeActiveFeedDetailRow];
+        }
     }
 }
 
@@ -446,6 +450,9 @@
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	NSInteger nearestNumber = lround(fractionalPage);
     
+    if (currentPage.pageIndex == nearestNumber ||
+        currentPage.pageIndex == -1) return;
+    
 	if (currentPage.pageIndex < nearestNumber) {
         NSLog(@"Swap next into current, current into previous: %d / %d", currentPage.pageIndex, nearestNumber);
 		StoryDetailViewController *swapCurrentController = currentPage;
@@ -463,7 +470,6 @@
     }
     
     NSLog(@"Set Story from scroll: %f = %d (%d/%d/%d)", fractionalPage, nearestNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
-    if (currentPage.pageIndex == -1) return;
     
     nextPage.webView.scrollView.scrollsToTop = NO;
     previousPage.webView.scrollView.scrollsToTop = NO;
@@ -490,15 +496,15 @@
     [appDelegate changeActiveFeedDetailRow];
     
     if (self.currentPage.pageIndex != location) {
-        NSLog(@"Updating Current: %d", location);
+        NSLog(@"Updating Current: from %d to %d", currentPage.pageIndex, location);
         [self applyNewIndex:location pageController:self.currentPage];
     }
     if (self.nextPage.pageIndex != location+1) {
-        NSLog(@"Updating Next: %d", location+1);
+        NSLog(@"Updating Next: from %d to %d", nextPage.pageIndex, location+1);
         [self applyNewIndex:location+1 pageController:self.nextPage];
     }
     if (self.previousPage.pageIndex != location-1) {
-        NSLog(@"Updating Previous: %d", location-1);
+        NSLog(@"Updating Previous: from %d to %d", previousPage.pageIndex, location-1);
         [self applyNewIndex:location-1 pageController:self.previousPage];
     }
 }
