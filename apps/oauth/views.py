@@ -150,7 +150,7 @@ def follow_twitter_account(request):
     code = 1
     message = "OK"
     
-    logging.user(request, "~BB~FRFollowing Twitter: %s" % username)
+    logging.user(request, "~BB~FR~SKFollowing Twitter: %s" % username)
     
     if username not in ['samuelclay', 'newsblur']:
         return HttpResponseForbidden

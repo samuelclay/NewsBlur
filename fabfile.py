@@ -50,13 +50,13 @@ env.roledefs ={
              # 'task02.newsblur.com', 
              'task03.newsblur.com', 
              'task04.newsblur.com', 
-             'task05.newsblur.com', 
-             'task06.newsblur.com', 
-             'task07.newsblur.com',
-             # 'task08.newsblur.com',
-             # 'task09.newsblur.com',
-             # 'task10.newsblur.com',
-             # 'task11.newsblur.com',
+             # 'task05.newsblur.com', 
+             # 'task06.newsblur.com', 
+             # 'task07.newsblur.com',
+             'task08.newsblur.com',
+             'task09.newsblur.com',
+             'task10.newsblur.com',
+             'task11.newsblur.com',
              ],
     'ec2task': ['ec2-54-242-38-48.compute-1.amazonaws.com',
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
@@ -236,6 +236,8 @@ def backup_mongo():
         run('python backup_mongo.py')
 
 def backup_postgresql():
+    # 0 4 * * * python /home/sclay/newsblur/utils/backups/backup_psql.py
+    # 0 * * * * sudo find /var/lib/postgresql/9.1/archive -mtime +1 -exec rm {} \;
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         # run('./postgresql_backup.sh')
         run('python backup_psql.py')

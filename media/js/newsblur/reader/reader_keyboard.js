@@ -175,6 +175,9 @@ NEWSBLUR.ReaderKeyboard.prototype = {
               $.make('div', { className: 'NB-keyboard-shortcut' }, [
                 $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Return to dashboard'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'esc'
+                ]),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
                     'd'
                 ])
               ]),

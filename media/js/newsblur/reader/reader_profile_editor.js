@@ -65,15 +65,15 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                             $.make('label', { 'for': 'NB-profile-bio' }, 'Bio'),
                             $.make('input', { id: 'NB-profile-bio', name: 'bio', type: 'text', className: 'NB-input', style: 'width: 520px', value: this.profile.get('bio'), "data-max": 160 }),
                             $.make('span', { className: 'NB-count NB-count-bio' }),
-                            (NEWSBLUR.Globals.is_admin && $.make('label', { 'for': 'NB-profile-privacy-public' }, [
+                            $.make('label', { 'for': 'NB-profile-privacy-public' }, [
                                 'Privacy',
                                 (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-profile-privacy-notpremium' }, [
                                     'You must have a ',
                                     $.make('div', { className: 'NB-splash-link NB-premium' }, 'premium account'),
                                     ' to change privacy.'
                                 ]))
-                            ])),
-                            (NEWSBLUR.Globals.is_admin && $.make('div', { className: 'NB-profile-privacy-options' }, [
+                            ]),
+                            $.make('div', { className: 'NB-profile-privacy-options' }, [
                                 $.make('div', { className: 'NB-profile-privacy-option' }, [
                                     $.make('input', { 
                                         id: 'NB-profile-privacy-public', 
@@ -121,7 +121,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                         $.make('span', 'Only people I approve can see my shared stories and reply to me')
                                     ])
                                 ])
-                            ]))
+                            ])
                         ])
                     ])
                 ]),

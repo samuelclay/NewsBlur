@@ -8444,7 +8444,7 @@ form.opml_import_form input {
     width: 100%;
 }
 .NB-profile-badge td {
-    vertical-align: middle;
+    vertical-align: top;
 }
 .NB-profile-badge td.NB-profile-badge-info {
     width: 100%;

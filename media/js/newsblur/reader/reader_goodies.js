@@ -156,15 +156,20 @@ NEWSBLUR.ReaderGoodies.prototype = {
 
         $.targetIs(e, { tagSelector: '.NB-goodies-firefox-link' }, function($t, $p) {
             e.preventDefault();
-
+            var host = [
+                document.location.protocol,
+                '//',
+                document.location.host,
+                '/'
+            ].join('');
             navigator.registerContentHandler("application/vnd.mozilla.maybe.feed",
-                                             document.location +"?url=%s",
+                                             host + "?url=%s",
                                              "NewsBlur");
             navigator.registerContentHandler("application/atom+xml",
-                                             document.location +"?url=%s",
+                                             host + "?url=%s",
                                              "NewsBlur");
             navigator.registerContentHandler("application/rss+xml",
-                                             document.location +"?url=%s",
+                                             host + "?url=%s",
                                              "NewsBlur");
         });
 

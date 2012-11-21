@@ -49,12 +49,12 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
     add: function(options) {
         if (options.added) {
             var collection = this.collection;
-            var $stories = _.map(this.collection.models.slice(-1 * options.added), function(story) {
+            var $stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function(story) {
                 return new NEWSBLUR.Views.StoryDetailView({
                     model: story,
                     collection: collection
                 }).render().el;
-            });
+            }));
             this.$el.append($stories);
         } else {
             this.show_no_more_stories();
