@@ -1359,18 +1359,42 @@ static const CGFloat kFolderTitleHeight = 28;
     
     NSMutableDictionary *updatedDictFeeds = [appDelegate.dictFeeds mutableCopy];    
     NSDictionary *newFeedCounts = [results objectForKey:@"feeds"];
+    NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
     for (id feed in newFeedCounts) {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
         NSMutableDictionary *newFeed = [[appDelegate.dictFeeds objectForKey:feedIdStr] mutableCopy];
         NSMutableDictionary *newFeedCount = [newFeedCounts objectForKey:feed];
 
         if ([newFeed isKindOfClass:[NSDictionary class]]) {
-            
+            // Check if a feed goes from visible to hidden, but doesn't disappear.
+            if ((intelligenceLevel > 0 &&
+                 [[newFeed objectForKey:@"ps"] intValue] > 0 &&
+                 [[newFeedCount objectForKey:@"ps"] intValue] == 0) ||
+                (intelligenceLevel == 0 &&
+                 ([[newFeed objectForKey:@"ps"] intValue] > 0 || [[newFeed objectForKey:@"nt"] intValue] > 0) &&
+                 [[newFeedCount objectForKey:@"ps"] intValue] == 0 &&
+                 [[newFeedCount objectForKey:@"nt"] intValue] == 0)) {
+                NSIndexPath *indexPath;
+                for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
+                    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
+                    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+                    NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+                    for (int l=0; l < [activeFolderFeeds count]; l++) {
+                        if ([[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] intValue] == [feed intValue]) {
+                            indexPath = [NSIndexPath indexPathForRow:l inSection:s];
+                        }
+                    }
+                }
+                if (indexPath) {
+                    [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
+                }
+            }
             [newFeed setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
             [newFeed setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
             [newFeed setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
             [updatedDictFeeds setObject:newFeed forKey:feedIdStr];
         }
+        
     }
     
     NSMutableDictionary *updatedDictSocialFeeds = [appDelegate.dictSocialFeeds mutableCopy]; 
