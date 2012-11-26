@@ -192,10 +192,18 @@ def staging_full():
 
 @parallel
 def celery():
+    celery_slow()
+    
+def celery_slow():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')
     celery_stop()
     celery_start()
+
+def celery_fast():
+    with cd(env.NEWSBLUR_PATH):
+        run('git pull')
+    celery_reload()
 
 @parallel
 def celery_stop():
@@ -208,6 +216,12 @@ def celery_stop():
 def celery_start():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl start celery')
+        run('tail logs/newsblur.log')
+
+@parallel
+def celery_reload():
+    with cd(env.NEWSBLUR_PATH):
+        run('sudo supervisorctl reload celery')
         run('tail logs/newsblur.log')
 
 def kill_celery():
