@@ -182,13 +182,14 @@ class Feed(models.Model):
             return self
         except IntegrityError:
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address, feed_link=self.feed_link)
-            logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
-            logging.debug(' ***> [%-30s] Feed deleted.' % (unicode(self)[:30]))
             if duplicate_feed:
                 if self.pk != duplicate_feed[0].pk:
-                    merge_feeds(self.pk, duplicate_feed[0].pk)
+                    merge_feeds(self.pk, duplicate_feed[0].pk, force=True)
                 return duplicate_feed[0]
+
             # Feed has been deleted. Just ignore it.
+            logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
+            logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
             return
     
     def sync_redis(self):
@@ -1596,9 +1597,13 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         return
         
     logging.info(" ---> Feed: [%s - %s] %s - %s" % (original_feed_id, duplicate_feed_id,
-                                             original_feed, original_feed.feed_link))
-    logging.info("            --> %s / %s" % (original_feed.feed_address, original_feed.feed_link))
-    logging.info("            --> %s / %s" % (duplicate_feed.feed_address, duplicate_feed.feed_link))
+                                                    original_feed, original_feed.feed_link))
+    logging.info("            ++> %s: %s / %s" % (original_feed.pk, 
+                                                  original_feed.feed_address,
+                                                  original_feed.feed_link))
+    logging.info("            --> %s: %s / %s" % (duplicate_feed.pk,
+                                                  duplicate_feed.feed_address,
+                                                  duplicate_feed.feed_link))
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed)
     for user_sub in user_subs:
@@ -1629,9 +1634,13 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         dupe_feed.feed = original_feed
         dupe_feed.duplicate_feed_id = duplicate_feed.pk
         dupe_feed.save()
-        
+    
+    logging.debug(' ---> Dupe subscribers: %s, Original subscribers: %s' %
+                  (duplicate_feed.num_subscribers, original_feed.num_subscribers))
     duplicate_feed.delete()
     original_feed.count_subscribers()
+    logging.debug(' ---> Now original subscribers: %s' %
+                  (original_feed.num_subscribers))
     
     MSharedStory.switch_feed(original_feed_id, duplicate_feed_id)
     
