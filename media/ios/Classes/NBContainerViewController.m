@@ -541,7 +541,6 @@
         [self transitionFromShareView];
     }
     
-    [self.storyPageControl resetPages];
     self.feedDetailIsVisible = NO;
     CGRect vb = [self.view bounds];
     

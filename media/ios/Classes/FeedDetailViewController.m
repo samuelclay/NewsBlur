@@ -211,6 +211,7 @@
     self.pageFetching = NO;
     self.pageFinished = NO;
     self.feedPage = 1;
+    [appDelegate.storyPageControl resetPages];
 }
 
 - (void)reloadPage {

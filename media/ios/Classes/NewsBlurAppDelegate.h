@@ -101,6 +101,7 @@
     
     int feedDetailPortraitYCoordinate;
     int storyCount;
+    int storyLocationsCount;
     int originalStoryCount;
     NSInteger selectedIntelligence;
     int visibleUnreadCount;
@@ -181,6 +182,7 @@
 @property (readwrite) NSURL * activeOriginalStoryURL;
 @property (readwrite) int feedDetailPortraitYCoordinate;
 @property (readwrite) int storyCount;
+@property (readwrite) int storyLocationsCount;
 @property (readwrite) int originalStoryCount;
 @property (readwrite) int visibleUnreadCount;
 @property (readwrite) int savedStoriesCount;

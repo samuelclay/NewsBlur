@@ -1137,14 +1137,14 @@
 		431B857215A131B200DCE497 /* Feed-Detail */ = {
 			isa = PBXGroup;
 			children = (
-				FF2D8CE214893BBF00057B80 /* MoveSiteViewController.h */,
-				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
-				7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */,
-				7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */,
 				787A0CD811CE65330056422D /* FeedDetailViewController.h */,
 				787A0CD911CE65330056422D /* FeedDetailViewController.m */,
+				7843F50311EEB1A000675F64 /* FeedDetailTableCell.h */,
+				7843F50411EEB1A000675F64 /* FeedDetailTableCell.m */,
 				FFDE35E8162799B90034BFDE /* FeedDetailMenuViewController.h */,
 				FFDE35E9162799B90034BFDE /* FeedDetailMenuViewController.m */,
+				FF2D8CE214893BBF00057B80 /* MoveSiteViewController.h */,
+				FF2D8CE314893BBF00057B80 /* MoveSiteViewController.m */,
 			);
 			name = "Feed-Detail";
 			sourceTree = "<group>";

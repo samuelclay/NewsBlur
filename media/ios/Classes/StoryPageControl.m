@@ -35,7 +35,6 @@
 @synthesize buttonNext;
 @synthesize buttonAction;
 @synthesize activity;
-@synthesize buttonNextStory;
 @synthesize fontSettingsButton;
 @synthesize originalStoryButton;
 @synthesize subscribeButton;
@@ -95,7 +94,6 @@
     self.fontSettingsButton = settingsButton;
     
     // original button for iPhone
-    
     UIBarButtonItem *originalButton = [[UIBarButtonItem alloc]
                                        initWithTitle:@"Original"
                                        style:UIBarButtonItemStyleBordered
@@ -200,7 +198,7 @@
 }
 
 - (void)transitionFromFeedDetail {
-    [self performSelector:@selector(resetPages) withObject:self afterDelay:0.5];
+//    [self performSelector:@selector(resetPages) withObject:self afterDelay:0.5];
     [appDelegate.masterContainerViewController transitionFromFeedDetail];
 }
 
@@ -212,17 +210,18 @@
     NSLog(@"resetPages");
     [currentPage clearStory];
     [nextPage clearStory];
-//    [previousPage clearStory];
+    [previousPage clearStory];
 
     [currentPage hideStory];
     [nextPage hideStory];
-//    [previousPage hideStory];
+    [previousPage hideStory];
 
     currentPage.pageIndex = -2;
     nextPage.pageIndex = -2;
     previousPage.pageIndex = -2;
     
-//    self.scrollView.contentOffset = CGPointMake(0, 0);
+    CGRect frame = self.scrollView.frame;
+    self.scrollView.contentSize = frame.size;
 }
 
 - (void)refreshPages {
@@ -239,7 +238,7 @@
 }
 
 - (void)resizeScrollView {
-    NSInteger widthCount = self.appDelegate.storyCount;
+    NSInteger widthCount = self.appDelegate.storyLocationsCount;
 	if (widthCount == 0) {
 		widthCount = 1;
 	}
@@ -299,9 +298,9 @@
     
     int wasIndex = pageController.pageIndex;
 	pageController.pageIndex = newIndex;
-    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d)", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
+    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.activeFeedStoryLocations count]);
     
-    if (newIndex >= [appDelegate.activeFeedStoryLocations count]) {
+    if (newIndex > 0 && newIndex >= [appDelegate.activeFeedStoryLocations count]) {
         if (self.appDelegate.feedDetailViewController.feedPage < 50 &&
             !self.appDelegate.feedDetailViewController.pageFinished &&
             !self.appDelegate.feedDetailViewController.pageFetching) {
@@ -325,6 +324,7 @@
             [pageController initStory];
             [pageController drawStory];
         } else {
+            [pageController clearStory];
             NSLog(@"Skipping drawing %d (waiting for %d)", newIndex, self.scrollingToPage);
         }
     } else if (outOfBounds) {
@@ -333,12 +333,10 @@
     
     [self resizeScrollView];
     [self.loadingIndicator stopAnimating];
-    
-    
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender {
-    [sender setContentOffset:CGPointMake(sender.contentOffset.x, 0)];
+//    [sender setContentOffset:CGPointMake(sender.contentOffset.x, 0)];
     CGFloat pageWidth = self.scrollView.frame.size.width;
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	
@@ -346,6 +344,9 @@
 	NSInteger upperNumber = lowerNumber + 1;
 	NSInteger previousNumber = lowerNumber - 1;
 	
+    int storyCount = [appDelegate.activeFeedStoryLocations count];
+    if (storyCount == 0 || lowerNumber > storyCount) return;
+    
 //    NSLog(@"Did Scroll: %f = %d (%d/%d/%d)", fractionalPage, lowerNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
 	if (lowerNumber == currentPage.pageIndex) {
 		if (upperNumber != nextPage.pageIndex) {
@@ -362,7 +363,6 @@
             NSLog(@"Prev was %d, now %d (B)", previousPage.pageIndex, previousNumber);
 			[self applyNewIndex:lowerNumber pageController:previousPage];
 		}
-        [self setStoryFromScroll];
 	} else {
         // Going forwards
 		if (lowerNumber == nextPage.pageIndex) {
@@ -376,13 +376,17 @@
 			[self applyNewIndex:previousNumber pageController:previousPage];
 		} else {
             NSLog(@"Next was %d, now %d (C3)", nextPage.pageIndex, upperNumber);
+            NSLog(@"Current was %d, now %d (C3)", currentPage.pageIndex, lowerNumber);
             NSLog(@"Prev was %d, now %d (C3)", previousPage.pageIndex, previousNumber);
 			[self applyNewIndex:lowerNumber pageController:currentPage];
 			[self applyNewIndex:upperNumber pageController:nextPage];
-//			[self applyNewIndex:previousNumber pageController:previousPage];
+			[self applyNewIndex:previousNumber pageController:previousPage];
 		}
-        [self setStoryFromScroll];
 	}
+    
+//    if (self.isDraggingScrollview) {
+        [self setStoryFromScroll];
+//    }
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -425,6 +429,7 @@
 }
 
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated {
+    NSLog(@"changePage to %d (animated: %d)", pageIndex, animated);
 	// update the scroll view to the appropriate page
     [self resizeScrollView];
 
@@ -446,12 +451,20 @@
 }
 
 - (void)setStoryFromScroll {
+    [self setStoryFromScroll:NO];
+}
+
+- (void)setStoryFromScroll:(BOOL)force {
     CGFloat pageWidth = self.scrollView.frame.size.width;
     float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	NSInteger nearestNumber = lround(fractionalPage);
     
-    if (currentPage.pageIndex == nearestNumber ||
-        currentPage.pageIndex == -1) return;
+    if (!force && currentPage.pageIndex > 0 &&
+        currentPage.pageIndex == nearestNumber &&
+        currentPage.pageIndex != self.scrollingToPage) {
+        NSLog(@"Skipping setStoryFromScroll: currentPage is %d (%d, %d)", currentPage.pageIndex, nearestNumber, self.scrollingToPage);
+        return;
+    }
     
 	if (currentPage.pageIndex < nearestNumber) {
         NSLog(@"Swap next into current, current into previous: %d / %d", currentPage.pageIndex, nearestNumber);
@@ -474,11 +487,17 @@
     nextPage.webView.scrollView.scrollsToTop = NO;
     previousPage.webView.scrollView.scrollsToTop = NO;
     currentPage.webView.scrollView.scrollsToTop = YES;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        appDelegate.feedDetailViewController.storyTitlesTable.scrollsToTop = NO;
+    }
     self.scrollView.scrollsToTop = NO;
     
-    int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
-    appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
-    [self updatePageWithActiveStory:currentPage.pageIndex];
+    if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
+        self.scrollingToPage = -1;
+        int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
+        appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
+        [self updatePageWithActiveStory:currentPage.pageIndex];
+    }
 }
 
 - (void)updatePageWithActiveStory:(int)location {
@@ -882,46 +901,6 @@
          animated:YES];
         [appDelegate hideStoryDetailView];
     } else {
-        [self changePage:nextLocation];
-    }
-}
-
-- (IBAction)doNextStory {
-    
-    int nextLocation = [appDelegate locationOfNextStory];
-    
-    [self.loadingIndicator stopAnimating];
-    
-    if (self.appDelegate.feedDetailViewController.pageFetching) {
-        return;
-    }
-    
-    if (nextLocation == -1 &&
-        self.appDelegate.feedDetailViewController.feedPage < 50 &&
-        !self.appDelegate.feedDetailViewController.pageFinished &&
-        !self.appDelegate.feedDetailViewController.pageFetching) {
-        
-        // Fetch next page and see if it has the unreads.
-        [self.loadingIndicator startAnimating];
-        self.activity.customView = self.loadingIndicator;
-        [self.appDelegate.feedDetailViewController fetchNextPage:^() {
-            [self doNextStory];
-        }];
-    } else if (nextLocation == -1) {
-        [MBProgressHUD hideHUDForView:self.view animated:NO];
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        hud.mode = MBProgressHUDModeText;
-        hud.removeFromSuperViewOnHide = YES;
-        hud.labelText = @"No stories left";
-        [hud hide:YES afterDelay:0.8];
-    } else {
-//        [appDelegate setActiveStory:[[appDelegate activeFeedStories]
-//                                     objectAtIndex:nextLocation]];
-//        [appDelegate pushReadStory:[appDelegate.activeStory objectForKey:@"id"]];
-//        
-//        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//            [appDelegate changeActiveFeedDetailRow];
-//        }
         [self changePage:nextLocation];
     }
 }

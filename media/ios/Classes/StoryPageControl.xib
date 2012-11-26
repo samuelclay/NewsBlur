@@ -73,15 +73,6 @@
 								<int key="IBUIStyle">1</int>
 								<reference key="IBUIToolbar" ref="945643081"/>
 							</object>
-							<object class="IBUIBarButtonItem" id="890347356">
-								<object class="NSCustomResource" key="IBUIImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">06-arrow-south.png</string>
-								</object>
-								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<int key="IBUIStyle">1</int>
-								<reference key="IBUIToolbar" ref="945643081"/>
-							</object>
 							<object class="IBUIBarButtonItem" id="235335976">
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								<reference key="IBUIToolbar" ref="945643081"/>
@@ -199,14 +190,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">buttonNextStory</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="890347356"/>
-					</object>
-					<int key="connectionID">54</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">progressView</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="692825750"/>
@@ -236,14 +219,6 @@
 						<reference key="destination" ref="372490531"/>
 					</object>
 					<int key="connectionID">27</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">doNextStory</string>
-						<reference key="source" ref="890347356"/>
-						<reference key="destination" ref="372490531"/>
-					</object>
-					<int key="connectionID">58</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
@@ -294,8 +269,8 @@
 						<reference key="object" ref="179724038"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="757323871"/>
-							<reference ref="945643081"/>
 							<reference ref="415445951"/>
+							<reference ref="945643081"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -314,7 +289,6 @@
 							<reference ref="1000698832"/>
 							<reference ref="558400182"/>
 							<reference ref="33555139"/>
-							<reference ref="890347356"/>
 							<reference ref="235335976"/>
 						</array>
 						<reference key="parent" ref="179724038"/>
@@ -348,11 +322,6 @@
 						<reference key="parent" ref="945643081"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">41</int>
-						<reference key="object" ref="890347356"/>
-						<reference key="parent" ref="945643081"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">40</int>
 						<reference key="object" ref="235335976"/>
 						<reference key="parent" ref="945643081"/>
@@ -380,7 +349,6 @@
 				<string key="38.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="39.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="40.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<string key="41.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="42.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="43.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="44.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1850,10 +1818,6 @@
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaTouchFramework</string>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
-		<object class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="NS.key.0">06-arrow-south.png</string>
-			<string key="NS.object.0">{10, 12}</string>
-		</object>
 		<string key="IBCocoaTouchPluginVersion">1926</string>
 	</data>
 </archive>

@@ -50,7 +50,6 @@
 @property (nonatomic) UIBarButtonItem *buttonBack;
 @property (nonatomic) IBOutlet UIBarButtonItem *activity;
 @property (nonatomic) IBOutlet UIBarButtonItem *buttonAction;
-@property (nonatomic) IBOutlet UIBarButtonItem *buttonNextStory;
 @property (nonatomic) IBOutlet UIToolbar *bottomPlaceholderToolbar;
 @property (nonatomic) IBOutlet UIBarButtonItem *fontSettingsButton;
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
@@ -69,6 +68,7 @@
 - (void)resetPages;
 - (void)refreshPages;
 - (void)setStoryFromScroll;
+- (void)setStoryFromScroll:(BOOL)force;
 - (void)updatePageWithActiveStory:(int)location;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;
@@ -93,7 +93,6 @@
 
 - (IBAction)showOriginalSubview:(id)sender;
 - (IBAction)doNextUnreadStory;
-- (IBAction)doNextStory;
 - (IBAction)doPreviousStory;
 - (IBAction)tapProgressBar:(id)sender;
 

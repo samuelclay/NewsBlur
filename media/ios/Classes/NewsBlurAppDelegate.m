@@ -100,6 +100,7 @@
 @synthesize activeFeedUserProfiles;
 @synthesize activeStory;
 @synthesize storyCount;
+@synthesize storyLocationsCount;
 @synthesize visibleUnreadCount;
 @synthesize savedStoriesCount;
 @synthesize originalStoryCount;
@@ -965,6 +966,7 @@
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
     self.storyCount = [self.activeFeedStories count];
     [self calculateStoryLocations];
+    self.storyLocationsCount = [self.activeFeedStoryLocations count];
 }
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
@@ -973,6 +975,7 @@
     self.recentlyReadStories = [NSMutableArray array];
     self.recentlyReadFeeds = [NSMutableSet set];
     [self calculateStoryLocations];
+    self.storyLocationsCount = [self.activeFeedStoryLocations count];
 }
 
 - (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue{
