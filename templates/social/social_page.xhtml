@@ -10,6 +10,21 @@
     <link rel="icon" href="{{ social_profile.photo_url }}">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1.5">
     
+    {% if active_story %}
+        <meta property="fb:app_id"               content="{{ facebook_app_id }}"> 
+        <meta property="og:type"                 content="website"> 
+        <meta property="og:url"                  content="{{ active_story.blurblog_permalink }}">
+        {% if active_story.feed %}
+        <meta property="og:site_name"            content="{{ active_story.feed.feed_title }}">
+        {% endif %}
+        <meta property="og:image"                content="{{ active_story.image_url }}">
+        <meta property="og:title"                content="{{ active_story.story_title }}">
+        <meta property="og:description"          content="{{ active_story.story_content|addslashes|safe }}"> 
+        <meta property="article:published_time"  content="{{ active_story.iso8601 }}"> 
+        <meta property="article:author"          content="{{ active_story.story_authors }}">
+        <meta property="article:tag"             content="{{ active_story.tags }}">    
+    {% endif %}
+    
     {% include_stylesheets "blurblog" %}
     
     {% if social_profile.custom_css %}

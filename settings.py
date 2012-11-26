@@ -221,7 +221,6 @@ INSTALLED_APPS = (
     'django_extensions',
     'djcelery',
     'django_ses',
-    'raven.contrib.django',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
@@ -246,6 +245,7 @@ INSTALLED_APPS = (
 if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
+        'raven.contrib.django',
     )
 
 # ==========
@@ -415,6 +415,7 @@ REDIS = {
 
 FACEBOOK_APP_ID = '111111111111111'
 FACEBOOK_SECRET = '99999999999999999999999999999999'
+FACEBOOK_NAMESPACE = 'newsblur'
 TWITTER_CONSUMER_KEY = 'ooooooooooooooooooooo'
 TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 

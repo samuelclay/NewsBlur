@@ -10,7 +10,8 @@ NEWSBLUR.Views.FollowRequestsModule = Backbone.View.extend({
     },
     
     start_polling: function() {
-        if (NEWSBLUR.assets.user_profile.get('protected')) {
+        if (NEWSBLUR.assets.user_profile.get('protected') && 
+            NEWSBLUR.Globals.is_authenticated) {
             this.poll = setInterval(_.bind(function() {
                 this.fetch_follow_requests();
             }, this), this.POLL_INTERVAL);
