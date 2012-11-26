@@ -1144,6 +1144,7 @@ class MSharedStory(mongo.Document):
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField(unique_with=('user_id',))
+    story_guid_hash          = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     posted_to_services       = mongo.ListField(mongo.StringField(max_length=20))
     mute_email_users         = mongo.ListField(mongo.IntField())
@@ -1173,7 +1174,13 @@ class MSharedStory(mongo.Document):
 
     @property
     def guid_hash(self):
-        return hashlib.sha1(self.story_guid).hexdigest()
+        if self.story_guid_hash:
+            return self.story_guid_hash
+        
+        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()
+        self.save()
+        
+        return self.story_guid_hash
     
     def to_json(self):
         return {
@@ -1194,7 +1201,8 @@ class MSharedStory(mongo.Document):
         if self.story_original_content:
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
-        
+
+        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()
         self.story_title = strip_tags(self.story_title)
         
         self.comments = linkify(strip_tags(self.comments))
@@ -1626,13 +1634,14 @@ class MSharedStory(mongo.Document):
             self.guid_hash[:6]
         )
     
-    def generate_post_to_service_message(self):
+    def generate_post_to_service_message(self, include_url=True):
         message = self.comments
         if not message or len(message) < 1:
             message = self.story_title
         
-        message = truncate_chars(message, 116)
-        message += " " + self.blurblog_permalink()
+        if include_url:
+            message = truncate_chars(message, 116)
+            message += " " + self.blurblog_permalink()
         
         return message
         
@@ -1641,16 +1650,16 @@ class MSharedStory(mongo.Document):
             return
 
         posted = False
-        message = self.generate_post_to_service_message()
         social_service = MSocialServices.objects.get(user_id=self.user_id)
         user = User.objects.get(pk=self.user_id)
         
+        message = self.generate_post_to_service_message()
         logging.user(user, "~BM~FGPosting to %s: ~SB%s" % (service, message))
         
         if service == 'twitter':
-            posted = social_service.post_to_twitter(message)
+            posted = social_service.post_to_twitter(self)
         elif service == 'facebook':
-            posted = social_service.post_to_facebook(message)
+            posted = social_service.post_to_facebook(self)
         
         if posted:
             self.posted_to_services.append(service)
@@ -2113,7 +2122,9 @@ class MSocialServices(mongo.Document):
         profile.save()
         return profile
     
-    def post_to_twitter(self, message):
+    def post_to_twitter(self, shared_story):
+        message = shared_story.generate_post_to_service_message()
+
         try:
             api = self.twitter_api()
             api.update_status(status=message)
@@ -2123,10 +2134,22 @@ class MSocialServices(mongo.Document):
 
         return True
             
-    def post_to_facebook(self, message):
+    def post_to_facebook(self, shared_story):
+        message = shared_story.generate_post_to_service_message(include_url=False)
+        shared_story.calculate_image_sizes()
+        content = zlib.decompress(shared_story.story_content_z)[:1024]
+        
         try:
             api = self.facebook_api()
-            api.put_wall_post(message=message)
+            # api.put_wall_post(message=message)
+            api.put_object('me', '%s:share' % settings.FACEBOOK_NAMESPACE, 
+                           link=shared_story.blurblog_permalink(), 
+                           type="link", 
+                           name=shared_story.story_title, 
+                           description=content, 
+                           article=shared_story.story_permalink,
+                           message=message,
+                           )
         except facebook.GraphAPIError, e:
             print e
             return

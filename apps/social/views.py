@@ -399,7 +399,25 @@ def load_social_page(request, user_id, username=None, **kwargs):
                 story['user_comments'] = shared_story.comments
 
     stories = MSharedStory.attach_users_to_stories(stories, profiles)
-
+    
+    active_story = None
+    path = request.META['PATH_INFO']
+    if '/story/' in path and format != 'html':
+        story_id = path.replace('/story/', '')
+        active_story_db = MSharedStory.objects.filter(user_id=social_user.pk,
+                                                      story_guid_hash__startswith=story_id).limit(1)
+        if active_story_db: 
+            active_story_db = active_story_db[0]
+            active_story = Feed.format_story(active_story_db)
+            if active_story_db.image_count:
+                active_story['image_url'] = active_story_db.image_sizes[0]['url']
+            active_story['tags'] = ', '.join(active_story_db.story_tags)
+            if active_story['story_feed_id']:
+                feed = Feed.get_by_id(active_story['story_feed_id'])
+                if feed:
+                    active_story['feed'] = feed.canonical()
+                    print active_story
+    
     params = {
         'social_user'   : social_user,
         'stories'       : stories,
@@ -412,7 +430,9 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'feeds'         : feeds,
         'user_profile'  : hasattr(user, 'profile') and user.profile,
         'has_next_page' : has_next_page,
-        'holzer_truism' : random.choice(jennyholzer.TRUISMS) #if not has_next_page else None
+        'holzer_truism' : random.choice(jennyholzer.TRUISMS), #if not has_next_page else None
+        'facebook_app_id': settings.FACEBOOK_APP_ID,
+        'active_story'  : active_story,
     }
 
     diff1 = checkpoint1-start
