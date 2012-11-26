@@ -9,11 +9,12 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import "WEPopoverController.h"
+#import "BaseViewController.h"
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
-@interface StoryDetailViewController : UIViewController 
+@interface StoryDetailViewController : BaseViewController
 <UIPopoverControllerDelegate, WEPopoverControllerDelegate,
 UIScrollViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
@@ -78,7 +79,11 @@ UIScrollViewDelegate> {
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
 - (void)openSendToDialog;
 - (void)markStoryAsUnread;
+- (void)finishMarkAsUnread:(ASIHTTPRequest *)request;
 - (void)markStoryAsSaved;
+- (void)finishMarkAsSaved:(ASIHTTPRequest *)request;
+- (void)markStoryAsUnsaved;
+- (void)finishMarkAsUnsaved:(ASIHTTPRequest *)request;
 - (void)openShareDialog;
 - (void)finishLikeComment:(ASIHTTPRequest *)request;
 - (void)subscribeToBlurblog;

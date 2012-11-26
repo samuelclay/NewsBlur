@@ -26,6 +26,7 @@ typedef enum {
 @property (assign, nonatomic) int ntPadding;
 @property (assign, nonatomic) int psCount;
 @property (assign, nonatomic) int ntCount;
+@property (assign, nonatomic) int blueCount;
 @property (assign, nonatomic) CGRect rect;
 
 - (void)drawInRect:(CGRect)r ps:(int)ps nt:(int)nt listType:(NBFeedListType)listType;

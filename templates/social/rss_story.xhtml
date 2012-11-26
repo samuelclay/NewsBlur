@@ -1,0 +1,22 @@
+<table style="border: 1px solid #E0E0E0; margin: 0; padding: 0; background-color: #F0F0F0" valign="top" align="left" cellpadding="0" width="100%">
+    <tr>
+        <td rowspan="2" style="padding: 6px;width: 36px;white-space:nowrap" width="36" valign="top"><img src="{{ social_profile.photo_url }}" style="width: 36px; height: 36px; border-radius: 4px;"></td>
+        <td width="100%" style="padding-top: 6px;">
+            <b>
+                {{ user.username }} 
+                <a href="{{ shared_story.blurblog_permalink }}">shared this story</a>
+            {% if feed %}from <img src="{{ feed.favicon_url_fqdn }}" style="vertical-align: middle;width:16px;height:16px;"> {{ feed.feed_title }}{% endif %}{% if shared_story.comments %}:{% else %}.{% endif %}</b>
+        </td>
+    </tr>
+    {% if shared_story.comments %}
+    <tr>
+        <td>
+            {{ shared_story.comments }}
+        </td>
+    </tr>
+    {% endif %}
+</table>
+
+<hr style="clear: both; margin: 0 0 24px;">
+
+{{ content|safe }}

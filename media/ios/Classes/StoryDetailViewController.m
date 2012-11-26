@@ -889,6 +889,10 @@
             UIImage *titleImage;
             if (appDelegate.isSocialRiverView) {
                 titleImage = [UIImage imageNamed:@"group_white.png"];
+            } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
+                titleImage = [UIImage imageNamed:@"archive_white.png"];
+            } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
+                titleImage = [UIImage imageNamed:@"clock_white.png"];
             } else if (appDelegate.isRiverView) {
                 titleImage = [UIImage imageNamed:@"folder_white.png"];
             } else {
@@ -1182,7 +1186,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         }
                          
         [request setDidFinishSelector:@selector(finishMarkAsRead:)];
-        [request setDidFailSelector:@selector(finishedWithError:)];
+        [request setDidFailSelector:@selector(requestFailed:)];
         [request setDelegate:self];
         [request startAsynchronous];
     }
@@ -1214,7 +1218,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [request setPostValue:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
     
     [request setDidFinishSelector:@selector(finishLikeComment:)];
-    [request setDidFailSelector:@selector(finishedWithError:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
     [request setDelegate:self];
     [request startAsynchronous];
 }
@@ -1254,14 +1258,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 
 - (void)requestFailed:(ASIHTTPRequest *)request {    
-    NSLog(@"Error in mark as read is %@", [request error]);
+    NSLog(@"Error in story detail: %@", [request error]);
+    NSString *error;
+    if ([request error]) {
+        error = [NSString stringWithFormat:@"%@", [request error]];
+    } else {
+        error = @"The server barfed!";
+    }
+    [self informError:error];
 }
 
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request {
-//    NSString *responseString = [request responseString];
-//    NSDictionary *results = [[NSDictionary alloc] 
-//                             initWithDictionary:[responseString JSONValue]];
-//    NSLog(@"results in mark as read is %@", results);
+    //    NSString *responseString = [request responseString];
+    //    NSDictionary *results = [[NSDictionary alloc]
+    //                             initWithDictionary:[responseString JSONValue]];
+    //    NSLog(@"results in mark as read is %@", results);
 }
 
 - (void)openSendToDialog {
@@ -1300,11 +1311,96 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)markStoryAsSaved {
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_starred",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
+    [request setPostValue:[appDelegate.activeStory
+                           objectForKey:@"id"]
+                   forKey:@"story_id"];
+    [request setPostValue:[appDelegate.activeStory
+                           objectForKey:@"story_feed_id"]
+                   forKey:@"feed_id"];
+    
+    [request setDidFinishSelector:@selector(finishMarkAsSaved:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)finishMarkAsSaved:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self requestFailed:request];
+    }
+    
+    [appDelegate markActiveStorySaved:YES];
+    [self informMessage:@"This story is now saved"];
+}
+
+- (void)markStoryAsUnsaved {
+    //    [appDelegate markActiveStoryUnread];
+    
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_unstarred",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:[appDelegate.activeStory
+                           objectForKey:@"id"]
+                   forKey:@"story_id"];
+    [request setPostValue:[appDelegate.activeStory
+                           objectForKey:@"story_feed_id"]
+                   forKey:@"feed_id"];
+    
+    [request setDidFinishSelector:@selector(finishMarkAsUnsaved:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)finishMarkAsUnsaved:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self requestFailed:request];
+    }
+    
+    //    [appDelegate markActiveStoryUnread];
+    //    [appDelegate.feedDetailViewController redrawUnreadStory];
+    
+    [appDelegate markActiveStorySaved:NO];
+    [self informMessage:@"This story is no longer saved"];
 }
 
 - (void)markStoryAsUnread {
+    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] == 1) {
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_unread",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        
+        [request setPostValue:[appDelegate.activeStory
+                               objectForKey:@"id"]
+                       forKey:@"story_id"];
+        [request setPostValue:[appDelegate.activeStory
+                               objectForKey:@"story_feed_id"]
+                       forKey:@"feed_id"];
+        
+        [request setDidFinishSelector:@selector(finishMarkAsUnread:)];
+        [request setDidFailSelector:@selector(requestFailed:)];
+        [request setDelegate:self];
+        [request startAsynchronous];
+    }
+}
+
+- (void)finishMarkAsUnread:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self requestFailed:request];
+    }
     
+    [appDelegate markActiveStoryUnread];
+    [appDelegate.feedDetailViewController redrawUnreadStory];
+    
+    [self informMessage:@"This story is now unread"];
 }
 
 # pragma mark
@@ -1601,7 +1697,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(240, 162)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(240, 154)];
         [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionAny 
                                                        animated:YES];

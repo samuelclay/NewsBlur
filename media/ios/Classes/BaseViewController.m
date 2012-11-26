@@ -82,6 +82,14 @@
 //    [alertView release];
 }
 
+- (void)informMessage:(NSString *)message {    
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    MBProgressHUD *HUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	HUD.mode = MBProgressHUDModeText;
+    HUD.labelText = message;
+    [HUD hide:YES afterDelay:.75];
+}
+
 #pragma mark -
 #pragma mark UIViewController
 

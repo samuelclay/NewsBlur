@@ -57,16 +57,19 @@ class MSocialProfile(mongo.Document):
     following_user_ids   = mongo.ListField(mongo.IntField())
     follower_user_ids    = mongo.ListField(mongo.IntField())
     unfollowed_user_ids  = mongo.ListField(mongo.IntField())
+    requested_follow_user_ids = mongo.ListField(mongo.IntField())
     popular_publishers   = mongo.StringField()
     stories_last_month   = mongo.IntField(default=0)
     average_stories_per_month = mongo.IntField(default=0)
     story_count_history  = mongo.ListField()
     feed_classifier_counts = mongo.DictField()
     favicon_color        = mongo.StringField(max_length=6)
+    protected            = mongo.BooleanField()
+    private              = mongo.BooleanField()
     
     meta = {
         'collection': 'social_profile',
-        'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids'],
+        'indexes': ['user_id', 'following_user_ids', 'follower_user_ids', 'unfollowed_user_ids', 'requested_follow_user_ids'],
         'allow_inheritance': False,
         'index_drop_dups': True,
     }
@@ -100,7 +103,7 @@ class MSocialProfile(mongo.Document):
             
         super(MSocialProfile, self).save(*args, **kwargs)
         if self.user_id not in self.following_user_ids:
-            self.follow_user(self.user_id)
+            self.follow_user(self.user_id, force=True)
             self.count_follows()
             
     @property
@@ -266,6 +269,8 @@ class MSocialProfile(mongo.Document):
             'feed_address': "http://%s%s" % (domain, reverse('shared-stories-rss-feed', 
                                     kwargs={'user_id': self.user_id, 'username': self.username_slug})),
             'feed_link': self.blurblog_url,
+            'protected': self.protected,
+            'private': self.private,
         }
         if not compact:
             params.update({
@@ -299,6 +304,7 @@ class MSocialProfile(mongo.Document):
             params['followers_everybody'] = followers_everybody[:FOLLOWERS_LIMIT]
             params['following_youknow'] = following_youknow[:FOLLOWERS_LIMIT]
             params['following_everybody'] = following_everybody[:FOLLOWERS_LIMIT]
+            params['requested_follow'] = common_follows_with_user in self.requested_follow_user_ids
         if include_following_user or common_follows_with_user:
             if not include_following_user:
                 include_following_user = common_follows_with_user
@@ -337,33 +343,46 @@ class MSocialProfile(mongo.Document):
         
         if check_unfollowed and user_id in self.unfollowed_user_ids:
             return
+            
+        if self.user_id == user_id:
+            followee = self
+        else:
+            followee = MSocialProfile.get_user(user_id)
         
         logging.debug(" ---> ~FB~SB%s~SN (%s) following %s" % (self.username, self.user_id, user_id))
-
-        if user_id not in self.following_user_ids:
-            self.following_user_ids.append(user_id)
-        elif not force:
-            return
+        
+        if not followee.protected or force:
+            if user_id not in self.following_user_ids:
+                self.following_user_ids.append(user_id)
+            elif not force:
+                return
             
         if user_id in self.unfollowed_user_ids:
             self.unfollowed_user_ids.remove(user_id)
         self.count_follows()
         self.save()
         
-        if self.user_id == user_id:
-            followee = self
-        else:
-            followee = MSocialProfile.get_user(user_id)
-        if self.user_id not in followee.follower_user_ids:
+        if followee.protected and not force:
+            if self.user_id not in followee.requested_follow_user_ids:
+                followee.requested_follow_user_ids.append(self.user_id)
+                MFollowRequest.add(self.user_id, user_id)
+        elif self.user_id not in followee.follower_user_ids:
             followee.follower_user_ids.append(self.user_id)
-            followee.count_follows()
-            followee.save()
-        
+        followee.count_follows()
+        followee.save()
+
+        if followee.protected and not force:
+            from apps.social.tasks import EmailFollowRequest
+            EmailFollowRequest.apply_async(kwargs=dict(follower_user_id=self.user_id,
+                                                       followee_user_id=user_id),
+                                           countdown=settings.SECONDS_TO_DELAY_CELERY_EMAILS)
+            return
+            
         following_key = "F:%s:F" % (self.user_id)
         r.sadd(following_key, user_id)
         follower_key = "F:%s:f" % (user_id)
         r.sadd(follower_key, self.user_id)
-        
+
         if self.user_id != user_id:
             MInteraction.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
             MActivity.new_follow(follower_user_id=self.user_id, followee_user_id=user_id)
@@ -371,6 +390,8 @@ class MSocialProfile(mongo.Document):
                                                                  subscription_user_id=user_id)
         socialsub.needs_unread_recalc = True
         socialsub.save()
+        
+        MFollowRequest.remove(self.user_id, user_id)
         
         if not force:
             from apps.social.tasks import EmailNewFollower
@@ -410,6 +431,11 @@ class MSocialProfile(mongo.Document):
             followee.follower_user_ids.remove(self.user_id)
             followee.count_follows()
             followee.save()
+        if self.user_id in followee.requested_follow_user_ids:
+            followee.requested_follow_user_ids.remove(self.user_id)
+            followee.count_follows()
+            followee.save()
+            MFollowRequest.remove(self.user_id, user_id)
         
         following_key = "F:%s:F" % (self.user_id)
         r.srem(following_key, user_id)
@@ -490,7 +516,61 @@ class MSocialProfile(mongo.Document):
         MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
                           email_type='new_follower')
                 
-        logging.user(user, "~BB~FR~SBSending email for new follower: %s" % follower_profile.username)
+        logging.user(user, "~BB~FM~SBSending email for new follower: %s" % follower_profile.username)
+
+    def send_email_for_follow_request(self, follower_user_id):
+        user = User.objects.get(pk=self.user_id)
+        if follower_user_id not in self.requested_follow_user_ids:
+            logging.user(user, "~FMNo longer being followed by %s" % follower_user_id)
+            return
+        if not user.email:
+            logging.user(user, "~FMNo email to send to, skipping.")
+            return
+        elif not user.profile.send_emails:
+            logging.user(user, "~FMDisabled emails, skipping.")
+            return
+        if self.user_id == follower_user_id:
+            return
+        
+        emails_sent = MSentEmail.objects.filter(receiver_user_id=user.pk,
+                                                sending_user_id=follower_user_id,
+                                                email_type='follow_request')
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+        for email in emails_sent:
+            if email.date_sent > day_ago:
+                logging.user(user, "~SK~FMNot sending follow request email, already sent before. NBD.")
+                return
+        
+        follower_profile = MSocialProfile.get_user(follower_user_id)
+        common_followers, _ = self.common_follows(follower_user_id, direction='followers')
+        common_followings, _ = self.common_follows(follower_user_id, direction='following')
+        if self.user_id in common_followers:
+            common_followers.remove(self.user_id)
+        if self.user_id in common_followings:
+            common_followings.remove(self.user_id)
+        common_followers = MSocialProfile.profiles(common_followers)
+        common_followings = MSocialProfile.profiles(common_followings)
+        
+        data = {
+            'user': user,
+            'follower_profile': follower_profile,
+            'common_followers': common_followers,
+            'common_followings': common_followings,
+        }
+        
+        text    = render_to_string('mail/email_follow_request.txt', data)
+        html    = render_to_string('mail/email_follow_request.xhtml', data)
+        subject = "%s has requested to follow your Blurblog on NewsBlur" % follower_profile.username
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user.username, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+        
+        MSentEmail.record(receiver_user_id=user.pk, sending_user_id=follower_user_id,
+                          email_type='follow_request')
+                
+        logging.user(user, "~BB~FM~SBSending email for follow request: %s" % follower_profile.username)
             
     def save_feed_story_history_statistics(self):
         """
@@ -742,9 +822,12 @@ class MSocialSubscription(mongo.Document):
         return [story_id for story_id in story_ids if story_id and story_id != 'None']
         
     @classmethod
-    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all'):
+    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         
+        if not relative_user_id:
+            relative_user_id = user_id
+            
         if order == 'oldest':
             range_func = r.zrange
         else:
@@ -764,9 +847,9 @@ class MSocialSubscription(mongo.Document):
             r.delete(unread_ranked_stories_keys)
 
         for social_user_id in social_user_ids:
-            us = cls.objects.get(user_id=user_id, subscription_user_id=social_user_id)
+            us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
             story_guids = us.get_stories(offset=0, limit=100, 
-                                         # order=order, read_filter=read_filter, 
+                                         order=order, read_filter=read_filter, 
                                          withscores=True)
             if story_guids:
                 r.zadd(unread_ranked_stories_keys, **dict(story_guids))
@@ -798,7 +881,11 @@ class MSocialSubscription(mongo.Document):
             logging.user(request, "~FYRead story in social subscription: %s" % (sub_username))
         
         for story_id in set(story_ids):
-            story = MSharedStory.objects.get(user_id=self.subscription_user_id, story_guid=story_id)
+            try:
+                story = MSharedStory.objects.get(user_id=self.subscription_user_id,
+                                                 story_guid=story_id)
+            except MSharedStory.DoesNotExist:
+                continue
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
             if not feed_id:
@@ -917,7 +1004,7 @@ class MSocialSubscription(mongo.Document):
         if story_feed_ids:
             read_stories = MUserStory.objects(user_id=self.user_id,
                                               feed_id__in=story_feed_ids,
-                                              story_id__in=story_ids)
+                                              story_id__in=story_ids).only('story_id')
             read_stories_ids = list(set(rs.story_id for rs in read_stories))
 
         oldest_unread_story_date = now
@@ -1333,9 +1420,15 @@ class MSharedStory(mongo.Document):
         return shared
             
     @classmethod
-    def sync_all_redis(cls):
+    def sync_all_redis(cls, drop=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         s = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        if drop:
+            for key_name in ["C", "S"]:
+                keys = r.keys("%s:*" % key_name)
+                print " ---> Removing %s keys named %s:*" % (len(keys), key_name)
+                for key in keys:
+                    r.delete(key)
         for story in cls.objects.all():
             story.sync_redis_shares(redis_conn=r)
             story.sync_redis_story(redis_conn=s)
@@ -1417,7 +1510,7 @@ class MSharedStory(mongo.Document):
         return comment, profiles
         
     @classmethod
-    def stories_with_comments_and_profiles(cls, stories, user_id, check_all=False, public=False):
+    def stories_with_comments_and_profiles(cls, stories, user_id, check_all=False):
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
         friend_key = "F:%s:F" % (user_id)
         profile_user_ids = set()
@@ -1482,7 +1575,16 @@ class MSharedStory(mongo.Document):
             
         profiles = MSocialProfile.objects.filter(user_id__in=list(profile_user_ids))
         profiles = [profile.to_json(compact=True) for profile in profiles]
-
+        
+        # Toss public comments by private profiles
+        profiles_dict = dict((profile['user_id'], profile) for profile in profiles)
+        for story in stories:
+            commented_by_public = story.get('commented_by_public') or [c['user_id'] for c in story['public_comments']]
+            for user_id in commented_by_public:
+                if profiles_dict[user_id]['private']:
+                    story['public_comments'] = [c for c in story['public_comments'] if c['user_id'] != user_id]
+                    story['comment_count_public'] -= 1
+        
         return stories, profiles
     
     @staticmethod
@@ -1551,7 +1653,7 @@ class MSharedStory(mongo.Document):
         social_service = MSocialServices.objects.get(user_id=self.user_id)
         user = User.objects.get(pk=self.user_id)
         
-        logging.user(user, "~BM~FBPosting to %s: ~SB%s" % (service, message))
+        logging.user(user, "~BM~FGPosting to %s: ~SB%s" % (service, message))
         
         if service == 'twitter':
             posted = social_service.post_to_twitter(message)
@@ -1595,7 +1697,7 @@ class MSharedStory(mongo.Document):
         reply_user_profile = MSocialProfile.get_user(reply.user_id)
         sent_emails = 0
 
-        story_feed = Feed.objects.get(pk=self.story_feed_id)
+        story_feed = Feed.get_by_id(self.story_feed_id)
         comment = self.comments_with_author()
         profile_user_ids = set([comment['user_id']])
         reply_user_ids = list(r['user_id'] for r in comment['replies'])
@@ -1667,7 +1769,7 @@ class MSharedStory(mongo.Document):
                 logging.user(original_user, "~FMDisabled emails, skipping.")
             return
             
-        story_feed = Feed.objects.get(pk=self.story_feed_id)
+        story_feed = Feed.get_by_id(self.story_feed_id)
         comment = self.comments_with_author()
         profile_user_ids = set([comment['user_id']])
         reply_user_ids = [reply['user_id'] for reply in comment['replies']]
@@ -1815,7 +1917,7 @@ class MSocialServices(mongo.Document):
                 'syncing': self.syncing_facebook,
             },
             'gravatar': {
-                'gravatar_picture_url': "http://www.gravatar.com/avatar/" + \
+                'gravatar_picture_url': "https://www.gravatar.com/avatar/" + \
                                         hashlib.md5(user.email).hexdigest()
             },
             'upload': {
@@ -1858,18 +1960,18 @@ class MSocialServices(mongo.Document):
 
     def sync_twitter_friends(self):
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRTwitter import starting...")
+        logging.user(user, "~BG~FMTwitter import starting...")
         
         api = self.twitter_api()
         if not api:
-            logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no api access.")
+            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: no api access.")
             self.syncing_twitter = False
             self.save()
             return
             
         friend_ids = list(unicode(friend.id) for friend in tweepy.Cursor(api.friends).items())
         if not friend_ids:
-            logging.user(user, "~BB~FRTwitter import ~SBfailed~SN: no friend_ids.")
+            logging.user(user, "~BG~FMTwitter import ~SBfailed~SN: no friend_ids.")
             self.syncing_twitter = False
             self.save()
             return
@@ -1919,24 +2021,24 @@ class MSocialServices(mongo.Document):
         #         followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BM~FRTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
+        logging.user(user, "~BG~FMTwitter import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.twitter_friend_ids), len(following), followers))
         
         return following
         
     def sync_facebook_friends(self):
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRFacebook import starting...")
+        logging.user(user, "~BG~FMFacebook import starting...")
         
         graph = self.facebook_api()
         if not graph:
-            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no api access.")
+            logging.user(user, "~BG~FMFacebook import ~SBfailed~SN: no api access.")
             self.syncing_facebook = False
             self.save()
             return
 
         friends = graph.get_connections("me", "friends")
         if not friends:
-            logging.user(user, "~BB~FRFacebook import ~SBfailed~SN: no friend_ids.")
+            logging.user(user, "~BG~FMFacebook import ~SBfailed~SN: no friend_ids.")
             self.syncing_facebook = False
             self.save()
             return
@@ -1986,7 +2088,7 @@ class MSocialServices(mongo.Document):
         #         followers += 1
         
         user = User.objects.get(pk=self.user_id)
-        logging.user(user, "~BB~FRFacebook import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.facebook_friend_ids), len(following), followers))
+        logging.user(user, "~BG~FMFacebook import: %s users, now following ~SB%s~SN with ~SB%s~SN follower-backs" % (len(self.facebook_friend_ids), len(following), followers))
         
         return following
         
@@ -2014,7 +2116,7 @@ class MSocialServices(mongo.Document):
             profile.photo_url = self.upload_picture_url
         elif service == 'gravatar':
             user = User.objects.get(pk=self.user_id)
-            profile.photo_url = "http://www.gravatar.com/avatar/" + \
+            profile.photo_url = "https://www.gravatar.com/avatar/" + \
                                 hashlib.md5(user.email).hexdigest()
         profile.save()
         return profile
@@ -2063,7 +2165,7 @@ class MInteraction(mongo.Document):
     
     meta = {
         'collection': 'interactions',
-        'indexes': [('user_id', '-date'), 'category'],
+        'indexes': [('user_id', '-date'), 'category', 'with_user_id'],
         'allow_inheritance': False,
         'index_drop_dups': True,
         'ordering': ['-date'],
@@ -2262,7 +2364,7 @@ class MActivity(mongo.Document):
     
     meta = {
         'collection': 'activities',
-        'indexes': [('user_id', '-date'), 'category'],
+        'indexes': [('user_id', '-date'), 'category', 'with_user_id'],
         'allow_inheritance': False,
         'index_drop_dups': True,
         'ordering': ['-date'],
@@ -2450,3 +2552,27 @@ class MActivity(mongo.Document):
         cls.objects.get_or_create(user_id=user_id,
                                   with_user_id=user_id,
                                   category="signup")
+
+class MFollowRequest(mongo.Document):
+    follower_user_id    = mongo.IntField(unique_with='followee_user_id')
+    followee_user_id    = mongo.IntField()
+    date                = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    meta = {
+        'collection': 'follow_request',
+        'indexes': ['follower_user_id', 'followee_user_id'],
+        'ordering': ['-date'],
+        'allow_inheritance': False,
+        'index_drop_dups': True,
+    }
+    
+    @classmethod
+    def add(cls, follower_user_id, followee_user_id):
+        cls.objects.get_or_create(follower_user_id=follower_user_id,
+                                  followee_user_id=followee_user_id)
+    
+    @classmethod
+    def remove(cls, follower_user_id, followee_user_id):
+        cls.objects.filter(follower_user_id=follower_user_id, 
+                           followee_user_id=followee_user_id).delete()
+                           

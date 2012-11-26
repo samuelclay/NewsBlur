@@ -11,8 +11,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.text.TextUtils;
-import android.util.Config;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -276,7 +274,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 		Cursor cursor = null;
 		View v;
 		if (groupPosition == 0) {
-			cursor = allStoriesCountCursor;
+			cursor = sharedStoriesCountCursor;
 			v =  inflater.inflate(R.layout.row_all_shared_stories, null, false);
 			sharedStoriesCountCursor.moveToFirst();
 			((TextView) v.findViewById(R.id.row_everythingtext)).setOnClickListener(new OnClickListener() {
@@ -288,7 +286,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 				}
 			});
 			String neutCount = sharedStoriesCountCursor.getString(sharedStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT));
-			if (TextUtils.isEmpty(neutCount) || TextUtils.equals(neutCount, "0")) {
+			if (currentState == AppConstants.STATE_BEST || TextUtils.isEmpty(neutCount) || TextUtils.equals(neutCount, "0")) {
 				v.findViewById(R.id.row_foldersumneu).setVisibility(View.GONE);
 			} else {
 				v.findViewById(R.id.row_foldersumneu).setVisibility(View.VISIBLE);
@@ -309,8 +307,17 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			cursor = allStoriesCountCursor;
 			v =  inflater.inflate(R.layout.row_all_stories, null, false);
 			allStoriesCountCursor.moveToFirst();
-			((TextView) v.findViewById(R.id.row_foldersumneu)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
-			((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
+			switch (currentState) {
+				case AppConstants.STATE_BEST:
+					v.findViewById(R.id.row_foldersumneu).setVisibility(View.INVISIBLE);
+					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
+					break;
+				default:	
+					((TextView) v.findViewById(R.id.row_foldersumneu)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_NEUT)));
+					((TextView) v.findViewById(R.id.row_foldersumpos)).setText(allStoriesCountCursor.getString(allStoriesCountCursor.getColumnIndex(DatabaseConstants.SUM_POS)));
+					break;
+			}
+ 			
 		} else {
 			cursor = folderCursorHelper.moveTo(groupPosition - 2);
 			if (convertView == null) {

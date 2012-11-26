@@ -90,7 +90,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 if (errorThrown == 'abort') {
                     return;
                 }
-                NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown, !!error_callback, error_callback]);
+                NEWSBLUR.log(['AJAX Error', e, e.status, textStatus, errorThrown, 
+                              !!error_callback, error_callback]);
                 
                 if (error_callback) {
                     error_callback(e, textStatus, errorThrown);
@@ -648,6 +649,20 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         
         if (NEWSBLUR.Globals.is_authenticated || feed_id) {
             this.make_request('/reader/refresh_feeds', data, pre_callback, error_callback);
+        }
+    },
+    
+    feed_unread_count: function(feed_id, callback, error_callback) {
+        var self = this;
+        
+        var pre_callback = function(data) {
+            self.post_refresh_feeds(data, callback);
+        };
+        
+        if (NEWSBLUR.Globals.is_authenticated || feed_id) {
+            this.make_request('/reader/feed_unread_count',  {
+                'feed_id': feed_id
+            }, pre_callback, error_callback);
         }
     },
     
@@ -1212,6 +1227,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
+    fetch_follow_requests: function(callback) {
+        this.make_request('/social/load_follow_requests', null, _.bind(function(data) {
+            this.user_profile.set(data.user_profile);
+            callback(data);
+        }, this), null, {
+            request_type: 'GET'
+        });
+    },
+    
     fetch_user_profile: function(user_id, callback) {
         this.make_request('/social/profile', {
             'user_id': user_id,
@@ -1284,6 +1308,18 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 return profile.get('user_id') == data.unfollow_profile.user_id;
             });
             this.social_feeds.remove(data.unfollow_profile.id);
+            callback(data);
+        }, this));
+    },
+    
+    approve_follower: function(user_id, callback) {
+        this.make_request('/social/approve_follower', {'user_id': user_id}, _.bind(function(data) {
+            callback(data);
+        }, this));
+    },
+    
+    ignore_follower: function(user_id, callback) {
+        this.make_request('/social/ignore_follower', {'user_id': user_id}, _.bind(function(data) {
             callback(data);
         }, this));
     },

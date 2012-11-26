@@ -166,7 +166,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             ])
         ]);
         
-        $('.carousel', this.$modal).carousel({});
+        var $carousel = $('.carousel', this.$modal);
+        $carousel.carousel({});
+        $carousel.carousel('pause');
     },
     
     // ==========

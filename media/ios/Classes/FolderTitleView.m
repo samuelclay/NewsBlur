@@ -54,6 +54,16 @@
         [unreadCount calculateOffsets:counts.ps nt:counts.nt];
         countWidth = [unreadCount offsetWidth];
         [self addSubview:unreadCount];
+    } else if (folderName == @"saved_stories") {
+        unreadCount = [[UnreadCountView alloc] initWithFrame:rect];
+        unreadCount.appDelegate = appDelegate;
+        unreadCount.opaque = NO;
+        unreadCount.psCount = appDelegate.savedStoriesCount;
+        unreadCount.blueCount = appDelegate.savedStoriesCount;
+        
+        [unreadCount calculateOffsets:appDelegate.savedStoriesCount nt:0];
+        countWidth = [unreadCount offsetWidth];
+        [self addSubview:unreadCount];
     }
     
     // create the parent view that will hold header Label
@@ -87,9 +97,11 @@
     UIFont *font = [UIFont boldSystemFontOfSize:11];
     NSString *folderTitle;
     if (section == 0) {
-        folderTitle = @"ALL BLURBLOG STORIES";
+        folderTitle = [@"All Blurblog Stories" uppercaseString];
     } else if (section == 1) {
-        folderTitle = @"ALL STORIES";
+        folderTitle = [@"All Stories" uppercaseString];
+    } else if (folderName == @"saved_stories") {
+        folderTitle = [@"Saved Stories" uppercaseString];
     } else {
         folderTitle = [[appDelegate.dictFoldersArray objectAtIndex:section] uppercaseString];
     }
@@ -97,7 +109,7 @@
     CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 0, [shadowColor CGColor]);
     
     [folderTitle
-     drawInRect:CGRectMake(36.0, 7, rect.size.width - 36 - 36 - countWidth, 14)
+     drawInRect:CGRectMake(36.0, 9, rect.size.width - 36 - 36 - countWidth, 14)
      withFont:font
      lineBreakMode:UILineBreakModeTailTruncation
      alignment:UITextAlignmentLeft];
@@ -116,10 +128,10 @@
         UIButton *disclosureButton = [UIButton buttonWithType:UIButtonTypeCustom];
         UIImage *disclosureImage = [UIImage imageNamed:@"disclosure.png"];
         [disclosureButton setImage:disclosureImage forState:UIControlStateNormal];
-        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, -1, 29, 29);
+        disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 1, 29, 29);
 
         // Add collapse button to all folders except Everything
-        if (section != 1) {
+        if (section != 1 && folderName != @"saved_stories") {
             if (!isFolderCollapsed) {
                 disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
             }
@@ -128,9 +140,9 @@
             [disclosureButton addTarget:appDelegate.feedsViewController action:@selector(didCollapseFolder:) forControlEvents:UIControlEventTouchUpInside];
 
             UIImage *disclosureBorder = [UIImage imageNamed:@"disclosure_border.png"];
-            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, -1, 29, 29)];
+            [disclosureBorder drawInRect:CGRectMake(customView.frame.size.width - 32, 1, 29, 29)];
         } else {
-            // Everything folder doesn't get a button
+            // Everything/Saved folder doesn't get a button
             [disclosureButton setUserInteractionEnabled:NO];
         }
         [customView addSubview:disclosureButton];
@@ -153,6 +165,13 @@
         } else {
             folderImageViewX = 7;
         }
+    } else if (folderName == @"saved_stories") {
+        folderImage = [UIImage imageNamed:@"clock.png"];
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            folderImageViewX = 10;
+        } else {
+            folderImageViewX = 7;
+        }
     } else {
         if (isFolderCollapsed) {
             folderImage = [UIImage imageNamed:@"folder_collapsed.png"];
@@ -164,7 +183,7 @@
             folderImageViewX = 7;
         }
     }
-    [folderImage drawInRect:CGRectMake(folderImageViewX, 3, 20, 20)];
+    [folderImage drawInRect:CGRectMake(folderImageViewX, 5, 20, 20)];
     
     [customView setAutoresizingMask:UIViewAutoresizingNone];
     

@@ -64,6 +64,9 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         if (this.flags.on_header_caption && _.isUndefined(force)) {
             return;
         }
+        if (this.flags.on_signin && _.isUndefined(force)) {
+            return;
+        }
         
         var NUM_CAPTIONS = 3;
         var r = force ? force - 1 : (this.rotation + 1) % NUM_CAPTIONS;

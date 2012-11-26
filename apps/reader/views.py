@@ -279,7 +279,7 @@ def load_feeds_flat(request):
     
     feeds = {}
     flat_folders = {" ": []}
-    iphone_version = "1.5"
+    iphone_version = "1.7"
     
     if include_favicons == 'false': include_favicons = False
     if update_counts == 'false': update_counts = False
@@ -353,7 +353,7 @@ def load_feeds_flat(request):
     }
     return data
 
-@ratelimit(minutes=1, requests=20)
+@ratelimit(minutes=1, requests=10)
 @never_cache
 @json.json_view
 def refresh_feeds(request):
@@ -407,6 +407,33 @@ def refresh_feeds(request):
         
     return {'feeds': feeds, 'social_feeds': social_feeds}
 
+@never_cache
+@json.json_view
+def feed_unread_count(request):
+    user = get_user(request)
+    feed_ids = request.REQUEST.getlist('feed_id')
+    social_feed_ids = [feed_id for feed_id in feed_ids if 'social:' in feed_id]
+    feed_ids = list(set(feed_ids) - set(social_feed_ids))
+    
+    feeds = {}
+    if feed_ids:
+        feeds = UserSubscription.feeds_with_updated_counts(user, feed_ids=feed_ids)
+
+    social_feeds = {}
+    if social_feed_ids:
+        social_feeds = MSocialSubscription.feeds_with_updated_counts(user, social_feed_ids=social_feed_ids)
+    
+    if settings.DEBUG:
+        if len(feed_ids):
+            feed_title = Feed.get_by_id(feed_ids[0]).feed_title
+        elif len(social_feed_ids) == 1:
+            feed_title = MSocialProfile.objects.get(user_id=social_feed_ids[0].replace('social:', '')).username
+        else:
+            feed_title = "%s feeds" % (len(feeds) + len(social_feeds))
+        logging.user(request, "~FBUpdating unread count on: %s" % feed_title)
+    
+    return {'feeds': feeds, 'social_feeds': social_feeds}
+    
 def refresh_feed(request, feed_id):
     user = get_user(request)
     feed = get_object_or_404(Feed, pk=feed_id)
@@ -557,7 +584,7 @@ def load_single_feed(request, feed_id):
     if dupe_feed_id: data['dupe_feed_id'] = dupe_feed_id
     if not usersub:
         data.update(feed.canonical())
-        
+    
     return data
 
 def load_feed_page(request, feed_id):
@@ -572,13 +599,14 @@ def load_feed_page(request, feed_id):
         feed.s3_page):
         if settings.PROXY_S3_PAGES:
             key = settings.S3_PAGES_BUCKET.get_key(feed.s3_pages_key)
-            compressed_data = key.get_contents_as_string()
-            response = HttpResponse(compressed_data, mimetype="text/html; charset=utf-8")
-            response['Content-Encoding'] = 'gzip'
+            if key:
+                compressed_data = key.get_contents_as_string()
+                response = HttpResponse(compressed_data, mimetype="text/html; charset=utf-8")
+                response['Content-Encoding'] = 'gzip'
             
-            logging.user(request, "~FYLoading original page, proxied: ~SB%s bytes" %
-                         (len(compressed_data)))
-            return response
+                logging.user(request, "~FYLoading original page, proxied: ~SB%s bytes" %
+                             (len(compressed_data)))
+                return response
         else:
             logging.user(request, "~FYLoading original page, non-proxied")
             return HttpResponseRedirect('//%s/%s' % (settings.S3_PAGES_BUCKET_NAME,
@@ -606,12 +634,21 @@ def load_starred_stories(request):
         
     mstories       = MStarredStory.objects(user_id=user.pk).order_by('-starred_date')[offset:offset+limit]
     stories        = Feed.format_stories(mstories)
+    
+    stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
+    
+    story_ids      = [story['id'] for story in stories]
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
     usersub_ids    = UserSubscription.objects.filter(user__pk=user.pk, feed__pk__in=story_feed_ids).values('feed__pk')
     usersub_ids    = [us['feed__pk'] for us in usersub_ids]
     unsub_feed_ids = list(set(story_feed_ids).difference(set(usersub_ids)))
     unsub_feeds    = Feed.objects.filter(pk__in=unsub_feed_ids)
     unsub_feeds    = dict((feed.pk, feed.canonical(include_favicon=False)) for feed in unsub_feeds)
+    shared_stories = MSharedStory.objects(user_id=user.pk, 
+                                          story_guid__in=story_ids)\
+                                 .only('story_guid', 'shared_date', 'comments')
+    shared_stories = dict([(story.story_guid, dict(shared_date=story.shared_date, comments=story.comments))
+                           for story in shared_stories])
 
     for story in stories:
         story_date                 = localtime_for_timezone(story['story_date'], user.profile.timezone)
@@ -622,15 +659,22 @@ def load_starred_stories(request):
         story['read_status']       = 1
         story['starred']           = True
         story['intelligence']      = {
-            'feed':   0,
+            'feed':   1,
             'author': 0,
             'tags':   0,
             'title':  0,
         }
+        if story['id'] in shared_stories:
+            story['shared'] = True
+            story['shared_comments'] = strip_tags(shared_stories[story['id']]['comments'])
     
     logging.user(request, "~FCLoading starred stories: ~SB%s stories" % (len(stories)))
     
-    return dict(stories=stories, feeds=unsub_feeds)
+    return {
+        "stories": stories,
+        "user_profiles": user_profiles,
+        "feeds": unsub_feeds,
+    }
 
 @json.json_view
 def load_river_stories__redis(request):
@@ -768,11 +812,15 @@ def mark_story_as_read(request):
     else:
         data = dict(code=-1, errors=["User is not subscribed to this feed."])
 
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r.publish(request.user.username, 'feed:%s' % feed_id)
+
     return data
     
 @ajax_login_required
 @json.json_view
 def mark_feed_stories_as_read(request):
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
     feeds_stories = request.REQUEST.get('feeds_stories', "{}")
     feeds_stories = json.decode(feeds_stories)
     for feed_id, story_ids in feeds_stories.items():
@@ -791,6 +839,8 @@ def mark_feed_stories_as_read(request):
                 data = usersub.mark_story_ids_as_read(story_ids)
             except (UserSubscription.DoesNotExist, Feed.DoesNotExist):
                 return dict(code=-1, error="No feed exists for feed_id: %d" % feed_id)
+
+        r.publish(request.user.username, 'feed:%s' % feed_id)
     
     return data
     
@@ -800,6 +850,7 @@ def mark_social_stories_as_read(request):
     code = 1
     errors = []
     data = {}
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
     users_feeds_stories = request.REQUEST.get('users_feeds_stories', "{}")
     users_feeds_stories = json.decode(users_feeds_stories)
 
@@ -828,6 +879,8 @@ def mark_social_stories_as_read(request):
                         errors.append("No feed exists for feed_id %d." % feed_id)
                 else:
                     continue
+            r.publish(request.user.username, 'feed:%s' % feed_id)
+        r.publish(request.user.username, 'social:%s' % social_user_id)
 
     data.update(code=code, errors=errors)
     return data
@@ -880,7 +933,10 @@ def mark_story_as_unread(request):
         m.delete()
     except MUserStory.DoesNotExist:
         logging.user(request, "~BY~SB~FRCouldn't find read story to mark as unread.")
-    
+
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r.publish(request.user.username, 'feed:%s' % feed_id)
+
     logging.user(request, "~FY~SBUnread~SN story in feed: %s %s" % (feed, dirty_count))
     
     return data
@@ -1304,7 +1360,7 @@ def send_story_email(request):
     else:
         story, _ = MStory.find_story(feed_id, story_id)
         story   = Feed.format_story(story, feed_id, text=True)
-        feed    = Feed.objects.get(pk=story['story_feed_id'])
+        feed    = Feed.get_by_id(story['story_feed_id'])
         text    = render_to_string('mail/email_story_text.xhtml', locals())
         html    = render_to_string('mail/email_story_html.xhtml', locals())
         subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])

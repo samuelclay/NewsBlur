@@ -128,7 +128,8 @@
     if ((appDelegate.isSocialRiverView ||
          appDelegate.isSocialView ||
          (appDelegate.isRiverView &&
-          [appDelegate.activeFolder isEqualToString:@"everything"]))) {
+          [appDelegate.activeFolder isEqualToString:@"everything"]) ||
+         [appDelegate.activeFolder isEqualToString:@"saved_stories"])) {
         settingsButton.enabled = NO;
     } else {
         settingsButton.enabled = YES;
@@ -136,7 +137,8 @@
     
     if (appDelegate.isSocialRiverView || 
         (appDelegate.isRiverView &&
-         [appDelegate.activeFolder isEqualToString:@"everything"])) {
+         [appDelegate.activeFolder isEqualToString:@"everything"]) ||
+        [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
         feedMarkReadButton.enabled = NO;
     } else {
         feedMarkReadButton.enabled = YES;
@@ -206,15 +208,37 @@
     self.feedPage = 1;
 }
 
+- (void)reloadPage {
+    [self resetFeedDetail];
+
+    [appDelegate setStories:nil];
+    appDelegate.storyCount = 0;
+
+    [self.storyTitlesTable reloadData];
+    [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+
+    
+    if (appDelegate.isRiverView) {
+        [self fetchRiverPage:1 withCallback:nil];
+    } else {
+        [self fetchFeedDetail:1 withCallback:nil];
+    }
+}
+
 #pragma mark -
 #pragma mark Regular and Social Feeds
 
 - (void)fetchNextPage:(void(^)())callback {
-    [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
+    if (appDelegate.isRiverView) {
+        [self fetchRiverPage:self.feedPage+1 withCallback:callback];
+    } else {
+        [self fetchFeedDetail:self.feedPage+1 withCallback:callback];
+    }
 }
 
-- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback { 
+- (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     NSString *theFeedDetailURL;
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if (!self.pageFetching && !self.pageFinished) {
     
@@ -236,6 +260,18 @@
                                 [appDelegate.activeFeed objectForKey:@"id"],
                                 self.feedPage];
         }
+        
+        if ([userPreferences stringForKey:[appDelegate orderKey]]) {
+            theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                                theFeedDetailURL,
+                                [userPreferences stringForKey:[appDelegate orderKey]]];
+        }
+        if ([userPreferences stringForKey:[appDelegate readFilterKey]]) {
+            theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                                theFeedDetailURL,
+                                [userPreferences stringForKey:[appDelegate readFilterKey]]];
+        }
+        
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
@@ -260,7 +296,9 @@
 #pragma mark -
 #pragma mark River of News
 
-- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {    
+- (void)fetchRiverPage:(int)page withCallback:(void(^)())callback {
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
     if (!self.pageFetching && !self.pageFinished) {
         self.feedPage = page;
         self.pageFetching = YES;
@@ -274,7 +312,12 @@
         
         if (appDelegate.isSocialRiverView) {
             theFeedDetailURL = [NSString stringWithFormat:
-                                @"http://%@/social/river_stories/?page=%d&order=newest", 
+                                @"http://%@/social/river_stories/?page=%d", 
+                                NEWSBLUR_URL,
+                                self.feedPage];
+        } else if (appDelegate.activeFolder == @"saved_stories") {
+            theFeedDetailURL = [NSString stringWithFormat:
+                                @"http://%@/reader/starred_stories/?page=%d",
                                 NEWSBLUR_URL,
                                 self.feedPage];
         } else {
@@ -285,6 +328,18 @@
                                 self.feedPage];
         }
         
+        
+        if ([userPreferences stringForKey:[appDelegate orderKey]]) {
+            theFeedDetailURL = [NSString stringWithFormat:@"%@&order=%@",
+                                theFeedDetailURL,
+                                [userPreferences stringForKey:[appDelegate orderKey]]];
+        }
+        if ([userPreferences stringForKey:[appDelegate readFilterKey]]) {
+            theFeedDetailURL = [NSString stringWithFormat:@"%@&read_filter=%@",
+                                theFeedDetailURL,
+                                [userPreferences stringForKey:[appDelegate readFilterKey]]];
+        }
+
         [self cancelRequests];
         __weak ASIHTTPRequest *request = [self requestWithURL:theFeedDetailURL];
         [request setDelegate:self];
@@ -430,7 +485,7 @@
         [self.storyTitlesTable reloadData];
         
     } else if (newStoriesCount == 0 || 
-               (self.feedPage > 15 && 
+               (self.feedPage > 25 &&
                 existingStoriesCount >= [appDelegate unreadCount])) {
         self.pageFinished = YES;
         [self.storyTitlesTable reloadData];
@@ -623,7 +678,7 @@
     
     int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
     cell.storyScore = score;
-
+    
     cell.isRead = [[story objectForKey:@"read_status"] intValue] == 1;
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
@@ -650,9 +705,17 @@
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(int)row {
     cell.isRead = YES;
     [cell setNeedsLayout];
-    [appDelegate setActiveStory:[[appDelegate activeFeedStories] objectAtIndex:row]];
+    appDelegate.activeStory = [[appDelegate activeFeedStories] objectAtIndex:row];
     [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
     [appDelegate loadStoryDetailView];
+}
+
+- (void)redrawUnreadStory {
+    int rowIndex = [appDelegate locationOfActiveStory];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
+    FeedDetailTableCell *cell = (FeedDetailTableCell*) [self.storyTitlesTable cellForRowAtIndexPath:indexPath];
+    cell.isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
+    [cell setNeedsDisplay];
 }
 
 - (void)changeActiveStoryTitleCellLayout {
@@ -884,8 +947,8 @@
     NSArray *buttonTitles = nil;
     BOOL showVisible = YES;
     BOOL showEntire = YES;
-    if ([appDelegate.activeFolder isEqualToString:@"Everything"]) showEntire = NO;
-    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;  
+    if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
+    if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
     NSString *entireText = [NSString stringWithFormat:@"Mark %@ read", 
                             appDelegate.isRiverView ? 
                             @"entire folder" : 
@@ -976,7 +1039,7 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 2 : 38 *3)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 3 : 38 * 5)];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];

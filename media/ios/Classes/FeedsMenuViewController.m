@@ -11,6 +11,7 @@
 #import "MBProgressHUD.h"
 #import "NBContainerViewController.h"
 #import "NewsBlurViewController.h"
+#import "MenuTableViewCell.h"
 
 @implementation FeedsMenuViewController
 
@@ -49,6 +50,10 @@
     self.menuTableView = nil;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [self.menuTableView reloadData];
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return YES;
 }
@@ -68,18 +73,12 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier]; 
     
     if (cell == nil) {
-        cell = [[UITableViewCell alloc]
+        cell = [[MenuTableViewCell alloc]
                 initWithStyle:UITableViewCellStyleDefault
                 reuseIdentifier:CellIndentifier];
     }
     
     cell.textLabel.text = [self.menuOptions objectAtIndex:[indexPath row]];
-    cell.contentView.backgroundColor = UIColorFromRGB(0xBAE3A8);
-    cell.textLabel.backgroundColor = UIColorFromRGB(0xBAE3A8);
-    cell.textLabel.textColor = UIColorFromRGB(0x303030);
-    cell.textLabel.shadowColor = UIColorFromRGB(0xF0FFF0);
-    cell.textLabel.shadowOffset = CGSizeMake(0, 1);
-    cell.textLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:14.0];
     
     if (indexPath.row == 0) {
         cell.imageView.image = [UIImage imageNamed:@"rainbow.png"];

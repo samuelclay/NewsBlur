@@ -22,7 +22,6 @@ import android.webkit.CookieSyncManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.newsblur.R;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.database.FeedProvider;
 import com.newsblur.domain.Classifier;
@@ -462,8 +461,7 @@ public class APIManager {
 				contentResolver.insert(FeedProvider.SOCIAL_FEEDS_URI, feed.getValues());
 			}
 			
-			String unsortedFolderName = context.getResources().getString(R.string.unsorted_folder_name);
-
+			
 			Cursor folderCursor = contentResolver.query(FeedProvider.FOLDERS_URI, null, null, null, null);
 			folderCursor.moveToFirst();
 			HashSet<String> existingFolders = new HashSet<String>();
@@ -474,20 +472,22 @@ public class APIManager {
 			folderCursor.close();
 			
 			for (final Entry<String, List<Long>> entry : feedUpdate.folders.entrySet()) {
-				String folderName = TextUtils.isEmpty(entry.getKey()) ? unsortedFolderName : entry.getKey();
-
-				if (!existingFolders.contains(folderName)) {
-					final ContentValues folderValues = new ContentValues();
-					folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
-					contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
-				}
-
-				for (Long feedId : entry.getValue()) {
-					if (!existingFeeds.containsKey(Long.toString(feedId))) {
-						ContentValues values = new ContentValues(); 
-						values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
-						values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
-						contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
+				if (!TextUtils.isEmpty(entry.getKey())) {
+					String folderName = entry.getKey().trim();
+					if (!existingFolders.contains(folderName) && !TextUtils.isEmpty(folderName)) {
+						final ContentValues folderValues = new ContentValues();
+						folderValues.put(DatabaseConstants.FOLDER_NAME, folderName);
+						Log.d("Folder", "Inserting folder: " + folderName);
+						contentResolver.insert(FeedProvider.FOLDERS_URI, folderValues);
+					}
+	
+					for (Long feedId : entry.getValue()) {
+						if (!existingFeeds.containsKey(Long.toString(feedId))) {
+							ContentValues values = new ContentValues(); 
+							values.put(DatabaseConstants.FEED_FOLDER_FEED_ID, feedId);
+							values.put(DatabaseConstants.FEED_FOLDER_FOLDER_NAME, folderName);
+							contentResolver.insert(FeedProvider.FEED_FOLDER_MAP_URI, values);
+						}
 					}
 				}
 			}

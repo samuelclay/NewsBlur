@@ -4,7 +4,7 @@
 {% block body %}
     
     <p style="font-size: 24px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;line-height: 48px;">
-        <a href="{{ reshare_user_profile.blurblog_url }}"><img src="{{ reshare_user_profile.email_photo_url }}" style="width: 48px; height: 48px;margin: 0 12px 0 0;border-radius: 3px;border: none;float: left"></a> {{ reshare_user_profile.username }} re-shared "<a href="{{ shared_story.blurblog_permalink }}">{{ shared_story.story_title }}</a>" from <img src="{{ story_feed.favicon_url_fqdn }}" style="width: 16px;height: 16px;vertical-align: middle"> {{ story_feed.feed_title }}:
+        <a href="{{ reshare_user_profile.blurblog_url }}"><img src="{{ reshare_user_profile.email_photo_url }}" style="width: 48px; height: 48px;margin: 0 12px 0 0;border-radius: 3px;border: none;float: left"></a> {{ reshare_user_profile.username }} re-shared "<a href="{{ shared_story.blurblog_permalink }}">{{ shared_story.story_title }}</a>"{% if story_feed %} from <img src="{{ story_feed.favicon_url_fqdn }}" style="width: 16px;height: 16px;vertical-align: middle"> {{ story_feed.feed_title }}{% endif %}:
     </p>
 
     {% render_email_comment comment %}

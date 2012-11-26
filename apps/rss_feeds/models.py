@@ -29,7 +29,7 @@ from utils.feed_functions import levenshtein_distance
 from utils.feed_functions import timelimit, TimeoutError
 from utils.feed_functions import relative_timesince
 from utils.feed_functions import seconds_timesince
-from utils.story_functions import strip_tags, htmldiff
+from utils.story_functions import strip_tags, htmldiff, strip_comments
 
 ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
@@ -182,13 +182,14 @@ class Feed(models.Model):
             return self
         except IntegrityError:
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address, feed_link=self.feed_link)
-            logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
-            logging.debug(' ***> [%-30s] Feed deleted.' % (unicode(self)[:30]))
             if duplicate_feed:
                 if self.pk != duplicate_feed[0].pk:
-                    merge_feeds(self.pk, duplicate_feed[0].pk)
+                    merge_feeds(self.pk, duplicate_feed[0].pk, force=True)
                 return duplicate_feed[0]
+
             # Feed has been deleted. Just ignore it.
+            logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
+            logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
             return
     
     def sync_redis(self):
@@ -275,7 +276,11 @@ class Feed(models.Model):
         
     @classmethod
     def task_feeds(cls, feeds, queue_size=12):
-        logging.debug(" ---> Tasking %s feeds..." % feeds.count())
+        if isinstance(feeds, Feed):
+            logging.debug(" ---> Tasking feed: %s" % feeds)
+            feeds = [feeds]
+        else:
+            logging.debug(" ---> Tasking %s feeds..." % len(feeds))
         
         feed_queue = []
         for f in feeds:
@@ -289,7 +294,7 @@ class Feed(models.Model):
     def update_all_statistics(self, full=True, force=False):
         self.count_subscribers()
         count_extra = False
-        if random.random() > .9 or not self.data.popular_tags or not self.data.popular_authors:
+        if random.random() > .98 or not self.data.popular_tags or not self.data.popular_authors:
             count_extra = True
         if force or (full and count_extra):
             self.count_stories()
@@ -596,7 +601,7 @@ class Feed(models.Model):
         for r in res:
             dates[r.key] = r.value
             year = int(re.findall(r"(\d{4})-\d{1,2}", r.key)[0])
-            if year < min_year:
+            if year < min_year and year > 2000:
                 min_year = year
                 
         # Add on to existing months, always amending up, never down. (Current month
@@ -606,7 +611,7 @@ class Feed(models.Model):
             year = int(re.findall(r"(\d{4})-\d{1,2}", current_month)[0])
             if current_month not in dates or dates[current_month] < current_count:
                 dates[current_month] = current_count
-            if year < min_year:
+            if year < min_year and year > 2000:
                 min_year = year
         
         # Assemble a list with 0's filled in for missing months, 
@@ -703,14 +708,7 @@ class Feed(models.Model):
         disp.add_jobs([[self.pk]])
         feed = disp.run_jobs()
         
-        try:
-            feed = Feed.objects.get(pk=feed.pk)
-        except Feed.DoesNotExist:
-            # Feed has been merged after updating. Find the right feed.
-            duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id=feed.pk)
-            if duplicate_feeds:
-                feed = duplicate_feeds[0].feed
-            
+        feed = Feed.get_by_id(feed.pk)
         feed.last_update = datetime.datetime.utcnow()
         feed.set_next_scheduled_update()
         
@@ -741,12 +739,13 @@ class Feed(models.Model):
             ENTRY_SAME:0,
             ENTRY_ERR:0
         }
-
+        
         for story in stories:
             if not story.get('title'):
                 continue
                 
             story_content = story.get('story_content')
+            story_content = strip_comments(story_content)
             story_tags = self.get_tags(story)
             story_link = self.get_permalink(story)
                 
@@ -922,6 +921,7 @@ class Feed(models.Model):
             except IndexError, e:
                 logging.debug(' ***> [%-30s] ~BRError trimming feed: %s' % (unicode(self)[:30], e))
                 return
+                
             extra_stories = MStory.objects(story_feed_id=self.pk, 
                                            story_date__lte=story_trim_date)
             extra_stories_count = extra_stories.count()
@@ -931,7 +931,19 @@ class Feed(models.Model):
                 existing_story_count = MStory.objects(story_feed_id=self.pk).count()
                 print "Deleted %s stories, %s left." % (extra_stories_count,
                                                         existing_story_count)
-                        
+
+    @staticmethod
+    def clean_invalid_ids():
+        history = MFeedFetchHistory.objects(status_code=500, exception__contains='InvalidId:')
+        urls = set()
+        for h in history:
+            u = re.split('InvalidId: (.*?) is not a valid ObjectId\\n$', h.exception)[1]
+            urls.add((h.feed_id, u))
+        
+        for f, u in urls:
+            print "db.stories.remove({\"story_feed_id\": %s, \"_id\": \"%s\"})" % (f, u)
+
+        
     def get_stories(self, offset=0, limit=25, force=False):
         stories_db = MStory.objects(story_feed_id=self.pk)[offset:offset+limit]
         stories = self.format_stories(stories_db, self.pk)
@@ -1395,13 +1407,16 @@ class MStory(mongo.Document):
     def sync_all_redis(cls, story_feed_id=None):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         DAYS_OF_UNREAD = datetime.datetime.now() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        feed = None
+        if story_feed_id:
+            feed = Feed.get_by_id(story_feed_id)
         stories = cls.objects.filter(story_date__gte=DAYS_OF_UNREAD)
         if story_feed_id:
             stories = stories.filter(story_feed_id=story_feed_id)
             r.delete('F:%s' % story_feed_id)
             r.delete('zF:%s' % story_feed_id)
-        
-        print " ---> Syncing %s stories in %s" % (stories.count(), story_feed_id)
+
+        logging.info(" ---> [%-30s] ~FMSyncing ~SB%s~SN stories to redis" % (feed and feed.title[:30] or story_feed_id, stories.count()))
         for story in stories:
             story.sync_redis(r)
         
@@ -1455,7 +1470,11 @@ class MStarredStory(mongo.Document):
             self.story_original_content = None
         super(MStarredStory, self).save(*args, **kwargs)
     
+    @property
+    def guid_hash(self):
+        return hashlib.sha1(self.story_guid).hexdigest()
     
+
 class MFeedFetchHistory(mongo.Document):
     feed_id = mongo.IntField()
     status_code = mongo.IntField()
@@ -1544,14 +1563,6 @@ class MFeedPushHistory(mongo.Document):
         return push_history
         
         
-class FeedLoadtime(models.Model):
-    feed = models.ForeignKey(Feed)
-    date_accessed = models.DateTimeField(auto_now=True)
-    loadtime = models.FloatField()
-    
-    def __unicode__(self):
-        return "%s: %s sec" % (self.feed, self.loadtime)
-    
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, db_index=True)
     duplicate_link = models.CharField(max_length=255, null=True, db_index=True)
@@ -1586,9 +1597,13 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         return
         
     logging.info(" ---> Feed: [%s - %s] %s - %s" % (original_feed_id, duplicate_feed_id,
-                                             original_feed, original_feed.feed_link))
-    logging.info("            --> %s / %s" % (original_feed.feed_address, original_feed.feed_link))
-    logging.info("            --> %s / %s" % (duplicate_feed.feed_address, duplicate_feed.feed_link))
+                                                    original_feed, original_feed.feed_link))
+    logging.info("            ++> %s: %s / %s" % (original_feed.pk, 
+                                                  original_feed.feed_address,
+                                                  original_feed.feed_link))
+    logging.info("            --> %s: %s / %s" % (duplicate_feed.pk,
+                                                  duplicate_feed.feed_address,
+                                                  duplicate_feed.feed_link))
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed)
     for user_sub in user_subs:
@@ -1619,9 +1634,13 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         dupe_feed.feed = original_feed
         dupe_feed.duplicate_feed_id = duplicate_feed.pk
         dupe_feed.save()
-        
+    
+    logging.debug(' ---> Dupe subscribers: %s, Original subscribers: %s' %
+                  (duplicate_feed.num_subscribers, original_feed.num_subscribers))
     duplicate_feed.delete()
     original_feed.count_subscribers()
+    logging.debug(' ---> Now original subscribers: %s' %
+                  (original_feed.num_subscribers))
     
     MSharedStory.switch_feed(original_feed_id, duplicate_feed_id)
     

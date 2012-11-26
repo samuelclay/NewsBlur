@@ -1,8 +1,11 @@
+import re
 import datetime
 import struct
 from HTMLParser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
-from lxml.etree import ParserError
+from lxml.etree import ParserError, XMLSyntaxError
+import lxml.html, lxml.etree
+from lxml.html.clean import Cleaner
 from itertools import chain
 from django.utils.dateformat import DateFormat
 from django.utils.html import strip_tags as strip_tags_django
@@ -10,6 +13,8 @@ from django.conf import settings
 from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 from vendor import reseekfile
+
+COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 
 def story_score(story, bottom_delta=None):
     # A) Date - Assumes story is unread and within unread range
@@ -174,6 +179,37 @@ def strip_tags(html):
     s = MLStripper()
     s.feed(html)
     return s.get_data()
+
+def strip_comments(html_string):
+    return COMMENTS_RE.sub('', html_string)
+    
+def strip_comments__lxml(html_string):
+    params = {
+        'comments': True,
+        'scripts': False,
+        'javascript': False,
+        'style': False,
+        'links': False,
+        'meta': False,
+        'page_structure': False,
+        'processing_instructions': False,
+        'embedded': False,
+        'frames': False,
+        'forms': False,
+        'annoying_tags': False,
+        'remove_tags': None,
+        'allow_tags': None,
+        'remove_unknown_tags': True,
+        'safe_attrs_only': False,
+    }
+    try:
+        cleaner = Cleaner(**params)
+        html = lxml.html.fromstring(html_string)
+        clean_html = cleaner.clean_html(html)
+
+        return lxml.etree.tostring(clean_html)
+    except XMLSyntaxError:
+        return html_string
 
 def linkify(*args, **kwargs):
     return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))

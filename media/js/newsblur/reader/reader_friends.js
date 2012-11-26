@@ -248,7 +248,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     self.options.onShow();
                 }
             },
-            'onClose': function(dialog, callback) {
+            'onClose': _.bind(function(dialog, callback) {
+                clearInterval(this.sync_interval);
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {
@@ -256,7 +257,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     $.modal.close(callback);
                 });
                 $('.NB-modal-holder').empty().remove();
-            }
+            }, this)
         });
     },
     

@@ -274,7 +274,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [request setDidFailSelector:@selector(finishedWithError:)];
     [request setTimeOutSeconds:30];
     [request startAsynchronous];
-    NSLog(@"urlFeedList is %@", urlFeedList);
+
     self.lastUpdate = [NSDate date];
 }
 
@@ -303,7 +303,8 @@ static const CGFloat kFolderTitleHeight = 28;
                              JSONObjectWithData:responseData
                              options:kNilOptions 
                              error:&error];
-
+    appDelegate.savedStoriesCount = [[results objectForKey:@"starred_count"] intValue];
+    
 //    NSLog(@"results are %@", results);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
@@ -394,9 +395,9 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
-    
-    if (![[allFolders allKeys] containsObject:@"everything"]) {
-        [allFolders setValue:[[NSArray alloc] init] forKey:@"everything"];
+        
+    if (appDelegate.savedStoriesCount) {
+        [allFolders setValue:[[NSArray alloc] init] forKey:@"saved_stories"];
     }
     
     appDelegate.dictFolders = allFolders;
@@ -449,6 +450,12 @@ static const CGFloat kFolderTitleHeight = 28;
     if ([appDelegate.dictFoldersArray containsObject:@"everything"]) {
         [appDelegate.dictFoldersArray removeObject:@"everything"];
         [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:1];
+    }
+    
+    // Add Saved Stories folder
+    if (appDelegate.savedStoriesCount) {
+        [appDelegate.dictFoldersArray removeObject:@"saved_stories"];
+        [appDelegate.dictFoldersArray insertObject:@"saved_stories" atIndex:appDelegate.dictFoldersArray.count];
     }
 
     if (self.viewShowingAllFeeds) {
@@ -683,7 +690,7 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
-
+    
     return [[self.activeFeedLocations objectForKey:folderName] count];
 }
 
@@ -868,17 +875,17 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-//    NSString *folder = [appDelegate.dictFoldersArray objectAtIndex:section];
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
 //    if ([[folder stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
 //        return 0;
 //    }
     
-    if ([tableView.dataSource tableView:tableView numberOfRowsInSection:section] == 0 &&
-        section != 1) {
+    int rows = [tableView.dataSource tableView:tableView numberOfRowsInSection:section];
+    if (rows == 0 && section != 1 && folderName != @"saved_stories") {
         return 0;
     }
     
-    return 28;
+    return 32;
 }
 
 - (void)didSelectSectionHeader:(UIButton *)button {
@@ -963,6 +970,20 @@ static const CGFloat kFolderTitleHeight = 28;
                         withRowAnimation:UITableViewRowAnimationFade];
     [self.feedTitlesTable beginUpdates];
     [self.feedTitlesTable endUpdates];
+    
+    // Scroll to section header if collapse causes it to scroll far off screen
+    NSArray *indexPathsVisibleCells = [self.feedTitlesTable indexPathsForVisibleRows];
+    BOOL firstFeedInFolderVisible = NO;
+    for (NSIndexPath *indexPath in indexPathsVisibleCells) {
+        if (indexPath.row == 0 && indexPath.section == button.tag) {
+            firstFeedInFolderVisible = YES;
+        }
+    }
+    if (!firstFeedInFolderVisible) {
+        CGRect headerRect = [self.feedTitlesTable rectForHeaderInSection:button.tag];
+        CGPoint headerPoint = CGPointMake(headerRect.origin.x, headerRect.origin.y);
+        [self.feedTitlesTable setContentOffset:headerPoint animated:YES];
+    }
     
 }
 

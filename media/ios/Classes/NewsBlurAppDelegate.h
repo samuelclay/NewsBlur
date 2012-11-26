@@ -102,6 +102,7 @@
     int originalStoryCount;
     NSInteger selectedIntelligence;
     int visibleUnreadCount;
+    int savedStoriesCount;
     NSMutableArray * recentlyReadStories;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
@@ -118,6 +119,7 @@
     
     NSArray *categories;
     NSDictionary *categoryFeeds;
+    UIImageView *splashView;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -178,6 +180,7 @@
 @property (readwrite) int storyCount;
 @property (readwrite) int originalStoryCount;
 @property (readwrite) int visibleUnreadCount;
+@property (readwrite) int savedStoriesCount;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableArray * recentlyReadStories;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
@@ -197,6 +200,7 @@
 @property (nonatomic) NSDictionary *categoryFeeds;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
+- (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;
@@ -227,6 +231,8 @@
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
 - (BOOL)isPortrait;
+- (NSString *)orderKey;
+- (NSString *)readFilterKey;
 - (void)confirmLogout;
 
 - (int)indexOfNextUnreadStory;
@@ -249,9 +255,13 @@
 - (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
 - (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
+- (void)markActiveStoryUnread;
 - (NSDictionary *)markVisibleStoriesRead;
 - (void)markStoryRead:(NSString *)storyId feedId:(id)feedId;
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
+- (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
+- (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
+- (void)markActiveStorySaved:(BOOL)saved;
 - (void)markActiveFeedAllRead;
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;

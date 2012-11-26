@@ -50,7 +50,13 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
     open_reply: function(options) {
         options = options || {};
         var current_user = NEWSBLUR.assets.user_profile;
-        
+
+        if (NEWSBLUR.Globals.blurblog_protected && !NEWSBLUR.Globals.blurblog_following) {
+            var $error = this.$('.NB-story-comment-error');
+            $error.text("You must be following " + NEWSBLUR.Globals.blurblog_username + " to reply");
+            return;
+        }
+
         var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
             $.make('img', { className: 'NB-story-comment-reply-photo', src: current_user.get('photo_url') }),
             $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, current_user.get('username')),
