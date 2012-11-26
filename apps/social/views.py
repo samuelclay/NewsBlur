@@ -410,7 +410,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
             active_story_db = active_story_db[0]
             active_story = Feed.format_story(active_story_db)
             if active_story_db.image_count:
-                active_story['image_url'] = active_story_db.image_sizes[0]['url']
+                active_story['image_url'] = active_story_db.image_sizes[0]['src']
             active_story['tags'] = ', '.join(active_story_db.story_tags)
             if active_story['story_feed_id']:
                 feed = Feed.get_by_id(active_story['story_feed_id'])
