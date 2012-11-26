@@ -79,7 +79,7 @@ class FetchFeed:
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)
-        except ValueError, e:
+        except (TypeError, ValueError), e:
             logging.debug(u'   ***> [%-30s] ~FR%s, turning off microformats.' % 
                           (self.feed.title[:30], e))
             feedparser.PARSE_MICROFORMATS = False
