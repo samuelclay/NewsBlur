@@ -13,7 +13,7 @@
     {% if active_story %}
         <meta property="fb:app_id"               content="{{ facebook_app_id }}"> 
         <meta property="og:type"                 content="article"> 
-        <meta property="og:url"                  content="{{ active_story.story_permalink }}">
+        <meta property="og:url"                  content="{{ active_story.blurblog_permalink }}">
         {% if active_story.feed %}
         <meta property="og:site_name"            content="{{ active_story.feed.feed_title }}">
         {% endif %}
