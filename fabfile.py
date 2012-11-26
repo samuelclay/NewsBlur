@@ -200,6 +200,7 @@ def celery_slow():
     celery_stop()
     celery_start()
 
+@parallel
 def celery_fast():
     with cd(env.NEWSBLUR_PATH):
         run('git pull')

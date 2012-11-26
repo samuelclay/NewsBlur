@@ -221,7 +221,6 @@ INSTALLED_APPS = (
     'django_extensions',
     'djcelery',
     'django_ses',
-    'raven.contrib.django',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
@@ -246,6 +245,7 @@ INSTALLED_APPS = (
 if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
+        'raven.contrib.django',
     )
 
 # ==========

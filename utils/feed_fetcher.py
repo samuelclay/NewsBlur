@@ -58,7 +58,7 @@ class FetchFeed:
         if self.options.get('force') or not self.feed.fetched_once or not self.feed.known_good:
             modified = None
             etag = None
-            
+
         USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2 (NewsBlur Feed Fetcher - %s subscriber%s - %s)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
@@ -67,19 +67,31 @@ class FetchFeed:
         if self.options.get('feed_xml'):
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed has been fat pinged. Ignoring fat: %s' % (
                           self.feed.title[:30], len(self.options.get('feed_xml'))))
+        
         if self.options.get('fpf'):
             self.fpf = self.options.get('fpf')
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed fetched in real-time with fat ping.' % (
                           self.feed.title[:30]))
-        else:
+            return FEED_OK, self.fpf
+
+        try:
             self.fpf = feedparser.parse(self.feed.feed_address,
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)
-
+        except ValueError, e:
+            logging.debug(u'   ***> [%-30s] ~FR%s, turning off microformats.' % 
+                          (self.feed.title[:30], e))
+            feedparser.PARSE_MICROFORMATS = False
+            self.fpf = feedparser.parse(self.feed.feed_address,
+                                        agent=USER_AGENT,
+                                        etag=etag,
+                                        modified=modified)
+            feedparser.PARSE_MICROFORMATS = True
+            
         logging.debug(u'   ---> [%-30s] ~FYFeed fetch in ~FM%.4ss' % (
                       self.feed.title[:30], time.time() - start))
-        
+
         return FEED_OK, self.fpf
         
     def get_identity(self):
@@ -211,8 +223,7 @@ class ProcessFeed:
             elif entry.get('title'):
                 guids.append(entry.title)
 
-        self.feed.save()
-        self.refresh_feed()
+        self.feed = self.feed.save()
 
         # Compare new stories to existing stories, adding and updating
         start_date = datetime.datetime.utcnow()
@@ -402,7 +413,8 @@ class Dispatcher:
                 feed_code = 500
                 fetched_feed = None
                 mail_feed_error_to_admin(feed, e, local_vars=locals())
-                settings.RAVEN_CLIENT.captureException(e)
+                if not settings.DEBUG:
+                    settings.RAVEN_CLIENT.captureException(e)
 
             if not feed_code:
                 if ret_feed == FEED_OK:
