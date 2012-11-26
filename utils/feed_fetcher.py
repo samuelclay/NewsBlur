@@ -105,6 +105,9 @@ class ProcessFeed:
     
     def refresh_feed(self):
         self.feed = Feed.get_by_id(self.feed_id)
+        if self.feed_id != self.feed.pk:
+            logging.debug(" ***> Feed has changed: from %s to %s" % (self.feed_id, self.feed.pk))
+            self.feed_id = self.feed.pk
         
     def process(self):
         """ Downloads and parses a feed.
@@ -207,7 +210,9 @@ class ProcessFeed:
                 guids.append(entry.link)
             elif entry.get('title'):
                 guids.append(entry.title)
-        self.feed = self.feed.save()
+
+        self.feed.save()
+        self.refresh_feed()
 
         # Compare new stories to existing stories, adding and updating
         start_date = datetime.datetime.utcnow()
@@ -226,7 +231,7 @@ class ProcessFeed:
         existing_stories = list(MStory.objects(
             # story_guid__in=story_guids,
             story_date__gte=start_date,
-            story_feed_id=self.feed_id
+            story_feed_id=self.feed.pk
         ).limit(max(int(len(story_guids)*1.5), 10)))
         
         ret_values = self.feed.add_update_stories(stories, existing_stories,
