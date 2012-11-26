@@ -2147,7 +2147,7 @@ class MSocialServices(mongo.Document):
                            type="link", 
                            name=shared_story.story_title, 
                            description=content, 
-                           article=shared_story.story_permalink,
+                           article=shared_story.blurblog_permalink(),
                            message=message,
                            )
         except facebook.GraphAPIError, e:
