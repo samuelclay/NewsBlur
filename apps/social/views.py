@@ -412,6 +412,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
             if active_story_db.image_count:
                 active_story['image_url'] = active_story_db.image_sizes[0]['src']
             active_story['tags'] = ', '.join(active_story_db.story_tags)
+            active_story['blurblog_permalink'] = active_story_db.blurblog_permalink()
             if active_story['story_feed_id']:
                 feed = Feed.get_by_id(active_story['story_feed_id'])
                 if feed:
