@@ -1144,7 +1144,7 @@ class MSharedStory(mongo.Document):
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField(unique_with=('user_id',))
-    story_guid_hash          = mongo.StringField()
+    story_guid_hash          = mongo.StringField(max_length=6)
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     posted_to_services       = mongo.ListField(mongo.StringField(max_length=20))
     mute_email_users         = mongo.ListField(mongo.IntField())
@@ -1177,7 +1177,7 @@ class MSharedStory(mongo.Document):
         if self.story_guid_hash:
             return self.story_guid_hash
         
-        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()
+        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()[:6]
         self.save()
         
         return self.story_guid_hash
@@ -1202,7 +1202,7 @@ class MSharedStory(mongo.Document):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
 
-        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()
+        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()[:6]
         self.story_title = strip_tags(self.story_title)
         
         self.comments = linkify(strip_tags(self.comments))

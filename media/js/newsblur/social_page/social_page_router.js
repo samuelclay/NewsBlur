@@ -13,7 +13,7 @@ NEWSBLUR.Router = Backbone.Router.extend({
     },
     
     story: function(guid) {
-        this.story_guid = guid;
+        this.story_guid = guid.replace(/\?(.*)$/, '');
     },
     
     site: function(feed_id) {
