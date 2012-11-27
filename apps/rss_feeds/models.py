@@ -983,6 +983,8 @@ class Feed(models.Model):
             story['starred_date'] = story_db.starred_date
         if hasattr(story_db, 'shared_date'):
             story['shared_date'] = story_db.shared_date
+        if hasattr(story_db, 'blurblog_permalink'):
+            story['blurblog_permalink'] = story_db.blurblog_permalink()
         if text:
             from BeautifulSoup import BeautifulSoup
             soup = BeautifulSoup(story['story_content'])
@@ -1343,7 +1345,7 @@ class MStory(mongo.Document):
     
     @property
     def guid_hash(self):
-        return hashlib.sha1(self.story_guid).hexdigest()
+        return hashlib.sha1(self.story_guid).hexdigest()[:6]
     
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
@@ -1472,7 +1474,7 @@ class MStarredStory(mongo.Document):
     
     @property
     def guid_hash(self):
-        return hashlib.sha1(self.story_guid).hexdigest()
+        return hashlib.sha1(self.story_guid).hexdigest()[:6]
     
 
 class MFeedFetchHistory(mongo.Document):
