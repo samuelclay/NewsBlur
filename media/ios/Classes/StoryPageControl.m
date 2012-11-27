@@ -215,13 +215,13 @@
     [currentPage hideStory];
     [nextPage hideStory];
     [previousPage hideStory];
-
-    currentPage.pageIndex = -2;
-    nextPage.pageIndex = -2;
-    previousPage.pageIndex = -2;
     
     CGRect frame = self.scrollView.frame;
     self.scrollView.contentSize = frame.size;
+    
+    currentPage.pageIndex = -2;
+    nextPage.pageIndex = -2;
+    previousPage.pageIndex = -2;
 }
 
 - (void)refreshPages {
@@ -320,6 +320,7 @@
         [pageController setActiveStoryAtIndex:location];
         [pageController clearStory];
         if (self.isDraggingScrollview ||
+            self.scrollingToPage < 0 ||
             abs(newIndex - self.scrollingToPage) <= 1) {
             [pageController initStory];
             [pageController drawStory];
@@ -462,7 +463,7 @@
     if (!force && currentPage.pageIndex > 0 &&
         currentPage.pageIndex == nearestNumber &&
         currentPage.pageIndex != self.scrollingToPage) {
-        NSLog(@"Skipping setStoryFromScroll: currentPage is %d (%d, %d)", currentPage.pageIndex, nearestNumber, self.scrollingToPage);
+//        NSLog(@"Skipping setStoryFromScroll: currentPage is %d (%d, %d)", currentPage.pageIndex, nearestNumber, self.scrollingToPage);
         return;
     }
     
