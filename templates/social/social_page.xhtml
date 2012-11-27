@@ -17,7 +17,9 @@
         {% if active_story.feed %}
         <meta property="og:site_name"            content="{{ active_story.feed.feed_title }}">
         {% endif %}
+        {% if active_story.image_url %}
         <meta property="og:image"                content="{{ active_story.image_url }}">
+        {% endif %}
         <meta property="og:title"                content="{{ active_story.story_title }}">
         <meta property="og:description"          content="{{ active_story.story_content|striptags|addslashes|safe }}"> 
         <meta property="article:published_time"  content="{{ active_story.iso8601 }}"> 
