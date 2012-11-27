@@ -25,7 +25,7 @@
                 {% endif %}
                 
                 
-                {{ story.shared_date|date:"D F j<\s\u\p>S</\s\u\p>, Y"|safe }} 
+                <a href="{{ story.blurblog_permalink }}" class="NB-story-permalink">{{ story.shared_date|date:"D F j<\s\u\p>S</\s\u\p>, Y"|safe }}</a>
             </div>
             {% if story.story_authors %}
                 <div class="NB-story-author">{{ story.story_authors }}</div>

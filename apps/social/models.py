@@ -1629,8 +1629,9 @@ class MSharedStory(mongo.Document):
         
     def blurblog_permalink(self):
         profile = MSocialProfile.get_user(self.user_id)
-        return "%s/story/%s" % (
+        return "%s/story/%s/%s" % (
             profile.blurblog_url,
+            slugify(self.story_title)[:20],
             self.guid_hash[:6]
         )
     

@@ -2,6 +2,7 @@ import time
 import datetime
 import zlib
 import random
+import re
 from bson.objectid import ObjectId
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse
@@ -403,7 +404,10 @@ def load_social_page(request, user_id, username=None, **kwargs):
     active_story = None
     path = request.META['PATH_INFO']
     if '/story/' in path and format != 'html':
-        story_id = path.replace('/story/', '')
+        story_id = re.sub(r"^/story/.*?/(.*?)/?", "", path)
+        if not story_id or '/story' in story_id:
+            story_id = path.replace('/story/', '')
+
         active_story_db = MSharedStory.objects.filter(user_id=social_user.pk,
                                                       story_guid_hash=story_id).limit(1)
         if active_story_db:
