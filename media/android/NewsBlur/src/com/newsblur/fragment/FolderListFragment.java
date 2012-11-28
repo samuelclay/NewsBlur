@@ -116,7 +116,7 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 		return v;
 	}
 
-	private void checkOpenFolderPreferences() {
+	public void checkOpenFolderPreferences() {
 		if (sharedPreferences == null) {
 			sharedPreferences = getActivity().getSharedPreferences(PrefConstants.PREFERENCES, 0);
 		}
@@ -124,6 +124,8 @@ public class FolderListFragment extends Fragment implements OnGroupClickListener
 			long groupId = folderAdapter.getGroupId(i);
 			if (sharedPreferences.getBoolean(AppConstants.FOLDER_PRE + groupId, true)) {
 				list.expandGroup(i);
+			} else {
+				list.collapseGroup(i);
 			}
 		}
 	}

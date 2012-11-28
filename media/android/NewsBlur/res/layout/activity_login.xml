@@ -3,15 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login_background"
-    android:orientation="vertical"
-    android:paddingBottom="30dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/login_logo_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:paddingBottom="25dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
         android:background="@color/item_background"
         android:gravity="center_horizontal" >
 

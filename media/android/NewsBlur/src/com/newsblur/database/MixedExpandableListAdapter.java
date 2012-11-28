@@ -571,7 +571,7 @@ public class MixedExpandableListAdapter extends BaseExpandableListAdapter{
 			@Override
 			public void onChanged() {
 				mDataValid = true;
-				notifyDataSetChanged();
+				notifyDataSetInvalidated();
 			}
 
 			@Override
