@@ -38,17 +38,24 @@
 - (void)viewDidLoad {
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
     
-    // For textField1
     [[NSNotificationCenter defaultCenter] 
      addObserver:self 
      selector:@selector(onTextChange:)
      name:UITextViewTextDidChangeNotification 
      object:self.commentField];
     
-    UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemCancel target:self action:@selector(doCancelButton:)];
+    UIBarButtonItem *cancel = [[UIBarButtonItem alloc]
+                               initWithTitle:@"Cancel"
+                               style:UIBarButtonSystemItemCancel
+                               target:self
+                               action:@selector(doCancelButton:)];
     self.navigationItem.leftBarButtonItem = cancel;
     
-    UIBarButtonItem *submit = [[UIBarButtonItem alloc] initWithTitle:@"Post" style:UIBarButtonSystemItemDone target:self action:@selector(doShareThisStory:)];
+    UIBarButtonItem *submit = [[UIBarButtonItem alloc]
+                               initWithTitle:@"Post"
+                               style:UIBarButtonSystemItemDone
+                               target:self
+                               action:@selector(doShareThisStory:)];
     self.submitButton = submit;
     self.navigationItem.rightBarButtonItem = submit;
     
@@ -67,7 +74,10 @@
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f
+                                                                            green:0.36f
+                                                                             blue:0.46
+                                                                            alpha:0.9];
     } else {
         self.submitButton.tintColor = UIColorFromRGB(0x709d3c);
     }
@@ -79,8 +89,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
     [self setCommentField:nil];
     [self setFacebookButton:nil];
     [self setTwitterButton:nil];
@@ -137,7 +146,10 @@
     [userPreferences synchronize];
 }
 
-- (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)replyId {
+- (void)setSiteInfo:(NSString *)type
+          setUserId:(NSString *)userId
+        setUsername:(NSString *)username
+         setReplyId:(NSString *)replyId {
     [self.submitButton setStyle:UIBarButtonItemStyleDone];
     if ([type isEqualToString: @"edit-reply"]) {
         self.currentType = nil;
@@ -152,10 +164,8 @@
         NSArray *replies = [appDelegate.activeComment objectForKey:@"replies"];
         NSDictionary *reply = nil;
         for (int i = 0; i < replies.count; i++) {
-            NSString *replyId = [NSString stringWithFormat:@"%@", [[replies objectAtIndex:i] valueForKey:@"reply_id"]];
-            NSLog(@"[replies objectAtIndex:i] valueForKey:@reply_id] %@", [[replies objectAtIndex:i] valueForKey:@"reply_id"]);
-            NSLog(@":self.activeReplyId %@", self.activeReplyId);
-            
+            NSString *replyId = [NSString stringWithFormat:@"%@",
+                                 [[replies objectAtIndex:i] valueForKey:@"reply_id"]];
             if ([replyId isEqualToString:self.activeReplyId]) {
                 reply = [replies objectAtIndex:i];
             }
@@ -164,7 +174,6 @@
             self.commentField.text = [self stringByStrippingHTML:[reply objectForKey:@"comments"]]; 
         }
     } else if ([type isEqualToString: @"reply"]) {
-        
         self.activeReplyId = nil;
         [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         facebookButton.hidden = YES;

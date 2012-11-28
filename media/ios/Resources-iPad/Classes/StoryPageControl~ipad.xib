@@ -36,7 +36,7 @@
 			</object>
 			<object class="IBUIView" id="191373211">
 				<reference key="NSNextResponder"/>
-				<int key="NSvFlags">256</int>
+				<int key="NSvFlags">274</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="IBUIScrollView" id="951898239">
 						<reference key="NSNextResponder" ref="191373211"/>
@@ -144,6 +144,7 @@
 						<string key="NSFrame">{{350, 936}, {70, 43}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIAutoresizesSubviews">NO</bool>
@@ -1715,7 +1716,6 @@
 					<string key="className">StoryPageControl</string>
 					<string key="superclassName">BaseViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="doNextStory">id</string>
 						<string key="doNextUnreadStory">id</string>
 						<string key="doPreviousStory">id</string>
 						<string key="showOriginalSubview:">id</string>
@@ -1723,10 +1723,6 @@
 						<string key="toggleFontSize:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="doNextStory">
-							<string key="name">doNextStory</string>
-							<string key="candidateClassName">id</string>
-						</object>
 						<object class="IBActionInfo" key="doNextUnreadStory">
 							<string key="name">doNextUnreadStory</string>
 							<string key="candidateClassName">id</string>
@@ -1754,7 +1750,6 @@
 						<string key="bottomPlaceholderToolbar">UIToolbar</string>
 						<string key="buttonAction">UIBarButtonItem</string>
 						<string key="buttonNext">UIBarButtonItem</string>
-						<string key="buttonNextStory">UIBarButtonItem</string>
 						<string key="buttonPrevious">UIBarButtonItem</string>
 						<string key="fontSettingsButton">UIBarButtonItem</string>
 						<string key="originalStoryButton">UIBarButtonItem</string>
@@ -1784,10 +1779,6 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="buttonNext">
 							<string key="name">buttonNext</string>
-							<string key="candidateClassName">UIBarButtonItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="buttonNextStory">
-							<string key="name">buttonNextStory</string>
 							<string key="candidateClassName">UIBarButtonItem</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="buttonPrevious">

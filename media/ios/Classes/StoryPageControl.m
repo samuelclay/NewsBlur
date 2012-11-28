@@ -242,6 +242,7 @@
 	if (widthCount == 0) {
 		widthCount = 1;
 	}
+    NSLog(@"resizeScrollView: %@", NSStringFromCGRect(self.scrollView.frame));
     self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width
                                              * widthCount,
                                              self.scrollView.frame.size.height);
@@ -416,6 +417,8 @@
         CGFloat pageWidth = self.scrollView.frame.size.width;
         float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
         NSInteger nearestNumber = lround(fractionalPage);
+        
+        if (![appDelegate.activeFeedStories count]) return;
         
         int storyIndex = [appDelegate indexFromLocation:nearestNumber];
         if (storyIndex != [appDelegate indexOfActiveStory]) {

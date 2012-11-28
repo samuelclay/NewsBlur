@@ -307,15 +307,16 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToShareView];
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId]; 
     } else {
         if (self.shareNavigationController == nil) {
-            UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
+            UINavigationController *shareNav = [[UINavigationController alloc]
+                                                initWithRootViewController:self.shareViewController];
             self.shareNavigationController = shareNav;
         }
         [self.navigationController presentModalViewController:self.shareNavigationController animated:YES];
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId]; 
     }
+    
+    [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
 }
 
 - (void)hideShareView:(BOOL)resetComment {
