@@ -39,7 +39,8 @@ def timelimit(timeout):
             return c.result
         return _2
     return _1
-    
+
+         
 def utf8encode(tstr):
     """ Encodes a unicode string in utf-8
     """
