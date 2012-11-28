@@ -79,9 +79,9 @@ static UIColor *blueBackgroundColor = nil;
         
         if (listType == NBFeedListSocial) {
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 14, psWidth, 17);
+                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, 17);
             } else {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 10, psWidth, 17);
+                rr = CGRectMake(rect.size.width + rect.origin.x - psOffset, 7, psWidth, 17);
             }
         } else if (listType == NBFeedListFolder) {
             rr = CGRectMake(rect.size.width + rect.origin.x - psOffset - 22, 7, psWidth, 17);
@@ -108,9 +108,9 @@ static UIColor *blueBackgroundColor = nil;
         CGRect rr;
         if (listType == NBFeedListSocial) {
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 14, ntWidth, 17);
+                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, 17);
             } else {
-                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 10, ntWidth, 17);
+                rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset, 7, ntWidth, 17);
             }
         } else if (listType == NBFeedListFolder) {
             rr = CGRectMake(rect.size.width + rect.origin.x - psWidth - psPadding - ntOffset - 22, 7, ntWidth, 17);

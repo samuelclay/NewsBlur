@@ -26,8 +26,8 @@
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
-#define kBlurblogTableViewRowHeight 47;
-#define kPhoneBlurblogTableViewRowHeight 39;
+#define kBlurblogTableViewRowHeight 32;
+#define kPhoneBlurblogTableViewRowHeight 32;
 static const CGFloat kFolderTitleHeight = 28;
 
 @interface NewsBlurViewController () 
