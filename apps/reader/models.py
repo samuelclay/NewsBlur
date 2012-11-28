@@ -153,7 +153,6 @@ class UserSubscription(models.Model):
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
-        print story_ids, ignore_user_stories, order, read_filter
         r.expire(unread_ranked_stories_key, 24*60*60)
         if not ignore_user_stories:
             r.delete(unread_stories_key)

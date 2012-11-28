@@ -8,8 +8,6 @@ import mongoengine as mongo
 import zlib
 import hashlib
 import redis
-import bson
-import pytz
 from collections import defaultdict
 from operator import itemgetter
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
@@ -1640,6 +1638,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     logging.debug(' ---> Dupe subscribers: %s, Original subscribers: %s' %
                   (duplicate_feed.num_subscribers, original_feed.num_subscribers))
     duplicate_feed.delete()
+    logging.debug(' ---> Deleted duplicate feed: %s' % (duplicate_feed))
     original_feed.count_subscribers()
     logging.debug(' ---> Now original subscribers: %s' %
                   (original_feed.num_subscribers))
