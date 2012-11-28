@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newsblur"
-    android:versionCode="27"
-    android:versionName="1.0.4" >
+    android:versionCode="29"
+    android:versionName="1.0.55" >
 
     <uses-sdk
         android:minSdkVersion="8"

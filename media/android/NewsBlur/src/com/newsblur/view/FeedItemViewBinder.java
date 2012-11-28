@@ -72,6 +72,9 @@ public class FeedItemViewBinder implements ViewBinder {
 			} catch (UnsupportedEncodingException e) {
 				((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
 				Log.e(TAG, "Error decoding from title string");
+			}  catch (IllegalArgumentException e) {
+				((TextView) view).setText(Html.fromHtml(cursor.getString(columnIndex)));
+				Log.d(TAG, "Title contained an unescaped character");
 			}
 			return true;
 		}
