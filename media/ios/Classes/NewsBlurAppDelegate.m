@@ -777,8 +777,8 @@
 
 - (int)locationOfActiveStory {
     for (int i=0; i < [activeFeedStoryLocations count]; i++) {
-        if ([activeFeedStoryLocationIds objectAtIndex:i] == 
-            [self.activeStory objectForKey:@"id"]) {
+        if ([[activeFeedStoryLocationIds objectAtIndex:i]
+             isEqualToString:[self.activeStory objectForKey:@"id"]]) {
             return i;
         }
     }

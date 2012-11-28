@@ -9,6 +9,7 @@
 #import "ShareViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "StoryDetailViewController.h"
+#import "FeedDetailViewController.h"
 #import "StoryPageControl.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Utilities.h"
@@ -367,6 +368,8 @@
     self.commentField.text = nil;
     [appDelegate.storyPageControl refreshPages];
     [appDelegate.storyPageControl.currentPage refreshComments:replyId];
+    [appDelegate changeActiveFeedDetailRow];
+
 }
 
 

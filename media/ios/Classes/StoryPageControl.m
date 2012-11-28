@@ -443,6 +443,7 @@
 
     self.scrollingToPage = pageIndex;
 
+    // Check if already on the selected page
     if (self.scrollView.contentOffset.x == frame.origin.x) {
         [self applyNewIndex:pageIndex pageController:currentPage];
         [self setStoryFromScroll];
