@@ -3,15 +3,21 @@ from django.test.client import Client
 from django.test import TestCase
 from django.core import management
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from apps.rss_feeds.models import Feed, MStory
-
+from mongoengine.connection import connect, disconnect
 
 class FeedTest(TestCase):
     fixtures = ['rss_feeds.json']
     
     def setUp(self):
+        disconnect()
+        settings.MONGODB = connect('test_newsblur')
         self.client = Client()
 
+    def tearDown(self):
+        settings.MONGODB.drop_database('test_newsblur')
+        
     def test_load_feeds__gawker(self):
         self.client.login(username='conesus', password='test')
         
