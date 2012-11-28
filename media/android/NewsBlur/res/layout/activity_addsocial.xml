@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/item_background" >
+
+    <FrameLayout
+        android:id="@+id/addsocial_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:padding="20dp" />
+    
+    <LinearLayout
+        android:id="@+id/addsocial_button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/newsblur_blue"
+        android:gravity="right"
+        android:padding="10dp" >
+
+        <Button
+            android:id="@+id/login_addsocial_nextstep"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:text="Skip this step"
+            android:textSize="14sp" />
+        
+    </LinearLayout>
+    
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="8dip"
+        android:layout_above="@id/addsocial_button_bar"
+        android:background="@drawable/inverted_orangeline_shadow" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="8dip"
+        android:background="@drawable/orangeline_shadow" />
+
+</RelativeLayout>

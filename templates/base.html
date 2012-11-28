@@ -4,9 +4,12 @@
 <head>
   <title>{% block title %}NewsBlur{% endblock %}</title>
   <link rel="shortcut icon" href="{{ MEDIA_URL }}img/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="{{ MEDIA_URL }}img/favicon_32.png" sizes="32x32"/>
+  <link rel="icon" href="{{ MEDIA_URL }}img/favicon_64.png" sizes="64x64"/>
   <link rel="apple-touch-icon" href="/media/img/mobile/apple-touch-icon-precomposed.png" />
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-  <meta name="msapplication-TileImage" content="{{ MEDIA_URL }}img/logo_128.png" />
+  <meta name="msapplication-TileImage" content="{{ MEDIA_URL }}img/logo_144.png" />
+  <meta name="msapplication-TileColor" content="#F7E5A8"/>
 
   <script type="text/javascript" charset="utf-8">
     window.NEWSBLUR = {};
@@ -34,7 +37,6 @@
       'has_setup_feeds'         : {{ user_profile.has_setup_feeds|yesno:"true,false" }},
       'has_found_friends'       : {{ user_profile.has_found_friends|yesno:"true,false" }},
       'has_trained_intelligence': {{ user_profile.has_trained_intelligence|yesno:"true,false" }},
-      'hide_mobile'             : {{ user_profile.hide_mobile|yesno:"true,false" }},
       'story_titles_pane_size'  : 168,
       'story_pane_anchor'       : 'south',
       'new_window'              : 1,
@@ -55,6 +57,7 @@
       'view_settings'           : {},
       'collapsed_folders'       : [],
       'story_styling'           : 'sans-serif',
+      'hide_public_comments'    : false,
       'timezone'                : "{{ user_profile.timezone }}",
       'story_share_twitter'     : true,
       'story_share_facebook'    : true,

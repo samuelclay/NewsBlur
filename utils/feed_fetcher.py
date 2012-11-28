@@ -6,7 +6,7 @@ import urllib2
 import xml.sax
 import redis
 import random
-from django.core.cache import cache
+import pymongo
 from django.conf import settings
 from django.db import IntegrityError
 from apps.reader.models import UserSubscription
@@ -34,7 +34,7 @@ def mtime(ttime):
     
 class FetchFeed:
     def __init__(self, feed_id, options):
-        self.feed = Feed.objects.get(pk=feed_id)
+        self.feed = Feed.get_by_id(feed_id)
         self.options = options
         self.fpf = None
     
@@ -57,7 +57,7 @@ class FetchFeed:
         if self.options.get('force') or not self.feed.fetched_once or not self.feed.known_good:
             modified = None
             etag = None
-            
+
         USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2 (NewsBlur Feed Fetcher - %s subscriber%s - %s)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
@@ -66,19 +66,31 @@ class FetchFeed:
         if self.options.get('feed_xml'):
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed has been fat pinged. Ignoring fat: %s' % (
                           self.feed.title[:30], len(self.options.get('feed_xml'))))
+        
         if self.options.get('fpf'):
             self.fpf = self.options.get('fpf')
             logging.debug(u'   ---> [%-30s] ~FM~BKFeed fetched in real-time with fat ping.' % (
                           self.feed.title[:30]))
-        else:
+            return FEED_OK, self.fpf
+
+        try:
             self.fpf = feedparser.parse(self.feed.feed_address,
                                         agent=USER_AGENT,
                                         etag=etag,
                                         modified=modified)
-
+        except (TypeError, ValueError), e:
+            logging.debug(u'   ***> [%-30s] ~FR%s, turning off microformats.' % 
+                          (self.feed.title[:30], e))
+            feedparser.PARSE_MICROFORMATS = False
+            self.fpf = feedparser.parse(self.feed.feed_address,
+                                        agent=USER_AGENT,
+                                        etag=etag,
+                                        modified=modified)
+            feedparser.PARSE_MICROFORMATS = True
+            
         logging.debug(u'   ---> [%-30s] ~FYFeed fetch in ~FM%.4ss' % (
                       self.feed.title[:30], time.time() - start))
-        
+
         return FEED_OK, self.fpf
         
     def get_identity(self):
@@ -98,6 +110,9 @@ class ProcessFeed:
     
     def refresh_feed(self):
         self.feed = Feed.get_by_id(self.feed_id)
+        if self.feed_id != self.feed.pk:
+            logging.debug(" ***> Feed has changed: from %s to %s" % (self.feed_id, self.feed.pk))
+            self.feed_id = self.feed.pk
         
     def process(self):
         """ Downloads and parses a feed.
@@ -204,7 +219,7 @@ class ProcessFeed:
         existing_stories = list(MStory.objects(
             # story_guid__in=story_guids,
             story_date__gte=start_date,
-            story_feed_id=self.feed_id
+            story_feed_id=self.feed.pk
         ).limit(max(int(len(story_guids)*1.5), 10)))
         
         ret_values = self.feed.add_update_stories(stories, existing_stories,
@@ -328,6 +343,8 @@ class Dispatcher:
                             feed.fetched_once = True
                             feed = feed.save()
                         # MUserStory.delete_old_stories(feed_id=feed.pk)
+                        if random.random() <= 0.01:
+                            feed.sync_redis()
                         try:
                             self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
@@ -335,9 +352,6 @@ class Dispatcher:
                         if self.options['verbose']:
                             logging.debug(u'   ---> [%-30s] ~FBTIME: unread count in ~FM%.4ss' % (
                                           feed.title[:30], time.time() - start))
-                    cache.delete('feed_stories:%s-%s-%s' % (feed.id, 0, 25))
-                    # if ret_entries['new'] or ret_entries['updated'] or self.options['force']:
-                    #     feed.get_stories(force=True)
             except KeyboardInterrupt:
                 break
             except urllib2.HTTPError, e:
@@ -358,11 +372,13 @@ class Dispatcher:
                 logging.error(tb)
                 logging.debug('[%d] ! -------------------------' % (feed_id,))
                 ret_feed = FEED_ERREXC 
-                feed = self.refresh_feed(feed.pk)
+                feed = Feed.get_by_id(getattr(feed, 'pk', feed_id))
                 feed.save_feed_history(500, "Error", tb)
                 feed_code = 500
                 fetched_feed = None
                 mail_feed_error_to_admin(feed, e, local_vars=locals())
+                if not settings.DEBUG:
+                    settings.RAVEN_CLIENT.captureException(e)
 
             if not feed_code:
                 if ret_feed == FEED_OK:
@@ -405,6 +421,7 @@ class Dispatcher:
                     fetched_feed = None
                     page_data = None
                     mail_feed_error_to_admin(feed, e, local_vars=locals())
+                    settings.RAVEN_CLIENT.captureException(e)
 
                 feed = self.refresh_feed(feed.pk)
                 logging.debug(u'   ---> [%-30s] ~FYFetching icon: %s' % (feed.title[:30], feed.feed_link))
@@ -422,6 +439,7 @@ class Dispatcher:
                     logging.debug('[%d] ! -------------------------' % (feed_id,))
                     # feed.save_feed_history(560, "Icon Error", tb)
                     mail_feed_error_to_admin(feed, e, local_vars=locals())
+                    settings.RAVEN_CLIENT.captureException(e)
             else:
                 logging.debug(u'   ---> [%-30s] ~FBSkipping page fetch: (%s on %s stories) %s' % (feed.title[:30], self.feed_trans[ret_feed], feed.stories_last_month, '' if feed.has_page else ' [HAS NO PAGE]'))
             
@@ -470,28 +488,33 @@ class Dispatcher:
                                                     active=True,
                                                     user__profile__last_seen_on__gte=UNREAD_CUTOFF)\
                                             .order_by('-last_read_date')
-
+        
+        if not user_subs.count():
+            return
+            
         for sub in user_subs:
             if not sub.needs_unread_recalc:
                 sub.needs_unread_recalc = True
                 sub.save()
 
         if self.options['compute_scores']:
-            stories_db = MStory.objects(story_feed_id=feed.pk,
-                                        story_date__gte=UNREAD_CUTOFF)
+            stories = MStory.objects(story_feed_id=feed.pk,
+                                     story_date__gte=UNREAD_CUTOFF)\
+                            .read_preference(pymongo.ReadPreference.PRIMARY)
+            stories = Feed.format_stories(stories, feed.pk)
             logging.debug(u'   ---> [%-30s] ~FYComputing scores: ~SB%s stories~SN with ~SB%s subscribers ~SN(%s/%s/%s)' % (
-                          feed.title[:30], stories_db.count(), user_subs.count(),
+                          feed.title[:30], len(stories), user_subs.count(),
                           feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers))        
-            self.calculate_feed_scores_with_stories(user_subs, stories_db)
+            self.calculate_feed_scores_with_stories(user_subs, stories)
         elif self.options.get('mongodb_replication_lag'):
             logging.debug(u'   ---> [%-30s] ~BR~FYSkipping computing scores: ~SB%s seconds~SN of mongodb lag' % (
               feed.title[:30], self.options.get('mongodb_replication_lag')))
     
     @timelimit(10)
-    def calculate_feed_scores_with_stories(self, user_subs, stories_db):
+    def calculate_feed_scores_with_stories(self, user_subs, stories):
         for sub in user_subs:
             silent = False if self.options['verbose'] >= 2 else True
-            sub.calculate_feed_scores(silent=silent, stories_db=stories_db)
+            sub.calculate_feed_scores(silent=silent, stories=stories)
             
     def add_jobs(self, feeds_queue, feeds_count=1):
         """ adds a feed processing job to the pool

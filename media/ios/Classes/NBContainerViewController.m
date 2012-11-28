@@ -16,6 +16,7 @@
 #import "InteractionCell.h"
 #import "ActivityCell.h"
 #import "FeedsMenuViewController.h"
+#import "FeedDetailMenuViewController.h"
 #import "FontSettingsViewController.h"
 #import "AddSiteViewController.h"
 
@@ -240,19 +241,38 @@
         popoverController = nil;
         return;
     }
-
+    
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.feedsMenuViewController];
     
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(200, 86)];
-//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-//                                       initWithCustomView:sender];
-    [popoverController presentPopoverFromBarButtonItem:sender 
-                              permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                              animated:YES]; 
+    [popoverController setPopoverContentSize:CGSizeMake(200, 76)];
+    //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
+    //                                       initWithCustomView:sender];
+    [popoverController presentPopoverFromBarButtonItem:sender
+                              permittedArrowDirections:UIPopoverArrowDirectionAny
+                                              animated:YES];
+}
+
+- (void)showFeedDetailMenuPopover:(id)sender {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+        popoverController = nil;
+        return;
+    }
+    
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:appDelegate.feedDetailMenuViewController];
+    
+    popoverController.delegate = self;
+    
+    
+    [popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38*3 : 38*5)];
+    [popoverController presentPopoverFromBarButtonItem:sender
+                              permittedArrowDirections:UIPopoverArrowDirectionAny
+                                              animated:YES];
 }
 
 - (void)showFontSettingsPopover:(id)sender {
@@ -268,7 +288,7 @@
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
+    [popoverController setPopoverContentSize:CGSizeMake(240, 228)];
     //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
     //                                       initWithCustomView:sender];
     [popoverController presentPopoverFromBarButtonItem:sender 

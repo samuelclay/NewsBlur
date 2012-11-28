@@ -170,7 +170,10 @@ class IconImporter(object):
             compressed_content = key.get_contents_as_string()
             stream = StringIO(compressed_content)
             gz = gzip.GzipFile(fileobj=stream)
-            content = gz.read()
+            try:
+                content = gz.read()
+            except IOError:
+                content = None
         else:
             content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)
@@ -197,6 +200,9 @@ class IconImporter(object):
     
     def get_image_from_url(self, url):
         # print 'Requesting: %s' % url
+        if not url:
+            return None, None
+            
         @timelimit(30)
         def _1(url):
             try:

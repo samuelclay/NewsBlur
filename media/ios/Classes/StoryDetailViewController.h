@@ -7,13 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import "WEPopoverController.h"
+#import "BaseViewController.h"
 
 @class NewsBlurAppDelegate;
 @class ASIHTTPRequest;
 
-@interface StoryDetailViewController : UIViewController 
-<UIPopoverControllerDelegate, WEPopoverControllerDelegate> {
+@interface StoryDetailViewController : BaseViewController
+<UIPopoverControllerDelegate, WEPopoverControllerDelegate,
+UIScrollViewDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSString *activeStoryId;
@@ -29,7 +32,7 @@
     UIToolbar *bottomPlaceholderToolbar;
     UIBarButtonItem *buttonBack;
 	Class popoverClass;
-
+    BOOL pullingScrollview;
 }
 
 @property (nonatomic, strong) UIActivityIndicatorView *loadingIndicator;
@@ -53,6 +56,7 @@
 @property (nonatomic) IBOutlet UIBarButtonItem *originalStoryButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
 @property (nonatomic) IBOutlet UILabel *noStorySelectedLabel;
+@property (nonatomic, assign) BOOL pullingScrollview;
 
 
 - (void)setNextPreviousButtons;
@@ -73,6 +77,14 @@
 - (void)showShareHUD:(NSString *)msg;
 - (void)refreshComments:(NSString *)replyId;
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request;
+- (void)openSendToDialog;
+- (void)markStoryAsUnread;
+- (void)finishMarkAsUnread:(ASIHTTPRequest *)request;
+- (void)markStoryAsSaved;
+- (void)finishMarkAsSaved:(ASIHTTPRequest *)request;
+- (void)markStoryAsUnsaved;
+- (void)finishMarkAsUnsaved:(ASIHTTPRequest *)request;
+- (void)openShareDialog;
 - (void)finishLikeComment:(ASIHTTPRequest *)request;
 - (void)subscribeToBlurblog;
 - (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request;

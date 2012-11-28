@@ -19,8 +19,9 @@
 
 @class NewsBlurViewController;
 @class DashboardViewController;
-@class FeedDetailViewController;
 @class FeedsMenuViewController;
+@class FeedDetailViewController;
+@class FeedDetailMenuViewController;
 @class FeedDashboardViewController;
 @class FirstTimeUserViewController;
 @class FirstTimeUserAddSitesViewController;
@@ -37,7 +38,7 @@
 @class UserProfileViewController;
 @class NBContainerViewController;
 @class FindSitesViewController;
-
+@class UnreadCounts;
 
 @interface NewsBlurAppDelegate : BaseViewController <UIApplicationDelegate, UIAlertViewDelegate>  {
     UIWindow *window;
@@ -56,11 +57,12 @@
     DashboardViewController *dashboardViewController;
     NewsBlurViewController *feedsViewController;
     FeedsMenuViewController *feedsMenuViewController;
+    FeedDetailViewController *feedDetailViewController;
+    FeedDetailMenuViewController *feedDetailMenuViewController;
     FeedDashboardViewController *feedDashboardViewController;
     FriendsListViewController *friendsListViewController;
     FontSettingsViewController *fontSettingsViewController;
-    FeedDetailViewController *feedDetailViewController;
-
+    
     StoryDetailViewController *storyDetailViewController;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
@@ -73,6 +75,7 @@
     NSString * activeUsername;
     NSString * activeUserProfileId;
     NSString * activeUserProfileName;
+    BOOL hasNoSites;
     BOOL isRiverView;
     BOOL isSocialView;
     BOOL isSocialRiverView;
@@ -99,9 +102,11 @@
     int originalStoryCount;
     NSInteger selectedIntelligence;
     int visibleUnreadCount;
+    int savedStoriesCount;
     NSMutableArray * recentlyReadStories;
     NSMutableSet * recentlyReadFeeds;
     NSMutableArray * readStories;
+    NSMutableDictionary *folderCountCache;
     
 	NSDictionary * dictFolders;
     NSMutableDictionary * dictFeeds;
@@ -114,6 +119,7 @@
     
     NSArray *categories;
     NSDictionary *categoryFeeds;
+    UIImageView *splashView;
 }
 
 @property (nonatomic) IBOutlet UIWindow *window;
@@ -126,8 +132,9 @@
 @property (nonatomic) IBOutlet DashboardViewController *dashboardViewController;
 @property (nonatomic) IBOutlet NewsBlurViewController *feedsViewController;
 @property (nonatomic) IBOutlet FeedsMenuViewController *feedsMenuViewController;
-@property (nonatomic) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic) IBOutlet FeedDetailViewController *feedDetailViewController;
+@property (nonatomic) IBOutlet FeedDetailMenuViewController *feedDetailMenuViewController;
+@property (nonatomic) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
@@ -147,6 +154,7 @@
 @property (readwrite) NSString * activeUsername;
 @property (readwrite) NSString * activeUserProfileId;
 @property (readwrite) NSString * activeUserProfileName;
+@property (nonatomic, readwrite) BOOL hasNoSites;
 @property (nonatomic, readwrite) BOOL isRiverView;
 @property (nonatomic, readwrite) BOOL isSocialView;
 @property (nonatomic, readwrite) BOOL isSocialRiverView;
@@ -172,10 +180,12 @@
 @property (readwrite) int storyCount;
 @property (readwrite) int originalStoryCount;
 @property (readwrite) int visibleUnreadCount;
+@property (readwrite) int savedStoriesCount;
 @property (readwrite) NSInteger selectedIntelligence;
 @property (readwrite) NSMutableArray * recentlyReadStories;
 @property (readwrite) NSMutableSet * recentlyReadFeeds;
 @property (readwrite) NSMutableArray * readStories;
+@property (nonatomic) NSMutableDictionary *folderCountCache;
 
 @property (nonatomic) NSDictionary *dictFolders;
 @property (nonatomic, strong) NSMutableDictionary *dictFeeds;
@@ -190,6 +200,7 @@
 @property (nonatomic) NSDictionary *categoryFeeds;
 
 + (NewsBlurAppDelegate*) sharedAppDelegate;
+- (void)startupAnimationDone:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context;
 
 - (void)showFirstTimeUser;
 - (void)showLogin;
@@ -220,6 +231,8 @@
 - (void)resetShareComments;
 - (BOOL)isSocialFeed:(NSString *)feedIdStr;
 - (BOOL)isPortrait;
+- (NSString *)orderKey;
+- (NSString *)readFilterKey;
 - (void)confirmLogout;
 
 - (int)indexOfNextUnreadStory;
@@ -239,10 +252,16 @@
 - (int)allUnreadCount;
 - (int)unreadCountForFeed:(NSString *)feedId;
 - (int)unreadCountForFolder:(NSString *)folderName;
+- (UnreadCounts *)splitUnreadCountForFeed:(NSString *)feedId;
+- (UnreadCounts *)splitUnreadCountForFolder:(NSString *)folderName;
 - (void)markActiveStoryRead;
+- (void)markActiveStoryUnread;
 - (NSDictionary *)markVisibleStoriesRead;
 - (void)markStoryRead:(NSString *)storyId feedId:(id)feedId;
 - (void)markStoryRead:(NSDictionary *)story feed:(NSDictionary *)feed;
+- (void)markStoryUnread:(NSString *)storyId feedId:(id)feedId;
+- (void)markStoryUnread:(NSDictionary *)story feed:(NSDictionary *)feed;
+- (void)markActiveStorySaved:(BOOL)saved;
 - (void)markActiveFeedAllRead;
 - (void)markActiveFolderAllRead;
 - (void)markFeedAllRead:(id)feedId;
@@ -254,5 +273,19 @@
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
 - (UIButton *)makeRightFeedTitle:(NSDictionary *)feed;
+@end
+
+@interface UnreadCounts : NSObject {
+    int ps;
+    int nt;
+    int ng;
+}
+
+@property (readwrite) int ps;
+@property (readwrite) int nt;
+@property (readwrite) int ng;
+
+- (void)addCounts:(UnreadCounts *)counts;
+
 @end
 

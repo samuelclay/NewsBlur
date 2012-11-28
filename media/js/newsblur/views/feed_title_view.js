@@ -188,7 +188,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     flash_changes: function() {
         var $highlight = this.$('.NB-feed-highlight');
-
+        $highlight.stop();
         $highlight.css({
             'backgroundColor': '#F0F076',
             'display': 'block'
@@ -237,12 +237,17 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
     },
     
-    open_feed_link: function() {
+    open_feed_link: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
         if ($('.NB-modal-feedchooser').is(':visible')) return;
         
         NEWSBLUR.reader.mark_feed_as_read(this.model.id);
         window.open(this.model.get('feed_link'), '_blank');
         window.focus();
+        
+        return false;
     },
     
     mark_feed_as_read: function(e) {

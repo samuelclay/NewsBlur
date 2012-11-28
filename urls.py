@@ -38,6 +38,7 @@ urlpatterns = patterns('',
     url(r'^ios/?',          static_views.ios, name='ios-static'),
     url(r'^iphone/?',       static_views.ios, name='ios-static'),
     url(r'^ipad/?',         static_views.ios, name='ios-static'),
+    url(r'^android/?',      static_views.android, name='android-static'),
     url(r'^firefox/?',      static_views.firefox, name='firefox'),
     url(r'zebra/',          include('zebra.urls',  namespace="zebra",  app_name='zebra')),
 )

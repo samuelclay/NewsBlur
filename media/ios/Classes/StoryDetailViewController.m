@@ -21,6 +21,7 @@
 #import "NBContainerViewController.h"
 #import "DataUtilities.h"
 #import "JSON.h"
+#import "SHK.h"
 
 @interface StoryDetailViewController ()
 
@@ -52,6 +53,7 @@
 @synthesize noStorySelectedLabel;
 @synthesize buttonBack;
 @synthesize bottomPlaceholderToolbar;
+@synthesize pullingScrollview;
 
 // private
 @synthesize inTouchMove;
@@ -316,7 +318,6 @@
 //    } else if ([[appDelegate.activeStory objectForKey:@"reply_count"] intValue] == 1) {
 //        replyStr = [NSString stringWithFormat:@" and <b>%@ replies</b>", [appDelegate.activeStory objectForKey:@"reply_count"]];
 //    }
-    NSLog(@"[appDelegate.activeStory objectForKey:@'comment_count'] %@", [[appDelegate.activeStory objectForKey:@"comment_count"] class]);
     if (![[appDelegate.activeStory objectForKey:@"comment_count"] isKindOfClass:[NSNull class]] &&
         [[appDelegate.activeStory objectForKey:@"comment_count"] intValue]) {
         commentLabel = [commentLabel stringByAppendingString:[NSString stringWithFormat:@
@@ -335,7 +336,6 @@
                                                               //replyStr,
                                                               [self getAvatars:@"commented_by_friends"],
                                                               [self getAvatars:@"commented_by_public"]]];
-        NSLog(@"commentLabel is %@", commentLabel);
     }
     
     if (![[appDelegate.activeStory objectForKey:@"share_count"] isKindOfClass:[NSNull class]] &&
@@ -356,7 +356,6 @@
                                                               [[appDelegate.activeStory objectForKey:@"share_count"] intValue] == 1
                                                               ? [NSString stringWithFormat:@"<b>1 share</b>"] : 
                                                               [NSString stringWithFormat:@"<b>%@ shares</b>", [appDelegate.activeStory objectForKey:@"share_count"]]]];
-        NSLog(@"commentLabel is %@", commentLabel);
     }
     
     if ([appDelegate.activeStory objectForKey:@"share_count"] != [NSNull null] &&
@@ -636,7 +635,6 @@
 
 - (void)showStory {
     appDelegate.inStoryDetail = YES;
-    NSLog(@"in showStory");
     // when we show story, we mark it as read
     [self markStoryAsRead]; 
     self.noStorySelectedLabel.hidden = YES;
@@ -775,7 +773,7 @@
                             footerString
                             ];
 
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -799,34 +797,86 @@
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
     }
     
-    self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed 
+    self.feedTitleGradient = [appDelegate makeFeedTitleGradient:feed
                                  withRect:CGRectMake(0, -1, 1024, 21)]; // 1024 hack for self.webView.frame.size.width
     
     self.feedTitleGradient.tag = FEED_TITLE_GRADIENT_TAG; // Not attached yet. Remove old gradients, first.
+    [self.feedTitleGradient.layer setShadowColor:[[UIColor blackColor] CGColor]];
+    [self.feedTitleGradient.layer setShadowOffset:CGSizeMake(0, 0)];
+    [self.feedTitleGradient.layer setShadowOpacity:0];
+    [self.feedTitleGradient.layer setShadowRadius:12.0];
+    
     for (UIView *subview in self.webView.subviews) {
         if (subview.tag == FEED_TITLE_GRADIENT_TAG) {
             [subview removeFromSuperview];
         }
     }
-    
-    for (NSObject *aSubView in [self.webView subviews]) {
-        if ([aSubView isKindOfClass:[UIScrollView class]]) {
-            UIScrollView * theScrollView = (UIScrollView *)aSubView;
-            if (appDelegate.isRiverView || appDelegate.isSocialView) {
-                theScrollView.contentInset = UIEdgeInsetsMake(19, 0, 0, 0);
-                theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(19, 0, 0, 0);
-            } else {
-                theScrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
-                theScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
-            }
-            [self.webView insertSubview:feedTitleGradient aboveSubview:theScrollView];
-            [theScrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView || appDelegate.isSocialView) ? -19 : -9) animated:NO];
-                        
-            break;
-        }
+
+    if (appDelegate.isRiverView || appDelegate.isSocialView) {
+        self.webView.scrollView.contentInset = UIEdgeInsetsMake(20, 0, 0, 0);
+        self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(20, 0, 0, 0);
+    } else {
+        self.webView.scrollView.contentInset = UIEdgeInsetsMake(9, 0, 0, 0);
+        self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsMake(9, 0, 0, 0);
     }
+    [self.webView insertSubview:feedTitleGradient aboveSubview:self.webView.scrollView];
+    [self.webView.scrollView setContentOffset:CGPointMake(0, (appDelegate.isRiverView ||
+                                                              appDelegate.isSocialView) ? -20 : -9)
+                                     animated:NO];
+    [self.webView.scrollView addObserver:self forKeyPath:@"contentOffset"
+                                 options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+                                 context:nil];
+
+                
     
     [self setNextPreviousButtons];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    
+    if (keyPath == @"contentOffset") {
+        if (self.webView.scrollView.contentOffset.y < (-1 * self.feedTitleGradient.frame.size.height + 1)) {
+            // Pulling
+            if (!pullingScrollview) {
+                pullingScrollview = YES;
+                [self.feedTitleGradient.layer setShadowOpacity:.5];
+                [self.webView insertSubview:self.feedTitleGradient belowSubview:self.webView.scrollView];
+                
+                for (id subview in self.webView.scrollView.subviews) {
+                    UIImageView *imgView = [subview isKindOfClass:[UIImageView class]] ?
+                    (UIImageView*)subview : nil;
+                    // image views whose image is 1px wide are shadow images, hide them
+                    if (imgView && imgView.image.size.width == 1) {
+                        imgView.hidden = YES;
+                    }
+                }
+            }
+            float y = -1 * self.webView.scrollView.contentOffset.y - self.feedTitleGradient.frame.size.height;
+            self.feedTitleGradient.frame = CGRectMake(0, y,
+                                                      self.feedTitleGradient.frame.size.width,
+                                                      self.feedTitleGradient.frame.size.height);
+        } else {
+            // Normal reading
+            if (pullingScrollview) {
+                pullingScrollview = NO;
+                [self.feedTitleGradient.layer setShadowOpacity:0];
+                [self.webView insertSubview:self.feedTitleGradient aboveSubview:self.webView.scrollView];
+                
+                self.feedTitleGradient.frame = CGRectMake(0, -1,
+                                                          self.feedTitleGradient.frame.size.width,
+                                                          self.feedTitleGradient.frame.size.height);
+                
+                for (id subview in self.webView.scrollView.subviews) {
+                    UIImageView *imgView = [subview isKindOfClass:[UIImageView class]] ?
+                    (UIImageView*)subview : nil;
+                    // image views whose image is 1px wide are shadow images, hide them
+                    if (imgView && imgView.image.size.width == 1) {
+                        imgView.hidden = NO;
+                    }
+                }
+            }
+        }
+    }
 }
 
 - (void)setActiveStory {
@@ -839,6 +889,10 @@
             UIImage *titleImage;
             if (appDelegate.isSocialRiverView) {
                 titleImage = [UIImage imageNamed:@"group_white.png"];
+            } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
+                titleImage = [UIImage imageNamed:@"archive_white.png"];
+            } else if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
+                titleImage = [UIImage imageNamed:@"clock_white.png"];
             } else if (appDelegate.isRiverView) {
                 titleImage = [UIImage imageNamed:@"folder_white.png"];
             } else {
@@ -938,29 +992,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             }
             return NO; 
         } else if ([action isEqualToString:@"share"]) {
-            // test to see if the user has commented
-            // search for the comment from friends comments
-            NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
-            NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-            for (int i = 0; i < friendComments.count; i++) {
-                NSString *userId = [NSString stringWithFormat:@"%@", 
-                                    [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
-                if([userId isEqualToString:currentUserId]){
-                    appDelegate.activeComment = [friendComments objectAtIndex:i];
-                }
-            }
-            
-            if (appDelegate.activeComment == nil) {
-                [appDelegate showShareView:@"share"
-                                 setUserId:nil
-                               setUsername:nil
-                           setReplyId:nil];
-            } else {
-                [appDelegate showShareView:@"edit-share"
-                                 setUserId:nil
-                               setUsername:nil
-                           setReplyId:nil];
-            }
+            [self openShareDialog];
             return NO; 
         } else if ([action isEqualToString:@"show-profile"]) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
@@ -994,8 +1026,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         // only adjust for the bar if user is scrolling
         if (appDelegate.isRiverView || appDelegate.isSocialView) {
-            if (self.webView.scrollView.contentOffset.y == -19) {
-                y = y + 19;
+            if (self.webView.scrollView.contentOffset.y == -20) {
+                y = y + 20;
             }
         } else {
             if (self.webView.scrollView.contentOffset.y == -9) {
@@ -1115,7 +1147,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         if (appDelegate.isSocialRiverView) {
             // grab the user id from the shared_by_friends
             NSArray *storyId = [NSArray arrayWithObject:[appDelegate.activeStory objectForKey:@"id"]];
-            NSLog(@"[appDelegate.activeStory objectForKey:@shared_by_friends] %@", [appDelegate.activeStory objectForKey:@"shared_by_friends"]);
             NSString *friendUserId;
             
             if ([[appDelegate.activeStory objectForKey:@"shared_by_friends"] count]) {
@@ -1155,7 +1186,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         }
                          
         [request setDidFinishSelector:@selector(finishMarkAsRead:)];
-        [request setDidFailSelector:@selector(finishedWithError:)];
+        [request setDidFailSelector:@selector(requestFailed:)];
         [request setDelegate:self];
         [request startAsynchronous];
     }
@@ -1187,7 +1218,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [request setPostValue:[appDelegate.activeComment objectForKey:@"user_id"] forKey:@"comment_user_id"];
     
     [request setDidFinishSelector:@selector(finishLikeComment:)];
-    [request setDidFailSelector:@selector(finishedWithError:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
     [request setDelegate:self];
     [request startAsynchronous];
 }
@@ -1227,15 +1258,150 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 
 - (void)requestFailed:(ASIHTTPRequest *)request {    
-    NSLog(@"Error in mark as read is %@", [request error]);
+    NSLog(@"Error in story detail: %@", [request error]);
+    NSString *error;
+    if ([request error]) {
+        error = [NSString stringWithFormat:@"%@", [request error]];
+    } else {
+        error = @"The server barfed!";
+    }
+    [self informError:error];
 }
 
 - (void)finishMarkAsRead:(ASIHTTPRequest *)request {
-    NSString *responseString = [request responseString];
-    NSDictionary *results = [[NSDictionary alloc] 
-                             initWithDictionary:[responseString JSONValue]];
-    NSLog(@"results in mark as read is %@", results);
-} 
+    //    NSString *responseString = [request responseString];
+    //    NSDictionary *results = [[NSDictionary alloc]
+    //                             initWithDictionary:[responseString JSONValue]];
+    //    NSLog(@"results in mark as read is %@", results);
+}
+
+- (void)openSendToDialog {
+    NSURL *url = [NSURL URLWithString:[appDelegate.activeStory
+                                       objectForKey:@"story_permalink"]];
+    SHKItem *item = [SHKItem URL:url title:[appDelegate.activeStory
+                                            objectForKey:@"story_title"]];
+    SHKActionSheet *actionSheet = [SHKActionSheet actionSheetForItem:item];
+    [actionSheet showInView:self.view];
+}
+
+- (void)openShareDialog {
+    // test to see if the user has commented
+    // search for the comment from friends comments
+    NSArray *friendComments = [appDelegate.activeStory objectForKey:@"friend_comments"];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    for (int i = 0; i < friendComments.count; i++) {
+        NSString *userId = [NSString stringWithFormat:@"%@",
+                            [[friendComments objectAtIndex:i] objectForKey:@"user_id"]];
+        if([userId isEqualToString:currentUserId]){
+            appDelegate.activeComment = [friendComments objectAtIndex:i];
+        }
+    }
+    
+    if (appDelegate.activeComment == nil) {
+        [appDelegate showShareView:@"share"
+                         setUserId:nil
+                       setUsername:nil
+                        setReplyId:nil];
+    } else {
+        [appDelegate showShareView:@"edit-share"
+                         setUserId:nil
+                       setUsername:nil
+                        setReplyId:nil];
+    }
+}
+
+- (void)markStoryAsSaved {
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_starred",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:[appDelegate.activeStory
+                           objectForKey:@"id"]
+                   forKey:@"story_id"];
+    [request setPostValue:[appDelegate.activeStory
+                           objectForKey:@"story_feed_id"]
+                   forKey:@"feed_id"];
+    
+    [request setDidFinishSelector:@selector(finishMarkAsSaved:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)finishMarkAsSaved:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self requestFailed:request];
+    }
+    
+    [appDelegate markActiveStorySaved:YES];
+    [self informMessage:@"This story is now saved"];
+}
+
+- (void)markStoryAsUnsaved {
+    //    [appDelegate markActiveStoryUnread];
+    
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_unstarred",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:[appDelegate.activeStory
+                           objectForKey:@"id"]
+                   forKey:@"story_id"];
+    [request setPostValue:[appDelegate.activeStory
+                           objectForKey:@"story_feed_id"]
+                   forKey:@"feed_id"];
+    
+    [request setDidFinishSelector:@selector(finishMarkAsUnsaved:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)finishMarkAsUnsaved:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self requestFailed:request];
+    }
+    
+    //    [appDelegate markActiveStoryUnread];
+    //    [appDelegate.feedDetailViewController redrawUnreadStory];
+    
+    [appDelegate markActiveStorySaved:NO];
+    [self informMessage:@"This story is no longer saved"];
+}
+
+- (void)markStoryAsUnread {
+    if ([[appDelegate.activeStory objectForKey:@"read_status"] intValue] == 1) {
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_story_as_unread",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        
+        [request setPostValue:[appDelegate.activeStory
+                               objectForKey:@"id"]
+                       forKey:@"story_id"];
+        [request setPostValue:[appDelegate.activeStory
+                               objectForKey:@"story_feed_id"]
+                       forKey:@"feed_id"];
+        
+        [request setDidFinishSelector:@selector(finishMarkAsUnread:)];
+        [request setDidFailSelector:@selector(requestFailed:)];
+        [request setDelegate:self];
+        [request startAsynchronous];
+    }
+}
+
+- (void)finishMarkAsUnread:(ASIHTTPRequest *)request {
+    if ([request responseStatusCode] != 200) {
+        return [self requestFailed:request];
+    }
+    
+    [appDelegate markActiveStoryUnread];
+    [appDelegate.feedDetailViewController redrawUnreadStory];
+    
+    [self informMessage:@"This story is now unread"];
+}
 
 # pragma mark
 # pragma mark Subscribing to blurblog
@@ -1379,8 +1545,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (IBAction)doNextStory {
     
     int nextIndex = [appDelegate indexOfNextStory];
-    
-    NSLog(@"nextIndex is %i", nextIndex);
     
     [self.loadingIndicator stopAnimating];
     
@@ -1533,7 +1697,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(274, 130)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(240, 154)];
         [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionAny 
                                                        animated:YES];

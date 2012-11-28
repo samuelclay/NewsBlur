@@ -23,10 +23,14 @@ io.sockets.on 'connection', (socket) ->
         socket.subscribe?.end()
         socket.subscribe = redis.createClient 6379, REDIS_SERVER
         socket.subscribe.subscribe @feeds
+        socket.subscribe.subscribe @username
         
         socket.subscribe.on 'message', (channel, message) =>
             console.log "   ---> [#{@username}] Update on #{channel}: #{message}"
-            socket.emit 'feed:update', channel
+            if channel == @username
+                socket.emit 'user:update', channel, message
+            else
+                socket.emit 'feed:update', channel, message
     
     socket.on 'disconnect', () ->
         socket.subscribe?.end()

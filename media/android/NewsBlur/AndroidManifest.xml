@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.newsblur"
+    android:versionCode="27"
+    android:versionName="1.0.4" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="15" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:icon="@drawable/logo"
+        android:label="@string/newsblur"
+        android:theme="@style/NewsBlurTheme"
+        android:name=".activity.NewsBlurApplication" >
+        
+        <activity
+            android:name=".activity.Login"
+            android:label="@string/newsblur"
+            android:noHistory="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".activity.LoginProgress"
+            android:noHistory="true"
+            android:label="@string/newsblur" />
+       	
+		<activity
+            android:name=".activity.RegisterProgress"
+            android:label="@string/get_started" />
+		
+		<activity
+            android:name=".activity.AddSites"
+            android:label="@string/add_sites" />
+		
+		<activity
+            android:name=".activity.AddFollow"
+            android:label="@string/add_follow" />
+		
+		<activity
+            android:name=".activity.AddTwitter"
+            android:label="@string/add_twitter" />
+		
+			<activity
+            android:name=".activity.AddFacebook"
+            android:label="@string/add_facebook" />
+		
+		<activity
+            android:name=".activity.AddSocial"
+            android:label="@string/add_friends" />
+		
+		<activity
+            android:name=".activity.ImportFeeds"
+            android:label="@string/newsblur" />
+        
+        <activity
+            android:name=".activity.Main"
+            android:label="@string/newsblur" />
+       	
+        
+        <activity
+            android:name=".activity.Profile"
+            android:label="@string/profile"/>
+        
+        <activity
+            android:name=".activity.FeedItemsList" />
+        
+        <activity
+            android:name=".activity.AllStoriesItemsList" />
+         
+        <activity
+            android:name=".activity.AllSharedStoriesItemsList" />
+        
+        <activity
+            android:name=".activity.FolderItemsList" />
+        
+        <activity
+            android:name=".activity.SocialFeedItemsList" />
+        
+        <activity
+            android:name=".activity.FeedReading"/>
+        
+        <activity
+            android:name=".activity.AllStoriesReading"/>
+        
+        <activity
+            android:name=".activity.AllSharedStoriesReading"/>
+        
+        <activity
+            android:name=".activity.FolderReading"/>
+        
+        <activity 
+            android:name=".activity.SearchForFeeds" android:launchMode="singleTop" >
+        	<intent-filter>
+            	<action android:name="android.intent.action.SEARCH" />
+        	</intent-filter>
+        	<meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>    
+    	</activity>
+        
+        <activity
+            android:name=".activity.SocialFeedReading"/>
+
+        <service android:name=".service.SyncService" />
+
+        <provider
+            android:name=".database.FeedProvider"
+            android:authorities="com.newsblur"
+            android:exported="true"
+            android:multiprocess="true" />
+    </application>
+
+</manifest>

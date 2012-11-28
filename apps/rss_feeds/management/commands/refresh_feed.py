@@ -18,5 +18,5 @@ class Command(BaseCommand):
         if options['title']:
             feed = Feed.objects.get(feed_title__icontains=options['title'])
         else:
-            feed = Feed.objects.get(pk=options['feed'])
+            feed = Feed.get_by_id(options['feed'])
         feed.update(force=options['force'], single_threaded=True, verbose=2)

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|center_horizontal"
+    android:orientation="vertical"
+    android:layout_marginTop="10dp"
+    android:paddingLeft="25dip"
+    android:paddingRight="25dip"
+    android:paddingBottom="10dip"
+    android:paddingTop="10dip"
+    >
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="XS"
+            android:textSize="14sp"
+            android:layout_weight="1"
+            android:layout_margin="10dp"
+            android:gravity="left"/>
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="S"
+            android:textSize="14sp" />
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="M"
+            android:textSize="14sp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="center" />
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="L"
+            android:textSize="14sp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="center" />
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="XL"
+            android:textSize="14sp"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="right" />
+        
+    </LinearLayout>
+    
+    <SeekBar
+        android:id="@+id/textSizeSlider"
+        android:background="@android:color/transparent"
+        android:layout_width="match_parent"
+        android:progress="2"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:max="4"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

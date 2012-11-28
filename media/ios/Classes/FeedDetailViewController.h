@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NewsBlurAppDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "BaseViewController.h"
 #import "Utilities.h"
+#import "WEPopoverController.h"
 
 @class NewsBlurAppDelegate;
 @class FeedDetailTableCell;
@@ -17,7 +19,8 @@
 @interface FeedDetailViewController : BaseViewController 
 <UITableViewDelegate, UITableViewDataSource, 
  UIActionSheetDelegate, UIAlertViewDelegate,
- UIPopoverControllerDelegate, ASIHTTPRequestDelegate> {
+ UIPopoverControllerDelegate, ASIHTTPRequestDelegate,
+ WEPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSArray * stories;
@@ -30,17 +33,18 @@
     UISlider * feedScoreSlider;
     UIBarButtonItem * feedMarkReadButton;
     UISegmentedControl * intelligenceControl;
-    UIPopoverController *popoverController;
+    WEPopoverController *popoverController;
+    Class popoverClass;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
-@property (nonatomic) UIPopoverController *popoverController;
 @property (nonatomic, strong) IBOutlet UITableView *storyTitlesTable;
 @property (nonatomic) IBOutlet UIToolbar *feedViewToolbar;
 @property (nonatomic) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic) IBOutlet UIBarButtonItem * feedMarkReadButton;
 @property (nonatomic) IBOutlet UIBarButtonItem * settingsButton;
 @property (nonatomic) IBOutlet UISegmentedControl * intelligenceControl;
+@property (nonatomic, retain) WEPopoverController *popoverController;
 
 @property (nonatomic) NSArray * stories;
 @property (nonatomic, readwrite) int feedPage;
@@ -48,6 +52,7 @@
 @property (nonatomic, readwrite) BOOL pageFinished;
 
 - (void)resetFeedDetail;
+- (void)reloadPage;
 - (void)fetchNextPage:(void(^)())callback;
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)())callback;
@@ -62,8 +67,9 @@
 - (void)setUserAvatarLayout:(UIInterfaceOrientation)orientation;
 
 - (void)fadeSelectedCell;
+- (void)redrawUnreadStory;
 - (IBAction)doOpenMarkReadActionSheet:(id)sender;
-- (IBAction)doOpenSettingsActionSheet;
+- (IBAction)doOpenSettingsActionSheet:(id)sender;
 - (void)confirmDeleteSite;
 - (void)deleteSite;
 - (void)deleteFolder;

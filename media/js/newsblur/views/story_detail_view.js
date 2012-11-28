@@ -18,7 +18,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag"              : "save_classifier",
         "click .NB-feed-story-author"           : "save_classifier",
         "click .NB-feed-story-train"            : "open_story_trainer",
-        "click .NB-feed-story-save"             : "star_story"
+        "click .NB-feed-story-save"             : "star_story",
+        "click .NB-story-comments-label"        : "scroll_to_comments"
     },
     
     initialize: function() {
@@ -51,7 +52,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             el: this.el
         }).template({
             story: this.model,
-            social_services: NEWSBLUR.assets.social_services
+            social_services: NEWSBLUR.assets.social_services,
+            profile: NEWSBLUR.assets.user_profile
         });
         this.$el.html(this.template(params));
         this.toggle_classes();
@@ -219,12 +221,12 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         
         if (onlySelected) return;
         
-        // if (this.model.changedAttributes()) {
-        //     NEWSBLUR.log(["Story changed", this.model.changedAttributes(), this.model.previousAttributes()]);
-        // }
+        if (this.model.changedAttributes()) {
+            NEWSBLUR.log(["Story changed", this.model.changedAttributes(), this.model.previousAttributes()]);
+        }
         
         var story = this.model;
-        var unread_view = NEWSBLUR.assets.preference('unread_view');
+        var unread_view = NEWSBLUR.reader.get_unread_view_score();
         var score = story.score();
         
         if (this.feed) {
@@ -407,11 +409,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var $button = this.$('.NB-feed-story-hide-changes');
         
         if (NEWSBLUR.assets.preference('hide_story_changes')) {
-            this.$('ins').css({'text-decoration': 'underline'});
-            this.$('del').css({'display': 'inline'});
+            this.$el.addClass('NB-story-show-changes');
+            // this.$('ins').css({'text-decoration': 'underline'});
+            // this.$('del').css({'display': 'inline'});
         } else {
-            this.$('ins').css({'text-decoration': 'none'});
-            this.$('del').css({'display': 'none'});
+            this.$el.addClass('NB-story-hide-changes');
+            // this.$('ins').css({'text-decoration': 'none'});
+            // this.$('del').css({'display': 'none'});
         }
         $button.css('opacity', 1).fadeOut(400);
         $button.tipsy('hide').tipsy('disable');
@@ -472,6 +476,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.mark_read({skip_delay: true});
         window.open(this.model.get('story_permalink'), '_blank');
         window.focus();
+    },
+    
+    scroll_to_comments: function() {
+        NEWSBLUR.app.story_list.scroll_to_selected_story(this.model, {
+            scroll_to_comments: true,
+            scroll_offset: -50
+        });
     }
     
 

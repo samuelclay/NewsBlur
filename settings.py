@@ -4,6 +4,8 @@ import os
 import datetime
 import redis
 import boto
+import raven
+import redis
 from mongoengine import connect
 from vendor.dynamodb_mapper.model import ConnectionBorg
 from boto.s3.connection import S3Connection
@@ -190,6 +192,7 @@ TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
+SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
 # ==============
 # = Subdomains =
@@ -245,6 +248,7 @@ INSTALLED_APPS = (
 if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
+        'raven.contrib.django',
     )
 
 # ==========
@@ -354,6 +358,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=1),
         'options': {'queue': 'beat_tasks'},
     },
+    'clean-analytics': {
+        'task': 'clean-analytics',
+        'schedule': datetime.timedelta(hours=12),
+        'options': {'queue': 'beat_tasks'},
+    },
 }
 
 # =========
@@ -409,6 +418,7 @@ REDIS = {
 
 FACEBOOK_APP_ID = '111111111111111'
 FACEBOOK_SECRET = '99999999999999999999999999999999'
+FACEBOOK_NAMESPACE = 'newsblur'
 TWITTER_CONSUMER_KEY = 'ooooooooooooooooooooo'
 TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 
@@ -454,6 +464,7 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
+RAVEN_CLIENT = raven.Client(SENTRY_DSN)
 
 # =========
 # = Mongo =
@@ -465,7 +476,15 @@ MONGO_DB_DEFAULTS = {
     'alias': 'default',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
+
+# if MONGO_DB.get('read_preference', pymongo.ReadPreference.PRIMARY) != pymongo.ReadPreference.PRIMARY:
+#     MONGO_PRIMARY_DB = MONGO_DB.copy()
+#     MONGO_PRIMARY_DB.update(read_preference=pymongo.ReadPreference.PRIMARY)
+#     MONGOPRIMARYDB = connect(MONGO_PRIMARY_DB.pop('name'), **MONGO_PRIMARY_DB)
+# else:
+#     MONGOPRIMARYDB = MONGODB
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
@@ -474,6 +493,7 @@ MONGO_ANALYTICS_DB_DEFAULTS = {
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
+
 
 # =========
 # = Redis =

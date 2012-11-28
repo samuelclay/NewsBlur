@@ -1,0 +1,37 @@
+body {
+	background-color: #f5f5f5;
+}
+
+p {
+	line-height: 1.4em;
+}
+
+img, video, embed, object, iframe, div {
+	max-width: 95% !important;
+	height: auto !important;	
+}
+
+
+a {
+	color: #405BA8;	
+	text-decoration: none;
+}
+
+a:visited {
+	color: #405BA8;
+}
+
+blockquote {
+    background-color: #F0F0F0;
+    border-left: 1px solid #9B9B9B;
+    padding: 10px 20px;
+    margin: 20px 0;
+}
+
+ins { 
+	text-decoration: none;
+}
+
+del {
+    display: none;
+}

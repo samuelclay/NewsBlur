@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="edittext" parent="@android:style/Widget.EditText">
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/edittext_newsblur</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/darkgray</item>
+        <item name="android:textColorHint">@color/lightorange</item>
+    </style>
+
+    <style name="greenButton" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/selector_greenbutton_background</item>
+        <item name="android:textColor">@color/button_text_selector</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">5</item>
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:padding">10dp</item>
+    </style>
+    
+     <style name="shareButton" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/selector_sharebutton_background</item>
+        <item name="android:textColor">@color/button_text_selector</item>
+		<item name="android:textStyle">normal</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">5</item>
+        <item name="android:shadowColor">#003366</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">10dp</item>
+    </style>
+    
+    
+    <style name="button" parent="@android:style/Widget.Button">
+        <item name="android:background">@drawable/selector_button_background</item>
+        <item name="android:textColor">@color/button_text_selector</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">5</item>
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:padding">10dp</item>
+    </style>
+    
+    <style name="dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:background">@drawable/actionbar_background</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">15dp</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+    <style name="slimButton" parent="@style/button">
+        <item name="android:background">@drawable/selector_slimbutton_background</item>
+        <item name="android:textColor">@color/button_text_selector</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">3</item>
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:textSize">10dp</item>
+        <item name="android:padding">5dp</item>
+    </style>
+    
+    <style name="slimGreenButton" parent="@style/button">
+        <item name="android:background">@drawable/selector_slimgreenbutton_background</item>
+        <item name="android:textColor">@color/button_text_selector</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+        <item name="android:shadowRadius">3</item>
+        <item name="android:shadowColor">@color/black</item>
+        <item name="android:textSize">10dp</item>
+        <item name="android:padding">5dp</item>
+    </style>
+    
+    <style name="actionbar" parent="Widget.Sherlock.ActionBar">
+        <item name="android:background">@drawable/actionbar_background</item>
+        <item name="background">@drawable/actionbar_background</item>
+    </style>
+
+</resources>

@@ -31,17 +31,19 @@
             </div>
         </div>
         
-        {% if story.comment_count_public %}
-            <div class="NB-story-comments-public-header-wrapper">
-                <div class="NB-story-comments-public-header">
-                    {{ story.comment_count_public }} public comment{{ story.comment_count_public|pluralize }}
+        <div class="NB-story-comments-public">
+            {% if story.comment_count_public %}
+                <div class="NB-story-comments-public-header-wrapper">
+                    <div class="NB-story-comments-public-header">
+                        {{ story.comment_count_public }} public comment{{ story.comment_count_public|pluralize }}
+                    </div>
                 </div>
-            </div>
-        {% endif %}
+            {% endif %}
         
-        {% for comment in story.public_comments %}
-            {% render_story_comment story comment %}
-        {% endfor %}
+            {% for comment in story.public_comments %}
+                {% render_story_comment story comment %}
+            {% endfor %}
+        </div>
     
     </div>
 
