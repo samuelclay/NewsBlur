@@ -2,10 +2,10 @@ import sys
 import logging
 import os
 import datetime
+import redis
+import raven
 from mongoengine import connect
 from boto.s3.connection import S3Connection
-import raven
-import redis
 from utils import jammit
 
 # ===================
@@ -426,7 +426,6 @@ TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 BACKED_BY_AWS = {
     'pages_on_s3': False,
     'icons_on_s3': False,
-    'stories_on_dynamodb': False,
 }
 
 PROXY_S3_PAGES = True
@@ -449,6 +448,9 @@ TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
 AWS_ACCESS_KEY_ID = S3_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = S3_SECRET
+
+os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
+os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
 
 def custom_show_toolbar(request):
     return DEBUG

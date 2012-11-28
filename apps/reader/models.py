@@ -137,15 +137,22 @@ class UserSubscription(models.Model):
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
-            # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
-            max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
+            if read_filter == 'unread':
+                # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
+                max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
+            else:
+                max_score = 0
 
         if settings.DEBUG:
-            print " ---> Unread all stories: %s" % r.zrevrange(unread_ranked_stories_key, 0, -1)
+            debug_stories = r.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
+            print " ---> Unread all stories (%s - %s) %s stories: %s" % (
+                min_score,
+                max_score,
+                len(debug_stories),
+                debug_stories)
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
                                   max_score, start=offset, num=limit,
                                   withscores=withscores)
-
         r.expire(unread_ranked_stories_key, 24*60*60)
         if not ignore_user_stories:
             r.delete(unread_stories_key)
@@ -153,7 +160,15 @@ class UserSubscription(models.Model):
         # XXX TODO: Remove below line after combing redis for these None's.
         story_ids = [s for s in story_ids if s and s != 'None'] # ugh, hack
         
-        return story_ids
+        if withscores:
+            return story_ids
+        elif story_ids:
+            story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+            mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
+            stories = Feed.format_stories(mstories)
+            return stories
+        else:
+            return []
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):
