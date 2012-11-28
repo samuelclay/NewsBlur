@@ -1011,6 +1011,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     [self refreshComments:@"like"];
 } 
 
@@ -1119,10 +1120,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 //    // adding in a simulated delay
 //    sleep(1);
     
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
     self.storyHUD.removeFromSuperViewOnHide = YES;  
-    
+
     if ([shareType isEqualToString:@"reply"]) {
         self.storyHUD.labelText = @"Replied";
     } else if ([shareType isEqualToString:@"edit-reply"]) {
