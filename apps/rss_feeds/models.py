@@ -12,7 +12,6 @@ import bson
 import pytz
 from collections import defaultdict
 from operator import itemgetter
-from vendor.dynamodb_mapper.model import DynamoDBModel, ConnectionBorg
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
 from django.db import models
 from django.db import IntegrityError
@@ -73,7 +72,6 @@ class Feed(models.Model):
     favicon_not_found = models.BooleanField(default=False)
     s3_page = models.NullBooleanField(default=False, blank=True, null=True)
     s3_icon = models.NullBooleanField(default=False, blank=True, null=True)
-    backed_by_dynamodb = models.NullBooleanField(default=False, blank=True, null=True)
 
     class Meta:
         db_table="feeds"
@@ -308,21 +306,6 @@ class Feed(models.Model):
     def setup_feed_for_premium_subscribers(self):
         self.count_subscribers()
         self.set_next_scheduled_update()
-    
-    def convert_to_dynamodb(self):
-        stories = MStory.objects.filter(story_feed_id=self.pk)
-        batch_stories = []
-        logging.debug('   ---> [%-30s] Converting %s stories to DynamoDB...' % (unicode(self)[:30],
-                                                                                stories.count()))
-        for story in stories:
-            item = story.save_to_dynamodb(batch=True)
-            batch_stories.append(item._to_db_dict())
-            # story.delete()
-
-        DStory.batch_write(batch_stories)
-
-        self.backed_by_dynamodb = True
-        self.save()
         
     def check_feed_link_for_feed_address(self):
         @timelimit(10)
@@ -1452,59 +1435,7 @@ class MStory(mongo.Document):
         self.share_count = shares.count()
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
-    
-    def save_to_dynamodb(self, batch=False):
-        mongo_dict = self._data
-        ddb_dict = dict(mongo_id=unicode(self.id))
-        allowed_keys = DStory.__schema__.keys()
 
-        for story_key, story_value in mongo_dict.items():
-            if story_key not in allowed_keys:
-                continue
-            elif isinstance(story_value, bson.binary.Binary):
-                ddb_dict[story_key] = unicode(story_value.encode('base64'))
-            elif isinstance(story_value, list):
-                ddb_dict[story_key] = set(story_value)
-            elif isinstance(story_value, str):
-                ddb_dict[story_key] = unicode(story_value)
-            elif isinstance(story_value, datetime.datetime):
-                ddb_dict[story_key] = story_value.replace(tzinfo=pytz.UTC)
-            else:
-                ddb_dict[story_key] = story_value
-        
-        dstory = DStory(**ddb_dict)
-        if batch:
-            return dstory
-        else:
-            dstory.save()
-        
-class DStory(DynamoDBModel):
-    '''Story backed by Amazon's DynamoDB'''
-    __table__ = "stories"
-    __hash_key__ = "mongo_id"
-    __schema__ = {
-        "mongo_id": unicode,
-        "story_feed_id": int,
-        "story_date": datetime.datetime,
-        "story_title": unicode,
-        "story_content_z": unicode,
-        "story_original_content_z": unicode,
-        "story_latest_content_z": unicode,
-        "story_content_type": unicode,
-        "story_author_name": unicode,
-        "story_permalink": unicode,
-        "story_guid": unicode,
-        "story_tags": set,
-        "comment_count": int,
-        "comment_user_ids": set,
-        "share_count": int,
-        "share_user_ids": set,
-    }
-    
-    @classmethod
-    def create_table(cls):
-        conn = ConnectionBorg()
-        conn.create_table(cls, 1000, 1000, wait_for_active=True)
 
 class MStarredStory(mongo.Document):
     """Like MStory, but not inherited due to large overhead of _cls and _type in

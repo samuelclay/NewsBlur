@@ -89,7 +89,6 @@ REDIS = {
 BACKED_BY_AWS = {
     'pages_on_s3': False,
     'icons_on_s3': False,
-    'stories_on_dynamodb': False,
 }
 
 # ===========

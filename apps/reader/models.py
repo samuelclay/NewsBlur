@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from mongoengine.queryset import OperationError
 from apps.reader.managers import UserSubscriptionManager
-from apps.rss_feeds.models import Feed, MStory, DStory, DuplicateFeed
+from apps.rss_feeds.models import Feed, MStory, DuplicateFeed
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from utils.feed_functions import add_object_to_folder
@@ -164,12 +164,8 @@ class UserSubscription(models.Model):
         if withscores:
             return story_ids
         elif story_ids:
-            if self.feed.backed_by_dynamodb:
-                mstories = DStory.get_batch(story_ids, table=settings.DDB)
-                mstories = sorted(mstories, key=lambda s: s.story_date, reverse=bool(order=='newest'))
-            else:
-                story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
-                mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
+            story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+            mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
             stories = Feed.format_stories(mstories)
             return stories
         else:

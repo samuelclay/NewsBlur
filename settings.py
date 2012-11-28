@@ -3,11 +3,8 @@ import logging
 import os
 import datetime
 import redis
-import boto
 import raven
-import redis
 from mongoengine import connect
-from vendor.dynamodb_mapper.model import ConnectionBorg
 from boto.s3.connection import S3Connection
 from utils import jammit
 
@@ -429,7 +426,6 @@ TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 BACKED_BY_AWS = {
     'pages_on_s3': False,
     'icons_on_s3': False,
-    'stories_on_dynamodb': False,
 }
 
 PROXY_S3_PAGES = True
@@ -520,8 +516,3 @@ if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
     S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET)
     S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
     S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)
-if BACKED_BY_AWS.get('stories_on_dynamodb'):
-    try:
-        DDB = ConnectionBorg().get_table('stories')
-    except boto.exception.DynamoDBResponseError:
-        DDB = None
