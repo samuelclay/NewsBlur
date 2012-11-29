@@ -8522,6 +8522,13 @@ form.opml_import_form input {
 .NB-profile-badge .NB-profile-badge-blurblog-link {
     text-transform: none;
 }
+.NB-profile-badge .NB-profile-badge-following-you {
+    padding: 2px 8px;
+    background-color: #FFFFF6;
+    border-radius: 4px;
+    display: inline;
+    border: 1px solid #EFEFE6;
+}
 .NB-profile-badge-actions {
     float: right;
 }

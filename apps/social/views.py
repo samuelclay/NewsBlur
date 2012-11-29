@@ -793,7 +793,8 @@ def profile(request):
 
     user_profile = MSocialProfile.get_user(user_id)
     user_profile.count_follows()
-
+    is_following_user = user_profile.is_following_user(user.pk)
+    
     activities = []
     if not user_profile.private or user_profile.is_followed_by_user(user.pk):
         activities, _ = MActivity.user(user_id, page=1, public=True, categories=categories)
@@ -807,12 +808,12 @@ def profile(request):
         
     payload = {
         'user_profile': user_profile,
-        # XXX TODO: Remove following 4 vestigial params.
         'followers_youknow': user_profile['followers_youknow'],
         'followers_everybody': user_profile['followers_everybody'],
         'following_youknow': user_profile['following_youknow'],
         'following_everybody': user_profile['following_everybody'],
         'requested_follow': user_profile['requested_follow'],
+        'following_you': is_following_user,
         'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
         'activities': activities,
     }

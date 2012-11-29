@@ -56,7 +56,11 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                         'shared ',
                         Inflector.pluralize('story', profile.get('shared_stories_count')),
                         ' &middot; ',
-                        $.make('a', { href: profile.blurblog_url(), target: "_blank", className: "NB-profile-badge-blurblog-link NB-splash-link" }, profile.blurblog_url().replace('http://', ''))
+                        $.make('a', { href: profile.blurblog_url(), target: "_blank", className: "NB-profile-badge-blurblog-link NB-splash-link" }, profile.blurblog_url().replace('http://', '')),
+                        (this.model.get('following_you') && $.make('span', [
+                            ' &middot; ',
+                            $.make('div', { className: 'NB-profile-badge-following-you' }, 'Follows you')
+                        ]))
                     ]))
                 ])
             ])
