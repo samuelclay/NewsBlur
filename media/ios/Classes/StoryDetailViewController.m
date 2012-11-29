@@ -1101,7 +1101,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *commentString = [self getComments];  
     NSString *jsString = [[NSString alloc] initWithFormat:@
                           "document.getElementById('NB-comments-wrapper').innerHTML = '%@';"
-                          "document.getElementById('NB-share-bar-wrapper').innerHTML = '<div>LALALALALA</div> %@';",
+                          "document.getElementById('NB-share-bar-wrapper').innerHTML = '%@';",
                           commentString, 
                           shareBarString];
     NSString *shareType = appDelegate.activeShareType;
