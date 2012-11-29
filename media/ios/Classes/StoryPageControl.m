@@ -790,6 +790,9 @@
 	[hud hide:YES afterDelay:0.8];
 }
 
+- (void)subscribeToBlurblog {
+    [self.currentPage subscribeToBlurblog];
+}
 
 #pragma mark -
 #pragma mark Styles

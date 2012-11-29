@@ -893,7 +893,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [self changeFontSize:[userPreferences stringForKey:@"fontSizing"]];
     }
     
-    [self checkTryFeedStory];
+    if ([appDelegate.activeFeedStories count] &&
+        self.activeStoryId &&
+        ![self.webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
+                       dispatch_get_current_queue(), ^{
+            [self checkTryFeedStory];
+        });
+    }
 }
 
 - (void)checkTryFeedStory {
@@ -908,11 +915,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
             NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true, true);", currentUserId];
             [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
-        } else if ([appDelegate.tryFeedCategory isEqualToString:@"story_reshare"]) {
+        } else if ([appDelegate.tryFeedCategory isEqualToString:@"story_reshare"] ||
+                   [appDelegate.tryFeedCategory isEqualToString:@"reply_reply"]) {
             NSString *blurblogUserId = [NSString stringWithFormat:@"%@", [self.activeStory objectForKey:@"social_user_id"]];
-            NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", blurblogUserId];
+            NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true, true);", blurblogUserId];
             [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
-            
         }
         appDelegate.tryFeedCategory = nil;
     }
@@ -1075,6 +1082,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 } 
 
 - (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request {
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
+    self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
     self.storyHUD.removeFromSuperViewOnHide = YES;  
@@ -1142,7 +1151,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)scrolltoComment {
-    NSString *currentUserId = YES ? @"50a2a61620abf55b0cb56b05" : [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
+    NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
     NSString *jsFlashString = [[NSString alloc] initWithFormat:@"slideToComment('%@', true);", currentUserId];
     [self.webView stringByEvaluatingJavaScriptFromString:jsFlashString];
 }

@@ -85,6 +85,7 @@
 - (void)finishMarkAsSaved:(ASIHTTPRequest *)request;
 - (void)markStoryAsUnsaved;
 - (void)finishMarkAsUnsaved:(ASIHTTPRequest *)request;
+- (void)subscribeToBlurblog;
 
 - (IBAction)toggleFontSize:(id)sender;
 - (void)setFontStyle:(NSString *)fontStyle;
