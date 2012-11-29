@@ -377,7 +377,8 @@ class Dispatcher:
                 feed_code = 500
                 fetched_feed = None
                 mail_feed_error_to_admin(feed, e, local_vars=locals())
-                if not settings.DEBUG:
+                if (not settings.DEBUG and hasattr(settings, 'RAVEN_CLIENT') and
+                    settings.RAVEN_CLIENT):
                     settings.RAVEN_CLIENT.captureException(e)
 
             if not feed_code:

@@ -14,6 +14,7 @@
 #import "FeedsMenuViewController.h"
 #import "FeedDetailMenuViewController.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "FirstTimeUserViewController.h"
 #import "FriendsListViewController.h"
 #import "LoginViewController.h"
@@ -57,6 +58,7 @@
 @synthesize friendsListViewController;
 @synthesize fontSettingsViewController;
 @synthesize storyDetailViewController;
+@synthesize storyPageControl;
 @synthesize shareViewController;
 @synthesize loginViewController;
 @synthesize addSiteViewController;
@@ -98,6 +100,7 @@
 @synthesize activeFeedUserProfiles;
 @synthesize activeStory;
 @synthesize storyCount;
+@synthesize storyLocationsCount;
 @synthesize visibleUnreadCount;
 @synthesize savedStoriesCount;
 @synthesize originalStoryCount;
@@ -126,8 +129,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
     
-//    [TestFlight takeOff:@"101dd20fb90f7355703b131d9af42633_MjQ0NTgyMDExLTA4LTIxIDIzOjU3OjEzLjM5MDcyOA"];
-    
     NSString *currentiPhoneVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
     self.navigationController.viewControllers = [NSArray arrayWithObject:self.feedsViewController];
@@ -148,8 +149,23 @@
     [self.feedsViewController fetchFeedList:YES];
     
     
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     splashView = [[UIImageView alloc] init];
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    int rotate = 0;
+    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
+        NSLog(@"UPSIDE DOWN");
+        rotate = -2;
+    } else if (orientation == UIInterfaceOrientationLandscapeLeft) {
+        rotate = -1;
+    } else if (orientation == UIInterfaceOrientationLandscapeRight) {
+        rotate = 1;
+    }
+    splashView.transform = CGAffineTransformMakeRotation(M_PI * rotate * 90.0 / 180);
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+        UIInterfaceOrientationIsLandscape(orientation)) {
+        splashView.frame = self.view.frame;
+        splashView.image = [UIImage imageNamed:@"Default-Landscape.png"];
+    } else if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         splashView.frame = self.view.frame;
         splashView.image = [UIImage imageNamed:@"Default-Portrait.png"];
     } else if (IS_IPHONE_5) {
@@ -159,6 +175,9 @@
         splashView.frame = self.window.frame;
         splashView.image = [UIImage imageNamed:@"Default.png"];
     }
+    
+    [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+
     [window addSubview:splashView];
     [window bringSubviewToFront:splashView];
     [UIView beginAnimations:nil context:nil];
@@ -288,15 +307,16 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionToShareView];
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId]; 
     } else {
         if (self.shareNavigationController == nil) {
-            UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
+            UINavigationController *shareNav = [[UINavigationController alloc]
+                                                initWithRootViewController:self.shareViewController];
             self.shareNavigationController = shareNav;
         }
         [self.navigationController presentModalViewController:self.shareNavigationController animated:YES];
-        [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId]; 
     }
+    
+    [self.shareViewController setSiteInfo:type setUserId:userId setUsername:username setReplyId:replyId];
 }
 
 - (void)hideShareView:(BOOL)resetComment {
@@ -417,11 +437,11 @@
     }
 }
 
-- (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD {
-    if (showHUD) {
-        [self.storyDetailViewController showShareHUD:@"Loading story"];        
-    }
-    
+- (void)loadTryFeedDetailView:(NSString *)feedId
+                    withStory:(NSString *)contentId
+                     isSocial:(BOOL)social
+                     withUser:(NSDictionary *)user
+             showFindingStory:(BOOL)showHUD {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         [self.navigationController popToRootViewControllerAnimated:NO];
         [self.navigationController dismissModalViewControllerAnimated:YES];
@@ -449,11 +469,15 @@
         [self setInFindingStoryMode:NO];
     }
             
-    [self setTryFeedStoryId:contentId];
-    [self setActiveFeed:feed];
-    [self setActiveFolder:nil];
+    self.tryFeedStoryId = contentId;
+    self.activeFeed = feed;
+    self.activeFolder = nil;
     
     [self loadFeedDetailView];
+    
+    if (showHUD) {
+        [self.storyPageControl showShareHUD:@"Loading story"];
+    }
 }
 
 - (BOOL)isSocialFeed:(NSString *)feedIdStr {
@@ -559,9 +583,9 @@
 
 - (void)adjustStoryDetailWebView {
     // change UIWebView
-    int contentWidth = storyDetailViewController.view.frame.size.width;
-//    NSLog(@"contentWidth is %i", contentWidth);
-    [storyDetailViewController changeWebViewWidth:contentWidth];
+    [storyPageControl.currentPage changeWebViewWidth];
+    [storyPageControl.nextPage changeWebViewWidth];
+    [storyPageControl.previousPage changeWebViewWidth];
 }
 
 - (void)calibrateStoryTitles {
@@ -611,15 +635,21 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         UIBarButtonItem *newBackButton = [[UIBarButtonItem alloc] initWithTitle:feedTitle style: UIBarButtonItemStyleBordered target: nil action: nil];
         [feedDetailViewController.navigationItem setBackBarButtonItem: newBackButton];
-        UINavigationController *navController = self.navigationController;   
-        [navController pushViewController:storyDetailViewController animated:YES];
+        UINavigationController *navController = self.navigationController;
+        [navController pushViewController:storyPageControl animated:YES];
         //self.storyDetailViewController.navigationItem.titleView = nil;
         [navController.navigationItem setLeftBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:feedTitle style:UIBarButtonItemStyleBordered target:nil action:nil]];
         navController.navigationItem.hidesBackButton = YES;
         navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
     }
     
-    [self.storyDetailViewController initStory];
+    int activeStoryLocation = [self locationOfActiveStory];
+    if (activeStoryLocation >= 0) {
+        BOOL animated = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad &&
+                         !self.tryFeedCategory);
+        [self.storyPageControl changePage:activeStoryLocation animated:animated];
+//        [self.storyPageControl updatePageWithActiveStory:activeStoryLocation];
+    }
 }
 
 - (void)navigationController:(UINavigationController *)navController 
@@ -646,6 +676,8 @@
     [label setBackgroundColor:[UIColor clearColor]];
     [label setTextColor:[UIColor whiteColor]];
     [label setText:title];
+    [label setShadowOffset:CGSizeMake(0, -1)];
+    [label setShadowColor:UIColorFromRGB(0x306070)];
     [label sizeToFit];
     [navigationController.navigationBar.topItem setTitleView:label];
 }
@@ -664,7 +696,6 @@
 }
 
 - (void)hideStoryDetailView {
-//    [self.storyDetailViewController clearStory];
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [self.masterContainerViewController transitionFromFeedDetail];
     } else {
@@ -673,23 +704,28 @@
 }
 
 - (int)indexOfNextUnreadStory {
+    int location = [self locationOfNextUnreadStory];
+    return [self indexFromLocation:location];
+}
+
+- (int)locationOfNextUnreadStory {
     int activeLocation = [self locationOfActiveStory];
     int readStatus = -1;
     for (int i=activeLocation+1; i < [self.activeFeedStoryLocations count]; i++) {
-        int location = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
-        NSDictionary *story = [activeFeedStories objectAtIndex:location];
+        int storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
+        NSDictionary *story = [activeFeedStories objectAtIndex:storyIndex];
         readStatus = [[story objectForKey:@"read_status"] intValue];
         if (readStatus == 0) {
-            return location;
+            return i;
         }
     }
     if (activeLocation > 0) {
         for (int i=activeLocation-1; i >= 0; i--) {
-            int location = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
-            NSDictionary *story = [activeFeedStories objectAtIndex:location];
+            int storyIndex = [[self.activeFeedStoryLocations objectAtIndex:i] intValue];
+            NSDictionary *story = [activeFeedStories objectAtIndex:storyIndex];
             readStatus = [[story objectForKey:@"read_status"] intValue];
             if (readStatus == 0) {
-                return location;
+                return i;
             }
         }
     }
@@ -697,18 +733,17 @@
 }
 
 - (int)indexOfNextStory {
+    int location = [self locationOfNextStory];
+    return [self indexFromLocation:location];
+}
+
+- (int)locationOfNextStory {
     int activeLocation = [self locationOfActiveStory];
     int nextStoryLocation = activeLocation + 1;
     if (nextStoryLocation < [self.activeFeedStoryLocations count]) {
-        int location = [[self.activeFeedStoryLocations objectAtIndex:nextStoryLocation] intValue];
-        return location;
+        return nextStoryLocation;
     }
     return -1;
-}
-
-- (int)indexOfPreviousStory {
-    NSInteger activeIndex = [self indexOfActiveStory];
-    return MAX(-1, activeIndex-1);
 }
 
 - (int)indexOfActiveStory {
@@ -721,14 +756,38 @@
     return -1;
 }
 
-- (int)locationOfActiveStory {
-    for (int i=0; i < [activeFeedStoryLocations count]; i++) {
-        if ([activeFeedStoryLocationIds objectAtIndex:i] == 
-            [self.activeStory objectForKey:@"id"]) {
+- (int)indexOfStoryId:(id)storyId {
+    for (int i=0; i < self.storyCount; i++) {
+        NSDictionary *story = [activeFeedStories objectAtIndex:i];
+        if ([story objectForKey:@"id"] == storyId) {
             return i;
         }
     }
     return -1;
+}
+
+- (int)locationOfStoryId:(id)storyId {
+    for (int i=0; i < [activeFeedStoryLocations count]; i++) {
+        if ([activeFeedStoryLocationIds objectAtIndex:i] == storyId) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+- (int)locationOfActiveStory {
+    for (int i=0; i < [activeFeedStoryLocations count]; i++) {
+        if ([[activeFeedStoryLocationIds objectAtIndex:i]
+             isEqualToString:[self.activeStory objectForKey:@"id"]]) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+- (int)indexFromLocation:(int)location {
+    if (location == -1) return -1;
+    return [[activeFeedStoryLocations objectAtIndex:location] intValue];
 }
 
 - (void)pushReadStory:(id)storyId {
@@ -745,15 +804,6 @@
         id lastStory = [self.readStories lastObject];
         return lastStory;
     }
-}
-
-- (int)locationOfStoryId:(id)storyId {
-    for (int i=0; i < [activeFeedStoryLocations count]; i++) {
-        if ([activeFeedStoryLocationIds objectAtIndex:i] == storyId) {
-            return [[activeFeedStoryLocations objectAtIndex:i] intValue];
-        }
-    }
-    return -1;
 }
 
 - (int)unreadCount {
@@ -917,6 +967,7 @@
     self.activeFeedStories = [self.activeFeedStories arrayByAddingObjectsFromArray:stories];
     self.storyCount = [self.activeFeedStories count];
     [self calculateStoryLocations];
+    self.storyLocationsCount = [self.activeFeedStoryLocations count];
 }
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue {
@@ -925,6 +976,7 @@
     self.recentlyReadStories = [NSMutableArray array];
     self.recentlyReadFeeds = [NSMutableSet set];
     [self calculateStoryLocations];
+    self.storyLocationsCount = [self.activeFeedStoryLocations count];
 }
 
 - (void)setFeedUserProfiles:(NSArray *)activeFeedUserProfilesValue{
@@ -1433,7 +1485,7 @@
         [gradientView addSubview:titleImageView];
     } else {
         gradientView = [NewsBlurAppDelegate 
-                        makeGradientView:CGRectMake(0, -1, 1024, 10) 
+                        makeGradientView:CGRectMake(0, -1, rect.size.width, 10)
                         // hard coding the 1024 as a hack for window.frame.size.width
                         startColor:[feed objectForKey:@"favicon_fade"] 
                         endColor:[feed objectForKey:@"favicon_color"]];

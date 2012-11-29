@@ -109,6 +109,14 @@
         }
     },
 
+    {
+        "pk": 2,
+        "model": "sites.site",
+        "fields": {
+            "domain": "testserver",
+            "name": "testserver"
+        }
+    },
 
 
     {

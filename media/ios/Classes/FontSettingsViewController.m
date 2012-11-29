@@ -9,6 +9,7 @@
 #import "FontSettingsViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "FeedDetailViewController.h"
 #import "MenuTableViewCell.h"
 #import "NBContainerViewController.h"
@@ -93,19 +94,19 @@
 - (IBAction)changeFontSize:(id)sender {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     if ([sender selectedSegmentIndex] == 0) {
-        [appDelegate.storyDetailViewController changeFontSize:@"NB-extra-small"];
+        [appDelegate.storyPageControl changeFontSize:@"NB-extra-small"];
         [userPreferences setObject:@"NB-extra-small" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 1) {
-        [appDelegate.storyDetailViewController changeFontSize:@"NB-small"];
+        [appDelegate.storyPageControl changeFontSize:@"NB-small"];
         [userPreferences setObject:@"NB-small" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 2) {
-        [appDelegate.storyDetailViewController changeFontSize:@"NB-medium"];
+        [appDelegate.storyPageControl changeFontSize:@"NB-medium"];
         [userPreferences setObject:@"NB-medium" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 3) {
-        [appDelegate.storyDetailViewController changeFontSize:@"NB-large"];
+        [appDelegate.storyPageControl changeFontSize:@"NB-large"];
         [userPreferences setObject:@"NB-large" forKey:@"fontSizing"];
     } else if ([sender selectedSegmentIndex] == 4) {
-        [appDelegate.storyDetailViewController changeFontSize:@"NB-extra-large"];
+        [appDelegate.storyPageControl changeFontSize:@"NB-extra-large"];
         [userPreferences setObject:@"NB-extra-large" forKey:@"fontSizing"];
     }
     [userPreferences synchronize];
@@ -113,12 +114,12 @@
 
 - (void)setSanSerif {
     [fontStyleSegment setSelectedSegmentIndex:0];
-    [appDelegate.storyDetailViewController setFontStyle:@"Helvetica"];
+    [appDelegate.storyPageControl setFontStyle:@"Helvetica"];
 }
         
 - (void)setSerif {
     [fontStyleSegment setSelectedSegmentIndex:1];
-    [appDelegate.storyDetailViewController setFontStyle:@"Georgia"];
+    [appDelegate.storyPageControl setFontStyle:@"Georgia"];
 }
 
 #pragma mark -
@@ -190,30 +191,30 @@
     if (indexPath.row == 0) {
         bool isSaved = [[appDelegate.activeStory objectForKey:@"starred"] boolValue];
         if (isSaved) {
-            [appDelegate.storyDetailViewController markStoryAsUnsaved];
+            [appDelegate.storyPageControl markStoryAsUnsaved];
         } else {
-            [appDelegate.storyDetailViewController markStoryAsSaved];
+            [appDelegate.storyPageControl markStoryAsSaved];
         }
     } else if (indexPath.row == 1) {
         bool isRead = [[appDelegate.activeStory objectForKey:@"read_status"] boolValue];
         if (isRead) {
-            [appDelegate.storyDetailViewController markStoryAsUnread];
+            [appDelegate.storyPageControl markStoryAsUnread];
         } else {
-            [appDelegate.storyDetailViewController markStoryAsRead];
+            [appDelegate.storyPageControl markStoryAsRead];
             [appDelegate.feedDetailViewController redrawUnreadStory];
         }
     } else if (indexPath.row == 2) {
-        [appDelegate.storyDetailViewController openSendToDialog];
+        [appDelegate.storyPageControl openSendToDialog];
     } else if (indexPath.row == 3) {
-        [appDelegate.storyDetailViewController openShareDialog];
+        [appDelegate.storyPageControl.currentPage openShareDialog];
     }
     
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController hidePopover];
     } else {
-        [appDelegate.storyDetailViewController.popoverController dismissPopoverAnimated:YES];
-        appDelegate.storyDetailViewController.popoverController = nil;
+        [appDelegate.storyPageControl.popoverController dismissPopoverAnimated:YES];
+        appDelegate.storyPageControl.popoverController = nil;
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     

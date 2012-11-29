@@ -15,6 +15,7 @@
 #import "FeedDetailMenuViewController.h"
 #import "UserProfileViewController.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
@@ -25,8 +26,8 @@
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
-#define kBlurblogTableViewRowHeight 47;
-#define kPhoneBlurblogTableViewRowHeight 39;
+#define kBlurblogTableViewRowHeight 32;
+#define kPhoneBlurblogTableViewRowHeight 32;
 static const CGFloat kFolderTitleHeight = 28;
 
 @interface NewsBlurViewController () 
@@ -132,7 +133,7 @@ static const CGFloat kFolderTitleHeight = 28;
     appDelegate.isSocialView = NO;
     appDelegate.isRiverView = NO;
     appDelegate.inFindingStoryMode = NO;
-    [MBProgressHUD hideHUDForView:appDelegate.storyDetailViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
     if (appDelegate.activeFeed || appDelegate.isRiverView) {        
         [self.feedTitlesTable beginUpdates];
@@ -290,7 +291,8 @@ static const CGFloat kFolderTitleHeight = 28;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
         return [appDelegate showLogin];
-    } else if ([request responseStatusCode] >= 500) {
+    } else if ([request responseStatusCode] == 404 ||
+               [request responseStatusCode] >= 500) {
         [pull finishedLoading];
         return [self informError:@"The server barfed!"];
     }
@@ -727,23 +729,20 @@ static const CGFloat kFolderTitleHeight = 28;
         
     FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];    
     if (cell == nil) {
-        cell = [[FeedTableCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:CellIdentifier];
-        cell.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+        cell = [[FeedTableCell alloc]
+                initWithStyle:UITableViewCellStyleDefault
+                reuseIdentifier:CellIdentifier];
+        cell.appDelegate = appDelegate;
     }
-    
-
     
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
     NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
     int location = [[activeFolderFeeds objectAtIndex:indexPath.row] intValue];
-    id feedId = [feeds objectAtIndex:location];
-    
+    id feedId = [feeds objectAtIndex:location];    
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
-    
 
-    
     if (isSocial) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
         cell.feedFavicon = [Utilities getImage:feedIdStr isSocial:YES];
@@ -756,6 +755,8 @@ static const CGFloat kFolderTitleHeight = 28;
     cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];
     cell.negativeCount = [[feed objectForKey:@"ng"] intValue];
     cell.isSocial      = isSocial;
+    
+    [cell setNeedsDisplay];
     
     return cell;
 }
@@ -1358,18 +1359,42 @@ static const CGFloat kFolderTitleHeight = 28;
     
     NSMutableDictionary *updatedDictFeeds = [appDelegate.dictFeeds mutableCopy];    
     NSDictionary *newFeedCounts = [results objectForKey:@"feeds"];
+    NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
     for (id feed in newFeedCounts) {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
         NSMutableDictionary *newFeed = [[appDelegate.dictFeeds objectForKey:feedIdStr] mutableCopy];
         NSMutableDictionary *newFeedCount = [newFeedCounts objectForKey:feed];
 
         if ([newFeed isKindOfClass:[NSDictionary class]]) {
-            
+            // Check if a feed goes from visible to hidden, but doesn't disappear.
+            if ((intelligenceLevel > 0 &&
+                 [[newFeed objectForKey:@"ps"] intValue] > 0 &&
+                 [[newFeedCount objectForKey:@"ps"] intValue] == 0) ||
+                (intelligenceLevel == 0 &&
+                 ([[newFeed objectForKey:@"ps"] intValue] > 0 || [[newFeed objectForKey:@"nt"] intValue] > 0) &&
+                 [[newFeedCount objectForKey:@"ps"] intValue] == 0 &&
+                 [[newFeedCount objectForKey:@"nt"] intValue] == 0)) {
+                NSIndexPath *indexPath;
+                for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
+                    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
+                    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+                    NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+                    for (int l=0; l < [activeFolderFeeds count]; l++) {
+                        if ([[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] intValue] == [feed intValue]) {
+                            indexPath = [NSIndexPath indexPathForRow:l inSection:s];
+                        }
+                    }
+                }
+                if (indexPath) {
+                    [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
+                }
+            }
             [newFeed setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
             [newFeed setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
             [newFeed setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
             [updatedDictFeeds setObject:newFeed forKey:feedIdStr];
         }
+        
     }
     
     NSMutableDictionary *updatedDictSocialFeeds = [appDelegate.dictSocialFeeds mutableCopy]; 

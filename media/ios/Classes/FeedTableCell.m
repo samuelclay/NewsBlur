@@ -113,16 +113,16 @@ static UIFont *textFont = nil;
 
     if (isSocial) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            [self.feedFavicon drawInRect:CGRectMake(12.0, 5.0, 36.0, 36.0)];
+            [self.feedFavicon drawInRect:CGRectMake(9.0, 2.0, 28.0, 28.0)];
             [feedTitle 
-             drawInRect:CGRectMake(56, 13, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 20, 20.0)
+             drawInRect:CGRectMake(46, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 16, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft]; 
         } else {
-            [self.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 32.0, 32.0)];
+            [self.feedFavicon drawInRect:CGRectMake(9.0, 3.0, 26.0, 26.0)];
             [feedTitle 
-             drawInRect:CGRectMake(50, 11, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 20, 20.0)
+             drawInRect:CGRectMake(42, 7, r.size.width - ([unreadCount offsetWidth] + 36) - 10 - 12, 20.0)
              withFont:font
              lineBreakMode:UILineBreakModeTailTruncation 
              alignment:UITextAlignmentLeft];

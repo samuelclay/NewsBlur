@@ -30,6 +30,7 @@
 @class FriendsListViewController;
 @class FontSettingsViewController;
 @class StoryDetailViewController;
+@class StoryPageControl;
 @class ShareViewController;
 @class LoginViewController;
 @class AddSiteViewController;
@@ -64,6 +65,7 @@
     FontSettingsViewController *fontSettingsViewController;
     
     StoryDetailViewController *storyDetailViewController;
+    StoryPageControl *storyPageControl;
     ShareViewController *shareViewController;
     LoginViewController *loginViewController;
     AddSiteViewController *addSiteViewController;
@@ -99,6 +101,7 @@
     
     int feedDetailPortraitYCoordinate;
     int storyCount;
+    int storyLocationsCount;
     int originalStoryCount;
     NSInteger selectedIntelligence;
     int visibleUnreadCount;
@@ -137,6 +140,7 @@
 @property (nonatomic) IBOutlet FeedDashboardViewController *feedDashboardViewController;
 @property (nonatomic) IBOutlet FriendsListViewController *friendsListViewController;
 @property (nonatomic) IBOutlet StoryDetailViewController *storyDetailViewController;
+@property (nonatomic) IBOutlet StoryPageControl *storyPageControl;
 @property (nonatomic) IBOutlet LoginViewController *loginViewController;
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet FindSitesViewController *findSitesViewController;
@@ -178,6 +182,7 @@
 @property (readwrite) NSURL * activeOriginalStoryURL;
 @property (readwrite) int feedDetailPortraitYCoordinate;
 @property (readwrite) int storyCount;
+@property (readwrite) int storyLocationsCount;
 @property (readwrite) int originalStoryCount;
 @property (readwrite) int visibleUnreadCount;
 @property (readwrite) int savedStoriesCount;
@@ -236,10 +241,13 @@
 - (void)confirmLogout;
 
 - (int)indexOfNextUnreadStory;
+- (int)locationOfNextUnreadStory;
 - (int)indexOfNextStory;
-- (int)indexOfPreviousStory;
+- (int)locationOfNextStory;
 - (int)indexOfActiveStory;
+- (int)indexOfStoryId:(id)storyId;
 - (int)locationOfActiveStory;
+- (int)indexFromLocation:(int)location;
 - (void)pushReadStory:(id)storyId;
 - (id)popReadStory;
 - (int)locationOfStoryId:(id)storyId;

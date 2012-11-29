@@ -29,8 +29,8 @@ import urllib2
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from djpubsubhubbub.models import Subscription, SubscriptionManager
-from djpubsubhubbub.signals import pre_subscribe, verified, updated
+from apps.push.models import PushSubscription, PushSubscriptionManager
+from apps.push.signals import pre_subscribe, verified, updated
 
 class MockResponse(object):
     def __init__(self, status, data=None):
@@ -48,11 +48,11 @@ class MockResponse(object):
 
 class PSHBTestBase:
 
-    urls = 'apps.djpubsubhubbub.urls'
+    urls = 'apps.push.urls'
 
     def setUp(self):
-        self._old_send_request = SubscriptionManager._send_request
-        SubscriptionManager._send_request = self._send_request
+        self._old_send_request = PushSubscriptionManager._send_request
+        PushSubscriptionManager._send_request = self._send_request
         self.responses = []
         self.requests = []
         self.signals = []
@@ -62,7 +62,7 @@ class PSHBTestBase:
             connecter.connect(callback, dispatch_uid=connecter, weak=False)
 
     def tearDown(self):
-        SubscriptionManager._send_request = self._old_send_request
+        PushSubscriptionManager._send_request = self._old_send_request
         del self._old_send_request
         for signal in pre_subscribe, verified:
             signal.disconnect(dispatch_uid=signal)
@@ -79,7 +79,7 @@ class PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         active.
         """
         self.responses.append(MockResponse(204))
-        sub = Subscription.objects.subscribe('topic', 'hub', 'callback', 2000)
+        sub = PushSubscription.objects.subscribe('topic', 'hub', 'callback', 2000)
         self.assertEquals(len(self.signals), 2)
         self.assertEquals(self.signals[0], (pre_subscribe, {'sender': sub,
                                                             'created': True}))
@@ -106,7 +106,7 @@ class PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         subscription is verified.
         """
         self.responses.append(MockResponse(202))
-        sub = Subscription.objects.subscribe('topic', 'hub', 'callback', 2000)
+        sub = PushSubscription.objects.subscribe('topic', 'hub', 'callback', 2000)
         self.assertEquals(len(self.signals), 1)
         self.assertEquals(self.signals[0], (pre_subscribe, {'sender': sub,
                                                             'created': True}))
@@ -132,7 +132,7 @@ class PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         should default to 2592000 (30 days).
         """
         self.responses.append(MockResponse(202))
-        sub = Subscription.objects.subscribe('topic', 'hub', 'callback')
+        sub = PushSubscription.objects.subscribe('topic', 'hub', 'callback')
         rough_expires = datetime.now() + timedelta(seconds=2592000)
         self.assert_(abs(sub.lease_expires - rough_expires).seconds < 5,
                      'lease more than 5 seconds off')
@@ -146,7 +146,7 @@ class PSHBSubscriptionManagerTest(PSHBTestBase, TestCase):
         """
         self.responses.append(MockResponse(500, 'error data'))
         try:
-            Subscription.objects.subscribe('topic', 'hub', 'callback')
+            PushSubscription.objects.subscribe('topic', 'hub', 'callback')
         except urllib2.URLError, e:
             self.assertEquals(e.reason,
                               'error subscribing to topic on hub:\nerror data')
@@ -159,7 +159,7 @@ class PSHBCallbackViewTestCase(PSHBTestBase, TestCase):
         """
         Getting the callback from the server should verify the subscription.
         """
-        sub = Subscription.objects.create(
+        sub = PushSubscription.objects.create(
             topic='topic',
             hub='hub',
             verified=False)
@@ -175,7 +175,7 @@ class PSHBCallbackViewTestCase(PSHBTestBase, TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.content, 'challenge')
-        sub = Subscription.objects.get(pk=sub.pk)
+        sub = PushSubscription.objects.get(pk=sub.pk)
         self.assertEquals(sub.verified, True)
         self.assertEquals(len(self.signals), 1)
         self.assertEquals(self.signals[0], (verified, {'sender': sub}))
@@ -189,7 +189,7 @@ class PSHBCallbackViewTestCase(PSHBTestBase, TestCase):
         * subscription doesn't exist
         * token doesn't match the subscription
         """
-        sub = Subscription.objects.create(
+        sub = PushSubscription.objects.create(
             topic='topic',
             hub='hub',
             verified=False)
@@ -292,7 +292,7 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
 </atom:feed>
 """
 
-        sub = Subscription.objects.create(
+        sub = PushSubscription.objects.create(
             hub="http://myhub.example.com/endpoint",
             topic="http://publisher.example.com/happycats.xml")
 
@@ -340,7 +340,7 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
   </entry>
 </atom:feed>
 """
-        sub = Subscription.objects.create(
+        sub = PushSubscription.objects.create(
             hub="hub",
             topic="http://publisher.example.com/happycats.xml",
             lease_expires=datetime.now() + timedelta(days=1))
@@ -358,7 +358,7 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
                                     update_data, 'application/atom+xml')
         self.assertEquals(response.status_code, 200)
         self.assertEquals(
-            Subscription.objects.filter(
+            PushSubscription.objects.filter(
                 hub='http://myhub.example.com/endpoint',
                 topic='http://publisher.example.com/happycats.xml',
                 verified=True).count(), 1)
@@ -389,7 +389,7 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
   </entry>
 </atom:feed>
 """
-        sub = Subscription.objects.create(
+        sub = PushSubscription.objects.create(
             hub="http://myhub.example.com/endpoint",
             topic="topic",
             lease_expires=datetime.now() + timedelta(days=1))
@@ -406,7 +406,7 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
                                     update_data, 'application/atom+xml')
         self.assertEquals(response.status_code, 200)
         self.assertEquals(
-            Subscription.objects.filter(
+            PushSubscription.objects.filter(
                 hub='http://myhub.example.com/endpoint',
                 topic='http://publisher.example.com/happycats.xml',
                 verified=True).count(), 1)
@@ -437,7 +437,7 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
   </entry>
 </atom:feed>
 """
-        sub = Subscription.objects.create(
+        sub = PushSubscription.objects.create(
             hub="hub",
             topic="topic",
             lease_expires=datetime.now() + timedelta(days=1))
@@ -455,7 +455,7 @@ class PSHBUpdateTestCase(PSHBTestBase, TestCase):
                                     update_data, 'application/atom+xml')
         self.assertEquals(response.status_code, 200)
         self.assertEquals(
-            Subscription.objects.filter(
+            PushSubscription.objects.filter(
                 hub='http://myhub.example.com/endpoint',
                 topic='http://publisher.example.com/happycats.xml',
                 verified=True).count(), 1)
