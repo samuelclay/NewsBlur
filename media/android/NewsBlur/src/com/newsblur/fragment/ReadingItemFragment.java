@@ -313,8 +313,10 @@ public class ReadingItemFragment extends Fragment implements ClassifierDialogFra
 				commentText.setTag("commentBy" + user.id);
 				commentText.setText(sharedText);
 
-				ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
-				commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
+				if (PrefsUtils.getUserImage(getActivity()) != null) {
+					ImageView commentImage = (ImageView) commentView.findViewById(R.id.comment_user_image);
+					commentImage.setImageBitmap(UIUtils.roundCorners(PrefsUtils.getUserImage(getActivity()), 10f));
+				}
 
 				TextView commentSharedDate = (TextView) commentView.findViewById(R.id.comment_shareddate);
 				commentSharedDate.setText(R.string.now);
