@@ -470,8 +470,8 @@ def load_single_feed(request, feed_id):
         usersub = UserSubscription.objects.get(user=user, feed=feed)
     except UserSubscription.DoesNotExist:
         usersub = None
-    
-    if usersub:
+
+    if usersub and (read_filter == 'unread' or order == 'oldest'):
         stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
     else:
         stories = feed.get_stories(offset, limit)
