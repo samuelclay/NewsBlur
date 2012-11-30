@@ -308,8 +308,9 @@ class MSocialProfile(mongo.Document):
         if include_following_user or common_follows_with_user:
             if not include_following_user:
                 include_following_user = common_follows_with_user
-            params['followed_by_you'] = bool(self.is_followed_by_user(include_following_user))
-            params['following_you'] = bool(self.is_following_user(include_following_user))
+            if include_following_user != self.user_id:
+                params['followed_by_you'] = bool(self.is_followed_by_user(include_following_user))
+                params['following_you'] = self.is_following_user(include_following_user)
 
         return params
     
@@ -904,7 +905,7 @@ class MSocialSubscription(mongo.Document):
             #     continue
             except MUserStory.MultipleObjectsReturned:
                 if not mark_all_read:
-                    logging.user(request, "~FRMultiple read stories: %s" % story.story_guid)
+                    logging.user(request, "~BR~FW~SKMultiple read stories: %s" % story.story_guid)
             
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (self.user_id)

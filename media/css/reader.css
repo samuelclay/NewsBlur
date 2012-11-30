@@ -2969,7 +2969,7 @@ background: transparent;
 /* ========================== */
 
 .NB-feeds-header-river-container {
-    display: block;
+    display: none;
     border-bottom: 1px solid #F0F0F0;
 }
 
@@ -8465,7 +8465,7 @@ form.opml_import_form input {
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-photo-wrapper {
     width: 108px;
     height: 108px;
-    vertical-align: middle;
+    vertical-align: top;
 }
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-photo img {
     max-width: 108px;

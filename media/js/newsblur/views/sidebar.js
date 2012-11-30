@@ -6,7 +6,8 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         "click .NB-feeds-header-starred": "open_starred_stories",
         "click .NB-feeds-header-river-sites": "open_river_stories",
         "click .NB-feeds-header-river-blurblogs .NB-feedlist-collapse-icon": "collapse_river_blurblog",
-        "click .NB-feeds-header-river-blurblogs": "open_river_blurblogs_stories"
+        "click .NB-feeds-header-river-blurblogs": "open_river_blurblogs_stories",
+        "click .NB-feeds-header-river-global": "open_river_global_stories"
     },
     
     initialize: function() {},
@@ -31,7 +32,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     
     show_collapsed_river_blurblog_count: function(options) {
         options = options || {};
-        var $header = this.$('.NB-feeds-header-river-blurblogs');
+        var $header = NEWSBLUR.reader.$s.$river_blurblogs_header;
         var $counts = $('.feed_counts_floater', $header);
         var $river = $('.NB-feedlist-collapse-icon', $header);
         var $folder = this.$('.NB-socialfeeds-folder');
@@ -57,7 +58,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     },
     
     show_counts: function(options) {
-        var $header = this.$('.NB-feeds-header-river-blurblogs');
+        var $header = NEWSBLUR.reader.$s.$river_blurblogs_header;
         var $counts = new NEWSBLUR.Views.FolderCount({
             collection: NEWSBLUR.assets.social_feeds
         }).render().$el;
@@ -73,7 +74,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     },
     
     hide_collapsed_river_blurblog_count: function() {
-        var $header = this.$('.NB-feeds-header-river-blurblogs');
+        var $header = NEWSBLUR.reader.$s.$river_blurblogs_header;
         var $counts = $('.feed_counts_floater', $header);
         var $river = $('.NB-feedlist-collapse-icon', $header);
         
@@ -105,7 +106,7 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
         e.stopPropagation();
         options = options || {};
         
-        var $header = this.$('.NB-feeds-header-river-blurblogs');
+        var $header = NEWSBLUR.reader.$s.$river_blurblogs_header;
         var $folder = this.$('.NB-socialfeeds-folder');
         
         // Hiding / Collapsing
@@ -148,6 +149,10 @@ NEWSBLUR.Views.Sidebar = Backbone.View.extend({
     
     open_river_blurblogs_stories: function() {
         return NEWSBLUR.reader.open_river_blurblogs_stories();
+    },
+    
+    open_river_global_stories: function() {
+        return NEWSBLUR.reader.open_river_blurblogs_stories({'global': true});
     }
     
 });

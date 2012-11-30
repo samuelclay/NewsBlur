@@ -190,13 +190,13 @@ def load_river_blurblog(request):
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     relative_user_id  = request.REQUEST.get('relative_user_id', None)
-    user_perspective  = request.REQUEST.get('user_perspective', None)
+    global_feed       = request.REQUEST.get('global_feed', None)
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
-    if user_perspective:
-        up = User.objects.get(username=settings.HOMEPAGE_USERNAME)
-        relative_user_id = up.pk
+    if global_feed:
+        global_user = User.objects.get(username=settings.HOMEPAGE_USERNAME)
+        relative_user_id = global_user.pk
     
     if not relative_user_id:
         relative_user_id = get_user(request).pk
@@ -787,13 +787,12 @@ def shared_stories_public(request, username):
 @json.json_view
 def profile(request):
     user = get_user(request.user)
-    user_id = request.GET.get('user_id', user.pk)
+    user_id = int(request.GET.get('user_id', user.pk))
     categories = request.GET.getlist('category')
     include_activities_html = request.REQUEST.get('include_activities_html', None)
 
     user_profile = MSocialProfile.get_user(user_id)
     user_profile.count_follows()
-    is_following_user = user_profile.is_following_user(user.pk)
     
     activities = []
     if not user_profile.private or user_profile.is_followed_by_user(user.pk):
@@ -813,11 +812,10 @@ def profile(request):
         'following_youknow': user_profile['following_youknow'],
         'following_everybody': user_profile['following_everybody'],
         'requested_follow': user_profile['requested_follow'],
-        'following_you': is_following_user,
         'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
         'activities': activities,
     }
-    
+
     if include_activities_html:
         payload['activities_html'] = render_to_string('reader/activities_module.xhtml', {
             'activities': activities,
