@@ -208,9 +208,11 @@ def load_river_blurblog(request):
     offset = (page-1) * limit
     limit = page * limit - 1
     
-    story_ids, story_dates = MSocialSubscription.feed_stories(relative_user_id, social_user_ids, 
+    story_ids, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
                                                  offset=offset, limit=limit,
-                                                 order=order, read_filter=read_filter)
+                                                 order=order, read_filter=read_filter,
+                                                 relative_user_id=relative_user_id,
+                                                 everything_unread=global_feed)
     mstories = MStory.objects(id__in=story_ids)
     story_id_to_dates = dict(zip(story_ids, story_dates))
     def sort_stories_by_id(a, b):

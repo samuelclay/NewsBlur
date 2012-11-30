@@ -779,7 +779,8 @@ class MSocialSubscription(mongo.Document):
             'feed_opens': self.feed_opens,
         }
     
-    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False):
+    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', 
+                    withscores=False, everything_unread=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         ignore_user_stories = False
         
@@ -789,7 +790,7 @@ class MSocialSubscription(mongo.Document):
 
         if not r.exists(stories_key):
             return []
-        elif read_filter != 'unread' or not r.exists(read_stories_key):
+        elif everything_unread or read_filter != 'unread' or not r.exists(read_stories_key):
             ignore_user_stories = True
             unread_stories_key = stories_key
         else:
@@ -823,7 +824,7 @@ class MSocialSubscription(mongo.Document):
         return [story_id for story_id in story_ids if story_id and story_id != 'None']
         
     @classmethod
-    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None):
+    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None, everything_unread=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         
         if not relative_user_id:
@@ -851,7 +852,7 @@ class MSocialSubscription(mongo.Document):
             us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
             story_guids = us.get_stories(offset=0, limit=100, 
                                          order=order, read_filter=read_filter, 
-                                         withscores=True)
+                                         withscores=True, everything_unread=everything_unread)
             if story_guids:
                 r.zadd(unread_ranked_stories_keys, **dict(story_guids))
             

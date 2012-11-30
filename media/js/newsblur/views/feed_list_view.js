@@ -86,12 +86,10 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
                 'opacity': 0
             }).animate({'opacity': 1}, {'duration': 700});
         }
-        if (NEWSBLUR.Globals.is_admin) {
-            $('.NB-feeds-header-river-global-container').css({
-                'display': 'block',
-                'opacity': 0
-            }).animate({'opacity': 1}, {'duration': 700});
-        }
+        $('.NB-feeds-header-river-global-container').css({
+            'display': 'block',
+            'opacity': 0
+        }).animate({'opacity': 1}, {'duration': 700});
         
         if (!this.options.feed_chooser &&
             (NEWSBLUR.reader.flags['showing_feed_in_tryfeed_view'] ||
