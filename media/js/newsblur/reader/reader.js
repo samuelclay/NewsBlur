@@ -1477,7 +1477,7 @@
             }
 
             this.hide_stories_error();
-            this.show_stories_progress_bar(NEWSBLUR.assets.social_feeds.size());
+            this.show_stories_progress_bar(100); // Assume 100 followees for popular
             this.model.fetch_river_blurblogs_stories(this.active_feed, 1, 
                 {'global': this.flags.global_blurblogs},
                 _.bind(this.post_open_river_blurblogs_stories, this), 
@@ -1505,7 +1505,8 @@
                     this.show_next_unread_story(true);
                 } else if (this.counts['find_last_unread_on_page_of_feed_stories_load']) {
                     this.show_last_unread_story(true);
-                } else if (this.counts['select_story_in_feed'] || this.flags['select_story_in_feed']) {
+                } else if (this.counts['select_story_in_feed'] ||
+                           this.flags['select_story_in_feed']) {
                     this.select_story_in_feed();
                 }
                 if (first_load) {
@@ -2033,6 +2034,7 @@
                 var feed = this.model.get_feed(feed_id);
             }
             if (!feed && !folder) return;
+            if (this.active_feed == 'river:global') return;
             
             if (NEWSBLUR.app.story_unread_counter) {
                 NEWSBLUR.app.story_unread_counter.remove();
@@ -2082,7 +2084,7 @@
                 if (this.active_feed == 'starred') {
                     this.model.fetch_starred_stories(this.counts['page'], _.bind(this.post_open_starred_stories, this),
                                                      this.show_stories_error, false);
-                } else if (this.flags['social_view'] && this.active_feed == 'river:blurblogs') {
+                } else if (this.flags['social_view'] && _.contains(['river:blurblogs', 'river:global'], this.active_feed)) {
                     this.model.fetch_river_blurblogs_stories(this.active_feed,
                                                              this.counts['page'],
                                                              {'global': this.flags.global_blurblogs},
@@ -5283,6 +5285,8 @@
                     self.open_starred_stories();
                 } else if (self.flags['social_view'] && self.active_feed == 'river:blurblogs') {
                     self.open_river_blurblogs_stories();
+                } else if (self.flags['social_view'] && self.active_feed == 'river:global') {
+                    self.open_river_blurblogs_stories({'global': true});
                 } else if (self.flags['social_view']) {
                     self.open_social_stories(self.active_feed);
                 } else if (self.flags['river_view']) {

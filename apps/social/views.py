@@ -195,11 +195,11 @@ def load_river_blurblog(request):
     UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
     if global_feed:
-        global_user = User.objects.get(username=settings.HOMEPAGE_USERNAME)
+        global_user = User.objects.get(username='popular')
         relative_user_id = global_user.pk
     
     if not relative_user_id:
-        relative_user_id = get_user(request).pk
+        relative_user_id = user.pk
 
     if not social_user_ids:
         socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id) 
@@ -219,8 +219,11 @@ def load_river_blurblog(request):
     stories = Feed.format_stories(sorted_mstories)
     for s, story in enumerate(stories):
         story['story_date'] = datetime.datetime.fromtimestamp(story_dates[s])
+    share_relative_user_id = relative_user_id
+    if global_user:
+        share_relative_user_id = user.pk
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories,
-                                                                             relative_user_id,
+                                                                             share_relative_user_id,
                                                                              check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
