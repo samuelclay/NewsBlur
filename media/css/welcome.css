@@ -483,9 +483,12 @@
 }
 .NB-welcome-pricing .NB-price {
     float: right;
-    margin: 0;
-    padding: 0;
+    margin: -2px -6px;
+    padding: 2px 6px;
+    background-color: #E0E8F2;
+    border-radius: 8px;
     line-height: 16px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 .NB-pricing {
     margin: 12px 0;
