@@ -222,7 +222,7 @@ def load_river_blurblog(request):
     for s, story in enumerate(stories):
         story['story_date'] = datetime.datetime.fromtimestamp(story_dates[s])
     share_relative_user_id = relative_user_id
-    if global_user:
+    if global_feed:
         share_relative_user_id = user.pk
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories,
                                                                              share_relative_user_id,
