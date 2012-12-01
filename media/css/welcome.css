@@ -11,13 +11,15 @@
 .NB-welcome .NB-splash-info.NB-splash-bottom {
     height: 6px;
     position: absolute;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4B638C), to(#23364D));
-    background: -moz-linear-gradient(center top , #4B638C 0%, #23364D 100%);
-    border-bottom: 1px solid #000D41;
+    top: 0;
     border-top: none;
+    border-bottom: none;
+    background: none;
+    background-color: rgba(0, 0, 0, .4);
 }
 .NB-welcome .NB-splash-info.NB-splash-bottom {
     position: static;
+    display: none !important;
 }
 .NB-welcome .NB-splash-info.NB-splash-bottom .NB-splash-links {
     display: none;
@@ -69,24 +71,35 @@
 /* ========== */
 
 .NB-welcome-header {
-    background-color: #238232;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#69A1D1), to(#E5B568));
-    background: -moz-linear-gradient(center top , #69A1D1 0%, #E5B568 100%) repeat scroll 0 0 transparent;
-    height: 400px;
+/*    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#69A1D1), to(#E5B568));*/
+/*    background: -moz-linear-gradient(center top , #69A1D1 0%, #E5B568 100%) repeat scroll 0 0 transparent;*/
+    background: #39302E url(/media/img/welcome/header_background.jpg) no-repeat center center;
+    height: 420px;
     color: white;
     overflow: hidden;
     box-shadow: 0 1px 2px rgba(10, 10, 10, 0.3);
 }
 
 .NB-welcome-header .NB-welcome-header-logo {
-    padding: 108px 0 0 0;
+    padding: 48px 0 0 0;
     text-align: center;
     width: 460px;
 }
+.NB-welcome-header .NB-welcome-header-logo img {
+    opacity: .9;
+        -webkit-transition: all .15s ease-in-out;
+    -moz-transition: all .15s ease-in-out;
+    -o-transition: all .15s ease-in-out;
+    -ms-transition: all .15s ease-in-out;
+
+}
+.NB-welcome-header .NB-welcome-header-logo img:hover {
+    opacity: 1;
+}
 .NB-welcome-header .NB-welcome-header-tagline {
-    margin: 36px 0 0 0;
+    margin: 24px 0 0 0;
     font-size: 22px;
-    text-shadow: 0 1px 0 rgba(35,35,35,0.35);
+    text-shadow: 0 1px 0 rgba(25, 25, 25, 0.75);
     text-align: center;
     width: 460px;
 }
@@ -138,7 +151,7 @@
 }
 .NB-welcome-header-captions {
     text-align: center;
-    margin: 0 auto;
+    margin: 12px auto 0;
     position: absolute;
     top: 0;
     right: 32px;
@@ -179,9 +192,14 @@
 .NB-welcome-header-actions {
     margin: 36px 0 0;
     line-height: 16px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    float: left;
 }
 .NB-welcome-header-action {
     float: left;
+    margin: 4px 0 16px;
 }
 .NB-welcome-header-action-subtext {
     text-align: center;
@@ -545,11 +563,16 @@
 .NB-welcome-footer {
     overflow: hidden;
     clear: both;
-    padding: 48px 0 52px;
+    padding: 42px 0 52px;
     color: #363C53;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
     line-height: 24px;
     background-color: #FAFAFA;
-    border-top: 1px solid #F0F0F0;
+    background: #F1E0D0 url(/media/img/welcome/footer_background.jpg) repeat center bottom;
+    background-size: 1438px 150px;
+
+    border-top: 4px solid rgba(0, 0, 0, .1);
+    border-bottom: 6px solid rgba(0, 0, 0, .4);
 }
 .NB-welcome-footer .NB-footer-logo {
     vertical-align: text-bottom;
@@ -559,7 +582,7 @@
 .NB-welcome-footer .NB-splash-link {
     color: #363C53;
     font-weight: bold;
-    text-shadow: 0 1px 0 rgba(245, 245, 245, 0.4);
+    text-shadow: 0 1px 0 rgba(245, 245, 245, 0.7);
 }
 .NB-welcome-footer .NB-splash-link:hover {
     color: #822216;
