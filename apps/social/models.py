@@ -933,6 +933,48 @@ class MSocialSubscription(mongo.Document):
                 # XXX TODO: Real-time notification, just for this user
         return data
         
+    @classmethod
+    def mark_unsub_story_ids_as_read(cls, user_id, social_user_id, story_ids, feed_id=None,
+                                     request=None):
+        data = dict(code=0, payload=story_ids)
+        
+        if not request:
+            request = User.objects.get(pk=user_id)
+    
+        if len(story_ids) > 1:
+            logging.user(request, "~FYRead %s social stories from global" % (len(story_ids)))
+        else:
+            logging.user(request, "~FYRead social story from global")
+        
+        for story_id in set(story_ids):
+            try:
+                story = MSharedStory.objects.get(user_id=social_user_id,
+                                                 story_guid=story_id)
+            except MSharedStory.DoesNotExist:
+                continue
+            now = datetime.datetime.utcnow()
+            date = now if now > story.story_date else story.story_date # For handling future stories
+            try:
+                m, _ = MUserStory.objects.get_or_create(user_id=user_id, 
+                                                        feed_id=story.story_feed_id, 
+                                                        story_id=story.story_guid,
+                                                        defaults={
+                                                            "read_date": date,
+                                                            "story_date": story.shared_date,
+                                                        })
+            except MUserStory.MultipleObjectsReturned:
+                logging.user(request, "~BR~FW~SKMultiple read stories: %s" % story.story_guid)
+            
+            # Also count on original subscription
+            usersubs = UserSubscription.objects.filter(user=user_id, feed=story.story_feed_id)
+            if usersubs:
+                usersub = usersubs[0]
+                if not usersub.needs_unread_recalc:
+                    usersub.needs_unread_recalc = True
+                    usersub.save()
+                # XXX TODO: Real-time notification, just for this user
+        return data
+    
     def mark_feed_read(self):
         latest_story_date = datetime.datetime.utcnow()
         UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)

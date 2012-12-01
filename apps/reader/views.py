@@ -862,8 +862,9 @@ def mark_social_stories_as_read(request):
                 code = -1
                 errors.append("Already read story: %s" % e)
             except MSocialSubscription.DoesNotExist:
-                code = -1
-                errors.append("You are not subscribed to this social user_id: %s" % social_user_id)
+                MSocialSubscription.mark_unsub_story_ids_as_read(request.user.pk, social_user_id,
+                                                                 story_ids, feed_id,
+                                                                 request=request)
             except Feed.DoesNotExist:
                 duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
                 if duplicate_feed:
