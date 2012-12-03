@@ -1341,6 +1341,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, this), null, {request_type: 'GET'});
     },
     
+    fetch_payment_history: function(callback) {
+        this.make_request('/profile/payment_history', {}, callback, null, {request_type: 'GET'});
+    },
+    
     follow_twitter_account: function(username, callback) {
         this.make_request('/oauth/follow_twitter_account', {'username': username}, callback);
     },

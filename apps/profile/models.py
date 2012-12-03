@@ -407,3 +407,10 @@ class PaymentHistory(models.Model):
     
     class Meta:
         ordering = ['-payment_date']
+        
+    def to_json(self):
+        return {
+            'payment_date': self.payment_date.strftime('%Y-%m-%d'),
+            'payment_amount': self.payment_amount,
+            'payment_provider': self.payment_provider,
+        }
