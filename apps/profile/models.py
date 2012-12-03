@@ -20,9 +20,10 @@ from utils import log as logging
 from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
-from vendor.paypal.standard.ipn.signals import subscription_signup
+from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful
 from vendor.paypal.standard.ipn.models import PayPalIPN
 from zebra.signals import zebra_webhook_customer_subscription_created
+from zebra.signals import zebra_webhook_charge_succeeded
 
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile")
@@ -359,6 +360,15 @@ def paypal_signup(sender, **kwargs):
     user.profile.activate_premium()
 subscription_signup.connect(paypal_signup)
 
+def paypal_payment_history_sync(sender, **kwargs):
+    ipn_obj = sender
+    user = User.objects.get(username=ipn_obj.custom)
+    try:
+        user.profile.setup_premium_history()
+    except:
+        return {"code": -1, "message": "User doesn't exist."}
+payment_was_successful.connect(paypal_payment_history_sync)
+
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
     try:
@@ -367,6 +377,15 @@ def stripe_signup(sender, full_json, **kwargs):
     except Profile.DoesNotExist:
         return {"code": -1, "message": "User doesn't exist."}
 zebra_webhook_customer_subscription_created.connect(stripe_signup)
+
+def stripe_payment_history_sync(sender, full_json, **kwargs):
+    stripe_id = full_json['data']['object']['customer']
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_id)
+        profile.setup_premium_history()
+    except Profile.DoesNotExist:
+        return {"code": -1, "message": "User doesn't exist."}    
+zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 
 def change_password(user, old_password, new_password):
     user_db = authenticate(username=user.username, password=old_password)
