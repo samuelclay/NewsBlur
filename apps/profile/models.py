@@ -1,4 +1,5 @@
 import datetime
+import stripe
 import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
@@ -20,11 +21,13 @@ from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
 from vendor.paypal.standard.ipn.signals import subscription_signup
+from vendor.paypal.standard.ipn.models import PayPalIPN
 from zebra.signals import zebra_webhook_customer_subscription_created
 
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile")
     is_premium        = models.BooleanField(default=False)
+    premium_expire    = models.DateTimeField(blank=True, null=True)
     send_emails       = models.BooleanField(default=True)
     preferences       = models.TextField(default="{}")
     view_settings     = models.TextField(default="{}")
@@ -127,6 +130,8 @@ class Profile(models.Model):
         self.is_premium = True
         self.save()
         
+        self.setup_premium_history()
+        
         subs = UserSubscription.objects.filter(user=self.user)
         for sub in subs:
             sub.active = True
@@ -139,6 +144,43 @@ class Profile(models.Model):
         self.queue_new_feeds()
         
         logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+    
+    def setup_premium_history(self):
+        existing_history = PaymentHistory.objects.filter(user=self.user)
+        print " ---> Deleting existing history: %s payments" % existing_history.count()
+        existing_history.delete()
+        
+        # Record Paypal payments
+        paypal_payments = PayPalIPN.objects.filter(custom=self.user.username,
+                                                   txn_type='subscr_payment')
+        for payment in paypal_payments:
+            PaymentHistory.objects.create(user=self.user,
+                                          payment_date=payment.payment_date,
+                                          payment_amount=payment.payment_gross,
+                                          payment_provider='paypal')
+        
+        # Record Stripe payments
+        if self.stripe_id:
+            stripe.api_key = settings.STRIPE_SECRET
+            stripe_customer = stripe.Customer.retrieve(self.stripe_id)
+            stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+            for payment in stripe_payments:
+                created = datetime.datetime.fromtimestamp(payment.created)
+                PaymentHistory.objects.create(user=self.user,
+                                              payment_date=created,
+                                              payment_amount=payment.amount / 100.0,
+                                              payment_provider='stripe')
+        
+        # Calculate last payment date
+        payment_history = PaymentHistory.objects.filter(user=self.user)
+        most_recent_payment_date = None
+        for payment in payment_history:
+            if not most_recent_payment_date or payment.payment_date > most_recent_payment_date:
+                most_recent_payment_date = payment.payment_date
+        
+        if most_recent_payment_date:
+            self.premium_expire = most_recent_payment_date + datetime.timedelta(year=1)
+            self.save()
         
     def queue_new_feeds(self, new_feeds=None):
         if not new_feeds:
@@ -356,4 +398,12 @@ class MSentEmail(mongo.Document):
         cls.objects.create(email_type=email_type, 
                            receiver_user_id=receiver_user_id, 
                            sending_user_id=sending_user_id)
+
+class PaymentHistory(models.Model):
+    user = models.ForeignKey(User, related_name='payments')
+    payment_date = models.DateTimeField(auto_now=True)
+    payment_amount = models.IntegerField()
+    payment_provider = models.CharField(max_length=20)
     
+    class Meta:
+        ordering = ['-payment_date']
