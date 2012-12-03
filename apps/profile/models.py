@@ -180,7 +180,7 @@ class Profile(models.Model):
                 most_recent_payment_date = payment.payment_date
         
         if most_recent_payment_date:
-            self.premium_expire = most_recent_payment_date + datetime.timedelta(year=1)
+            self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365)
             self.save()
         
     def queue_new_feeds(self, new_feeds=None):
