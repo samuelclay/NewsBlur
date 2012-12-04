@@ -6,7 +6,7 @@ from south.v2 import DataMigration
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
-
+from apps.profile.models import PaymentHistory
 
 class Migration(DataMigration):
 
@@ -22,7 +22,10 @@ class Migration(DataMigration):
                 print " ---> %s: %s -- %s" % (i, user.username, e)
                 pass
             if user.profile.premium_expire:
-                print " ---> %s: %s (%s)" % (i, user.username, user.profile.premium_expire.strftime("%Y-%m-%d"))
+                payments = PaymentHistory.objects.filter(user=user)
+                print " ---> %s: %s (%s) %s payments" % (i, user.username,
+                    user.profile.premium_expire.strftime("%Y-%m-%d"), 
+                    payments.count())
             else:
                 print " ***> %s: %s -- NO PREMIUM EXPIRE" % (i, user.username)
 

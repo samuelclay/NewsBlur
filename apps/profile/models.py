@@ -148,12 +148,16 @@ class Profile(models.Model):
     
     def setup_premium_history(self):
         existing_history = PaymentHistory.objects.filter(user=self.user)
-        print " ---> Deleting existing history: %s payments" % existing_history.count()
-        existing_history.delete()
+        if existing_history.count():
+            print " ---> Deleting existing history: %s payments" % existing_history.count()
+            existing_history.delete()
         
         # Record Paypal payments
         paypal_payments = PayPalIPN.objects.filter(custom=self.user.username,
                                                    txn_type='subscr_payment')
+        if not paypal_payments.count():
+            paypal_payments = PayPalIPN.objects.filter(payer_email=self.user.email,
+                                                       txn_type='subscr_payment')
         for payment in paypal_payments:
             PaymentHistory.objects.create(user=self.user,
                                           payment_date=payment.payment_date,
