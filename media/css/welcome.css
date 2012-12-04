@@ -75,13 +75,13 @@
     background: -moz-linear-gradient(center top , #3F5354 0%, #1B2424 100%) repeat scroll 0 0 transparent;
     height: 420px;
     color: white;
-    overflow: hidden;
     box-shadow: 0 1px 2px rgba(10, 10, 10, 0.3);
 }
 .NB-welcome-header .NB-background {
     background: url(/media/img/welcome/header_background.jpg) no-repeat center center;
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 .NB-welcome-header .NB-welcome-header-logo {
     padding: 48px 0 0 0;
@@ -522,6 +522,32 @@
     border: 1px solid #606060;
     height: 54px;
     margin: 0 12px 0 0;
+}
+
+/* ================== */
+/* = Bottom Actions = */
+/* ================== */
+
+.NB-welcome-bottomactions {
+    overflow: hidden;
+    clear: both;
+    margin: 48px 0 0;
+    padding: 36px 0;
+    background-color: #F8FBFE;
+    border-top: 1px solid #F0F0F0;
+    border-bottom: 1px solid #F0F0F0;
+}
+
+.NB-welcome-bottomactions .NB-welcome-header-actions {
+    padding: 0;
+    margin: 0 auto;
+    float: none;
+    background-color: rgba(209, 211, 219, .4);
+    width: 450px;
+}
+.NB-welcome-bottomactions .NB-welcome-header-action-subtext {
+    color: #363C53;
+    text-shadow: 0 1px 0 white;
 }
 
 /* ============ */

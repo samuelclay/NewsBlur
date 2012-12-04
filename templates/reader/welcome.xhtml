@@ -200,12 +200,34 @@
             </table>
         </div>
     </div>
-
+    
     <div class="NB-welcome-activity">
         <div class="NB-inner">
             {% render_features_module %}
             <h2>Real-time Stats</h2>
             {% render_statistics_graphs statistics %}
+        </div>
+    </div>
+
+    <div class="NB-welcome-bottomactions">
+        <div class="NB-inner">
+            <div class="NB-welcome-header-actions">
+                <div class="NB-welcome-header-action">
+                    <div class="NB-welcome-header-action-subtext">First</div>
+                    <div class="NB-button NB-button-tryout">
+                        <img src="{{ MEDIA_URL }}img/welcome/04-eye@2x.png" style="width: 20px; height: 13px; margin-top: 2px">
+                        Try out NewsBlur
+                    </div>
+                </div>
+                <div class="NB-welcome-header-action">
+                    <div class="NB-welcome-header-action-subtext">Then</div>
+                    <div class="NB-button NB-button-login">
+                        <img src="{{ MEDIA_URL }}img/welcome/09-lightning@2x.png" class="NB-welcome-header-action-bolt" style="width: 12px; height: 18px; margin-bottom: -2px">
+                        <img src="{{ MEDIA_URL }}img/reader/32-Arrow-Right.png" class="NB-welcome-header-action-arrow">
+                        Sign up or Log in
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
