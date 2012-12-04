@@ -7367,7 +7367,7 @@ form.opml_import_form input {
     list-style: none;
     margin: 0 0 12px;
     padding: 0 0 12px;
-    border-bottom: 1px solid #F0F0F0;
+    border-bottom: 1px solid #E0E0E0;
 }
 .NB-modal-account .NB-account-payments li:last-child {
     border-bottom: none;

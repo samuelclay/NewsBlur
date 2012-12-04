@@ -115,7 +115,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         $.make('div', [
                             $.make('input', { id: 'NB-preference-emails-1', type: 'radio', name: 'send_emails', value: 'true' }),
                             $.make('label', { 'for': 'NB-preference-emails-1' }, [
-                                'Mail me the infrequent email'
+                                'Email replies, re-shares, and new followers'
                             ])
                         ]),
                         $.make('div', [
@@ -273,6 +273,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                     $.make('div', { className: 'NB-account-payment-provider' }, payment.payment_provider)
                 ]));
             });
+            $(window).resize();
         }, this));
     },
     
