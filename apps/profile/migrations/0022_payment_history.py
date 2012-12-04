@@ -28,7 +28,7 @@ class Migration(DataMigration):
                     payments.count())
             else:
                 print " ***> %s: %s -- NO PREMIUM EXPIRE" % (i, user.username)
-
+                
     def backwards(self, orm):
         "Write your backwards methods here."
 
@@ -73,7 +73,7 @@ class Migration(DataMigration):
             'Meta': {'ordering': "['-payment_date']", 'object_name': 'PaymentHistory'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'payment_amount': ('django.db.models.fields.IntegerField', [], {}),
-            'payment_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'payment_date': ('django.db.models.fields.DateTimeField', [], {}),
             'payment_provider': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'payments'", 'to': "orm['auth.User']"})
         },

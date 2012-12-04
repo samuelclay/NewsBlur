@@ -424,7 +424,7 @@ class MSentEmail(mongo.Document):
 
 class PaymentHistory(models.Model):
     user = models.ForeignKey(User, related_name='payments')
-    payment_date = models.DateTimeField(auto_now=True)
+    payment_date = models.DateTimeField()
     payment_amount = models.IntegerField()
     payment_provider = models.CharField(max_length=20)
     

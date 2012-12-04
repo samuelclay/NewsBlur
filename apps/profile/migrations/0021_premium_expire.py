@@ -11,8 +11,8 @@ class Migration(SchemaMigration):
         # Adding model 'PaymentHistory'
         db.create_table('profile_paymenthistory', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('payment_date', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='payments', to=orm['auth.User'])),
+            ('payment_date', self.gf('django.db.models.fields.DateTimeField')()),
             ('payment_amount', self.gf('django.db.models.fields.IntegerField')()),
             ('payment_provider', self.gf('django.db.models.fields.CharField')(max_length=20)),
         ))
@@ -70,12 +70,12 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'profile.paymenthistory': {
-            'Meta': {'object_name': 'PaymentHistory'},
+            'Meta': {'ordering': "['-payment_date']", 'object_name': 'PaymentHistory'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'payment_amount': ('django.db.models.fields.IntegerField', [], {}),
-            'payment_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'payment_date': ('django.db.models.fields.DateTimeField', [], {}),
             'payment_provider': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'payments'", 'to': "orm['auth.User']"})
         },
         'profile.profile': {
             'Meta': {'object_name': 'Profile'},
