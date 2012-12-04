@@ -18,6 +18,8 @@ class Migration(DataMigration):
         for i, user in enumerate(premium_users):
             try:
                 user.profile.setup_premium_history()
+                db.commit_transaction()
+                db.start_transaction()
             except stripe.InvalidRequestError, e:
                 print " ---> %s: %s -- %s" % (i, user.username, e)
                 pass
