@@ -10,7 +10,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
-from apps.profile.models import Profile, change_password
+from apps.profile.models import Profile, change_password, PaymentHistory
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
@@ -281,3 +281,10 @@ def load_activities(request):
         'has_next_page': has_next_page,
         'username': 'You',
     }
+
+@ajax_login_required
+@json.json_view
+def payment_history(request):
+    history = PaymentHistory.objects.filter(user=request.user)
+
+    return {'payments': history}

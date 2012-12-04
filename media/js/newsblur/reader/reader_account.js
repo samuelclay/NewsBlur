@@ -25,6 +25,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.handle_change();
         this.select_preferences();
+        
+        if (NEWSBLUR.Globals.is_premium) {
+            this.fetch_payment_history();
+        }
     },
     
     make_modal: function() {
@@ -87,6 +91,16 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         'Premium'
                     ])
                 ]),
+                (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preference NB-preference-premium' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('ul', { className: 'NB-account-payments' }, [
+                            $.make('li', { className: 'NB-payments-loading' }, 'Loading...')
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Payment history'
+                    ])
+                ])),
                 $.make('div', { className: 'NB-preference NB-preference-opml' }, [
                     $.make('div', { className: 'NB-preference-options' }, [
                         $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, 'Download OPML')
@@ -199,7 +213,6 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     select_preferences: function() {
         var pref = this.model.preference;
         $('input[name=send_emails]', this.$modal).each(function() {
-            NEWSBLUR.log(["pref", pref('send_emails'), $(this).val()]);
             if ($(this).val() == ""+pref('send_emails')) {
                 $(this).attr('checked', true);
                 return false;
@@ -248,6 +261,19 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
             $('.NB-module-account-username').text(NEWSBLUR.Globals.username);
             self.close();
         });
+    },
+    
+    fetch_payment_history: function() {
+        this.model.fetch_payment_history(_.bind(function(data) {
+            var $history = $('.NB-account-payments', this.$modal).empty();
+            _.each(data.payments, function(payment) {
+                $history.append($.make('li', { className: 'NB-account-payment' }, [
+                    $.make('div', { className: 'NB-account-payment-date' }, payment.payment_date),
+                    $.make('div', { className: 'NB-account-payment-amount' }, "$" + payment.payment_amount),
+                    $.make('div', { className: 'NB-account-payment-provider' }, payment.payment_provider)
+                ]));
+            });
+        }, this));
     },
     
     // ===========

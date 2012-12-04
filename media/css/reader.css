@@ -7356,6 +7356,41 @@ form.opml_import_form input {
   text-decoration: none;
 }
 
+.NB-modal-account .NB-account-payments {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.NB-modal-account .NB-account-payments .NB-account-payment {
+    clear: both;
+    overflow: hidden;
+    list-style: none;
+    margin: 0 0 12px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid #F0F0F0;
+}
+.NB-modal-account .NB-account-payments li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.NB-modal-account .NB-account-payments .NB-payments-loading {
+    padding: 0 0 0 20px;
+    background: transparent url('/media/embed/reader/recycle_spinner.gif') no-repeat left 3px;
+}
+.NB-modal-account .NB-account-payments .NB-account-payment-date {
+    float: left;
+    width: 140px;
+    font-weight: bold;
+}
+.NB-modal-account .NB-account-payments .NB-account-payment-amount {
+    float: left;
+    width: 100px;
+}
+.NB-modal-account .NB-account-payments .NB-account-payment-provider {
+    float: left;
+    width: 100px;
+}
 
 /* ================ */
 /* = Static Pages = */
