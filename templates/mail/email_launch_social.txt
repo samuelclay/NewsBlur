@@ -11,7 +11,7 @@ We've worked hard to make a great app, so congratulations on discovering a handc
 Here are some easy ways to have a great time on NewsBlur:
 
     * Follow friends from Twitter, Facebook, and NewsBlur: http://{% current_domain %}{{ user.profile.autologin_url }}
-    * Visit the popular blurblog, The People Have Spoken: http://popular.dev.newsblur.co
+    * Visit the popular blurblog, The People Have Spoken: http://popular.newsblur.com
     * {% if user.profile.is_premium %}Thank you, thank you, thank you for going premium! You are supporting a young startup and we are grateful to you.{% else %}Upgrade to a premium account for only $12/year: http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser{% endif %}
 
 Spend a few days trying out NewsBlur. We hope you love it.{% endblock body %}

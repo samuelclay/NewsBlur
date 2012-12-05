@@ -11,7 +11,7 @@ Your premium account was set to expire today, but you've been given a free month
 Here are some easy ways to have a great time on NewsBlur:
 
     * Follow friends from Twitter, Facebook, and NewsBlur: http://{% current_domain %}{{ user.profile.autologin_url }}
-    * Visit the popular blurblog, The People Have Spoken: http://popular.dev.newsblur.co
+    * Visit the popular blurblog, The People Have Spoken: http://popular.newsblur.com
     * Renew your premium account for only $12/year: http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser
 
 Spend a few days trying out NewsBlur again. We hope you love it.{% endblock body %}

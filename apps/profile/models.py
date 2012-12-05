@@ -131,8 +131,6 @@ class Profile(models.Model):
         self.is_premium = True
         self.save()
         
-        self.setup_premium_history()
-        
         subs = UserSubscription.objects.filter(user=self.user)
         for sub in subs:
             sub.active = True
@@ -143,8 +141,24 @@ class Profile(models.Model):
                 pass
         
         self.queue_new_feeds()
+        self.setup_premium_history()
         
         logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+    
+    def deactivate_premium(self):
+        self.is_premium = False
+        self.save()
+        
+        subs = UserSubscription.objects.filter(user=self.user)
+        for sub in subs:
+            sub.active = False
+            try:
+                sub.save()
+                sub.feed.setup_feed_for_premium_subscribers()
+            except IntegrityError, Feed.DoesNotExist:
+                pass
+        
+        logging.user(self.user, "~BY~FW~SBBOO! Deactivating premium account: ~FR%s subscriptions~SN!" % (subs.count()))
     
     def setup_premium_history(self):
         existing_history = PaymentHistory.objects.filter(user=self.user)
@@ -184,7 +198,14 @@ class Profile(models.Model):
                 most_recent_payment_date = payment.payment_date
         
         if most_recent_payment_date:
-            self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365)
+            payment_gap = 0
+            # If user lapsed and has no gap b/w last payment and expiration, 
+            # they only get a full year. Otherwise, give them the gap.
+            if (self.premium_expire and 
+                self.premium_expire > datetime.datetime.now() and
+                self.premium_expire > most_recent_payment_date):
+                payment_gap = (self.premium_expire - most_recent_payment_date).days
+            self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365+payment_gap)
             self.save()
         
     def queue_new_feeds(self, new_feeds=None):
@@ -478,7 +499,7 @@ class MSentEmail(mongo.Document):
         return "%s sent %s email to %s" % (self.sending_user_id, self.email_type, self.receiver_user_id)
     
     @classmethod
-    def record(cls, email_type, receiver_user_id, sending_user_id):
+    def record(cls, email_type, receiver_user_id, sending_user_id=None):
         cls.objects.create(email_type=email_type, 
                            receiver_user_id=receiver_user_id, 
                            sending_user_id=sending_user_id)

@@ -360,6 +360,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=12),
         'options': {'queue': 'beat_tasks'},
     },
+    # 'premium-expire': {
+    #     'task': 'premium-expire',
+    #     'schedule': datetime.timedelta(hours=24),
+    #     'options': {'queue': 'beat_tasks'},
+    # },
 }
 
 # =========
