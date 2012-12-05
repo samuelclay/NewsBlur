@@ -1,0 +1,17 @@
+{% extends "mail/email_base.txt" %}
+
+{% load utils_tags %}
+
+{% block body %}Hey {{ user.username }}, your premium account is about to expire...
+
+{% if months_ago >= 1 %}It's been {{ months_ago }} month{{ months_ago|pluralize }} since you last saw NewsBlur. A lot has changed since then.{% else %}You've recently been on NewsBlur, but a lot has changed since even then.{% endif %} NewsBlur is now a social news reader. We just launched shared stories and if you miss the old Google Reader features, you'll love the new NewsBlur.
+
+Your premium account was set to expire today, but you've been given a free month grace period, so you can continue using your premium account to try out NewsBlur.
+
+Here are some easy ways to have a great time on NewsBlur:
+
+    * Follow friends from Twitter, Facebook, and NewsBlur: http://{% current_domain %}{{ user.profile.autologin_url }}
+    * Visit the popular blurblog, The People Have Spoken: http://popular.dev.newsblur.co
+    * Renew your premium account for only $12/year: http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser
+
+Spend a few days trying out NewsBlur again. We hope you love it.{% endblock body %}

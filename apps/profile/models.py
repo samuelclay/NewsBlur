@@ -335,6 +335,67 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % (months_ago, self.user.email))
+        
+    def send_premium_expire_grace_period_email(self, force=False):
+        if not self.user.email:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending premium expire grace for user: %s" % (self.user))
+            return
+
+        emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
+                                                email_type='premium_expire_grace')
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
+        for email in emails_sent:
+            if email.date_sent > day_ago:
+                logging.user(self.user, "~SK~FMNot sending premium expire grace email, already sent before.")
+                return
+        
+        self.premium_expire = datetime.datetime.now()
+        self.save()
+        
+        delta      = datetime.datetime.now() - self.last_seen_on
+        months_ago = delta.days / 30
+        user    = self.user
+        data    = dict(user=user, months_ago=months_ago)
+        text    = render_to_string('mail/email_premium_expire_grace.txt', data)
+        html    = render_to_string('mail/email_premium_expire_grace.xhtml', data)
+        subject = "Your premium account on NewsBlur has one more month!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type='premium_expire_grace')
+        logging.user(self.user, "~BB~FM~SBSending premium expire grace email for user: %s months, %s" % (months_ago, self.user.email))
+        
+    def send_premium_expire_email(self, force=False):
+        if not self.user.email:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending premium expire for user: %s" % (self.user))
+            return
+
+        emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
+                                                email_type='premium_expire')
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
+        for email in emails_sent:
+            if email.date_sent > day_ago:
+                logging.user(self.user, "~SK~FMNot sending premium expire email, already sent before.")
+                return
+        
+        delta      = datetime.datetime.now() - self.last_seen_on
+        months_ago = delta.days / 30
+        user    = self.user
+        data    = dict(user=user, months_ago=months_ago)
+        text    = render_to_string('mail/email_premium_expire.txt', data)
+        html    = render_to_string('mail/email_premium_expire.xhtml', data)
+        subject = "Your premium account on NewsBlur has expired"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type='premium_expire')
+        logging.user(self.user, "~BB~FM~SBSending premium expire email for user: %s months, %s" % (months_ago, self.user.email))
     
     def autologin_url(self, next=None):
         return reverse('autologin', kwargs={

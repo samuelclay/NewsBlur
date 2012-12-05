@@ -6587,6 +6587,14 @@ form.opml_import_form input {
     border-left: 1px solid #B0B0B0;
 }
 
+.NB-modal-feedchooser.NB-feedchooser-premium .NB-feedchooser-type {
+    float: none;
+    width: 400px;
+    margin: 0 auto;
+    padding: 0;
+    border-left: none;
+}
+
 .NB-modal-feedchooser .NB-feedchooser-porpoise {
     border-radius: 16px;
     line-height: 48px;
