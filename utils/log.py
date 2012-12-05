@@ -27,9 +27,9 @@ def user(u, msg, request=None):
         if hasattr(request, 'start_time'):
             seconds = time.time() - request.start_time
             color = '~FK~SB'
-            if seconds >= .5:
+            if seconds >= 1:
                 color = '~FR'
-            elif seconds <= .15:
+            elif seconds <= .2:
                 color = '~FB'
             time_elapsed = "[%s%.4ss~SB] " % (
                 color,
