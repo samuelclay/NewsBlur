@@ -292,29 +292,31 @@
 //        NSLog(@"Out of bounds: was %d, now %d", pageController.pageIndex, newIndex);
 		CGRect pageFrame = pageController.view.frame;
 		pageFrame.origin.x = self.scrollView.frame.size.width * newIndex;
-		pageFrame.origin.y = self.scrollView.frame.size.height;
-        pageFrame.size.height = 0;
+		pageFrame.origin.y = 48;
+        pageFrame.size.height = self.scrollView.frame.size.height;
 		pageController.view.frame = pageFrame;
 	}
     
     int wasIndex = pageController.pageIndex;
 	pageController.pageIndex = newIndex;
-    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.activeFeedStoryLocations count]);
+    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories - %d]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.activeFeedStoryLocations count], outOfBounds);
     
     if (newIndex > 0 && newIndex >= [appDelegate.activeFeedStoryLocations count]) {
+        pageController.pageIndex = -2;
         if (self.appDelegate.feedDetailViewController.feedPage < 50 &&
             !self.appDelegate.feedDetailViewController.pageFinished &&
             !self.appDelegate.feedDetailViewController.pageFetching) {
             [self.appDelegate.feedDetailViewController fetchNextPage:^() {
+                NSLog(@"Fetched next page, %d stories", [appDelegate.activeFeedStoryLocations count]);
                 [self applyNewIndex:newIndex pageController:pageController];
             }];
-        } else {
-            
-//            [appDelegate.navigationController
-//             popToViewController:[appDelegate.navigationController.viewControllers
-//                                  objectAtIndex:0]
-//             animated:YES];
-//            [appDelegate hideStoryDetailView];
+        } else if (!self.appDelegate.feedDetailViewController.pageFinished &&
+                   !self.appDelegate.feedDetailViewController.pageFetching) {
+            [appDelegate.navigationController
+             popToViewController:[appDelegate.navigationController.viewControllers
+                                  objectAtIndex:0]
+             animated:YES];
+            [appDelegate hideStoryDetailView];
         }
     } else if (!outOfBounds) {
         int location = [appDelegate indexFromLocation:pageController.pageIndex];
