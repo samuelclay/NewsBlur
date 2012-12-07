@@ -1,11 +1,6 @@
-//
-// Prefix header for all source files of the 'NewsBlur' target in the 'NewsBlur' project
-//
-
 #ifdef __OBJC__
     #import <Foundation/Foundation.h>
     #import <UIKit/UIKit.h>
-//    #import "TestFlight.h"
 
     #define UIColorFromRGB(rgbValue) [UIColor \
     colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
