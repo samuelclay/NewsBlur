@@ -397,7 +397,8 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
-        
+    [allFolders setValue:[[NSMutableArray alloc] init] forKey:@"river_global"];
+    
     if (appDelegate.savedStoriesCount) {
         [allFolders setValue:[[NSArray alloc] init] forKey:@"saved_stories"];
     }
@@ -444,14 +445,20 @@ static const CGFloat kFolderTitleHeight = 28;
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
     
+    
+    NSLog(@"Before Sections: %@", appDelegate.dictFoldersArray);
     // Move River Blurblog and Everything to the top
+    if ([appDelegate.dictFoldersArray containsObject:@"river_global"]) {
+        [appDelegate.dictFoldersArray removeObject:@"river_global"];
+        [appDelegate.dictFoldersArray insertObject:@"river_global" atIndex:0];
+    }
     if ([appDelegate.dictFoldersArray containsObject:@"river_blurblogs"]) {
         [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
-        [appDelegate.dictFoldersArray insertObject:@"river_blurblogs" atIndex:0];
+        [appDelegate.dictFoldersArray insertObject:@"river_blurblogs" atIndex:1];
     }
     if ([appDelegate.dictFoldersArray containsObject:@"everything"]) {
         [appDelegate.dictFoldersArray removeObject:@"everything"];
-        [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:1];
+        [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:2];
     }
     
     // Add Saved Stories folder
@@ -473,6 +480,7 @@ static const CGFloat kFolderTitleHeight = 28;
         appDelegate.hasNoSites = YES;
     }
     
+    NSLog(@"After Sections: %@", appDelegate.dictFoldersArray);
     [self.feedTitlesTable reloadData];
 
     // assign categories for FTUX
@@ -677,8 +685,9 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (appDelegate.hasNoSites) {
-        return 2;
+        return 3;
     }
+    NSLog(@"Sections: %@", appDelegate.dictFoldersArray);
     return [appDelegate.dictFoldersArray count];
 }
 
@@ -774,8 +783,10 @@ static const CGFloat kFolderTitleHeight = 28;
     NSDictionary *feed;
     NSString *folderName;
     if (indexPath.section == 0) {
-        folderName = @"river_blurblogs";
+        folderName = @"river_global";
     } else if (indexPath.section == 1) {
+            folderName = @"river_blurblogs";
+    } else if (indexPath.section == 2) {
         folderName = @"everything";
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
@@ -822,7 +833,9 @@ static const CGFloat kFolderTitleHeight = 28;
     
     NSString *folderName;
     if (indexPath.section == 0) {
-        folderName = @"river_blurblogs";
+        folderName = @"river_global";
+    } else if (indexPath.section == 1) {
+            folderName = @"river_blurblogs";
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     }
@@ -834,7 +847,8 @@ static const CGFloat kFolderTitleHeight = 28;
         return 0;
     }
     
-    if ([folderName isEqualToString:@"river_blurblogs"]) { // blurblogs
+    if ([folderName isEqualToString:@"river_blurblogs"] ||
+        [folderName isEqualToString:@"river_global"]) { // blurblogs
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             return kBlurblogTableViewRowHeight;            
         } else {
@@ -882,7 +896,7 @@ static const CGFloat kFolderTitleHeight = 28;
 //    }
     
     int rows = [tableView.dataSource tableView:tableView numberOfRowsInSection:section];
-    if (rows == 0 && section != 1 && folderName != @"saved_stories") {
+    if (rows == 0 && section != 2 && section != 0 && folderName != @"saved_stories") {
         return 0;
     }
     
@@ -898,6 +912,10 @@ static const CGFloat kFolderTitleHeight = 28;
     NSMutableArray *feeds = [NSMutableArray array];
 
     if (button.tag == 0) {
+        appDelegate.isSocialRiverView = YES;
+        appDelegate.isRiverView = YES;
+        [appDelegate setActiveFolder:@"river_global"];
+    } else if (button.tag == 1) {
         appDelegate.isSocialRiverView = YES;
         appDelegate.isRiverView = YES;
         // add all the feeds from every NON blurblog folder
@@ -950,6 +968,8 @@ static const CGFloat kFolderTitleHeight = 28;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if (button.tag == 0) {
+        folderName = @"river_global";
+    } else if (button.tag == 1) {
         folderName = @"river_blurblogs";
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:button.tag];
@@ -1187,6 +1207,7 @@ static const CGFloat kFolderTitleHeight = 28;
         self.visibleFeeds = [NSMutableDictionary dictionary];
     }
     for (NSString *folderName in appDelegate.dictFoldersArray) {
+        if ([folderName isEqualToString:@"river_global"]) continue;
         NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
         NSMutableArray *feedLocations = [NSMutableArray array];
         for (int f = 0; f < [folder count]; f++) {

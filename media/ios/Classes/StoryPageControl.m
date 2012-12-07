@@ -616,9 +616,12 @@
             if ([[appDelegate.activeStory objectForKey:@"shared_by_friends"] count]) {
                 friendUserId = [NSString stringWithFormat:@"%@",
                                 [[appDelegate.activeStory objectForKey:@"shared_by_friends"] objectAtIndex:0]];
-            } else {
+            } else if ([[appDelegate.activeStory objectForKey:@"commented_by_friends"] count]) {
                 friendUserId = [NSString stringWithFormat:@"%@",
                                 [[appDelegate.activeStory objectForKey:@"commented_by_friends"] objectAtIndex:0]];
+            } else {
+                friendUserId = [NSString stringWithFormat:@"%@",
+                                [[appDelegate.activeStory objectForKey:@"share_user_ids"] objectAtIndex:0]];
             }
             
             NSDictionary *feedStory = [NSDictionary dictionaryWithObject:storyId

@@ -317,10 +317,18 @@
         NSString *theFeedDetailURL;
         
         if (appDelegate.isSocialRiverView) {
-            theFeedDetailURL = [NSString stringWithFormat:
-                                @"http://%@/social/river_stories/?page=%d", 
-                                NEWSBLUR_URL,
-                                self.feedPage];
+            if ([appDelegate.activeFolder isEqualToString:@"river_global"]) {
+                theFeedDetailURL = [NSString stringWithFormat:
+                                    @"http://%@/social/river_stories/?global_feed=true&page=%d",
+                                    NEWSBLUR_URL,
+                                    self.feedPage];
+                
+            } else {
+                theFeedDetailURL = [NSString stringWithFormat:
+                                    @"http://%@/social/river_stories/?page=%d", 
+                                    NEWSBLUR_URL,
+                                    self.feedPage];
+            }
         } else if (appDelegate.activeFolder == @"saved_stories") {
             theFeedDetailURL = [NSString stringWithFormat:
                                 @"http://%@/reader/starred_stories/?page=%d",

@@ -621,6 +621,8 @@
     if (self.isRiverView) {
         if ([self.activeFolder isEqualToString:@"river_blurblogs"]) {
             feedTitle = @"All Shared Stories";
+        } else if ([self.activeFolder isEqualToString:@"river_global"]) {
+            feedTitle = @"Global Shared Stories";
         } else if ([self.activeFolder isEqualToString:@"everything"]) {
             feedTitle = @"All Stories";
         } else if ([self.activeFolder isEqualToString:@"saved_stories"]) {
@@ -871,8 +873,11 @@
         for (id feedId in self.dictSocialFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
+    } else if (folderName == @"river_global" ||
+               (!folderName && self.activeFolder == @"river_global")) {
+        total = 0;
     } else if (folderName == @"everything" ||
-            (!folderName && self.activeFolder == @"everything")) {
+               (!folderName && self.activeFolder == @"everything")) {
         for (id feedId in self.dictFeeds) {
             total += [self unreadCountForFeed:feedId];
         }
@@ -935,6 +940,9 @@
         for (id feedId in self.dictSocialFeeds) {
             [counts addCounts:[self splitUnreadCountForFeed:feedId]];
         }
+    } else if (folderName == @"river_global" ||
+            (!folderName && self.activeFolder == @"river_global")) {
+        // Nothing for global
     } else if (folderName == @"everything" ||
                (!folderName && self.activeFolder == @"everything")) {
         for (id feedId in self.dictFeeds) {
@@ -1019,17 +1027,19 @@
         // make sure we set the active feed
         self.activeFeed = feed;
     } else if (self.isSocialRiverView) {
-        feedId = [[self.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0];
-        feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];  
-        feed = [self.dictSocialFeeds objectForKey:feedIdStr];
+        if ([[self.activeStory objectForKey:@"friend_user_ids"] count]) {
+            feedId = [[self.activeStory objectForKey:@"friend_user_ids"] objectAtIndex:0];
+            feedIdStr = [NSString stringWithFormat:@"social:%@",feedId];
+            feed = [self.dictSocialFeeds objectForKey:feedIdStr];
         
-        [otherFriendShares removeObject:feedId];
-        NSLog(@"otherFriendFeeds is %@", otherFriendShares);
-        [otherFriendComments removeObject:feedId];
-        NSLog(@"otherFriendFeeds is %@", otherFriendComments);
+            [otherFriendShares removeObject:feedId];
+            NSLog(@"otherFriendFeeds is %@", otherFriendShares);
+            [otherFriendComments removeObject:feedId];
+            NSLog(@"otherFriendFeeds is %@", otherFriendComments);
         
-        // make sure we set the active feed
-        self.activeFeed = feed;
+            // make sure we set the active feed
+            self.activeFeed = feed;
+        }
     } else {
         feedId = [self.activeStory objectForKey:@"story_feed_id"];
         feedIdStr = [NSString stringWithFormat:@"%@",feedId];
@@ -1498,8 +1508,10 @@
 
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
     UILabel *titleLabel = [[UILabel alloc] init];
-    if (self.isSocialRiverView) {
+    if (self.isSocialRiverView && [self.activeFolder isEqualToString:@"river_blurblogs"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Shared Stories"];
+    } else if (self.isSocialRiverView && [self.activeFolder isEqualToString:@"river_global"]) {
+            titleLabel.text = [NSString stringWithFormat:@"     Global Shared Stories"];
     } else if (self.isRiverView && [self.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [NSString stringWithFormat:@"     All Stories"];
     } else if (self.isRiverView && [self.activeFolder isEqualToString:@"saved_stories"]) {
