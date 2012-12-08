@@ -298,7 +298,6 @@
             NSMutableArray *tag_strings = [NSMutableArray array];
             for (NSString *tag in tag_array) {
                 int tag_score = [[[appDelegate.activeClassifiers objectForKey:@"tags"] objectForKey:tag] intValue];
-                NSLog(@"Tag %@: %d", tag, tag_score);
                 NSString *tag_html = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-tag/%@\" "
                                       "class=\"NB-story-tag %@\">%@</a>",
                                       tag,
@@ -868,12 +867,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             return NO;
         } else if ([action isEqualToString:@"classify-author"]) {
             NSString *author = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
-            NSLog(@"Author: %@", author);
             [self toggleAuthorClassifier:author];
             return NO;
         } else if ([action isEqualToString:@"classify-tag"]) {
             NSString *tag = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
-            NSLog(@"Tag: %@", tag);
             [self toggleTagClassifier:tag];
             return NO;
         } else if ([action isEqualToString:@"show-profile"]) {

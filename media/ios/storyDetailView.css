@@ -431,6 +431,7 @@ a.NB-show-profile {
 .NB-header {
     -webkit-user-select: none;
     -webkit-highlight: none; 
+    -webkit-touch-callout: none;
 }
 
 .NB-share-button {
