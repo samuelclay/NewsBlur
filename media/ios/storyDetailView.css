@@ -154,7 +154,14 @@ body.NB-iphone {
     text-shadow: 0 1px 0 #F9F9F9;
     float: left;
 }
-
+.NB-story-author-positive {
+    color: #58A353;
+    text-shadow: 0 1px 0 #E9F6E9;
+}
+.NB-story-author-negative {
+    color: #B85044;
+    text-shadow: 0 1px 0 #F6E9E9;
+}
 .NB-story-tags {
     overflow: hidden;
     padding: 5px 0 0px 0;
@@ -167,10 +174,20 @@ body.NB-iphone {
     font-weight: normal;
     padding: 0px 4px 0px;
     margin: 0px 4px 4px 0;
-    background-color: #C6CBC3;
+    background-color: #C9CBC6;
     color: #505050;
-    text-shadow: 0 1px 0 #E7E7E7;
+    text-shadow: 0 1px 0 #E0E8DB;
     -webkit-border-radius: 4px;
+}
+.NB-story-tag-positive {
+    background-color: #88B383;
+    color: white;
+    text-shadow: 0 1px 0 #588353;
+}
+.NB-story-tag-negative {
+    background-color: #C89094;
+    color: white;
+    text-shadow: 0 1px 0 #986064;
 }
 
 .NB-story-date {
@@ -275,7 +292,7 @@ div + p {
     overflow: hidden;
 }
 
-.NB-story a.NB-contains-image { 
+.NB-story a.NB-contains-image {
     display: block;
 }
 
@@ -315,6 +332,14 @@ div + p {
     margin: 8px 0 4px;
 }
 
+.NB-story-title-positive {
+    color: #58A353;
+    text-shadow: 0 1px 0 #E9F6E9;
+}
+.NB-story-title-negative {
+    color: #B85044;
+    text-shadow: 0 1px 0 #F6E9E9;
+}
 ins {
     text-decoration: none;
 }

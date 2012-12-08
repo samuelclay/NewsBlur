@@ -412,7 +412,9 @@
         }
         [self loadFaviconsFromActiveFeed];
     }
-        
+    
+    appDelegate.activeClassifiers = [results objectForKey:@"classifiers"];
+    
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [[NSMutableArray alloc] init];
     if ([appDelegate.activeFeedStories count]) {

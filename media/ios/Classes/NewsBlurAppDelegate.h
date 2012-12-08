@@ -88,6 +88,7 @@
     BOOL inFindingStoryMode;
     NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
+    NSDictionary * activeClassifiers;
     NSString * activeFolder;
     NSDictionary * activeComment;
     NSString * activeShareType;
@@ -170,6 +171,7 @@
 @property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
 @property (readwrite) NSDictionary * activeFeed;
+@property (readwrite) NSDictionary * activeClassifiers;
 @property (readwrite) NSString * activeFolder;
 @property (readwrite) NSDictionary * activeComment;
 @property (readwrite) NSString * activeShareType;

@@ -23,6 +23,7 @@
 #import "DataUtilities.h"
 #import "JSON.h"
 #import "SHK.h"
+#import "StringHelper.h"
 
 @implementation StoryDetailViewController
 
@@ -175,20 +176,44 @@
         NSString *author = [NSString stringWithFormat:@"%@",
                             [self.activeStory objectForKey:@"story_authors"]];
         if (author && ![author isEqualToString:@"<null>"]) {
-            story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author\">%@</div>",author];
+            int author_score = [[[appDelegate.activeClassifiers objectForKey:@"authors"] objectForKey:author] intValue];
+            story_author = [NSString stringWithFormat:@"<div class=\"NB-story-author %@\">%@</div>", author_score > 0 ? @"NB-story-author-positive" : author_score < 0 ? @"NB-story-author-negative" : @"",
+                author];
         }
     }
     NSString *story_tags = @"";
     if ([self.activeStory objectForKey:@"story_tags"]) {
         NSArray *tag_array = [self.activeStory objectForKey:@"story_tags"];
         if ([tag_array count] > 0) {
+            NSMutableArray *tag_strings = [NSMutableArray array];
+            for (NSString *tag in tag_array) {
+                int tag_score = [[[appDelegate.activeClassifiers objectForKey:@"tags"] objectForKey:tag] intValue];
+                NSLog(@"Tag %@: %d", tag, tag_score);
+                NSString *tag_html = [NSString stringWithFormat:@"<div class=\"NB-story-tag %@\">%@</div>", tag_score > 0 ? @"NB-story-tag-positive" : tag_score < 0 ? @"NB-story-tag-negative" : @"",
+                    tag];
+                [tag_strings addObject:tag_html];
+            }
             story_tags = [NSString
                           stringWithFormat:@"<div class=\"NB-story-tags\">"
-                          "<div class=\"NB-story-tag\">"
-                          "%@</div></div>",
-                          [tag_array componentsJoinedByString:@"</div><div class=\"NB-story-tag\">"]];
+                          "%@"
+                          "</div>",
+                          [tag_strings componentsJoinedByString:@""]];
         }
     }
+    
+    NSString *story_title = [self.activeStory objectForKey:@"story_title"];
+    for (NSString *title_classifier in [appDelegate.activeClassifiers objectForKey:@"titles"]) {
+        if ([story_title containsString:title_classifier]) {
+            int title_score = [[[appDelegate.activeClassifiers objectForKey:@"titles"]
+                                objectForKey:title_classifier] intValue];
+            story_title = [story_title
+                           stringByReplacingOccurrencesOfString:title_classifier
+                           withString:[NSString stringWithFormat:@"<span class=\"NB-story-title-%@\">%@</span>",
+                                       title_score > 0 ? @"positive" : title_score < 0 ? @"negative" : @"",
+                                       title_classifier]];
+        }
+    }
+    
     NSString *storyHeader = [NSString stringWithFormat:@
                              "<div class=\"NB-header\"><div class=\"NB-header-inner\">"
                              "<div class=\"NB-story-date\">%@</div>"
@@ -201,7 +226,7 @@
                               objectForKey:@"long_parsed_date"] :
                              [self.activeStory
                               objectForKey:@"short_parsed_date"],
-                             [self.activeStory objectForKey:@"story_title"],
+                             story_title,
                              story_author,
                              story_tags];
     NSString *htmlString = [NSString stringWithFormat:@

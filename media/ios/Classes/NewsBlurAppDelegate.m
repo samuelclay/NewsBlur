@@ -92,6 +92,7 @@
 @synthesize activeShareType;
 
 @synthesize activeFeed;
+@synthesize activeClassifiers;
 @synthesize activeFolder;
 @synthesize activeFolderFeeds;
 @synthesize activeFeedStories;
