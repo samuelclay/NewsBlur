@@ -413,7 +413,7 @@
         [self loadFaviconsFromActiveFeed];
     }
     
-    appDelegate.activeClassifiers = [results objectForKey:@"classifiers"];
+    appDelegate.activeClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
     
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [[NSMutableArray alloc] init];

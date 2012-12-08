@@ -67,6 +67,7 @@
 - (void)transitionFromFeedDetail;
 - (void)resetPages;
 - (void)refreshPages;
+- (void)refreshHeaders;
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;
 - (void)updatePageWithActiveStory:(int)location;

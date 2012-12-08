@@ -237,6 +237,11 @@
     //    self.scrollView.contentOffset = CGPointMake(self.scrollView.frame.size.width * currentPage.pageIndex, 0);
 }
 
+- (void)refreshHeaders {
+    [currentPage refreshHeader];
+    [nextPage refreshHeader];
+    [previousPage refreshHeader];
+}
 - (void)resizeScrollView {
     NSInteger widthCount = self.appDelegate.storyLocationsCount;
 	if (widthCount == 0) {

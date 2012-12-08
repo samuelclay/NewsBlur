@@ -57,6 +57,7 @@
 - (void)finishSubscribeToBlurblog:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)setActiveStoryAtIndex:(NSInteger)activeStoryIndex;
+- (NSString *)getHeader;
 - (NSString *)getShareBar;
 - (NSString *)getComments;
 - (NSString *)getComment:(NSDictionary *)commentDict;
@@ -64,6 +65,9 @@
 - (NSString *)getAvatars:(NSString *)key;
 - (NSDictionary *)getUser:(int)user_id;
 
+- (void)toggleAuthorClassifier:(NSString *)author;
+- (void)toggleTagClassifier:(NSString *)tag;
+- (void)refreshHeader;
 
 
 @end
