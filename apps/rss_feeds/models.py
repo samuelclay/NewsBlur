@@ -1587,8 +1587,8 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     if original_feed_id == duplicate_feed_id:
         logging.info(" ***> Merging the same feed. Ignoring...")
         return
-    if original_feed_id > duplicate_feed_id and not force:
-        original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
+    # if original_feed_id > duplicate_feed_id and not force:
+        # original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
     try:
         original_feed = Feed.objects.get(pk=original_feed_id)
         duplicate_feed = Feed.objects.get(pk=duplicate_feed_id)
@@ -1598,10 +1598,10 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         
     logging.info(" ---> Feed: [%s - %s] %s - %s" % (original_feed_id, duplicate_feed_id,
                                                     original_feed, original_feed.feed_link))
-    logging.info("            ++> %s: %s / %s" % (original_feed.pk, 
+    logging.info("            Orig ++> %s: %s / %s" % (original_feed.pk, 
                                                   original_feed.feed_address,
                                                   original_feed.feed_link))
-    logging.info("            --> %s: %s / %s" % (duplicate_feed.pk,
+    logging.info("            Dupe --> %s: %s / %s" % (duplicate_feed.pk,
                                                   duplicate_feed.feed_address,
                                                   duplicate_feed.feed_link))
 
