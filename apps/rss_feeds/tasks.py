@@ -2,9 +2,9 @@ import datetime
 import os
 import shutil
 import time
-import s3
 from celery.task import Task
 from utils import log as logging
+from utils import s3_utils as s3
 from django.conf import settings
 
 class TaskFeeds(Task):
