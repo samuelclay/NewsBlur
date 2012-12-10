@@ -1291,10 +1291,12 @@ def mark_story_as_starred(request):
     feed_id  = int(request.POST['feed_id'])
     story_id = request.POST['story_id']
     
-    story = MStory.objects(story_feed_id=feed_id, story_guid=story_id).limit(1)
+    story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
     if story:
-        story_db = dict([(k, v) for k, v in story[0]._data.items() 
+        story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
+        if 'user_id' in story_db: story_db.pop('user_id')
+        if 'starred_date' in story_db: story_db.pop('starred_date')
         now = datetime.datetime.now()
         story_values = dict(user_id=request.user.pk, starred_date=now, **story_db)
         starred_story, created = MStarredStory.objects.get_or_create(
@@ -1302,13 +1304,13 @@ def mark_story_as_starred(request):
             user_id=story_values.pop('user_id'),
             defaults=story_values)
         if created:
-            logging.user(request, "~FCStarring: ~SB%s" % (story[0].story_title[:50]))
+            logging.user(request, "~FCStarring: ~SB%s" % (story.story_title[:50]))
             MActivity.new_starred_story(user_id=request.user.pk, 
-                                        story_title=story[0].story_title, 
+                                        story_title=story.story_title, 
                                         story_feed_id=feed_id,
                                         story_id=starred_story.story_guid)
         else:
-            logging.user(request, "~FC~BRAlready stared:~SN~FC ~SB%s" % (story[0].story_title[:50]))
+            logging.user(request, "~FC~BRAlready stared:~SN~FC ~SB%s" % (story.story_title[:50]))
     else:
         code = -1
     
