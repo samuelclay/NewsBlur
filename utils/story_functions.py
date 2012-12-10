@@ -1,6 +1,7 @@
 import re
 import datetime
 import struct
+import dateutil
 from HTMLParser import HTMLParser
 from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
 from lxml.etree import ParserError, XMLSyntaxError
@@ -69,7 +70,18 @@ def _extract_date_tuples(date):
     
 def pre_process_story(entry):
     publish_date = entry.get('published_parsed', entry.get('updated_parsed'))
-    entry['published'] = datetime.datetime(*publish_date[:6]) if publish_date else datetime.datetime.utcnow()
+    if publish_date:
+        publish_date = datetime.datetime(*publish_date[:6])
+    if not publish_date and entry.get('published'):
+        try:
+            publish_date = dateutil.parser.parse(entry.get('published'))
+        except ValueError:
+            pass
+    
+    if publish_date:
+        entry['published'] = publish_date
+    else:
+        entry['published'] = datetime.datetime.utcnow()
     
     # entry_link = entry.get('link') or ''
     # protocol_index = entry_link.find("://")
