@@ -41,7 +41,7 @@ class OPMLExporter:
         self.user = user
         self.fetch_feeds()
         
-    def process(self):
+    def process(self, verbose=False):
         now = str(datetime.datetime.now())
 
         root = Element('opml')
@@ -57,17 +57,22 @@ class OPMLExporter:
         dm.text    = now
         folders    = self.get_folders()
         body       = SubElement(root, 'body')
-        self.process_outline(body, folders)
+        self.process_outline(body, folders, verbose=verbose)
         return tostring(root)
         
-    def process_outline(self, body, folders):
+    def process_outline(self, body, folders, verbose=False):
         for obj in folders:
             if isinstance(obj, int) and obj in self.feeds:
                 feed = self.feeds[obj]
+                if verbose:
+                    print "     ---> Adding feed: %s - %s" % (feed['pk'],
+                                                              feed['feed_title'][:30])
                 feed_attrs = self.make_feed_row(feed)
                 body.append(Element('outline', feed_attrs))
             elif isinstance(obj, dict):
                 for folder_title, folder_objs in obj.items():
+                    if verbose:
+                        print " ---> Adding folder: %s" % folder_title
                     folder_element = Element('outline', {'text': folder_title, 'title': folder_title})
                     body.append(self.process_outline(folder_element, folder_objs))
         return body
