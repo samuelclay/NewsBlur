@@ -1,4 +1,8 @@
 import datetime
+import os
+import shutil
+import time
+import s3
 from celery.task import Task
 from utils import log as logging
 from django.conf import settings
@@ -105,3 +109,32 @@ class PushFeeds(Task):
         }
         feed = Feed.get_by_id(feed_id)
         feed.update(options=options)
+
+class BackupMongo(Task):
+    name = 'backup-mongo'
+    max_retries = 0
+    ignore_result = True
+    
+    def run(self, **kwargs):
+        COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title userstories starred_stories shared_stories category category_site sent_emails social_profile social_subscription social_services statistics feedback"
+
+        date = time.strftime('%Y-%m-%d-%H-%M')
+        collections = COLLECTIONS.split(' ')
+        db_name = 'newsblur'
+        dir_name = 'backup_mongo_%s' % date
+        filename = '%s.tgz' % dir_name
+
+        os.mkdir(dir_name)
+
+        for collection in collections:
+            cmd = 'mongodump  --db %s --collection %s -o %s' % (db_name, collection, dir_name)
+            logging.debug(' ---> ~FMDumping ~SB%s~SN: %s' % (collection, cmd))
+            os.system(cmd)
+
+        cmd = 'tar -jcf %s %s' % (filename, dir_name)
+        os.system(cmd)
+
+        logging.debug(' ---> ~FRUploading ~SB~SK%s~SN~FR to S3...' % filename)
+        s3.save_file_in_s3(filename)
+        shutil.rmtree(dir_name)
+        os.remove(filename)

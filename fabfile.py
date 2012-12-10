@@ -42,7 +42,7 @@ env.roledefs ={
             ],
     'db': ['db01.newsblur.com', 
            'db02.newsblur.com', 
-           'db03.newsblur.com', 
+           # 'db03.newsblur.com', 
            'db04.newsblur.com', 
            'db05.newsblur.com',
            ],
