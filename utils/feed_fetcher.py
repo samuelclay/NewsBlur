@@ -214,7 +214,7 @@ class ProcessFeed:
             if story.get('published') < start_date:
                 start_date = story.get('published')
             stories.append(story)
-            story_guids.append(story.get('guid') or story.get('link'))
+            story_guids.append(story.get('guid'))
 
         existing_stories = list(MStory.objects(
             # story_guid__in=story_guids,

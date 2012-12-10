@@ -754,7 +754,7 @@ class Feed(models.Model):
                        story_content = story_content,
                        story_author_name = story.get('author'),
                        story_permalink = story_link,
-                       story_guid = story.get('guid') or story.get('link'),
+                       story_guid = story.get('guid'),
                        story_tags = story_tags
                 )
                 try:
@@ -763,7 +763,7 @@ class Feed(models.Model):
                 except (IntegrityError, OperationError):
                     ret_values['error'] += 1
                     if verbose:
-                        logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s' % (self.feed_title[:30], story.get('title')[:30]))
+                        logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s' % (self.feed_title[:30], story.get('guid')[:30]))
             elif existing_story and story_has_changed:
                 # update story
                 # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))

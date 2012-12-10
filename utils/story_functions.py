@@ -69,7 +69,7 @@ def _extract_date_tuples(date):
     return parsed_date, date_tuple, today_tuple, yesterday_tuple
     
 def pre_process_story(entry):
-    publish_date = entry.get('published_parsed', entry.get('updated_parsed'))
+    publish_date = entry.get('published_parsed')
     if publish_date:
         publish_date = datetime.datetime(*publish_date[:6])
     if not publish_date and entry.get('published'):
