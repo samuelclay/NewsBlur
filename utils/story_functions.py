@@ -74,7 +74,7 @@ def pre_process_story(entry):
         publish_date = datetime.datetime(*publish_date[:6])
     if not publish_date and entry.get('published'):
         try:
-            publish_date = dateutil.parser.parse(entry.get('published'))
+            publish_date = dateutil.parser.parse(entry.get('published')).replace(tzinfo=None)
         except ValueError:
             pass
     
