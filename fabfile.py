@@ -313,6 +313,7 @@ def setup_app():
     configure_node()
     pre_deploy()
     deploy()
+    config_monit_app()
 
 def setup_db():
     setup_common()
@@ -460,6 +461,11 @@ def bounce_pgbouncer():
     
 def config_monit_task():
     put('config/monit_task.conf', '/etc/monit/conf.d/celery.conf', use_sudo=True)
+    sudo('echo "startup=1" > /etc/default/monit')
+    sudo('/etc/init.d/monit restart')
+    
+def config_monit_app():
+    put('config/monit_app.conf', '/etc/monit/conf.d/gunicorn.conf', use_sudo=True)
     sudo('echo "startup=1" > /etc/default/monit')
     sudo('/etc/init.d/monit restart')
     
