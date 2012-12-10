@@ -181,10 +181,13 @@ class Feed(models.Model):
             super(Feed, self).save(*args, **kwargs)
             return self
         except IntegrityError:
-            duplicate_feed = Feed.objects.filter(feed_address=self.feed_address, feed_link=self.feed_link)
+            logging.debug(" ---> ~FRFeed save collision, checking dupe...")
+            duplicate_feed = Feed.objects.filter(feed_address=self.feed_address,
+                                                 feed_link=self.feed_link)
             if duplicate_feed:
                 if self.pk != duplicate_feed[0].pk:
                     merge_feeds(self.pk, duplicate_feed[0].pk, force=True)
+                logging.debug(" ---> ~FRReturning found dupe feed: %s [%s]" % (duplicate_feed[0].title[:30], duplicate_feed[0].pk))
                 return duplicate_feed[0]
 
             # Feed has been deleted. Just ignore it.
