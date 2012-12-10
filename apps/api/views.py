@@ -17,6 +17,7 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
 
+
 @json.json_view
 def login(request):
     code = -1

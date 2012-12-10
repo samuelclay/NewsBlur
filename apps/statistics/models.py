@@ -197,7 +197,7 @@ class MStatistics(mongo.Document):
     def collect_statistics_for_db(cls):
         lag = db_functions.mongo_max_replication_lag(settings.MONGODB)
         cls.set('mongodb_replication_lag', lag)
-        
+
 
 class MFeedback(mongo.Document):
     date    = mongo.StringField()

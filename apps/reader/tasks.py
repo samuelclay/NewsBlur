@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from apps.reader.models import UserSubscription
 from apps.social.models import MSocialSubscription
-from apps.statistics.models import MStatistics
-from apps.statistics.models import MFeedback
 
 
 class FreshenHomepage(Task):
@@ -33,22 +31,6 @@ class FreshenHomepage(Task):
             sub.needs_unread_recalc = True
             sub.save()
             sub.calculate_feed_scores(silent=True)
-
-
-class CollectStats(Task):
-    name = 'collect-stats'
-
-    def run(self, **kwargs):
-        logging.debug(" ---> Collecting stats...")
-        MStatistics.collect_statistics()
-        
-        
-class CollectFeedback(Task):
-    name = 'collect-feedback'
-
-    def run(self, **kwargs):
-        logging.debug(" ---> Collecting feedback...")
-        MFeedback.collect_feedback()
 
 class CleanAnalytics(Task):
     name = 'clean-analytics'

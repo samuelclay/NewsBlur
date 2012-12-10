@@ -134,7 +134,8 @@ class BackupMongo(Task):
         cmd = 'tar -jcf %s %s' % (filename, dir_name)
         os.system(cmd)
 
-        logging.debug(' ---> ~FRUploading ~SB~SK%s~SN~FR to S3...' % filename)
+        logging.debug(' ---> ~FRUploading ~SB~FM%s~SN~FR to S3...' % filename)
         s3.save_file_in_s3(filename)
         shutil.rmtree(dir_name)
         os.remove(filename)
+        logging.debug(' ---> ~FRFinished uploading ~SB~FM%s~SN~FR to S3.' % filename)

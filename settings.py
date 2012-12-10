@@ -320,7 +320,8 @@ CELERYD_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS              = ("apps.rss_feeds.tasks", 
                                "apps.social.tasks", 
                                "apps.reader.tasks",
-                               "apps.feed_import.tasks",)
+                               "apps.feed_import.tasks",
+                               "apps.statistics.tasks",)
 CELERYD_CONCURRENCY         = 4
 CELERY_IGNORE_RESULT        = True
 CELERY_ACKS_LATE            = True # Retry if task fails
