@@ -186,9 +186,8 @@ class Feed(models.Model):
                                                  feed_link=self.feed_link)
             if duplicate_feed:
                 if self.pk != duplicate_feed[0].pk:
-                    merge_feeds(self.pk, duplicate_feed[0].pk, force=True)
-                logging.debug(" ---> ~FRReturning found dupe feed: %s [%s]" % (duplicate_feed[0].title[:30], duplicate_feed[0].pk))
-                return duplicate_feed[0]
+                    merge_feeds(self.pk, duplicate_feed[0].pk)
+                return self
 
             # Feed has been deleted. Just ignore it.
             logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
@@ -755,7 +754,7 @@ class Feed(models.Model):
                        story_content = story_content,
                        story_author_name = story.get('author'),
                        story_permalink = story_link,
-                       story_guid = story.get('guid'),
+                       story_guid = story.get('guid') or story.get('link'),
                        story_tags = story_tags
                 )
                 try:
@@ -1645,7 +1644,8 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     original_feed.count_subscribers()
     logging.debug(' ---> Now original subscribers: %s' %
                   (original_feed.num_subscribers))
-    
+                  
+          
     MSharedStory.switch_feed(original_feed_id, duplicate_feed_id)
     
 def rewrite_folders(folders, original_feed, duplicate_feed):
