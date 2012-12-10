@@ -189,13 +189,12 @@ class PageImporter(object):
                 k.set_contents_from_string(compressed_html)
                 k.set_acl('public-read')
                 
-                if not self.feed.s3_page:
-                    try:
-                        feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
-                        feed_page.delete()
-                        logging.debug('   --->> [%-30s] ~FYTransfering page data to S3...' % (self.feed))
-                    except MFeedPage.DoesNotExist:
-                        pass
+                try:
+                    feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
+                    feed_page.delete()
+                    logging.debug('   --->> [%-30s] ~FYTransfering page data to S3...' % (self.feed))
+                except MFeedPage.DoesNotExist:
+                    pass
 
                 self.feed.s3_page = True
                 self.feed.save()
