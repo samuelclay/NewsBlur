@@ -35,6 +35,8 @@
     
     NSString *folderName;
     if (section == 0) {
+        folderName = @"river_global";
+    } else if (section == 1) {
         folderName = @"river_blurblogs";
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
@@ -97,8 +99,10 @@
     UIFont *font = [UIFont boldSystemFontOfSize:11];
     NSString *folderTitle;
     if (section == 0) {
-        folderTitle = [@"All Blurblog Stories" uppercaseString];
+        folderTitle = [@"Global Shared Stories" uppercaseString];
     } else if (section == 1) {
+            folderTitle = [@"All Shared Stories" uppercaseString];
+    } else if (section == 2) {
         folderTitle = [@"All Stories" uppercaseString];
     } else if (folderName == @"saved_stories") {
         folderTitle = [@"Saved Stories" uppercaseString];
@@ -131,7 +135,7 @@
         disclosureButton.frame = CGRectMake(customView.frame.size.width - 32, 1, 29, 29);
 
         // Add collapse button to all folders except Everything
-        if (section != 1 && folderName != @"saved_stories") {
+        if (section != 0 && section != 2 && folderName != @"saved_stories") {
             if (!isFolderCollapsed) {
                 disclosureButton.transform = CGAffineTransformMakeRotation(M_PI_2);
             }
@@ -151,14 +155,14 @@
     UIImage *folderImage;
     int folderImageViewX = 10;
     
-    if (section == 0) {
+    if (section == 0 || section == 1) {
         folderImage = [UIImage imageNamed:@"group.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;
         } else {
             folderImageViewX = 8;
         }
-    } else if (section == 1) {
+    } else if (section == 2) {
         folderImage = [UIImage imageNamed:@"archive.png"];
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             folderImageViewX = 10;

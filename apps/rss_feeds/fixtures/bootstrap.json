@@ -1,16 +1,16 @@
 [
     {
-        "pk": 1,
+        "pk": 2,
         "model": "sites.site",
         "fields": {
-            "domain": "localhost",
-            "name": "NewsBlur"
+            "domain": "testserver",
+            "name": "testserver"
         }
     },
     {
         "model": "auth.user",
         "fields": {
-            "username": "newsblur",
+            "username": "newsblur_test",
             "first_name": "",
             "last_name": "",
             "is_active": true,

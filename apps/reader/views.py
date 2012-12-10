@@ -470,12 +470,9 @@ def load_single_feed(request, feed_id):
         usersub = UserSubscription.objects.get(user=user, feed=feed)
     except UserSubscription.DoesNotExist:
         usersub = None
-    
+
     if usersub and (read_filter == 'unread' or order == 'oldest'):
-        story_ids = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
-        story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
-        mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
-        stories = Feed.format_stories(mstories)
+        stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
     else:
         stories = feed.get_stories(offset, limit)
     
@@ -865,8 +862,9 @@ def mark_social_stories_as_read(request):
                 code = -1
                 errors.append("Already read story: %s" % e)
             except MSocialSubscription.DoesNotExist:
-                code = -1
-                errors.append("You are not subscribed to this social user_id: %s" % social_user_id)
+                MSocialSubscription.mark_unsub_story_ids_as_read(request.user.pk, social_user_id,
+                                                                 story_ids, feed_id,
+                                                                 request=request)
             except Feed.DoesNotExist:
                 duplicate_feed = DuplicateFeed.objects.filter(duplicate_feed_id=feed_id)
                 if duplicate_feed:

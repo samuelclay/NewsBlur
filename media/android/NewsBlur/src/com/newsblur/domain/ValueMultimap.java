@@ -1,18 +1,16 @@
 package com.newsblur.domain;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.gson.Gson;
-
 import android.text.TextUtils;
-import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class ValueMultimap implements Serializable {
 	
@@ -61,7 +59,7 @@ public class ValueMultimap implements Serializable {
 	
 	public String getJsonString() {
 		ArrayList<String> parameters = new ArrayList<String>();
-		Gson gson = new Gson();
+		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 		for (String key : multimap.keySet()) {
 			StringBuilder builder = new StringBuilder();
 			builder.append("\"" + key + "\"");

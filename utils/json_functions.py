@@ -43,6 +43,8 @@ def json_encode(data, *args, **kwargs):
             ret = data.canonical()
         elif isinstance(data, list):
             ret = _list(data)
+        elif isinstance(data, set):
+            ret = _list(list(data))
         # Same as for lists above.
         elif isinstance(data, dict):
             ret = _dict(data)

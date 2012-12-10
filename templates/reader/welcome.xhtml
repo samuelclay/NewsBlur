@@ -27,12 +27,13 @@
 <div class="NB-welcome-container NB-splash">
     
     <div class="NB-welcome-header">
+        <div class="NB-background">
         <div class="NB-inner">
             <div class="NB-welcome-header-logo">
-                <a href="/"><img src="{{ MEDIA_URL }}img/logo_newsblur.png" class="NB-module-logo-image" style="height: 55px;" /></a>
+                <a href="/"><img src="{{ MEDIA_URL }}img/logo_512.png" class="NB-module-logo-image" style="height: 128px;" /></a>
             </div>
             <div class="NB-welcome-header-tagline">
-                Focus on the best stories from<br><b>your friends</b> and <b>favorite blogs</b>
+                <span style="font-size:24px;">NewsBlur is a personal news reader</span><br /><span style="font-size: 17px;color: #FBDB9B">bringing people together to talk about the world</span>
             </div>
             <div class="NB-welcome-header-captions">
                 <div class="NB-welcome-header-caption NB-1 {% if not post_request %}NB-active{% endif %}" data-ss="1"><span>Web</span></div>
@@ -127,6 +128,7 @@
             </div>
 
         </div>
+        </div>
     </div>
     
     <div class="NB-welcome-features">
@@ -144,7 +146,7 @@
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_3.png">
                 <div class="NB-feature-caption">Shared stories</div>
-                <div class="NB-feature-text">Reading news is better with friends. Shares stories on your blurblog.</div>
+                <div class="NB-feature-text">Reading news is better with friends. Share stories on your public blurblog.</div>
             </div>
             <div class="NB-feature">
                 <img src="{{ MEDIA_URL }}img/welcome/feature_4.png">
@@ -183,6 +185,11 @@
                     <td class="NB-last">Up to 10X as often</td>
                 </tr>
                 <tr>
+                    <td class="NB-bold">Privacy</td>
+                    <td>Public shares only</td>
+                    <td class="NB-last">Public, protected, and private shares</td>
+                </tr>
+                <tr>
                     <td class="NB-bold">
                         Feed poor Shiloh
                     </td>
@@ -193,12 +200,34 @@
             </table>
         </div>
     </div>
-
+    
     <div class="NB-welcome-activity">
         <div class="NB-inner">
             {% render_features_module %}
             <h2>Real-time Stats</h2>
             {% render_statistics_graphs statistics %}
+        </div>
+    </div>
+
+    <div class="NB-welcome-bottomactions">
+        <div class="NB-inner">
+            <div class="NB-welcome-header-actions">
+                <div class="NB-welcome-header-action">
+                    <div class="NB-welcome-header-action-subtext">First</div>
+                    <div class="NB-button NB-button-tryout">
+                        <img src="{{ MEDIA_URL }}img/welcome/04-eye@2x.png" style="width: 20px; height: 13px; margin-top: 2px">
+                        Try out NewsBlur
+                    </div>
+                </div>
+                <div class="NB-welcome-header-action">
+                    <div class="NB-welcome-header-action-subtext">Then</div>
+                    <div class="NB-button NB-button-login">
+                        <img src="{{ MEDIA_URL }}img/welcome/09-lightning@2x.png" class="NB-welcome-header-action-bolt" style="width: 12px; height: 18px; margin-bottom: -2px">
+                        <img src="{{ MEDIA_URL }}img/reader/32-Arrow-Right.png" class="NB-welcome-header-action-arrow">
+                        Sign up or Log in
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     

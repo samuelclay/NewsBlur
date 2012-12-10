@@ -18,7 +18,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         "click .NB-feed-story-tag"              : "save_classifier",
         "click .NB-feed-story-author"           : "save_classifier",
         "click .NB-feed-story-train"            : "open_story_trainer",
-        "click .NB-feed-story-save"             : "star_story"
+        "click .NB-feed-story-save"             : "star_story",
+        "click .NB-story-comments-label"        : "scroll_to_comments"
     },
     
     initialize: function() {
@@ -475,6 +476,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.mark_read({skip_delay: true});
         window.open(this.model.get('story_permalink'), '_blank');
         window.focus();
+    },
+    
+    scroll_to_comments: function() {
+        NEWSBLUR.app.story_list.scroll_to_selected_story(this.model, {
+            scroll_to_comments: true,
+            scroll_offset: -50
+        });
     }
     
 

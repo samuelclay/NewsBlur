@@ -19,6 +19,7 @@
       'is_premium'              : {{ user.profile.is_premium|yesno:"true,false" }},
       'is_admin'                : {{ user.is_staff|yesno:"true,false" }},
       'is_staff'                : {{ user.is_staff|yesno:"true,false" }},
+      'premium_expire'          : new Date('{{ user.profile.premium_expire|date:"Y-m-d" }}'),
       'secret_token'            : "{{ user.profile.secret_token }}",
       'username'                : "{{ user.username|safe }}",
       {% if user.pk %}'user_id'                 : {{ user.pk }},{% endif %}

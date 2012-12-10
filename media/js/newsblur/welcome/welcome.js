@@ -101,7 +101,9 @@ NEWSBLUR.Welcome = Backbone.View.extend({
         this.hide_tryout();
         
         this.flags.on_header_caption = true;
-
+        
+        this.$el.scrollTo(0, 500, {queue: false, easing: 'easeInOutQuint'});
+        
         _.delay(_.bind(function() {
             this.rotate_screenshots(4, _.bind(function() {
                 this.$('input[name=login-username]').focus();
@@ -119,7 +121,7 @@ NEWSBLUR.Welcome = Backbone.View.extend({
             this.flags.loaded = true;
         }
         var open = NEWSBLUR.reader.toggle_sidebar();
-        
+
         this.$('.NB-inner').animate({
             paddingLeft: open ? 240 : 0
         }, {

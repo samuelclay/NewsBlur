@@ -141,6 +141,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (!social_user_id) {
             social_user_id = story.get('friend_user_ids')[0];
         }
+        if (!social_user_id) {
+            social_user_id = story.get('public_user_ids')[0];
+        }
         var read = story.get('read_status');
 
         if (!story.get('read_status')) {
@@ -539,7 +542,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_river_blurblogs_stories: function(feed_id, page, callback, error_callback, first_load) {
+    fetch_river_blurblogs_stories: function(feed_id, page, options, callback, error_callback, first_load) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -561,7 +564,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         this.make_request('/social/river_stories', {
             page: page,
-            order: this.view_setting(feed_id, 'order')
+            order: this.view_setting(feed_id, 'order'),
+            global_feed: options.global
             // read_filter: this.view_setting(feed_id, 'read_filter')
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
@@ -1335,6 +1339,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             var comments = new NEWSBLUR.Collections.Comments(data.comments);
             callback(comments);
         }, this), null, {request_type: 'GET'});
+    },
+    
+    fetch_payment_history: function(callback) {
+        this.make_request('/profile/payment_history', {}, callback, null, {request_type: 'GET'});
     },
     
     follow_twitter_account: function(username, callback) {

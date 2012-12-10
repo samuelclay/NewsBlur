@@ -1,4 +1,5 @@
 import datetime
+import stripe
 import mongoengine as mongo
 from django.db import models
 from django.db import IntegrityError
@@ -19,12 +20,15 @@ from utils import log as logging
 from utils import json_functions as json
 from utils.user_functions import generate_secret_token
 from vendor.timezones.fields import TimeZoneField
-from vendor.paypal.standard.ipn.signals import subscription_signup
+from vendor.paypal.standard.ipn.signals import subscription_signup, payment_was_successful
+from vendor.paypal.standard.ipn.models import PayPalIPN
 from zebra.signals import zebra_webhook_customer_subscription_created
+from zebra.signals import zebra_webhook_charge_succeeded
 
 class Profile(models.Model):
     user              = models.OneToOneField(User, unique=True, related_name="profile")
     is_premium        = models.BooleanField(default=False)
+    premium_expire    = models.DateTimeField(blank=True, null=True)
     send_emails       = models.BooleanField(default=True)
     preferences       = models.TextField(default="{}")
     view_settings     = models.TextField(default="{}")
@@ -137,8 +141,72 @@ class Profile(models.Model):
                 pass
         
         self.queue_new_feeds()
+        self.setup_premium_history()
         
         logging.user(self.user, "~BY~SK~FW~SBNEW PREMIUM ACCOUNT! WOOHOO!!! ~FR%s subscriptions~SN!" % (subs.count()))
+    
+    def deactivate_premium(self):
+        self.is_premium = False
+        self.save()
+        
+        subs = UserSubscription.objects.filter(user=self.user)
+        for sub in subs:
+            sub.active = False
+            try:
+                sub.save()
+                sub.feed.setup_feed_for_premium_subscribers()
+            except IntegrityError, Feed.DoesNotExist:
+                pass
+        
+        logging.user(self.user, "~BY~FW~SBBOO! Deactivating premium account: ~FR%s subscriptions~SN!" % (subs.count()))
+    
+    def setup_premium_history(self):
+        existing_history = PaymentHistory.objects.filter(user=self.user)
+        if existing_history.count():
+            print " ---> Deleting existing history: %s payments" % existing_history.count()
+            existing_history.delete()
+        
+        # Record Paypal payments
+        paypal_payments = PayPalIPN.objects.filter(custom=self.user.username,
+                                                   txn_type='subscr_payment')
+        if not paypal_payments.count():
+            paypal_payments = PayPalIPN.objects.filter(payer_email=self.user.email,
+                                                       txn_type='subscr_payment')
+        for payment in paypal_payments:
+            PaymentHistory.objects.create(user=self.user,
+                                          payment_date=payment.payment_date,
+                                          payment_amount=payment.payment_gross,
+                                          payment_provider='paypal')
+        
+        # Record Stripe payments
+        if self.stripe_id:
+            stripe.api_key = settings.STRIPE_SECRET
+            stripe_customer = stripe.Customer.retrieve(self.stripe_id)
+            stripe_payments = stripe.Charge.all(customer=stripe_customer.id).data
+            for payment in stripe_payments:
+                created = datetime.datetime.fromtimestamp(payment.created)
+                PaymentHistory.objects.create(user=self.user,
+                                              payment_date=created,
+                                              payment_amount=payment.amount / 100.0,
+                                              payment_provider='stripe')
+        
+        # Calculate last payment date
+        payment_history = PaymentHistory.objects.filter(user=self.user)
+        most_recent_payment_date = None
+        for payment in payment_history:
+            if not most_recent_payment_date or payment.payment_date > most_recent_payment_date:
+                most_recent_payment_date = payment.payment_date
+        
+        if most_recent_payment_date:
+            payment_gap = 0
+            # If user lapsed and has no gap b/w last payment and expiration, 
+            # they only get a full year. Otherwise, give them the gap.
+            if (self.premium_expire and 
+                self.premium_expire > datetime.datetime.now() and
+                self.premium_expire > most_recent_payment_date):
+                payment_gap = (self.premium_expire - most_recent_payment_date).days
+            self.premium_expire = most_recent_payment_date + datetime.timedelta(days=365+payment_gap)
+            self.save()
         
     def queue_new_feeds(self, new_feeds=None):
         if not new_feeds:
@@ -288,6 +356,67 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.send(fail_silently=True)
         
         logging.user(self.user, "~BB~FM~SBSending launch social email for user: %s months, %s" % (months_ago, self.user.email))
+        
+    def send_premium_expire_grace_period_email(self, force=False):
+        if not self.user.email:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending premium expire grace for user: %s" % (self.user))
+            return
+
+        emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
+                                                email_type='premium_expire_grace')
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
+        for email in emails_sent:
+            if email.date_sent > day_ago:
+                logging.user(self.user, "~SK~FMNot sending premium expire grace email, already sent before.")
+                return
+        
+        self.premium_expire = datetime.datetime.now()
+        self.save()
+        
+        delta      = datetime.datetime.now() - self.last_seen_on
+        months_ago = delta.days / 30
+        user    = self.user
+        data    = dict(user=user, months_ago=months_ago)
+        text    = render_to_string('mail/email_premium_expire_grace.txt', data)
+        html    = render_to_string('mail/email_premium_expire_grace.xhtml', data)
+        subject = "Your premium account on NewsBlur has one more month!"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type='premium_expire_grace')
+        logging.user(self.user, "~BB~FM~SBSending premium expire grace email for user: %s months, %s" % (months_ago, self.user.email))
+        
+    def send_premium_expire_email(self, force=False):
+        if not self.user.email:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending premium expire for user: %s" % (self.user))
+            return
+
+        emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
+                                                email_type='premium_expire')
+        day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
+        for email in emails_sent:
+            if email.date_sent > day_ago:
+                logging.user(self.user, "~SK~FMNot sending premium expire email, already sent before.")
+                return
+        
+        delta      = datetime.datetime.now() - self.last_seen_on
+        months_ago = delta.days / 30
+        user    = self.user
+        data    = dict(user=user, months_ago=months_ago)
+        text    = render_to_string('mail/email_premium_expire.txt', data)
+        html    = render_to_string('mail/email_premium_expire.xhtml', data)
+        subject = "Your premium account on NewsBlur has expired"
+        msg     = EmailMultiAlternatives(subject, text, 
+                                         from_email='NewsBlur <%s>' % settings.HELLO_EMAIL,
+                                         to=['%s <%s>' % (user, user.email)])
+        msg.attach_alternative(html, "text/html")
+        msg.send(fail_silently=True)
+        
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type='premium_expire')
+        logging.user(self.user, "~BB~FM~SBSending premium expire email for user: %s months, %s" % (months_ago, self.user.email))
     
     def autologin_url(self, next=None):
         return reverse('autologin', kwargs={
@@ -317,6 +446,15 @@ def paypal_signup(sender, **kwargs):
     user.profile.activate_premium()
 subscription_signup.connect(paypal_signup)
 
+def paypal_payment_history_sync(sender, **kwargs):
+    ipn_obj = sender
+    user = User.objects.get(username=ipn_obj.custom)
+    try:
+        user.profile.setup_premium_history()
+    except:
+        return {"code": -1, "message": "User doesn't exist."}
+payment_was_successful.connect(paypal_payment_history_sync)
+
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json['data']['object']['customer']
     try:
@@ -325,6 +463,15 @@ def stripe_signup(sender, full_json, **kwargs):
     except Profile.DoesNotExist:
         return {"code": -1, "message": "User doesn't exist."}
 zebra_webhook_customer_subscription_created.connect(stripe_signup)
+
+def stripe_payment_history_sync(sender, full_json, **kwargs):
+    stripe_id = full_json['data']['object']['customer']
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_id)
+        profile.setup_premium_history()
+    except Profile.DoesNotExist:
+        return {"code": -1, "message": "User doesn't exist."}    
+zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 
 def change_password(user, old_password, new_password):
     user_db = authenticate(username=user.username, password=old_password)
@@ -352,8 +499,23 @@ class MSentEmail(mongo.Document):
         return "%s sent %s email to %s" % (self.sending_user_id, self.email_type, self.receiver_user_id)
     
     @classmethod
-    def record(cls, email_type, receiver_user_id, sending_user_id):
+    def record(cls, email_type, receiver_user_id, sending_user_id=None):
         cls.objects.create(email_type=email_type, 
                            receiver_user_id=receiver_user_id, 
                            sending_user_id=sending_user_id)
+
+class PaymentHistory(models.Model):
+    user = models.ForeignKey(User, related_name='payments')
+    payment_date = models.DateTimeField()
+    payment_amount = models.IntegerField()
+    payment_provider = models.CharField(max_length=20)
     
+    class Meta:
+        ordering = ['-payment_date']
+        
+    def to_json(self):
+        return {
+            'payment_date': self.payment_date.strftime('%Y-%m-%d'),
+            'payment_amount': self.payment_amount,
+            'payment_provider': self.payment_provider,
+        }

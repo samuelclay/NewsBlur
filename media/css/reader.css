@@ -1826,7 +1826,7 @@ background: transparent;
 #story_pane .NB-feed-stories .NB-feed-story .NB-feed-story-content img {
   max-width: 100% !important;
   width: auto;
-  height: auto;
+  height: auto !important;
 }
 #story_pane .NB-feed-story {
     position: relative;
@@ -2439,6 +2439,7 @@ background: transparent;
 #story_pane .NB-story-comments-label {
     float: left;
     margin-right: 12px;
+    cursor: pointer;
 }
 #story_pane .NB-story-comments-label b {
     font-size: 12px;
@@ -2968,7 +2969,7 @@ background: transparent;
 /* ========================== */
 
 .NB-feeds-header-river-container {
-    display: block;
+    display: none;
     border-bottom: 1px solid #F0F0F0;
 }
 
@@ -6586,6 +6587,14 @@ form.opml_import_form input {
     border-left: 1px solid #B0B0B0;
 }
 
+.NB-modal-feedchooser.NB-feedchooser-premium .NB-feedchooser-type {
+    float: none;
+    width: 400px;
+    margin: 0 auto;
+    padding: 0;
+    border-left: none;
+}
+
 .NB-modal-feedchooser .NB-feedchooser-porpoise {
     border-radius: 16px;
     line-height: 48px;
@@ -7355,6 +7364,41 @@ form.opml_import_form input {
   text-decoration: none;
 }
 
+.NB-modal-account .NB-account-payments {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.NB-modal-account .NB-account-payments .NB-account-payment {
+    clear: both;
+    overflow: hidden;
+    list-style: none;
+    margin: 0 0 12px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid #E0E0E0;
+}
+.NB-modal-account .NB-account-payments li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.NB-modal-account .NB-account-payments .NB-payments-loading {
+    padding: 0 0 0 20px;
+    background: transparent url('/media/embed/reader/recycle_spinner.gif') no-repeat left 3px;
+}
+.NB-modal-account .NB-account-payments .NB-account-payment-date {
+    float: left;
+    width: 140px;
+    font-weight: bold;
+}
+.NB-modal-account .NB-account-payments .NB-account-payment-amount {
+    float: left;
+    width: 100px;
+}
+.NB-modal-account .NB-account-payments .NB-account-payment-provider {
+    float: left;
+    width: 100px;
+}
 
 /* ================ */
 /* = Static Pages = */
@@ -8464,7 +8508,7 @@ form.opml_import_form input {
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-photo-wrapper {
     width: 108px;
     height: 108px;
-    vertical-align: middle;
+    vertical-align: top;
 }
 .NB-profile-badge.NB-profile-badge-embiggen .NB-profile-badge-photo img {
     max-width: 108px;
@@ -8520,6 +8564,13 @@ form.opml_import_form input {
 }
 .NB-profile-badge .NB-profile-badge-blurblog-link {
     text-transform: none;
+}
+.NB-profile-badge .NB-profile-badge-following-you {
+    padding: 2px 8px;
+    background-color: #FFFFF6;
+    border-radius: 4px;
+    display: inline;
+    border: 1px solid #EFEFE6;
 }
 .NB-profile-badge-actions {
     float: right;

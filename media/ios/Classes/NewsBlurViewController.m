@@ -15,6 +15,7 @@
 #import "FeedDetailMenuViewController.h"
 #import "UserProfileViewController.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "ASIHTTPRequest.h"
 #import "PullToRefreshView.h"
 #import "MBProgressHUD.h"
@@ -25,8 +26,8 @@
 
 #define kPhoneTableViewRowHeight 31;
 #define kTableViewRowHeight 31;
-#define kBlurblogTableViewRowHeight 47;
-#define kPhoneBlurblogTableViewRowHeight 39;
+#define kBlurblogTableViewRowHeight 32;
+#define kPhoneBlurblogTableViewRowHeight 32;
 static const CGFloat kFolderTitleHeight = 28;
 
 @interface NewsBlurViewController () 
@@ -132,7 +133,7 @@ static const CGFloat kFolderTitleHeight = 28;
     appDelegate.isSocialView = NO;
     appDelegate.isRiverView = NO;
     appDelegate.inFindingStoryMode = NO;
-    [MBProgressHUD hideHUDForView:appDelegate.storyDetailViewController.view animated:NO];
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
     if (appDelegate.activeFeed || appDelegate.isRiverView) {        
         [self.feedTitlesTable beginUpdates];
@@ -290,7 +291,8 @@ static const CGFloat kFolderTitleHeight = 28;
 - (void)finishLoadingFeedList:(ASIHTTPRequest *)request {
     if ([request responseStatusCode] == 403) {
         return [appDelegate showLogin];
-    } else if ([request responseStatusCode] >= 500) {
+    } else if ([request responseStatusCode] == 404 ||
+               [request responseStatusCode] >= 500) {
         [pull finishedLoading];
         return [self informError:@"The server barfed!"];
     }
@@ -395,7 +397,8 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 
     [allFolders setValue:socialFolder forKey:@"river_blurblogs"];
-        
+    [allFolders setValue:[[NSMutableArray alloc] init] forKey:@"river_global"];
+    
     if (appDelegate.savedStoriesCount) {
         [allFolders setValue:[[NSArray alloc] init] forKey:@"saved_stories"];
     }
@@ -442,14 +445,20 @@ static const CGFloat kFolderTitleHeight = 28;
     appDelegate.dictFolders = sortedFolders;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
     
+    
+    NSLog(@"Before Sections: %@", appDelegate.dictFoldersArray);
     // Move River Blurblog and Everything to the top
+    if ([appDelegate.dictFoldersArray containsObject:@"river_global"]) {
+        [appDelegate.dictFoldersArray removeObject:@"river_global"];
+        [appDelegate.dictFoldersArray insertObject:@"river_global" atIndex:0];
+    }
     if ([appDelegate.dictFoldersArray containsObject:@"river_blurblogs"]) {
         [appDelegate.dictFoldersArray removeObject:@"river_blurblogs"];
-        [appDelegate.dictFoldersArray insertObject:@"river_blurblogs" atIndex:0];
+        [appDelegate.dictFoldersArray insertObject:@"river_blurblogs" atIndex:1];
     }
     if ([appDelegate.dictFoldersArray containsObject:@"everything"]) {
         [appDelegate.dictFoldersArray removeObject:@"everything"];
-        [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:1];
+        [appDelegate.dictFoldersArray insertObject:@"everything" atIndex:2];
     }
     
     // Add Saved Stories folder
@@ -471,6 +480,7 @@ static const CGFloat kFolderTitleHeight = 28;
         appDelegate.hasNoSites = YES;
     }
     
+    NSLog(@"After Sections: %@", appDelegate.dictFoldersArray);
     [self.feedTitlesTable reloadData];
 
     // assign categories for FTUX
@@ -675,8 +685,9 @@ static const CGFloat kFolderTitleHeight = 28;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (appDelegate.hasNoSites) {
-        return 2;
+        return 3;
     }
+    NSLog(@"Sections: %@", appDelegate.dictFoldersArray);
     return [appDelegate.dictFoldersArray count];
 }
 
@@ -727,23 +738,20 @@ static const CGFloat kFolderTitleHeight = 28;
         
     FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];    
     if (cell == nil) {
-        cell = [[FeedTableCell alloc] initWithStyle:UITableViewCellStyleDefault  reuseIdentifier:CellIdentifier];
-        cell.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate];
+        cell = [[FeedTableCell alloc]
+                initWithStyle:UITableViewCellStyleDefault
+                reuseIdentifier:CellIdentifier];
+        cell.appDelegate = appDelegate;
     }
-    
-
     
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
     NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
     int location = [[activeFolderFeeds objectAtIndex:indexPath.row] intValue];
-    id feedId = [feeds objectAtIndex:location];
-    
+    id feedId = [feeds objectAtIndex:location];    
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
     BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
-    
 
-    
     if (isSocial) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
         cell.feedFavicon = [Utilities getImage:feedIdStr isSocial:YES];
@@ -756,6 +764,8 @@ static const CGFloat kFolderTitleHeight = 28;
     cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];
     cell.negativeCount = [[feed objectForKey:@"ng"] intValue];
     cell.isSocial      = isSocial;
+    
+    [cell setNeedsDisplay];
     
     return cell;
 }
@@ -773,8 +783,10 @@ static const CGFloat kFolderTitleHeight = 28;
     NSDictionary *feed;
     NSString *folderName;
     if (indexPath.section == 0) {
-        folderName = @"river_blurblogs";
+        folderName = @"river_global";
     } else if (indexPath.section == 1) {
+            folderName = @"river_blurblogs";
+    } else if (indexPath.section == 2) {
         folderName = @"everything";
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
@@ -821,7 +833,9 @@ static const CGFloat kFolderTitleHeight = 28;
     
     NSString *folderName;
     if (indexPath.section == 0) {
-        folderName = @"river_blurblogs";
+        folderName = @"river_global";
+    } else if (indexPath.section == 1) {
+            folderName = @"river_blurblogs";
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     }
@@ -833,7 +847,8 @@ static const CGFloat kFolderTitleHeight = 28;
         return 0;
     }
     
-    if ([folderName isEqualToString:@"river_blurblogs"]) { // blurblogs
+    if ([folderName isEqualToString:@"river_blurblogs"] ||
+        [folderName isEqualToString:@"river_global"]) { // blurblogs
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             return kBlurblogTableViewRowHeight;            
         } else {
@@ -881,7 +896,7 @@ static const CGFloat kFolderTitleHeight = 28;
 //    }
     
     int rows = [tableView.dataSource tableView:tableView numberOfRowsInSection:section];
-    if (rows == 0 && section != 1 && folderName != @"saved_stories") {
+    if (rows == 0 && section != 2 && section != 0 && folderName != @"saved_stories") {
         return 0;
     }
     
@@ -897,6 +912,10 @@ static const CGFloat kFolderTitleHeight = 28;
     NSMutableArray *feeds = [NSMutableArray array];
 
     if (button.tag == 0) {
+        appDelegate.isSocialRiverView = YES;
+        appDelegate.isRiverView = YES;
+        [appDelegate setActiveFolder:@"river_global"];
+    } else if (button.tag == 1) {
         appDelegate.isSocialRiverView = YES;
         appDelegate.isRiverView = YES;
         // add all the feeds from every NON blurblog folder
@@ -949,6 +968,8 @@ static const CGFloat kFolderTitleHeight = 28;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
     if (button.tag == 0) {
+        folderName = @"river_global";
+    } else if (button.tag == 1) {
         folderName = @"river_blurblogs";
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:button.tag];
@@ -1186,6 +1207,7 @@ static const CGFloat kFolderTitleHeight = 28;
         self.visibleFeeds = [NSMutableDictionary dictionary];
     }
     for (NSString *folderName in appDelegate.dictFoldersArray) {
+        if ([folderName isEqualToString:@"river_global"]) continue;
         NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
         NSMutableArray *feedLocations = [NSMutableArray array];
         for (int f = 0; f < [folder count]; f++) {
@@ -1358,18 +1380,42 @@ static const CGFloat kFolderTitleHeight = 28;
     
     NSMutableDictionary *updatedDictFeeds = [appDelegate.dictFeeds mutableCopy];    
     NSDictionary *newFeedCounts = [results objectForKey:@"feeds"];
+    NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
     for (id feed in newFeedCounts) {
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", feed];
         NSMutableDictionary *newFeed = [[appDelegate.dictFeeds objectForKey:feedIdStr] mutableCopy];
         NSMutableDictionary *newFeedCount = [newFeedCounts objectForKey:feed];
 
         if ([newFeed isKindOfClass:[NSDictionary class]]) {
-            
+            // Check if a feed goes from visible to hidden, but doesn't disappear.
+            if ((intelligenceLevel > 0 &&
+                 [[newFeed objectForKey:@"ps"] intValue] > 0 &&
+                 [[newFeedCount objectForKey:@"ps"] intValue] == 0) ||
+                (intelligenceLevel == 0 &&
+                 ([[newFeed objectForKey:@"ps"] intValue] > 0 || [[newFeed objectForKey:@"nt"] intValue] > 0) &&
+                 [[newFeedCount objectForKey:@"ps"] intValue] == 0 &&
+                 [[newFeedCount objectForKey:@"nt"] intValue] == 0)) {
+                NSIndexPath *indexPath;
+                for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
+                    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
+                    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
+                    NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
+                    for (int l=0; l < [activeFolderFeeds count]; l++) {
+                        if ([[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] intValue] == [feed intValue]) {
+                            indexPath = [NSIndexPath indexPathForRow:l inSection:s];
+                        }
+                    }
+                }
+                if (indexPath) {
+                    [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
+                }
+            }
             [newFeed setObject:[newFeedCount objectForKey:@"ng"] forKey:@"ng"];
             [newFeed setObject:[newFeedCount objectForKey:@"nt"] forKey:@"nt"];
             [newFeed setObject:[newFeedCount objectForKey:@"ps"] forKey:@"ps"];
             [updatedDictFeeds setObject:newFeed forKey:feedIdStr];
         }
+        
     }
     
     NSMutableDictionary *updatedDictSocialFeeds = [appDelegate.dictSocialFeeds mutableCopy]; 

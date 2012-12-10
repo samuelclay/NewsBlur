@@ -99,7 +99,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
                     feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
                 }
                 if ((feed && feed.is_social()) ||
-                    NEWSBLUR.reader.active_feed == 'river:blurblogs') {
+                    _.contains(['river:blurblogs', 'river:global'], NEWSBLUR.reader.active_feed)) {
                     mark_read_fn = NEWSBLUR.assets.mark_social_story_as_read;
                 }
                 mark_read_fn.call(NEWSBLUR.assets, story, feed, _.bind(function(read) {

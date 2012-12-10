@@ -14,6 +14,7 @@
 #import "ASIFormDataRequest.h"
 #import "UserProfileViewController.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "NSString+HTML.h"
 #import "MBProgressHUD.h"
 #import "Base64.h"
@@ -86,7 +87,8 @@
     [MBProgressHUD hideHUDForView:self.view animated:YES];
             
     // set center title
-    UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
+    UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
+    titleLabel.shadowColor = UIColorFromRGB(0x306070);
     self.navigationItem.titleView = titleLabel;
     
     // set right avatar title image
@@ -149,16 +151,16 @@
         int location = appDelegate.locationOfActiveStory;
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:location inSection:0];
         if (indexPath) {
-            [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
-        } 
+            [self.storyTitlesTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionMiddle];
+        }
         [self performSelector:@selector(fadeSelectedCell) withObject:self afterDelay:0.4];
     }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    if (appDelegate.inStoryDetail = YES && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (appDelegate.inStoryDetail && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         appDelegate.inStoryDetail = NO;
-        [appDelegate.storyDetailViewController clearStory];
+        [appDelegate.storyPageControl resetPages];
         [self checkScroll];
     }
 }
@@ -169,6 +171,9 @@
     self.popoverController = nil;
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+    
+}
 
 - (void)fadeSelectedCell {
     // have the selected cell deselect
@@ -206,6 +211,7 @@
     self.pageFetching = NO;
     self.pageFinished = NO;
     self.feedPage = 1;
+    [appDelegate.storyPageControl resetPages];
 }
 
 - (void)reloadPage {
@@ -240,7 +246,7 @@
     NSString *theFeedDetailURL;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
-    if (!self.pageFetching && !self.pageFinished) {
+    if (callback || (!self.pageFetching && !self.pageFinished)) {
     
         self.feedPage = page;
         self.pageFetching = YES;
@@ -311,10 +317,18 @@
         NSString *theFeedDetailURL;
         
         if (appDelegate.isSocialRiverView) {
-            theFeedDetailURL = [NSString stringWithFormat:
-                                @"http://%@/social/river_stories/?page=%d", 
-                                NEWSBLUR_URL,
-                                self.feedPage];
+            if ([appDelegate.activeFolder isEqualToString:@"river_global"]) {
+                theFeedDetailURL = [NSString stringWithFormat:
+                                    @"http://%@/social/river_stories/?global_feed=true&page=%d",
+                                    NEWSBLUR_URL,
+                                    self.feedPage];
+                
+            } else {
+                theFeedDetailURL = [NSString stringWithFormat:
+                                    @"http://%@/social/river_stories/?page=%d", 
+                                    NEWSBLUR_URL,
+                                    self.feedPage];
+            }
         } else if (appDelegate.activeFolder == @"saved_stories") {
             theFeedDetailURL = [NSString stringWithFormat:
                                 @"http://%@/reader/starred_stories/?page=%d",
@@ -398,7 +412,9 @@
         }
         [self loadFaviconsFromActiveFeed];
     }
-        
+    
+    appDelegate.activeClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
+    
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [[NSMutableArray alloc] init];
     if ([appDelegate.activeFeedStories count]) {
@@ -455,6 +471,8 @@
     }
     
     [self renderStories:confirmedNewStories];
+    [appDelegate.storyPageControl resizeScrollView];
+    [appDelegate.storyPageControl setStoryFromScroll:YES];
 }
 
 #pragma mark - 
@@ -514,7 +532,7 @@
                 [self loadStory:cell atRow:indexPath.row];
                 
                 // found the story, reset the two flags.
-                appDelegate.tryFeedStoryId = nil;
+//                appDelegate.tryFeedStoryId = nil;
                 appDelegate.inFindingStoryMode = NO;
             }
         }
@@ -705,7 +723,8 @@
 - (void)loadStory:(FeedDetailTableCell *)cell atRow:(int)row {
     cell.isRead = YES;
     [cell setNeedsLayout];
-    appDelegate.activeStory = [[appDelegate activeFeedStories] objectAtIndex:row];
+    int storyIndex = [appDelegate indexFromLocation:row];
+    appDelegate.activeStory = [[appDelegate activeFeedStories] objectAtIndex:storyIndex];
     [appDelegate setOriginalStoryCount:[appDelegate unreadCount]];
     [appDelegate loadStoryDetailView];
 }
@@ -730,8 +749,7 @@
     if (indexPath.row < [appDelegate.activeFeedStoryLocations count]) {
         // mark the cell as read
         FeedDetailTableCell *cell = (FeedDetailTableCell*) [tableView cellForRowAtIndexPath:indexPath];        
-        int location = [[[appDelegate activeFeedStoryLocations] objectAtIndex:indexPath.row] intValue];
-        [self loadStory:cell atRow:location]; 
+        [self loadStory:cell atRow:indexPath.row];
     }
 }
 
@@ -1143,6 +1161,7 @@
 }
 
 - (void)changeActiveFeedDetailRow {
+    NSLog(@"changeActiveFeedDetailRow in feed detail view");
     int rowIndex = [appDelegate locationOfActiveStory];
                     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];

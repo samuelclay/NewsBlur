@@ -81,8 +81,7 @@ class StripeCustomerMixin(object):
 
 class StripeSubscriptionMixin(object):
     """
-    Provides a property `stripe` that returns an instance of the Stripe module &
-    additionally adds a property `stripe_subscription` that returns a stripe
+    Provides a property `stripe_subscription` that returns a stripe
     subscription instance.
 
     Your class must have an attribute `stripe_customer` (method or property)
@@ -99,9 +98,7 @@ class StripeSubscriptionMixin(object):
 
 class StripePlanMixin(object):
     """
-    Provides a property `stripe` that returns an instance of the Stripe module &
-    additionally adds a property `stripe_plan` that returns a stripe plan
-    instance.
+    Provides a property `stripe_plan` that returns a stripe plan instance.
 
     Your class must have an attribute `stripe_plan_id` (method or property)
     to provide the plan id for the returned instance.
@@ -113,9 +110,7 @@ class StripePlanMixin(object):
 
 class StripeInvoiceMixin(object):
     """
-    Provides a property `stripe` that returns an instance of the Stripe module &
-    additionally adds a property `stripe_invoice` that returns a stripe invoice
-    instance.
+    Provides a property `stripe_invoice` that returns a stripe invoice instance.
 
     Your class must have an attribute `stripe_invoice_id` (method or property)
     to provide the invoice id for the returned instance.
@@ -128,26 +123,23 @@ class StripeInvoiceMixin(object):
 
 class StripeInvoiceItemMixin(object):
     """
-    Provides a property `stripe` that returns an instance of the Stripe module &
-    additionally adds a property `stripe_invoice_item` that returns a stripe
+    Provides a property `stripe_invoice_item` that returns a stripe
     invoice item instance.
 
     Your class must have an attribute `stripe_invoice_item_id` (method or
     property) to provide the invoice id for the returned instance.
     """
-    def _get_stripe_invoice(self):
-        return stripe.Invoice.retrieve(_get_attr_value(self,
+    def _get_stripe_invoice_item(self):
+        return stripe.InvoiceItem.retrieve(_get_attr_value(self,
                                                     'stripe_invoice_item_id'))
-    stripe_invoice = property(_get_stripe_invoice)
+    stripe_invoice_item = property(_get_stripe_invoice_item)
 
 
 class StripeChargeMixin(object):
     """
-    Provides a property `stripe` that returns an instance of the Stripe module &
-    additionally adds a property `stripe_invoice_item` that returns a stripe
-    invoice item instance.
+    Provides a property `stripe_charge` that returns a stripe charge instance.
 
-    Your class must have an attribute `stripe_invoice_item_id` (method or
+    Your class must have an attribute `stripe_charge_id` (method or
     property) to provide the invoice id for the returned instance.
     """
     def _get_stripe_charge(self):

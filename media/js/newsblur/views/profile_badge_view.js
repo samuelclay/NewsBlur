@@ -56,12 +56,16 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
                         'shared ',
                         Inflector.pluralize('story', profile.get('shared_stories_count')),
                         ' &middot; ',
-                        $.make('a', { href: profile.blurblog_url(), target: "_blank", className: "NB-profile-badge-blurblog-link NB-splash-link" }, profile.blurblog_url().replace('http://', ''))
+                        $.make('a', { href: profile.blurblog_url(), target: "_blank", className: "NB-profile-badge-blurblog-link NB-splash-link" }, profile.blurblog_url().replace('http://', '')),
+                        (this.model.get('following_you') && $.make('span', [
+                            ' &middot; ',
+                            $.make('div', { className: 'NB-profile-badge-following-you' }, 'Follows you')
+                        ]))
                     ]))
                 ])
             ])
         ]));
-        
+
         var $actions;
         if (this.options.request_approval) {
             $actions = $.make('div', { className: 'NB-profile-badge-action-buttons' }, [
@@ -151,7 +155,6 @@ NEWSBLUR.Views.SocialProfileBadge = Backbone.View.extend({
     unfollow_user: function() {
         this.$('.NB-loading').addClass('NB-active');
         NEWSBLUR.reader.model.unfollow_user(this.model.get('user_id'), _.bind(function(data, unfollow_user) {
-            console.log(["Unfollow user", data, unfollow_user, this.model]);
             this.$('.NB-loading').removeClass('NB-active');
             this.model.set(data.unfollow_profile);
             

@@ -182,13 +182,14 @@ class Feed(models.Model):
             return self
         except IntegrityError:
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address, feed_link=self.feed_link)
-            logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
-            logging.debug(' ***> [%-30s] Feed deleted.' % (unicode(self)[:30]))
             if duplicate_feed:
                 if self.pk != duplicate_feed[0].pk:
-                    merge_feeds(self.pk, duplicate_feed[0].pk)
+                    merge_feeds(self.pk, duplicate_feed[0].pk, force=True)
                 return duplicate_feed[0]
+
             # Feed has been deleted. Just ignore it.
+            logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
+            logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
             return
     
     def sync_redis(self):
@@ -732,13 +733,8 @@ class Feed(models.Model):
                     return duplicate_feeds[0].feed
                 
     def add_update_stories(self, stories, existing_stories, verbose=False):
-        ret_values = {
-            ENTRY_NEW:0,
-            ENTRY_UPDATED:0,
-            ENTRY_SAME:0,
-            ENTRY_ERR:0
-        }
-        
+        ret_values = dict(new=0, updated=0, same=0, error=0)
+
         for story in stories:
             if not story.get('title'):
                 continue
@@ -761,9 +757,9 @@ class Feed(models.Model):
                 )
                 try:
                     s.save()
-                    ret_values[ENTRY_NEW] += 1
+                    ret_values['new'] += 1
                 except (IntegrityError, OperationError):
-                    ret_values[ENTRY_ERR] += 1
+                    ret_values['error'] += 1
                     if verbose:
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s' % (self.feed_title[:30], story.get('title')[:30]))
             elif existing_story and story_has_changed:
@@ -784,7 +780,7 @@ class Feed(models.Model):
                     else:
                         raise MStory.DoesNotExist
                 except (MStory.DoesNotExist, OperationError):
-                    ret_values[ENTRY_ERR] += 1
+                    ret_values['error'] += 1
                     if verbose:
                         logging.info('   ---> [%-30s] ~SN~FROperation on existing story: %s' % (self.feed_title[:30], story.get('title')[:30]))
                     continue
@@ -818,17 +814,17 @@ class Feed(models.Model):
                 existing_story.story_tags = story_tags
                 try:
                     existing_story.save()
-                    ret_values[ENTRY_UPDATED] += 1
+                    ret_values['updated'] += 1
                 except (IntegrityError, OperationError):
-                    ret_values[ENTRY_ERR] += 1
+                    ret_values['error'] += 1
                     if verbose:
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on updated story: %s' % (self.feed_title[:30], story.get('title')[:30]))
                 except ValidationError:
-                    ret_values[ENTRY_ERR] += 1
+                    ret_values['error'] += 1
                     if verbose:
                         logging.info('   ---> [%-30s] ~SN~FRValidationError on updated story: %s' % (self.feed_title[:30], story.get('title')[:30]))
             else:
-                ret_values[ENTRY_SAME] += 1
+                ret_values['same'] += 1
                 # logging.debug("Unchanged story: %s " % story.get('title'))
         
         return ret_values
@@ -961,10 +957,13 @@ class Feed(models.Model):
     
     @classmethod
     def format_story(cls, story_db, feed_id=None, text=False):
+        if isinstance(story_db.story_content_z, unicode):
+            story_db.story_content_z = story_db.story_content_z.decode('base64')
+            
         story_content = story_db.story_content_z and zlib.decompress(story_db.story_content_z) or ''
         story                     = {}
         story['story_tags']       = story_db.story_tags or []
-        story['story_date']       = story_db.story_date
+        story['story_date']       = story_db.story_date.replace(tzinfo=None)
         story['story_authors']    = story_db.story_author_name
         story['story_title']      = story_db.story_title
         story['story_content']    = story_content
@@ -982,6 +981,8 @@ class Feed(models.Model):
             story['starred_date'] = story_db.starred_date
         if hasattr(story_db, 'shared_date'):
             story['shared_date'] = story_db.shared_date
+        if hasattr(story_db, 'blurblog_permalink'):
+            story['blurblog_permalink'] = story_db.blurblog_permalink()
         if text:
             from BeautifulSoup import BeautifulSoup
             soup = BeautifulSoup(story['story_content'])
@@ -1342,7 +1343,7 @@ class MStory(mongo.Document):
     
     @property
     def guid_hash(self):
-        return hashlib.sha1(self.story_guid).hexdigest()
+        return hashlib.sha1(self.story_guid).hexdigest()[:6]
     
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
@@ -1432,7 +1433,7 @@ class MStory(mongo.Document):
         self.share_count = shares.count()
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
-        
+
 
 class MStarredStory(mongo.Document):
     """Like MStory, but not inherited due to large overhead of _cls and _type in
@@ -1471,7 +1472,7 @@ class MStarredStory(mongo.Document):
     
     @property
     def guid_hash(self):
-        return hashlib.sha1(self.story_guid).hexdigest()
+        return hashlib.sha1(self.story_guid).hexdigest()[:6]
     
 
 class MFeedFetchHistory(mongo.Document):
@@ -1596,9 +1597,13 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         return
         
     logging.info(" ---> Feed: [%s - %s] %s - %s" % (original_feed_id, duplicate_feed_id,
-                                             original_feed, original_feed.feed_link))
-    logging.info("            --> %s / %s" % (original_feed.feed_address, original_feed.feed_link))
-    logging.info("            --> %s / %s" % (duplicate_feed.feed_address, duplicate_feed.feed_link))
+                                                    original_feed, original_feed.feed_link))
+    logging.info("            ++> %s: %s / %s" % (original_feed.pk, 
+                                                  original_feed.feed_address,
+                                                  original_feed.feed_link))
+    logging.info("            --> %s: %s / %s" % (duplicate_feed.pk,
+                                                  duplicate_feed.feed_address,
+                                                  duplicate_feed.feed_link))
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed)
     for user_sub in user_subs:
@@ -1629,9 +1634,14 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         dupe_feed.feed = original_feed
         dupe_feed.duplicate_feed_id = duplicate_feed.pk
         dupe_feed.save()
-        
+    
+    logging.debug(' ---> Dupe subscribers: %s, Original subscribers: %s' %
+                  (duplicate_feed.num_subscribers, original_feed.num_subscribers))
     duplicate_feed.delete()
+    logging.debug(' ---> Deleted duplicate feed: %s' % (duplicate_feed))
     original_feed.count_subscribers()
+    logging.debug(' ---> Now original subscribers: %s' %
+                  (original_feed.num_subscribers))
     
     MSharedStory.switch_feed(original_feed_id, duplicate_feed_id)
     

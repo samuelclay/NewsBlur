@@ -2,13 +2,21 @@ from utils import json_functions as json
 from django.test.client import Client
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.conf import settings
+from mongoengine.connection import connect, disconnect
 
 class ReaderTest(TestCase):
     fixtures = ['subscriptions.json', 'stories.json', '../../rss_feeds/fixtures/gawker1.json']
     
-    def setUp(self):
-        self.client = Client()
     
+    def setUp(self):
+        disconnect()
+        settings.MONGODB = connect('test_newsblur')
+        self.client = Client()
+
+    def tearDown(self):
+        settings.MONGODB.drop_database('test_newsblur')
+            
     def test_api_feeds(self):
         self.client.login(username='conesus', password='test')
         

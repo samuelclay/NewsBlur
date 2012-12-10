@@ -2,10 +2,10 @@ import sys
 import logging
 import os
 import datetime
+import redis
+import raven
 from mongoengine import connect
 from boto.s3.connection import S3Connection
-import raven
-import redis
 from utils import jammit
 
 # ===================
@@ -221,7 +221,6 @@ INSTALLED_APPS = (
     'django_extensions',
     'djcelery',
     'django_ses',
-    'raven.contrib.django',
     'apps.rss_feeds',
     'apps.reader',
     'apps.analyzer',
@@ -246,6 +245,7 @@ INSTALLED_APPS = (
 if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
+        'raven.contrib.django',
     )
 
 # ==========
@@ -360,6 +360,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=12),
         'options': {'queue': 'beat_tasks'},
     },
+    'premium-expire': {
+        'task': 'premium-expire',
+        'schedule': datetime.timedelta(hours=24),
+        'options': {'queue': 'beat_tasks'},
+    },
 }
 
 # =========
@@ -415,6 +420,7 @@ REDIS = {
 
 FACEBOOK_APP_ID = '111111111111111'
 FACEBOOK_SECRET = '99999999999999999999999999999999'
+FACEBOOK_NAMESPACE = 'newsblur'
 TWITTER_CONSUMER_KEY = 'ooooooooooooooooooooo'
 TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 
@@ -425,7 +431,6 @@ TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 BACKED_BY_AWS = {
     'pages_on_s3': False,
     'icons_on_s3': False,
-    'stories_on_dynamodb': False,
 }
 
 PROXY_S3_PAGES = True
@@ -448,6 +453,9 @@ TEMPLATE_DEBUG = DEBUG
 ACCOUNT_ACTIVATION_DAYS = 30
 AWS_ACCESS_KEY_ID = S3_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = S3_SECRET
+
+os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
+os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
 
 def custom_show_toolbar(request):
     return DEBUG

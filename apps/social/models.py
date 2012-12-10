@@ -308,8 +308,9 @@ class MSocialProfile(mongo.Document):
         if include_following_user or common_follows_with_user:
             if not include_following_user:
                 include_following_user = common_follows_with_user
-            params['followed_by_you'] = bool(self.is_followed_by_user(include_following_user))
-            params['following_you'] = bool(self.is_following_user(include_following_user))
+            if include_following_user != self.user_id:
+                params['followed_by_you'] = bool(self.is_followed_by_user(include_following_user))
+                params['following_you'] = self.is_following_user(include_following_user)
 
         return params
     
@@ -778,7 +779,8 @@ class MSocialSubscription(mongo.Document):
             'feed_opens': self.feed_opens,
         }
     
-    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False):
+    def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', 
+                    withscores=False, everything_unread=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         ignore_user_stories = False
         
@@ -788,7 +790,7 @@ class MSocialSubscription(mongo.Document):
 
         if not r.exists(stories_key):
             return []
-        elif read_filter != 'unread' or not r.exists(read_stories_key):
+        elif everything_unread or read_filter != 'unread' or not r.exists(read_stories_key):
             ignore_user_stories = True
             unread_stories_key = stories_key
         else:
@@ -822,7 +824,7 @@ class MSocialSubscription(mongo.Document):
         return [story_id for story_id in story_ids if story_id and story_id != 'None']
         
     @classmethod
-    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None):
+    def feed_stories(cls, user_id, social_user_ids, offset=0, limit=6, order='newest', read_filter='all', relative_user_id=None, everything_unread=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         
         if not relative_user_id:
@@ -850,7 +852,7 @@ class MSocialSubscription(mongo.Document):
             us = cls.objects.get(user_id=relative_user_id, subscription_user_id=social_user_id)
             story_guids = us.get_stories(offset=0, limit=100, 
                                          order=order, read_filter=read_filter, 
-                                         withscores=True)
+                                         withscores=True, everything_unread=everything_unread)
             if story_guids:
                 r.zadd(unread_ranked_stories_keys, **dict(story_guids))
             
@@ -904,7 +906,7 @@ class MSocialSubscription(mongo.Document):
             #     continue
             except MUserStory.MultipleObjectsReturned:
                 if not mark_all_read:
-                    logging.user(request, "~FRMultiple read stories: %s" % story.story_guid)
+                    logging.user(request, "~BR~FW~SKMultiple read stories: %s" % story.story_guid)
             
             # Find other social feeds with this story to update their counts
             friend_key = "F:%s:F" % (self.user_id)
@@ -931,6 +933,48 @@ class MSocialSubscription(mongo.Document):
                 # XXX TODO: Real-time notification, just for this user
         return data
         
+    @classmethod
+    def mark_unsub_story_ids_as_read(cls, user_id, social_user_id, story_ids, feed_id=None,
+                                     request=None):
+        data = dict(code=0, payload=story_ids)
+        
+        if not request:
+            request = User.objects.get(pk=user_id)
+    
+        if len(story_ids) > 1:
+            logging.user(request, "~FYRead %s social stories from global" % (len(story_ids)))
+        else:
+            logging.user(request, "~FYRead social story from global")
+        
+        for story_id in set(story_ids):
+            try:
+                story = MSharedStory.objects.get(user_id=social_user_id,
+                                                 story_guid=story_id)
+            except MSharedStory.DoesNotExist:
+                continue
+            now = datetime.datetime.utcnow()
+            date = now if now > story.story_date else story.story_date # For handling future stories
+            try:
+                m, _ = MUserStory.objects.get_or_create(user_id=user_id, 
+                                                        feed_id=story.story_feed_id, 
+                                                        story_id=story.story_guid,
+                                                        defaults={
+                                                            "read_date": date,
+                                                            "story_date": story.shared_date,
+                                                        })
+            except MUserStory.MultipleObjectsReturned:
+                logging.user(request, "~BR~FW~SKMultiple read stories: %s" % story.story_guid)
+            
+            # Also count on original subscription
+            usersubs = UserSubscription.objects.filter(user=user_id, feed=story.story_feed_id)
+            if usersubs:
+                usersub = usersubs[0]
+                if not usersub.needs_unread_recalc:
+                    usersub.needs_unread_recalc = True
+                    usersub.save()
+                # XXX TODO: Real-time notification, just for this user
+        return data
+    
     def mark_feed_read(self):
         latest_story_date = datetime.datetime.utcnow()
         UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
@@ -1144,6 +1188,7 @@ class MSharedStory(mongo.Document):
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField(unique_with=('user_id',))
+    story_guid_hash          = mongo.StringField(max_length=6)
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     posted_to_services       = mongo.ListField(mongo.StringField(max_length=20))
     mute_email_users         = mongo.ListField(mongo.IntField())
@@ -1173,7 +1218,13 @@ class MSharedStory(mongo.Document):
 
     @property
     def guid_hash(self):
-        return hashlib.sha1(self.story_guid).hexdigest()
+        if self.story_guid_hash:
+            return self.story_guid_hash
+        
+        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()[:6]
+        self.save()
+        
+        return self.story_guid_hash
     
     def to_json(self):
         return {
@@ -1194,7 +1245,8 @@ class MSharedStory(mongo.Document):
         if self.story_original_content:
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
-        
+
+        self.story_guid_hash = hashlib.sha1(self.story_guid).hexdigest()[:6]
         self.story_title = strip_tags(self.story_title)
         
         self.comments = linkify(strip_tags(self.comments))
@@ -1621,18 +1673,20 @@ class MSharedStory(mongo.Document):
         
     def blurblog_permalink(self):
         profile = MSocialProfile.get_user(self.user_id)
-        return "%s/story/%s" % (
+        return "%s/story/%s/%s" % (
             profile.blurblog_url,
+            slugify(self.story_title)[:20],
             self.guid_hash[:6]
         )
     
-    def generate_post_to_service_message(self):
+    def generate_post_to_service_message(self, include_url=True):
         message = self.comments
         if not message or len(message) < 1:
             message = self.story_title
         
-        message = truncate_chars(message, 116)
-        message += " " + self.blurblog_permalink()
+        if include_url:
+            message = truncate_chars(message, 116)
+            message += " " + self.blurblog_permalink()
         
         return message
         
@@ -1641,16 +1695,16 @@ class MSharedStory(mongo.Document):
             return
 
         posted = False
-        message = self.generate_post_to_service_message()
         social_service = MSocialServices.objects.get(user_id=self.user_id)
         user = User.objects.get(pk=self.user_id)
         
+        message = self.generate_post_to_service_message()
         logging.user(user, "~BM~FGPosting to %s: ~SB%s" % (service, message))
         
         if service == 'twitter':
-            posted = social_service.post_to_twitter(message)
+            posted = social_service.post_to_twitter(self)
         elif service == 'facebook':
-            posted = social_service.post_to_facebook(message)
+            posted = social_service.post_to_facebook(self)
         
         if posted:
             self.posted_to_services.append(service)
@@ -2113,7 +2167,9 @@ class MSocialServices(mongo.Document):
         profile.save()
         return profile
     
-    def post_to_twitter(self, message):
+    def post_to_twitter(self, shared_story):
+        message = shared_story.generate_post_to_service_message()
+
         try:
             api = self.twitter_api()
             api.update_status(status=message)
@@ -2123,10 +2179,22 @@ class MSocialServices(mongo.Document):
 
         return True
             
-    def post_to_facebook(self, message):
+    def post_to_facebook(self, shared_story):
+        message = shared_story.generate_post_to_service_message(include_url=False)
+        shared_story.calculate_image_sizes()
+        content = zlib.decompress(shared_story.story_content_z)[:1024]
+        
         try:
             api = self.facebook_api()
-            api.put_wall_post(message=message)
+            # api.put_wall_post(message=message)
+            api.put_object('me', '%s:share' % settings.FACEBOOK_NAMESPACE, 
+                           link=shared_story.blurblog_permalink(), 
+                           type="link", 
+                           name=shared_story.story_title, 
+                           description=content, 
+                           website=shared_story.blurblog_permalink(),
+                           message=message,
+                           )
         except facebook.GraphAPIError, e:
             print e
             return

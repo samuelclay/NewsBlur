@@ -107,22 +107,27 @@ class UserSubscription(models.Model):
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         ignore_user_stories = False
-        
+    
         stories_key         = 'F:%s' % (self.feed_id)
         read_stories_key    = 'RS:%s:%s' % (self.user_id, self.feed_id)
         unread_stories_key  = 'U:%s:%s' % (self.user_id, self.feed_id)
 
-        if not r.exists(stories_key):
-            print " ---> No stories on feed: %s" % self
-            return []
-        elif read_filter != 'unread' or not r.exists(read_stories_key):
-            ignore_user_stories = True
-            unread_stories_key = stories_key
+        unread_ranked_stories_key  = 'zU:%s:%s' % (self.user_id, self.feed_id)
+        if offset and not withscores and r.exists(unread_ranked_stories_key):
+            pass
         else:
-            r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-        sorted_stories_key          = 'zF:%s' % (self.feed_id)
-        unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
-        r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+            r.delete(unread_ranked_stories_key)
+            if not r.exists(stories_key):
+                print " ---> No stories on feed: %s" % self
+                return []
+            elif read_filter != 'unread' or not r.exists(read_stories_key):
+                ignore_user_stories = True
+                unread_stories_key = stories_key
+            else:
+                r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+            sorted_stories_key          = 'zF:%s' % (self.feed_id)
+            unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
+            r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)
         if order == 'oldest':
@@ -137,15 +142,22 @@ class UserSubscription(models.Model):
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
-            # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
-            max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
+            if read_filter == 'unread':
+                # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
+                max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
+            else:
+                max_score = 0
 
         if settings.DEBUG:
-            print " ---> Unread all stories: %s" % r.zrevrange(unread_ranked_stories_key, 0, -1)
+            debug_stories = r.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
+            print " ---> Unread all stories (%s - %s) %s stories: %s" % (
+                min_score,
+                max_score,
+                len(debug_stories),
+                debug_stories)
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
-                                  max_score, start=offset, num=limit,
-                                  withscores=withscores)
-
+                                  max_score, start=offset, num=500,
+                                  withscores=withscores)[:limit]
         r.expire(unread_ranked_stories_key, 24*60*60)
         if not ignore_user_stories:
             r.delete(unread_stories_key)
@@ -153,7 +165,15 @@ class UserSubscription(models.Model):
         # XXX TODO: Remove below line after combing redis for these None's.
         story_ids = [s for s in story_ids if s and s != 'None'] # ugh, hack
         
-        return story_ids
+        if withscores:
+            return story_ids
+        elif story_ids:
+            story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+            mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
+            stories = Feed.format_stories(mstories)
+            return stories
+        else:
+            return []
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):
@@ -351,7 +371,7 @@ class UserSubscription(models.Model):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
         UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-
+        
         if self.user.profile.last_seen_on < UNREAD_CUTOFF:
             # if not silent:
             #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))

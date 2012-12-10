@@ -2,6 +2,7 @@ import time
 import datetime
 import zlib
 import random
+import re
 from bson.objectid import ObjectId
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse
@@ -189,16 +190,16 @@ def load_river_blurblog(request):
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     relative_user_id  = request.REQUEST.get('relative_user_id', None)
-    user_perspective  = request.REQUEST.get('user_perspective', None)
+    global_feed       = request.REQUEST.get('global_feed', None)
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     UNREAD_CUTOFF     = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
     
-    if user_perspective:
-        up = User.objects.get(username=settings.HOMEPAGE_USERNAME)
-        relative_user_id = up.pk
+    if global_feed:
+        global_user = User.objects.get(username='popular')
+        relative_user_id = global_user.pk
     
     if not relative_user_id:
-        relative_user_id = get_user(request).pk
+        relative_user_id = user.pk
 
     if not social_user_ids:
         socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id) 
@@ -207,9 +208,11 @@ def load_river_blurblog(request):
     offset = (page-1) * limit
     limit = page * limit - 1
     
-    story_ids, story_dates = MSocialSubscription.feed_stories(relative_user_id, social_user_ids, 
+    story_ids, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
                                                  offset=offset, limit=limit,
-                                                 order=order, read_filter=read_filter)
+                                                 order=order, read_filter=read_filter,
+                                                 relative_user_id=relative_user_id,
+                                                 everything_unread=global_feed)
     mstories = MStory.objects(id__in=story_ids)
     story_id_to_dates = dict(zip(story_ids, story_dates))
     def sort_stories_by_id(a, b):
@@ -218,8 +221,11 @@ def load_river_blurblog(request):
     stories = Feed.format_stories(sorted_mstories)
     for s, story in enumerate(stories):
         story['story_date'] = datetime.datetime.fromtimestamp(story_dates[s])
+    share_relative_user_id = relative_user_id
+    if global_feed:
+        share_relative_user_id = user.pk
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories,
-                                                                             relative_user_id,
+                                                                             share_relative_user_id,
                                                                              check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
@@ -399,7 +405,29 @@ def load_social_page(request, user_id, username=None, **kwargs):
                 story['user_comments'] = shared_story.comments
 
     stories = MSharedStory.attach_users_to_stories(stories, profiles)
+    
+    active_story = None
+    path = request.META['PATH_INFO']
+    if '/story/' in path and format != 'html':
+        story_id = re.sub(r"^/story/.*?/(.*?)/?", "", path)
+        if not story_id or '/story' in story_id:
+            story_id = path.replace('/story/', '')
 
+        active_story_db = MSharedStory.objects.filter(user_id=social_user.pk,
+                                                      story_guid_hash=story_id).limit(1)
+        if active_story_db:
+            active_story_db = active_story_db[0]
+            active_story = Feed.format_story(active_story_db)
+            if active_story_db.image_count:
+                active_story['image_url'] = active_story_db.image_sizes[0]['src']
+            active_story['tags'] = ', '.join(active_story_db.story_tags)
+            active_story['blurblog_permalink'] = active_story_db.blurblog_permalink()
+            active_story['iso8601'] = active_story_db.story_date.isoformat()
+            if active_story['story_feed_id']:
+                feed = Feed.get_by_id(active_story['story_feed_id'])
+                if feed:
+                    active_story['feed'] = feed.canonical()
+    
     params = {
         'social_user'   : social_user,
         'stories'       : stories,
@@ -412,7 +440,9 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'feeds'         : feeds,
         'user_profile'  : hasattr(user, 'profile') and user.profile,
         'has_next_page' : has_next_page,
-        'holzer_truism' : random.choice(jennyholzer.TRUISMS) #if not has_next_page else None
+        'holzer_truism' : random.choice(jennyholzer.TRUISMS), #if not has_next_page else None
+        'facebook_app_id': settings.FACEBOOK_APP_ID,
+        'active_story'  : active_story,
     }
 
     diff1 = checkpoint1-start
@@ -509,7 +539,10 @@ def mark_story_as_shared(request):
     story = stories[0]
     story['shared_comments'] = strip_tags(shared_story['comments'] or "")
     story['shared_by_user'] = True
-    
+    shared_date = localtime_for_timezone(shared_story['shared_date'], request.user.profile.timezone)
+    story['short_parsed_date'] = format_story_link_date__short(shared_date)
+    story['long_parsed_date'] = format_story_link_date__long(shared_date)
+            
     if post_to_services:
         for service in post_to_services:
             if service not in shared_story.posted_to_services:
@@ -759,13 +792,13 @@ def shared_stories_public(request, username):
 @json.json_view
 def profile(request):
     user = get_user(request.user)
-    user_id = request.GET.get('user_id', user.pk)
+    user_id = int(request.GET.get('user_id', user.pk))
     categories = request.GET.getlist('category')
     include_activities_html = request.REQUEST.get('include_activities_html', None)
 
     user_profile = MSocialProfile.get_user(user_id)
     user_profile.count_follows()
-
+    
     activities = []
     if not user_profile.private or user_profile.is_followed_by_user(user.pk):
         activities, _ = MActivity.user(user_id, page=1, public=True, categories=categories)
@@ -779,7 +812,6 @@ def profile(request):
         
     payload = {
         'user_profile': user_profile,
-        # XXX TODO: Remove following 4 vestigial params.
         'followers_youknow': user_profile['followers_youknow'],
         'followers_everybody': user_profile['followers_everybody'],
         'following_youknow': user_profile['following_youknow'],
@@ -788,7 +820,7 @@ def profile(request):
         'profiles': dict([(p.user_id, p.to_json(compact=True)) for p in profiles]),
         'activities': activities,
     }
-    
+
     if include_activities_html:
         payload['activities_html'] = render_to_string('reader/activities_module.xhtml', {
             'activities': activities,

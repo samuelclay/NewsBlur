@@ -426,7 +426,13 @@ header {
 .NB-story-date sup {
     font-size: 7px;
 }
-
+.NB-story-permalink {
+    text-decoration: none;
+    color: inherit;
+}
+.NB-story-permalink:hover {
+    color: #87ACCC;
+}
 .NB-story-header .NB-story-modifications-button {
     width: 16px;
     height: 16px;

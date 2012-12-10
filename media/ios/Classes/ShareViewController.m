@@ -9,6 +9,8 @@
 #import "ShareViewController.h"
 #import "NewsBlurAppDelegate.h"
 #import "StoryDetailViewController.h"
+#import "FeedDetailViewController.h"
+#import "StoryPageControl.h"
 #import <QuartzCore/QuartzCore.h>
 #import "Utilities.h"
 #import "DataUtilities.h"
@@ -37,17 +39,24 @@
 - (void)viewDidLoad {
     self.appDelegate = (NewsBlurAppDelegate *)[[UIApplication sharedApplication] delegate]; 
     
-    // For textField1
     [[NSNotificationCenter defaultCenter] 
      addObserver:self 
      selector:@selector(onTextChange:)
      name:UITextViewTextDidChangeNotification 
      object:self.commentField];
     
-    UIBarButtonItem *cancel = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonSystemItemCancel target:self action:@selector(doCancelButton:)];
+    UIBarButtonItem *cancel = [[UIBarButtonItem alloc]
+                               initWithTitle:@"Cancel"
+                               style:UIBarButtonSystemItemCancel
+                               target:self
+                               action:@selector(doCancelButton:)];
     self.navigationItem.leftBarButtonItem = cancel;
     
-    UIBarButtonItem *submit = [[UIBarButtonItem alloc] initWithTitle:@"Post" style:UIBarButtonSystemItemDone target:self action:@selector(doShareThisStory:)];
+    UIBarButtonItem *submit = [[UIBarButtonItem alloc]
+                               initWithTitle:@"Post"
+                               style:UIBarButtonSystemItemDone
+                               target:self
+                               action:@selector(doShareThisStory:)];
     self.submitButton = submit;
     self.navigationItem.rightBarButtonItem = submit;
     
@@ -66,7 +75,10 @@
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
+        self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.16f
+                                                                            green:0.36f
+                                                                             blue:0.46
+                                                                            alpha:0.9];
     } else {
         self.submitButton.tintColor = UIColorFromRGB(0x709d3c);
     }
@@ -78,8 +90,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
     [self setCommentField:nil];
     [self setFacebookButton:nil];
     [self setTwitterButton:nil];
@@ -124,25 +135,22 @@
 - (IBAction)doToggleButton:(id)sender {
     UIButton *button = (UIButton *)sender;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
-    if (button.selected) {
-        button.selected = NO;
-        if ([[button currentTitle] isEqualToString: @"Facebook"]) {
-            [userPreferences setInteger:0 forKey:@"shareToFacebook"];
-        } else if ([[button currentTitle] isEqualToString: @"Twitter"]) {
-            [userPreferences setInteger:0 forKey:@"shareToTwitter"];
-        }
-    } else {
-        button.selected = YES;
-        if ([[button currentTitle] isEqualToString: @"Facebook"]) {
-            [userPreferences setInteger:1 forKey:@"shareToFacebook"];
-        } else if ([[button currentTitle] isEqualToString: @"Twitter"]) {
-            [userPreferences setInteger:1 forKey:@"shareToTwitter"];
-        }
+    button.selected = !button.selected;
+    int selected = button.selected ? 1 : 0;
+    
+    if (button.tag == 1) {
+        [userPreferences setInteger:selected forKey:@"shareToTwitter"];
+    } else if (button.tag == 2) {
+        [userPreferences setInteger:selected forKey:@"shareToFacebook"];
     }
+    
     [userPreferences synchronize];
 }
 
-- (void)setSiteInfo:(NSString *)type setUserId:(NSString *)userId setUsername:(NSString *)username setReplyId:(NSString *)replyId {
+- (void)setSiteInfo:(NSString *)type
+          setUserId:(NSString *)userId
+        setUsername:(NSString *)username
+         setReplyId:(NSString *)replyId {
     [self.submitButton setStyle:UIBarButtonItemStyleDone];
     if ([type isEqualToString: @"edit-reply"]) {
         self.currentType = nil;
@@ -157,10 +165,8 @@
         NSArray *replies = [appDelegate.activeComment objectForKey:@"replies"];
         NSDictionary *reply = nil;
         for (int i = 0; i < replies.count; i++) {
-            NSString *replyId = [NSString stringWithFormat:@"%@", [[replies objectAtIndex:i] valueForKey:@"reply_id"]];
-            NSLog(@"[replies objectAtIndex:i] valueForKey:@reply_id] %@", [[replies objectAtIndex:i] valueForKey:@"reply_id"]);
-            NSLog(@":self.activeReplyId %@", self.activeReplyId);
-            
+            NSString *replyId = [NSString stringWithFormat:@"%@",
+                                 [[replies objectAtIndex:i] valueForKey:@"reply_id"]];
             if ([replyId isEqualToString:self.activeReplyId]) {
                 reply = [replies objectAtIndex:i];
             }
@@ -169,7 +175,6 @@
             self.commentField.text = [self stringByStrippingHTML:[reply objectForKey:@"comments"]]; 
         }
     } else if ([type isEqualToString: @"reply"]) {
-        
         self.activeReplyId = nil;
         [submitButton setTitle:[NSString stringWithFormat:@"Reply to %@", username]];
         facebookButton.hidden = YES;
@@ -221,7 +226,7 @@
 # pragma mark Share Story
 
 - (IBAction)doShareThisStory:(id)sender {
-    [appDelegate.storyDetailViewController showShareHUD:@"Sharing"];
+    [appDelegate.storyPageControl showShareHUD:@"Sharing"];
     NSString *urlString = [NSString stringWithFormat:@"http://%@/social/share_story",
                            NEWSBLUR_URL];
 
@@ -287,7 +292,7 @@
 # pragma mark Reply to Story
 
 - (IBAction)doReplyToComment:(id)sender {
-    [appDelegate.storyDetailViewController showShareHUD:@"Replying"];
+    [appDelegate.storyPageControl showShareHUD:@"Replying"];
     NSString *comments = commentField.text;
     if ([comments length] == 0) {
         return;
@@ -316,7 +321,6 @@
     [request setDidFailSelector:@selector(requestFailed:)];
     [request startAsynchronous];
     [appDelegate hideShareView:YES];
-    [appDelegate.storyDetailViewController showShareHUD:@"Replying"];
 }
 
 - (void)finishAddReply:(ASIHTTPRequest *)request {
@@ -342,7 +346,6 @@
 - (void)replaceStory:(NSDictionary *)newStory withReplyId:(NSString *)replyId {
     NSMutableDictionary *newStoryParsed = [newStory mutableCopy];
     [newStoryParsed setValue:[NSNumber numberWithInt:1] forKey:@"read_status"];
-    [newStoryParsed setValue:[appDelegate.activeStory objectForKey:@"short_parsed_date"] forKey:@"short_parsed_date"] ;
 
     // update the current story and the activeFeedStories
     appDelegate.activeStory = newStoryParsed;
@@ -363,7 +366,10 @@
     appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     self.commentField.text = nil;
-    [appDelegate.storyDetailViewController refreshComments:replyId];
+    [appDelegate.storyPageControl refreshPages];
+    [appDelegate.storyPageControl.currentPage refreshComments:replyId];
+    [appDelegate changeActiveFeedDetailRow];
+
 }
 
 
@@ -378,7 +384,6 @@
     NSString *text = self.commentField.text;
     if ([self.submitButton.title isEqualToString:@"Share this story"] || 
         [self.submitButton.title isEqualToString:@"Share with comments"]) {
-        NSLog(@"text.length is %i", text.length);
         if (text.length) {
             self.submitButton.title = @"Share with comments";
         } else {

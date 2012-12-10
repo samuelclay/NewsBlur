@@ -6,9 +6,9 @@ p {
 	line-height: 1.4em;
 }
 
-img, video, embed, object, iframe {
-	max-width: 100%;
-	height: auto;	
+img, video, embed, object, iframe, div {
+	max-width: 95% !important;
+	height: auto !important;	
 }
 
 
