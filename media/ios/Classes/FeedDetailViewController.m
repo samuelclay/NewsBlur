@@ -138,8 +138,6 @@
     }
     
     if (appDelegate.isSocialRiverView || 
-        (appDelegate.isRiverView &&
-         [appDelegate.activeFolder isEqualToString:@"everything"]) ||
         [appDelegate.activeFolder isEqualToString:@"saved_stories"]) {
         feedMarkReadButton.enabled = NO;
     } else {
@@ -873,7 +871,17 @@
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
     NSLog(@"mark feeds read: %d %d", appDelegate.isRiverView, includeHidden);
-    if (appDelegate.isRiverView && includeHidden) {
+    if ([appDelegate.activeFolder isEqualToString:@"everything"]) {
+        // Mark folder as read
+        NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_all_as_read",
+                               NEWSBLUR_URL];
+        NSURL *url = [NSURL URLWithString:urlString];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setDelegate:nil];
+        [request startAsynchronous];
+        
+        [appDelegate markActiveFolderAllRead];
+    } else if (appDelegate.isRiverView && includeHidden) {
         // Mark folder as read
         NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_feed_as_read",
                                NEWSBLUR_URL];
@@ -965,10 +973,12 @@
     NSArray *buttonTitles = nil;
     BOOL showVisible = YES;
     BOOL showEntire = YES;
-    if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
+//    if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
     if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
     NSString *entireText = [NSString stringWithFormat:@"Mark %@ read", 
-                            appDelegate.isRiverView ? 
+                            appDelegate.isRiverView ?
+                            [appDelegate.activeFolder isEqualToString:@"everything"] ?
+                            @"everything" :
                             @"entire folder" : 
                             @"this site"];
     NSString *visibleText = [NSString stringWithFormat:@"Mark %@ read", 
@@ -1006,7 +1016,7 @@
         int totalUnreadCount = [appDelegate unreadCount];
         BOOL showVisible = YES;
         BOOL showEntire = YES;
-        if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
+//        if ([appDelegate.activeFolder isEqualToString:@"everything"]) showEntire = NO;
         if (visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0) showVisible = NO;
 //        NSLog(@"Counts: %d %d = %d", visibleUnreadCount, totalUnreadCount, visibleUnreadCount >= totalUnreadCount || visibleUnreadCount <= 0);
 

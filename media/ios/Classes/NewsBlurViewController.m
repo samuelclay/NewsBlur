@@ -446,7 +446,6 @@ static const CGFloat kFolderTitleHeight = 28;
     [appDelegate.dictFoldersArray sortUsingSelector:@selector(caseInsensitiveCompare:)];
     
     
-    NSLog(@"Before Sections: %@", appDelegate.dictFoldersArray);
     // Move River Blurblog and Everything to the top
     if ([appDelegate.dictFoldersArray containsObject:@"river_global"]) {
         [appDelegate.dictFoldersArray removeObject:@"river_global"];
@@ -480,7 +479,6 @@ static const CGFloat kFolderTitleHeight = 28;
         appDelegate.hasNoSites = YES;
     }
     
-    NSLog(@"After Sections: %@", appDelegate.dictFoldersArray);
     [self.feedTitlesTable reloadData];
 
     // assign categories for FTUX
@@ -687,7 +685,6 @@ static const CGFloat kFolderTitleHeight = 28;
     if (appDelegate.hasNoSites) {
         return 3;
     }
-    NSLog(@"Sections: %@", appDelegate.dictFoldersArray);
     return [appDelegate.dictFoldersArray count];
 }
 
@@ -820,7 +817,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [appDelegate loadFeedDetailView];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView 
+- (CGFloat)tableView:(UITableView *)tableView
            heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (appDelegate.hasNoSites) {
@@ -929,7 +926,7 @@ static const CGFloat kFolderTitleHeight = 28;
                 }
             }
         }
-    } else if (button.tag == 1) {
+    } else if (button.tag == 2) {
         appDelegate.isSocialRiverView = NO;
         appDelegate.isRiverView = YES;
         // add all the feeds from every NON blurblog folder
@@ -943,6 +940,7 @@ static const CGFloat kFolderTitleHeight = 28;
                 }
             }
         }
+        [appDelegate.folderCountCache removeAllObjects];
     } else {
         appDelegate.isSocialRiverView = NO;
         appDelegate.isRiverView = YES;
