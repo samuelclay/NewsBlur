@@ -65,7 +65,7 @@ class OPMLExporter:
             if isinstance(obj, int) and obj in self.feeds:
                 feed = self.feeds[obj]
                 if verbose:
-                    print "     ---> Adding feed: %s - %s" % (feed['pk'],
+                    print "     ---> Adding feed: %s - %s" % (feed['id'],
                                                               feed['feed_title'][:30])
                 feed_attrs = self.make_feed_row(feed)
                 body.append(Element('outline', feed_attrs))
@@ -74,7 +74,7 @@ class OPMLExporter:
                     if verbose:
                         print " ---> Adding folder: %s" % folder_title
                     folder_element = Element('outline', {'text': folder_title, 'title': folder_title})
-                    body.append(self.process_outline(folder_element, folder_objs))
+                    body.append(self.process_outline(folder_element, folder_objs, verbose=verbose))
         return body
     
     def make_feed_row(self, feed):
@@ -83,8 +83,8 @@ class OPMLExporter:
             'title': feed['feed_title'],
             'type': 'rss',
             'version': 'RSS',
-            'htmlUrl': feed['feed_link'],
-            'xmlUrl': feed['feed_address'],
+            'htmlUrl': feed['feed_link'] or "",
+            'xmlUrl': feed['feed_address'] or "",
         }
         return feed_attrs
         
