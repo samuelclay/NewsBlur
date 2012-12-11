@@ -219,9 +219,15 @@
     CGRect frame = self.scrollView.frame;
     self.scrollView.contentSize = frame.size;
     
+    NSLog(@"Pages are at: %f / %f / %f", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x);
+    currentPage.view.frame = self.scrollView.frame;
+    nextPage.view.frame = self.scrollView.frame;
+    previousPage.view.frame = self.scrollView.frame;
+
     currentPage.pageIndex = -2;
     nextPage.pageIndex = -2;
     previousPage.pageIndex = -2;
+    
 }
 
 - (void)refreshPages {

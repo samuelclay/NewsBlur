@@ -209,6 +209,7 @@
     self.pageFetching = NO;
     self.pageFinished = NO;
     self.feedPage = 1;
+    appDelegate.activeStory = nil;
     [appDelegate.storyPageControl resetPages];
 }
 
