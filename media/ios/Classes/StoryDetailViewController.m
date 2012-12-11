@@ -203,7 +203,7 @@
                             footerString
                             ];
     
-    //    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -278,51 +278,76 @@
 #pragma mark Story layout
 
 - (NSString *)getHeader {
-    NSString *story_author = @"";
-    if ([self.activeStory objectForKey:@"story_authors"]) {
+    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
+                                                          objectForKey:@"story_feed_id"]];
+    NSString *storyAuthor = @"";
+    if ([[self.activeStory objectForKey:@"story_authors"] class] != [NSNull class] &&
+        [[self.activeStory objectForKey:@"story_authors"] length]) {
         NSString *author = [NSString stringWithFormat:@"%@",
                             [self.activeStory objectForKey:@"story_authors"]];
-        if (author && ![author isEqualToString:@"<null>"]) {
-            int author_score = [[[appDelegate.activeClassifiers objectForKey:@"authors"] objectForKey:author] intValue];
-            story_author = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-author/%@\" "
-                            "class=\"NB-story-author %@\"><div class=\"NB-highlight\"></div>%@</a>",
-                            author,
-                            author_score > 0 ? @"NB-story-author-positive" : author_score < 0 ? @"NB-story-author-negative" : @"",
-                            author];
+        if (author && [author class] != [NSNull class]) {
+            int authorScore;
+            if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
+                authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                                 objectForKey:@"authors"]
+                                objectForKey:author] intValue];
+            } else {
+                authorScore = [[[appDelegate.activeClassifiers objectForKey:@"authors"]
+                                objectForKey:author] intValue];
+            }
+            storyAuthor = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-author/%@\" "
+                           "class=\"NB-story-author %@\" id=\"NB-story-author\"><div class=\"NB-highlight\"></div>%@</a>",
+                           author,
+                           authorScore > 0 ? @"NB-story-author-positive" : authorScore < 0 ? @"NB-story-author-negative" : @"",
+                           author];
         }
     }
-    NSString *story_tags = @"";
+    NSString *storyTags = @"";
     if ([self.activeStory objectForKey:@"story_tags"]) {
-        NSArray *tag_array = [self.activeStory objectForKey:@"story_tags"];
-        if ([tag_array count] > 0) {
-            NSMutableArray *tag_strings = [NSMutableArray array];
-            for (NSString *tag in tag_array) {
-                int tag_score = [[[appDelegate.activeClassifiers objectForKey:@"tags"] objectForKey:tag] intValue];
-                NSString *tag_html = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-tag/%@\" "
+        NSArray *tagArray = [self.activeStory objectForKey:@"story_tags"];
+        if ([tagArray count] > 0) {
+            NSMutableArray *tagStrings = [NSMutableArray array];
+            for (NSString *tag in tagArray) {
+                int tagScore;
+                if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
+                    tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                                  objectForKey:@"tags"]
+                                 objectForKey:tag] intValue];
+                } else {
+                    tagScore = [[[appDelegate.activeClassifiers objectForKey:@"tags"]
+                                 objectForKey:tag] intValue];
+                }
+                NSString *tagHtml = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-tag/%@\" "
                                       "class=\"NB-story-tag %@\"><div class=\"NB-highlight\"></div>%@</a>",
                                       tag,
-                                      tag_score > 0 ? @"NB-story-tag-positive" : tag_score < 0 ? @"NB-story-tag-negative" : @"",
+                                      tagScore > 0 ? @"NB-story-tag-positive" : tagScore < 0 ? @"NB-story-tag-negative" : @"",
                                       tag];
-                [tag_strings addObject:tag_html];
+                [tagStrings addObject:tagHtml];
             }
-            story_tags = [NSString
-                          stringWithFormat:@"<div id=\"NB-story-tags\" class=\"NB-story-tags\">"
-                          "%@"
-                          "</div>",
-                          [tag_strings componentsJoinedByString:@""]];
+            storyTags = [NSString
+                         stringWithFormat:@"<div id=\"NB-story-tags\" class=\"NB-story-tags\">"
+                         "%@"
+                         "</div>",
+                         [tagStrings componentsJoinedByString:@""]];
         }
     }
     
-    NSString *story_title = [self.activeStory objectForKey:@"story_title"];
-    for (NSString *title_classifier in [appDelegate.activeClassifiers objectForKey:@"titles"]) {
-        if ([story_title containsString:title_classifier]) {
-            int title_score = [[[appDelegate.activeClassifiers objectForKey:@"titles"]
-                                objectForKey:title_classifier] intValue];
-            story_title = [story_title
-                           stringByReplacingOccurrencesOfString:title_classifier
-                           withString:[NSString stringWithFormat:@"<span class=\"NB-story-title-%@\">%@</span>",
-                                       title_score > 0 ? @"positive" : title_score < 0 ? @"negative" : @"",
-                                       title_classifier]];
+    NSString *storyTitle = [self.activeStory objectForKey:@"story_title"];
+    NSMutableDictionary *titleClassifiers;
+    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
+        titleClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
+                            objectForKey:@"titles"];
+    } else {
+        titleClassifiers = [appDelegate.activeClassifiers objectForKey:@"titles"];
+    }
+    for (NSString *titleClassifier in titleClassifiers) {
+        if ([storyTitle containsString:titleClassifier]) {
+            int titleScore = [[titleClassifiers objectForKey:titleClassifier] intValue];
+            storyTitle = [storyTitle
+                          stringByReplacingOccurrencesOfString:titleClassifier
+                          withString:[NSString stringWithFormat:@"<span class=\"NB-story-title-%@\">%@</span>",
+                                       titleScore > 0 ? @"positive" : titleScore < 0 ? @"negative" : @"",
+                                       titleClassifier]];
         }
     }
     
@@ -333,21 +358,21 @@
                              "%@"
                              "%@"
                              "</div></div>",
-                             [story_tags length] ?
+                             [storyTags length] ?
                              [self.activeStory objectForKey:@"long_parsed_date"] :
                              [self.activeStory objectForKey:@"short_parsed_date"],
-                             story_title,
-                             story_author,
-                             story_tags];
+                             storyTitle,
+                             storyAuthor,
+                             storyTags];
     return storyHeader;
 }
 
 - (NSString *)getAvatars:(NSString *)key {
     NSString *avatarString = @"";
-    NSArray *share_user_ids = [self.activeStory objectForKey:key];
+    NSArray *shareUserIds = [self.activeStory objectForKey:key];
     
-    for (int i = 0; i < share_user_ids.count; i++) {
-        NSDictionary *user = [self getUser:[[share_user_ids objectAtIndex:i] intValue]];
+    for (int i = 0; i < shareUserIds.count; i++) {
+        NSDictionary *user = [self getUser:[[shareUserIds objectAtIndex:i] intValue]];
         NSString *avatarClass = @"NB-user-avatar";
         if ([key isEqualToString:@"commented_by_public"] ||
             [key isEqualToString:@"shared_by_public"]) {
@@ -356,7 +381,10 @@
         NSString *avatar = [NSString stringWithFormat:@
                             "<div class=\"NB-story-share-profile\"><div class=\"%@\">"
                             "<a id=\"NB-user-share-bar-%@\" class=\"NB-show-profile\" "
-                            " href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a>"
+                            " href=\"http://ios.newsblur.com/show-profile/%@\">"
+                            "<div class=\"NB-highlight\"></div>"
+                            "<img src=\"%@\" />"
+                            "</a>"
                             "</div></div>",
                             avatarClass,
                             [user objectForKey:@"user_id"],
@@ -558,7 +586,12 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         comment = [NSString stringWithFormat:@
                     "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
-                    "<div class=\"%@\"><a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a></div>"
+                    "<div class=\"%@\">"
+                    "<a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
+                    "<div class=\"NB-highlight\"></div>"
+                    "<img src=\"%@\" />"
+                    "</a>"
+                    "</div>"
                     "<div class=\"NB-story-comment-author-container\">"
                     "   %@"
                     "    <div class=\"NB-story-comment-username\">%@</div>"
@@ -594,7 +627,12 @@
     } else {
         comment = [NSString stringWithFormat:@
                    "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
-                   "<div class=\"%@\"><a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\"><img src=\"%@\" /></a></div>"
+                   "<div class=\"%@\">"
+                   "<a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
+                   "<div class=\"NB-highlight\"></div>"
+                   "<img src=\"%@\" />"
+                   "</a>"
+                   "</div>"
                    "<div class=\"NB-story-comment-author-container\">"
                    "   %@"
                    "    <div class=\"NB-story-comment-username\">%@</div>"
@@ -677,6 +715,7 @@
                 reply = [NSString stringWithFormat:@
                         "<div class=\"NB-story-comment-reply\" id=\"NB-user-comment-%@\">"
                         "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
+                        "       <div class=\"NB-highlight\"></div>"
                         "       <img class=\"NB-story-comment-reply-photo\" src=\"%@\" />"
                         "   </a>"
                         "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
@@ -699,6 +738,7 @@
                 reply = [NSString stringWithFormat:@
                          "<div class=\"NB-story-comment-reply\" id=\"NB-user-comment-%@\">"
                          "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
+                         "       <div class=\"NB-highlight\"></div>"
                          "       <img class=\"NB-story-comment-reply-photo\" src=\"%@\" />"
                          "   </a>"
                          "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
@@ -1147,6 +1187,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                           shareBarString];
     NSString *shareType = appDelegate.activeShareType;
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick();"];
 
     // HACK to make the scroll event happen after the replace innerHTML event above happens.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .15 * NSEC_PER_SEC),
@@ -1229,17 +1271,36 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark Classifiers
 
 - (void)toggleAuthorClassifier:(NSString *)author {
-    int author_score = [[[appDelegate.activeClassifiers objectForKey:@"authors"] objectForKey:author] intValue];
-    if (author_score > 0) {
-        author_score = -1;
-    } else if (author_score < 0) {
-        author_score = 0;
+    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
+                                                          objectForKey:@"story_feed_id"]];
+    int authorScore;
+    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
+        authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                         objectForKey:@"authors"]
+                        objectForKey:author] intValue];
     } else {
-        author_score = 1;
+        authorScore = [[[appDelegate.activeClassifiers objectForKey:@"authors"]
+                        objectForKey:author] intValue];
     }
-    NSMutableDictionary *authors = [[appDelegate.activeClassifiers objectForKey:@"authors"] mutableCopy];
-    [authors setObject:[NSNumber numberWithInt:author_score] forKey:author];
-    [appDelegate.activeClassifiers setObject:authors forKey:@"authors"];
+    if (authorScore > 0) {
+        authorScore = -1;
+    } else if (authorScore < 0) {
+        authorScore = 0;
+    } else {
+        authorScore = 1;
+    }
+    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
+        NSMutableDictionary *feedClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
+                                                 mutableCopy];
+        NSMutableDictionary *authors = [[feedClassifiers objectForKey:@"authors"] mutableCopy];
+        [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
+        [feedClassifiers setObject:authors forKey:@"authors"];
+        [appDelegate.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    } else {
+        NSMutableDictionary *authors = [[appDelegate.activeClassifiers objectForKey:@"authors"] mutableCopy];
+        [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
+        [appDelegate.activeClassifiers setObject:authors forKey:@"authors"];
+    }
     [appDelegate.storyPageControl refreshHeaders];
     
     NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
@@ -1247,12 +1308,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:author
-                   forKey:author_score >= 1 ? @"like_author" :
-                          author_score <= -1 ? @"dislike_author" :
+                   forKey:authorScore >= 1 ? @"like_author" :
+                          authorScore <= -1 ? @"dislike_author" :
                           @"remove_like_author"];
-    [request setPostValue:[self.activeStory
-                           objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
+    [request setPostValue:feedId forKey:@"feed_id"];
     [request setDidFinishSelector:@selector(finishTrain:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setDelegate:self];
@@ -1260,18 +1319,38 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)toggleTagClassifier:(NSString *)tag {
-    int tag_score = [[[appDelegate.activeClassifiers objectForKey:@"tags"] objectForKey:tag] intValue];
-    if (tag_score > 0) {
-        tag_score = -1;
-    } else if (tag_score < 0) {
-        tag_score = 0;
+    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
+                                                          objectForKey:@"story_feed_id"]];
+    int tagScore;
+    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
+        tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                      objectForKey:@"tags"]
+                     objectForKey:tag] intValue];
     } else {
-        tag_score = 1;
+        tagScore = [[[appDelegate.activeClassifiers objectForKey:@"tags"]
+                     objectForKey:tag] intValue];
+    }
+
+    if (tagScore > 0) {
+        tagScore = -1;
+    } else if (tagScore < 0) {
+        tagScore = 0;
+    } else {
+        tagScore = 1;
     }
     
-    NSMutableDictionary *tags = [[appDelegate.activeClassifiers objectForKey:@"tags"] mutableCopy];
-    [tags setObject:[NSNumber numberWithInt:tag_score] forKey:tag];
-    [appDelegate.activeClassifiers setObject:tags forKey:@"tags"];
+    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
+        NSMutableDictionary *feedClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
+                                                mutableCopy];
+        NSMutableDictionary *tags = [[feedClassifiers objectForKey:@"tags"] mutableCopy];
+        [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
+        [feedClassifiers setObject:tags forKey:@"tags"];
+        [appDelegate.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    } else {
+        NSMutableDictionary *tags = [[appDelegate.activeClassifiers objectForKey:@"tags"] mutableCopy];
+        [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
+        [appDelegate.activeClassifiers setObject:tags forKey:@"tags"];
+    }
     [appDelegate.storyPageControl refreshHeaders];
 
     NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
@@ -1279,12 +1358,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [NSURL URLWithString:urlString];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:tag
-                   forKey:tag_score >= 1 ? @"like_tag" :
-                          tag_score <= -1 ? @"dislike_tag" :
+                   forKey:tagScore >= 1 ? @"like_tag" :
+                          tagScore <= -1 ? @"dislike_tag" :
                           @"remove_like_tag"];
-    [request setPostValue:[self.activeStory
-                           objectForKey:@"story_feed_id"]
-                   forKey:@"feed_id"];
+    [request setPostValue:feedId forKey:@"feed_id"];
     [request setDidFinishSelector:@selector(finishTrain:)];
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setDelegate:self];

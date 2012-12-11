@@ -94,6 +94,7 @@ static const CGFloat kFolderTitleHeight = 28;
     [self.intelligenceControl setWidth:62 forSegmentAtIndex:2];
     self.intelligenceControl.hidden = YES;
 
+    appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -813,6 +814,7 @@ static const CGFloat kFolderTitleHeight = 28;
     appDelegate.isRiverView = NO;
     appDelegate.isSocialRiverView = NO;
     [appDelegate.folderCountCache removeObjectForKey:folderName];
+    appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
 
     [appDelegate loadFeedDetailView];
 }

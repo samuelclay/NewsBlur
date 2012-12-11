@@ -194,19 +194,22 @@ body.NB-iphone {
     text-shadow: 0 1px 0 #986064;
 }
 .NB-story-tag .NB-highlight,
-.NB-story-author .NB-highlight {
+.NB-story-author .NB-highlight,
+.NB-show-profile .NB-highlight {
     position: absolute;
     top: -2px;
     left: -2px;
     bottom: -2px;
     right: -2px;
-    background-color: #000;
+    background-color: #040;
     opacity: .25;
     border-radius: 4px;
     display: none;
 }
 .NB-story-tag.pressed .NB-highlight,
-.NB-story-author.pressed .NB-highlight {
+.NB-story-author.pressed .NB-highlight,
+.pressed .NB-show-profile .NB-highlight,
+.NB-show-profile.pressed .NB-highlight {
     display: block;
     
 }
@@ -418,13 +421,14 @@ del {
 
 .nb-story-comments-label {
     float: left;
-    margin-right: 5px;
+    margin-right: 2px;
     margin-top: 6px;
 }
 
 .nb-story-share-label {
     float: right;
     margin-top: 6px;
+    margin-left: 2px;
 }
 
 /* Sharing */
@@ -434,12 +438,14 @@ del {
 }
 
 a.NB-show-profile {
+    margin: 0 0 0 2px;
+    position: relative;
     display: inline-block;
 }
 
 /* Disable certain interactions on touch devices */
 .NB-button,
-.NB-show-profile.a {
+a.NB-show-profile {
     -webkit-text-size-adjust: none; 
     -webkit-user-select: none; 
     -webkit-highlight: none; 
@@ -447,7 +453,8 @@ a.NB-show-profile {
     -webkit-tap-highlight-color: rgba(0,0,0,0); 
 }
 
-.NB-header {
+.NB-header,
+#NB-share-bar-wrapper {
     -webkit-user-select: none;
     -webkit-highlight: none; 
     -webkit-touch-callout: none;

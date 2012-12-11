@@ -12,8 +12,7 @@ $('a.NB-show-profile').live('click', function () {
     var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
     window.location = url;
     return false;
-
-})
+});
 
 $('.NB-button').live('touchstart', function () {
     $(this).addClass('selected');
@@ -96,11 +95,6 @@ function findPos(obj) {
 }
 
 function NoClickDelay(el) {
-	this.element = el;
-	if( window.Touch ) this.element.addEventListener('touchstart', this, false);
-}
-
-function NoClickDelay(el) {
     this.element = typeof el == 'object' ? el : document.getElementById(el);
     if( window.Touch ) this.element.addEventListener('touchstart', this, false);
 }
@@ -118,7 +112,8 @@ onTouchStart: function(e) {
     this.x = e.targetTouches[0].clientX;
     this.y = e.targetTouches[0].clientY;
     this.theTarget = document.elementFromPoint(e.targetTouches[0].clientX, e.targetTouches[0].clientY);
-    if(this.theTarget.nodeType == 3) this.theTarget = theTarget.parentNode;
+    this.theTarget = $(this.theTarget).closest('a').get(0);
+//    if(this.theTarget.nodeType == 3) this.theTarget = theTarget.parentNode;
     this.theTarget.className+= ' pressed';
     this.element.addEventListener('touchmove', this, false);
     this.element.addEventListener('touchend', this, false);
@@ -152,14 +147,19 @@ onTouchEnd: function(e) {
 };
 
 function attachFastClick() {
+    var avatars = document.getElementsByClassName("NB-show-profile");
+    Array.prototype.slice.call(avatars, 0).forEach(function(avatar) {
+                                                   new NoClickDelay(avatar);
+                                                   });
     var tags = document.getElementsByClassName("NB-story-tag");
     Array.prototype.slice.call(tags, 0).forEach(function(tag) {
-                                                new NoClickDelay(tag);
-                                                });
-    var authors = document.getElementsByClassName("NB-story-author");
-    Array.prototype.slice.call(authors, 0).forEach(function(author) {
-                                                new NoClickDelay(author);
-                                                });
+        new NoClickDelay(tag);
+    });
+    
+    var author = document.getElementById("NB-story-author");
+    if (author) {
+        new NoClickDelay(author);
+    }
 }
 
 Zepto(function($) {

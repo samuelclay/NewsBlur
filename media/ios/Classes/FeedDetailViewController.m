@@ -220,7 +220,7 @@
 
     [self.storyTitlesTable reloadData];
     [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
-
+    appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
     
     if (appDelegate.isRiverView) {
         [self fetchRiverPage:1 withCallback:nil];
@@ -411,7 +411,10 @@
         [self loadFaviconsFromActiveFeed];
     }
     
-    appDelegate.activeClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
+    NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
+    for (id key in [newClassifiers allKeys]) {
+        [appDelegate.activeClassifiers setObject:[newClassifiers objectForKey:key] forKey:key];
+    }
     
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [[NSMutableArray alloc] init];

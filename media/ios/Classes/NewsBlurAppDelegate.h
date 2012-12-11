@@ -171,7 +171,7 @@
 @property (nonatomic, readwrite) BOOL inFeedDetail;
 @property (nonatomic, readwrite) BOOL inStoryDetail;
 @property (readwrite) NSDictionary * activeFeed;
-@property (readwrite) NSMutableDictionary * activeClassifiers;
+@property (strong, readwrite) NSMutableDictionary * activeClassifiers;
 @property (readwrite) NSString * activeFolder;
 @property (readwrite) NSDictionary * activeComment;
 @property (readwrite) NSString * activeShareType;

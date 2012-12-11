@@ -441,7 +441,7 @@
 		43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontSettingsViewController.xib; path = ../Classes/FontSettingsViewController.xib; sourceTree = "<group>"; };
 		437AA8B815929D51005463F5 /* zepto.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = zepto.js; path = ../zepto.js; sourceTree = "<group>"; };
 		437AA8BD15929DA7005463F5 /* storyDetailView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = storyDetailView.js; path = ../storyDetailView.js; sourceTree = "<group>"; };
-		437AA8BF15929DFA005463F5 /* storyDetailView.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailView.css; path = ../storyDetailView.css; sourceTree = "<group>"; };
+		437AA8BF15929DFA005463F5 /* storyDetailView.css */ = {isa = PBXFileReference; explicitFileType = text.css; fileEncoding = 4; name = storyDetailView.css; path = ../storyDetailView.css; sourceTree = "<group>"; };
 		437AA8C7159394E2005463F5 /* ShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		437AA8C8159394E2005463F5 /* ShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
 		437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "ShareViewController~ipad.xib"; path = "Classes/ShareViewController~ipad.xib"; sourceTree = "<group>"; };
