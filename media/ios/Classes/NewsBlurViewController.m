@@ -1343,10 +1343,20 @@ static const CGFloat kFolderTitleHeight = 28;
 }
 
 - (void)refreshFeedList {
+    [self refreshFeedList:nil];
+}
+
+- (void)refreshFeedList:(id)feedId {
     // refresh the feed
-    NSURL *urlFeedList = [NSURL URLWithString:
-                          [NSString stringWithFormat:@"http://%@/reader/refresh_feeds",
-                           NEWSBLUR_URL]];
+    NSString *urlString;
+    if (feedId) {
+        urlString = [NSString stringWithFormat:@"http://%@/reader/feed_unread_count?feed_id=%@",
+                     NEWSBLUR_URL, feedId];
+    } else {
+        urlString = [NSString stringWithFormat:@"http://%@/reader/refresh_feeds",
+                     NEWSBLUR_URL];
+    }
+    NSURL *urlFeedList = [NSURL URLWithString:urlString];
     
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:urlFeedList];
     [[NSHTTPCookieStorage sharedHTTPCookieStorage]

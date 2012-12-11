@@ -447,7 +447,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         NEWSBLUR.assets.classifiers[feed_id][classifier_type+'s'][value] = score;
         NEWSBLUR.assets.recalculate_story_scores(feed_id, {story_view: this});
         NEWSBLUR.assets.save_classifier(data, function(resp) {
-            NEWSBLUR.reader.force_feeds_refresh(null, true, feed_id);
+            NEWSBLUR.reader.feed_unread_count(feed_id);
         });
         
         this.preserve_classifier_color(classifier_type, value, score);

@@ -84,6 +84,7 @@
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)refreshFeedList;
+- (void)refreshFeedList:(id)feedId;
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
 - (void)showUserProfile;
 - (void)showSettingsPopover:(id)sender;

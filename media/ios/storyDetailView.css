@@ -154,6 +154,7 @@ body.NB-iphone {
     margin-bottom: 8px;
     text-shadow: 0 1px 0 #F9F9F9;
     float: left;
+    position: relative;
 }
 .NB-story-author-positive {
     color: #58A353;
@@ -165,7 +166,7 @@ body.NB-iphone {
 }
 .NB-story-tags {
     overflow: hidden;
-    padding: 5px 0 0px 0;
+    padding: 5px 2px 2px 2px;
     margin-bottom: 8px;
     text-transform: uppercase;
 }
@@ -180,6 +181,7 @@ body.NB-iphone {
     color: #505050;
     text-shadow: 0 1px 0 #E0E8DB;
     -webkit-border-radius: 4px;
+    position: relative;
 }
 .NB-story-tag-positive {
     background-color: #88B383;
@@ -190,6 +192,23 @@ body.NB-iphone {
     background-color: #C89094;
     color: white;
     text-shadow: 0 1px 0 #986064;
+}
+.NB-story-tag .NB-highlight,
+.NB-story-author .NB-highlight {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    bottom: -2px;
+    right: -2px;
+    background-color: #000;
+    opacity: .25;
+    border-radius: 4px;
+    display: none;
+}
+.NB-story-tag.pressed .NB-highlight,
+.NB-story-author.pressed .NB-highlight {
+    display: block;
+    
 }
 
 .NB-story-date {

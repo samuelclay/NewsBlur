@@ -285,7 +285,7 @@
         if (author && ![author isEqualToString:@"<null>"]) {
             int author_score = [[[appDelegate.activeClassifiers objectForKey:@"authors"] objectForKey:author] intValue];
             story_author = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-author/%@\" "
-                            "class=\"NB-story-author %@\">%@</a>",
+                            "class=\"NB-story-author %@\"><div class=\"NB-highlight\"></div>%@</a>",
                             author,
                             author_score > 0 ? @"NB-story-author-positive" : author_score < 0 ? @"NB-story-author-negative" : @"",
                             author];
@@ -299,14 +299,14 @@
             for (NSString *tag in tag_array) {
                 int tag_score = [[[appDelegate.activeClassifiers objectForKey:@"tags"] objectForKey:tag] intValue];
                 NSString *tag_html = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-tag/%@\" "
-                                      "class=\"NB-story-tag %@\">%@</a>",
+                                      "class=\"NB-story-tag %@\"><div class=\"NB-highlight\"></div>%@</a>",
                                       tag,
                                       tag_score > 0 ? @"NB-story-tag-positive" : tag_score < 0 ? @"NB-story-tag-negative" : @"",
                                       tag];
                 [tag_strings addObject:tag_html];
             }
             story_tags = [NSString
-                          stringWithFormat:@"<div class=\"NB-story-tags\">"
+                          stringWithFormat:@"<div id=\"NB-story-tags\" class=\"NB-story-tags\">"
                           "%@"
                           "</div>",
                           [tag_strings componentsJoinedByString:@""]];
@@ -1241,6 +1241,22 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [authors setObject:[NSNumber numberWithInt:author_score] forKey:author];
     [appDelegate.activeClassifiers setObject:authors forKey:@"authors"];
     [appDelegate.storyPageControl refreshHeaders];
+    
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:author
+                   forKey:author_score >= 1 ? @"like_author" :
+                          author_score <= -1 ? @"dislike_author" :
+                          @"remove_like_author"];
+    [request setPostValue:[self.activeStory
+                           objectForKey:@"story_feed_id"]
+                   forKey:@"feed_id"];
+    [request setDidFinishSelector:@selector(finishTrain:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
 }
 
 - (void)toggleTagClassifier:(NSString *)tag {
@@ -1257,6 +1273,27 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [tags setObject:[NSNumber numberWithInt:tag_score] forKey:tag];
     [appDelegate.activeClassifiers setObject:tags forKey:@"tags"];
     [appDelegate.storyPageControl refreshHeaders];
+
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:tag
+                   forKey:tag_score >= 1 ? @"like_tag" :
+                          tag_score <= -1 ? @"dislike_tag" :
+                          @"remove_like_tag"];
+    [request setPostValue:[self.activeStory
+                           objectForKey:@"story_feed_id"]
+                   forKey:@"feed_id"];
+    [request setDidFinishSelector:@selector(finishTrain:)];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+
+- (void)finishTrain:(ASIHTTPRequest *)request {
+    [appDelegate.feedsViewController refreshFeedList:[self.activeStory
+                                                      objectForKey:@"story_feed_id"]];
 }
 
 - (void)refreshHeader {
@@ -1264,6 +1301,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').innerHTML = '%@';",
                           headerString];
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick();"];
 }
 
 @end
