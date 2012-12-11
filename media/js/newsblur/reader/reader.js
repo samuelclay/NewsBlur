@@ -5403,7 +5403,9 @@
             });
             $document.bind('keydown', 'shift+a', function(e) {
                 e.preventDefault();
-                if (self.flags.social_view) {
+                if (self.flags.social_view && self.flags.river_view) {
+                    return;
+                } else if (self.flags.social_view && !self.flags.river_view) {
                     self.mark_feed_as_read();
                 } else if (self.flags.river_view) {
                     if (self.active_feed == 'river:') {

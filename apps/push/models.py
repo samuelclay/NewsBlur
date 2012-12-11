@@ -49,21 +49,24 @@ class PushSubscriptionManager(models.Manager):
             #     # callback = 'http://' + Site.objects.get_current() + callback_path
             callback = "http://push.newsblur.com/push/%s" % subscription.pk # + callback_path
 
-        response = self._send_request(hub, {
-            'hub.mode'          : 'subscribe',
-            'hub.callback'      : callback,
-            'hub.topic'         : topic,
-            'hub.verify'        : ['async', 'sync'],
-            'hub.verify_token'  : subscription.generate_token('subscribe'),
-            'hub.lease_seconds' : lease_seconds,
-        })
+        try:
+            response = self._send_request(hub, {
+                'hub.mode'          : 'subscribe',
+                'hub.callback'      : callback,
+                'hub.topic'         : topic,
+                'hub.verify'        : ['async', 'sync'],
+                'hub.verify_token'  : subscription.generate_token('subscribe'),
+                'hub.lease_seconds' : lease_seconds,
+            })
+        except requests.ConnectionError:
+            response = None
 
-        if response.status_code == 204:
+        if response and response.status_code == 204:
             subscription.verified = True
-        elif response.status_code == 202: # async verification
+        elif response and response.status_code == 202: # async verification
             subscription.verified = False
         else:
-            error = response.content
+            error = response and response.content or ""
             if not force_retry and 'You may only subscribe to' in error:
                 extracted_topic = re.search("You may only subscribe to (.*?) ", error)
                 if extracted_topic:
