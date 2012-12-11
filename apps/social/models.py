@@ -2479,10 +2479,19 @@ class MActivity(mongo.Document):
                            
     @classmethod
     def new_feed_subscription(cls, user_id, feed_id, feed_title):
-        cls.objects.get_or_create(user_id=user_id,
-                                  category='feedsub',
-                                  feed_id=feed_id,
-                                  defaults=dict(content=feed_title))
+        params = {
+            "user_id": user_id,
+            "category": 'feedsub',
+            "feed_id": feed_id,
+        }
+        try:
+            cls.objects.get_or_create(defaults=dict(content=feed_title), **params)
+        except cls.MultipleObjectsReturned:
+            dupes = cls.objects.filter(**params).order_by('-date')
+            logging.debug(" ---> ~FRDeleting dupe feed subscription activities. %s found." % dupes.count())
+            for dupe in dupes[1:]:
+                dupe.delete()
+
                            
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):

@@ -262,6 +262,7 @@ class UserSubscription(models.Model):
             
             from apps.social.models import MActivity
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
+                
             feed.setup_feed_for_premium_subscribers()
         
         return code, message, us
