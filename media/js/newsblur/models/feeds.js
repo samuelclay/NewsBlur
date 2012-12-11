@@ -159,6 +159,10 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
         return this.detect(function(feed) { return feed.get('selected'); });
     },
     
+    active: function() {
+        return this.select(function(feed) { return feed.get('active'); });
+    },
+    
     has_chosen_feeds: function() {
         return this.any(function(feed) {
             return feed.get('active');

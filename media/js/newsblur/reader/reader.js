@@ -887,7 +887,8 @@
             options = options || {};
             if (!NEWSBLUR.Globals.is_authenticated) return;
             
-            if (!NEWSBLUR.assets.folders.length || !NEWSBLUR.assets.preference('has_setup_feeds')) {
+            if (!NEWSBLUR.assets.folders.length ||
+                !NEWSBLUR.assets.preference('has_setup_feeds')) {
                 if (options.delayed_import || this.flags.delayed_import) {
                     this.setup_ftux_add_feed_callout("Check your email...");
                 } else if (NEWSBLUR.assets.preference('has_setup_feeds')) {
@@ -895,7 +896,11 @@
                 } else if (!NEWSBLUR.intro || !NEWSBLUR.intro.flags.open) {
                     _.defer(_.bind(this.open_intro_modal, this), 100);
                 }
-            } else if (!NEWSBLUR.assets.flags['has_chosen_feeds'] && NEWSBLUR.assets.folders.length) {
+            } else if (!NEWSBLUR.assets.flags['has_chosen_feeds'] &&
+                       NEWSBLUR.assets.folders.length) {
+                _.defer(_.bind(this.open_feedchooser_modal, this), 100);
+            } else if (!NEWSBLUR.Globals.is_premium &&
+                       NEWSBLUR.assets.feeds.active().length > 64) {
                 _.defer(_.bind(this.open_feedchooser_modal, this), 100);
             }
         },
