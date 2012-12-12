@@ -26,6 +26,7 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.user_functions import get_user, ajax_login_required
 from utils.view_functions import render_to, is_true
+from utils.view_functions import required_params
 from utils.story_functions import format_story_link_date__short
 from utils.story_functions import format_story_link_date__long
 from utils.story_functions import strip_tags
@@ -457,7 +458,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
         template = 'social/social_page.xhtml'
         
     return render_to_response(template, params, context_instance=RequestContext(request))
-    
+
+@required_params('story_id', feed_id=int)
 def story_public_comments(request):
     format           = request.REQUEST.get('format', 'json')
     relative_user_id = request.REQUEST.get('user_id', None)
@@ -467,11 +469,18 @@ def story_public_comments(request):
     if not relative_user_id:
         relative_user_id = get_user(request).pk
     
-    stories = MSharedStory.objects.filter(story_feed_id=feed_id, story_guid=story_id).limit(1)
-    stories = Feed.format_stories(stories)
-    stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, relative_user_id, 
+    story, _ = MStory.find_story(story_feed_id=feed_id, story_id=story_id)
+    if not story:
+        return json.json_response(request, {
+            'message': "Story not found.",
+            'code': -1,
+        })
+        
+    story = Feed.format_story(story)
+    stories, profiles = MSharedStory.stories_with_comments_and_profiles([story],
+                                                                        relative_user_id, 
                                                                         check_all=True)
-
+    
     if format == 'html':
         stories = MSharedStory.attach_users_to_stories(stories, profiles)
         return render_to_response('social/story_comments.xhtml', {
