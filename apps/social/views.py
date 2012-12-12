@@ -508,12 +508,19 @@ def mark_story_as_shared(request):
                                                story_feed_id=feed_id, 
                                                story_guid=story_id).limit(1).first()
     if not shared_story:
-        story_db = dict([(k, v) for k, v in story._data.items() 
-                                if k is not None and v is not None])
-        story_values = dict(user_id=request.user.pk, comments=comments, 
-                            has_comments=bool(comments), story_db_id=story.id,
-                            source_user_id=None, shared_date=datetime.datetime.now())
-        story_db.update(story_values)
+        story_db = {
+            "story_guid": story.story_guid,
+            "story_permalink": story.story_guid,
+            "story_title": story.story_title,
+            "story_feed_id": story.story_feed_id,
+            "story_content": story.story_content,
+            "story_date": datetime.datetime.now(),
+
+            "user_id": request.user.pk,
+            "comments": comments,
+            "has_comments": bool(comments),
+            "story_db_id": story.id,
+        }
         shared_story = MSharedStory.objects.create(**story_db)
         if source_user_id:
             shared_story.set_source_user_id(int(source_user_id))
