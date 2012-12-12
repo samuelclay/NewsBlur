@@ -396,9 +396,10 @@
                              JSONObjectWithData:responseData
                              options:kNilOptions 
                              error:&error];
+    id feedId = [results objectForKey:@"feed_id"];
         
     if (!(appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) 
-        && request.tag != [[results objectForKey:@"feed_id"] intValue]) {
+        && request.tag != [feedId intValue]) {
         return;
     }
     
@@ -413,8 +414,12 @@
     }
     
     NSMutableDictionary *newClassifiers = [[results objectForKey:@"classifiers"] mutableCopy];
-    for (id key in [newClassifiers allKeys]) {
-        [appDelegate.activeClassifiers setObject:[newClassifiers objectForKey:key] forKey:key];
+    if (appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) {
+        for (id key in [newClassifiers allKeys]) {
+            [appDelegate.activeClassifiers setObject:[newClassifiers objectForKey:key] forKey:key];
+        }
+    } else {
+        [appDelegate.activeClassifiers setObject:newClassifiers forKey:feedId];
     }
     
     NSArray *newStories = [results objectForKey:@"stories"];

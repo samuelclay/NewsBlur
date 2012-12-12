@@ -286,15 +286,9 @@
         NSString *author = [NSString stringWithFormat:@"%@",
                             [self.activeStory objectForKey:@"story_authors"]];
         if (author && [author class] != [NSNull class]) {
-            int authorScore;
-            if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
-                authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+            int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                                  objectForKey:@"authors"]
                                 objectForKey:author] intValue];
-            } else {
-                authorScore = [[[appDelegate.activeClassifiers objectForKey:@"authors"]
-                                objectForKey:author] intValue];
-            }
             storyAuthor = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-author/%@\" "
                            "class=\"NB-story-author %@\" id=\"NB-story-author\"><div class=\"NB-highlight\"></div>%@</a>",
                            author,
@@ -308,15 +302,9 @@
         if ([tagArray count] > 0) {
             NSMutableArray *tagStrings = [NSMutableArray array];
             for (NSString *tag in tagArray) {
-                int tagScore;
-                if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
-                    tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                                   objectForKey:@"tags"]
                                  objectForKey:tag] intValue];
-                } else {
-                    tagScore = [[[appDelegate.activeClassifiers objectForKey:@"tags"]
-                                 objectForKey:tag] intValue];
-                }
                 NSString *tagHtml = [NSString stringWithFormat:@"<a href=\"http://ios.newsblur.com/classify-tag/%@\" "
                                       "class=\"NB-story-tag %@\"><div class=\"NB-highlight\"></div>%@</a>",
                                       tag,
@@ -333,13 +321,8 @@
     }
     
     NSString *storyTitle = [self.activeStory objectForKey:@"story_title"];
-    NSMutableDictionary *titleClassifiers;
-    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
-        titleClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
+    NSMutableDictionary *titleClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
                             objectForKey:@"titles"];
-    } else {
-        titleClassifiers = [appDelegate.activeClassifiers objectForKey:@"titles"];
-    }
     for (NSString *titleClassifier in titleClassifiers) {
         if ([storyTitle containsString:titleClassifier]) {
             int titleScore = [[titleClassifiers objectForKey:titleClassifier] intValue];
@@ -1269,15 +1252,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)toggleAuthorClassifier:(NSString *)author {
     NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
                                                           objectForKey:@"story_feed_id"]];
-    int authorScore;
-    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
-        authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+    int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                          objectForKey:@"authors"]
                         objectForKey:author] intValue];
-    } else {
-        authorScore = [[[appDelegate.activeClassifiers objectForKey:@"authors"]
-                        objectForKey:author] intValue];
-    }
     if (authorScore > 0) {
         authorScore = -1;
     } else if (authorScore < 0) {
@@ -1285,18 +1262,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     } else {
         authorScore = 1;
     }
-    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
-        NSMutableDictionary *feedClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
-                                                 mutableCopy];
-        NSMutableDictionary *authors = [[feedClassifiers objectForKey:@"authors"] mutableCopy];
-        [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
-        [feedClassifiers setObject:authors forKey:@"authors"];
-        [appDelegate.activeClassifiers setObject:feedClassifiers forKey:feedId];
-    } else {
-        NSMutableDictionary *authors = [[appDelegate.activeClassifiers objectForKey:@"authors"] mutableCopy];
-        [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
-        [appDelegate.activeClassifiers setObject:authors forKey:@"authors"];
-    }
+    NSMutableDictionary *feedClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
+                                             mutableCopy];
+    NSMutableDictionary *authors = [[feedClassifiers objectForKey:@"authors"] mutableCopy];
+    [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
+    [feedClassifiers setObject:authors forKey:@"authors"];
+    [appDelegate.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [appDelegate.storyPageControl refreshHeaders];
     
     NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
@@ -1317,15 +1288,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)toggleTagClassifier:(NSString *)tag {
     NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
                                                           objectForKey:@"story_feed_id"]];
-    int tagScore;
-    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
-        tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+    int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                       objectForKey:@"tags"]
                      objectForKey:tag] intValue];
-    } else {
-        tagScore = [[[appDelegate.activeClassifiers objectForKey:@"tags"]
-                     objectForKey:tag] intValue];
-    }
 
     if (tagScore > 0) {
         tagScore = -1;
@@ -1335,18 +1300,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         tagScore = 1;
     }
     
-    if (appDelegate.isRiverView || appDelegate.isSocialRiverView || appDelegate.isSocialView) {
-        NSMutableDictionary *feedClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
-                                                mutableCopy];
-        NSMutableDictionary *tags = [[feedClassifiers objectForKey:@"tags"] mutableCopy];
-        [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
-        [feedClassifiers setObject:tags forKey:@"tags"];
-        [appDelegate.activeClassifiers setObject:feedClassifiers forKey:feedId];
-    } else {
-        NSMutableDictionary *tags = [[appDelegate.activeClassifiers objectForKey:@"tags"] mutableCopy];
-        [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
-        [appDelegate.activeClassifiers setObject:tags forKey:@"tags"];
-    }
+    NSMutableDictionary *feedClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    NSMutableDictionary *tags = [[feedClassifiers objectForKey:@"tags"] mutableCopy];
+    [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
+    [feedClassifiers setObject:tags forKey:@"tags"];
+    [appDelegate.activeClassifiers setObject:feedClassifiers forKey:feedId];
     [appDelegate.storyPageControl refreshHeaders];
 
     NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",

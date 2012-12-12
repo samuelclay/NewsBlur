@@ -433,7 +433,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.feeds.add(data.feeds);
             }
             if (data.classifiers) {
-                if (_.string.include(feed_id, ':')) {
+                if (_.string.include(feed_id, ':')) { // is_river or is_social
                     _.extend(this.classifiers, data.classifiers);
                 } else {
                     this.classifiers[feed_id] = _.extend({}, this.defaults['classifiers'], data.classifiers);
