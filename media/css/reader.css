@@ -3555,7 +3555,8 @@ form.opml_import_form input {
   -moz-transition: all .12s ease-out;
   -o-transition: all .12s ease-out;
   -ms-transition: all .12s ease-out;
-  background: transparent url('/media/embed/reader/spacer_16.png') no-repeat 1px 0px;
+  background: transparent url('/media/embed/reader/spacer_16.png') no-repeat 0 -17px;
+  background-size: 16px;
 }
 
 @media screen and (max-width: 1050px) {
@@ -3574,19 +3575,24 @@ form.opml_import_form input {
 .NB-splash-info .NB-splash-links .NB-splash-link-faq a:hover,
 .NB-splash-info .NB-splash-links .NB-splash-link-api a:hover,
 .NB-splash-info .NB-splash-links .NB-splash-link-press a:hover {
-  background: transparent url('/media/embed/favicon.png') no-repeat 0 7px;
+  background: transparent url('/media/embed/favicon_32.png') no-repeat 0 7px;
+  background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-github a:hover {
   background: transparent url('/media/embed/reader/octocat.png') no-repeat 0 7px;
+  background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-getsatisfaction a:hover {
   background: transparent url('/media/embed/reader/getsatisfaction.png') no-repeat 0 7px;
+  background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-blog a:hover {
   background: transparent url('/media/embed/reader/ofbrooklyn_icon.png') no-repeat 0 7px;
+  background-size: 16px;
 }
 .NB-splash-info .NB-splash-links .NB-splash-link-twitter a:hover {
   background: transparent url('/media/embed/reader/twitter_bird.png') no-repeat 0 7px;
+  background-size: 16px;
 }
 
 .NB-splash-info .NB-splash-links a {

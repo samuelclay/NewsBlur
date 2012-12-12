@@ -26,7 +26,7 @@
 #story_pane .NB-story-comment .NB-user-avatar {
     position: absolute;
     left: 6px;
-    top: 10px;
+    top: 8px;
 }
 #story_pane .NB-story-comment .NB-user-avatar.NB-story-comment-reshare {
     top: 22px;
@@ -35,7 +35,7 @@
 }
 #story_pane .NB-story-comment .NB-user-avatar img {
     border-radius: 6px;
-    margin: 2px 0 0 1px;
+    margin: 0;
     width: 48px;
     height: 48px;
 }
@@ -44,7 +44,7 @@
     width: 36px;
 }
 #story_pane .NB-story-comment .NB-story-comment-author-container {
-    margin: 4px 0 0;
+    padding: 8px 0 0;
 }
 #story_pane .NB-story-comment .NB-story-comment-reshares {
     position: absolute;
@@ -61,7 +61,7 @@
     font-size: 11px;
     color: #1D4BA6;
     font-weight: bold;
-    margin: 4px 10px 0 0;
+    margin: 0 4px 0 0;
     text-shadow: 0 -1px 0 #F0F0F0;
     cursor: pointer;
     line-height: 17px;
@@ -71,28 +71,32 @@
     font-size: 10px;
     color: #9D9D9D;
     font-weight: bold;
-    float: left;
+    float: right;
     line-height: 17px;
-    margin-top: 4px;
+    margin: 0 0 0;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-location {
     text-transform: uppercase;
     font-size: 10px;
-    color: #B7B58D;
+    color: #BECDD7;
     font-weight: bold;
     float: left;
-    margin-right: 8px;
-    margin: 4px 10px 0 0;
-    background-color: #EFEFEF;
-    border-radius: 8px;
-    line-height: 17px;
-    padding: 0 8px;
+    clear: both;
+    margin: 3px 0 6px;
+    line-height: 12px;
+}
+
+#story_pane .NB-story-comment .NB-button-wrapper {
+    overflow: hidden;
+    white-space: nowrap;
+    float: right;
 }
 
 #story_pane .NB-story-comment .NB-story-comment-content {
     float: left;
     color: #303030;
+    clear: both;
 }
 
 
@@ -102,7 +106,7 @@
     overflow: hidden;
     clear: both;
     position: relative;
-    padding: 8px 0 8px 42px;
+    padding: 8px 0 4px 42px;
     line-height: 18px;
 }
 #story_pane .NB-story-comment-reply .NB-story-comment-reply-photo {
@@ -111,14 +115,14 @@
     border-radius: 3px;
     position: absolute;
     left: 0px;
-    top: 10px;
+    top: 2px;
     cursor: pointer;
 }
 
 #story_pane .NB-story-comment-reply-content {
     clear: both;
     color: #303030;
-    float: left;
+    padding: 2px 0 3px;
 }
 
 #story_pane .NB-story-comment-reply-form {
@@ -255,8 +259,8 @@
     float: left;
 }
 #story_pane .NB-story-comment .NB-story-comment-content {
-    clear: left;
-    padding: 0 0 8px 0;
+    clear: both;
+    padding: 2px 0 3px 0;
 }
 
 #story_pane .NB-feed-story-endbar {

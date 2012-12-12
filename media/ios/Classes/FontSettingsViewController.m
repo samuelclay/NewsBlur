@@ -241,11 +241,11 @@
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     fontSizeSegment.frame = CGRectMake(8, 4, cell.frame.size.width - 8*2, kMenuOptionHeight - 4*2);
-    [fontSizeSegment setTitle:@"11pt" forSegmentAtIndex:0];
-    [fontSizeSegment setTitle:@"12pt" forSegmentAtIndex:1];
+    [fontSizeSegment setTitle:@"12pt" forSegmentAtIndex:0];
+    [fontSizeSegment setTitle:@"13pt" forSegmentAtIndex:1];
     [fontSizeSegment setTitle:@"14pt" forSegmentAtIndex:2];
-    [fontSizeSegment setTitle:@"16pt" forSegmentAtIndex:3];
-    [fontSizeSegment setTitle:@"18pt" forSegmentAtIndex:4];
+    [fontSizeSegment setTitle:@"15pt" forSegmentAtIndex:3];
+    [fontSizeSegment setTitle:@"17pt" forSegmentAtIndex:4];
     [fontSizeSegment setTintColor:UIColorFromRGB(0x738570)];
     
     [cell addSubview:fontSizeSegment];

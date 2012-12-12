@@ -12,9 +12,7 @@
 int main(int argc, char *argv[]) {
     
     @autoreleasepool {
-//        int retVal = UIApplicationMain(argc, argv, nil, nil);
-//    for iOS6
-    int retVal = UIApplicationMain(argc, argv, nil, @"NewsBlurAppDelegate");
+        int retVal = UIApplicationMain(argc, argv, nil, @"NewsBlurAppDelegate");
         return retVal;
     }
 }

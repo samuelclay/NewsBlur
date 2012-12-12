@@ -177,26 +177,26 @@
                             "<html>"
                             "<head>%@</head>" // header string
                             "<body id=\"story_pane\" class=\"%@\">"
-                            "    <div id=\"NB-header-container\">%@</div>" // storyHeader
-                            "    %@" // shareBar
                             "    <div class=\"%@\" id=\"NB-font-style\">"
                             "       <div class=\"%@\" id=\"NB-font-size\">"
+                            "           <div id=\"NB-header-container\">%@</div>" // storyHeader
+                            "           %@" // shareBar
                             "           <div class=\"NB-story\">%@</div>"
+                            "           %@" // share
+                            "           <div id=\"NB-comments-wrapper\">"
+                            "               %@" // friends comments
+                            "           </div>"
+                            "           %@"
                             "       </div>" // font-size
                             "    </div>" // font-style
-                            "    %@" // share
-                            "    <div id=\"NB-comments-wrapper\">"
-                            "       %@" // friends comments
-                            "    </div>"
-                            "    %@"
                             "</body>"
                             "</html>",
                             headerString,
                             contentWidthClass,
-                            storyHeader,
-                            shareBarString,
                             fontStyleClass,
                             fontSizeClass,
+                            storyHeader,
+                            shareBarString,
                             [self.activeStory objectForKey:@"story_content"],
                             sharingHtmlString,
                             commentString,
@@ -451,12 +451,12 @@
         [[self.activeStory objectForKey:@"comment_count"] intValue]) {
         commentLabel = [commentLabel stringByAppendingString:[NSString stringWithFormat:@
                                                               "<div class=\"NB-story-comments-label\">"
-                                                              "%@" // comment count
-                                                              //"%@" // reply count
+                                                                "%@" // comment count
+                                                                //"%@" // reply count
                                                               "</div>"
                                                               "<div class=\"NB-story-share-profiles NB-story-share-profiles-comments\">"
-                                                              "%@" // friend avatars
-                                                              "%@" // public avatars
+                                                                "%@" // friend avatars
+                                                                "%@" // public avatars
                                                               "</div>",
                                                               [[self.activeStory objectForKey:@"comment_count"] intValue] == 1
                                                               ? [NSString stringWithFormat:@"<b>1 comment</b>"] : 
@@ -476,9 +476,9 @@
                                                                   "%@" // friend avatars
                                                                   "%@" // public avatars
                                                                 "</div>"
-                                                              "<div class=\"NB-story-share-label\">"
-                                                              "%@" // comment count
-                                                              "</div>"
+                                                                "<div class=\"NB-story-share-label\">"
+                                                                  "%@" // comment count
+                                                                "</div>"
                                                               "</div>",
                                                               [self getAvatars:@"shared_by_public"],
                                                               [self getAvatars:@"shared_by_friends"],
@@ -492,19 +492,16 @@
         
         comments = [comments stringByAppendingString:[NSString stringWithFormat:@
                                                       "<div class=\"NB-story-shares\">"
-                                                      "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
-                                                      "<div class=\"NB-story-comments-shares-teaser\">"
-                                                      "%@"
-                                                      "%@"
-                                                      "</div></div></div></div>",
+                                                        "<div class=\"NB-story-comments-shares-teaser-wrapper\">"
+                                                          "<div class=\"NB-story-comments-shares-teaser\">"
+                                                            "%@"
+                                                            "%@"
+                                                          "</div>"
+                                                        "</div>"
+                                                      "</div>",
                                                       commentLabel,
                                                       shareLabel
                                                       ]];
-
-        
-        
-
-        comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
     }
     comments = [comments stringByAppendingString:[NSString stringWithFormat:@"</div>"]];
     return comments;
@@ -544,7 +541,7 @@
             userLikeButton = [NSString stringWithFormat:@
                               "<div class=\"NB-story-comment-like-button NB-button selected\">"
                               "<a href=\"http://ios.newsblur.com/unlike-comment/%@\"><div class=\"NB-story-comment-like-button-wrapper\">"
-                              "<span class=\"NB-favorite-icon\"></span>Favorited"
+                              "<span class=\"NB-favorite-icon\"></span>"
                               "</div></a>"
                               "</div>",
                               commentUserId]; 
@@ -552,7 +549,7 @@
             userLikeButton = [NSString stringWithFormat:@
                               "<div class=\"NB-story-comment-like-button NB-button\">"
                               "<a href=\"http://ios.newsblur.com/like-comment/%@\"><div class=\"NB-story-comment-like-button-wrapper\">"
-                              "<span class=\"NB-favorite-icon\"></span>Favorite"
+                              "<span class=\"NB-favorite-icon\"></span>"
                               "</div></a>"
                               "</div>",
                               commentUserId]; 
@@ -595,19 +592,19 @@
                     "<div class=\"NB-story-comment-author-container\">"
                     "   %@"
                     "    <div class=\"NB-story-comment-username\">%@</div>"
-                    " %@" // location
                     "    <div class=\"NB-story-comment-date\">%@ ago</div>"
-                    "    <div class=\"NB-button-wrapper\">"
-                    "    %@" //User Like Button>"
-                    "    %@" //User Edit Button>"
+                    "</div>"
+                    "<div class=\"NB-story-comment-content\">%@</div>"
+                    "%@" // location
+                    "<div class=\"NB-button-wrapper\">"
                     "    <div class=\"NB-story-comment-reply-button NB-button\">"
                     "        <a href=\"http://ios.newsblur.com/reply/%@/%@\"><div class=\"NB-story-comment-reply-button-wrapper\">"
                     "            Reply"
                     "        </div></a>"
                     "    </div>"
-                    "    </div>"
+                    "    %@" //User Like Button
+                    "    %@" //User Edit Button
                     "</div>"
-                    "<div class=\"NB-story-comment-content\">%@</div>"
                     "%@"
                     "</div>",
                     [commentDict objectForKey:@"user_id"],
@@ -616,14 +613,14 @@
                     [user objectForKey:@"photo_url"],
                     userReshareString,
                     [user objectForKey:@"username"],
-                    locationHtml,
                     [commentDict objectForKey:@"shared_date"],
-                    userEditButton,
-                    userLikeButton,
+                    commentContent,
+                    locationHtml,
                     [commentDict objectForKey:@"user_id"],
                     [user objectForKey:@"username"],
-                    commentContent,
-                    [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
+                    userEditButton,
+                    userLikeButton,
+                    [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]];
     } else {
         comment = [NSString stringWithFormat:@
                    "<div class=\"NB-story-comment\" id=\"NB-user-comment-%@\">"
@@ -634,21 +631,20 @@
                    "</a>"
                    "</div>"
                    "<div class=\"NB-story-comment-author-container\">"
-                   "   %@"
+                   "    %@"
                    "    <div class=\"NB-story-comment-username\">%@</div>"
-                   "   %@"
                    "    <div class=\"NB-story-comment-date\">%@ ago</div>"
                    "</div>"
                    "<div class=\"NB-story-comment-content\">%@</div>"
-
-                   "    <div class=\"NB-button-wrapper\" style=\"clear:both; padding-bottom: 8px;\">"
-                   "    %@" //User Like Button>"
-                   "    %@" //User Edit Button>"
+                   "%@" // location
+                   "<div class=\"NB-button-wrapper\">"
                    "    <div class=\"NB-story-comment-reply-button NB-button\">"
                    "        <a href=\"http://ios.newsblur.com/reply/%@/%@\"><div class=\"NB-story-comment-reply-button-wrapper\">"
                    "            Reply"
                    "        </div></a>"
                    "    </div>"
+                   "    %@" // User Like Button
+                   "    %@" // User Edit Button
                    "</div>"
                    "%@"
                    "</div>",
@@ -658,13 +654,13 @@
                    [user objectForKey:@"photo_url"],
                    userReshareString,
                    [user objectForKey:@"username"],
-                   locationHtml,
                    [commentDict objectForKey:@"shared_date"],
                    commentContent,
-                   userEditButton,
-                   userLikeButton,
+                   locationHtml,
                    [commentDict objectForKey:@"user_id"],
                    [user objectForKey:@"username"],
+                   userEditButton,
+                   userLikeButton,
                    [self getReplies:[commentDict objectForKey:@"replies"] forUserId:[commentDict objectForKey:@"user_id"]]]; 
 
     }
@@ -713,27 +709,27 @@
             
             if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
                 reply = [NSString stringWithFormat:@
-                        "<div class=\"NB-story-comment-reply\" id=\"NB-user-comment-%@\">"
-                        "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
-                        "       <div class=\"NB-highlight\"></div>"
-                        "       <img class=\"NB-story-comment-reply-photo\" src=\"%@\" />"
-                        "   </a>"
-                        "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
-                        "   %@"
-                        "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
-                        "    <div class=\"NB-button-wrapper\">"
-                        "    %@" //User Edit Button>"
-                        "    </div>"
-                        "   <div class=\"NB-story-comment-reply-content\">%@</div>"
-                        "</div>",
-                       [replyDict objectForKey:@"reply_id"],
-                       [user objectForKey:@"user_id"],  
-                       [user objectForKey:@"photo_url"],
-                       [user objectForKey:@"username"],
-                       locationHtml,
-                       [replyDict objectForKey:@"publish_date"],
-                       userEditButton,
-                       replyContent];
+                         "<div class=\"NB-story-comment-reply\" id=\"NB-user-comment-%@\">"
+                         "   <a class=\"NB-show-profile\" href=\"http://ios.newsblur.com/show-profile/%@\">"
+                         "       <div class=\"NB-highlight\"></div>"
+                         "       <img class=\"NB-story-comment-reply-photo\" src=\"%@\" />"
+                         "   </a>"
+                         "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
+                         "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
+                         "   <div class=\"NB-story-comment-reply-content\">%@</div>"
+                         "   %@" // location
+                         "   <div class=\"NB-button-wrapper\">"
+                         "       %@" // edit
+                         "   </div>"
+                         "</div>",
+                         [replyDict objectForKey:@"reply_id"],
+                         [user objectForKey:@"user_id"],
+                         [user objectForKey:@"photo_url"],
+                         [user objectForKey:@"username"],
+                         [replyDict objectForKey:@"publish_date"],
+                         replyContent,
+                         locationHtml,
+                         userEditButton];
             } else {
                 reply = [NSString stringWithFormat:@
                          "<div class=\"NB-story-comment-reply\" id=\"NB-user-comment-%@\">"
@@ -742,20 +738,20 @@
                          "       <img class=\"NB-story-comment-reply-photo\" src=\"%@\" />"
                          "   </a>"
                          "   <div class=\"NB-story-comment-username NB-story-comment-reply-username\">%@</div>"
-                         "   %@"
                          "   <div class=\"NB-story-comment-date NB-story-comment-reply-date\">%@ ago</div>"
                          "   <div class=\"NB-story-comment-reply-content\">%@</div>"
-                         "    <div style=\"clear:both;\" class=\"NB-button-wrapper\">"
-                         "    %@" //User Edit Button>"
-                         "    </div>"
+                         "   %@"
+                         "   <div class=\"NB-button-wrapper\">"
+                         "       %@" // edit
+                         "   </div>"
                          "</div>",
                          [replyDict objectForKey:@"reply_id"],
                          [user objectForKey:@"user_id"],  
                          [user objectForKey:@"photo_url"],
                          [user objectForKey:@"username"],
-                         locationHtml,
                          [replyDict objectForKey:@"publish_date"],
                          replyContent,
+                         locationHtml,
                          userEditButton];
             }
             repliesString = [repliesString stringByAppendingString:reply];
