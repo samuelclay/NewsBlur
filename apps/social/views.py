@@ -511,7 +511,8 @@ def mark_story_as_shared(request):
         story_db = dict([(k, v) for k, v in story._data.items() 
                                 if k is not None and v is not None])
         story_values = dict(user_id=request.user.pk, comments=comments, 
-                            has_comments=bool(comments), story_db_id=story.id)
+                            has_comments=bool(comments), story_db_id=story.id,
+                            source_user_id=None, shared_date=datetime.datetime.now())
         story_db.update(story_values)
         shared_story = MSharedStory.objects.create(**story_db)
         if source_user_id:
