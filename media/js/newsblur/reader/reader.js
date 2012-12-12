@@ -2962,14 +2962,14 @@
                 if (inverse) {
                     var $align = $item;
                     if (type == 'feed') {
-                        left = toplevel ? 0 : -20;
+                        left = toplevel ? 2 : -20;
                         top = toplevel ? 21 : 21;
                     } else if (type == 'socialfeed') {
-                        left = toplevel ? 0 : -20;
+                        left = toplevel ? 2 : -20;
                         top = toplevel ? 21 : 21;
                     } else if (type == 'folder') {
                         left = toplevel ? 0 : -20;
-                        top = toplevel ? 24 : 24;
+                        top = toplevel ? 23 : 24;
                         $align = $('.folder_title', $item);
                     } else if (type == 'story') {
                         left = 4;
@@ -2986,13 +2986,13 @@
                     });
 
                     $manage_menu_container.corner('br 8px');
-                    $manage_menu_container.find('.NB-menu-manage > li').each(function() {
-                        $(this).prependTo($(this).parent());
+                    $manage_menu_container.find('.NB-menu-manage > li.NB-menu-separator-inverse').each(function() {
+                        $(this).appendTo($(this).parent());
                     });
                 } else {
                     var $align = $item;
                     if (type == 'feed') {
-                        left = toplevel ? 2 : -18;
+                        left = toplevel ? 2 : 0;
                         top = toplevel ? 21 : 21;
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'socialfeed') {
@@ -3001,7 +3001,7 @@
                         $align = $('.NB-feedlist-manage-icon', $item);
                     } else if (type == 'folder') {
                         left = toplevel ? 2 : -20;
-                        top = toplevel ? 22 : 21;
+                        top = toplevel ? 22 : 22;
                     } else if (type == 'story') {
                         left = 4;
                         top = 18;
