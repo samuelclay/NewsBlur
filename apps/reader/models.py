@@ -524,6 +524,8 @@ class UserSubscription(models.Model):
                 logging.info(" ---> Switching %s %s" % (duplicates.count(), model))
             for duplicate in duplicates:
                 duplicate.feed_id = new_feed.pk
+                if duplicate.social_user_id is None:
+                    duplicate.social_user_id = 0
                 try:
                     duplicate.save()
                     pass
