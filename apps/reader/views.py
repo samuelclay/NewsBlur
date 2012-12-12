@@ -590,7 +590,7 @@ def load_feed_page(request, feed_id):
     
     feed = Feed.get_by_id(feed_id)
     
-    if (feed.has_page and 
+    if (feed and feed.has_page and 
         not feed.has_page_exception and 
         settings.BACKED_BY_AWS['pages_on_s3'] and 
         feed.s3_page):
@@ -611,7 +611,7 @@ def load_feed_page(request, feed_id):
     
     data = MFeedPage.get_data(feed_id=feed_id)
     
-    if not data or not feed.has_page or feed.has_page_exception:
+    if not data or not feed or not feed.has_page or feed.has_page_exception:
         logging.user(request, "~FYLoading original page, ~FRmissing")
         return render(request, 'static/404_original_page.xhtml', {}, 
             content_type='text/html',
