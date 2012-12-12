@@ -226,6 +226,7 @@
 - (void)loadStoryDetailView;
 - (void)adjustStoryDetailWebView;
 - (void)calibrateStoryTitles;
+- (void)recalculateIntelligenceScores:(id)feedId;
 - (void)reloadFeedsView:(BOOL)showLoader;
 - (void)setTitle:(NSString *)title;
 - (void)showOriginalStory:(NSURL *)url;

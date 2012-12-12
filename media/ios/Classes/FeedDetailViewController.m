@@ -419,7 +419,8 @@
             [appDelegate.activeClassifiers setObject:[newClassifiers objectForKey:key] forKey:key];
         }
     } else {
-        [appDelegate.activeClassifiers setObject:newClassifiers forKey:feedId];
+        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+        [appDelegate.activeClassifiers setObject:newClassifiers forKey:feedIdStr];
     }
     
     NSArray *newStories = [results objectForKey:@"stories"];

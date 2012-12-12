@@ -595,6 +595,10 @@
     
 }
 
+- (void)recalculateIntelligenceScores:(id)feedId {
+    
+}
+
 - (void)dragFeedDetailView:(float)y {
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     

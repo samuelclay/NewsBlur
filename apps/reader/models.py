@@ -501,21 +501,23 @@ class UserSubscription(models.Model):
         for user_story in user_stories:
             user_story.feed_id = new_feed.pk
             duplicate_story = user_story.story
-            story_guid = duplicate_story.story_guid if hasattr(duplicate_story, 'story_guid') else duplicate_story.id
-            original_story = MStory.objects(story_feed_id=new_feed.pk,
-                                            story_guid=story_guid)
+            if duplicate_story:
+                story_guid = duplicate_story.story_guid if hasattr(duplicate_story, 'story_guid') else duplicate_story.id
+                original_story = MStory.objects(story_feed_id=new_feed.pk,
+                                                story_guid=story_guid)
         
-            if original_story:
-                user_story.story = original_story[0]
-                try:
-                    user_story.save()
-                except OperationError:
-                    # User read the story in the original feed, too. Ugh, just ignore it.
-                    pass
+                if original_story:
+                    user_story.story = original_story[0]
+                    try:
+                        user_story.save()
+                    except OperationError:
+                        # User read the story in the original feed, too. Ugh, just ignore it.
+                        pass
+                else:
+                    user_story.delete()
             else:
-                logging.info(" ***> Can't find original story: %s" % duplicate_story.id)
                 user_story.delete()
-        
+            
         def switch_feed_for_classifier(model):
             duplicates = model.objects(feed_id=old_feed.pk, user_id=self.user_id)
             if duplicates.count():
