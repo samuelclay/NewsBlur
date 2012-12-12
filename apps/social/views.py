@@ -1049,9 +1049,10 @@ def ignore_follower(request):
     return {'code': code}
 
 
+@required_params('query')
 @json.json_view
 def find_friends(request):
-    query = request.GET.get('query')
+    query = request.GET['query']
     limit = int(request.GET.get('limit', 3))
     profiles = MSocialProfile.objects.filter(username__icontains=query)[:limit]
     if not profiles:
@@ -1161,7 +1162,7 @@ def shared_stories_rss_feed(request, user_id, username):
     current_site = current_site and current_site.domain
     
     if social_profile.private:
-        return HttpResponseForbidden
+        return HttpResponseForbidden()
     
     data = {}
     data['title'] = social_profile.title
@@ -1205,9 +1206,10 @@ def shared_stories_rss_feed(request, user_id, username):
     ))
     return HttpResponse(rss.writeString('utf-8'))
 
+@required_params('user_id')
 @json.json_view
 def social_feed_trainer(request):
-    social_user_id = request.REQUEST.get('user_id')
+    social_user_id = request.REQUEST['user_id']
     social_profile = MSocialProfile.get_user(social_user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
     user = get_user(request)

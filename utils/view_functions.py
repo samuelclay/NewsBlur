@@ -78,7 +78,7 @@ class required_params(object):
 
     def disallowed(self, param=None, param_type=None, method=False, status_code=400):
         if method:
-            message = "Invalid method. Use %s." % self.method
+            message = "Invalid HTTP method. Use %s." % self.method
         elif param_type:
             message = "Invalid paramter: %s - needs to be %s" % (
                 param,
@@ -86,7 +86,7 @@ class required_params(object):
             )
         else:
             message = "Missing parameter: %s" % param
-        print status_code
+
         return HttpResponse(json.encode({
             'message': message,
             'code': -1,

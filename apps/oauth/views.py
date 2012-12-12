@@ -153,7 +153,7 @@ def follow_twitter_account(request):
     logging.user(request, "~BB~FR~SKFollowing Twitter: %s" % username)
     
     if username not in ['samuelclay', 'newsblur']:
-        return HttpResponseForbidden
+        return HttpResponseForbidden()
     
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
     try:
@@ -175,7 +175,7 @@ def unfollow_twitter_account(request):
     logging.user(request, "~BB~FRUnfollowing Twitter: %s" % username)
         
     if username not in ['samuelclay', 'newsblur']:
-        return HttpResponseForbidden
+        return HttpResponseForbidden()
     
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
     try:

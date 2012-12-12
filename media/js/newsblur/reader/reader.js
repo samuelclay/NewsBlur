@@ -1825,14 +1825,15 @@
             options = options || {};
             story_id = story_id || this.active_story && this.active_story.id;
             feed_id = feed_id || (story_id && this.model.get_story(story_id).get('story_feed_id'));
+            var story = this.model.get_story(story_id);
             // console.log(["open_story_trainer", story_id, feed_id, options]);
             
             if (story_id && feed_id) {
                 options['feed_loaded'] = !this.flags['river_view'];
                 if (this.flags['social_view'] && !_.string.contains(this.active_feed, 'river:')) {
                     options['social_feed_id'] = this.active_feed;
-                } else if (this.flags['social_view'] && this.active_story.get('friend_user_ids')) {
-                    options['social_feed_id'] = 'social:' + this.active_story.get('friend_user_ids')[0];
+                } else if (this.flags['social_view'] && story.get('friend_user_ids')) {
+                    options['social_feed_id'] = 'social:' + story.get('friend_user_ids')[0];
                 }
                 NEWSBLUR.classifier = new NEWSBLUR.ReaderClassifierStory(story_id, feed_id, options);
             }
