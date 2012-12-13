@@ -1,5 +1,73 @@
-<h1>It's an error!</h1>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta http-equiv="x-dns-prefetch-control" content="off"/>
+        <meta name="robots" content="noindex"/>
 
-<p>The error has been e-mailed and will hopefully be fixed so you won't have to see this again.</p>
+        <style>
+        html {
+            height: 100%;
+            -webkit-font-smoothing: antialiased;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            overflow-y: scroll
+        }
+        body {
+            height: 100%;
+            font-family: Arial,'Helvetica Neue',Helvetica,sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background-color: #3F5354;
+            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3F5354), to(#1B2424));
+            background: -moz-linear-gradient(center top , #3F5354 0%, #1B2424 100%) repeat scroll 0 0 transparent;
 
-<p><a href="{% url index %}">Return to NewsBlur</a></p>
+        }
+        #container {
+            width: 500px
+        }
+        h1 {
+            color: #fff;
+            font-size: 30px;
+            font-weight: bold;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.68);
+            letter-spacing: -1px;
+            margin: 0;
+            width: 500px;
+        }
+        .description {
+            color: rgba(255, 255, 255, .8);
+            font-size: 18px;
+            line-height: 24px;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.33);
+            width: 400px;
+        }
+        .description a {
+            color: #849EDB;
+            text-decoration: none;
+        }
+        .description a:hover {
+            color: #516BB7;
+        }
+        </style>
+        <title>NewsBlur experienced an error</title>
+    </head>
+    <body>
+        <table height="100%" width="100%">
+            <tr>
+                <td align="center" valign="middle">
+                    <div id="container">
+                        <h1>NewsBlur experienced an error</h1>
+                        <div class="description">
+                            <p>The error has been logged and will be fixed soon so you won't have to see this message again.</p>
+                            <p><a href="{% url index %}">Return to NewsBlur</a></p>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

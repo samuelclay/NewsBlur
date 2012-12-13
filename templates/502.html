@@ -1,1 +1,76 @@
-<body style="background-color: #F0F0F0;"><br><br><center><h1 style="color:#831818;text-shadow:0 1px 0 #FFF">5-oh-2</h1></center></body>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta http-equiv="x-dns-prefetch-control" content="off"/>
+        <meta name="robots" content="noindex"/>
+
+        <style>
+        html {
+            height: 100%;
+            -webkit-font-smoothing: antialiased;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            overflow-y: scroll
+        }
+        body {
+            height: 100%;
+            font-family: Arial,'Helvetica Neue',Helvetica,sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background-color: #232732;
+            background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#232732), to(#15171E));
+            background: -moz-linear-gradient(center top , #232732 0%, #15171E 100%) repeat scroll 0 0 transparent;
+
+        }
+        #container {
+            width: 500px
+        }
+        h1 {
+            color: #fff;
+            font-size: 30px;
+            font-weight: bold;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.68);
+            letter-spacing: -1px;
+            margin: 0;
+            width: 500px;
+        }
+        .description {
+            color: rgba(255, 255, 255, .8);
+            font-size: 18px;
+            line-height: 24px;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.33);
+            width: 450px;
+        }
+        .description a {
+            color: #849EDB;
+            text-decoration: none;
+        }
+        .description a:hover {
+            color: #516BB7;
+        }
+        .error404 {
+            color: #C5826E;
+        }
+        </style>
+        <title>502 - NewsBlur is down</title>
+    </head>
+    <body>
+        <table height="100%" width="100%">
+            <tr>
+                <td align="center" valign="middle">
+                    <div id="container">
+                        <h1><span class="error404">502</span> &middot; NewsBlur is down</h1>
+                        <div class="description">
+                            <p>Please wait patiently while NewsBlur comes back.</p>
+                            <p><a href="{% url index %}">@newsblur on Twitter</a> may have more information.</p>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
