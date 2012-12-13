@@ -499,9 +499,21 @@
     NSString *userLikeButton = @"";
     NSString *commentUserId = [NSString stringWithFormat:@"%@", [commentDict objectForKey:@"user_id"]];
     NSString *currentUserId = [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"user_id"]];
-    NSArray *likingUsers = [commentDict objectForKey:@"liking_users"];
+    NSArray *likingUsersArray = [commentDict objectForKey:@"liking_users"];
+    NSString *likingUsers = @"";
     
-
+    if ([likingUsersArray count]) {
+        likingUsers = @"<div class=\"NB-story-comment-likes-icon\"></div>";
+        for (NSNumber *likingUser in likingUsersArray) {
+            NSDictionary *sourceUser = [self getUser:[likingUser intValue]];
+            NSString *likingUserString = [NSString stringWithFormat:@
+                                          "<div class=\"NB-story-comment-likes-user\">"
+                                          "    <div class=\"NB-user-avatar\"><img src=\"%@\"></div>"
+                                          "</div>",
+                                          [sourceUser objectForKey:@"photo_url"]];
+            likingUsers = [likingUsers stringByAppendingString:likingUserString];
+        }
+    }
     
     if ([commentUserId isEqualToString:currentUserId]) {
         userEditButton = [NSString stringWithFormat:@
@@ -513,8 +525,8 @@
                           commentUserId];
     } else {
         BOOL isInLikingUsers = NO;
-        for (int i = 0; i < likingUsers.count; i++) {
-            if ([[[likingUsers objectAtIndex:i] stringValue] isEqualToString:currentUserId]) {
+        for (int i = 0; i < likingUsersArray.count; i++) {
+            if ([[[likingUsersArray objectAtIndex:i] stringValue] isEqualToString:currentUserId]) {
                 isInLikingUsers = YES;
                 break;
             }
@@ -576,6 +588,7 @@
                     "   %@"
                     "    <div class=\"NB-story-comment-username\">%@</div>"
                     "    <div class=\"NB-story-comment-date\">%@ ago</div>"
+                    "    <div class=\"NB-story-comment-likes\">%@</div>"
                     "</div>"
                     "<div class=\"NB-story-comment-content\">%@</div>"
                     "%@" // location
@@ -597,6 +610,7 @@
                     userReshareString,
                     [user objectForKey:@"username"],
                     [commentDict objectForKey:@"shared_date"],
+                    likingUsers,
                     commentContent,
                     locationHtml,
                     [commentDict objectForKey:@"user_id"],
