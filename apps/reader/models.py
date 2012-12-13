@@ -877,7 +877,7 @@ class UserSubscriptionFolders(models.Model):
     
     @classmethod
     def add_all_missing_feeds(cls):
-        usf = cls.objects.all().order_by('-pk')
+        usf = cls.objects.all().order_by('pk')
         total = usf.count()
         
         for i, f in enumerate(usf):

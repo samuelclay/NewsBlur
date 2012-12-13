@@ -665,7 +665,8 @@ class Feed(models.Model):
             for r in res:
                 facet_values = dict([(k, int(v)) for k,v in r.value.iteritems()])
                 facet_values[facet] = r.key
-                scores.append(facet_values)
+                if facet_values['pos'] + facet_values['neg'] > 1:
+                    scores.append(facet_values)
             scores = sorted(scores, key=lambda v: v['neg'] - v['pos'])
 
             return scores

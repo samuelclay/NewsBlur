@@ -135,7 +135,7 @@ def load_feed_statistics(request, feed_id):
         stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
 
     # Minutes between updates
-    update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
+    update_interval_minutes, _ = feed.get_next_scheduled_update(force=True, verbose=False)
     if feed.is_push:
         stats['update_interval_minutes'] = 0
     else:
@@ -144,7 +144,7 @@ def load_feed_statistics(request, feed_id):
     original_premium_subscribers = feed.premium_subscribers
     feed.active_premium_subscribers = max(feed.active_premium_subscribers+1, 1)
     feed.premium_subscribers += 1
-    premium_update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
+    premium_update_interval_minutes, _ = feed.get_next_scheduled_update(force=True, verbose=False)
     feed.active_premium_subscribers = original_active_premium_subscribers
     feed.premium_subscribers = original_premium_subscribers
     if feed.is_push:
