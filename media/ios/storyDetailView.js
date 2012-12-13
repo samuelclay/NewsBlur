@@ -96,7 +96,11 @@ function findPos(obj) {
 
 function NoClickDelay(el) {
     this.element = typeof el == 'object' ? el : document.getElementById(el);
-    if( window.Touch ) this.element.addEventListener('touchstart', this, false);
+    if( window.Touch ) {
+        this.element.removeEventListener('touchstart', this.element.notouch, false);
+        this.element.notouch = this;
+        this.element.addEventListener('touchstart', this.element.notouch, false);
+    }
 }
 NoClickDelay.prototype = {
 handleEvent: function(e) {

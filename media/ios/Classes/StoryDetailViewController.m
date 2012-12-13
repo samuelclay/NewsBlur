@@ -809,7 +809,7 @@
 }
 
 - (BOOL)webView:(UIWebView *)webView 
-shouldStartLoadWithRequest:(NSURLRequest *)request 
+shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType {
     NSURL *url = [request URL];
     NSArray *urlComponents = [url pathComponents];
@@ -817,7 +817,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if ([urlComponents count] > 1) {
          action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
     }
-                              
+    
+    NSLog(@"Tapped url: %@", url);
     // HACK: Using ios.newsblur.com to intercept the javascript share, reply, and edit events.
     // the pathComponents do not work correctly unless it is a correctly formed url
     // Is there a better way?  Someone show me the light
@@ -1289,6 +1290,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)toggleTagClassifier:(NSString *)tag {
+    NSLog(@"toggleTagClassifier: %@", tag);
     NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
                                                           objectForKey:@"story_feed_id"]];
     int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
@@ -1335,9 +1337,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)refreshHeader {
-    NSString *headerString = [[self getHeader] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"];
+    NSString *headerString = [[[self getHeader] stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
+                                                stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
     NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-header-container').innerHTML = '%@';",
                           headerString];
+
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
     [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick();"];
