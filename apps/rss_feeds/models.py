@@ -1611,7 +1611,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
                                                   duplicate_feed.feed_address,
                                                   duplicate_feed.feed_link))
 
-    user_subs = UserSubscription.objects.filter(feed=duplicate_feed)
+    user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by('-pk')
     for user_sub in user_subs:
         user_sub.switch_feed(original_feed, duplicate_feed)
 
@@ -1643,8 +1643,11 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     
     logging.debug(' ---> Dupe subscribers: %s, Original subscribers: %s' %
                   (duplicate_feed.num_subscribers, original_feed.num_subscribers))
-    duplicate_feed.delete()
-    logging.debug(' ---> Deleted duplicate feed: %s' % (duplicate_feed))
+    if duplicate_feed.pk != original_feed.pk:
+        duplicate_feed.delete()
+    else:
+        logging.debug(" ***> Duplicate feed is the same as original feed. Panic!")
+    logging.debug(' ---> Deleted duplicate feed: %s/%s' % (duplicate_feed/duplicate_feed_id))
     original_feed.count_subscribers()
     logging.debug(' ---> Now original subscribers: %s' %
                   (original_feed.num_subscribers))

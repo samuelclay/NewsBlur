@@ -858,6 +858,34 @@ class UserSubscriptionFolders(models.Model):
         folders = rewrite_folders(folders, original_feed, duplicate_feed)
         self.folders = json.encode(folders)
         self.save()
+    
+    def flat(self):
+        folders = json.decode(self.folders)
+        
+        def _flat(folder, feeds=None):
+            if not feeds:
+                feeds = []
+            for item in folder:
+                if isinstance(item, int) and item not in feeds:
+                    feeds.append(item)
+                elif isinstance(item, dict):
+                    for f_k, f_v in item.items():
+                        feeds.extend(_flat(f_v))
+            return feeds
+
+        return _flat(folders)
+
+    def add_missing_feeds(self):
+        all_feeds = self.flat()
+        subs = [us.feed_id for us in
+                UserSubscription.objects.filter(user=self.user).only('feed')]
+        
+        missing_feeds = set(all_feeds) - set(subs)
+        if missing_feeds:
+            logging.debug(" ---> %s is missing %s feeds. Adding..." % (
+                          self.user, len(missing_feeds)))
+            for feed in missing_feeds:
+                UserSubscription.objects.create(user=self.user, feed=feed)
 
 
 class Feature(models.Model):
