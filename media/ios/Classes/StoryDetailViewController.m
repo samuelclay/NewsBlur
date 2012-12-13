@@ -203,7 +203,7 @@
                             footerString
                             ];
     
-    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
+//    NSLog(@"\n\n\n\nhtmlString:\n\n\n%@\n\n\n", htmlString);
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
     
@@ -1283,6 +1283,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setDelegate:self];
     [request startAsynchronous];
+    
+    [appDelegate recalculateIntelligenceScores:feedId];
+    [appDelegate.feedDetailViewController.storyTitlesTable reloadData];
 }
 
 - (void)toggleTagClassifier:(NSString *)tag {
@@ -1321,13 +1324,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [request setDidFailSelector:@selector(requestFailed:)];
     [request setDelegate:self];
     [request startAsynchronous];
+    
+    [appDelegate recalculateIntelligenceScores:feedId];
+    [appDelegate.feedDetailViewController.storyTitlesTable reloadData];
 }
 
 - (void)finishTrain:(ASIHTTPRequest *)request {
-    [appDelegate.feedsViewController refreshFeedList:[self.activeStory
-                                                      objectForKey:@"story_feed_id"]];
-    [appDelegate recalculateIntelligenceScores:];
-    [appDelegate.feedDetailViewController.storyTitlesTable reloadData];
+    id feedId = [self.activeStory objectForKey:@"story_feed_id"];
+    [appDelegate.feedsViewController refreshFeedList:feedId];
 }
 
 - (void)refreshHeader {

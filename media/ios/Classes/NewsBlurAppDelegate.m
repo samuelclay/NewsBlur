@@ -596,7 +596,71 @@
 }
 
 - (void)recalculateIntelligenceScores:(id)feedId {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+    NSMutableArray *newFeedStories = [NSMutableArray array];
     
+    for (NSDictionary *story in self.activeFeedStories) {
+        NSString *storyFeedId = [NSString stringWithFormat:@"%@",
+                                 [story objectForKey:@"story_feed_id"]];
+        if (![storyFeedId isEqualToString:feedIdStr]) {
+            [newFeedStories addObject:story];
+            continue;
+        }
+
+        NSMutableDictionary *newStory = [story mutableCopy];
+
+        // If the story is visible, mark it as sticky so it doesn;t go away on page loads.
+        int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
+        if (score >= self.selectedIntelligence) {
+            [newStory setObject:[NSNumber numberWithBool:YES] forKey:@"sticky"];
+        }
+        
+        NSNumber *zero = [NSNumber numberWithInt:0];
+        NSMutableDictionary *intelligence = [NSMutableDictionary
+                                             dictionaryWithObjects:[NSArray arrayWithObjects:
+                                                                    [zero copy], [zero copy],
+                                                                    [zero copy], [zero copy], nil]
+                                             forKeys:[NSArray arrayWithObjects:
+                                                      @"author", @"feed", @"tags", @"title", nil]];
+        NSDictionary *classifiers = [self.activeClassifiers objectForKey:feedIdStr];
+        
+        for (NSString *title in [classifiers objectForKey:@"titles"]) {
+            if ([[intelligence objectForKey:@"title"] intValue] <= 0 &&
+                [[story objectForKey:@"story_title"] containsString:title]) {
+                int score = [[[classifiers objectForKey:@"titles"] objectForKey:title] intValue];
+                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"title"];
+            }
+        }
+        
+        for (NSString *author in [classifiers objectForKey:@"authors"]) {
+            if ([[intelligence objectForKey:@"author"] intValue] <= 0 &&
+                [[story objectForKey:@"story_authors"] containsString:author]) {
+                int score = [[[classifiers objectForKey:@"authors"] objectForKey:author] intValue];
+                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"author"];
+            }
+        }
+        
+        for (NSString *tag in [classifiers objectForKey:@"tags"]) {
+            if ([[intelligence objectForKey:@"tags"] intValue] <= 0 &&
+                [[story objectForKey:@"story_tags"] containsObject:tag]) {
+                int score = [[[classifiers objectForKey:@"tags"] objectForKey:tag] intValue];
+                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"tags"];
+            }
+        }
+        
+        for (NSString *feed in [classifiers objectForKey:@"feeds"]) {
+            if ([[intelligence objectForKey:@"feed"] intValue] <= 0 &&
+                [[story objectForKey:@"story_feed_id"] isEqualToString:feed]) {
+                int score = [[[classifiers objectForKey:@"feeds"] objectForKey:feed] intValue];
+                [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"feed"];
+            }
+        }
+        
+        [newStory setObject:intelligence forKey:@"intelligence"];
+        [newFeedStories addObject:newStory];
+    }
+    
+    self.activeFeedStories = newFeedStories;
 }
 
 - (void)dragFeedDetailView:(float)y {
@@ -1354,7 +1418,7 @@
     for (int i=0; i < self.storyCount; i++) {
         NSDictionary *story = [self.activeFeedStories objectAtIndex:i];
         int score = [NewsBlurAppDelegate computeStoryScore:[story objectForKey:@"intelligence"]];
-        if (score >= self.selectedIntelligence) {
+        if (score >= self.selectedIntelligence || [[story objectForKey:@"sticky"] boolValue]) {
             NSNumber *location = [NSNumber numberWithInt:i];
             [self.activeFeedStoryLocations addObject:location];
             [self.activeFeedStoryLocationIds addObject:[story objectForKey:@"id"]];
