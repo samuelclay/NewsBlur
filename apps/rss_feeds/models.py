@@ -1648,7 +1648,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         duplicate_feed.delete()
     else:
         logging.debug(" ***> Duplicate feed is the same as original feed. Panic!")
-    logging.debug(' ---> Deleted duplicate feed: %s/%s' % (duplicate_feed/duplicate_feed_id))
+    logging.debug(' ---> Deleted duplicate feed: %s/%s' % (duplicate_feed, duplicate_feed_id))
     original_feed.count_subscribers()
     logging.debug(' ---> Now original subscribers: %s' %
                   (original_feed.num_subscribers))
