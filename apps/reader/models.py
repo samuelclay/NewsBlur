@@ -874,7 +874,16 @@ class UserSubscriptionFolders(models.Model):
             return feeds
 
         return _flat(folders)
-
+    
+    @classmethod
+    def add_all_missing_feeds(cls):
+        usf = cls.objects.all().order_by('-pk')
+        total = usf.count()
+        
+        for i, f in enumerate(usf):
+            print "%s/%s: %s" % (i, total, f)
+            f.add_missing_feeds()
+        
     def add_missing_feeds(self):
         all_feeds = self.flat()
         subs = [us.feed_id for us in
@@ -882,10 +891,12 @@ class UserSubscriptionFolders(models.Model):
         
         missing_feeds = set(all_feeds) - set(subs)
         if missing_feeds:
-            logging.debug(" ---> %s is missing %s feeds. Adding..." % (
-                          self.user, len(missing_feeds)))
-            for feed in missing_feeds:
-                UserSubscription.objects.create(user=self.user, feed=feed)
+            logging.debug(" ---> %s is missing %s feeds. Adding %s..." % (
+                          self.user, len(missing_feeds), missing_feeds))
+            for feed_id in missing_feeds:
+                feed = Feed.get_by_id(feed_id)
+                if feed:
+                    UserSubscription.objects.get_or_create(user=self.user, feed=feed)
 
 
 class Feature(models.Model):
