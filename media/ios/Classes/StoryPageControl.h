@@ -32,6 +32,7 @@
 	Class popoverClass;
     
     BOOL isDraggingScrollview;
+    BOOL waitingForNextUnreadFromServer;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
@@ -56,6 +57,7 @@
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *subscribeButton;
 @property (readwrite) CGFloat inTouchMove;
 @property (assign) BOOL isDraggingScrollview;
+@property (assign) BOOL waitingForNextUnreadFromServer;
 @property (nonatomic) MBProgressHUD *storyHUD;
 @property (nonatomic) int scrollingToPage;
 
@@ -70,6 +72,7 @@
 - (void)refreshHeaders;
 - (void)setStoryFromScroll;
 - (void)setStoryFromScroll:(BOOL)force;
+- (void)advanceToNextUnread;
 - (void)updatePageWithActiveStory:(int)location;
 - (void)changePage:(NSInteger)pageIndex;
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated;

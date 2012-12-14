@@ -481,6 +481,7 @@
     [self renderStories:confirmedNewStories];
     [appDelegate.storyPageControl resizeScrollView];
     [appDelegate.storyPageControl setStoryFromScroll:YES];
+    [appDelegate.storyPageControl advanceToNextUnread];
 }
 
 #pragma mark - 

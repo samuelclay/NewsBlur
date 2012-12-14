@@ -631,6 +631,7 @@
                    "    %@"
                    "    <div class=\"NB-story-comment-username\">%@</div>"
                    "    <div class=\"NB-story-comment-date\">%@ ago</div>"
+                   "    <div class=\"NB-story-comment-likes\">%@</div>"
                    "</div>"
                    "<div class=\"NB-story-comment-content\">%@</div>"
                    "%@" // location
@@ -652,6 +653,7 @@
                    userReshareString,
                    [user objectForKey:@"username"],
                    [commentDict objectForKey:@"shared_date"],
+                   likingUsers,
                    commentContent,
                    locationHtml,
                    [commentDict objectForKey:@"user_id"],
@@ -926,7 +928,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                            height:[[urlComponents objectAtIndex:6] intValue]];
             return NO; 
         }
+    } else if ([url.host hasSuffix:@"itunes.apple.com"]) {
+        [[UIApplication sharedApplication] openURL:url];
+        return NO;
     }
+    
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         [appDelegate showOriginalStory:url];
         return NO;

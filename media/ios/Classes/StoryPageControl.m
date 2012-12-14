@@ -44,6 +44,7 @@
 @synthesize loadingIndicator;
 @synthesize inTouchMove;
 @synthesize isDraggingScrollview;
+@synthesize waitingForNextUnreadFromServer;
 @synthesize storyHUD;
 @synthesize scrollingToPage;
 
@@ -314,7 +315,7 @@
     
     if (newIndex > 0 && newIndex >= [appDelegate.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;
-        if (self.appDelegate.feedDetailViewController.feedPage < 50 &&
+        if (self.appDelegate.feedDetailViewController.feedPage < 100 &&
             !self.appDelegate.feedDetailViewController.pageFinished &&
             !self.appDelegate.feedDetailViewController.pageFetching) {
             [self.appDelegate.feedDetailViewController fetchNextPage:^() {
@@ -516,6 +517,15 @@
         appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
         [self updatePageWithActiveStory:currentPage.pageIndex];
     }
+}
+
+- (void)advanceToNextUnread {
+    if (!self.waitingForNextUnreadFromServer) {
+        return;
+    }
+    
+    self.waitingForNextUnreadFromServer = NO;
+    [self doNextUnreadStory];
 }
 
 - (void)updatePageWithActiveStory:(int)location {
@@ -909,15 +919,16 @@
     int unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
     
+    NSLog(@"doNextUnreadStory: %d (out of %d)", nextLocation, unreadCount);
+    
     if (nextLocation == -1 && unreadCount > 0 &&
-        fdvc.feedPage < 50) {
+        fdvc.feedPage < 100) {
         [self.loadingIndicator startAnimating];
         self.activity.customView = self.loadingIndicator;
         self.buttonNext.enabled = NO;
         // Fetch next page and see if it has the unreads.
-        [fdvc fetchNextPage:^() {
-            [self doNextUnreadStory];
-        }];
+        self.waitingForNextUnreadFromServer = YES;
+        [fdvc fetchNextPage:nil];
     } else if (nextLocation == -1) {
         [appDelegate.navigationController
          popToViewController:[appDelegate.navigationController.viewControllers
