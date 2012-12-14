@@ -1092,15 +1092,15 @@ class MSocialSubscription(mongo.Document):
             
             max_score = max(scores['author'], scores['tags'], scores['title'])
             min_score = min(scores['author'], scores['tags'], scores['title'])
-
+            
             if max_score > 0:
                 feed_scores['positive'] += 1
             elif min_score < 0:
                 feed_scores['negative'] += 1
             else:
-                if story['story_feed_id'] and scores['feed'] > 0:
+                if scores['feed'] > 0:
                     feed_scores['positive'] += 1
-                elif story['story_feed_id'] and scores['feed'] < 0:
+                elif scores['feed'] < 0:
                     feed_scores['negative'] += 1
                 else:
                     feed_scores['neutral'] += 1
