@@ -1680,7 +1680,7 @@ class MSharedStory(mongo.Document):
         )
     
     def generate_post_to_service_message(self, include_url=True):
-        message = self.comments
+        message = strip_tags(self.comments)
         if not message or len(message) < 1:
             message = self.story_title
         
