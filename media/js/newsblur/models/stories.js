@@ -137,27 +137,27 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         }
         
         if (story.score() > 0) {
-            var active_count = Math.max(active_feed.get('ps') + (options.unread?1:-1), 0);
+            var active_count = active_feed && Math.max(active_feed.get('ps') + (options.unread?1:-1), 0);
             var story_count = story_feed && Math.max(story_feed.get('ps') + (options.unread?1:-1), 0);
-            active_feed.set('ps', active_count, {instant: true});
+            if (active_feed) active_feed.set('ps', active_count, {instant: true});
             if (story_feed) story_feed.set('ps', story_count, {instant: true});
             _.each(friend_feeds, function(socialsub) { 
                 var socialsub_count = Math.max(socialsub.get('ps') + (options.unread?1:-1), 0);
                 socialsub.set('ps', socialsub_count, {instant: true});
             });
         } else if (story.score() == 0) {
-            var active_count = Math.max(active_feed.get('nt') + (options.unread?1:-1), 0);
+            var active_count = active_feed && Math.max(active_feed.get('nt') + (options.unread?1:-1), 0);
             var story_count = story_feed && Math.max(story_feed.get('nt') + (options.unread?1:-1), 0);
-            active_feed.set('nt', active_count, {instant: true});
+            if (active_feed) active_feed.set('nt', active_count, {instant: true});
             if (story_feed) story_feed.set('nt', story_count, {instant: true});
             _.each(friend_feeds, function(socialsub) { 
                 var socialsub_count = Math.max(socialsub.get('nt') + (options.unread?1:-1), 0);
                 socialsub.set('nt', socialsub_count, {instant: true});
             });
         } else if (story.score() < 0) {
-            var active_count = Math.max(active_feed.get('ng') + (options.unread?1:-1), 0);
+            var active_count = active_feed && Math.max(active_feed.get('ng') + (options.unread?1:-1), 0);
             var story_count = story_feed && Math.max(story_feed.get('ng') + (options.unread?1:-1), 0);
-            active_feed.set('ng', active_count, {instant: true});
+            if (active_feed) active_feed.set('ng', active_count, {instant: true});
             if (story_feed) story_feed.set('ng', story_count, {instant: true});
             _.each(friend_feeds, function(socialsub) { 
                 var socialsub_count = Math.max(socialsub.get('ng') + (options.unread?1:-1), 0);

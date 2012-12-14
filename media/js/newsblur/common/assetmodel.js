@@ -137,7 +137,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     mark_social_story_as_read: function(story, social_feed, callback) {
         var self = this;
         var feed_id = story.get('story_feed_id');
-        var social_user_id = social_feed.get('user_id');
+        var social_user_id = social_feed && social_feed.get('user_id');
         if (!social_user_id) {
             social_user_id = story.get('friend_user_ids')[0];
         }
