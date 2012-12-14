@@ -919,7 +919,7 @@
     int unreadCount = [appDelegate unreadCount];
     [self.loadingIndicator stopAnimating];
     
-    NSLog(@"doNextUnreadStory: %d (out of %d)", nextLocation, unreadCount);
+//    NSLog(@"doNextUnreadStory: %d (out of %d)", nextLocation, unreadCount);
     
     if (nextLocation == -1 && unreadCount > 0 &&
         fdvc.feedPage < 100) {
