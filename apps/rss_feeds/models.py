@@ -1389,6 +1389,22 @@ class MStory(mongo.Document):
                                                  story_guid=story_id).limit(1).first()
         
         return story, original_found
+    
+    @classmethod
+    def find_by_id(cls, story_ids):
+        from apps.social.models import MSharedStory
+        count = len(story_ids)
+        multiple = isinstance(story_ids, list) or isinstance(story_ids, tuple)
+        
+        stories = list(cls.objects(id__in=story_ids))
+        if len(stories) < count:
+            shared_stories = list(MSharedStory.objects(id__in=story_ids))
+            stories.extend(shared_stories)
+        print stories, multiple, story_ids, type(story_ids)
+        if not multiple:
+            stories = stories[0]
+        
+        return stories
         
     def sync_redis(self, r=None):
         if not r:

@@ -1318,8 +1318,8 @@ class MSharedStory(mongo.Document):
         
         return your_story, same_stories, other_stories
         
-    def ensure_story_db_id(self, save=True):
-        if not self.story_db_id:
+    def ensure_story_db_id(self, save=True, force=False):
+        if not self.story_db_id or force:
             story, _ = MStory.find_story(self.story_feed_id, self.story_guid)
             if story:
                 logging.debug(" ***> Shared story didn't have story_db_id. Adding found id: %s" % story.id)

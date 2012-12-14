@@ -214,7 +214,7 @@ def load_river_blurblog(request):
                                                  order=order, read_filter=read_filter,
                                                  relative_user_id=relative_user_id,
                                                  everything_unread=global_feed)
-    mstories = MStory.objects(id__in=story_ids)
+    mstories = MStory.find_by_id(story_ids)
     story_id_to_dates = dict(zip(story_ids, story_dates))
     def sort_stories_by_id(a, b):
         return int(story_id_to_dates[str(b.id)]) - int(story_id_to_dates[str(a.id)])
