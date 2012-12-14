@@ -838,7 +838,7 @@ class MSocialSubscription(mongo.Document):
         if not isinstance(social_user_ids, list):
             social_user_ids = [social_user_ids]
 
-        unread_ranked_stories_keys  = 'zU:%s' % (user_id)
+        unread_ranked_stories_keys  = 'zU:%s:social' % (user_id)
         if offset and r.exists(unread_ranked_stories_keys):
             story_guids = range_func(unread_ranked_stories_keys, offset, limit, withscores=True)
             if story_guids:

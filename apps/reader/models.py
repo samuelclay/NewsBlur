@@ -187,7 +187,7 @@ class UserSubscription(models.Model):
         if not isinstance(feed_ids, list):
             feed_ids = [feed_ids]
 
-        unread_ranked_stories_keys  = 'zU:%s' % (user_id)
+        unread_ranked_stories_keys  = 'zU:%s:feeds' % (user_id)
         if offset and r.exists(unread_ranked_stories_keys):
             story_guids = range_func(unread_ranked_stories_keys, offset, limit)
             return story_guids
