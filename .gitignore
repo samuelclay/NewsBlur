@@ -51,3 +51,4 @@ media/android/NewsBlurTest/gen/
 # Local configuration file (sdk path, etc)
 media/android/NewsBlur/local.properties
 media/android/NewsBlurTest/local.properties
+originals
