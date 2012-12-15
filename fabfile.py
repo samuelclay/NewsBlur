@@ -62,6 +62,7 @@ env.roledefs ={
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
                 'ec2-107-20-103-16.compute-1.amazonaws.com',
                 'ec2-50-17-12-16.compute-1.amazonaws.com',
+                'ec2-54-242-34-138.compute-1.amazonaws.com',
                 'ec2-184-73-2-61.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
@@ -643,6 +644,7 @@ def setup_db_firewall():
     sudo('ufw allow proto tcp from 107.20.103.16 to any port 5432,27017,6379,11211')
     sudo('ufw allow proto tcp from 50.17.12.16 to any port 5432,27017,6379,11211')
     sudo('ufw allow proto tcp from 184.73.2.61 to any port 5432,27017,6379,11211')
+    sudo('ufw allow proto tcp from 54.242.34.138 to any port 5432,27017,6379,11211')
     sudo('ufw --force enable')
     
 def setup_db_motd():

@@ -2,6 +2,7 @@ import datetime
 import time
 import boto
 import redis
+import requests
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -590,24 +591,39 @@ def load_feed_page(request, feed_id):
     
     feed = Feed.get_by_id(feed_id)
     
-    if (feed and feed.has_page and 
-        not feed.has_page_exception and 
-        settings.BACKED_BY_AWS['pages_on_s3'] and 
-        feed.s3_page):
-        if settings.PROXY_S3_PAGES:
-            key = settings.S3_PAGES_BUCKET.get_key(feed.s3_pages_key)
-            if key:
-                compressed_data = key.get_contents_as_string()
-                response = HttpResponse(compressed_data, mimetype="text/html; charset=utf-8")
-                response['Content-Encoding'] = 'gzip'
+    if feed and feed.has_page and not feed.has_page_exception:
+        if settings.BACKED_BY_AWS.get('pages_on_node'):
+            url = "http://%s/original_page/%s" % (
+                settings.ORIGINAL_PAGE_SERVER,
+                feed.pk,
+            )
+            import pdb; pdb.set_trace()
+            page_response = requests.get(url, headers={
+                'If-None-Match': request.headers,
+            })
+            response = HttpResponse(page_response.content, mimetype="text/html; charset=utf-8")
+            response['Content-Encoding'] = 'gzip'
+            response['Last-Modified'] = page_response.headers.get('Last-modified')
+            response['Etag'] = page_response.headers.get('Etag')
+            response['Content-Length'] = str(len(page_response.content))
+            logging.user(request, "~FYLoading original page, proxied from node: ~SB%s bytes" %
+                         (len(page_response.content)))
+            return response
+        elif settings.BACKED_BY_AWS['pages_on_s3'] and feed.s3_page:
+            if settings.PROXY_S3_PAGES:
+                key = settings.S3_PAGES_BUCKET.get_key(feed.s3_pages_key)
+                if key:
+                    compressed_data = key.get_contents_as_string()
+                    response = HttpResponse(compressed_data, mimetype="text/html; charset=utf-8")
+                    response['Content-Encoding'] = 'gzip'
             
-                logging.user(request, "~FYLoading original page, proxied: ~SB%s bytes" %
-                             (len(compressed_data)))
-                return response
-        else:
-            logging.user(request, "~FYLoading original page, non-proxied")
-            return HttpResponseRedirect('//%s/%s' % (settings.S3_PAGES_BUCKET_NAME,
-                                                     feed.s3_pages_key))
+                    logging.user(request, "~FYLoading original page, proxied: ~SB%s bytes" %
+                                 (len(compressed_data)))
+                    return response
+            else:
+                logging.user(request, "~FYLoading original page, non-proxied")
+                return HttpResponseRedirect('//%s/%s' % (settings.S3_PAGES_BUCKET_NAME,
+                                                         feed.s3_pages_key))
     
     data = MFeedPage.get_data(feed_id=feed_id)
     

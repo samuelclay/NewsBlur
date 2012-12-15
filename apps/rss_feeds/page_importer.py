@@ -10,6 +10,7 @@ import gzip
 import StringIO
 from boto.s3.key import Key
 from django.conf import settings
+from django.utils.text import compress_string
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
 from utils.feed_functions import timelimit, mail_feed_error_to_admin
@@ -175,7 +176,15 @@ class PageImporter(object):
         
     def save_page(self, html):
         if html and len(html) > 100:
-            if settings.BACKED_BY_AWS.get('pages_on_s3'):
+            if settings.BACKED_BY_AWS.get('pages_on_node'):
+                url = "http://%s/original_page/%s" % (
+                    settings.ORIGINAL_PAGE_SERVER,
+                    self.feed.pk,
+                )
+                requests.post(url, files={
+                    'original_page': compress_string(html),
+                })
+            elif settings.BACKED_BY_AWS.get('pages_on_s3'):
                 k = Key(settings.S3_PAGES_BUCKET)
                 k.key = self.feed.s3_pages_key
                 k.set_metadata('Content-Encoding', 'gzip')
