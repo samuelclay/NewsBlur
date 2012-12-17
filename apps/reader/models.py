@@ -615,8 +615,10 @@ class MUserStory(mongo.Document):
     def delete_old_stories(cls, feed_id):
         UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD*5)
         read_stories = cls.objects(feed_id=feed_id, read_date__lte=UNREAD_CUTOFF)
-        logging.info(" ---> ~FCCleaning ~SB%s read stories~SN...")
-        read_stories.delete()
+        read_stories_count = read_stories.count()
+        if read_stories_count:
+            logging.info(" ---> ~FCCleaning ~SB%s read stories~SN..." % read_stories_count)
+            read_stories.delete()
         
     @classmethod
     def delete_marked_as_read_stories(cls, user_id, feed_id, mark_read_date=None):
