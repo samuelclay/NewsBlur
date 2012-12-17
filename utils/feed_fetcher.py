@@ -248,7 +248,9 @@ class ProcessFeed:
                       '~FR~SB' if ret_values['error'] else '', ret_values['error'],
                       len(self.fpf.entries)))
         self.feed.update_all_statistics(full=bool(ret_values['new']), force=self.options['force'])
-        self.feed.trim_feed()
+        if ret_values['new']:
+            self.feed.trim_feed()
+            MUserStory.delete_old_stories(feed_id=self.feed.pk)
         self.feed.save_feed_history(200, "OK")
         
         if self.options['verbose']:
@@ -342,8 +344,7 @@ class Dispatcher:
                             feed.known_good = True
                             feed.fetched_once = True
                             feed = feed.save()
-                        MUserStory.delete_old_stories(feed_id=feed.pk)
-                        if random.random() <= 0.01:
+                        if random.random() <= 0.05:
                             feed.sync_redis()
                         try:
                             self.count_unreads_for_subscribers(feed)
