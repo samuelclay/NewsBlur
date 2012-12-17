@@ -591,6 +591,7 @@ class MUserStory(mongo.Document):
             {'fields': ('user_id', 'feed_id', 'story_id'), 'unique': True},
             ('feed_id', 'story_id'),   # Updating stories with new guids
             ('feed_id', 'story_date'), # Trimming feeds
+            ('feed_id', '-read_date'), # Trimming feeds
         ],
         'allow_inheritance': False,
         'index_drop_dups': True,
