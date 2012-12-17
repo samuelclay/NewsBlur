@@ -617,7 +617,8 @@ class MUserStory(mongo.Document):
         read_stories = cls.objects(feed_id=feed_id, read_date__lte=UNREAD_CUTOFF)
         read_stories_count = read_stories.count()
         if read_stories_count:
-            logging.info(" ---> ~FCCleaning ~SB%s read stories~SN..." % read_stories_count)
+            feed = Feed.objects.get(pk=feed_id)
+            logging.info(" ---> ~FCCleaning ~SB%s read stories~SN from %s..." % (read_stories_count, feed.title[:30]))
             read_stories.delete()
         
     @classmethod
