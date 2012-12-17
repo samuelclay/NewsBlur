@@ -79,8 +79,8 @@ MONGODB_SLAVE = {
 }
 
 # Celery RabbitMQ/Redis Broker
-CELERY_REDIS_HOST = "127.0.0.1"
 BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_RESULT_BACKEND = BROKER_URL
 
 REDIS = {
     'host': '127.0.0.1',
