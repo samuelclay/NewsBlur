@@ -5,7 +5,9 @@ mkdirp = require 'mkdirp'
 
 app = express.createServer()
 app.use express.bodyParser()
-    
+
+app.listen 3060
+
 app.get /^\/original_page\/(\d+)\/?/, (req, res) =>
     feedId = parseInt(req.params, 10)
     etag = req.header('If-None-Match')
@@ -14,7 +16,8 @@ app.get /^\/original_page\/(\d+)\/?/, (req, res) =>
     filePath = "originals/#{feedIdDir}.zhtml"
     
     path.exists filePath, (exists, err) ->
-        console.log "Req: #{feedId} (#{filePath}), etag: #{etag}"
+        console.log " ---> Loading: #{feedId} (#{filePath}). " +
+                    "#{if exists then "" else "NOT FOUND"}"
         if not exists
             return res.send 404
         fs.stat filePath, (err, stats) ->
@@ -27,6 +30,7 @@ app.get /^\/original_page\/(\d+)\/?/, (req, res) =>
                 res.header 'Etag', Date.parse(stats.mtime)
                 res.send content
 
+
 app.post /^\/original_page\/(\d+)\/?/, (req, res) =>
     feedId = parseInt(req.params, 10)
     feedIdDir = splitFeedId feedId
@@ -38,7 +42,8 @@ app.post /^\/original_page\/(\d+)\/?/, (req, res) =>
             console.log err if err
             console.log " ---> Saving: #{feedId} (#{filePath})"
             res.send "OK"
-    
+
+
 splitFeedId = (feedId) ->
     feedId += ''
     # x2 = if feedId.length > 1 then '.' + feedId[1] else ''
@@ -46,4 +51,3 @@ splitFeedId = (feedId) ->
     feedId = feedId.replace rgx, '$1' + '/' + '$2' while rgx.test(feedId)
     return feedId;
     
-app.listen 3060

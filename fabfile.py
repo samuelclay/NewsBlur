@@ -66,7 +66,6 @@ env.roledefs ={
                 'ec2-184-73-2-61.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
-            'task02.newsblur.com', 
             'task03.newsblur.com', 
             'task04.newsblur.com', 
             'task08.newsblur.com', 
@@ -75,7 +74,6 @@ env.roledefs ={
             'task11.newsblur.com', 
             'app01.newsblur.com', 
             'app02.newsblur.com', 
-            'app03.newsblur.com',
             ],
 }
 
@@ -253,6 +251,7 @@ def backup_mongo():
         run('python backup_mongo.py')
 
 def backup_postgresql():
+    # crontab for postgres master server
     # 0 4 * * * python /home/sclay/newsblur/utils/backups/backup_psql.py
     # 0 * * * * sudo find /var/lib/postgresql/9.1/archive -mtime +1 -exec rm {} \;
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):

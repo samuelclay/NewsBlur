@@ -597,19 +597,18 @@ def load_feed_page(request, feed_id):
                 settings.ORIGINAL_PAGE_SERVER,
                 feed.pk,
             )
-            import pdb; pdb.set_trace()
-            page_response = requests.get(url, headers={
-                'If-None-Match': request.headers,
-            })
-            response = HttpResponse(page_response.content, mimetype="text/html; charset=utf-8")
-            response['Content-Encoding'] = 'gzip'
-            response['Last-Modified'] = page_response.headers.get('Last-modified')
-            response['Etag'] = page_response.headers.get('Etag')
-            response['Content-Length'] = str(len(page_response.content))
-            logging.user(request, "~FYLoading original page, proxied from node: ~SB%s bytes" %
-                         (len(page_response.content)))
-            return response
-        elif settings.BACKED_BY_AWS['pages_on_s3'] and feed.s3_page:
+            page_response = requests.get(url)
+            if page_response.status_code == 200:
+                response = HttpResponse(page_response.content, mimetype="text/html; charset=utf-8")
+                response['Content-Encoding'] = 'gzip'
+                response['Last-Modified'] = page_response.headers.get('Last-modified')
+                response['Etag'] = page_response.headers.get('Etag')
+                response['Content-Length'] = str(len(page_response.content))
+                logging.user(request, "~FYLoading original page, proxied from node: ~SB%s bytes" %
+                             (len(page_response.content)))
+                return response
+        
+        if settings.BACKED_BY_AWS['pages_on_s3'] and feed.s3_page:
             if settings.PROXY_S3_PAGES:
                 key = settings.S3_PAGES_BUCKET.get_key(feed.s3_pages_key)
                 if key:

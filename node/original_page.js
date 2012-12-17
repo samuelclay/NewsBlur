@@ -15,6 +15,8 @@
 
   app.use(express.bodyParser());
 
+  app.listen(3060);
+
   app.get(/^\/original_page\/(\d+)\/?/, function(req, res) {
     var etag, feedId, feedIdDir, filePath, lastModified;
     feedId = parseInt(req.params, 10);
@@ -23,7 +25,7 @@
     feedIdDir = splitFeedId(feedId);
     filePath = "originals/" + feedIdDir + ".zhtml";
     return path.exists(filePath, function(exists, err) {
-      console.log("Req: " + feedId + " (" + filePath + "), etag: " + etag);
+      console.log((" ---> Loading: " + feedId + " (" + filePath + "). ") + ("" + (exists ? "" : "NOT FOUND")));
       if (!exists) {
         return res.send(404);
       }
@@ -69,7 +71,5 @@
     }
     return feedId;
   };
-
-  app.listen(3060);
 
 }).call(this);
