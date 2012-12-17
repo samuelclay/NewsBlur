@@ -58,7 +58,7 @@ class FetchFeed:
             modified = None
             etag = None
 
-        USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2 (NewsBlur Feed Fetcher - %s subscriber%s - %s)' % (
+        USER_AGENT = 'NewsBlur Feed Fetcher - %s subscriber%s - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2)' % (
             self.feed.num_subscribers,
             's' if self.feed.num_subscribers != 1 else '',
             settings.NEWSBLUR_URL
