@@ -9,7 +9,7 @@ import random
 import pymongo
 from django.conf import settings
 from django.db import IntegrityError
-from apps.reader.models import UserSubscription
+from apps.reader.models import UserSubscription, MUserStory
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
@@ -342,7 +342,7 @@ class Dispatcher:
                             feed.known_good = True
                             feed.fetched_once = True
                             feed = feed.save()
-                        # MUserStory.delete_old_stories(feed_id=feed.pk)
+                        MUserStory.delete_old_stories(feed_id=feed.pk)
                         if random.random() <= 0.01:
                             feed.sync_redis()
                         try:
