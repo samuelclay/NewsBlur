@@ -343,7 +343,7 @@ class Dispatcher:
                             feed.known_good = True
                             feed.fetched_once = True
                             feed = feed.save()
-                        if random.random() <= 0.01:
+                        if random.random() <= 0.02:
                             feed.sync_redis()
                             MUserStory.delete_old_stories(feed_id=feed.pk)
                             MUserStory.sync_all_redis(feed_id=feed.pk)
