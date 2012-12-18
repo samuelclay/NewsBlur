@@ -675,14 +675,31 @@ class MUserStory(mongo.Document):
             r.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.story_db_id)
         
     @classmethod
-    def sync_all_redis(cls, user_id=None):
-        if not user_id:
-            read_stories = cls.objects.all()
-        else:
+    def sync_all_redis(cls, user_id=None, feed_id=None):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        
+        if feed_id:
+            read_stories = cls.objects.filter(feed_id=feed_id)
+            keys = r.keys("RS:*:%s" % feed_id)
+            print " ---> Deleting %s redis keys: %s" % (len(keys), keys)
+            for key in keys:
+                r.delete(key)
+        elif user_id:
             read_stories = cls.objects.filter(user_id=user_id)
-        print " ---> Syncing %s stories (%s)" % (read_stories.count(), user_id)
-        for read_story in read_stories:
-            read_story.sync_redis()
+            keys = r.keys("RS:%s:*" % user_id)
+            r.delete("RS:%s" % user_id)
+            print " ---> Deleting %s redis keys" % len(keys)
+            for key in keys:
+                r.delete(key)            
+        else:
+            read_stories = cls.objects.all()
+
+        total = read_stories.count()
+        print " ---> Syncing %s stories (%s)" % (total, user_id or feed_id)
+        for i, read_story in enumerate(read_stories):
+            if (i+1) % 100 == 0: 
+                print " ---> %s/%s" % (i, total)
+            read_story.sync_redis(r)
         
 class UserSubscriptionFolders(models.Model):
     """
