@@ -629,22 +629,31 @@ def maintenance_off():
 # ==============    
 
 def setup_db_firewall():
+    ports = [
+        5432,   # PostgreSQL
+        27017,  # MongoDB
+        6379,   # Redis
+        11211,  # Memcached
+        3060,   # Node original page server
+    ]
     sudo('ufw default deny')
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
-    sudo('ufw allow from 199.15.248.0/21 to any port 5432 ') # PostgreSQL
-    sudo('ufw allow from 199.15.248.0/21 to any port 27017') # MongoDB
-    sudo('ufw allow from 199.15.248.0/21 to any port 28017') # MongoDB web
-    sudo('ufw allow from 199.15.248.0/21 to any port 6379 ') # Redis
-    sudo('ufw allow from 199.15.248.0/21 to any port 11211 ') # Memcached
+    for port in ports:
+        sudo('ufw allow from 199.15.248.0/21 to any port %s ' % port)
 
     # EC2
-    sudo('ufw allow proto tcp from 54.242.38.48 to any port 5432,27017,6379,11211')
-    sudo('ufw allow proto tcp from 184.72.214.147 to any port 5432,27017,6379,11211')
-    sudo('ufw allow proto tcp from 107.20.103.16 to any port 5432,27017,6379,11211')
-    sudo('ufw allow proto tcp from 50.17.12.16 to any port 5432,27017,6379,11211')
-    sudo('ufw allow proto tcp from 184.73.2.61 to any port 5432,27017,6379,11211')
-    sudo('ufw allow proto tcp from 54.242.34.138 to any port 5432,27017,6379,11211')
+    for host in env.roledefs['ec2task']:
+        sudo('ufw allow proto tcp from %s to any port %s' % (
+            host,
+            ','.join(ports)
+        ))
+    # sudo('ufw allow proto tcp from 54.242.38.48 to any port 5432,27017,6379,11211')
+    # sudo('ufw allow proto tcp from 184.72.214.147 to any port 5432,27017,6379,11211')
+    # sudo('ufw allow proto tcp from 107.20.103.16 to any port 5432,27017,6379,11211')
+    # sudo('ufw allow proto tcp from 50.17.12.16 to any port 5432,27017,6379,11211')
+    # sudo('ufw allow proto tcp from 184.73.2.61 to any port 5432,27017,6379,11211')
+    # sudo('ufw allow proto tcp from 54.242.34.138 to any port 5432,27017,6379,11211')
     sudo('ufw --force enable')
     
 def setup_db_motd():
@@ -744,7 +753,15 @@ def setup_db_mdadm():
     sudo("mdadm --examine --scan | sudo tee -a /etc/mdadm/mdadm.conf")
     sudo("echo '/dev/md0   /srv/db xfs   rw,nobarrier,noatime,nodiratime,noauto   0 0' | sudo tee -a  /etc/fstab")
     sudo("sudo update-initramfs -u -v -k `uname -r`")
-    
+
+def setup_original_page_server():
+    setup_node()
+    sudo('rm -fr /etc/supervisor/conf.d/node.conf')
+    put('config/supervisor_node_original.conf', 
+        '/etc/supervisor/conf.d/node_original.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl reload')
+
 # ================
 # = Setup - Task =
 # ================
