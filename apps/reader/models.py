@@ -675,24 +675,27 @@ class MUserStory(mongo.Document):
             r.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.story_db_id)
         
     @classmethod
-    def sync_all_redis(cls, user_id=None, feed_id=None):
+    def sync_all_redis(cls, user_id=None, feed_id=None, force=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+
         if feed_id:
-            read_stories = cls.objects.filter(feed_id=feed_id)
+            read_stories = cls.objects.filter(feed_id=feed_id, read_date__gte=UNREAD_CUTOFF)
             keys = r.keys("RS:*:%s" % feed_id)
             print " ---> Deleting %s redis keys: %s" % (len(keys), keys)
             for key in keys:
                 r.delete(key)
         elif user_id:
-            read_stories = cls.objects.filter(user_id=user_id)
+            read_stories = cls.objects.filter(user_id=user_id, read_date__gte=UNREAD_CUTOFF)
             keys = r.keys("RS:%s:*" % user_id)
             r.delete("RS:%s" % user_id)
             print " ---> Deleting %s redis keys" % len(keys)
             for key in keys:
                 r.delete(key)            
+        elif force:
+            read_stories = cls.objects.all(read_date__gte=UNREAD_CUTOFF)
         else:
-            read_stories = cls.objects.all()
+            raise "Specify user_id, feed_id, or force."
 
         total = read_stories.count()
         print " ---> Syncing %s stories (%s)" % (total, user_id or feed_id)
