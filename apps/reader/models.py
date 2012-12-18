@@ -677,7 +677,7 @@ class MUserStory(mongo.Document):
     @classmethod
     def sync_all_redis(cls, user_id=None, feed_id=None, force=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
 
         if feed_id:
             read_stories = cls.objects.filter(feed_id=feed_id, read_date__gte=UNREAD_CUTOFF)
@@ -689,7 +689,7 @@ class MUserStory(mongo.Document):
             read_stories = cls.objects.filter(user_id=user_id, read_date__gte=UNREAD_CUTOFF)
             keys = r.keys("RS:%s:*" % user_id)
             r.delete("RS:%s" % user_id)
-            print " ---> Deleting %s redis keys" % len(keys)
+            print " ---> Deleting %s redis keys: %s" % (len(keys), keys)
             for key in keys:
                 r.delete(key)            
         elif force:
@@ -700,7 +700,7 @@ class MUserStory(mongo.Document):
         total = read_stories.count()
         print " ---> Syncing %s stories (%s)" % (total, user_id or feed_id)
         for i, read_story in enumerate(read_stories):
-            if (i+1) % 100 == 0: 
+            if (i+1) % 1000 == 0: 
                 print " ---> %s/%s" % (i, total)
             read_story.sync_redis(r)
         

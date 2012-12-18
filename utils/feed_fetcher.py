@@ -343,9 +343,10 @@ class Dispatcher:
                             feed.known_good = True
                             feed.fetched_once = True
                             feed = feed.save()
-                        if random.random() <= 0.05:
+                        if random.random() <= 0.01:
                             feed.sync_redis()
                             MUserStory.delete_old_stories(feed_id=feed.pk)
+                            MUserStory.sync_all_redis(feed_id=feed.pk)
                         try:
                             self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
