@@ -250,7 +250,6 @@ class ProcessFeed:
         self.feed.update_all_statistics(full=bool(ret_values['new']), force=self.options['force'])
         if ret_values['new']:
             self.feed.trim_feed()
-            MUserStory.delete_old_stories(feed_id=self.feed.pk)
         self.feed.save_feed_history(200, "OK")
         
         if self.options['verbose']:
@@ -346,6 +345,7 @@ class Dispatcher:
                             feed = feed.save()
                         if random.random() <= 0.05:
                             feed.sync_redis()
+                            MUserStory.delete_old_stories(feed_id=feed.pk)
                         try:
                             self.count_unreads_for_subscribers(feed)
                         except TimeoutError:

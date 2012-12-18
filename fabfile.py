@@ -62,10 +62,10 @@ env.roledefs ={
                 'ec2-184-72-214-147.compute-1.amazonaws.com',
                 'ec2-107-20-103-16.compute-1.amazonaws.com',
                 'ec2-50-17-12-16.compute-1.amazonaws.com',
+                'ec2-54-242-34-138.compute-1.amazonaws.com',
                 'ec2-184-73-2-61.compute-1.amazonaws.com',
                 ],
     'vps': ['task01.newsblur.com', 
-            'task02.newsblur.com', 
             'task03.newsblur.com', 
             'task04.newsblur.com', 
             'task08.newsblur.com', 
@@ -74,7 +74,6 @@ env.roledefs ={
             'task11.newsblur.com', 
             'app01.newsblur.com', 
             'app02.newsblur.com', 
-            'app03.newsblur.com',
             ],
 }
 
@@ -252,8 +251,10 @@ def backup_mongo():
         run('python backup_mongo.py')
 
 def backup_postgresql():
+    # crontab for postgres master server
     # 0 4 * * * python /home/sclay/newsblur/utils/backups/backup_psql.py
     # 0 * * * * sudo find /var/lib/postgresql/9.1/archive -mtime +1 -exec rm {} \;
+    
     with cd(os.path.join(env.NEWSBLUR_PATH, 'utils/backups')):
         # run('./postgresql_backup.sh')
         run('python backup_psql.py')
@@ -643,6 +644,7 @@ def setup_db_firewall():
     sudo('ufw allow proto tcp from 107.20.103.16 to any port 5432,27017,6379,11211')
     sudo('ufw allow proto tcp from 50.17.12.16 to any port 5432,27017,6379,11211')
     sudo('ufw allow proto tcp from 184.73.2.61 to any port 5432,27017,6379,11211')
+    sudo('ufw allow proto tcp from 54.242.34.138 to any port 5432,27017,6379,11211')
     sudo('ufw --force enable')
     
 def setup_db_motd():
