@@ -9,7 +9,7 @@ import random
 import pymongo
 from django.conf import settings
 from django.db import IntegrityError
-from apps.reader.models import UserSubscription
+from apps.reader.models import UserSubscription, MUserStory
 from apps.rss_feeds.models import Feed, MStory
 from apps.rss_feeds.page_importer import PageImporter
 from apps.rss_feeds.icon_importer import IconImporter
@@ -248,7 +248,8 @@ class ProcessFeed:
                       '~FR~SB' if ret_values['error'] else '', ret_values['error'],
                       len(self.fpf.entries)))
         self.feed.update_all_statistics(full=bool(ret_values['new']), force=self.options['force'])
-        self.feed.trim_feed()
+        if ret_values['new']:
+            self.feed.trim_feed()
         self.feed.save_feed_history(200, "OK")
         
         if self.options['verbose']:
@@ -342,9 +343,10 @@ class Dispatcher:
                             feed.known_good = True
                             feed.fetched_once = True
                             feed = feed.save()
-                        # MUserStory.delete_old_stories(feed_id=feed.pk)
-                        if random.random() <= 0.01:
+                        if random.random() <= 0.02:
                             feed.sync_redis()
+                            MUserStory.delete_old_stories(feed_id=feed.pk)
+                            MUserStory.sync_all_redis(feed_id=feed.pk)
                         try:
                             self.count_unreads_for_subscribers(feed)
                         except TimeoutError:
