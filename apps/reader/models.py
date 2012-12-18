@@ -675,8 +675,12 @@ class MUserStory(mongo.Document):
             r.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.story_db_id)
         
     @classmethod
-    def sync_all_redis(cls):
-        read_stories = cls.objects.all()
+    def sync_all_redis(cls, user_id=None):
+        if not user_id:
+            read_stories = cls.objects.all()
+        else:
+            read_stories = cls.objects.filter(user_id=user_id)
+        print " ---> Syncing %s stories (%s)" % (read_stories.count(), user_id)
         for read_story in read_stories:
             read_story.sync_redis()
         
