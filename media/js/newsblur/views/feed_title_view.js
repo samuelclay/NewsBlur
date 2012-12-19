@@ -105,12 +105,13 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           selected            : this.model.get('selected') || NEWSBLUR.reader.active_feed == this.model.id
         }));
         
-        if (this.options.type == 'story') {
-            var search_view = new NEWSBLUR.Views.FeedSearchView({
-                feedbar_view: this
-            }).render();
-            $('.feed_title', $feed).append(search_view.$el);
-        }
+        // Removed search from feeds because it's SLOW
+        // if (this.options.type == 'story') {
+        //     var search_view = new NEWSBLUR.Views.FeedSearchView({
+        //         feedbar_view: this
+        //     }).render();
+        //     $('.feed_title', $feed).append(search_view.$el);
+        // }
         
         this.$el.replaceWith($feed);
         this.setElement($feed);

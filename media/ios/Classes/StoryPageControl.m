@@ -792,7 +792,7 @@
     [appDelegate markActiveStoryUnread];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     
-    [self informMessage:@"This story is now unread"];
+    [self.currentPage flashCheckmarkHud:@"unread"];
 }
 
 - (IBAction)showOriginalSubview:(id)sender {

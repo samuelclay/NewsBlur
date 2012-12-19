@@ -278,7 +278,7 @@
 #pragma mark Story layout
 
 - (NSString *)getHeader {
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
+    NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory
                                                           objectForKey:@"story_feed_id"]];
     NSString *storyAuthor = @"";
     if ([[self.activeStory objectForKey:@"story_authors"] class] != [NSNull class] &&
@@ -988,7 +988,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // see if it's a tryfeed for animation
     if (!self.webView.hidden &&
         appDelegate.tryFeedCategory &&
-        [[appDelegate.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId]) {
+        [[self.activeStory objectForKey:@"id"] isEqualToString:appDelegate.tryFeedStoryId]) {
         [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:YES];
         
         if ([appDelegate.tryFeedCategory isEqualToString:@"comment_like"] ||
@@ -1238,6 +1238,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         self.storyHUD.labelText = @"Saved";
     } else if ([messageType isEqualToString:@"unsaved"]) {
         self.storyHUD.labelText = @"No longer saved";
+    } else if ([messageType isEqualToString:@"unread"]) {
+        self.storyHUD.labelText = @"Unread";
     }
     [self.storyHUD hide:YES afterDelay:1];
 }
@@ -1280,7 +1282,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark Classifiers
 
 - (void)toggleAuthorClassifier:(NSString *)author {
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
+    NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory
                                                           objectForKey:@"story_feed_id"]];
     int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                          objectForKey:@"authors"]
@@ -1320,7 +1322,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)toggleTagClassifier:(NSString *)tag {
     NSLog(@"toggleTagClassifier: %@", tag);
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
+    NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory
                                                           objectForKey:@"story_feed_id"]];
     int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                       objectForKey:@"tags"]
