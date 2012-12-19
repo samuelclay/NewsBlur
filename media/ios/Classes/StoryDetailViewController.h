@@ -43,6 +43,7 @@
 - (void)hideStory;
 
 - (void)toggleLikeComment:(BOOL)likeComment;
+- (void)flashCheckmarkHud:(NSString *)messageType;
 - (void)scrolltoComment;
 - (void)changeWebViewWidth;
 - (void)showUserProfile:(NSString *)userId xCoordinate:(int)x yCoordinate:(int)y width:(int)width height:(int)height;

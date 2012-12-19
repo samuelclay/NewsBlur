@@ -602,6 +602,14 @@ static const CGFloat kFolderTitleHeight = 28;
 
     NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
     NSMutableArray *indexPaths = [NSMutableArray array];
+    NSMutableDictionary *oldSectionRows = [NSMutableDictionary dictionary];
+    NSMutableDictionary *switchingSectionRows = [NSMutableDictionary dictionary];
+    
+    for (int section=0; section < [self numberOfSectionsInTableView:self.feedTitlesTable]; section++) {
+        [oldSectionRows setObject:[NSNumber numberWithInt:[self.feedTitlesTable
+                                                           numberOfRowsInSection:section]]
+                           forKey:[NSNumber numberWithInt:section]];
+    }
     
     // if show all sites, calculate feeds and mark visible
     if (self.viewShowingAllFeeds) {
@@ -649,7 +657,36 @@ static const CGFloat kFolderTitleHeight = 28;
         [self calculateFeedLocations:YES];
     }
     
-//    @try {
+    // Count the rows that will be deleted/inserted and ensure it matches
+    // the table's count, just in case they are incorrect.
+    for (NSIndexPath *rowPath in indexPaths) {
+        NSNumber *section = [NSNumber numberWithInt:rowPath.section];
+        [switchingSectionRows setObject:[NSNumber numberWithInt:[[switchingSectionRows objectForKey:section] intValue] + 1]
+                           forKey:section];
+    }
+    
+    BOOL correct = YES;
+    for (int section=0; section < [self numberOfSectionsInTableView:self.feedTitlesTable]; section++) {
+        int newRows = [self tableView:self.feedTitlesTable numberOfRowsInSection:section];
+        int oldRows = [[oldSectionRows objectForKey:[NSNumber numberWithInt:section]] intValue];
+        int difference = [[switchingSectionRows objectForKey:[NSNumber numberWithInt:section]] intValue];
+        if (!self.viewShowingAllFeeds) {
+            difference = difference * -1;
+        }
+        if (oldRows + difference != newRows) {
+            correct = NO;
+            break;
+        }
+    }
+    NSArray *visiblePaths = [self.feedTitlesTable indexPathsForVisibleRows];
+    NSIndexPath *middleRow = [visiblePaths objectAtIndex:0];
+    
+
+    // If the row counts don't match up, no animation is possible. Instead of crashing
+    // just reload the table. Loss of animation, but better than crashing.
+    if (!correct) {
+        [self.feedTitlesTable reloadData];
+    } else {
         [self.feedTitlesTable beginUpdates];
         if ([indexPaths count] > 0) {
             if (self.viewShowingAllFeeds) {
@@ -661,16 +698,13 @@ static const CGFloat kFolderTitleHeight = 28;
             }
         }
         [self.feedTitlesTable endUpdates];
-//    }
-//    @catch (NSException *exception) {
-//        NSLog(@"EXCEPTION: %@", exception);
-//        [self.feedTitlesTable beginUpdates];
-//        [self.feedTitlesTable endUpdates];
-//        [self.feedTitlesTable reloadData];
-//    }
+    }
     
-    CGPoint offset = CGPointMake(0, 0);
-    [self.feedTitlesTable setContentOffset:offset animated:YES];
+    NSIndexPath *newMiddleRow = [NSIndexPath indexPathForItem:0 inSection:middleRow.section];
+    [self.feedTitlesTable scrollToRowAtIndexPath:newMiddleRow atScrollPosition:UITableViewScrollPositionTop animated:YES];
+//    CGRect middleRect = [self.feedTitlesTable rectForRowAtIndexPath:middleRow];
+//    CGPoint offset = CGPointMake(middleRect.origin.x, middleRect.origin.y);
+//    [self.feedTitlesTable setContentOffset:offset animated:YES];
     
     // Forget still visible feeds, since they won't be populated when
     // all feeds are showing, and shouldn't be populated after this

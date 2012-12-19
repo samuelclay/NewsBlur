@@ -1212,23 +1212,32 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 //    // adding in a simulated delay
 //    sleep(1);
     
+    [self flashCheckmarkHud:shareType];
+}
+
+- (void)flashCheckmarkHud:(NSString *)messageType {
+    [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     self.storyHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.storyHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"37x-Checkmark.png"]];
     self.storyHUD.mode = MBProgressHUDModeCustomView;
-    self.storyHUD.removeFromSuperViewOnHide = YES;  
-
-    if ([shareType isEqualToString:@"reply"]) {
+    self.storyHUD.removeFromSuperViewOnHide = YES;
+    
+    if ([messageType isEqualToString:@"reply"]) {
         self.storyHUD.labelText = @"Replied";
-    } else if ([shareType isEqualToString:@"edit-reply"]) {
+    } else if ([messageType isEqualToString:@"edit-reply"]) {
         self.storyHUD.labelText = @"Edited Reply";
-    } else if ([shareType isEqualToString:@"edit-share"]) {
+    } else if ([messageType isEqualToString:@"edit-share"]) {
         self.storyHUD.labelText = @"Edited Comment";
-    } else if ([shareType isEqualToString:@"share"]) {
+    } else if ([messageType isEqualToString:@"share"]) {
         self.storyHUD.labelText = @"Shared";
-    } else if ([shareType isEqualToString:@"like-comment"]) {
+    } else if ([messageType isEqualToString:@"like-comment"]) {
         self.storyHUD.labelText = @"Favorited";
-    } else if ([shareType isEqualToString:@"unlike-comment"]) {
+    } else if ([messageType isEqualToString:@"unlike-comment"]) {
         self.storyHUD.labelText = @"Unfavorited";
+    } else if ([messageType isEqualToString:@"saved"]) {
+        self.storyHUD.labelText = @"Saved";
+    } else if ([messageType isEqualToString:@"unsaved"]) {
+        self.storyHUD.labelText = @"No longer saved";
     }
     [self.storyHUD hide:YES afterDelay:1];
 }

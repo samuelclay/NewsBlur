@@ -398,14 +398,6 @@ del {
 
 #story_pane .NB-story-comment-reply.NB-highlighted {
     background-color: #FBE5C7;
-    padding-left: 50px;
-    padding-right: 5px;
-    margin-left: -5px;
-    margin-right: -5px;
-}
-
-#story_pane .NB-story-comment-reply.NB-highlighted .NB-story-comment-reply-photo {
-    left: 5px;
 }
 
 #story_pane .NB-story-comment.NB-highlighted {
