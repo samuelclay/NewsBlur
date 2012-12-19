@@ -65,7 +65,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (clear_queue) {
             this.ajax[options['ajax_group']].clear(true);
         }
-
         this.ajax[options['ajax_group']].add(_.extend({
             url: url,
             data: data,
@@ -406,12 +405,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.feed_id = feed_id;
 
         if (feed_id) {
+            console.log(["query", NEWSBLUR.reader.flags.search]);
             this.make_request('/reader/feed/'+feed_id,
                 {
                     page: page,
                     feed_address: this.feeds.get(feed_id).get('feed_address'),
                     order: this.view_setting(feed_id, 'order'),
-                    read_filter: this.view_setting(feed_id, 'read_filter')
+                    read_filter: this.view_setting(feed_id, 'read_filter'),
+                    query: NEWSBLUR.reader.flags.search
                 }, pre_callback,
                 error_callback,
                 {
@@ -504,7 +505,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.feed_id = 'starred';
         
         this.make_request('/reader/starred_stories', {
-            page: page
+            page: page,
+            query: NEWSBLUR.reader.flags.search
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'

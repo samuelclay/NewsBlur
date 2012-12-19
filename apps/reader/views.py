@@ -18,7 +18,7 @@ from django.core.mail import mail_admins
 from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.models import Site
-from mongoengine.queryset import OperationError
+from mongoengine.queryset import OperationError, Q
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
@@ -454,6 +454,8 @@ def load_single_feed(request, feed_id):
     page         = int(request.REQUEST.get('page', 1))
     order        = request.REQUEST.get('order', 'newest')
     read_filter  = request.REQUEST.get('read_filter', 'all')
+    query        = request.REQUEST.get('query')
+
     dupe_feed_id = None
     userstories_db = None
     user_profiles = []
@@ -470,8 +472,10 @@ def load_single_feed(request, feed_id):
         usersub = UserSubscription.objects.get(user=user, feed=feed)
     except UserSubscription.DoesNotExist:
         usersub = None
-
-    if usersub and (read_filter == 'unread' or order == 'oldest'):
+    
+    if query:
+        stories = feed.find_stories(query, offset=offset, limit=limit)
+    elif usersub and (read_filter == 'unread' or order == 'oldest'):
         stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
     else:
         stories = feed.get_stories(offset, limit)
@@ -626,10 +630,21 @@ def load_starred_stories(request):
     offset = int(request.REQUEST.get('offset', 0))
     limit  = int(request.REQUEST.get('limit', 10))
     page   = int(request.REQUEST.get('page', 0))
+    query  = request.REQUEST.get('query')
     now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     if page: offset = limit * (page - 1)
-        
-    mstories       = MStarredStory.objects(user_id=user.pk).order_by('-starred_date')[offset:offset+limit]
+    
+    if query:
+        mstories = MStarredStory.objects(
+            Q(user_id=user.pk) &
+            (Q(story_title__icontains=query) |
+             Q(story_content__icontains=query) |
+             Q(story_author_name__icontains=query))
+        ).order_by('-starred_date')[offset:offset+limit]
+    else:
+        mstories = MStarredStory.objects(
+            user_id=user.pk
+        ).order_by('-starred_date')[offset:offset+limit]
     stories        = Feed.format_stories(mstories)
     
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)

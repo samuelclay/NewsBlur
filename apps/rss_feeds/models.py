@@ -17,7 +17,7 @@ from django.conf import settings
 from django.db.models.query import QuerySet
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
-from mongoengine.queryset import OperationError
+from mongoengine.queryset import OperationError, Q
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
 from utils import json_functions as json
@@ -948,6 +948,17 @@ class Feed(models.Model):
         
         return stories
     
+    def find_stories(self, query, offset=0, limit=25):
+        stories_db = MStory.objects(
+            Q(story_feed_id=self.pk) &
+            (Q(story_title__icontains=query) |
+             Q(story_content__icontains=query) |
+             Q(story_author_name__icontains=query))
+        ).order_by('-starred_date')[offset:offset+limit]
+        stories = self.format_stories(stories_db, self.pk)
+        
+        return stories
+        
     @classmethod
     def format_stories(cls, stories_db, feed_id=None):
         stories = []
