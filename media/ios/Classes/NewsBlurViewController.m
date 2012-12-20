@@ -49,6 +49,7 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize intelligenceControl;
 @synthesize activeFeedLocations;
 @synthesize stillVisibleFeeds;
+@synthesize visibleFolders;
 @synthesize viewShowingAllFeeds;
 @synthesize pull;
 @synthesize lastUpdate;
@@ -788,7 +789,8 @@ static const CGFloat kFolderTitleHeight = 28;
     button.backgroundColor = [UIColor clearColor];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView
+heightForHeaderInSection:(NSInteger)section {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
     BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
@@ -854,7 +856,12 @@ static const CGFloat kFolderTitleHeight = 28;
 
     }
     appDelegate.activeFolderFeeds = feeds;
-    
+    if (!self.viewShowingAllFeeds) {
+        for (id feedId in feeds) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+            [self.stillVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
+        }
+    }
     [appDelegate.folderCountCache removeObjectForKey:appDelegate.activeFolder];
     
     [appDelegate loadRiverFeedDetailView];
