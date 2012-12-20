@@ -52,6 +52,7 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
     this.cache = {};
     this.story_id = story_id;
     this.feed_id = feed_id;
+    if (options.social_feed_id) this.feed_id = options.social_feed_id;
     this.trainer_iterator = -1;
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
@@ -100,6 +101,8 @@ var classifier_prototype = {
     },
     
     runner_story: function() {
+        this.options.social_feed = _.string.include(this.feed_id, 'social:');
+        
         if (!this.model.classifiers[this.feed_id]) {
             this.model.classifiers[this.feed_id] = _.extend({}, this.model.defaults['classifiers']);
         }
@@ -117,7 +120,7 @@ var classifier_prototype = {
         this.handle_cancel();
         this.open_modal();
         this.$modal.parent().bind('click.reader_classifer', $.rescope(this.handle_clicks, this));
-        
+
         if (!this.options.feed_loaded) {
             _.defer(_.bind(function() {
                 this.load_single_feed_trainer();
@@ -301,7 +304,7 @@ var classifier_prototype = {
             ]),
             (!NEWSBLUR.Globals.is_authenticated && $.make('div', { className: 'NB-trainer-not-authenticated' }, 'Please create an account and add sites you read. Then you can train them.')),
             $.make('div', { className: 'NB-modal-submit' }, [
-                (!NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-close NB-modal-submit-button' }, 'Close')),
+                (!NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-grey NB-modal-submit-button' }, 'Close')),
                 (NEWSBLUR.Globals.is_authenticated && $.make('a', { href: '#', className: 'NB-modal-submit-begin NB-modal-submit-button NB-modal-submit-grey NB-disabled' }, 'Loading Training...'))
             ])
         ]);
@@ -402,7 +405,7 @@ var classifier_prototype = {
                       $.make('input', { name: 'feed_id', value: this.feed_id, type: 'hidden' }),
                       $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-back' }, $.entity('&laquo;') + ' Back'),
                       $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-green NB-modal-submit-next NB-modal-submit-save' }, 'Save & Next '+$.entity('&raquo;')),
-                      $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-close' }, 'Close')
+                      $.make('a', { href: '#', className: 'NB-modal-submit-button NB-modal-submit-grey' }, 'Close')
                   ])),
                   (!this.options['training'] && $.make('div', { className: 'NB-modal-submit' }, [
                       $.make('input', { name: 'story_id', value: this.story_id, type: 'hidden' }),
@@ -450,6 +453,13 @@ var classifier_prototype = {
                         $.make('h5', 'Story Categories &amp; Tags'),
                         $.make('div', { className: 'NB-classifier-tags NB-fieldset-fields NB-classifiers' },
                             this.make_tags(story.get('story_tags'))
+                        )
+                    ])),
+
+                    (this.feed_publishers && this.feed_publishers.length && $.make('div', { className: 'NB-modal-field NB-fieldset NB-publishers' }, [
+                        $.make('h5', 'Sharing Stories From These Sites'),
+                        $.make('div', { className: 'NB-classifier-publishers NB-fieldset-fields NB-classifiers' },
+                            this.make_publishers(this.feed_publishers)
                         )
                     ])),
                     $.make('div', { className: 'NB-modal-field NB-fieldset' }, [
@@ -662,7 +672,7 @@ var classifier_prototype = {
         var $dislike = $('.NB-classifier-input-dislike', $classifier);
         
         var $save = $('.NB-modal-submit-save', this.$modal);
-        var $close = $('.NB-modal-submit-close', this.$modal);
+        var $close = $('.NB-modal-submit-grey', this.$modal);
         var $back = $('.NB-modal-submit-back', this.$modal);
         
         if (classifier_opinion == 'like') {
@@ -815,7 +825,7 @@ var classifier_prototype = {
                 self.retrain_all_sites();
             });
 
-            $.targetIs(e, { tagSelector: '.NB-modal-submit-close' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-modal-submit-grey' }, function($t, $p){
                 e.preventDefault();
                 self.save();
             });

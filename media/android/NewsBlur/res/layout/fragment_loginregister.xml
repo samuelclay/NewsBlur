@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/login_viewswitcher"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out" >
+   
+    <RelativeLayout
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+    	android:paddingBottom="20dp">
+
+        <LinearLayout
+            android:id="@+id/login_button_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/login_change_to_register"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="left"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/need_to_register"
+                android:textColor="@color/lightorange"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/login_button"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                android:contentDescription="@string/description_login_button"
+                android:text="@string/login_button_login" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/login_field_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/login_button_container"
+            android:gravity="center_vertical"
+            android:orientation="vertical" >
+
+            <EditText
+                android:id="@+id/login_username"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/login_username_hint"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/white"
+                android:textColorHint="@color/lightorange"
+                android:textSize="22dp" />
+
+            <EditText
+                android:id="@+id/login_password"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:hint="@string/login_password_hint"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                android:nextFocusDown="@+id/login_button"
+                android:textColor="@color/white"
+                android:textColorHint="@color/lightorange"
+                android:textSize="22dp" />
+        </LinearLayout>
+    </RelativeLayout>
+    
+     <RelativeLayout
+        android:id="@+id/registration_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+    	android:paddingBottom="20dp">
+
+        <LinearLayout
+            android:id="@+id/registration_button_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/login_change_to_login"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/need_to_login"
+                android:textColor="@color/lightorange"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/registration_button"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                android:contentDescription="@string/description_login_button"
+                android:text="@string/login_registration_register" />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/registration_button_container" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:orientation="vertical" >
+
+                <EditText
+                    android:id="@+id/registration_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/login_username_hint"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/lightorange"
+                    android:textSize="22dp" >
+
+                </EditText>
+
+                <EditText
+                    android:id="@+id/registration_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:hint="@string/login_password_hint"
+                    android:inputType="textPassword"
+                    android:nextFocusDown="@+id/registration_email"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/lightorange"
+                    android:textSize="22dp" />
+
+                <EditText
+                    android:id="@+id/registration_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:hint="@string/login_registration_email_hint"
+                    android:imeOptions="actionDone"
+                    android:inputType="textEmailAddress"
+                    android:nextFocusDown="@+id/registration_button"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/lightorange"
+                    android:textSize="22dp" />
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+    
+</ViewSwitcher>

@@ -5,7 +5,7 @@
     <h5 class="NB-module-header">
         <div class="NB-module-header-right">
             <div class="NB-spinner NB-left"></div>
-            <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if activities|length <= 4 %}NB-disabled{% endif %}"></a>
+            <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if not has_next_page %}NB-disabled{% endif %}"></a>
             <a href="#" class="NB-module-direction NB-module-previous-page {% if page <= 1 %}NB-disabled{% endif %}"></a>
         </div>
 
@@ -15,8 +15,8 @@
 {% endif %}
 
     <ul class="NB-interactions">
-        {% for activity in activities|slice:":4" %}
-        <li class="NB-interaction NB-activity-{{ activity.category }} {% if activity.is_new %}NB-highlighted{% endif %}"
+        {% for activity in activities %}
+        <li class="NB-interaction NB-activity-{{ activity.category }} {% if activity.is_new %}NB-highlighted{% endif %} {% if activity.category == 'signup' %}NB-disabled{% endif %}"
             {% if activity.content_id %}data-content-id="{{ activity.content_id }}"{% endif %}
             {% if activity.feed_id %}data-feed-id="{{ activity.feed_id }}"{% endif %}
             {% if activity.with_user_id %}data-user-id="{{ activity.with_user_id }}"{% endif %}
@@ -32,9 +32,19 @@
                     <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>.
                 </div>
             {% endif %}
+            
+            {% if activity.category == 'signup' %}
+                <img class="NB-interaction-photo" src="{{ activity.photo_url }}"  data-user-id="{{ activity.with_user_id }}">
+                <div class="NB-interaction-date">
+                    {{ activity.time_since }} ago
+                </div>
+                <div class="NB-interaction-title">
+                    {{ username }} signed up for NewsBlur.
+                </div>
+            {% endif %}
 
             {% if activity.category == 'comment_reply' %}
-                <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}" data-feed-id="{{ activity.feed_id }}">
+                <img class="NB-interaction-photo" src="{{ activity.photo_url }}" data-feed-id="{{ activity.feed_id }}">
                 <div class="NB-interaction-date">
                     {{ activity.time_since }} ago
                 </div>
@@ -46,8 +56,21 @@
                 </div>
             {% endif %}
 
+            {% if activity.category == 'comment_like' %}
+                <img class="NB-interaction-photo" src="{{ activity.photo_url }}"  data-user-id="{{ activity.with_user_id }}">
+                <div class="NB-interaction-date">
+                    {{ activity.time_since }} ago
+                </div>
+                <div class="NB-interaction-title">
+                    {{ username }} favorited <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>'s comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ activity.title|safe|truncatewords:6 }}</span>:
+                </div>
+                <div class="NB-interaction-content">
+                    "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ activity.content|truncatewords:16 }}</span>"
+                </div>
+            {% endif %}
+
             {% if activity.category == 'sharedstory' %}
-                <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.feed_id }}" data-feed-id="{{ activity.feed_id }}">
+                <img class="NB-interaction-photo" src="/rss_feeds/icon/{{ activity.story_feed_id }}" data-feed-id="{{ activity.story_feed_id }}">
                 <div class="NB-interaction-date">
                     {{ activity.time_since }} ago
                 </div>
@@ -56,13 +79,13 @@
                 </div>
                 {% if activity.content %}
                     <div class="NB-interaction-content">
-                        "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ activity.content|truncatewords:16 }}</span>"
+                        "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ activity.content|safe|truncatewords:16 }}</span>"
                     </div>
                 {% endif %}
             {% endif %}
             
             {% if activity.category == 'star' %}
-                <img class="NB-interaction-photo" src="{{ MEDIA_URL }}img/reader/star_blue.png">
+                <img class="NB-interaction-photo" src="{{ MEDIA_URL }}img/icons/silk/time.png">
                 <div class="NB-interaction-date">
                     {{ activity.time_since }} ago
                 </div>

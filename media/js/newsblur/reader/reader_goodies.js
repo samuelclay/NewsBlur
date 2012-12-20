@@ -22,8 +22,44 @@ NEWSBLUR.ReaderGoodies.prototype = {
             $.make('h2', { className: 'NB-modal-title' }, 'Goodies &amp; Extras'),
             $.make('div', { className: 'NB-goodies-group' }, [
               NEWSBLUR.generate_bookmarklet(),
-              $.make('div', { className: 'NB-goodies-title' }, 'Add Site Bookmarklet')
+              $.make('div', { className: 'NB-goodies-title' }, 'Add Site &amp; Share Story Bookmarklet')
             ]),
+            
+            $.make('h3', 'Mobile Apps for NewsBlur'),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: '/ios/'
+              }, 'See the iOS App'),
+              $.make('div', { className: 'NB-goodies-iphone' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur iPhone/iPad App')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: '/android/'
+              }, 'See the Android App'),
+              $.make('div', { className: 'NB-goodies-android' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur Android App')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'https://market.android.com/details?id=bitwrit.Blar'
+              }, 'View in Android Market'),
+              $.make('div', { className: 'NB-goodies-android' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Blar: User-Created Android App')
+            ]),
+            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
+              $.make('a', {
+                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
+                  href: 'http://projects.developer.nokia.com/feed_reader'
+              }, 'View in Nokia Store'),
+              $.make('div', { className: 'NB-goodies-nokia' }),
+              $.make('div', { className: 'NB-goodies-title' }, 'Web Feeds: User-Created MeeGo App')
+            ]),
+            
+            $.make('h3', 'Browser Extensions for NewsBlur'),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
                   className: 'NB-goodies-firefox-link NB-modal-submit-button NB-modal-submit-green',
@@ -38,7 +74,7 @@ NEWSBLUR.ReaderGoodies.prototype = {
                   href: '#'
               }, 'Add to Chrome'),
               $.make('div', { className: 'NB-goodies-chrome' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Google Chome: NewsBlur Chrome Web App')
+              $.make('div', { className: 'NB-goodies-title' }, 'Google Chrome: NewsBlur Chrome Web App')
             ]),
             $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
               $.make('a', {
@@ -70,30 +106,6 @@ NEWSBLUR.ReaderGoodies.prototype = {
               }, 'Chrome Notifier'),
               $.make('div', { className: 'NB-goodies-chrome' }),
               $.make('div', { className: 'NB-goodies-title' }, 'Chrome address bar button that shows unread counts')
-            ]),
-            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
-              $.make('a', {
-                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
-                  href: '/iphone/'
-              }, 'See the iPhone App'),
-              $.make('div', { className: 'NB-goodies-iphone' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Official NewsBlur iPhone App')
-            ]),
-            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
-              $.make('a', {
-                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
-                  href: 'https://market.android.com/details?id=bitwrit.Blar'
-              }, 'View in Android Market'),
-              $.make('div', { className: 'NB-goodies-android' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Blar: User-Created Android App')
-            ]),
-            $.make('div', { className: 'NB-goodies-group NB-modal-submit' }, [
-              $.make('a', {
-                  className: 'NB-goodies-mobile-link NB-modal-submit-button NB-modal-submit-green',
-                  href: 'http://projects.developer.nokia.com/feed_reader'
-              }, 'View in Nokia Store'),
-              $.make('div', { className: 'NB-goodies-nokia' }),
-              $.make('div', { className: 'NB-goodies-title' }, 'Web Feeds: User-Created MeeGo App')
             ])
         ]);
     },
@@ -144,9 +156,20 @@ NEWSBLUR.ReaderGoodies.prototype = {
 
         $.targetIs(e, { tagSelector: '.NB-goodies-firefox-link' }, function($t, $p) {
             e.preventDefault();
-
+            var host = [
+                document.location.protocol,
+                '//',
+                document.location.host,
+                '/'
+            ].join('');
             navigator.registerContentHandler("application/vnd.mozilla.maybe.feed",
-                                             document.location +"?url=%s",
+                                             host + "?url=%s",
+                                             "NewsBlur");
+            navigator.registerContentHandler("application/atom+xml",
+                                             host + "?url=%s",
+                                             "NewsBlur");
+            navigator.registerContentHandler("application/rss+xml",
+                                             host + "?url=%s",
                                              "NewsBlur");
         });
 

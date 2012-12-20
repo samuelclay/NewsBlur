@@ -6,8 +6,11 @@ import scipy.cluster
 import urlparse
 import struct
 import operator
+import gzip
 import BmpImagePlugin, PngImagePlugin, Image
+from boto.s3.key import Key
 from StringIO import StringIO
+from django.conf import settings
 from apps.rss_feeds.models import MFeedPage, MFeedIcon
 from utils.feed_functions import timelimit, TimeoutError
 
@@ -18,16 +21,20 @@ HEADERS = {
 
 class IconImporter(object):
     
-    def __init__(self, feed, force=False):
+    def __init__(self, feed, page_data=None, force=False):
         self.feed = feed
         self.force = force
+        self.page_data = page_data
         self.feed_icon, _ = MFeedIcon.objects.get_or_create(feed_id=self.feed.pk)
     
     def save(self):
         if not self.force and self.feed.favicon_not_found:
             # print 'Not found, skipping...'
             return
-        if not self.force and not self.feed.favicon_not_found and self.feed_icon.icon_url:
+        if (not self.force and 
+            not self.feed.favicon_not_found and 
+            self.feed_icon.icon_url and 
+            self.feed.s3_icon):
             # print 'Found, but skipping...'
             return
         image, image_file, icon_url = self.fetch_image_from_page_data()
@@ -45,15 +52,19 @@ class IconImporter(object):
             color     = self.determine_dominant_color_in_image(image)
             image_str = self.string_from_image(image)
 
-            if (self.feed_icon.color != color or 
+            if (self.force or 
+                self.feed_icon.color != color or 
                 self.feed_icon.data != image_str or 
                 self.feed_icon.icon_url != icon_url or
-                self.feed_icon.not_found):
+                self.feed_icon.not_found or
+                (settings.BACKED_BY_AWS.get('icons_on_s3') and not self.feed.s3_icon)):
                 self.feed_icon.data      = image_str
                 self.feed_icon.icon_url  = icon_url
                 self.feed_icon.color     = color
                 self.feed_icon.not_found = False
                 self.feed_icon.save()
+                if settings.BACKED_BY_AWS.get('icons_on_s3'):
+                    self.save_to_s3(image_str)
             self.feed.favicon_color     = color
             self.feed.favicon_not_found = False
         else:
@@ -62,7 +73,16 @@ class IconImporter(object):
             
         self.feed.save()
         return not self.feed.favicon_not_found
-     
+
+    def save_to_s3(self, image_str):
+        k = Key(settings.S3_ICONS_BUCKET)
+        k.key = self.feed.s3_icons_key
+        k.set_metadata('Content-Type', 'image/png')
+        k.set_contents_from_string(image_str.decode('base64'))
+        k.set_acl('public-read')
+        
+        self.feed.s3_icon = True
+        
     def load_icon(self, image_file, index=None):
         '''
         Load Windows ICO image.
@@ -143,7 +163,19 @@ class IconImporter(object):
     def fetch_image_from_page_data(self):
         image = None
         image_file = None
-        content = MFeedPage.get_data(feed_id=self.feed.pk)
+        if self.page_data:
+            content = self.page_data
+        elif settings.BACKED_BY_AWS.get('pages_on_s3') and self.feed.s3_page:
+            key = settings.S3_PAGES_BUCKET.get_key(self.feed.s3_pages_key)
+            compressed_content = key.get_contents_as_string()
+            stream = StringIO(compressed_content)
+            gz = gzip.GzipFile(fileobj=stream)
+            try:
+                content = gz.read()
+            except IOError:
+                content = None
+        else:
+            content = MFeedPage.get_data(feed_id=self.feed.pk)
         url = self._url_from_html(content)
         if url:
             image, image_file = self.get_image_from_url(url)
@@ -168,6 +200,9 @@ class IconImporter(object):
     
     def get_image_from_url(self, url):
         # print 'Requesting: %s' % url
+        if not url:
+            return None, None
+            
         @timelimit(30)
         def _1(url):
             try:
@@ -193,6 +228,8 @@ class IconImporter(object):
         url = None
         if not content: return url
         try:
+            if isinstance(content, unicode):
+                content = content.encode('utf-8')
             icon_path = lxml.html.fromstring(content).xpath(
                 '//link[@rel="icon" or @rel="shortcut icon"]/@href'
             )

@@ -6,7 +6,11 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     events: {
-        "contextmenu"                       : "show_manage_menu",
+        "click .NB-feedbar-mark-feed-read"  : "mark_feed_as_read",
+        "click .NB-story-title-indicator"   : "show_hidden_story_titles",
+        "click .NB-feedbar-train-feed"      : "open_trainer",
+        "click .NB-feedbar-statistics"      : "open_statistics",
+        "click .NB-feedbar-settings"        : "open_settings",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
         "dblclick"                          : "open_feed_link",
         "click"                             : "open",
@@ -71,8 +75,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             <% } %>\
             <%= feed.get("feed_title") %>\
             <% if (type == "story") { %>\
-              <span class="NB-feedbar-train-feed" title="Train Intelligence"></span>\
-              <span class="NB-feedbar-statistics" title="Statistics"></span>\
+                <span class="NB-feedbar-settings" title="Site settings"></span>\
             <% } %>\
           </span>\
           <% if (type == "story") { %>\
@@ -102,11 +105,26 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
           selected            : this.model.get('selected') || NEWSBLUR.reader.active_feed == this.model.id
         }));
         
+        // Removed search from feeds because it's SLOW
+        // if (this.options.type == 'story') {
+        //     var search_view = new NEWSBLUR.Views.FeedSearchView({
+        //         feedbar_view: this
+        //     }).render();
+        //     $('.feed_title', $feed).append(search_view.$el);
+        // }
+        
         this.$el.replaceWith($feed);
         this.setElement($feed);
         this.render_counts();
         this.setup_tooltips();
         this.render_updated_time();
+        
+        if (NEWSBLUR.reader.flags.search) {
+            var $search = this.$("input[name=feed_search]");
+            $search.focus();
+        }
+        
+        this.$el.bind('contextmenu', _.bind(this.show_manage_menu, this));
         
         return this;
     },
@@ -183,7 +201,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     flash_changes: function() {
         var $highlight = this.$('.NB-feed-highlight');
-
+        $highlight.stop();
         $highlight.css({
             'backgroundColor': '#F0F076',
             'display': 'block'
@@ -211,18 +229,17 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         $(this.el).addClass(extra_classes);
     },
     
-    // ===========
-    // = Actions =
-    // ===========
-    
-    
     // ==========
     // = Events =
     // ==========
     
     open: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         if (this.options.feed_chooser) return;
         if (this.options.type != 'feed') return;
+        if (e.which >= 2) return;
+        if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
         
         if (this.model.get('has_exception') && this.model.get('exception_type') == 'feed') {
             NEWSBLUR.reader.open_feed_exception_modal(this.model.id);
@@ -233,20 +250,33 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
     },
     
-    open_feed_link: function() {
+    open_feed_link: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if ($('.NB-modal-feedchooser').is(':visible')) return;
+        
         NEWSBLUR.reader.mark_feed_as_read(this.model.id);
         window.open(this.model.get('feed_link'), '_blank');
         window.focus();
+        
+        return false;
+    },
+    
+    mark_feed_as_read: function(e) {
+        NEWSBLUR.reader.mark_feed_as_read(this.model.id);
+        this.$('.NB-feedbar-mark-feed-read').fadeOut(400);
     },
     
     show_manage_menu: function(e) {
         if (this.options.feed_chooser) return;
         e.preventDefault();
         e.stopPropagation();
-        // NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this]);
+        NEWSBLUR.log(["showing manage menu", this.model.is_social() ? 'socialfeed' : 'feed', $(this.el), this, e.which, e.button]);
         NEWSBLUR.reader.show_manage_menu(this.model.is_social() ? 'socialfeed' : 'feed', this.$el, {
             feed_id: this.model.id,
-            toplevel: this.options.depth == 0
+            toplevel: this.options.depth == 0,
+            rightclick: e.which >= 2
         });
         return false;
     },
@@ -272,6 +302,24 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     remove_hover_inverse: function() {
         this.$el.removeClass('NB-hover-inverse');
+    },
+    
+    open_trainer: function() {
+        if (!$('.NB-task-manage').hasClass('NB-disabled')) {
+            NEWSBLUR.reader.open_feed_intelligence_modal(1, null, !NEWSBLUR.reader.flags.social_view);
+        }
+    },
+    
+    open_statistics: function() {
+        NEWSBLUR.reader.open_feed_statistics_modal();
+    },
+    
+    open_settings: function(e) {
+        this.show_manage_menu(e);
+    },
+    
+    show_hidden_story_titles: function() {
+        NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
     }
-
+    
 });

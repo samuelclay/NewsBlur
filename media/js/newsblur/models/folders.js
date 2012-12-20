@@ -4,7 +4,7 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         if (_.isNumber(model)) {
             this.feed = NEWSBLUR.assets.feeds.get(model);
 
-            // The feed needs to exists as a model as well. Otherwise, chuck it.
+            // The feed needs to exists as a model as well. Otherwise, toss it.
             if (this.feed) {
                 this.set('is_feed', true);
             }
@@ -14,17 +14,20 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
             this.set('is_folder', true);
             this.set('folder_title', title);
             this.folder_views = [];
-            this.folders = new NEWSBLUR.Collections.Folders([], {title: title});
+            this.folders = new NEWSBLUR.Collections.Folders([], {
+                title: title,
+                parent_folder: this.collection
+            });
             this.folders.reset(_.compact(children));
         }
     },
     
     is_feed: function() {
-        return this.get('is_feed', false);
+        return !!this.get('is_feed');
     },
     
     is_folder: function() {
-        return this.get('is_folder', false);
+        return !!this.get('is_folder');
     },
     
     get_view: function($folder) {
@@ -93,6 +96,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
     
     initialize: function(models, options) {
         this.options = options || {};
+        this.parent_folder = options && options.parent_folder;
         this.comparator = NEWSBLUR.Collections.Folders.comparator;
     },
     
@@ -102,6 +106,21 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         return this.select(function(item) {
             return item.is_folder();
         });
+    },
+    
+    find_folder: function(folder_name) {
+        var found_folder;
+        this.any(function(folder) {
+            if (folder.is_folder()) {
+                if (folder.get('folder_title').toLowerCase() == folder_name) {
+                    found_folder = folder;
+                    return found_folder;
+                }
+                found_folder = folder.folders.find_folder(folder_name);
+                return found_folder;
+            }
+        });
+        return found_folder;
     },
     
     get_view: function($folder) {
@@ -134,6 +153,21 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
         return _.compact(_.flatten(this.map(function(item) {
             return item.feed_ids_in_folder();
         })));
+    },
+    
+    selected: function() {
+        var selected_folder;
+        this.any(function(folder) {
+            if (folder.is_folder()) {
+                if (folder.get('selected')) {
+                    selected_folder = folder;
+                    return selected_folder;
+                }
+                selected_folder = folder.folders.selected();
+                return selected_folder;
+            }
+        });
+        return selected_folder;
     },
     
     deselect: function() {
@@ -173,7 +207,7 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
     
     comparator: function(modelA, modelB) {
         var sort_order = NEWSBLUR.assets.preference('feed_order');
-        
+
         if (modelA.is_feed() != modelB.is_feed()) {
             // Feeds above folders
             return modelA.is_feed() ? -1 : 1;

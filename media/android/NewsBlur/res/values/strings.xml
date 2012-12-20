@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="newsblur">NewsBlur</string>
+    
+    <string name="login_username_hint">username</string>
+    <string name="login_password_hint">password</string>
+    <string name="login_registration_email_hint">email address</string>
+    <string name="login_button_login">Log In</string>
+    <string name="login_button_signup">Sign Up</string>
+    <string name="login_message_error">There was problem connecting to NewsBlur. Check your internet connection.</string>
+    <string name="login_logging_in">Logging in…</string>
+    <string name="login_logged_in">Logged in!</string>
+    <string name="login_retrieving_feeds">Retrieving feeds…</string>
+    <string name="login_retrieved_feeds">Retrieved feeds!</string>
+    <string name="login_lets_go">Let\'s go!</string>
+    
+    <string name="hello">Hello World!</string>
+    
+    <string name="title_feed_search">Search for feeds</string>
+    <string name="add_feed_message">Add \"%s\" to your feeds?</string>
+    
+    <string name="train_on">Train on \"%s\"</string>
+    
+    <string name="dialog_title">Alert</string>
+    <string name="loading">Loading…</string>
+    <string name="edit">Shared</string>
+    
+    <string name="follow_error">There was a problem following the user. Check your internet connection and try again.</string>
+    <string name="unfollow_error">There was a problem unfollowing the user. Check your internet connection and try again.</string>
+    
+    <string name="description_login_button">Press to log in.</string>
+    <string name="description_login_logo">NewsBlur Logo</string>
+    <string name="description_signup_button">Press to sign up</string>
+    <string name="description_favicon">The feed\'s favicon</string>
+	<string name="description_profile_picture">The user\'s profile picture</string>
+	<string name="description_row_folder_icon">folder icon</string>
+	<string name="description_activity_icon">An icon illustrating the user\'s activity</string>
+	<string name="description_follow_button">Follow or unfollow a user</string>
+	<string name="description_comment_user">Comment user image</string>
+	
+	<string name="reading_shared_count">%s SHARES</string>
+	<string name="reading_comment_count">%s COMMENTS</string>
+	
+	<string name="all_stories">ALL STORIES</string>
+	<string name="all_shared_stories">ALL SHARED STORIES</string>
+	
+	<string name="now">now</string>
+	
+	<string name="error_saving_classifier">There was an error. Check your internet connection.</string>
+	
+	<string name="replied">Reply posted</string>
+	<string name="error_replying">There was an error replying</string>
+	<string name="share">\"%1$s\" - %2$s (via NewsBlur)</string>
+	<string name="shared_title">Share</string>
+	<string name="share_this">Share this story</string>
+	<string name="share_comment_hint">Comment (Optional)</string>
+	<string name="shared">Story shared</string>
+	<string name="error_sharing">There was an problem sharing this story.</string>
+	<string name="share_newsblur">Share \"%s\" to your Blurblog?</string>
+	
+	<string name="reply_to">Reply to \"%s\"</string>
+	
+	<string name="alert_dialog_ok">Okay</string>
+	<string name="alert_dialog_cancel">Cancel</string>
+	<string name="alert_dialog_close">Close</string>
+	
+    <string name="profile">Profile</string>
+    <string name="profile_location_icon">Location icon</string>
+    <string name="profile_following">FOLLOWING</string>
+    <string name="profile_followers">FOLLOWERS</string>
+    <string name="profile_shared">SHARED STORIES</string>
+    <string name="profile_subscribers">subscribers</string>
+    <string name="profile_no_bio">No bio included</string>
+    <string name="profile_no_location">Location not set</string>
+    <string name="profile_ago">AGO</string>
+    <string name="profile_recent_actvity">Recent Activity</string>
+    <string name="profile_started_following">Started following </string>
+    <string name="profile_replied_to">Replied to</string>
+    <string name="profile_with_comment">with the comment</string>
+    <string name="profile_liked_comment">Liked the comment</string>
+    <string name="profile_shared_story">Shared the story</string>
+    <string name="profile_button_follow">Follow</string>
+    <string name="profile_button_unfollow">Following</string>
+    
+    <string name="menu_profile">Profile</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_original">View original</string>
+    <string name="menu_share">Send to…</string>
+    <string name="menu_mark_feed_as_read">Mark feed as read</string>
+    <string name="menu_delete_feed">Delete feed</string>
+    <string name="menu_mark_folder_as_read">Mark folder as read</string>
+    <string name="menu_sharenewsblur">Share this story</string>
+    <string name="menu_textsize">Adjust text size</string>
+    
+    <string name="toast_marked_folder_as_read">Folder marked as read</string>
+    <string name="toast_marked_feed_as_read">Feed marked as read</string>
+    <string name="toast_marked_socialfeed_as_read">Blurblog marked as read</string>
+    
+    <string name="toast_error_marking_feed_as_read">Error marking feed as read. Check your internet connection.</string>
+    
+    <string name="logout_warning">Are you sure you want to log out?</string>
+    
+    <string name="feed_search_hint">Search for new feeds</string>
+    <string name="empty_list_notice">Loading stories…</string>
+    <string name="empty_search_notice">Type a search term to begin</string>
+    <string name="menu_add_feed">Add new feed</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_mark_all_as_read">Mark all as read</string>
+    <string name="menu_logout">Log out</string>
+    
+    <string name="feed_deleted">Feed deleted</string>
+    <string name="error_deleting_feed">There was an error deleting the feed.</string>
+    <string name="login_registration_register">Register</string>
+    <string name="login_google_reader">Google Reader</string>
+    <string name="login_add_sites_from_google_reader">Import your sites from Google Reader</string>
+    <string name="add_sites">Add some sites</string>
+    <string name="get_started">Let\'s get started</string>
+    <string name="add_friends">Add your friends</string>
+    <string name="connect_with_your_friends">Connect with your friends to easily follow the stories that matter to them</string>
+    <string name="twitter">Twitter</string>
+    <string name="facebook">Facebook</string>
+    <string name="auto_follow_friends">Auto-follow friends</string>
+    <string name="faster_faster">Faster! Faster! Until the thrill of speed overcomes the fear of death!</string>
+    <string name="add_twitter">Add Twitter friends</string>
+    <string name="add_facebook">Add Facebook friends</string>
+    <string name="need_to_login"><u>I need to log in!</u></string>
+    <string name="need_to_register"><u>I need to register</u></string>
+    <string name="wonderful_things">Wonderful things are happening at Newsblur. Add our blog for the latest news.</string>
+    <string name="addfollow_add_newsblur">Follow the NewsBlur blog</string>
+    <string name="addfollow_add_popular">Follow Popular Stories</string>
+    <string name="add_follow">All Done!</string>
+    <string name="share_with_comments">Share with comments</string>
+    <string name="share_this_story">Share this story</string>
+    <string name="comment_favourited">Comment favorited</string>
+    <string name="error_liking_comment">Error favoriting comment</string>
+    <string name="let_s_go_">Let&amp;apos;s go!</string>
+    <string name="public_comment_count">%d PUBLIC COMMENTS</string>
+    <string name="friends_comments_count">%d COMMENTS</string>
+    
+</resources>

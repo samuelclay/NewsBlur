@@ -1,7 +1,7 @@
-/*
- * jQuery UI Position 1.8.9
+/*!
+ * jQuery UI Position 1.8.23
  *
- * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
  *
@@ -14,6 +14,7 @@ $.ui = $.ui || {};
 var horizontalPositions = /left|center|right/,
 	verticalPositions = /top|center|bottom/,
 	center = "center",
+	support = {},
 	_position = $.fn.position,
 	_offset = $.fn.offset;
 
@@ -121,9 +122,11 @@ $.fn.position = function( options ) {
 			position.top -= elemHeight / 2;
 		}
 
-		// prevent fractions (see #5280)
-		position.left = Math.round( position.left );
-		position.top = Math.round( position.top );
+		// prevent fractions if jQuery version doesn't support them (see #5280)
+		if ( !support.fractions ) {
+			position.left = Math.round( position.left );
+			position.top = Math.round( position.top );
+		}
 
 		collisionPosition = {
 			left: position.left - marginLeft,
@@ -240,7 +243,12 @@ if ( !$.offset.setOffset ) {
 	$.fn.offset = function( options ) {
 		var elem = this[ 0 ];
 		if ( !elem || !elem.ownerDocument ) { return null; }
-		if ( options ) { 
+		if ( options ) {
+			if ( $.isFunction( options ) ) {
+				return this.each(function( i ) {
+					$( this ).offset( options.call( this, i, $( this ).offset() ) );
+				});
+			}
 			return this.each(function() {
 				$.offset.setOffset( this, options );
 			});
@@ -248,5 +256,53 @@ if ( !$.offset.setOffset ) {
 		return _offset.call( this );
 	};
 }
+
+// jQuery <1.4.3 uses curCSS, in 1.4.3 - 1.7.2 curCSS = css, 1.8+ only has css
+if ( !$.curCSS ) {
+	$.curCSS = $.css;
+}
+
+// fraction support test (older versions of jQuery don't support fractions)
+(function () {
+	var body = document.getElementsByTagName( "body" )[ 0 ], 
+		div = document.createElement( "div" ),
+		testElement, testElementParent, testElementStyle, offset, offsetTotal;
+
+	//Create a "fake body" for testing based on method used in jQuery.support
+	testElement = document.createElement( body ? "div" : "body" );
+	testElementStyle = {
+		visibility: "hidden",
+		width: 0,
+		height: 0,
+		border: 0,
+		margin: 0,
+		background: "none"
+	};
+	if ( body ) {
+		$.extend( testElementStyle, {
+			position: "absolute",
+			left: "-1000px",
+			top: "-1000px"
+		});
+	}
+	for ( var i in testElementStyle ) {
+		testElement.style[ i ] = testElementStyle[ i ];
+	}
+	testElement.appendChild( div );
+	testElementParent = body || document.documentElement;
+	testElementParent.insertBefore( testElement, testElementParent.firstChild );
+
+	div.style.cssText = "position: absolute; left: 10.7432222px; top: 10.432325px; height: 30px; width: 201px;";
+
+	offset = $( div ).offset( function( _, offset ) {
+		return offset;
+	}).offset();
+
+	testElement.innerHTML = "";
+	testElementParent.removeChild( testElement );
+
+	offsetTotal = offset.top + offset.left + ( body ? 2000 : 0 );
+	support.fractions = offsetTotal > 21 && offsetTotal < 22;
+})();
 
 }( jQuery ));

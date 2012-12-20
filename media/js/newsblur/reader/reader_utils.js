@@ -153,12 +153,13 @@ NEWSBLUR.utils = {
     },
     
     is_url_iframe_buster: function(url) {
-        // Also change in rss_feeds/models.py.
+        // Also change in utils/page_importer.py.
         var BROKEN_URLS = [
             'nytimes.com',
             'stackoverflow.com',
             'stackexchange.com',
-            'twitter.com'
+            'twitter.com',
+            'rankexploits'
         ];
         return _.any(BROKEN_URLS, function(broken_url) {
             return _.string.contains(url, broken_url);

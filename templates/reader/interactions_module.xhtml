@@ -5,14 +5,14 @@
     <h5 class="NB-module-header">
         <div class="NB-module-header-right">
             <div class="NB-spinner NB-left"></div>
-            <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if interactions|length <= 4 %}NB-disabled{% endif %}"></a>
+            <a href="#" class="NB-module-direction NB-module-next-page NB-javascript {% if not has_next_page %}NB-disabled{% endif %}"></a>
             <a href="#" class="NB-module-direction NB-module-previous-page {% if page <= 1 %}NB-disabled{% endif %}"></a>
         </div>
         Interactions
     </h5>
 
     <ul class="NB-interactions">
-        {% for interaction in interactions|slice:":4" %}
+        {% for interaction in interactions %}
         <li class="NB-interaction NB-interaction-{{ interaction.category }} 
                    {% if interaction.is_new %}NB-highlighted{% endif %}
                    {% if interaction.category == 'story_reshare' %}NB-interaction-sharedstory{% endif %}"
@@ -43,7 +43,7 @@
                     </span> replied to your {% if interaction.category == 'comment_reply' %}comment{% else %}reply{% endif %}:
                 </div>
                 <div class="NB-interaction-content">
-                    "<span class="NB-interaction-reply-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|truncatewords:16 }}</span>"
+                    "<span class="NB-interaction-reply-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
                 </div>
             {% endif %}
             
@@ -59,9 +59,24 @@
                 </div>
                 {% if interaction.content %}
                     <div class="NB-interaction-content">
-                        "<span class="NB-interaction-sharedstory-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|truncatewords:16 }}</span>"
+                        "<span class="NB-interaction-sharedstory-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
                     </div>
                 {% endif %}
+            {% endif %}
+            
+            {% if interaction.category == 'comment_like' %}
+                <img class="NB-interaction-photo" src="{{ interaction.photo_url }}"  data-user-id="{{ interaction.with_user_id }}">
+                <div class="NB-interaction-date">
+                    {{ interaction.time_since }} ago
+                </div>
+                <div class="NB-interaction-title">
+                    <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
+                        {{ interaction.with_user.username }}
+                    </span> favorited your comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ interaction.title|safe|truncatewords:6 }}</span>:
+                </div>
+                <div class="NB-interaction-content">
+                    "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ interaction.content|truncatewords:16 }}</span>"
+                </div>
             {% endif %}
         </li>
         {% endfor %}

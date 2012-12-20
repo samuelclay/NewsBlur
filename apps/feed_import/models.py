@@ -1,20 +1,27 @@
 import datetime
-import oauth2 as oauth
+import mongoengine as mongo
+import httplib2
+import pickle
+import base64
 from collections import defaultdict
 from StringIO import StringIO
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 from lxml import etree
 from django.db import models
 from django.contrib.auth.models import User
-from django.conf import settings
 from mongoengine.queryset import OperationError
 import vendor.opml as opml
 from apps.rss_feeds.models import Feed, DuplicateFeed, MStarredStory
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from utils import json_functions as json, urlnorm
 from utils import log as logging
+from utils.feed_functions import timelimit
 
-    
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^oauth2client\.django_orm\.FlowField"])
+add_introspection_rules([], ["^oauth2client\.django_orm\.CredentialsField"])
+
+
 class OAuthToken(models.Model):
     user = models.OneToOneField(User, null=True, blank=True)
     session_id = models.CharField(max_length=50, null=True, blank=True)
@@ -24,6 +31,7 @@ class OAuthToken(models.Model):
     request_token_secret = models.CharField(max_length=50)
     access_token = models.CharField(max_length=50)
     access_token_secret = models.CharField(max_length=50)
+    credential = models.TextField(null=True, blank=True)
     created_date = models.DateTimeField(default=datetime.datetime.now)
     
     
@@ -33,7 +41,7 @@ class OPMLExporter:
         self.user = user
         self.fetch_feeds()
         
-    def process(self):
+    def process(self, verbose=False):
         now = str(datetime.datetime.now())
 
         root = Element('opml')
@@ -49,19 +57,24 @@ class OPMLExporter:
         dm.text    = now
         folders    = self.get_folders()
         body       = SubElement(root, 'body')
-        self.process_outline(body, folders)
+        self.process_outline(body, folders, verbose=verbose)
         return tostring(root)
         
-    def process_outline(self, body, folders):
+    def process_outline(self, body, folders, verbose=False):
         for obj in folders:
             if isinstance(obj, int) and obj in self.feeds:
                 feed = self.feeds[obj]
+                if verbose:
+                    print "     ---> Adding feed: %s - %s" % (feed['id'],
+                                                              feed['feed_title'][:30])
                 feed_attrs = self.make_feed_row(feed)
                 body.append(Element('outline', feed_attrs))
             elif isinstance(obj, dict):
                 for folder_title, folder_objs in obj.items():
+                    if verbose:
+                        print " ---> Adding folder: %s" % folder_title
                     folder_element = Element('outline', {'text': folder_title, 'title': folder_title})
-                    body.append(self.process_outline(folder_element, folder_objs))
+                    body.append(self.process_outline(folder_element, folder_objs, verbose=verbose))
         return body
     
     def make_feed_row(self, feed):
@@ -70,8 +83,8 @@ class OPMLExporter:
             'title': feed['feed_title'],
             'type': 'rss',
             'version': 'RSS',
-            'htmlUrl': feed['feed_link'],
-            'xmlUrl': feed['feed_address'],
+            'htmlUrl': feed['feed_link'] or "",
+            'xmlUrl': feed['feed_address'] or "",
         }
         return feed_attrs
         
@@ -87,8 +100,10 @@ class OPMLExporter:
 class Importer:
 
     def clear_feeds(self):
-        UserSubscriptionFolders.objects.filter(user=self.user).delete()
         UserSubscription.objects.filter(user=self.user).delete()
+
+    def clear_folders(self):
+        UserSubscriptionFolders.objects.filter(user=self.user).delete()
 
     
 class OPMLImporter(Importer):
@@ -96,12 +111,18 @@ class OPMLImporter(Importer):
     def __init__(self, opml_xml, user):
         self.user = user
         self.opml_xml = opml_xml
-
+    
+    def try_processing(self):
+        folders = timelimit(20)(self.process)()
+        return folders
+        
     def process(self):
-        outline = opml.from_string(self.opml_xml)
         self.clear_feeds()
+        outline = opml.from_string(str(self.opml_xml))
         folders = self.process_outline(outline)
+        self.clear_folders()
         UserSubscriptionFolders.objects.create(user=self.user, folders=json.encode(folders))
+        
         return folders
         
     def process_outline(self, outline):
@@ -167,9 +188,33 @@ class OPMLImporter(Importer):
                 if not us.needs_unread_recalc:
                     us.needs_unread_recalc = True
                     us.save()
-                folders.append(feed_db.pk)
+                if feed_db.pk not in folders:
+                    folders.append(feed_db.pk)
+
         return folders
+    
+    def count_feeds_in_opml(self):
+        opml_count = len(opml.from_string(self.opml_xml))
+        sub_count = UserSubscription.objects.filter(user=self.user).count()
+        return max(sub_count, opml_count)
         
+
+class UploadedOPML(mongo.Document):
+    user_id = mongo.IntField()
+    opml_file = mongo.StringField()
+    upload_date = mongo.DateTimeField(default=datetime.datetime.now)
+    
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "%s: %s characters" % (user.username, len(self.opml_file))
+    
+    meta = {
+        'collection': 'uploaded_opml',
+        'allow_inheritance': False,
+        'order': '-upload_date',
+        'indexes': ['user_id', '-upload_date'],
+    }
+    
 
 class GoogleReaderImporter(Importer):
     
@@ -178,25 +223,29 @@ class GoogleReaderImporter(Importer):
         self.subscription_folders = []
         self.scope = "http://www.google.com/reader/api"
         self.xml = xml
+        self.auto_active = False
     
-    def import_feeds(self):
+    def import_feeds(self, auto_active=False):
+        self.auto_active = auto_active
         sub_url = "%s/0/subscription/list" % self.scope
         if not self.xml:
             feeds_xml = self.send_request(sub_url)
         else:
             feeds_xml = self.xml
-        self.process_feeds(feeds_xml)
+        if feeds_xml:
+            self.process_feeds(feeds_xml)
         
     def send_request(self, url):
         user_tokens = OAuthToken.objects.filter(user=self.user)
 
         if user_tokens.count():
             user_token = user_tokens[0]
-            consumer = oauth.Consumer(settings.OAUTH_KEY, settings.OAUTH_SECRET)
-            token = oauth.Token(user_token.access_token, user_token.access_token_secret)
-            client = oauth.Client(consumer, token)
-            _, content = client.request(url, 'GET')
-            return content
+            if user_token.credential:
+                credential = pickle.loads(base64.b64decode(user_token.credential))
+                http = httplib2.Http()
+                http = credential.authorize(http)
+                content = http.request(url)
+                return content and content[1]
         
     def process_feeds(self, feeds_xml):
         self.clear_feeds()
@@ -206,8 +255,10 @@ class GoogleReaderImporter(Importer):
         for item in self.feeds:
             folders = self.process_item(item, folders)
 
-        self.rearrange_folders(folders)
+        folders = self.rearrange_folders(folders)
         logging.user(self.user, "~BB~FW~SBGoogle Reader import: ~BT~FW%s" % (self.subscription_folders))
+        
+        self.clear_folders()
         UserSubscriptionFolders.objects.get_or_create(user=self.user, defaults=dict(
                                                       folders=json.encode(self.subscription_folders)))
 
@@ -254,17 +305,18 @@ class GoogleReaderImporter(Importer):
                 defaults={
                     'needs_unread_recalc': True,
                     'mark_read_date': datetime.datetime.utcnow() - datetime.timedelta(days=1),
-                    'active': self.user.profile.is_premium,
+                    'active': self.user.profile.is_premium or self.auto_active,
                 }
             )
             if not us.needs_unread_recalc:
                 us.needs_unread_recalc = True
                 us.save()
             if not category: category = "Root"
-            folders[category].append(feed_db.pk)
+            if feed_db.pk not in folders[category]:
+                folders[category].append(feed_db.pk)
         except Exception, e:
             logging.info(' *** -> Exception: %s: %s' % (e, item))
-            
+
         return folders
         
     def rearrange_folders(self, folders, depth=0):

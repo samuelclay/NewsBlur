@@ -7,12 +7,15 @@ NEWSBLUR.Views.ProfileThumb = Backbone.View.extend({
     },
     
     initialize: function() {
-        this.model.profile_thumb_view = this;
+        if (this.model) {
+            this.model.profile_thumb_view = this;
+        }
     },
     
     render: function() {
         var $profile = $.make('div', { className: 'NB-user-avatar', title: this.model.get('username') }, [
-            $.make('img', { src: this.model.get('photo_url') })
+            (this.model.get('private') && $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + 'img/icons/silk/lock.png', className: 'NB-user-avatar-private' })),
+            $.make('img', { src: this.model.get('photo_url'), className: 'NB-user-avatar-image' })
         ]).tipsy({
             delayIn: 50,
             gravity: 's',
@@ -34,7 +37,12 @@ NEWSBLUR.Views.ProfileThumb = Backbone.View.extend({
     
     create: function(user_id, options) {
         var user = NEWSBLUR.assets.user_profiles.find(user_id);
-        return new NEWSBLUR.Views.ProfileThumb(_.extend({}, {model: user}, options));
+        if (!user && user_id == NEWSBLUR.Globals.user_id) {
+            user = NEWSBLUR.assets.user_profile;
+        }
+        if (user) {
+            return new NEWSBLUR.Views.ProfileThumb(_.extend({}, {model: user}, options));
+        }
     }
     
 });

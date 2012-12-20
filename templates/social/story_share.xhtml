@@ -2,67 +2,49 @@
 
 
 {% if story.share_count %}
-<div class="NB-story-comments">
+<div class="NB-story-shares">
     <div class="NB-story-comments-shares-teaser-wrapper">
         <div class="NB-story-comments-shares-teaser">
-            {% if story.share_count %}
-                <div class="NB-right">
-                    Shared by 
-                    <b>{{ story.share_count }}</b>
-                    {{ story.share_count|pluralize:"person, people" }}
+            {% if story.comment_count %}
+                <div class="NB-story-comments-label">
+                    <b>{{ story.comment_count }}</b>
+                    {{ story.comment_count|pluralize:"comment,comments" }}
+                    {% if story.reply_count %}
+                        and 
+                        <b>{{ story.reply_count }}</b>
+                        {{ story.reply_count|pluralize:"reply,replies" }}
+                    {% endif %}
                 </div>
-                {% if story.share_count_public %}
-                    <div class="NB-story-share-profiles NB-story-share-profiles-public">
-                        {% for share_user in story.shared_by_public %}
-                            <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
-                                <img src="{{ share_user.photo_url }}">
-                            </a>
+                <div class="NB-story-share-profiles NB-story-share-profiles-comments">
+                    <div class="NB-story-share-profiles-comments-friends">
+                        {% for comment in story.friend_comments %}
+                            {% render_avatars comment.user %}
                         {% endfor %}
                     </div>
-                {% endif %}
-            {% endif %}
-            {% if story.share_count %}
-                {% if story.share_count_friends %}
-                    <div class="NB-story-share-label">Shared by: </div>
-                    <div class="NB-story-share-profiles NB-story-share-profiles-friends">
-                        {% for share_user in story.shared_by_friends %}
-                            <a href="{{ share_user.feed_link }}" class="NB-user-avatar" title="{{ share_user.username }}">
-                                <img src="{{ share_user.photo_url }}">
-                            </a>
+                    <div class="NB-story-share-profiles-comments-public">
+                        {% for comment in story.public_comments %}
+                            {% render_avatars comment.user %}
                         {% endfor %}
                     </div>
-                {% endif %}
+                </div>
             {% endif %}
-        </div>
-    </div>
-
-    <div class="NB-comments-body">
-        {% for comment in story.friend_comments %}
-            {% render_story_comment comment %}
-        {% endfor %}
-        
-        {% if story.comment_count_public %}
-            <div class="NB-story-comments-public-header-wrapper">
-                <div class="NB-story-comments-public-header">
-                    {{ story.comment_count_public }} public comment{{ story.comment_count_public|pluralize }}
+            <div class="NB-right">
+                <div class="NB-story-share-label">
+                    Shared by
+                    <b>{{ story.share_count }}</b>
+                    {{ story.share_count|pluralize:"person,people" }}
+                </div>
+                <div class="NB-story-share-profiles NB-story-share-profiles-shares">
+                    <div class="NB-story-share-profiles-shares-friends">
+                        {% render_avatars story.shared_by_friends %}
+                    </div>
+                    <div class="NB-story-share-profiles-shares-public">
+                        {% render_avatars story.shared_by_public %}
+                    </div>
                 </div>
             </div>
-        {% endif %}
-        
-        {% for comment in story.public_comments %}
-            {% render_story_comment comment %}
-        {% endfor %}
-        
+        </div>
     </div>
-    
-    {# {% if story.comment_count_public %} #}
-    {# <div class="NB-story-comments-public-teaser-wrapper"> #}
-    {#     <div class="NB-story-comments-public-teaser"> #}
-    {#         There {{ story.comment_count_public|pluralize:"is,are" }} {{ story.comment_count_public}} public comment{{ story.comment_count_public|pluralize }} #}
-    {#     </div> #}
-    {# </div> #}
-    {# {% endif %} #}
-    
 </div>
 {% endif %}
 

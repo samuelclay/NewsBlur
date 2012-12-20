@@ -328,7 +328,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
                 $.make('li', [
                   $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-javascript NB-tutorial-finish-newsblur-blog', style: 'float: right;margin-top: -2px' }, [
                     'Finish Tutorial and Load',
-                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/favicon.png', style: "margin: -3px 0px 0px 4px; vertical-align: middle;" }),
+                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL+'/img/favicon_32.png', style: "margin: -3px 0px 0px 4px; vertical-align: middle;width: 16px;height: 16px;" }),
                     ' the NewsBlur Blog ',
                     $.make('span', { className: 'NB-raquo' }, '&raquo;')
                   ]),
@@ -469,6 +469,7 @@ _.extend(NEWSBLUR.ReaderTutorial.prototype, {
         $.make('b', page_count)
       ]));
       this.set_title();
+      this.resize();
     },
     
     close: function() {

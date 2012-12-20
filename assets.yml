@@ -22,7 +22,7 @@ compress_assets: on
 
 javascripts:
     common:
-        - media/js/vendor/jquery-1.*.js
+        - media/js/vendor/jquery-1.7.2.js
         - media/js/vendor/jquery.json.js
         - media/js/vendor/jquery.easing.js
         - media/js/vendor/jquery.newsblur.js
@@ -33,7 +33,6 @@ javascripts:
         - media/js/vendor/jquery.ajaxmanager.3.js
         - media/js/vendor/jquery.simplemodal-1.3.js
         - media/js/vendor/jquery.color.js
-        - media/js/vendor/jquery.rightclick.js
         - media/js/vendor/jquery.ui.core.js
         - media/js/vendor/jquery.ui.widget.js
         - media/js/vendor/jquery.ui.mouse.js
@@ -50,6 +49,8 @@ javascripts:
         - media/js/vendor/jquery.flot.js
         - media/js/vendor/jquery.tipsy.js
         - media/js/vendor/jquery.chosen.js
+        - media/js/vendor/jquery.effects.core.js
+        - media/js/vendor/jquery.effects.slideOffscreen.js
         # - media/js/vendor/jquery.linkify.js
         - media/js/vendor/bootstrap.*.js
         - media/js/vendor/audio.js
@@ -64,9 +65,9 @@ javascripts:
         - media/js/newsblur/reader/reader_utils.js
         - media/js/newsblur/reader/reader.js
         - media/js/newsblur/reader/*.js
-        - media/js/newsblur/static/*.js
+        - media/js/newsblur/welcome/*.js
     mobile:
-        - media/js/vendor/jquery-1.*.js
+        - media/js/vendor/jquery-1.7.2.js
         - media/js/mobile/jquery.mobile-1.0b1.js
         - media/js/vendor/jquery.ajaxmanager.3.js
         - media/js/vendor/underscore-*.js
@@ -84,14 +85,19 @@ javascripts:
         - media/js/newsblur/payments/paypal_return.js
         - media/js/newsblur/payments/stripe_form.js
     bookmarklet:
-        - media/js/vendor/jquery-1.5.1.min.js
+        - media/js/vendor/jquery-1.7.2.min.js
         - media/js/vendor/jquery.noConflict.js
         - media/js/vendor/jquery.newsblur.js
         - media/js/vendor/jquery.tinysort.js
         - media/js/vendor/jquery.simplemodal-1.3.js
         - media/js/vendor/jquery.corners.js
+        - media/js/vendor/jquery.hotkeys.js
+        - media/js/vendor/jquery.easing.js
+        - media/js/vendor/jquery.url.js
+        - media/js/vendor/underscore-*.js
+        - media/js/vendor/readability-*.js
     blurblog:
-        - media/js/vendor/jquery-*.js
+        - media/js/vendor/jquery-1.7.2.js
         - media/js/vendor/jquery.color.js
         - media/js/vendor/underscore-*.js
         - media/js/vendor/underscore.string.js
@@ -99,6 +105,7 @@ javascripts:
         - media/js/vendor/jquery.tipsy.js
         - media/js/vendor/inflector.js
         - media/js/newsblur/social_page/*.js
+        - media/js/newsblur/models/comments.js
         - media/js/newsblur/views/story_share_view.js
         - media/js/newsblur/views/story_comment_view.js
         - media/js/vendor/jquery.easing.js
@@ -120,6 +127,7 @@ stylesheets:
     bookmarklet:
         - media/css/bookmarklet/reset.css
         - media/css/modals.css
+        - media/css/bookmarklet/bookmarklet.css
     blurblog:
         - media/css/jquery.tipsy.css
         - media/css/social/social_page.css

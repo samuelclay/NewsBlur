@@ -6,6 +6,9 @@ import feedparser
 import time
 import urllib2
 import httplib
+import gzip
+import StringIO
+from boto.s3.key import Key
 from django.conf import settings
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
@@ -17,6 +20,15 @@ BROKEN_PAGES = [
     'uuid:', 
     'urn:', 
     '[]',
+]
+
+# Also change in reader_utils.js.
+BROKEN_PAGE_URLS = [
+    'nytimes.com',
+    'stackoverflow.com',
+    'stackexchange.com',
+    'twitter.com',
+    'rankexploits',
 ]
 
 class PageImporter(object):
@@ -42,15 +54,22 @@ class PageImporter(object):
     
     @timelimit(15)
     def fetch_page(self, urllib_fallback=False, requests_exception=None):
+        html = None
         feed_link = self.feed.feed_link
         if not feed_link:
             self.save_no_page()
             return
-        
+            
+        if feed_link.startswith('www'):
+            self.feed.feed_link = 'http://' + feed_link
         try:
-            if feed_link.startswith('www'):
-                self.feed.feed_link = 'http://' + feed_link
-            if feed_link.startswith('http'):
+            if any(feed_link.startswith(s) for s in BROKEN_PAGES):
+                self.save_no_page()
+                return
+            elif any(s in feed_link.lower() for s in BROKEN_PAGE_URLS):
+                self.save_no_page()
+                return
+            elif feed_link.startswith('http'):
                 if urllib_fallback:
                     request = urllib2.Request(feed_link, headers=self.headers)
                     response = urllib2.urlopen(request)
@@ -61,13 +80,13 @@ class PageImporter(object):
                         response = requests.get(feed_link, headers=self.headers)
                     except requests.exceptions.TooManyRedirects:
                         response = requests.get(feed_link)
+                    except AttributeError:
+                        self.save_no_page()
+                        return
                     try:
                         data = response.text
                     except (LookupError, TypeError):
                         data = response.content
-            elif any(feed_link.startswith(s) for s in BROKEN_PAGES):
-                self.save_no_page()
-                return
             else:
                 try:
                     data = open(feed_link, 'r').read()
@@ -94,7 +113,7 @@ class PageImporter(object):
         except (requests.exceptions.RequestException, 
                 requests.packages.urllib3.exceptions.HTTPError), e:
             logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
-            mail_feed_error_to_admin(self.feed, e, local_vars=locals())
+            # mail_feed_error_to_admin(self.feed, e, local_vars=locals())
             return self.fetch_page(urllib_fallback=True, requests_exception=e)
         except Exception, e:
             logging.debug('[%d] ! -------------------------' % (self.feed.id,))
@@ -107,8 +126,11 @@ class PageImporter(object):
                 self.fetch_page(urllib_fallback=True)
         else:
             self.feed.save_page_history(200, "OK")
-
+        
+        return html
+        
     def save_no_page(self):
+        logging.debug('   --->> [%-30s] ~FYNo original page: %s' % (self.feed, self.feed.feed_link))
         self.feed.has_page = False
         self.feed.save()
         self.feed.save_page_history(404, "Feed has no original page.")
@@ -153,10 +175,34 @@ class PageImporter(object):
         
     def save_page(self, html):
         if html and len(html) > 100:
-            feed_page, created = MFeedPage.objects.get_or_create(feed_id=self.feed.pk, auto_save=True)
-            feed_page.page_data = html
-            if not created:
-                feed_page.save()
+            if settings.BACKED_BY_AWS.get('pages_on_s3'):
+                k = Key(settings.S3_PAGES_BUCKET)
+                k.key = self.feed.s3_pages_key
+                k.set_metadata('Content-Encoding', 'gzip')
+                k.set_metadata('Content-Type', 'text/html')
+                k.set_metadata('Access-Control-Allow-Origin', '*')
+                out = StringIO.StringIO()
+                f = gzip.GzipFile(fileobj=out, mode='w')
+                f.write(html)
+                f.close()
+                compressed_html = out.getvalue()
+                k.set_contents_from_string(compressed_html)
+                k.set_acl('public-read')
+                
+                try:
+                    feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
+                    feed_page.delete()
+                    logging.debug('   --->> [%-30s] ~FYTransfering page data to S3...' % (self.feed))
+                except MFeedPage.DoesNotExist:
+                    pass
+
+                self.feed.s3_page = True
+                self.feed.save()
             else:
-                feed_page.save(force_insert=True)
-            return feed_page
+                try:
+                    feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
+                    feed_page.page_data = html
+                    feed_page.save()
+                except MFeedPage.DoesNotExist:
+                    feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, page_data=html)
+                return feed_page

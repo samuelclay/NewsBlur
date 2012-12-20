@@ -1,0 +1,37 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load utils_tags %}
+
+{% block body %}
+    <p style="font-size: 37px; color:#555555; margin-top: 18px;margin-bottom: 10px;padding-top:6px;">Hey {{ user.username }}, we're launching a new NewsBlur...</p>
+    <p style="line-height: 20px;">{% if months_ago >= 1 %}It's been {{ months_ago }} month{{ months_ago|pluralize }} since you last saw NewsBlur. A lot has changed since then.{% else %}You've recently been on NewsBlur, but a lot has changed since even then.{% endif %} NewsBlur is now a social news reader. We just launched shared stories and if you miss the old Google Reader features, you'll love the new NewsBlur.</p>
+    <p style="line-height: 20px;">We've worked hard to make a great app, so congratulations on discovering a handcrafted experience.</p>
+    <p style="line-height: 20px;">Here are some easy ways to have a great time on NewsBlur:</p>
+    <p style="line-height: 20px;">
+        <ul style="list-style: none;">
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/icons/silk/rainbow.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}" style="text-decoration:none">Follow friends from Twitter, Facebook, and NewsBlur</a>.</li>
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/reader/popular_thumb.jpg?1" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> Visit the popular blurblog: <a href="http://popular.newsblur.com" style="text-decoration:none">The People Have Spoken</a>.</li>
+{% if user.profile.is_premium %}
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/reader/hamburger_l.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <b>Thank you, thank you, thank you</b> for going premium!</li>
+{% else %}
+            <li style="line-height:22px;"><img src="http://{% current_domain %}/media/img/reader/hamburger_l.png" style="width:16px;height:16px;vertical-align:top;padding-top:3px;"> <a href="http://{% current_domain %}{{ user.profile.autologin_url }}?next=chooser" style="text-decoration:none">Upgrade to a premium account for only $12/year</a>.</li>
+{% endif %}
+        </ul>
+    </p>
+    
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center"><b>NEW:</b> Sharing and discussing stories with friends</p>
+    
+    <p><img src="http://f.cl.ly/items/0S2m3D3v0v041q0e2I04/Comments.png" style="width:550px;height:643px;border: 1px solid #505050;display: block;margin: 0 auto;"></p>
+    
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center"><b>IT'S FUN:</b> There's serendipity in your news reader</p>
+    
+    <p><img src="http://f.cl.ly/items/2w2R1X013q3T1r1p3t1M/Profile.png" style="width:550px;height:632px;border: 1px solid #505050;display: block;margin: 0 auto;"></p>
+    
+    <p style="border-top: 1px solid #C0C0C0;padding: 24px 0 12px;text-align:center"><b>IMPROVED:</b> Everything is now incredibly fast</p>
+    
+    <p><img src="http://f.cl.ly/items/3w2t0u3H133o0y1F2y04/Speed.png" style="width:550px;height:268px;border: 1px solid #505050;display: block;margin: 0 auto;"></p>
+    
+    <p style="line-height: 20px;">Spend a few days trying out <a href="http://{% current_domain %}{{ user.profile.autologin_url }}">NewsBlur</a>. We hope you love it.</p>
+{% endblock %}
+
+{% block resources_header %}There are a couple resources you can use if you end up loving NewsBlur:{% endblock resources_header %}

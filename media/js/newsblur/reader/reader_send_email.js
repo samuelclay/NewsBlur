@@ -1,12 +1,11 @@
-NEWSBLUR.ReaderSendEmail = function(story_id, options) {
+NEWSBLUR.ReaderSendEmail = function(story, options) {
     var defaults = {};
     
     _.bindAll(this, 'close', 'save_callback', 'error');
 
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
-    this.story_id = story_id;
-    this.story = this.model.get_story(story_id);
+    this.story = story;
     this.feed_id = this.story.get('story_feed_id');
     this.feed = this.model.get_feed(this.feed_id);
 
@@ -106,7 +105,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         $('.NB-error', this.$modal).fadeOut(500);
         
         this.model.send_story_email({
-          story_id   : this.story_id,
+          story_id   : this.story.id,
           feed_id    : this.feed_id,
           from_name  : from_name,
           from_email : from_email,

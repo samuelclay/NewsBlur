@@ -25,9 +25,9 @@
     padding: 2px;
     margin: 2px 4px 2px;
     border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 #D0D0D0;
-    -webkit-box-shadow:2px 2px 0 #D0D0D0;
-    box-shadow:2px 2px 0 #D0D0D0;
+    -moz-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
+    -webkit-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
+    box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
 }
 
 /* ========== */
@@ -84,21 +84,13 @@
 .NB-module h5 {
     margin: 0;
     padding: 8px 12px 6px;
-    background-color: #D1E1FA;
-    background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.16, #C5D7FB),
-        color-stop(0.84, #D8E1FF)
-    );
-    background-image: -moz-linear-gradient(
-        center bottom,
-        #C5D7FB 16%,
-        #D8E1FF 84%
-    );
 
-    text-shadow: 1px 1px 0 #E9E9E9;
+    background-color: #E3ECF8;
+    background-image: -moz-linear-gradient(top, #E3ECF8, #CBDBF5); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#E3ECF8), to(#CBDBF5)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #E3ECF8, #CBDBF5);
+
+    text-shadow: 0 1px 0 #F2F6FE;
     border-top: 1px solid #D1DAF7;
     border-bottom: 1px solid #A1A9CF;
     color:#505050;
@@ -125,9 +117,9 @@
     padding: 2px;
     margin: 0px 4px 6px;
     border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 #D0D0D0;
-    -webkit-box-shadow:2px 2px 0 #D0D0D0;
-    box-shadow:2px 2px 0 #D0D0D0;
+    -moz-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
+    -webkit-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
+    box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
 }
 
 .NB-modal .NB-modal-field input[type=checkbox] {
@@ -213,9 +205,9 @@
     text-transform: uppercase;
     margin: 2px 4px 2px;
     border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 #D0D0D0;
-    -webkit-box-shadow:2px 2px 0 #D0D0D0;
-    box-shadow:2px 2px 0 #D0D0D0;
+    -moz-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
+    -webkit-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
+    box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
     border-radius: 4px;
     -moz-border-radius: 4px;
     cursor: pointer;
@@ -409,6 +401,14 @@
     font-weight: bold;
     color: #FCFCFC;
 }
+.NB-modal-submit-red:hover,
+.NB-modal-submit-delete:hover {
+    background-color: #4D000A;
+}
+.NB-modal-submit-red:active,
+.NB-modal-submit-delete:active {
+    background-color: #1E0007;
+}
 .NB-modal-submit .NB-disabled {
     background-color: #d5d4dB;
     color: #909090;
@@ -501,108 +501,4 @@
 
 .NB-modal .NB-modal-section {
     padding: 12px 0;
-}
-
-/* ===================== */
-/* = Bookmarklet Modal = */
-/* ===================== */
-
-.NB-bookmarklet {
-  font-family: 'Lucida Sans', 'Lucida Grande', Verdana, Arial, Helvetica, sans-serif;
-  font-size: 12px;
-  text-align: left;
-}
-
-.NB-bookmarklet .NB-modal-information {
-  float: right;
-  margin-top: 10px;
-  text-transform: uppercase;
-  color: #909090;
-  font-size: 10px;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-container {
-  margin: 28px 0;
-  float: right;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-container .NB-bookmarklet-folder-label {
-  float: left;
-  margin: 2px 4px 0 0;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-container .NB-folders {
-  font-size: 14px;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-add-button {
-  float: left;
-  margin: 2px 4px 0 0;
-  cursor: pointer;
-}
-.NB-bookmarklet .NB-bookmarklet-new-folder-container {
-  display: none;
-  float: right;
-  clear: both;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-new {
-  float: left;
-  padding: 2px;
-  border: 1px solid #505050;
-  font-size: 11px;
-  line-height: 13px;
-  margin: 2px 0 0;
-  width: 170px;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-new-label {
-  margin: 4px 4px 0 0;
-  float: left;
-}
-.NB-bookmarklet .NB-folders {
-  width: 200px;
-}
-.NB-bookmarklet .NB-modal-submit {
-  margin: 24px 0 8px;
-  padding: 0 0 6px;
-}
-.NB-bookmarklet .NB-modal-submit-button {
-  clear: both;
-  padding: 0 16px;
-  line-height: 24px;
-  width: 200px;
-  text-align: center;
-  text-shadow: none;
-}
-.NB-bookmarklet .NB-modal-submit-button img {
-  margin: 5px 6px 0 0;
-  width: 16px;
-  height: 16px;
-  float: left;
-  vertical-align: top;
-}
-.NB-bookmarklet .NB-bookmarklet-error {
-  margin: 12px 0 0 0;
-  font-weight: bold;
-  color: #701040;
-}
-.NB-bookmarklet .NB-bookmarklet-error img {
-  float: left;
-  width: 16px;
-  height: 16px;
-  vertical-align: top;
-  margin: -2px 6px 0 0;
-}
-.NB-bookmarklet .NB-bookmarklet-folder-label {
-  float: right;
-}
-.NB-bookmarklet .NB-folders {
-  float: right;
-}
-.NB-bookmarklet .NB-error-invalid {
-    padding: 12px 12px;
-    font-size: 13px;
-    text-shadow: none;
-    color: white;
-    background-color: #690F0F;
-    border-radius: 8px;
-}
-.NB-bookmarklet .NB-error-invalid a {
-    color: #9FC6F5;
-    text-decoration: underline;
 }

@@ -5,9 +5,14 @@ NEWSBLUR.Models.SocialSubscription = Backbone.Model.extend({
             this.set('page_url', '/social/page/' + this.get('user_id'));
         }
         
-        _.bindAll(this, 'on_change', 'on_remove');
+        _.bindAll(this, 'on_change', 'on_remove', 'update_counts');
         // this.bind('change', this.on_change);
         this.bind('remove', this.on_remove);
+        
+        this.bind('change:ps', this.update_counts);
+        this.bind('change:nt', this.update_counts);
+        this.bind('change:ng', this.update_counts);
+        
         this.views = [];
     },
 
@@ -18,6 +23,10 @@ NEWSBLUR.Models.SocialSubscription = Backbone.Model.extend({
     on_remove: function() {
         NEWSBLUR.log(["Remove Feed", this, this.views]);
         _.each(this.views, function(view) { view.remove(); });
+    },
+    
+    update_counts: function() {
+        NEWSBLUR.assets.social_feeds.trigger('change:counts');
     },
 
     is_social: function() {
@@ -79,6 +88,22 @@ NEWSBLUR.Collections.SocialSubscriptions = Backbone.Collection.extend({
         }).each(function(feed){ 
             feed.set('selected', false); 
         });
+    },
+    
+    unread_counts: function() {
+        var counts = this.reduce(function(counts, item) {
+            var feed_counts = item.unread_counts();
+            counts['ps'] += feed_counts['ps'];
+            counts['nt'] += feed_counts['nt'];
+            counts['ng'] += feed_counts['ng'];
+            return counts;
+        }, {
+            ps: 0,
+            nt: 0,
+            ng: 0
+        });
+        
+        return counts;
     }
     
 });

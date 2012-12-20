@@ -10,7 +10,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.core.mail import mail_admins
 from django.conf import settings
-from apps.profile.models import Profile, change_password
+from apps.profile.models import Profile, change_password, PaymentHistory
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
@@ -18,6 +18,7 @@ from utils import json_functions as json
 from utils.user_functions import ajax_login_required
 from utils.view_functions import render_to
 from utils.user_functions import get_user
+from utils import log as logging
 from vendor.paypal.standard.forms import PayPalPaymentsForm
 
 SINGLE_FIELD_PREFS = ('timezone','feed_pane_size','hide_mobile','send_emails',
@@ -40,7 +41,7 @@ def set_preference(request):
             setattr(request.user.profile, preference_name, preference_value)
         elif preference_name in SPECIAL_PREFERENCES:
             if preference_name == 'autofollow_friends':
-                social_services = MSocialServices.objects.get(user_id=request.user.pk)
+                social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
                 social_services.autofollow = preference_value
                 social_services.save()
             elif preference_name == 'dashboard_date':
@@ -49,7 +50,9 @@ def set_preference(request):
             if preference_value in ["true", "false"]:
                 preference_value = True if preference_value == "true" else False
             preferences[preference_name] = preference_value
-        
+        if preference_name == 'intro_page':
+            logging.user(request, "~FBAdvancing intro to page ~FM~SB%s" % preference_value)
+            
     request.user.profile.preferences = json.encode(preferences)
     request.user.profile.save()
     
@@ -84,7 +87,7 @@ def set_account_settings(request):
         except User.DoesNotExist:
             request.user.username = post_settings['username']
             request.user.save()
-            social_profile = MSocialProfile.objects.get(user_id=request.user.pk)
+            social_profile = MSocialProfile.get_user(request.user.pk)
             social_profile.username = post_settings['username']
             social_profile.save()
         else:
@@ -92,7 +95,7 @@ def set_account_settings(request):
             message = "This username is already taken. Try something different."
     
     if request.user.email != post_settings['email']:
-        if not User.objects.filter(email=post_settings['email']).count():
+        if not post_settings['email'] or not User.objects.filter(email=post_settings['email']).count():
             request.user.email = post_settings['email']
             request.user.save()
         else:
@@ -117,10 +120,18 @@ def set_account_settings(request):
 def set_view_setting(request):
     code = 1
     feed_id = request.POST['feed_id']
-    feed_view_setting = request.POST['feed_view_setting']
-    
+    feed_view_setting = request.POST.get('feed_view_setting')
+    feed_order_setting = request.POST.get('feed_order_setting')
+    feed_read_filter_setting = request.POST.get('feed_read_filter_setting')
     view_settings = json.decode(request.user.profile.view_settings)
-    view_settings[feed_id] = feed_view_setting
+    
+    setting = view_settings.get(feed_id, {})
+    if isinstance(setting, basestring): setting = {'v': setting}
+    if feed_view_setting: setting['v'] = feed_view_setting
+    if feed_order_setting: setting['o'] = feed_order_setting
+    if feed_read_filter_setting: setting['r'] = feed_read_filter_setting
+    
+    view_settings[feed_id] = setting
     request.user.profile.view_settings = json.encode(view_settings)
     request.user.profile.save()
     
@@ -173,6 +184,8 @@ def paypal_form(request):
 
     # Create the instance.
     form = PayPalPaymentsForm(initial=paypal_dict, button_type="subscribe")
+
+    logging.user(request, "~FBLoading paypal/feedchooser")
 
     # Output the button.
     return HttpResponse(form.render(), mimetype='text/html')
@@ -260,10 +273,18 @@ def stripe_form(request):
 def load_activities(request):
     user = get_user(request)
     page = max(1, int(request.REQUEST.get('page', 1)))
-    activities = MActivity.user(user.pk, page=page)
+    activities, has_next_page = MActivity.user(user.pk, page=page)
 
     return {
         'activities': activities,
         'page': page,
+        'has_next_page': has_next_page,
         'username': 'You',
     }
+
+@ajax_login_required
+@json.json_view
+def payment_history(request):
+    history = PaymentHistory.objects.filter(user=request.user)
+
+    return {'payments': history}

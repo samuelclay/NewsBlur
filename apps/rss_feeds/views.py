@@ -2,7 +2,7 @@ import datetime
 from utils import log as logging
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.decorators.http import condition
-from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponseRedirect, HttpResponse, Http404
 from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -28,7 +28,6 @@ def search_feed(request):
         return dict(code=-1, message="Please provide a URL/address.")
         
     feed = Feed.get_feed_from_url(address, create=False, aggressive=True, offset=offset)
-    
     if feed:
         return feed.canonical()
     else:
@@ -70,6 +69,8 @@ def load_feed_favicon(request, feed_id):
 @json.json_view
 def feed_autocomplete(request):
     query = request.GET.get('term')
+    version = int(request.GET.get('v', 1))
+    
     if not query:
         return dict(code=-1, message="Specify a search 'term'.")
         
@@ -84,20 +85,39 @@ def feed_autocomplete(request):
                 Q(**{'%s__icontains' % field: 'token'}) |
                 Q(**{'%s__icontains' % field: 'private'})
             ).only(
+                'id',
                 'feed_title', 
                 'feed_address', 
                 'num_subscribers'
-            ).order_by('-num_subscribers')[:5]
-    
-    logging.user(request, "~FRAdd Search: ~SB%s ~FG(%s matches)" % (query, len(feeds),))
+            ).select_related("data").order_by('-num_subscribers')[:5]
     
     feeds = [{
+        'id': feed.pk,
         'value': feed.feed_address,
         'label': feed.feed_title,
+        'tagline': feed.data and feed.data.feed_tagline,
         'num_subscribers': feed.num_subscribers,
     } for feed in feeds]
     
-    return feeds
+    feed_ids = [f['id'] for f in feeds]
+    feed_icons = dict((icon.feed_id, icon) for icon in MFeedIcon.objects.filter(feed_id__in=feed_ids))
+    
+    for feed in feeds:
+        if feed['id'] in feed_icons:
+            feed_icon = feed_icons[feed['id']]
+            if feed_icon.data:
+                feed['favicon_color'] = feed_icon.color
+                feed['favicon'] = feed_icon.data
+
+    logging.user(request, "~FGAdd Search: ~SB%s ~SN(%s matches)" % (query, len(feeds),))
+    
+    if version > 1:
+        return {
+            'feeds': feeds,
+            'term': query,
+        }
+    else:
+        return feeds
     
 @json.json_view
 def load_feed_statistics(request, feed_id):
@@ -115,7 +135,7 @@ def load_feed_statistics(request, feed_id):
         stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
 
     # Minutes between updates
-    update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
+    update_interval_minutes, _ = feed.get_next_scheduled_update(force=True, verbose=False)
     if feed.is_push:
         stats['update_interval_minutes'] = 0
     else:
@@ -124,7 +144,7 @@ def load_feed_statistics(request, feed_id):
     original_premium_subscribers = feed.premium_subscribers
     feed.active_premium_subscribers = max(feed.active_premium_subscribers+1, 1)
     feed.premium_subscribers += 1
-    premium_update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
+    premium_update_interval_minutes, _ = feed.get_next_scheduled_update(force=True, verbose=False)
     feed.active_premium_subscribers = original_active_premium_subscribers
     feed.premium_subscribers = original_premium_subscribers
     if feed.is_push:
@@ -173,7 +193,11 @@ def exception_retry(request):
     user = get_user(request)
     feed_id = get_argument_or_404(request, 'feed_id')
     reset_fetch = json.decode(request.POST['reset_fetch'])
-    feed = get_object_or_404(Feed, pk=feed_id)
+    feed = Feed.get_by_id(feed_id)
+    original_feed = feed
+    
+    if not feed:
+        raise Http404
     
     feed.next_scheduled_update = datetime.datetime.utcnow()
     feed.has_page_exception = False
@@ -186,12 +210,22 @@ def exception_retry(request):
         logging.user(request, "~FRForcing refreshing feed: ~SB%s" % (feed))
         feed.fetched_once = True
     feed.save()
-    
+
     feed = feed.update(force=True, compute_scores=False, verbose=True)
-    usersub = UserSubscription.objects.get(user=user, feed=feed)
+    feed = Feed.get_by_id(feed.pk)
+
+    try:
+        usersub = UserSubscription.objects.get(user=user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        usersubs = UserSubscription.objects.filter(user=user, feed=original_feed)
+        if usersubs:
+            usersub = usersubs[0]
+            usersub.switch_feed(feed, original_feed)
+        else:
+            return {'code': -1}
     usersub.calculate_feed_scores(silent=False)
     
-    feeds = {feed.pk: usersub.canonical(full=True), feed_id: usersub.canonical(full=True)}
+    feeds = {feed.pk: usersub and usersub.canonical(full=True), feed_id: usersub.canonical(full=True)}
     return {'code': 1, 'feeds': feeds}
     
     
@@ -236,19 +270,24 @@ def exception_change_feed_address(request):
             code = 1
 
     feed = feed.update()
-    feed = Feed.objects.get(pk=feed.pk)
-    usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
-    if usersub:
-        usersub.switch_feed(feed, original_feed)
-    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
-        
+    feed = Feed.get_by_id(feed.pk)
+    try:
+        usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        usersubs = UserSubscription.objects.filter(user=request.user, feed=original_feed)
+        if usersubs:
+            usersub = usersubs[0]
+            usersub.switch_feed(feed, original_feed)
+        else:
+            return {'code': -1}
+
     usersub.calculate_feed_scores(silent=False)
     
     feed.update_all_statistics()
     classifiers = get_classifiers_for_user(usersub.user, feed_id=usersub.feed_id)
     
     feeds = {
-        original_feed.pk: usersub.canonical(full=True, classifiers=classifiers), 
+        original_feed.pk: usersub and usersub.canonical(full=True, classifiers=classifiers), 
     }
     
     if feed and feed.has_feed_exception:
@@ -303,12 +342,17 @@ def exception_change_feed_link(request):
             code = 1
 
     feed = feed.update()
-    feed = Feed.objects.get(pk=feed.pk)
+    feed = Feed.get_by_id(feed.pk)
 
-    usersub = UserSubscription.objects.get(user=request.user, feed=original_feed)
-    if usersub:
-        usersub.switch_feed(feed, original_feed)
-    usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    try:
+        usersub = UserSubscription.objects.get(user=request.user, feed=feed)
+    except UserSubscription.DoesNotExist:
+        usersubs = UserSubscription.objects.filter(user=request.user, feed=original_feed)
+        if usersubs:
+            usersub = usersubs[0]
+            usersub.switch_feed(feed, original_feed)
+        else:
+            return {'code': -1}
         
     usersub.calculate_feed_scores(silent=False)
     

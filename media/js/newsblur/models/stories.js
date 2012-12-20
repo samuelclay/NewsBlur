@@ -2,9 +2,12 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     
     initialize: function() {
         this.bind('change:selected', this.change_selected);
+        this.bind('change:shared_comments', this.populate_comments);
         this.bind('change:comments', this.populate_comments);
         this.bind('change:comment_count', this.populate_comments);
         this.populate_comments();
+        this.story_permalink = this.get('story_permalink');
+        this.story_title = this.get('story_title');
     },
     
     populate_comments: function(story, collection, changes) {
@@ -29,10 +32,8 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
     },
     
     has_modifications: function() {
-        if (this.get('story_content').indexOf('<ins') != -1) {
-            return true;
-        } else if (NEWSBLUR.assets.preference('hide_story_changes') && 
-                   this.get('story_content').indexOf('<del') != -1) {
+        if (this.get('story_content').indexOf('<ins') != -1 ||
+            this.get('story_content').indexOf('<del') != -1) {
             return true;
         }
         return false;
@@ -69,9 +70,9 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     // = Actions =
     // ===========
     
-    deselect: function(selected_story) {
+    deselect_other_stories: function(selected_story) {
         this.any(function(story) {
-            if (story.get('selected') && story != selected_story) {
+            if (story.get('selected') && story.id != selected_story.id) {
                 story.set('selected', false);
                 return true;
             }
@@ -97,7 +98,8 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
                 if (!feed) {
                     feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
                 }
-                if (feed && feed.is_social()) {
+                if ((feed && feed.is_social()) ||
+                    _.contains(['river:blurblogs', 'river:global'], NEWSBLUR.reader.active_feed)) {
                     mark_read_fn = NEWSBLUR.assets.mark_social_story_as_read;
                 }
                 mark_read_fn.call(NEWSBLUR.assets, story, feed, _.bind(function(read) {
@@ -125,26 +127,42 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         var unread_view           = NEWSBLUR.reader.get_unread_view_name();
         var active_feed           = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
         var story_feed            = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
-        
+        var friend_feeds          = NEWSBLUR.assets.get_friend_feeds(story);
+
         if (!active_feed) {
             // River of News does not have an active feed.
             active_feed = story_feed;
+        } else if (active_feed && active_feed.is_social()) {
+            friend_feeds = _.without(friend_feeds, active_feed);
         }
+        
         if (story.score() > 0) {
-            var active_count = Math.max(active_feed.get('ps') + (options.unread?1:-1), 0);
-            var story_count = Math.max(story_feed.get('ps') + (options.unread?1:-1), 0);
-            active_feed.set('ps', active_count, {instant: true});
-            story_feed.set('ps', story_count, {instant: true});
+            var active_count = active_feed && Math.max(active_feed.get('ps') + (options.unread?1:-1), 0);
+            var story_count = story_feed && Math.max(story_feed.get('ps') + (options.unread?1:-1), 0);
+            if (active_feed) active_feed.set('ps', active_count, {instant: true});
+            if (story_feed) story_feed.set('ps', story_count, {instant: true});
+            _.each(friend_feeds, function(socialsub) { 
+                var socialsub_count = Math.max(socialsub.get('ps') + (options.unread?1:-1), 0);
+                socialsub.set('ps', socialsub_count, {instant: true});
+            });
         } else if (story.score() == 0) {
-            var active_count = Math.max(active_feed.get('nt') + (options.unread?1:-1), 0);
-            var story_count = Math.max(story_feed.get('nt') + (options.unread?1:-1), 0);
-            active_feed.set('nt', active_count, {instant: true});
-            story_feed.set('nt', story_count, {instant: true});
+            var active_count = active_feed && Math.max(active_feed.get('nt') + (options.unread?1:-1), 0);
+            var story_count = story_feed && Math.max(story_feed.get('nt') + (options.unread?1:-1), 0);
+            if (active_feed) active_feed.set('nt', active_count, {instant: true});
+            if (story_feed) story_feed.set('nt', story_count, {instant: true});
+            _.each(friend_feeds, function(socialsub) { 
+                var socialsub_count = Math.max(socialsub.get('nt') + (options.unread?1:-1), 0);
+                socialsub.set('nt', socialsub_count, {instant: true});
+            });
         } else if (story.score() < 0) {
-            var active_count = Math.max(active_feed.get('ng') + (options.unread?1:-1), 0);
-            var story_count = Math.max(story_feed.get('ng') + (options.unread?1:-1), 0);
-            active_feed.set('ng', active_count, {instant: true});
-            story_feed.set('ng', story_count, {instant: true});
+            var active_count = active_feed && Math.max(active_feed.get('ng') + (options.unread?1:-1), 0);
+            var story_count = story_feed && Math.max(story_feed.get('ng') + (options.unread?1:-1), 0);
+            if (active_feed) active_feed.set('ng', active_count, {instant: true});
+            if (story_feed) story_feed.set('ng', story_count, {instant: true});
+            _.each(friend_feeds, function(socialsub) { 
+                var socialsub_count = Math.max(socialsub.get('ng') + (options.unread?1:-1), 0);
+                socialsub.set('ng', socialsub_count, {instant: true});
+            });
         }
         
         if (story_unread_counter) {
@@ -258,10 +276,16 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         // The +1+1 is because the currently selected story is included, so it
         // counts for more than what is available.
         if (current_index+1+1 <= visible_stories.length) {
+            if (visible_stories[current_index+1])
             return visible_stories[current_index+1];
         } else if (current_index-1 >= 0) {
             return visible_stories[current_index-1];
+        } else if (visible_stories.length == 1 && visible_stories[0] == this.active_story && !this.active_story.get('read_status')) {
+            // If the current story is unread yet selected, switch it back.
+            visible_stories[current_index].set('selected', false);
+            return visible_stories[current_index];
         }
+
     },
     
     get_last_unread_story: function(unread_count, options) {
@@ -278,7 +302,7 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
     
     detect_selected_story: function(selected_story, selected) {
         if (selected) {
-            this.deselect(selected_story);
+            this.deselect_other_stories(selected_story);
             this.active_story = selected_story;
             NEWSBLUR.reader.active_story = selected_story;
             this.previous_stories_stack.push(selected_story);

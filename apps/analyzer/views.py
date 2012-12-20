@@ -1,7 +1,9 @@
+import redis
 from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
-from mongoengine.queryset import OperationError
+from django.conf import settings
+# from mongoengine.queryset import OperationError
 from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -80,7 +82,6 @@ def save_classifier(request):
                             classifier_dict['feed_id'] = post_content
                     # try:
                     classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
-                    print classifier_dict, classifier, created
                     # except OperationError:
                     #     continue
                     if score == 0:
@@ -98,6 +99,9 @@ def save_classifier(request):
     _save_classifier(MClassifierTag, 'tag')
     _save_classifier(MClassifierTitle, 'title')
     _save_classifier(MClassifierFeed, 'feed')
+
+    r = redis.Redis(connection_pool=settings.REDIS_POOL)
+    r.publish(request.user.username, 'feed:%s' % feed_id)
 
     response = dict(code=code, message=message, payload=payload)
     return response

@@ -12,7 +12,7 @@ register = template.Library()
 @register.simple_tag
 def current_domain():
     current_site = Site.objects.get_current()
-    return current_site and current_site.domain.replace('www', 'dev')
+    return current_site and current_site.domain
 
 @register.simple_tag(takes_context=True)
 def localdatetime(context, date, date_format):
@@ -20,6 +20,15 @@ def localdatetime(context, date, date_format):
     date = localtime_for_timezone(date, user.profile.timezone).strftime(date_format)
     return date
     
+@register.inclusion_tag('reader/feeds_skeleton.xhtml', takes_context=True)
+def render_feeds_skeleton(context):
+    user         = get_user(context['user'])
+
+    return {
+        'user': user,
+        'MEDIA_URL': settings.MEDIA_URL,
+    }
+
 @register.inclusion_tag('reader/features_module.xhtml', takes_context=True)
 def render_features_module(context):
     user         = get_user(context['user'])
@@ -45,24 +54,26 @@ def render_recommended_users(context):
 @register.inclusion_tag('reader/interactions_module.xhtml', takes_context=True)
 def render_interactions_module(context, page=1):
     user = get_user(context['user'])
-    interactions = MInteraction.user(user.pk, page)
-        
+    interactions, has_next_page = MInteraction.user(user.pk, page)
+    
     return {
         'user': user,
         'interactions': interactions,
         'page': page,
+        'has_next_page': has_next_page,
         'MEDIA_URL': context['MEDIA_URL'],
     }
     
 @register.inclusion_tag('reader/activities_module.xhtml', takes_context=True)
 def render_activities_module(context, page=1):
     user = get_user(context['user'])
-    activities = MActivity.user(user.pk, page)
+    activities, has_next_page = MActivity.user(user.pk, page)
     
     return {
         'user': user,
         'activities': activities,
         'page': page,
+        'has_next_page': has_next_page,
         'username': 'You',
         'MEDIA_URL': context['MEDIA_URL'],
     }

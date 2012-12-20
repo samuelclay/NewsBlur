@@ -16,7 +16,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             story: this.model,
-            social_services: NEWSBLUR.assets.social_services
+            social_services: NEWSBLUR.assets.social_services,
+            profile: NEWSBLUR.assets.user_profile
         }));
         
         return this;
@@ -28,7 +29,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             <div class="NB-sideoption-share-wordcount"></div>\
             <div class="NB-sideoption-share-title">Comments:</div>\
             <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
-            <% if (social_services.twitter.twitter_uid || social_services.facebook.facebook_uid) { %>\
+            <% if (!profile.get("private") && \
+                   ((social_services.twitter && social_services.twitter.twitter_uid) || \
+                    (social_services.facebook && social_services.facebook.facebook_uid))) { %>\
                 <div class="NB-sideoption-share-crosspost">\
                     <% if (social_services.twitter.twitter_uid) { %>\
                         <div class="NB-sideoption-share-crosspost-twitter"></div>\
@@ -93,8 +96,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             }
             $sideoption.addClass('NB-active');
             $unshare_button.toggleClass('NB-hidden', !this.model.get("shared"));
-            $twitter_button.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_twitter'));
-            $facebook_button.toggleClass('NB-active', !!NEWSBLUR.assets.preference('post_to_facebook'));
+            $twitter_button.removeClass('NB-active');
+            $facebook_button.removeClass('NB-active');
             this.update_share_button_label();
             this.reset_posting_label();
             
@@ -160,23 +163,37 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $share_button = this.$('.NB-sideoption-share-save');
         var $share_button_menu = $('.NB-menu-manage .NB-menu-manage-story-share-save');
         var $share_menu = $share_button_menu.closest('.NB-sideoption-share');
+        var $twitter_button = this.$('.NB-sideoption-share-crosspost-twitter');
+        var $facebook_button = this.$('.NB-sideoption-share-crosspost-facebook');
         var $comments_sideoptions = this.$('.NB-sideoption-share-comments');
         var $comments_menu = $('.NB-sideoption-share-comments', $share_menu);
         var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
         if (this.options.on_social_page) {
             var source_user_id = NEWSBLUR.Globals.blurblog_user_id;
+        } else if (_.contains(['river:blurblogs', 'river:global'], NEWSBLUR.reader.active_feed)) {
+            var friends = this.model.get('friend_user_ids');
+            var source_user_id = friends && friends[0];
         } else {
             var feed = NEWSBLUR.assets.get_feed(NEWSBLUR.reader.active_feed);
             var source_user_id = feed && feed.get('user_id');
         }
         var post_to_services = _.compact([
-            NEWSBLUR.assets.preference('post_to_twitter') && 'twitter',
-            NEWSBLUR.assets.preference('post_to_facebook') && 'facebook'
+            $twitter_button.hasClass('NB-active') && 'twitter',
+            $facebook_button.hasClass('NB-active') && 'facebook'
         ]);
         
         $share_button.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
         $share_button_menu.addClass('NB-saving').addClass('NB-disabled').text('Sharing...');
-        NEWSBLUR.assets.mark_story_as_shared(this.model.id, this.model.get('story_feed_id'), comments, source_user_id, post_to_services, _.bind(this.post_share_story, this, true), _.bind(function(data) {
+        
+        var data = {
+            story_id: this.model.id, 
+            story_feed_id: this.model.get('story_feed_id'), 
+            comments: comments,
+            source_user_id: source_user_id,
+            relative_user_id: NEWSBLUR.Globals.blurblog_user_id,
+            post_to_services: post_to_services
+        };
+        NEWSBLUR.assets.mark_story_as_shared(data, _.bind(this.post_share_story, this, true), _.bind(function(data) {
             this.post_share_error(data, true);
         }, this));
         
@@ -190,9 +207,14 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var $unshare_button = this.$('.NB-sideoption-share-unshare');
         var $unshare_button_menu = $('.NB-menu-manage-story-share-unshare');
         var $share_menu = $unshare_button_menu.closest('.NB-sideoption-share');
-        
+
         $unshare_button.addClass('NB-saving').addClass('NB-disabled').text('Deleting...');
-        NEWSBLUR.assets.mark_story_as_unshared(this.model.id, this.model.get('story_feed_id'), _.bind(this.post_share_story, this, false), _.bind(function(data) {
+        var params = {
+            story_id: this.model.id, 
+            story_feed_id: this.model.get('story_feed_id'),
+            relative_user_id: NEWSBLUR.Globals.blurblog_user_id
+        };
+        NEWSBLUR.assets.mark_story_as_unshared(params, _.bind(this.post_share_story, this, false), _.bind(function(data) {
             this.post_share_error(data, false);
         }, this));
         
@@ -215,10 +237,11 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         $share_button.removeClass('NB-saving').removeClass('NB-disabled').text('Share');
         $unshare_button.removeClass('NB-saving').removeClass('NB-disabled').text('Delete Share');
         $share_sideoption.text(shared_text).closest('.NB-sideoption');
+        $comments_sideoptions.val(this.model.get('shared_comments'));
         
         if (this.options.on_social_page) {
             this.model.social_page_story.$el.toggleClass('NB-story-shared', this.model.get('shared'));
-            this.model.social_page_comments.replace_comments(data);
+            this.model.social_page_story.replace_shares_and_comments(data);
         } else {
             this.model.story_view.$el.toggleClass('NB-story-shared', this.model.get('shared'));
             this.model.story_view.render_comments();
@@ -297,26 +320,14 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     toggle_twitter: function() {
         var $twitter_button = this.$('.NB-sideoption-share-crosspost-twitter');
         
-        if (NEWSBLUR.assets.preference('post_to_twitter')) {
-            NEWSBLUR.assets.preference('post_to_twitter', false);
-        } else {
-            NEWSBLUR.assets.preference('post_to_twitter', true);
-        }
-        
-        $twitter_button.toggleClass('NB-active', NEWSBLUR.assets.preference('post_to_twitter'));
+        $twitter_button.toggleClass('NB-active', !$twitter_button.hasClass('NB-active'));
         this.reset_posting_label();
     },
     
     toggle_facebook: function() {
         var $facebook_button = this.$('.NB-sideoption-share-crosspost-facebook');
         
-        if (NEWSBLUR.assets.preference('post_to_facebook')) {
-            NEWSBLUR.assets.preference('post_to_facebook', false);
-        } else {
-            NEWSBLUR.assets.preference('post_to_facebook', true);
-        }
-        
-        $facebook_button.toggleClass('NB-active', NEWSBLUR.assets.preference('post_to_facebook'));
+        $facebook_button.toggleClass('NB-active', !$facebook_button.hasClass('NB-active'));
         this.reset_posting_label();
     },
     
@@ -333,10 +344,12 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     },
     
     show_posting_label: function(twitter, facebook) {
-        NEWSBLUR.log(["show_posting_label", twitter, facebook]);
+        var social_services = NEWSBLUR.assets.social_services;
         var $text = this.$('.NB-sideoption-share-crosspost-text');
-        twitter = twitter || NEWSBLUR.assets.preference('post_to_twitter');
-        facebook = facebook || NEWSBLUR.assets.preference('post_to_facebook');
+        var $twitter_button = this.$('.NB-sideoption-share-crosspost-twitter');
+        var $facebook_button = this.$('.NB-sideoption-share-crosspost-facebook');
+        twitter = twitter || $twitter_button.hasClass('NB-active');
+        facebook = facebook || $facebook_button.hasClass('NB-active');
         
         if (twitter || facebook) {
             var message = "Post to ";

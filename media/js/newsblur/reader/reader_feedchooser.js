@@ -15,8 +15,10 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         this.make_modal();
         this.make_paypal_button();
         _.defer(_.bind(function() { this.open_modal(); }, this));
-        this.find_feeds_in_feed_list();
-        this.initial_load_feeds();
+        if (!NEWSBLUR.Globals.is_premium) {
+            this.find_feeds_in_feed_list();
+            this.initial_load_feeds();
+        }
         this.choose_dollar_amount(2);
         
         this.flags = {
@@ -29,9 +31,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     make_modal: function() {
         var self = this;
         
-        this.$modal = $.make('div', { className: 'NB-modal-feedchooser NB-modal' }, [
+        this.$modal = $.make('div', { className: 'NB-modal-feedchooser NB-modal ' + (NEWSBLUR.Globals.is_premium ? "NB-feedchooser-premium" : "NB-feedchooser-standard") }, [
             // $.make('h2', { className: 'NB-modal-title' }, 'Choose Your '+this.MAX_FEEDS),
-            $.make('div', { className: 'NB-feedchooser-type'}, [
+            (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-type NB-feedchooser-left'}, [
               $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
                         $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Free'),
@@ -59,14 +61,31 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   e.preventDefault();
                   return false;
               })
-            ]),
-            $.make('div', { className: 'NB-feedchooser-type NB-last'}, [
-              $.make('div', { className: 'NB-feedchooser-info'}, [
+            ])),
+            $.make('div', { className: 'NB-feedchooser-type NB-last', style: 'position: relative'}, [
+              (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-porpoise' }, 'OR')),
+              (NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
+                  $.make('div', { className: 'NB-feedchooser-info-type' }, [
+                        $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Thank you'),
+                        ' for going premium!'
+                  ]),
+                  $.make('h2', { className: 'NB-modal-subtitle' }, [
+                      'Your premium account will expire on:',
+                      $.make('br'),
+                      $.make('b', { style: 'display: block; margin: 8px 0' }, [
+                          $.make('span', { className: 'NB-raquo' }, '&raquo;'),
+                          ' ',
+                          this.format_date(NEWSBLUR.Globals.premium_expire)
+                      ]),
+                      'Renew your premium subscription today.'
+                  ])
+              ])),
+              (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-feedchooser-info'}, [
                   $.make('div', { className: 'NB-feedchooser-info-type' }, [
                     $.make('span', { className: 'NB-feedchooser-subtitle-type-prefix' }, 'Super-Mega'),
                     ' Premium Account'
                   ])
-              ]),
+              ])),
               $.make('ul', { className: 'NB-feedchooser-premium-bullets' }, [
                 $.make('li', { className: 'NB-1' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -82,7 +101,7 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                 ]),
                 $.make('li', { className: 'NB-4' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
-                  'First access to future features'
+                  'Privacy options for your blurblog'
                 ]),
                 $.make('li', { className: 'NB-5' }, [
                   $.make('div', { className: 'NB-feedchooser-premium-bullet-image' }),
@@ -105,21 +124,30 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
                   $.make('div', { className: 'NB-feedchooser-dollar' }, [
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-1' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
-                            $.make('div', { className: 'NB-feedchooser-dollar-image' }),
+                            $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: 8px;top: 9px"  })
+                            ]),
                             '$12/year'
                           ]),
                           $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($1/month)')
                       ]),
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-2' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
-                            $.make('div', { className: 'NB-feedchooser-dollar-image' }),
+                            $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: -24px;top: 9px" }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_m.png', style: "position: absolute; left: 4px;top: 6px"  })
+                            ]),
                             '$24/year'
                           ]),
                           $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($2/month)')
                       ]),
                       $.make('div', { className: 'NB-feedchooser-dollar-value NB-3' }, [
                           $.make('div', { className: 'NB-feedchooser-dollar-month' }, [
-                            $.make('div', { className: 'NB-feedchooser-dollar-image' }),
+                            $.make('div', { className: 'NB-feedchooser-dollar-image' }, [
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_s.png', style: "position: absolute; left: -58px;top: 10px" }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_m.png', style: "position: absolute; left: -31px;top: 8px" }),
+                                $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/hamburger_l.png', style: "position: absolute; left: 0; top: 6px" })
+                            ]),
                             '$36/year'
                           ]),
                           $.make('div', { className: 'NB-feedchooser-dollar-year' }, '($3/month)')
@@ -149,6 +177,17 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
               ])
             ])
         ]);
+    },
+    
+    format_date: function(date) {
+        var dayOfWeek = date.getDay();
+        var month = date.getMonth();
+        var year = date.getUTCFullYear();
+        var day = date.getDate();
+        var dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];       
+
+        return dayNames[dayOfWeek] + ", " + monthNames[month] + " " + day + ", " + year;
     },
     
     make_paypal_button: function() {
@@ -192,21 +231,21 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
     },
 
     resize_modal: function(previous_height) {
-        var height = this.$modal.height() + 16;
-        var parent_height = this.$modal.parent().height();
-        if (height > parent_height && previous_height != height) {
+        var content_height = $('.NB-feedchooser-left', this.$modal).height() + 32;
+        var container_height = this.$modal.parent().height();
+        if (content_height > container_height && previous_height != content_height) {
             var chooser_height = $('#NB-feedchooser-feeds').height();
-            var diff = Math.max(4, height - parent_height);
+            var diff = Math.max(4, content_height - container_height);
             $('#NB-feedchooser-feeds').css({'max-height': chooser_height - diff});
-            _.defer(_.bind(function() { this.resize_modal(height); }, this), 1);
+            _.defer(_.bind(function() { this.resize_modal(content_height); }, this), 1);
         }
     },
     
     open_modal: function() {
         var self = this;
         this.$modal.modal({
-            'minWidth': 780,
-            'maxWidth': 780,
+            'minWidth': NEWSBLUR.Globals.is_premium ? 460 : 860,
+            'maxWidth': NEWSBLUR.Globals.is_premium ? 460 : 860,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 dialog.overlay.fadeIn(200, function () {
@@ -238,6 +277,8 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
         this.approve_list = _.without(this.approve_list, feed_id);
         var $feed = this.$feeds[feed_id];
         
+        if (!$feed) return;
+        
         $feed.removeClass('NB-feedchooser-approve');
         $feed.addClass('NB-feedchooser-decline');
         if (update) {
@@ -250,6 +291,9 @@ NEWSBLUR.ReaderFeedchooser.prototype = {
             this.approve_list.push(feed_id);
         }
         var $feed = this.$feeds[feed_id];
+        
+        if (!$feed) return;
+        
         $feed.removeClass('NB-feedchooser-decline');
         $feed.addClass('NB-feedchooser-approve');
         if (update) {

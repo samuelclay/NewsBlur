@@ -1,0 +1,201 @@
+#!/usr/bin/perl -w
+# Plugin to monitor pg_stat_database
+#
+# Copyright Dalibo <cedric.villemain@dalibo.com> 2007
+# Based on a plugin (postgres_block_read_) from Björn Ruberg <bjorn@linpro.no>
+#
+# Licenced under GPL v2.
+#
+# Usage:
+#
+#       Symlink into /etc/munin/plugins/ and add the monitored
+#       database to the filename. e.g.:
+#
+#       ln -s /usr/share/munin/plugins/pg__stat_database \
+#         /etc/munin/plugins/pg_<databasename>_stat_database
+#       This should, however, be given through autoconf and suggest.
+#
+#       If required, give username, password and/or Postgresql server
+#       host through environment variables.
+#
+#       You must also activate Postgresql statistics. See
+#       http://www.postgresql.org/docs/8.1/interactive/monitoring-stats.html
+#       for how to enable this. Specifically, the following lines must
+#       exist in your postgresql.conf:
+#
+#           stats_start_collector = true
+#           stats_block_level = true
+#
+#
+# Parameters:
+#
+#       config   (required)
+#
+# Config variables:
+#
+#       dbhost     - Which database server to use. Defaults to
+#                    'localhost'.
+#       dbname     - Which database to use. Defaults to template1
+#       dbuser     - A Postgresql user account with read permission to
+#                    the given database. Defaults to
+#                    'postgres'. Anyway, Munin must be told which user
+#                    this plugin should be run as.
+#       dbpass     - The corresponding password, if
+#                    applicable. Default to undef. Remember that
+#                    pg_hba.conf must be configured accordingly.
+#
+# Magic markers
+#%# family=auto
+#%# capabilities=autoconf
+
+use strict;
+use DBI;
+use vars qw ( $debug $configure  );
+use constant _PGMINI => 70400;
+
+my $dbhost = $ENV{'dbhost'} || '';
+my $dbname = $ENV{'dbname'} || 'template1';
+my $dbuser = $ENV{'dbuser'} || 'postgres';
+my $dbport = $ENV{'dbport'} || '5432';
+my $dbpass = $ENV{'dbpass'} || '';
+
+my $dsn = "DBI:Pg:dbname=$dbname";
+$dsn   .=";host=$dbhost;port=$dbport" if $dbhost;
+my $pg_server_version;
+
+if (exists $ARGV[0]) {
+  if ($ARGV[0] eq 'autoconf') {
+    # Check for DBD::Pg
+    if (! eval "require DBD::Pg;") {
+      print "no (DBD::Pg not found)";
+      exit 1;
+    }
+    my $dbh = DBI->connect ($dsn,
+                            $dbuser,
+                            $dbpass,
+                            {RaiseError =>1});
+    if ($dbh) {
+      $pg_server_version = $dbh->{'pg_server_version'};
+      if ($pg_server_version < (_PGMINI)) {
+        $pg_server_version =~ /(\d)(\d){2,2}(\d){2,2}/;
+        print "PostgreSQL Server version " . (_PGMINI) . " or above is needed. Current is $1.$2.$3 \n";
+				exit 1;
+      }
+      print "yes\n";
+      exit 0;
+    } else {
+      print "no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr;
+      exit 1;
+    }
+  } elsif ($ARGV[0] eq 'debug') {
+    # Set debug flag
+    $debug = 1;
+  } elsif ($ARGV[0] eq 'config') {
+    # Set config flag
+    $configure = 1;
+  }
+}
+
+print "# $dsn\n" if $debug;
+my $dbh = DBI->connect ($dsn,
+                        $dbuser,
+                        $dbpass,
+                        {RaiseError =>1});
+
+die ("no Unable to access Database $dbname on host $dbhost as user $dbuser.\nError returned was: ". $DBI::errstr."\n") unless($dbh);
+$pg_server_version = $dbh->{'pg_server_version'};
+
+if ($configure) {
+  print "graph_title PostgreSQL stat for database $dbname\n";
+  print "graph_vlabel Number / \${graph_period}\n";
+  print "graph_info Data from pg_stat_database.\n";
+  print "graph_category Postgresql \n";
+  print "graph_args --base 1000\n";
+
+  print "xact_commit.label Commits\n";
+  print "xact_commit.graph no\n";
+  print "xact_commit.draw LINE\n";
+  print "xact_commit.type DERIVE\n";
+  print "xact_commit.min 0\n";
+  print "xact_commit.info Xact committed\n";
+  print "xact_rollback.label Rollbacks\n";
+  print "xact_rollback.draw LINE\n";
+  print "xact_rollback.type DERIVE\n";
+  print "xact_rollback.min 0\n";
+  print "xact_rollback.negative xact_commit\n";
+  print "xact_rollback.info Xact rollbacked\n";
+
+  print "blks_read.label Blocks Read\n";
+  print "blks_read.graph no\n";
+  print "blks_read.draw LINE\n";
+  print "blks_read.type DERIVE\n";
+  print "blks_read.min 0\n";
+  print "blks_read.info Blocks read\n";
+  print "blks_hit.label Blocks Hit\n";
+  print "blks_hit.draw LINE\n";
+  print "blks_hit.type DERIVE\n";
+  print "blks_hit.min 0\n";
+  print "blks_hit.negative blks_read\n";
+  print "blks_hit.info Blocks hit\n";
+
+  if ($pg_server_version > 80300) {
+    print "tup_returned.label Tuples returned \n";
+    print "tup_returned.draw LINE\n";
+    print "tup_returned.type DERIVE\n";
+    print "tup_returned.min 0\n";
+    print "tup_returned.info Number of tuple returned\n";
+
+    print "tup_fetched.label Tuples fetched \n";
+    print "tup_fetched.draw LINE\n";
+    print "tup_fetched.type DERIVE\n";
+    print "tup_fetched.min 0\n";
+    print "tup_fetched.info Number of tuple fetched\n";
+
+    print "tup_inserted.label Tuples inserted \n";
+    print "tup_inserted.draw LINE\n";
+    print "tup_inserted.type DERIVE\n";
+    print "tup_inserted.min 0\n";
+    print "tup_inserted.info Number of tuple inserted\n";
+
+    print "tup_updated.label Tuples updated\n";
+    print "tup_updated.draw LINE\n";
+    print "tup_updated.type DERIVE\n";
+    print "tup_updated.min 0\n";
+    print "tup_updated.info Number of tuple updated\n";
+
+    print "tup_deleted.label Tuples deleted\n";
+    print "tup_deleted.draw LINE\n";
+    print "tup_deleted.type DERIVE\n";
+    print "tup_deleted.min 0\n";
+    print "tup_deleted.info Number of tuple deleted\n";
+  }
+}
+else {
+  my $sql = "select xact_commit, xact_rollback, ";
+  $sql 	 .= "       blks_read, blks_hit ";
+  if ($pg_server_version > 80300){
+		$sql   .= ", tup_returned, tup_fetched, tup_inserted, tup_updated, tup_deleted  ";
+  }
+  $sql 	 .= " from pg_stat_database where datname=?";
+  print "# $sql\n" if $debug;
+  my $sth = $dbh->prepare($sql);
+  $sth->execute($dbname);
+  printf ("# Rows: %d\n",  $sth->rows) if $debug;
+  if ($sth->rows > 0) {
+    my ($xact_commit, $xact_rollback, $blks_read, $blks_hit, $tup_returned, $tup_fetched, $tup_inserted, $tup_updated, $tup_deleted) = $sth->fetchrow_array();
+    print "xact_commit.value $xact_commit\n";
+    print "xact_rollback.value $xact_rollback\n";
+    print "blks_read.value $blks_read\n";
+    print "blks_hit.value $blks_hit\n";
+    if ($pg_server_version > 80300){
+      print "tup_returned.value $tup_returned\n";
+      print "tup_fetched.value $tup_fetched\n";
+      print "tup_inserted.value $tup_inserted\n";
+			print "tup_updated.value $tup_updated\n";
+			print "tup_deleted.value $tup_deleted\n";
+    }
+  }
+}
+
+exit 0;
+

@@ -1,0 +1,5 @@
+{% for user in users %}
+    <a href="{{ user.feed_link }}" class="NB-user-avatar" title="{{ user.username }}">
+        <img src="{{ user.photo_url }}">
+    </a>
+{% endfor %}

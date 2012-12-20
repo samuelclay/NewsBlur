@@ -1,8 +1,21 @@
+import re
 import datetime
+import struct
+import dateutil
 from HTMLParser import HTMLParser
+from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
+from lxml.etree import ParserError, XMLSyntaxError
+import lxml.html, lxml.etree
+from lxml.html.clean import Cleaner
 from itertools import chain
 from django.utils.dateformat import DateFormat
+from django.utils.html import strip_tags as strip_tags_django
 from django.conf import settings
+from utils.tornado_escape import linkify as linkify_tornado
+from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
+from vendor import reseekfile
+
+COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 
 def story_score(story, bottom_delta=None):
     # A) Date - Assumes story is unread and within unread range
@@ -56,8 +69,19 @@ def _extract_date_tuples(date):
     return parsed_date, date_tuple, today_tuple, yesterday_tuple
     
 def pre_process_story(entry):
-    publish_date = entry.get('published_parsed', entry.get('updated_parsed'))
-    entry['published'] = datetime.datetime(*publish_date[:6]) if publish_date else datetime.datetime.utcnow()
+    publish_date = entry.get('published_parsed')
+    if publish_date:
+        publish_date = datetime.datetime(*publish_date[:6])
+    if not publish_date and entry.get('published'):
+        try:
+            publish_date = dateutil.parser.parse(entry.get('published')).replace(tzinfo=None)
+        except ValueError:
+            pass
+    
+    if publish_date:
+        entry['published'] = publish_date
+    else:
+        entry['published'] = datetime.datetime.utcnow()
     
     # entry_link = entry.get('link') or ''
     # protocol_index = entry_link.find("://")
@@ -73,7 +97,8 @@ def pre_process_story(entry):
     if entry.get('content'):
         entry['story_content'] = entry['content'][0].get('value', '').strip()
     else:
-        entry['story_content'] = entry.get('summary', '').strip()
+        summary = entry.get('summary') or ''
+        entry['story_content'] = summary.strip()
     
     # Add each media enclosure as a Download link
     for media_content in chain(entry.get('media_content', [])[:5], entry.get('links', [])[:5]):
@@ -109,6 +134,9 @@ def pre_process_story(entry):
         if len(story_title) > 80:
             story_title = story_title[:80] + '...'
         entry['title'] = story_title
+    
+    entry['title'] = strip_tags(entry.get('title'))
+    entry['author'] = strip_tags(entry.get('author'))
     
     return entry
     
@@ -156,9 +184,47 @@ class MLStripper(HTMLParser):
         return ' '.join(self.fed)
 
 def strip_tags(html):
+    if not html:
+        return ''
+    return strip_tags_django(html)
+    
     s = MLStripper()
     s.feed(html)
     return s.get_data()
+
+def strip_comments(html_string):
+    return COMMENTS_RE.sub('', html_string)
+    
+def strip_comments__lxml(html_string):
+    params = {
+        'comments': True,
+        'scripts': False,
+        'javascript': False,
+        'style': False,
+        'links': False,
+        'meta': False,
+        'page_structure': False,
+        'processing_instructions': False,
+        'embedded': False,
+        'frames': False,
+        'forms': False,
+        'annoying_tags': False,
+        'remove_tags': None,
+        'allow_tags': None,
+        'remove_unknown_tags': True,
+        'safe_attrs_only': False,
+    }
+    try:
+        cleaner = Cleaner(**params)
+        html = lxml.html.fromstring(html_string)
+        clean_html = cleaner.clean_html(html)
+
+        return lxml.etree.tostring(clean_html)
+    except XMLSyntaxError:
+        return html_string
+
+def linkify(*args, **kwargs):
+    return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
     
 def truncate_chars(value, max_length):
     if len(value) <= max_length:
@@ -171,3 +237,75 @@ def truncate_chars(value, max_length):
             truncd_val = truncd_val[:rightmost_space]
  
     return truncd_val + "..."
+
+def image_size(datastream):
+    datastream = reseekfile.ReseekFile(datastream)
+    data = str(datastream.read(30))
+    size = len(data)
+    height = -1
+    width = -1
+    content_type = ''
+
+    # handle GIFs
+    if (size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
+        # Check to see if content_type is correct
+        content_type = 'image/gif'
+        w, h = struct.unpack("<HH", data[6:10])
+        width = int(w)
+        height = int(h)
+
+    # See PNG 2. Edition spec (http://www.w3.org/TR/PNG/)
+    # Bytes 0-7 are below, 4-byte chunk length, then 'IHDR'
+    # and finally the 4-byte width, height
+    elif ((size >= 24) and data.startswith('\211PNG\r\n\032\n')
+          and (data[12:16] == 'IHDR')):
+        content_type = 'image/png'
+        w, h = struct.unpack(">LL", data[16:24])
+        width = int(w)
+        height = int(h)
+
+    # Maybe this is for an older PNG version.
+    elif (size >= 16) and data.startswith('\211PNG\r\n\032\n'):
+        # Check to see if we have the right content type
+        content_type = 'image/png'
+        w, h = struct.unpack(">LL", data[8:16])
+        width = int(w)
+        height = int(h)
+
+    # handle JPEGs
+    elif (size >= 2) and data.startswith('\377\330'):
+        content_type = 'image/jpeg'
+        datastream.seek(0)
+        datastream.read(2)
+        b = datastream.read(1)
+        try:
+            while (b and ord(b) != 0xDA):
+                while (ord(b) != 0xFF): b = datastream.read(1)
+                while (ord(b) == 0xFF): b = datastream.read(1)
+                if (ord(b) >= 0xC0 and ord(b) <= 0xC3):
+                    datastream.read(3)
+                    h, w = struct.unpack(">HH", datastream.read(4))
+                    break
+                else:
+                    datastream.read(int(struct.unpack(">H", datastream.read(2))[0])-2)
+                b = datastream.read(1)
+            width = int(w)
+            height = int(h)
+        except struct.error:
+            pass
+        except ValueError:
+            pass
+
+    return content_type, width, height
+
+def htmldiff(old_html, new_html):
+    try:
+        old_html_tokens = tokenize(old_html, include_hrefs=False) 
+        new_html_tokens = tokenize(new_html, include_hrefs=False) 
+    except (KeyError, ParserError):
+        return new_html
+    
+    result = htmldiff_tokens(old_html_tokens, new_html_tokens) 
+    result = ''.join(result).strip() 
+    
+    return fixup_ins_del_tags(result)

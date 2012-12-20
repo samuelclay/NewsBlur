@@ -11,7 +11,7 @@ import time
 import s3
 from django.conf import settings
 
-COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title userstories starred_stories"
+COLLECTIONS = "classifier_tag classifier_author classifier_feed classifier_title userstories starred_stories shared_stories category category_site sent_emails social_profile social_subscription social_services statistics feedback"
 
 date = time.strftime('%Y-%m-%d-%H-%M')
 collections = COLLECTIONS.split(' ')

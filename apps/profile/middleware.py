@@ -1,6 +1,7 @@
 import datetime
 import re
 import random
+import time
 from utils import log as logging
 from django.conf import settings
 from django.db import connection
@@ -29,11 +30,13 @@ class LastSeenMiddleware(object):
 class SQLLogToConsoleMiddleware:
     def process_response(self, request, response): 
         if settings.DEBUG and connection.queries:
-            time = sum([float(q['time']) for q in connection.queries])
+            time_elapsed = sum([float(q['time']) for q in connection.queries])
             queries = connection.queries
             for query in queries:
                 if query.get('mongo'):
-                    query['sql'] = "%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
+                    query['sql'] = "~FM%s: %s" % (query['mongo']['collection'], query['mongo']['query'])
+                elif query.get('redis'):
+                    query['sql'] = "~FC%s" % (query['redis']['query'])
                 else:
                     query['sql'] = re.sub(r'SELECT (.*?) FROM', 'SELECT * FROM', query['sql'])
                     query['sql'] = re.sub(r'SELECT', '~FYSELECT', query['sql'])
@@ -41,7 +44,7 @@ class SQLLogToConsoleMiddleware:
                     query['sql'] = re.sub(r'UPDATE', '~FY~SBUPDATE', query['sql'])
                     query['sql'] = re.sub(r'DELETE', '~FR~SBDELETE', query['sql'])
             t = Template("{% for sql in sqllog %}{% if not forloop.first %}                  {% endif %}[{{forloop.counter}}] ~FC{{sql.time}}s~FW: {{sql.sql|safe}}{% if not forloop.last %}\n{% endif %}{% endfor %}")
-            logging.debug(t.render(Context({'sqllog':queries,'count':len(queries),'time':time})))
+            logging.debug(t.render(Context({'sqllog':queries,'count':len(queries),'time':time_elapsed})))
         return response
 
 SIMPSONS_QUOTES = [
@@ -155,4 +158,7 @@ class SimpsonsMiddleware:
         response["X-%s" % source] = quote[1]
 
         return response
-    
+
+class TimingMiddleware:
+    def process_request(self, request):
+        setattr(request, 'start_time', time.time())

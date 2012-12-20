@@ -3,12 +3,16 @@ NEWSBLUR.ReaderMarkRead = function(options) {
         'days': 1
     };
     
+    this.flags = {};
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
     this.runner();
 };
 
-NEWSBLUR.ReaderMarkRead.prototype = {
+NEWSBLUR.ReaderMarkRead.prototype = new NEWSBLUR.Modal;
+NEWSBLUR.ReaderMarkRead.prototype.constructor = NEWSBLUR.ReaderMarkRead;
+
+_.extend(NEWSBLUR.ReaderMarkRead.prototype, {
     
     runner: function() {
         this.make_modal();
@@ -18,6 +22,9 @@ NEWSBLUR.ReaderMarkRead.prototype = {
         this.open_modal();
         
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+        $(document).bind('keydown.mark_read', 'return', _.bind(this.save_mark_read, this));
+        $(document).bind('keydown.mark_read', 'ctrl+return', _.bind(this.save_mark_read, this));
+        $(document).bind('keydown.mark_read', 'meta+return', _.bind(this.save_mark_read, this));
     },
     
     make_modal: function() {
@@ -66,6 +73,7 @@ NEWSBLUR.ReaderMarkRead.prototype = {
                     $.modal.close();
                 });
                 $('.NB-modal-holder').empty().remove();
+                $(document).unbind('.mark_read');
             }
         });
     },
@@ -110,20 +118,25 @@ NEWSBLUR.ReaderMarkRead.prototype = {
     },
     
     save_mark_read: function() {
+        if (this.flags.saving) return;
+        
         var $save = $('.NB-modal input[type=submit]');
         var $slider = $('.NB-markread-slider', this.$modal);
         var days = $slider.slider('option', 'value');
         
+        this.flags.saving = true;
         $save.attr('value', 'Marking as read...').addClass('NB-disabled').attr('disabled', true);
         if (NEWSBLUR.Globals.is_authenticated) {
-            this.model.save_mark_read(days, function() {
+            this.model.save_mark_read(days, _.bind(function() {
                 NEWSBLUR.reader.start_count_unreads_after_import();
                 $.modal.close();
                 NEWSBLUR.reader.force_feeds_refresh(function() {
                     NEWSBLUR.reader.finish_count_unreads_after_import();
                 }, true);
-            });
+                this.flags.saving = false;
+            }, this));
         } else {
+            this.flags.saving = false;
             $.modal.close();
         }
     },
@@ -149,4 +162,4 @@ NEWSBLUR.ReaderMarkRead.prototype = {
         });
     }
     
-};
+});

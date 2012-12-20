@@ -30,7 +30,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             }).render().el;
         });
         this.$el.html($stories);
-        this.attach_audio_handler_to_stories();
         this.end_loading();
         this.fill_out();
     },
@@ -38,15 +37,14 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     add: function(options) {
         var collection = this.collection;
         if (options.added) {
-            var $stories = _.map(this.collection.models.slice(-1 * options.added), function(story) {
+            var $stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function(story) {
                 if (story.story_title_view) return;
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
                     collection: collection
                 }).render().el;
-            });
+            }));
             this.$el.append($stories);
-            this.attach_audio_handler_to_stories();
         }
         this.end_loading();
         this.fill_out();
@@ -68,23 +66,6 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ===========
     // = Actions =
     // ===========
-    
-    attach_audio_handler_to_stories: function() {
-        _.delay(_.bind(function() {
-            var $audio = this.$('audio').filter(function() {
-                return !$(this).closest('.audiojs').length;
-            });
-            var audio_opts = window.a = {
-                imageLocation: NEWSBLUR.Globals.MEDIA_URL + 'img/reader/player-graphics.gif',
-                swfLocation: NEWSBLUR.Globals.MEDIA_URL + 'flash/audiojs.swf',
-                preload: false
-            };
-
-            audiojs.events.ready(function() {
-                audiojs.createAll(audio_opts, $audio);
-            });
-        }, this), 500);
-    },
     
     fill_out: function(options) {
         this.snap_back_scroll_position();
@@ -195,7 +176,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     // ============
     
     scroll_to_selected_story: function(story) {
-        var story_title_view = story.story_title_view || this.collection.active_story.story_title_view;
+        var story_title_view = (story && story.story_title_view) ||
+                                (this.collection.active_story && this.collection.active_story.story_title_view);
+        if (!story_title_view) return;
+        
         var story_title_visisble = NEWSBLUR.reader.$s.$story_titles.isScrollVisible(story_title_view.$el);
         if (!story_title_visisble) {
             var container_offset = NEWSBLUR.reader.$s.$story_titles.position().top;

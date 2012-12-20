@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item>
+        <bitmap
+            android:src="@drawable/second_repeating_pattern"
+        	android:tileMode="repeat" 
+            />        
+    </item>
+    
+    <item>
+        <shape>
+            <gradient
+                android:angle="270"
+                android:endColor="@color/half_darkgray"
+                android:startColor="@color/half_black" />
+        </shape>
+    </item>
+
+    
+</layer-list>

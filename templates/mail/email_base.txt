@@ -1,10 +1,8 @@
-{% block body %}{% endblock body %}
-
-- Samuel & Roy
+{% load utils_tags %}{% block body %}{% endblock body %}
 
 -----------------------------------------------------------------------------
 
-NewsBlur is your social news reader. A new sound of an old instrument.
+NewsBlur is a social news network that brings people together to talk about the world. A new sound of an old instrument.
 
 Stay up to date and in touch with us, yr. developers, in a few different ways:
 
@@ -18,10 +16,10 @@ Stay up to date and in touch with us, yr. developers, in a few different ways:
 
 There's plenty of ways to use NewsBlur beyond the website:
 
-    * Download the free iPhone App: http://www.newsblur.com/iphone/
-    * Download the Android App on the Android Market: https://market.android.com/details?id=bitwrit.Blar
-    * Download browser extensions for Safari, Firefox, and Chrome: http://www.newsblur.com{{ user.profile.autologin_url }}?next=goodies
+    * Download the free iPad/iPhone App: http://{% current_domain %}/ios/
+    * Download the free Android App: http://{% current_domain %}/android/
+    * Download browser extensions for Safari, Firefox, and Chrome: http://{% current_domain %}{{ user.profile.autologin_url }}?next=goodies
 
 -----------------------------------------------------------------------------
 
-Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur: http://www.newsblur.com{{ user.profile.autologin_url }}?next=optout
+Don't want to be notified about anything NewsBlur related? Opt-out of emails from NewsBlur: http://{% current_domain %}{{ user.profile.autologin_url }}?next=optout

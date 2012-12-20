@@ -27,22 +27,20 @@ def timelimit(timeout):
                         self.result = function(*args, **kw)
                     except:
                         self.error = sys.exc_info()
-            if not settings.DEBUG and not settings.TEST_DEBUG:
-                c = Dispatch()
-                c.join(timeout)
-                if c.isAlive():
-                    raise TimeoutError, 'took too long'
-                if c.error:
-                    tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
-                    logging.debug(tb)
-                    mail_admins('Error in timeout: %s' % c.error[0], tb)
-                    raise c.error[0], c.error[1]
-                return c.result
-            else:
-                return function(*args, **kw)
+            c = Dispatch()
+            c.join(timeout)
+            if c.isAlive():
+                raise TimeoutError, 'took too long'
+            if c.error:
+                tb = ''.join(traceback.format_exception(c.error[0], c.error[1], c.error[2]))
+                logging.debug(tb)
+                mail_admins('Error in timeout: %s' % c.error[0], tb)
+                raise c.error[0], c.error[1], c.error[2]
+            return c.result
         return _2
     return _1
-    
+
+         
 def utf8encode(tstr):
     """ Encodes a unicode string in utf-8
     """
@@ -171,18 +169,35 @@ def format_relative_date(date, future=False):
         days = ((diff.seconds / 60) / 60 / 24)
         return "%s day%s %s" % (days, '' if days == 1 else 's', '' if future else 'ago')
     
-def add_object_to_folder(obj, folder, folders, parent='', added=False):
-    if not folder and not parent and obj not in folders:
+def add_object_to_folder(obj, in_folder, folders, parent='', added=False):
+    obj_identifier = obj
+    if isinstance(obj, dict):
+        obj_identifier = obj.keys()[0]
+        print obj, obj_identifier, folders
+
+    if (not in_folder and not parent and 
+        not isinstance(obj, dict) and 
+        obj_identifier not in folders):
         folders.append(obj)
         return folders
 
+    child_folder_names = []
+    for item in folders:
+        if isinstance(item, dict):
+            child_folder_names.append(item.keys()[0])
+    if isinstance(obj, dict) and in_folder == parent:
+        if obj_identifier not in child_folder_names:
+            folders.append(obj)
+        return folders
+        
     for k, v in enumerate(folders):
         if isinstance(v, dict):
             for f_k, f_v in v.items():
-                if f_k == folder and obj not in f_v and not added:
+                if f_k == in_folder and obj_identifier not in f_v and not added:
                     f_v.append(obj)
                     added = True
-                folders[k][f_k] = add_object_to_folder(obj, folder, f_v, f_k, added)
+                folders[k][f_k] = add_object_to_folder(obj, in_folder, f_v, f_k, added)
+    
     return folders  
 
 def mail_feed_error_to_admin(feed, e, local_vars=None, subject=None):

@@ -31,7 +31,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
     },
 
     initialize_feed: function(feed_id) {
-        var view_setting = this.model.view_setting(feed_id);
+        var view_setting = this.model.view_setting(feed_id, 'view');
         NEWSBLUR.Modal.prototype.initialize_feed.call(this, feed_id);
         $('input[name=feed_link]', this.$modal).val(this.feed.get('feed_link'));
         $('input[name=feed_address]', this.$modal).val(this.feed.get('feed_address'));
@@ -268,7 +268,17 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 NEWSBLUR.reader.force_feed_refresh(feed_id);
                 $.modal.close();
             }, function(data) {
-                $error.show().html((data && data.message) || "There was a problem fetching the feed from this URL.");
+                if (data.new_feed_id) {
+                    NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
+                }
+                
+                var feed = NEWSBLUR.assets.get_feed(data.new_feed_id);
+                console.log(["feed address", feed, NEWSBLUR.assets.get_feed(feed_id)]);
+                var error = "There was a problem fetching the feed from this URL.";
+                if (parseInt(feed.get('exception_code'), 10) == 404) {
+                    error = "URL gives a 404 - page not found.";
+                }
+                $error.show().html((data && data.message) || error);
                 $loading.removeClass('NB-active');
                 $submit.removeClass('NB-disabled').attr('value', 'Parse this RSS/XML Feed');
             });
@@ -292,7 +302,16 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 NEWSBLUR.reader.force_feed_refresh(feed_id);
                 $.modal.close();
             }, function(data) {
-                $error.show().html((data && data.message) || "There was a problem fetching the feed from this URL.");
+                if (data.new_feed_id) {
+                    NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
+                }
+
+                var feed = NEWSBLUR.assets.get_feed(data.new_feed_id);
+                var error = "There was a problem fetching the feed from this URL.";
+                if (feed.get('exception_code') == '404') {
+                    error = "URL gives a 404 - page not found.";
+                }
+                $error.show().html((data && data.message) || error);
                 $loading.removeClass('NB-active');
                 $submit.removeClass('NB-disabled').attr('value', 'Fetch Feed from Website');
             });
@@ -339,7 +358,7 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         });
         
         $.targetIs(e, { tagSelector: 'input[name=view_settings]' }, function($t, $p){
-            self.model.view_setting(self.feed_id, $t.val());
+            self.model.view_setting(self.feed_id, {'view': $t.val()});
 
             var $status = $('.NB-exception-option-view .NB-exception-option-status', self.$modal);
             $status.text('Saved').animate({

@@ -181,6 +181,10 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
         
         if (!story) return;
         
+        if (options.only_if_hidden && this.$el.isScrollVisible($story, true)) {
+            return;
+        }
+        
         if (!NEWSBLUR.assets.preference('animations') ||
             NEWSBLUR.reader.story_view == 'feed' ||
             NEWSBLUR.reader.story_view == 'story' ||
@@ -489,7 +493,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                     .unbind('click.NB-taskbar')
                     .bind('click.NB-taskbar', _.bind(function(e) {
                     var href = $(this).attr('href');
-                    if (href.indexOf('#') == 0) {
+                    if (href && href.indexOf('#') == 0) {
                         e.preventDefault();
                         var $footnote = $('a[name='+href.substr(1)+'], [id='+href.substr(1)+']',
                                           $iframe_contents);
@@ -557,7 +561,7 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
                     NEWSBLUR.reader.active_feed) {
                   $('.NB-feed-frame').attr('src', '');
                   window.top.location = '/reader/buster';
-                  $('.task_view_feed').click();
+                  NEWSBLUR.reader.switch_taskbar_view('feed');
                 }
             }
         }, 1);

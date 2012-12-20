@@ -6,14 +6,15 @@ from django.contrib.auth import authenticate
 from django.db.models import Q
 from apps.reader.models import Feature
 from apps.profile.tasks import EmailNewUser
+from apps.social.models import MActivity
 from utils import log as logging
 
 class LoginForm(forms.Form):
     username = forms.CharField(label=_("Username or Email"), max_length=30,
-                               widget=forms.TextInput(attrs={'tabindex': 1}),
+                               widget=forms.TextInput(attrs={'tabindex': 1, 'class': 'NB-input'}),
                                error_messages={'required': 'Please enter a username.'})
     password = forms.CharField(label=_("Password"),
-                               widget=forms.PasswordInput(attrs={'tabindex': 2}),
+                               widget=forms.PasswordInput(attrs={'tabindex': 2, 'class': 'NB-input'}),
                                required=False)    
                                # error_messages={'required': 'Please enter a password.'})
 
@@ -68,17 +69,17 @@ class LoginForm(forms.Form):
 class SignupForm(forms.Form):
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
-                                widget=forms.TextInput(),
+                                widget=forms.TextInput(attrs={'class': 'NB-input'}),
                                 label=_(u'username'),
                                 error_messages={
                                     'required': 'Please enter a username.', 
                                     'invalid': "Your username may only contain letters and numbers."
                                 })
-    email = forms.EmailField(widget=forms.TextInput(attrs=dict(maxlength=75)),
+    email = forms.EmailField(widget=forms.TextInput(attrs={'maxlength': 75, 'class': 'NB-input'}),
                              label=_(u'email address'),
                              required=False)  
                              # error_messages={'required': 'Please enter your email.'})
-    password = forms.CharField(widget=forms.PasswordInput(),
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'NB-input'}),
                                label=_(u'password'),
                                required=False)
                                # error_messages={'required': 'Please enter a password.'})
@@ -126,7 +127,9 @@ class SignupForm(forms.Form):
         new_user.save()
         new_user = authenticate(username=username,
                                 password=password)
-
+        
+        MActivity.new_signup(user_id=new_user.pk)
+        
         if new_user.email:
             EmailNewUser.delay(user_id=new_user.pk)
         

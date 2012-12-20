@@ -4,8 +4,7 @@ NEWSBLUR.ReaderFriends = function(options) {
     };
         
     this.options = $.extend({}, defaults, options);
-    this.model   = NEWSBLUR.assets;
-
+    this.sync_checks = 0;
     this.runner();
 };
 
@@ -71,8 +70,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     
     fetch_friends: function(callback) {
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
-        this.model.fetch_friends(_.bind(function(data) {
-            this.profile = this.model.user_profile;
+        NEWSBLUR.assets.fetch_friends(_.bind(function(data) {
+            this.profile = NEWSBLUR.assets.user_profile.clone();
             this.services = data.services;
             this.autofollow = data.autofollow;
             this.recommended_users = data.recommended_users;
@@ -86,29 +85,32 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
     
     check_services_sync_status: function() {
-        this.model.fetch_friends(_.bind(function(data) {
-            this.profile = this.model.user_profile;
+        NEWSBLUR.assets.fetch_friends(_.bind(function(data) {
+            console.log(["Find friends", data]);
+            this.profile = NEWSBLUR.assets.user_profile;
             this.services = data.services;
-            this.make_find_friends_and_services();
+            // if (!this.services['twitter'].syncing && !this.services['facebook'].syncing) {
+                clearTimeout(this.sync_interval);
+                this.make_find_friends_and_services();
+            // }
         }, this));
     },
     
     make_find_friends_and_services: function() {
         $('.NB-modal-loading', this.$modal).removeClass('NB-active');
         var $services = $('.NB-friends-services', this.$modal).empty();
+        var service_syncing = false;
         
         _.each(['twitter', 'facebook'], _.bind(function(service) {
             var $service;
             
             if (this.services && this.services[service][service+'_uid']) {
                 var syncing = this.services[service].syncing;
+                if (syncing) service_syncing = true;
                 $service = $.make('div', { className: 'NB-friends-service NB-connected NB-friends-service-'+service + (this.services[service].syncing ? ' NB-friends-service-syncing' : '') }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
                     $.make('div', { className: 'NB-friends-service-connect NB-modal-submit-button NB-modal-submit-grey' }, syncing ? 'Fetching...' : 'Disconnect')
                 ]);
-                if (syncing) {
-                    _.delay(_.bind(this.check_services_sync_status, this), 3000);
-                }
             } else {
                 $service = $.make('div', { className: 'NB-friends-service NB-friends-service-'+service }, [
                     $.make('div', { className: 'NB-friends-service-title' }, _.string.capitalize(service)),
@@ -151,6 +153,14 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             var $ghost = $.make('div', { className: 'NB-ghost' }, 'Nobody left to recommend. Good job!');
             $findlist.append($ghost);
         }
+        
+        if (service_syncing) {
+            clearTimeout(this.sync_interval);
+            this.sync_checks += 1;
+            this.sync_interval = _.delay(_.bind(function() {
+                this.check_services_sync_status();
+            }, this), this.sync_checks * 1000);
+        }
     },
     
     make_profile_section: function() {
@@ -189,7 +199,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 '.'
             ]);
             $tab.append($heading);
-            this.model.follower_profiles.each(_.bind(function(profile) {
+            NEWSBLUR.assets.follower_profiles.each(_.bind(function(profile) {
                 $tab.append(new NEWSBLUR.Views.SocialProfileBadge({model: profile}));
             }, this));
         }
@@ -207,7 +217,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                 '.'
             ]);
             $tab.append($heading);
-            this.model.following_profiles.each(_.bind(function(profile) {
+            NEWSBLUR.assets.following_profiles.each(_.bind(function(profile) {
                 $tab.append(new NEWSBLUR.Views.SocialProfileBadge({model: profile}));
             }, this));
         }
@@ -239,7 +249,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     self.options.onShow();
                 }
             },
-            'onClose': function(dialog, callback) {
+            'onClose': _.bind(function(dialog, callback) {
+                clearTimeout(this.sync_interval);
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {
@@ -247,7 +258,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     $.modal.close(callback);
                 });
                 $('.NB-modal-holder').empty().remove();
-            }
+            }, this)
         });
     },
     
@@ -269,15 +280,30 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
     
     connect: function(service) {
+        var self = this;
         var options = "location=0,status=0,width=800,height=500";
         var url = "/oauth/" + service + "_connect";
         this.connect_window = window.open(url, '_blank', options);
+        clearInterval(this.connect_window_timer);
+        this.sync_checks = 0;
+        this.connect_window_timer = setInterval(function() {
+            console.log(["post connect window?", self, self.connect_window, self.connect_window.closed]);
+            try {
+                if (!self.connect_window || 
+                    !self.connect_window.location || 
+                    self.connect_window.closed) {
+                    self.post_connect({});
+                }
+            } catch (err) {
+                self.post_connect({});
+            }
+        }, 1000);
     },
     
     disconnect: function(service) {
         var $service = $('.NB-friends-service-'+service, this.$modal);
         $('.NB-friends-service-connect', $service).text('Disconnecting...');
-        this.model.disconnect_social_service(service, _.bind(function(data) {
+        NEWSBLUR.assets.disconnect_social_service(service, _.bind(function(data) {
             this.services = data.services;
             this.make_find_friends_and_services();
             this.make_profile_section();
@@ -285,6 +311,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
     
     post_connect: function(data) {
+        console.log(["post_connect", data, this, this.connect_window_timer]);
+        clearInterval(this.connect_window_timer);
         $('.NB-error', this.$modal).remove();
         if (data.error) {
             var $error = $.make('div', { className: 'NB-error' }, [
@@ -297,7 +325,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             this.fetch_friends();
         }
         
-        this.model.preference('has_found_friends', true);
+        NEWSBLUR.assets.preference('has_found_friends', true);
         NEWSBLUR.reader.check_hide_getting_started();
     },
 
@@ -318,9 +346,9 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         
         $loading.addClass('NB-active');
         
-        this.model.search_for_friends(query, _.bind(function(data) {
+        NEWSBLUR.assets.search_for_friends(query, _.bind(function(data) {
             $loading.removeClass('NB-active');
-            if (!data || !data.profiles.length) {
+            if (!data || !data.profiles || !data.profiles.length) {
                 $badges.html($.make('div', { 
                     className: 'NB-friends-search-badges-empty' 
                 }, [
@@ -387,7 +415,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         $.targetIs(e, { tagSelector: '.NB-friends-autofollow-checkbox' }, function($t, $p) {
             e.preventDefault();
             
-            self.model.preference('autofollow_friends', $t.is(':checked'));
+            NEWSBLUR.assets.preference('autofollow_friends', $t.is(':checked'));
         });
     },
     

@@ -37,6 +37,11 @@ class MClassifierTitle(mongo.Document):
         'indexes': [('user_id', 'feed_id'), 'feed_id', ('user_id', 'social_user_id'), 'social_user_id'],
         'allow_inheritance': False,
     }
+    
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.title[:30])
+        
             
 class MClassifierAuthor(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id', 'author'))
@@ -51,6 +56,10 @@ class MClassifierAuthor(mongo.Document):
         'indexes': [('user_id', 'feed_id'), 'feed_id', ('user_id', 'social_user_id'), 'social_user_id'],
         'allow_inheritance': False,
     }
+    
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.author[:30])
 
 class MClassifierTag(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id', 'tag'))
@@ -66,6 +75,10 @@ class MClassifierTag(mongo.Document):
         'allow_inheritance': False,
     }
     
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, self.tag[:30])
+    
 
 class MClassifierFeed(mongo.Document):
     user_id = mongo.IntField(unique_with=('feed_id', 'social_user_id'))
@@ -80,10 +93,20 @@ class MClassifierFeed(mongo.Document):
         'allow_inheritance': False,
     }
     
+    def __unicode__(self):
+        user = User.objects.get(pk=self.user_id)
+        if self.feed_id:
+            feed = Feed.get_by_id(self.feed_id)
+        else:
+            feed = User.objects.get(pk=self.social_user_id)
+        return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, feed)
+    
     
 def apply_classifier_titles(classifiers, story):
     score = 0
     for classifier in classifiers:
+        if classifier.feed_id != story['story_feed_id']:
+            continue
         if classifier.title.lower() in story['story_title'].lower():
             # print 'Titles: (%s) %s -- %s' % (classifier.title in story['story_title'], classifier.title, story['story_title'])
             score = classifier.score
@@ -93,6 +116,8 @@ def apply_classifier_titles(classifiers, story):
 def apply_classifier_authors(classifiers, story):
     score = 0
     for classifier in classifiers:
+        if classifier.feed_id != story['story_feed_id']:
+            continue
         if story.get('story_authors') and classifier.author == story.get('story_authors'):
             # print 'Authors: %s -- %s' % (classifier.author, story['story_authors'])
             score = classifier.score
@@ -102,19 +127,29 @@ def apply_classifier_authors(classifiers, story):
 def apply_classifier_tags(classifiers, story):
     score = 0
     for classifier in classifiers:
+        if classifier.feed_id != story['story_feed_id']:
+            continue
         if story['story_tags'] and classifier.tag in story['story_tags']:
             # print 'Tags: (%s-%s) %s -- %s' % (classifier.tag in story['story_tags'], classifier.score, classifier.tag, story['story_tags'])
             score = classifier.score
             if score > 0: return classifier.score
     return score
     
-def apply_classifier_feeds(classifiers, feed, social_user_id=None):
-    feed_id = feed if isinstance(feed, int) else feed.pk
+def apply_classifier_feeds(classifiers, feed, social_user_ids=None):
+    if not feed and not social_user_ids: return 0
+    feed_id = None
+    if feed:
+        feed_id = feed if isinstance(feed, int) else feed.pk
+    
+    if social_user_ids and not isinstance(social_user_ids, list):
+        social_user_ids = [social_user_ids]
+        
     for classifier in classifiers:
         if classifier.feed_id == feed_id:
             # print 'Feeds: %s -- %s' % (classifier.feed_id, feed.pk)
             return classifier.score
-        if social_user_id and not classifier.feed_id and social_user_id == classifier.social_user_id:
+        if (social_user_ids and not classifier.feed_id and 
+            classifier.social_user_id in social_user_ids):
             return classifier.score
     return 0
     
