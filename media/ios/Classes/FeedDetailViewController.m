@@ -245,6 +245,8 @@
     NSString *theFeedDetailURL;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     
+    if (!appDelegate.activeFeed) return;
+    
     if (callback || (!self.pageFetching && !self.pageFinished)) {
     
         self.feedPage = page;
@@ -287,6 +289,7 @@
             [self informError:[request error]];
         }];
         [request setCompletionBlock:^(void) {
+            if (!appDelegate.activeFeed) return;
             [self finishedLoadingFeed:request];
             if (callback) {
                 callback();
@@ -882,7 +885,7 @@
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
     NSLog(@"mark feeds read: %d %d", appDelegate.isRiverView, includeHidden);
-    if ([appDelegate.activeFolder isEqualToString:@"everything"]) {
+    if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
         // Mark folder as read
         NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_all_as_read",
                                NEWSBLUR_URL];
