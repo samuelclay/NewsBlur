@@ -1501,7 +1501,7 @@ class MStarredStory(mongo.Document):
             self.story_original_content = None
         super(MStarredStory, self).save(*args, **kwargs)
 
-        self.index_for_search()
+        # self.index_for_search()
         
     def index_for_search(self):
         story_content = zlib.decompress(self.story_content_z)
