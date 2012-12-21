@@ -20,6 +20,7 @@ from django.contrib.sites.models import Site
 from mongoengine.queryset import OperationError, Q
 from mongoengine.base import ValidationError
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
+from apps.search.models import SearchStarredStory
 from utils import json_functions as json
 from utils import feedfinder, feedparser
 from utils import urlnorm
@@ -1499,6 +1500,18 @@ class MStarredStory(mongo.Document):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
         super(MStarredStory, self).save(*args, **kwargs)
+
+        # self.index_for_search()
+        
+    def index_for_search(self):
+        story_content = zlib.decompress(self.story_content_z)
+        SearchStarredStory.index(user_id=self.user_id, 
+                                 story_id=self.story_guid, 
+                                 story_title=self.story_title, 
+                                 story_content=story_content, 
+                                 story_author=self.story_author_name, 
+                                 story_date=self.story_date,
+                                 db_id=str(self.id))
     
     @property
     def guid_hash(self):

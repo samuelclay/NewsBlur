@@ -233,6 +233,7 @@ INSTALLED_APPS = (
     'apps.push',
     'apps.social',
     'apps.oauth',
+    'apps.search',
     'apps.categories',
     'south',
     'utils',
@@ -414,6 +415,12 @@ class MasterSlaveRouter(object):
 REDIS = {
     'host': 'db01',
 }
+
+# =================
+# = Elasticsearch =
+# =================
+
+ELASTICSEARCH_HOSTS = ['db02:9200']
 
 # ===============
 # = Social APIs =

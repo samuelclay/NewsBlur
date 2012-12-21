@@ -637,6 +637,7 @@ def setup_db_firewall():
     sudo('ufw allow from 199.15.248.0/21 to any port 28017') # MongoDB web
     sudo('ufw allow from 199.15.248.0/21 to any port 6379 ') # Redis
     sudo('ufw allow from 199.15.248.0/21 to any port 11211 ') # Memcached
+    sudo('ufw allow from 199.15.248.0/21 to any port 9200 ') # Elasticsearch
 
     # EC2
     sudo('ufw allow proto tcp from 54.242.38.48 to any port 5432,27017,6379,11211')
@@ -744,7 +745,18 @@ def setup_db_mdadm():
     sudo("mdadm --examine --scan | sudo tee -a /etc/mdadm/mdadm.conf")
     sudo("echo '/dev/md0   /srv/db xfs   rw,nobarrier,noatime,nodiratime,noauto   0 0' | sudo tee -a  /etc/fstab")
     sudo("sudo update-initramfs -u -v -k `uname -r`")
+
+def setup_elasticsearch():
+    ES_VERSION = "0.20.1"
+    sudo('apt-get update')
+    sudo('apt-get install openjdk-7-jre -y')
     
+    with cd(env.VENDOR_PATH):
+        run('mkdir elasticsearch')
+    with cd(os.path.join(env.VENDOR_PATH, 'elasticsearch-%s' % ES_VERSION)):
+        run('wget http://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb' % ES_VERSION)
+        sudo('dpkg -i elasticsearch-%s.deb' % ES_VERSION)
+        
 # ================
 # = Setup - Task =
 # ================

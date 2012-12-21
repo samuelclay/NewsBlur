@@ -18,7 +18,7 @@ from django.core.mail import mail_admins
 from django.core.validators import email_re
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.models import Site
-from mongoengine.queryset import OperationError, Q
+from mongoengine.queryset import OperationError
 from apps.recommendations.models import RecommendedFeed
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds
@@ -29,6 +29,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserS
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
 from apps.statistics.models import MStatistics
+from apps.search.models import SearchStarredStory
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory
 except:
@@ -635,11 +636,11 @@ def load_starred_stories(request):
     if page: offset = limit * (page - 1)
     
     if query:
+        results = SearchStarredStory.query(user.pk, query)
+        story_ids = [result.db_id for result in results]
         mstories = MStarredStory.objects(
-            Q(user_id=user.pk) &
-            (Q(story_title__icontains=query) |
-             Q(story_content__icontains=query) |
-             Q(story_author_name__icontains=query))
+            user_id=user.pk, 
+            id__in=story_ids
         ).order_by('-starred_date')[offset:offset+limit]
     else:
         mstories = MStarredStory.objects(

@@ -86,6 +86,8 @@ REDIS = {
     'host': '127.0.0.1',
 }
 
+ELASTICSEARCH_HOSTS = ['127.0.0.1:9200']
+
 BACKED_BY_AWS = {
     'pages_on_s3': False,
     'icons_on_s3': False,
