@@ -895,17 +895,17 @@ class Feed(models.Model):
             
     def trim_feed(self, verbose=False):
         trim_cutoff = 500
-        if self.active_subscribers <= 1 and self.premium_subscribers < 1:
+        if self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
             trim_cutoff = 100
-        elif self.active_subscribers <= 3  and self.premium_subscribers < 2:
+        elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
             trim_cutoff = 200
-        elif self.active_subscribers <= 5  and self.premium_subscribers < 3:
+        elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
             trim_cutoff = 300
-        elif self.active_subscribers <= 10 and self.premium_subscribers < 4:
+        elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
             trim_cutoff = 350
-        elif self.active_subscribers <= 20 and self.premium_subscribers < 5:
+        elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
             trim_cutoff = 400
-        elif self.active_subscribers <= 25 and self.premium_subscribers < 5:
+        elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
             trim_cutoff = 450
             
         stories = MStory.objects(
