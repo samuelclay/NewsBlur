@@ -422,7 +422,7 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil python-gflags cssutils raven')
+    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil python-gflags cssutils raven pyes')
     
     put('config/pystartup.py', '.pystartup')
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -616,13 +616,14 @@ def copy_certificates():
     put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
 
 def maintenance_on():
-    put('media/maintenance.html.unused', '%s/media/maintenance.html.unused' % env.NEWSBLUR_PATH)
+    put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
     with cd(env.NEWSBLUR_PATH):
-        run('mv media/maintenance.html.unused media/maintenance.html')
+        run('mv templates/maintenance_off.html templates/maintenance_on.html')
     
 def maintenance_off():
     with cd(env.NEWSBLUR_PATH):
-        run('mv media/maintenance.html media/maintenance.html.unused')
+        run('mv templates/maintenance_on.html templates/maintenance_off.html')
+        run('git checkout templates/maintenance_off.html')
     
 # ==============
 # = Setup - DB =
