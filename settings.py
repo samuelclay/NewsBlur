@@ -420,7 +420,7 @@ REDIS = {
 # = Elasticsearch =
 # =================
 
-ELASTICSEARCH_HOSTS = ['db01:9200']
+ELASTICSEARCH_HOSTS = ['db02:9200']
 
 # ===============
 # = Social APIs =
