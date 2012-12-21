@@ -1313,6 +1313,7 @@
             this.switch_taskbar_view(this.story_view);
             this.setup_mousemove_on_views();
             this.make_feed_title_in_stories();
+            this.hide_stories_error();
             
             this.model.fetch_starred_stories(1, _.bind(this.post_open_starred_stories, this), 
                                              this.show_stories_error, true);

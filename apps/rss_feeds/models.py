@@ -1500,6 +1500,8 @@ class MStarredStory(mongo.Document):
             self.story_original_content_z = zlib.compress(self.story_original_content)
             self.story_original_content = None
         super(MStarredStory, self).save(*args, **kwargs)
+
+        self.index_for_search()
         
     def index_for_search(self):
         story_content = zlib.decompress(self.story_content_z)
@@ -1508,7 +1510,8 @@ class MStarredStory(mongo.Document):
                                  story_title=self.story_title, 
                                  story_content=story_content, 
                                  story_author=self.story_author_name, 
-                                 story_date=self.story_date)
+                                 story_date=self.story_date,
+                                 db_id=str(self.id))
     
     @property
     def guid_hash(self):

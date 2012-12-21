@@ -28,7 +28,12 @@ class SearchStarredStory:
                 'boost': 1.0,
                 'index': 'analyzed',
                 'store': 'yes',
-                'type': 'string',
+                'type': 'string',   
+            },
+            'db_id': {
+                'index': 'not_analyzed',
+                'store': 'yes',
+                'type': 'string',   
             },
             'feed_id': {
                 'store': 'yes',
@@ -48,13 +53,14 @@ class SearchStarredStory:
         cls.ES.put_mapping("%s-type" % cls.name, {'properties': mapping}, ["%s-index" % cls.name])
         
     @classmethod
-    def index(cls, user_id, story_id, story_title, story_content, story_author, story_date):
+    def index(cls, user_id, story_id, story_title, story_content, story_author, story_date, db_id):
         doc = {
             "content": story_content,
             "title": story_title,
             "author": story_author,
             "date": story_date,
             "user_ids": user_id,
+            "db_id": db_id,
         }
         cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, story_id)
         
@@ -63,4 +69,17 @@ class SearchStarredStory:
         cls.ES.refresh()
         q = pyes.query.StringQuery(text)
         results = cls.ES.search(q)
+        
+        if not results.total:
+            q = pyes.query.FuzzyQuery('title', text)
+            results = cls.ES.search(q)
+            
+        if not results.total:
+            q = pyes.query.FuzzyQuery('content', text)
+            results = cls.ES.search(q)
+            
+        if not results.total:
+            q = pyes.query.FuzzyQuery('author', text)
+            results = cls.ES.search(q)
+            
         return results
