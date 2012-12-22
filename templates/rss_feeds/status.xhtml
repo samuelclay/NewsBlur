@@ -16,6 +16,7 @@
     <th>Subs</th>
     <th>Active</th>
     <th>Premium</th>
+    <th>Act. Prem</th>
     <th>Per Month</th>
   </tr>
   {% for feed in feeds %}
@@ -29,9 +30,10 @@
       </td>
       <td>{{ feed.min_to_decay }}</td>
       <td>{{ feed.num_subscribers }}</td>
-      <td>{{ feed.active_subscribers }}</td>
-      <td>{{ feed.premium_subscribers }}</td>
-      <td>{{ feed.average_stories_per_month }}</td>
+      <td {% if feed.active_subscribers == 0 %}style="color: lightgrey"{% endif %}>{{ feed.active_subscribers }}</td>
+      <td {% if feed.premium_subscribers == 0 %}style="color: lightgrey"{% endif %}>{{ feed.premium_subscribers }}</td>
+      <td {% if feed.active_premium_subscribers == 0 %}style="color: lightgrey"{% endif %}>{{ feed.active_premium_subscribers }}</td>
+      <td {% if feed.average_stories_per_month == 0 %}style="color: lightgrey"{% endif %}>{{ feed.average_stories_per_month }}</td>
     </tr>
   {% endfor %}
   
