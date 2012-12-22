@@ -632,10 +632,10 @@ class Feed(models.Model):
                         month_count += 1
         self.data.story_count_history = json.encode(months)
         self.data.save()
-        if not total:
+        if not total or not month_count:
             self.average_stories_per_month = 0
         else:
-            self.average_stories_per_month = total / month_count
+            self.average_stories_per_month = int(round(total / float(month_count)))
         self.save()
         
         
@@ -1163,8 +1163,12 @@ class Feed(models.Model):
         
         if self.active_premium_subscribers > 0:
             total = min(total, 60) # 1 hour minimum for premiums
+            if self.active_premium_subscribers <= 1 and self.average_stories_per_month == 0:
+                total = total * random.randint(1, 18)
+        
         if self.is_push:
             total = total * 20
+        
         if verbose:
             print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
                                                 self.num_subscribers, self.active_subscribers,
