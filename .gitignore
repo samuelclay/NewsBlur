@@ -28,6 +28,7 @@ static.tgz
 media/css/circular
 config/settings
 config/secrets
+templates/maintenance_on.html
 
 # ----------------------
 # Android

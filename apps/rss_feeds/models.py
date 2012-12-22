@@ -632,10 +632,10 @@ class Feed(models.Model):
                         month_count += 1
         self.data.story_count_history = json.encode(months)
         self.data.save()
-        if not total:
+        if not total or not month_count:
             self.average_stories_per_month = 0
         else:
-            self.average_stories_per_month = total / month_count
+            self.average_stories_per_month = int(round(total / float(month_count)))
         self.save()
         
         
@@ -895,17 +895,19 @@ class Feed(models.Model):
             
     def trim_feed(self, verbose=False):
         trim_cutoff = 500
-        if self.active_subscribers <= 1 and self.premium_subscribers < 1:
+        if self.active_subscribers <= 0:
+            trim_cutoff = 25
+        elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
             trim_cutoff = 100
-        elif self.active_subscribers <= 3  and self.premium_subscribers < 2:
+        elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
             trim_cutoff = 200
-        elif self.active_subscribers <= 5  and self.premium_subscribers < 3:
+        elif self.num_subscribers <= 50  or self.active_premium_subscribers <= 5:
             trim_cutoff = 300
-        elif self.active_subscribers <= 10 and self.premium_subscribers < 4:
+        elif self.num_subscribers <= 100 or self.active_premium_subscribers <= 10:
             trim_cutoff = 350
-        elif self.active_subscribers <= 20 and self.premium_subscribers < 5:
+        elif self.num_subscribers <= 150 or self.active_premium_subscribers <= 15:
             trim_cutoff = 400
-        elif self.active_subscribers <= 25 and self.premium_subscribers < 5:
+        elif self.num_subscribers <= 200 or self.active_premium_subscribers <= 20:
             trim_cutoff = 450
             
         stories = MStory.objects(
@@ -1163,8 +1165,12 @@ class Feed(models.Model):
         
         if self.active_premium_subscribers > 0:
             total = min(total, 60) # 1 hour minimum for premiums
+            if self.active_premium_subscribers <= 1 and self.average_stories_per_month == 0:
+                total = total * random.randint(1, 18)
+        
         if self.is_push:
             total = total * 20
+        
         if verbose:
             print "[%s] %s (%s/%s/%s/%s), %s, %s: %s" % (self, updates_per_day_delay, 
                                                 self.num_subscribers, self.active_subscribers,

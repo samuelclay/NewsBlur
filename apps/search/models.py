@@ -1,5 +1,7 @@
 import pyes
 from django.conf import settings
+from django.contrib.auth.models import User
+from utils import log as logging
 
 class SearchStarredStory:
     
@@ -66,19 +68,24 @@ class SearchStarredStory:
         
     @classmethod
     def query(cls, user_id, text):
+        user = User.objects.get(pk=user_id)
         cls.ES.refresh()
         q = pyes.query.StringQuery(text)
         results = cls.ES.search(q)
+        logging.user(user, "~FGSearch ~FCsaved stories~FG for: ~SB%s" % text)
         
         if not results.total:
+            logging.user(user, "~FGSearch ~FCsaved stories~FG by title: ~SB%s" % text)
             q = pyes.query.FuzzyQuery('title', text)
             results = cls.ES.search(q)
             
         if not results.total:
+            logging.user(user, "~FGSearch ~FCsaved stories~FG by content: ~SB%s" % text)
             q = pyes.query.FuzzyQuery('content', text)
             results = cls.ES.search(q)
             
         if not results.total:
+            logging.user(user, "~FGSearch ~FCsaved stories~FG by author: ~SB%s" % text)
             q = pyes.query.FuzzyQuery('author', text)
             results = cls.ES.search(q)
             
