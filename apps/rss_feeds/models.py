@@ -895,7 +895,9 @@ class Feed(models.Model):
             
     def trim_feed(self, verbose=False):
         trim_cutoff = 500
-        if self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
+        if self.active_subscribers <= 0:
+            trim_cutoff = 25
+        elif self.num_subscribers <= 10 or self.active_premium_subscribers <= 1:
             trim_cutoff = 100
         elif self.num_subscribers <= 30  or self.active_premium_subscribers <= 3:
             trim_cutoff = 200
