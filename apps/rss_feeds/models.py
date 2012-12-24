@@ -740,7 +740,8 @@ class Feed(models.Model):
         ret_values = dict(new=0, updated=0, same=0, error=0)
 
         if settings.DEBUG:
-            logging.debug("   ---> Checking %s new/updated against %s stories" % (
+            logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
+                          self.title[:30],
                           len(stories),
                           len(existing_stories)))
         
@@ -755,8 +756,8 @@ class Feed(models.Model):
                 
             existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
             if existing_story is None:
-                if settings.DEBUG:
-                    logging.debug('- New story in feed (%s - %s): %s' % (self.feed_title, story.get('title'), len(story_content)))
+                if settings.DEBUG and False:
+                    logging.debug('   ---> New story in feed (%s - %s): %s' % (self.feed_title, story.get('title'), len(story_content)))
                 
                 s = MStory(story_feed_id = self.pk,
                        story_date = story.get('published'),
@@ -810,7 +811,7 @@ class Feed(models.Model):
                 if existing_story.story_guid != story.get('guid'):
                     self.update_read_stories_with_new_guid(existing_story.story_guid, story.get('guid'))
 
-                if settings.DEBUG:
+                if settings.DEBUG and False:
                     logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(story_content_diff), len(story_content)))
                 
                 existing_story.story_feed = self.pk
