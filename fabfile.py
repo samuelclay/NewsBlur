@@ -560,10 +560,11 @@ def setup_baremetal():
 
 def setup_app_firewall():
     sudo('ufw default deny')
-    sudo('ufw allow ssh')
-    sudo('ufw allow 80')
-    sudo('ufw allow 8888')
-    sudo('ufw allow 443')
+    sudo('ufw allow ssh') # ssh
+    sudo('ufw allow 80') # http
+    sudo('ufw allow 8888') # socket.io
+    sudo('ufw allow 8889') # socket.io ssl
+    sudo('ufw allow 443') # https
     sudo('ufw --force enable')
 
 def setup_app_motd():
