@@ -739,6 +739,11 @@ class Feed(models.Model):
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
 
+        if settings.DEBUG:
+            logging.debug("   ---> Checking %s new/updated against %s stories" % (
+                          len(stories),
+                          len(existing_stories)))
+        
         for story in stories:
             if not story.get('title'):
                 continue
@@ -750,6 +755,9 @@ class Feed(models.Model):
                 
             existing_story, story_has_changed = self._exists_story(story, story_content, existing_stories)
             if existing_story is None:
+                if settings.DEBUG:
+                    logging.debug('- New story in feed (%s - %s): %s' % (self.feed_title, story.get('title'), len(story_content)))
+                
                 s = MStory(story_feed_id = self.pk,
                        story_date = story.get('published'),
                        story_title = story.get('title'),
@@ -764,12 +772,10 @@ class Feed(models.Model):
                     ret_values['new'] += 1
                 except (IntegrityError, OperationError):
                     ret_values['error'] += 1
-                    if verbose:
+                    if settings.DEBUG:
                         logging.info('   ---> [%-30s] ~SN~FRIntegrityError on new story: %s' % (self.feed_title[:30], story.get('guid')[:30]))
             elif existing_story and story_has_changed:
                 # update story
-                # logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(existing_story.story_content), len(story_content)))
-                
                 original_content = None
                 try:
                     if existing_story and existing_story.id:
@@ -803,11 +809,11 @@ class Feed(models.Model):
                 #    logging.debug('\tExisting title / New: : \n\t\t- %s\n\t\t- %s' % (existing_story.story_title, story.get('title')))
                 if existing_story.story_guid != story.get('guid'):
                     self.update_read_stories_with_new_guid(existing_story.story_guid, story.get('guid'))
+
+                if settings.DEBUG:
+                    logging.debug('- Updated story in feed (%s - %s): %s / %s' % (self.feed_title, story.get('title'), len(story_content_diff), len(story_content)))
                 
                 existing_story.story_feed = self.pk
-                # Do not allow publishers to change the story date once a story is published.
-                # Leads to incorrect unread story counts.
-                # existing_story.story_date = story.get('published')
                 existing_story.story_title = story.get('title')
                 existing_story.story_content = story_content_diff
                 existing_story.story_latest_content = story_content
@@ -816,6 +822,10 @@ class Feed(models.Model):
                 existing_story.story_permalink = story_link
                 existing_story.story_guid = story.get('guid')
                 existing_story.story_tags = story_tags
+                # Do not allow publishers to change the story date once a story is published.
+                # Leads to incorrect unread story counts.
+                # existing_story.story_date = story.get('published') # No, don't
+                
                 try:
                     existing_story.save()
                     ret_values['updated'] += 1
@@ -1052,68 +1062,68 @@ class Feed(models.Model):
     def _exists_story(self, story=None, story_content=None, existing_stories=None):
         story_in_system = None
         story_has_changed = False
-        story_pub_date = story.get('published')
-        story_published_now = story.get('published_now', False)
         story_link = self.get_permalink(story)
-        start_date = story_pub_date - datetime.timedelta(hours=8)
-        end_date = story_pub_date + datetime.timedelta(hours=8)
-
+        # story_pub_date = story.get('published')
+        # story_published_now = story.get('published_now', False)
+        # start_date = story_pub_date - datetime.timedelta(hours=8)
+        # end_date = story_pub_date + datetime.timedelta(hours=8)
+        
         for existing_story in existing_stories:
             content_ratio = 0
-            existing_story_pub_date = existing_story.story_date
+            # existing_story_pub_date = existing_story.story_date
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
-            if (story_published_now or
-                (existing_story_pub_date > start_date and existing_story_pub_date < end_date)):
+            
+            if 'story_latest_content_z' in existing_story:
+                existing_story_content = unicode(zlib.decompress(existing_story.story_latest_content_z))
+            elif 'story_latest_content' in existing_story:
+                existing_story_content = existing_story.story_latest_content
+            elif 'story_content_z' in existing_story:
+                existing_story_content = unicode(zlib.decompress(existing_story.story_content_z))
+            elif 'story_content' in existing_story:
+                existing_story_content = existing_story.story_content
+            else:
+                existing_story_content = u''
                 
-                if 'story_latest_content_z' in existing_story:
-                    existing_story_content = unicode(zlib.decompress(existing_story.story_latest_content_z))
-                elif 'story_latest_content' in existing_story:
-                    existing_story_content = existing_story.story_latest_content
-                elif 'story_content_z' in existing_story:
-                    existing_story_content = unicode(zlib.decompress(existing_story.story_content_z))
-                elif 'story_content' in existing_story:
-                    existing_story_content = existing_story.story_content
-                else:
-                    existing_story_content = u''
-                    
-                if isinstance(existing_story.id, unicode):
-                    existing_story.story_guid = existing_story.id
-                if story.get('guid') and story.get('guid') == existing_story.story_guid:
-                    story_in_system = existing_story
+            if isinstance(existing_story.id, unicode):
+                existing_story.story_guid = existing_story.id
+            if story.get('guid') and story.get('guid') == existing_story.story_guid:
+                story_in_system = existing_story
+            
+            # Title distance + content distance, checking if story changed
+            story_title_difference = abs(levenshtein_distance(story.get('title'),
+                                                              existing_story.story_title))
+            
+            seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
+            
+            if (seq
+                and story_content
+                and existing_story_content
+                and seq.real_quick_ratio() > .9 
+                and seq.quick_ratio() > .95):
+                content_ratio = seq.ratio()
                 
-                # Title distance + content distance, checking if story changed
-                story_title_difference = abs(levenshtein_distance(story.get('title'),
-                                                                  existing_story.story_title))
-                
-                seq = difflib.SequenceMatcher(None, story_content, existing_story_content)
-                
-                if (seq
-                    and story_content
-                    and existing_story_content
-                    and seq.real_quick_ratio() > .9 
-                    and seq.quick_ratio() > .95):
-                    content_ratio = seq.ratio()
-                    
-                if story_title_difference > 0 and content_ratio > .98:
-                    story_in_system = existing_story
-                    if story_title_difference > 0 or content_ratio < 1.0:
-                        # print "Title difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio)
-                        story_has_changed = True
-                        break
-                
-                # More restrictive content distance, still no story match
-                if not story_in_system and content_ratio > .98:
-                    # print "Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio)
-                    story_in_system = existing_story
+            if story_title_difference > 0 and content_ratio > .98:
+                story_in_system = existing_story
+                if story_title_difference > 0 or content_ratio < 1.0:
+                    # print "Title difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio)
                     story_has_changed = True
                     break
-                    
-                if story_in_system and not story_has_changed:
-                    if story_content != existing_story_content:
-                        story_has_changed = True
-                    if story_link != existing_story.story_permalink:
-                        story_has_changed = True
-                    break
+            
+            # More restrictive content distance, still no story match
+            if not story_in_system and content_ratio > .98:
+                # print "Content difference - %s/%s (%s): %s" % (story.get('title'), existing_story.story_title, story_title_difference, content_ratio)
+                story_in_system = existing_story
+                story_has_changed = True
+                break
+                
+            if story_in_system and not story_has_changed:
+                if story_content != existing_story_content:
+                    story_has_changed = True
+                if story_link != existing_story.story_permalink:
+                    story_has_changed = True
+                # if story_pub_date != existing_story.story_date:
+                #     story_has_changed = True
+                break
                 
         
         # if story_has_changed or not story_in_system:
