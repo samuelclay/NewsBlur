@@ -42,7 +42,7 @@ env.roledefs ={
             ],
     'db': ['db01.newsblur.com', 
            'db02.newsblur.com', 
-           # 'db03.newsblur.com', 
+           'db03.newsblur.com', 
            'db04.newsblur.com', 
            'db05.newsblur.com',
            ],
@@ -422,7 +422,7 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline chardet mysql-python pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil python-gflags cssutils raven pyes')
+    sudo('easy_install -U fabric django==1.3.1 readline chardet pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil python-gflags cssutils raven pyes')
     
     put('config/pystartup.py', '.pystartup')
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -495,7 +495,7 @@ def setup_pymongo_repo():
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridgs*')
-    sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/' % 
+    sudo('ln -fs %s /usr/local/lib/python2.7/dist-packages/' % 
          os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
         
 def setup_forked_mongoengine():
@@ -728,6 +728,7 @@ def setup_db_munin():
             run('git clone git://github.com/samuel/python-munin.git')
     with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
         run('sudo python setup.py install')
+    sudo('/etc/init.d/munin-node restart')
 
 def enable_celerybeat():
     with cd(env.NEWSBLUR_PATH):
