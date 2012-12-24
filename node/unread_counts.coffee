@@ -1,9 +1,20 @@
 fs     = require 'fs'
-io     = require('socket.io').listen 8888
 redis  = require 'redis'
 
 REDIS_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db01'
+SECURE = !!process.env.NODE_SSL
 client = redis.createClient 6379, REDIS_SERVER
+
+if SECURE
+    privateKey = fs.readFileSync('./config/certificates/newsblur.com.key').toString()
+    certificate = fs.readFileSync('./config/certificates/newsblur.com.crt').toString()
+    ca = fs.readFileSync('./config/certificates/intermediate.crt').toString()
+    io = require('socket.io').listen 8889
+        key: privateKey
+        cert: certificate
+        ca: ca
+else
+    io = require('socket.io').listen 8888
 
 io.configure 'production', ->
     io.set 'log level', 1
@@ -35,5 +46,6 @@ io.sockets.on 'connection', (socket) ->
     socket.on 'disconnect', () ->
         socket.subscribe?.end()
         console.log "   ---> [#{@username}] Disconnect, there are now" +
-                    " #{io.sockets.clients().length-1} users."
+                    " #{io.sockets.clients().length-1} users. " +
+                    " #{if SECURE then "(SSL)"}"
     

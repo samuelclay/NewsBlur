@@ -326,7 +326,7 @@ def setup_db():
     # setup_memcached()
     # setup_postgres(standby=False)
     setup_mongo()
-    setup_gunicorn(supervisor=False)
+    # setup_gunicorn(supervisor=False)
     # setup_redis()
     setup_db_munin()
     
@@ -603,6 +603,7 @@ def setup_node():
 def configure_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
+    put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
@@ -614,6 +615,7 @@ def copy_certificates():
     run('mkdir -p %s/config/certificates/' % env.NEWSBLUR_PATH)
     put('config/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
     put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('config/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
 
 def maintenance_on():
     put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)

@@ -3745,7 +3745,8 @@
             if (this.socket && !this.socket.socket.connected) {
                 this.socket.socket.connect();
             } else if (force || !this.socket || !this.socket.socket.connected) {
-                var server = window.location.protocol + '//' + window.location.hostname + ':8888';
+                var port = _.string.startsWith(window.location.protocol, 'https') ? 8889 : 8888;
+                var server = window.location.protocol + '//' + window.location.hostname + ':' + port;
                 this.socket = this.socket || io.connect(server);
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
