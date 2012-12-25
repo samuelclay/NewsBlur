@@ -1,7 +1,6 @@
 from celery.task import Task
 from apps.statistics.models import MStatistics
 from apps.statistics.models import MFeedback
-from apps.statistics.models import MAnalyticsPageLoad, MAnalyticsFetcher
 from utils import log as logging
 
 
@@ -20,12 +19,3 @@ class CollectFeedback(Task):
     def run(self, **kwargs):
         logging.debug(" ---> ~FMCollecting feedback...")
         MFeedback.collect_feedback()
-
-class CleanAnalytics(Task):
-    name = 'clean-analytics'
-
-    def run(self, **kwargs):
-        logging.debug(" ---> ~FMCleaning analytics...")
-        MAnalyticsFetcher.clean()
-        MAnalyticsPageLoad.clean()
-        logging.debug(" ---> ~FMDone cleaning analytics...")

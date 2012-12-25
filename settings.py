@@ -367,11 +367,6 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=24),
         'options': {'queue': 'beat_tasks'},
     },
-    'clean-analytics': {
-        'task': 'clean-analytics',
-        'schedule': datetime.timedelta(hours=24),
-        'options': {'queue': 'beat_tasks'},
-    },
 }
 
 # =========
