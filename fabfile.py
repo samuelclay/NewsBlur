@@ -619,11 +619,13 @@ def copy_certificates():
     put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
     put('config/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
 
+@parallel
 def maintenance_on():
     put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
     with cd(env.NEWSBLUR_PATH):
         run('mv templates/maintenance_off.html templates/maintenance_on.html')
-    
+
+@parallel    
 def maintenance_off():
     with cd(env.NEWSBLUR_PATH):
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
