@@ -7,6 +7,7 @@ from apps.social.models import MSharedStory
 from apps.profile.models import Profile
 from utils import json_functions as json
 from utils import db_functions
+from utils import log as logging
 
 class MStatistics(mongo.Document):
     key   = mongo.StringField(unique=True)
@@ -318,7 +319,7 @@ class MAnalyticsPageLoad(mongo.Document):
         try:
             delete_old_history()
         except TimeoutError:
-            print "Timed out on deleting old history. Shit."
+            logging.debug("~SK~SB~BR~FWTimed out on deleting old page load history. Shit.")
         
 
 class MAnalyticsFetcher(mongo.Document):
@@ -383,5 +384,5 @@ class MAnalyticsFetcher(mongo.Document):
         try:
             delete_old_history()
         except TimeoutError:
-            print "Timed out on deleting old history. Shit."
+            logging.debug("~SK~SB~BR~FWTimed out on deleting old fetch history. Shit.")
         
