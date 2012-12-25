@@ -249,7 +249,7 @@ def load_feeds(request):
     if not user_subs:
         categories = MCategory.serialize()
 
-    logging.user(request, "~FBLoading ~SB%s~SN/~SB%s~SN feeds/socials. %s" % (
+    logging.user(request, "~FBLoading ~SB~FY%s~FB~SN/~SB~FM%s~FB~SN feeds/socials. %s" % (
             len(feeds.keys()), len(social_feeds), '~SBUpdating counts.' if update_counts else ''))
 
     data = {
@@ -341,7 +341,7 @@ def load_feeds_flat(request):
     if not user_subs:
         categories = MCategory.serialize()
         
-    logging.user(request, "~FBLoading ~SB%s~SN/~SB%s~SN feeds/socials ~FMflat~FB. %s" % (
+    logging.user(request, "~FBLoading ~SB~FY%s~FB~SN/~SB~FM%s~FB~SN feeds/socials ~FMflat~FB. %s" % (
             len(feeds.keys()), len(social_feeds), '~SBUpdating counts.' if update_counts else ''))
 
     data = {
