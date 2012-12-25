@@ -1,12 +1,19 @@
 express = require 'express'
 mongo = require 'mongodb'
 
-MONGODB_SERVER = if process.env.NODE_ENV == 'development' then 'localhost' else 'db04'
+DEV = process.env.NODE_ENV == 'development'
+MONGODB_SERVER = if DEV then 'localhost' else 'db04'
 MONGODB_PORT = parseInt(process.env.MONGODB_PORT or 27017, 10)
 
-server = new mongo.Server(MONGODB_SERVER, MONGODB_PORT, 
-    auto_reconnect: true
-    poolSize: 12)
+if DEV
+    server = new mongo.Server(MONGODB_SERVER, MONGODB_PORT, 
+        auto_reconnect: true
+        poolSize: 12)
+else
+    server = new mongo.ReplSetServers(
+        [new mongo.Server( MONGODB_SERVER, MONGODB_PORT, { auto_reconnect: true } )]
+        {rs_name: 'nbset'})
+
 db = new mongo.Db('newsblur', server,
     readPreference: mongo.ReadPreference.SECONDARY_PREFERRED
     safe: false)
