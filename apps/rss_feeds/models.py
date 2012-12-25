@@ -36,7 +36,7 @@ ENTRY_NEW, ENTRY_UPDATED, ENTRY_SAME, ENTRY_ERR = range(4)
 
 
 class Feed(models.Model):
-    feed_address = models.URLField(max_length=255, db_index=True)
+    feed_address = models.URLField(max_length=764, db_index=True)
     feed_address_locked = models.NullBooleanField(default=False, blank=True, null=True)
     feed_link = models.URLField(max_length=1000, default="", blank=True, null=True)
     feed_link_locked = models.BooleanField(default=False)
@@ -181,19 +181,25 @@ class Feed(models.Model):
         try:
             super(Feed, self).save(*args, **kwargs)
             return self
-        except IntegrityError:
-            logging.debug(" ---> ~FRFeed save collision, checking dupe...")
+        except IntegrityError, e:
+            logging.debug(" ---> ~FRFeed save collision (%s), checking dupe..." % e)
             duplicate_feed = Feed.objects.filter(feed_address=self.feed_address,
                                                  feed_link=self.feed_link)
-            if duplicate_feed:
-                if self.pk != duplicate_feed[0].pk:
-                    merge_feeds(self.pk, duplicate_feed[0].pk)
-                return self
+            if not duplicate_feed:
+                # Feed has been deleted. Just ignore it.
+                logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
+                logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
+                return
 
-            # Feed has been deleted. Just ignore it.
-            logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
-            logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
-            return
+            if self.pk != duplicate_feed[0].pk:
+                merge_feeds(self.pk, duplicate_feed[0].pk)
+            else:
+                duplicate_feed = Feed.objects.filter(
+                    hash_address_and_link=self.hash_address_and_link)
+                
+                
+            return self
+
     
     def sync_redis(self):
         return MStory.sync_all_redis(self.pk)

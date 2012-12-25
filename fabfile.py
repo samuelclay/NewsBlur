@@ -150,12 +150,12 @@ def deploy_code(copy_assets=False, full=False):
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
-        with settings(warn_only=True):
-            run('pkill -c gunicorn')            
-            # run('kill -HUP `cat logs/gunicorn.pid`')
+        # with settings(warn_only=True):
+        #     run('pkill -c gunicorn')            
+        #     # run('kill -HUP `cat logs/gunicorn.pid`')
+        sudo('supervisorctl reload')
         run('curl -s http://%s > /dev/null' % env.host)
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
-        sudo('supervisorctl restart celery')
 
 def deploy_node():
     with cd(env.NEWSBLUR_PATH):
