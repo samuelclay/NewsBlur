@@ -7,7 +7,9 @@ MONGODB_PORT = parseInt(process.env.MONGODB_PORT or 27017, 10)
 server = new mongo.Server(MONGODB_SERVER, MONGODB_PORT, 
     auto_reconnect: true
     poolSize: 12)
-db = new mongo.Db('newsblur', server)
+db = new mongo.Db('newsblur', server,
+    readPreference: mongo.ReadPreference.SECONDARY_PREFERRED
+    safe: false)
 
 app = express.createServer()
 app.use express.bodyParser()

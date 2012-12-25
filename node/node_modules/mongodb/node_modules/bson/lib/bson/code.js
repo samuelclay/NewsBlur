@@ -22,6 +22,4 @@ Code.prototype.toJSON = function() {
   return {scope:this.scope, code:this.code};
 }
 
-if(typeof window === 'undefined') {
-  exports.Code = Code;
-}
+exports.Code = Code;

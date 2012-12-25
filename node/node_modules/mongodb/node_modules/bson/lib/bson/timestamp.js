@@ -850,6 +850,4 @@ Timestamp.TWO_PWR_24_ = Timestamp.fromInt(1 << 24);
 /**
  * Expose.
  */
-if(typeof window === 'undefined') { 
-  exports.Timestamp = Timestamp;
-}
+exports.Timestamp = Timestamp;

@@ -16,7 +16,10 @@
     poolSize: 12
   });
 
-  db = new mongo.Db('newsblur', server);
+  db = new mongo.Db('newsblur', server, {
+    readPreference: mongo.ReadPreference.SECONDARY_PREFERRED,
+    safe: false
+  });
 
   app = express.createServer();
 

@@ -30,6 +30,4 @@ Double.prototype.toJSON = function() {
   return this.value;
 }
 
-if(typeof window === 'undefined') {
-  exports.Double = Double;
-}
+exports.Double = Double;
