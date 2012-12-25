@@ -22,7 +22,8 @@ class TaskFeeds(Task):
         ).exclude(
             active_subscribers=0
         ).order_by('?')
-        Feed.task_feeds(feeds)
+        Feed.task_feeds(feeds, verbose=False)
+        active_count = feeds.count()
         
         # Mistakenly inactive feeds
         day = now - datetime.timedelta(days=1)
@@ -32,7 +33,8 @@ class TaskFeeds(Task):
             min_to_decay__lte=60*24,
             active_subscribers__gte=1
         ).order_by('?')[:20]
-        if feeds: Feed.task_feeds(feeds)
+        if feeds: Feed.task_feeds(feeds, verbose=False)
+        inactive_count = feeds.count()
         
         week = now - datetime.timedelta(days=7)
         feeds = Feed.objects.filter(
@@ -40,8 +42,14 @@ class TaskFeeds(Task):
             queued_date__lte=day,
             active_subscribers__gte=1
         ).order_by('?')[:20]
-        if feeds: Feed.task_feeds(feeds)
-
+        if feeds: Feed.task_feeds(feeds, verbose=False)
+        old_count = feeds.count()
+        
+        logging.debug(" ---> ~FBTasking ~SB~FC%s~SN/~FC%s~SN/~FC%s~SN~FB feeds..." % (
+            active_count,
+            inactive_count,
+            old_count,
+        ))
         
 class UpdateFeeds(Task):
     name = 'update-feeds'

@@ -33,7 +33,11 @@
     navBar.tintColor = UIColorFromRGB(0x183353);
 }
 
-- (void)viewWillAppear:(BOOL)animated {    
+- (void)viewWillAppear:(BOOL)animated {
+    UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
+    titleLabel.shadowColor = UIColorFromRGB(0x306070);
+    navBar.topItem.titleView = titleLabel;
+    
     [self.webView loadHTMLString:[self makeTrainerSections] baseURL:nil];
 }
 

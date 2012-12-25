@@ -278,17 +278,18 @@ class Feed(models.Model):
         return feed
         
     @classmethod
-    def task_feeds(cls, feeds, queue_size=12):
+    def task_feeds(cls, feeds, queue_size=12, verbose=True):
         if isinstance(feeds, Feed):
-            logging.debug(" ---> Tasking feed: %s" % feeds)
+            if verbose:
+                logging.debug(" ---> Tasking feed: %s" % feeds)
             feeds = [feeds]
-        else:
+        elif verbose:
             logging.debug(" ---> Tasking %s feeds..." % len(feeds))
         
         feed_queue = []
         for f in feeds:
             f.queued_date = datetime.datetime.utcnow()
-            f.set_next_scheduled_update()
+            f.set_next_scheduled_update(verbose=False)
 
         for feed_queue in (feeds[pos:pos + queue_size] for pos in xrange(0, len(feeds), queue_size)):
             feed_ids = [feed.pk for feed in feed_queue]
@@ -1191,12 +1192,15 @@ class Feed(models.Model):
         
         return total, random_factor*2
         
-    def set_next_scheduled_update(self):
+    def set_next_scheduled_update(self, verbose=True):
         total, random_factor = self.get_next_scheduled_update(force=True, verbose=False)
         
         if self.errors_since_good:
             total = total * self.errors_since_good
-            logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: ~SB%s errors. Time: %s min' % (unicode(self)[:30], self.errors_since_good, total))
+            if verbose:
+                logging.debug('   ---> [%-30s] ~FBScheduling feed fetch geometrically: '
+                              '~SB%s errors. Time: %s min' % (
+                              unicode(self)[:30], self.errors_since_good, total))
             
         next_scheduled_update = datetime.datetime.utcnow() + datetime.timedelta(
                                 minutes = total + random_factor)
