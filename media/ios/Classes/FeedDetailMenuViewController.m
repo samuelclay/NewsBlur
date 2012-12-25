@@ -92,6 +92,7 @@
     [options addObject:[deleteText uppercaseString]];
     
     [options addObject:[@"Move to another folder" uppercaseString]];
+    [options addObject:[@"Train this site" uppercaseString]];
     
     if (!appDelegate.isRiverView) {
         [options addObject:[@"Insta-fetch stories" uppercaseString]];
@@ -139,6 +140,8 @@
     } else if (indexPath.row == 1) {
         cell.imageView.image = [UIImage imageNamed:@"arrow_branch"];
     } else if (indexPath.row == 2) {
+        cell.imageView.image = [UIImage imageNamed:@"bricks"];
+    } else if (indexPath.row == 3) {
         cell.imageView.image = [UIImage imageNamed:@"car"];
     }
     
@@ -164,6 +167,8 @@
     } else if (indexPath.row == 1) {
         [appDelegate.feedDetailViewController openMoveView];
     } else if (indexPath.row == 2) {
+        [appDelegate.feedDetailViewController openTrainSite];
+    } else if (indexPath.row == 3) {
         [appDelegate.feedDetailViewController instafetchFeed];
     }
     

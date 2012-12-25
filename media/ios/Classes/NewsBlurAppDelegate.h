@@ -35,6 +35,7 @@
 @class LoginViewController;
 @class AddSiteViewController;
 @class MoveSiteViewController;
+@class TrainerViewController;
 @class OriginalStoryViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
@@ -71,6 +72,7 @@
     AddSiteViewController *addSiteViewController;
     FindSitesViewController *findSitesViewController;
     MoveSiteViewController *moveSiteViewController;
+    TrainerViewController *trainerViewController;
     OriginalStoryViewController *originalStoryViewController;
     UserProfileViewController *userProfileViewController;
 
@@ -146,6 +148,7 @@
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet FindSitesViewController *findSitesViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
+@property (nonatomic) IBOutlet TrainerViewController *trainerViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
@@ -220,6 +223,7 @@
 
 - (void)showAddSiteModal:(id)sender;
 - (void)showMoveSite;
+- (void)openTrainSite;
 - (void)loadFeedDetailView;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView;

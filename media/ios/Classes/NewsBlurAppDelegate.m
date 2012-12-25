@@ -21,6 +21,7 @@
 #import "AddSiteViewController.h"
 #import "FindSitesViewController.h"
 #import "MoveSiteViewController.h"
+#import "TrainerViewController.h"
 #import "OriginalStoryViewController.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
@@ -64,6 +65,7 @@
 @synthesize addSiteViewController;
 @synthesize findSitesViewController;
 @synthesize moveSiteViewController;
+@synthesize trainerViewController;
 @synthesize originalStoryViewController;
 @synthesize userProfileViewController;
 
@@ -401,6 +403,17 @@
         [navController presentModalViewController:moveSiteViewController animated:YES];
     } else {
         [navController presentModalViewController:moveSiteViewController animated:YES];
+    }
+}
+
+- (void)openTrainSite {
+    UINavigationController *navController = self.navigationController;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+        [navController presentModalViewController:trainerViewController animated:YES];
+    } else {
+        [navController presentModalViewController:trainerViewController animated:YES];
     }
 }
 

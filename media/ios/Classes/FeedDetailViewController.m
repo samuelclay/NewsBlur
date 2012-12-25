@@ -1081,7 +1081,7 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 3 : 38 * 5)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 4 : 38 * 6)];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];
@@ -1176,6 +1176,10 @@
 
 - (void)openMoveView {
     [appDelegate showMoveSite];
+}
+
+- (void)openTrainSite {
+    [appDelegate openTrainSite];
 }
 
 - (void)showUserProfile {

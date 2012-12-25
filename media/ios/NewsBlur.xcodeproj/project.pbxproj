@@ -373,6 +373,9 @@
 		FF5F3A89162B8377008DBE3E /* arrow_branch.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A88162B8377008DBE3E /* arrow_branch.png */; };
 		FF5F3A8B162B8390008DBE3E /* car.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A8A162B8390008DBE3E /* car.png */; };
 		FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF67D3B1168924C40057A7DA /* TrainerViewController.m */; };
+		FF67D3B51689746B0057A7DA /* bricks.png in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B41689746B0057A7DA /* bricks.png */; };
+		FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B6168977690057A7DA /* TrainerViewController.xib */; };
+		FF67D3B916897AD80057A7DA /* TrainerViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */; };
 		FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPageControl.m */; };
 		FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPageControl.xib */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -906,6 +909,9 @@
 		FF5F3A8A162B8390008DBE3E /* car.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = car.png; sourceTree = "<group>"; };
 		FF67D3B0168924C40057A7DA /* TrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerViewController.h; sourceTree = "<group>"; };
 		FF67D3B1168924C40057A7DA /* TrainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrainerViewController.m; sourceTree = "<group>"; };
+		FF67D3B41689746B0057A7DA /* bricks.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bricks.png; sourceTree = "<group>"; };
+		FF67D3B6168977690057A7DA /* TrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrainerViewController.xib; sourceTree = "<group>"; };
+		FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "TrainerViewController~ipad.xib"; path = "Resources-iPad/Classes/TrainerViewController~ipad.xib"; sourceTree = "<group>"; };
 		FF6A233016448E0700E15989 /* StoryPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPageControl.h; sourceTree = "<group>"; };
 		FF6A233116448E0700E15989 /* StoryPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPageControl.m; sourceTree = "<group>"; };
 		FF6A23361644903900E15989 /* StoryPageControl.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StoryPageControl.xib; path = ../Classes/StoryPageControl.xib; sourceTree = "<group>"; };
@@ -1390,6 +1396,7 @@
 		433323B5158901A40025064D /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF67D3B41689746B0057A7DA /* bricks.png */,
 				432EBD1415D1A7800000729D /* user_on.png */,
 				432EBD1515D1A7800000729D /* user_on@2x.png */,
 				432EBD0C15D1A2B00000729D /* fountain_pen_on.png */,
@@ -1484,6 +1491,7 @@
 				43081E2115AFE84200B24D7A /* ShareViewController.xib */,
 				43B8F021156603170008733D /* StoryDetailViewController.xib */,
 				FF6A23361644903900E15989 /* StoryPageControl.xib */,
+				FF67D3B6168977690057A7DA /* TrainerViewController.xib */,
 				43A4BAEA15C893E300F3B8D4 /* FriendsListViewController.xib */,
 			);
 			path = "Resources-iPhone";
@@ -1498,6 +1506,7 @@
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
 				43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */,
+				FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */,
 				43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */,
 				43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
@@ -2196,6 +2205,9 @@
 				FF4130AB162F3C2F00DDB6A7 /* archive_white.png in Resources */,
 				FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */,
 				FFAD0BE71649EC1800EE33D0 /* StoryPageControl~ipad.xib in Resources */,
+				FF67D3B51689746B0057A7DA /* bricks.png in Resources */,
+				FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */,
+				FF67D3B916897AD80057A7DA /* TrainerViewController~ipad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
