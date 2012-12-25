@@ -192,11 +192,14 @@ class Feed(models.Model):
                 return
 
             if self.pk != duplicate_feed[0].pk:
-                merge_feeds(self.pk, duplicate_feed[0].pk)
+                merge_feeds(duplicate_feed[0].pk, self.pk)
+                return duplicate_feed[0]
             else:
                 duplicate_feed = Feed.objects.filter(
                     hash_address_and_link=self.hash_address_and_link)
-                
+                if self.pk != duplicate_feed[0].pk:
+                    merge_feeds(duplicate_feed[0].pk, self.pk)
+                return duplicate_feed[0]
                 
             return self
 

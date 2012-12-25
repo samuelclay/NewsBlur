@@ -1735,6 +1735,7 @@
                     message = "NewsBlur is down right now. <br> Try again soon.";
                 } else if (data.status == 503) {
                     message = "NewsBlur is in maintenace mode. <br> Try again soon.";
+                    this.show_maintenance_page();
                 }
             }
             var $error = $.make('div', { className: 'NB-feed-error' }, [
@@ -1766,6 +1767,10 @@
                 $error.remove();
               }
             });
+        },
+        
+        show_maintenance_page: function() {
+            this.switch_taskbar_view('page', {skip_save_type: 'maintenance'});
         },
         
         // ==========================
