@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     font-family: "Lucida Grande", Helvetica;
+    background-color: transparent;
 }
 
 .NB-trainer {
@@ -9,13 +10,21 @@
 }
 
 .NB-trainer-section {
-    overflow: hidden;
     font-size: 13px;
 
     -webkit-text-size-adjust: none; 
     -webkit-user-select: none; 
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.NB-trainer-section-inner {
+    margin: 16px 0 0;
+    overflow: hidden;
+    box-shadow: 0 0 8px rgba(0, 0, 0, .6);
+}
+.NB-trainer-publisher .NB-trainer-section-inner {
+    margin-bottom: 16px;
 }
 
 .NB-trainer-section-title {
@@ -41,7 +50,6 @@
     overflow: hidden;
     background-color: #F0F0FF;
     border-bottom: 1px solid #D0D0D9;
-    margin: 0 0 16px;
 }
 
 .NB-trainer-title .NB-title-trainer {

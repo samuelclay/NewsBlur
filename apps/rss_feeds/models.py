@@ -1236,13 +1236,17 @@ class Feed(models.Model):
         self.save()
     
     def queue_pushed_feed_xml(self, xml):
-        logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories...' % (unicode(self)[:30], self.pk))
+        r = redis.Redis(connection_pool=settings.REDIS_POOL)
+        queue_size = r.llen("push_feeds")
         
-        self.queued_date = datetime.datetime.utcnow()
-        self.set_next_scheduled_update()
-
-        PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
-        
+        if queue_size > 1000:
+            self.schedule_feed_fetch_immediately()
+        else:
+            logging.debug('   ---> [%-30s] [%s] ~FBQueuing pushed stories...' % (unicode(self)[:30], self.pk))
+            self.queued_date = datetime.datetime.utcnow()
+            self.set_next_scheduled_update()
+            PushFeeds.apply_async(args=(self.pk, xml), queue='push_feeds')
+    
     # def calculate_collocations_story_content(self,
     #                                          collocation_measures=TrigramAssocMeasures,
     #                                          collocation_finder=TrigramCollocationFinder):

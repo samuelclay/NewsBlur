@@ -31,8 +31,18 @@
     self.appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
     
     navBar.tintColor = UIColorFromRGB(0x183353);
+    [self hideGradientBackground:webView];
 }
-
+- (void) hideGradientBackground:(UIView*)theView
+{
+    for (UIView * subview in theView.subviews)
+    {
+        if ([subview isKindOfClass:[UIImageView class]])
+            subview.hidden = YES;
+        
+        [self hideGradientBackground:subview];
+    }
+}
 - (void)viewWillAppear:(BOOL)animated {
     [[UIMenuController sharedMenuController]
      setMenuItems:[NSArray arrayWithObjects:
@@ -46,6 +56,7 @@
 
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
+    
     [self.webView loadHTMLString:[self makeTrainerSections] baseURL:baseURL];
 }
 
