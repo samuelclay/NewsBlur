@@ -160,7 +160,8 @@
                     contentWidth];
     footerString = [NSString stringWithFormat:@
                     "<script src=\"zepto.js\"></script>"
-                    "<script src=\"storyDetailView.js\"></script>"];
+                    "<script src=\"storyDetailView.js\"></script>"
+                    "<script src=\"fastTouch.js\"></script>"];
     
     sharingHtmlString = [NSString stringWithFormat:@
                          "<div class='NB-share-header'></div>"
