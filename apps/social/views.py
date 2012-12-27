@@ -309,7 +309,7 @@ def load_river_blurblog(request):
 
     diff = time.time() - start
     timediff = round(float(diff), 2)
-    logging.user(request, "~FYLoading ~FCriver blurblogs stories~FY: ~SBp%s~SN (%s/%s "
+    logging.user(request, "~FYLoading ~FCriver ~FMblurblogs~FC stories~FY: ~SBp%s~SN (%s/%s "
                                "stories, ~SN%s/%s/%s feeds)" % 
                                (page, len(stories), len(mstories), len(story_feed_ids), 
                                len(social_user_ids), len(original_user_ids)))
@@ -434,7 +434,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'active_story'  : active_story,
     }
 
-    logging.user(request, "~FYLoading ~FMsocial page~FY: ~SB%s%s" % (
+    logging.user(request, "~FYLoading ~FMsocial ~SBpage~SN~FY: ~SB%s%s" % (
         social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else ''))
     if format == 'html':
         template = 'social/social_stories.xhtml'
@@ -1186,7 +1186,7 @@ def shared_stories_rss_feed(request, user_id, username):
         
     logging.user(request, "~FBGenerating ~SB%s~SN's RSS feed: ~FM%s" % (
         user.username,
-        request.META['HTTP_USER_AGENT'][:100]
+        request.META['HTTP_USER_AGENT'][:24]
     ))
     return HttpResponse(rss.writeString('utf-8'))
 
