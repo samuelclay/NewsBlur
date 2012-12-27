@@ -91,6 +91,8 @@
     NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
     NSMutableDictionary * activeClassifiers;
+    NSArray * activePopularTags;
+    NSArray * activePopularAuthors;
     NSString * activeFolder;
     NSDictionary * activeComment;
     NSString * activeShareType;
@@ -175,6 +177,8 @@
 @property (nonatomic, readwrite) BOOL inStoryDetail;
 @property (readwrite) NSDictionary * activeFeed;
 @property (strong, readwrite) NSMutableDictionary * activeClassifiers;
+@property (strong, readwrite) NSArray * activePopularTags;
+@property (strong, readwrite) NSArray * activePopularAuthors;
 @property (readwrite) NSString * activeFolder;
 @property (readwrite) NSDictionary * activeComment;
 @property (readwrite) NSString * activeShareType;
@@ -224,6 +228,7 @@
 - (void)showAddSiteModal:(id)sender;
 - (void)showMoveSite;
 - (void)openTrainSite;
+- (void)openTrainStory;
 - (void)loadFeedDetailView;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView;

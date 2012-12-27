@@ -127,7 +127,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 6;
+    return 7;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -136,9 +136,9 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIndentifier];
     
-    if (indexPath.row == 4) {
+    if (indexPath.row == 5) {
         return [self makeFontSelectionTableCell];
-    } else if (indexPath.row == 5) {
+    } else if (indexPath.row == 6) {
         return [self makeFontSizeTableCell];
     }
     
@@ -168,6 +168,9 @@
         cell.textLabel.text = [@"Send to..." uppercaseString];
         cell.imageView.image = [UIImage imageNamed:@"email"];
     } else if (indexPath.row == 3) {
+        cell.textLabel.text = [@"Train this story" uppercaseString];
+        cell.imageView.image = [UIImage imageNamed:@"bricks"];
+    } else if (indexPath.row == 4) {
         cell.textLabel.text = [@"Share this story" uppercaseString];
         cell.imageView.image = [UIImage imageNamed:@"rainbow"];
     }
@@ -180,7 +183,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row >= 4) {
+    if (indexPath.row >= 5) {
         return nil;
     }
     return indexPath;
@@ -206,6 +209,8 @@
     } else if (indexPath.row == 2) {
         [appDelegate.storyPageControl openSendToDialog];
     } else if (indexPath.row == 3) {
+        [appDelegate openTrainStory];
+    } else if (indexPath.row == 4) {
         [appDelegate.storyPageControl.currentPage openShareDialog];
     }
     

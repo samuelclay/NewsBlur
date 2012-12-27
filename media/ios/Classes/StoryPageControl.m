@@ -842,7 +842,7 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(240, 226)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(240, 38*7-2)];
         [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionAny
                                                        animated:YES];

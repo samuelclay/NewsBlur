@@ -33,14 +33,14 @@
     padding: 4px 12px;
     background-color: #F0F8F2;
 
-    padding: 8px 12px 6px;
+    padding: 8px 12px 8px;
     background-color: #E3ECF8;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#E3ECF8), to(#CBDBF5));
     text-shadow: 0 1px 0 #F2F6FE;
     border-top: 1px solid #D1DAF7;
     border-bottom: 1px solid #A1A9CF;
     color: #505050;
-    font-family: "Gill Sans", "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif, inherit;
+    font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif, inherit;
     font-weight: normal;
     position: relative;
 }
@@ -48,13 +48,14 @@
 .NB-trainer-section-body {
     padding: 12px 12px;
     overflow: hidden;
-    background-color: #F0F0FF;
+    background-color: #EFF3F6;
     border-bottom: 1px solid #D0D0D9;
 }
 
 .NB-trainer-title .NB-title-trainer {
     padding: 12px 0;
-    line-height: 20px;
+    font-size: 18px;
+    line-height: 22px;
     -webkit-user-select: auto;
     -webkit-touch-callout: default;
     -webkit-highlight: auto; 
@@ -78,6 +79,12 @@
     text-shadow: 0 1px 0 #F6E9E9;
 }
 
+.NB-classifier-container {
+    white-space: nowrap;
+    float: left;
+    display: block;
+}
+
 /*
  * Classifiers
  */
@@ -92,7 +99,7 @@
     padding: 0 8px 0 26px;
     font-size: 12px;
     text-transform: uppercase;
-    background-color: #F5CD09;
+    background-color: #D8DEE2;
     position: relative;
     border: 1px solid transparent;
     border-radius: 12px;
@@ -113,13 +120,13 @@
 }
 
 .NB-classifier label b {
-    color: #957D09;
+    color: rgba(0,0,0,.4);
     text-shadow: none;
     font-weight: normal;
 }
 
 .NB-classifier label span {
-    text-shadow: 1px 1px 0 #F4E576;
+    text-shadow: 1px 1px 0  rgba(255, 255, 255, 0.5);
 }
 
 .NB-classifier.NB-classifier-facet-disabled {
@@ -145,13 +152,24 @@
   top: 2px;
   opacity: .2;
 }
+.pressed .NB-classifier .NB-classifier-icon-like,
+.pressed .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like {
+    opacity: 1;
+}
+.pressed .NB-classifier.NB-classifier-like .NB-classifier-icon-like {
+    opacity: 0;
+}
+.pressed .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like {
+    opacity: .2;
+    display: block;
+}
 
 .NB-classifier .NB-classifier-icon-dislike {
   width: 27px;
   height: 22px;
   position: absolute;
-  top: -1px;
-  left: 6px;
+  top: -2px;
+  left: 2px;
   background: transparent url('data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAUCAMAAACK2/weAAAAWlBMVEX////+/v79/f3x8fHw8PD97Nj76tb66dX56NT35M/2487u3Mfl1MDaybbRwa/QwK+/v7++vr62tra1tbW+sJ+1qJi0p5ezppd7e3t6enp4eHgCAgIBAQEAAABkZKaJAAAAHnRSTlMA///////////////////////////////////////0OBo3AAAAaklEQVR42rXMyRKDMAwDUIe2kELLFhqWSP//myQmOfbIO3ik0YzlPjsgKEToHP1PLalOM1cfLTrjOXLoo++na2M1D7bvBCSFVcWmziA4DKxNWdcNkBCaC0QFa3d9nKHOscwv7f/m/Kag3hMwawmoH/Rk6gAAAABJRU5ErkJggg==') no-repeat 5px -1px;
   display: none;
 }
@@ -160,9 +178,7 @@
   margin: 4px 4px 0 0;
   width: 18px;
   height: 13px;
-  border-left: 1px solid #EBEBE1;
 }
-
 .NB-classifier.NB-classifier-like {
   background-color: #34912E;
   border: 1px solid #202020;
@@ -178,12 +194,58 @@
   box-shadow: 1px 1px 1px #BDC0D7;
 }
 
-.NB-classifier.NB-classifier-like .NB-classifier-icon-like {
-  opacity: 1;
-}
 .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like {
     display: none;
 }
 .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike {
     display: block;
+}
+
+.NB-classifier.NB-classifier-like label b,
+.pressed .NB-classifier label b {
+  color: white;
+}
+.NB-classifier.NB-classifier-like label span,
+.pressed .NB-classifier label span {
+  color: white;
+  text-shadow: 1px 1px 0  rgba(0, 0, 0, 0.5);
+}
+.pressed .NB-classifier.NB-classifier-like .NB-classifier-icon-like,
+.pressed .NB-classifier.NB-classifier-dislike .NB-classifier-icon-dislike {
+    display: none;
+}
+.pressed .NB-classifier.NB-classifier-like .NB-classifier-icon-dislike,
+.pressed .NB-classifier.NB-classifier-like .NB-classifier-icon-like {
+    display: block;
+}
+.pressed .NB-classifier {
+    background-color: #54A54E;
+    border: 1px solid transparent;
+    box-shadow: none;
+}
+.pressed .NB-classifier.NB-classifier-like {
+  background-color: #C92123;
+  border: 1px solid transparent;
+    box-shadow: none;
+}
+.pressed .NB-classifier.NB-classifier-dislike {
+  border: 1px solid transparent;
+  background-color: #C6C6C6;
+    box-shadow: none;
+}
+.NB-classifier.NB-classifier-dislike label b,
+.pressed .NB-classifier.NB-classifier-like label b {
+  color: white;
+}
+.NB-classifier.NB-classifier-dislike label span,
+.pressed .NB-classifier.NB-classifier-like label span {
+  color: white;
+  text-shadow: 1px 1px 0  rgba(0, 0, 0, 0.5);
+}
+
+.NB-classifier-count {
+    font-size: 10px;
+    margin: 0 6px 0 -2px;
+    line-height: 26px;
+    color: #A0A0A0;
 }

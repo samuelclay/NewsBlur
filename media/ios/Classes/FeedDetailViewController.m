@@ -222,6 +222,8 @@
     [self.storyTitlesTable reloadData];
     [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
+    appDelegate.activePopularAuthors = [NSArray array];
+    appDelegate.activePopularTags = [NSArray array];
     
     if (appDelegate.isRiverView) {
         [self fetchRiverPage:1 withCallback:nil];
@@ -400,7 +402,8 @@
                              options:kNilOptions 
                              error:&error];
     id feedId = [results objectForKey:@"feed_id"];
-        
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    
     if (!(appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) 
         && request.tag != [feedId intValue]) {
         return;
@@ -422,9 +425,10 @@
             [appDelegate.activeClassifiers setObject:[newClassifiers objectForKey:key] forKey:key];
         }
     } else {
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
         [appDelegate.activeClassifiers setObject:newClassifiers forKey:feedIdStr];
     }
+    appDelegate.activePopularAuthors = [results objectForKey:@"feed_authors"];
+    appDelegate.activePopularTags = [results objectForKey:@"feed_tags"];
     
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [[NSMutableArray alloc] init];

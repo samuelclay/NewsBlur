@@ -15,6 +15,8 @@
 @synthesize webView;
 @synthesize navBar;
 @synthesize appDelegate;
+@synthesize feedTrainer;
+@synthesize storyTrainer;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -73,9 +75,9 @@
 #pragma mark Story layout
 
 - (NSString *)makeTrainerSections {
-    NSString *storyAuthor = [self makeAuthor];
-    NSString *storyTags = [self makeTags];
-    NSString *storyTitle = [self makeTitle];
+    NSString *storyAuthor = self.feedTrainer ? [self makeFeedAuthors] : [self makeStoryAuthor];
+    NSString *storyTags = self.feedTrainer ? [self makeFeedTags] : [self makeStoryTags];
+    NSString *storyTitle = self.feedTrainer ? @"" : [self makeTitle];
     NSString *storyPublisher = [self makePublisher];
     
     int contentWidth = self.view.frame.size.width;
@@ -126,10 +128,11 @@
     return htmlString;
 }
 
-- (NSString *)makeAuthor {
+- (NSString *)makeStoryAuthor {
     NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
                                                           objectForKey:@"story_feed_id"]];
     NSString *storyAuthor = @"";
+    
     if ([[appDelegate.activeStory objectForKey:@"story_authors"] class] != [NSNull class] &&
         [[appDelegate.activeStory objectForKey:@"story_authors"] length]) {
         NSString *author = [NSString stringWithFormat:@"%@",
@@ -142,22 +145,62 @@
                            "  <div class=\"NB-trainer-section-title\">Story Authors</div>"
                            "  <div class=\"NB-trainer-section-body\">"
                            "    <a href=\"http://ios.newsblur.com/classify-author/%@\" "
-                           "       class=\"NB-story-author %@\" id=\"NB-story-author\"><div class=\"NB-highlight\"></div>%@</a>"
+                           "       class=\"NB-story-author %@\">%@</a>"
                            "  </div>"
                            "</div>",
                            author,
                            authorScore > 0 ? @"NB-story-author-positive" : authorScore < 0 ? @"NB-story-author-negative" : @"",
-                           [self makeClassifier:author withType:@"Author"]];
+                           [self makeClassifier:author withType:@"Author" score:authorScore]];
         }
     }
     return storyAuthor;
 }
 
-- (NSString *)makeTags {
+- (NSString *)makeFeedAuthors {
+    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+    NSString *feedAuthors = @"";
+    NSArray *authorArray = appDelegate.activePopularAuthors;
+    
+    if ([authorArray count] > 0) {
+        NSMutableArray *authorStrings = [NSMutableArray array];
+        for (NSArray *authorObj in authorArray) {
+            NSString *author = [authorObj objectAtIndex:0];
+            int authorCount = [[authorObj objectAtIndex:1] intValue];
+            int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                              objectForKey:@"authors"]
+                             objectForKey:author] intValue];
+            NSString *authorHtml = [NSString stringWithFormat:@"<div class=\"NB-classifier-container\">"
+                                    "  <a href=\"http://ios.newsblur.com/classify-author/%@\" "
+                                    "     class=\"NB-story-author %@\">%@</a>"
+                                    "  <span class=\"NB-classifier-count\">&times;&nbsp; %d</span>"
+                                    "</div>",
+                                    author,
+                                    authorScore > 0 ? @"NB-story-author-positive" : authorScore < 0 ? @"NB-story-author-negative" : @"",
+                                    [self makeClassifier:author withType:@"author" score:authorScore],
+                                    authorCount];
+            [authorStrings addObject:authorHtml];
+        }
+        feedAuthors = [NSString
+                       stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"
+                       "  <div class=\"NB-trainer-section-title\">Authors</div>"
+                       "  <div class=\"NB-trainer-section-body\">"
+                       "    <div class=\"NB-story-authors\">"
+                       "      %@"
+                       "    </div>"
+                       "  </div>"
+                       "</div>",
+                       [authorStrings componentsJoinedByString:@""]];
+    }
+    
+    return feedAuthors;
+}
+
+
+- (NSString *)makeStoryTags {
     NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
                                                           objectForKey:@"story_feed_id"]];
-    
     NSString *storyTags = @"";
+    
     if ([appDelegate.activeStory objectForKey:@"story_tags"]) {
         NSArray *tagArray = [appDelegate.activeStory objectForKey:@"story_tags"];
         if ([tagArray count] > 0) {
@@ -166,20 +209,20 @@
                 int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                                   objectForKey:@"tags"]
                                  objectForKey:tag] intValue];
-                NSString *tagHtml = [NSString stringWithFormat:@"<div class=\"NB-trainer-tag\">"
+                NSString *tagHtml = [NSString stringWithFormat:@"<div class=\"NB-classifier-container\">"
                                      "  <a href=\"http://ios.newsblur.com/classify-tag/%@\" "
-                                     "     class=\"NB-story-tag %@\"><div class=\"NB-highlight\"></div>%@</a>"
+                                     "     class=\"NB-story-tag %@\">%@</a>"
                                      "</div>",
                                      tag,
                                      tagScore > 0 ? @"NB-story-tag-positive" : tagScore < 0 ? @"NB-story-tag-negative" : @"",
-                                     [self makeClassifier:tag withType:@"Tag"]];
+                                     [self makeClassifier:tag withType:@"Tag" score:tagScore]];
                 [tagStrings addObject:tagHtml];
             }
             storyTags = [NSString
                          stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"
                          "  <div class=\"NB-trainer-section-title\">Story Tags</div>"
                          "  <div class=\"NB-trainer-section-body\">"
-                         "    <div id=\"NB-story-tags\" class=\"NB-story-tags\">"
+                         "    <div class=\"NB-story-tags\">"
                          "      %@"
                          "    </div>"
                          "  </div>"
@@ -190,18 +233,73 @@
 
     return storyTags;
 }
+
+- (NSString *)makeFeedTags {
+    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+    NSString *feedTags = @"";
+    NSArray *tagArray = appDelegate.activePopularTags;
+    
+    if ([tagArray count] > 0) {
+        NSMutableArray *tagStrings = [NSMutableArray array];
+        for (NSArray *tagObj in tagArray) {
+            NSString *tag = [tagObj objectAtIndex:0];
+            int tagCount = [[tagObj objectAtIndex:1] intValue];
+            int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                              objectForKey:@"tags"]
+                             objectForKey:tag] intValue];
+            NSString *tagHtml = [NSString stringWithFormat:@"<div class=\"NB-classifier-container\">"
+                                 "  <a href=\"http://ios.newsblur.com/classify-tag/%@\" "
+                                 "     class=\"NB-story-tag %@\">%@</a>"
+                                 "  <span class=\"NB-classifier-count\">&times;&nbsp; %d</span>"
+                                 "</div>",
+                                 tag,
+                                 tagScore > 0 ? @"NB-story-tag-positive" : tagScore < 0 ? @"NB-story-tag-negative" : @"",
+                                 [self makeClassifier:tag withType:@"Tag" score:tagScore],
+                                 tagCount];
+            [tagStrings addObject:tagHtml];
+        }
+        feedTags = [NSString
+                    stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"
+                    "  <div class=\"NB-trainer-section-title\">Story Tags</div>"
+                    "  <div class=\"NB-trainer-section-body\">"
+                    "    <div class=\"NB-story-tags\">"
+                    "      %@"
+                    "    </div>"
+                    "  </div>"
+                    "</div>",
+                    [tagStrings componentsJoinedByString:@""]];
+    }
+    
+    return feedTags;
+}
+
 - (NSString *)makePublisher {
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
-                                                          objectForKey:@"story_feed_id"]];
-    NSString *feedTitle = [[appDelegate.dictFeeds objectForKey:feedId] objectForKey:@"feed_title"];
+    NSString *feedId;
+    NSString *feedTitle;
+    
+    if (self.feedTrainer) {
+        feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed objectForKey:@"id"]];
+        feedTitle = [appDelegate.activeFeed objectForKey:@"feed_title"];
+    } else {
+        feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
+                                                    objectForKey:@"story_feed_id"]];
+        feedTitle = [[appDelegate.dictFeeds objectForKey:feedId] objectForKey:@"feed_title"];
+    }
+    int publisherScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
+                            objectForKey:@"feeds"] objectForKey:feedId] intValue];
     
     NSString *storyPublisher = [NSString stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"
                                 "  <div class=\"NB-trainer-section-title\">Publisher</div>"
                                 "  <div class=\"NB-trainer-section-body\">"
-                                "    %@"
+                                "    <div class=\"NB-classifier-container\">"
+                                "      <a href=\"http://ios.newsblur.com/classify-publisher/%@\" "
+                                "         class=\"NB-story-publisher %@\">%@</a>"
+                                "    </div>"
                                 "  </div>"
                                 "</div",
-                                [self makeClassifier:feedTitle withType:@"Publisher"]];
+                                feedId,
+                                publisherScore > 0 ? @"NB-story-publisher-positive" : publisherScore < 0 ? @"NB-story-publisher-negative" : @"",
+                                [self makeClassifier:feedTitle withType:@"publisher" score:publisherScore]];
     
     return storyPublisher;
 }
@@ -231,15 +329,15 @@
     NSString *titleTrainer = [NSString stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"
                               "  <div class=\"NB-trainer-section-title\">Story Title</div>"
                               "  <div class=\"NB-trainer-section-body NB-title\">"
-                              "    <div class=\"NB-title-info\">Tap and hold the title below</div>"
                               "    <div class=\"NB-title-trainer\">%@</div>"
+                              "    <div class=\"NB-title-info\">Tap and hold the title</div>"
                               "  </div>"
                               "</div>", storyTitle];
     return titleTrainer;
 }
 
-- (NSString *)makeClassifier:(NSString *)classifierName withType:(NSString *)classifierType {
-    NSString *classifier = [NSString stringWithFormat:@"<span class=\"NB-classifier NB-classifier-%@\">"
+- (NSString *)makeClassifier:(NSString *)classifierName withType:(NSString *)classifierType score:(int)score {
+    NSString *classifier = [NSString stringWithFormat:@"<span class=\"NB-classifier NB-classifier-%@ NB-classifier-%@\">"
                             "<div class=\"NB-classifier-icon-like\"></div>"
                             "<div class=\"NB-classifier-icon-dislike\">"
                             "  <div class=\"NB-classifier-icon-dislike-inner\"></div>"
@@ -247,6 +345,7 @@
                             "<label><b>%@: </b><span>%@</span></label>"
                             "</span>",
                             classifierType,
+                            score > 0 ? @"like" : score < 0 ? @"dislike" : @"",
                             classifierType,
                             classifierName];
     
@@ -269,7 +368,8 @@
 }
 
 - (void)changeTitle:(id)sender {
-    NSLog(@"changeTitle: %@", sender);
+    NSString *selectedTitle = [self.webView stringByEvaluatingJavaScriptFromString:@"window.getSelection().toString()"];
+    NSLog(@"Selected: %@", selectedTitle);
 }
 
 @end

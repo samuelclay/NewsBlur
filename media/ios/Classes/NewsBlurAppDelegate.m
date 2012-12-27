@@ -95,6 +95,8 @@
 
 @synthesize activeFeed;
 @synthesize activeClassifiers;
+@synthesize activePopularTags;
+@synthesize activePopularAuthors;
 @synthesize activeFolder;
 @synthesize activeFolderFeeds;
 @synthesize activeFeedStories;
@@ -408,7 +410,21 @@
 
 - (void)openTrainSite {
     UINavigationController *navController = self.navigationController;
+    trainerViewController.feedTrainer = YES;
+    trainerViewController.storyTrainer = NO;
     
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+        [navController presentModalViewController:trainerViewController animated:YES];
+    } else {
+        [navController presentModalViewController:trainerViewController animated:YES];
+    }
+}
+
+- (void)openTrainStory {
+    UINavigationController *navController = self.navigationController;
+    trainerViewController.feedTrainer = NO;
+    trainerViewController.storyTrainer = YES;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
         [navController presentModalViewController:trainerViewController animated:YES];

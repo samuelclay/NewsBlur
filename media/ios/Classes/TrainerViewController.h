@@ -25,19 +25,26 @@
     IBOutlet UIBarButtonItem * closeButton;
     TrainerWebView *webView;
     UINavigationBar *navBar;
+    
+    BOOL feedTrainer;
+    BOOL storyTrainer;
 }
 
 @property (nonatomic) IBOutlet NewsBlurAppDelegate *appDelegate;
 @property (nonatomic) IBOutlet UIBarButtonItem *closeButton;
 @property (nonatomic) IBOutlet TrainerWebView *webView;
 @property (nonatomic) IBOutlet UINavigationBar *navBar;
+@property (nonatomic, assign) BOOL feedTrainer;
+@property (nonatomic, assign) BOOL storyTrainer;
 
 - (NSString *)makeTrainerSections;
-- (NSString *)makeAuthor;
-- (NSString *)makeTags;
+- (NSString *)makeStoryAuthor;
+- (NSString *)makeFeedAuthors;
+- (NSString *)makeStoryTags;
+- (NSString *)makeFeedTags;
 - (NSString *)makePublisher;
 - (NSString *)makeTitle;
-- (NSString *)makeClassifier:(NSString *)classifierName withType:(NSString *)classifierType;
+- (NSString *)makeClassifier:(NSString *)classifierName withType:(NSString *)classifierType score:(int)score;
 
 - (IBAction)doCloseDialog:(id)sender;
 - (void)changeTitle:(id)sender;

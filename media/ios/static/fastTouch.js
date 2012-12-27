@@ -64,6 +64,18 @@ function attachFastClick() {
     Array.prototype.slice.call(tags, 0).forEach(function(tag) {
                                                 new NoClickDelay(tag);
                                                 });
+    var authors = document.getElementsByClassName("NB-story-author");
+    Array.prototype.slice.call(authors, 0).forEach(function(author) {
+                                                new NoClickDelay(author);
+                                                });
+    var publishers = document.getElementsByClassName("NB-story-publisher");
+    Array.prototype.slice.call(publishers, 0).forEach(function(publisher) {
+                                                new NoClickDelay(publisher);
+                                                });
+    var titles = document.getElementsByClassName("NB-story-title");
+    Array.prototype.slice.call(titles, 0).forEach(function(title) {
+                                                new NoClickDelay(title);
+                                                });
     
     var author = document.getElementById("NB-story-author");
     if (author) {
