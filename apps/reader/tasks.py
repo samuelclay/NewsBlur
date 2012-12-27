@@ -3,7 +3,7 @@ from celery.task import Task
 from utils import log as logging
 from django.contrib.auth.models import User
 from django.conf import settings
-from apps.reader.models import UserSubscription
+from apps.reader.models import UserSubscription, MUserStory
 from apps.social.models import MSocialSubscription
 
 
@@ -47,3 +47,20 @@ class CleanAnalytics(Task):
         settings.MONGOANALYTICSDB.nbanalytics.page_loads.remove({
             "date": {"$lt": day_ago},
         })
+        
+class CleanStories(Task):
+    name = 'clean-stories'
+
+    def run(self, **kwargs):
+        days_ago = (datetime.datetime.utcnow() -
+                    datetime.timedelta(days=settings.DAYS_OF_UNREAD*5))
+        old_stories = MUserStory.objects.filter(read_date__lte=days_ago)
+        logging.debug(" ---> Cleaning stories from %s days ago... %s/%s read stories" % (
+            settings.DAYS_OF_UNREAD*5,
+            MUserStory.objects.count(),
+            old_stories.count()
+        ))
+        for s, story in enumerate(old_stories):
+            if (s+1) % 1000 == 0:
+                logging.debug(" ---> %s stories removed..." % (s+1))
+            story.delete()

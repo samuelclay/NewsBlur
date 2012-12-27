@@ -157,6 +157,11 @@ def deploy_code(copy_assets=False, full=False):
         run('curl -s http://%s > /dev/null' % env.host)
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
 
+@parallel
+def kill():
+    sudo('supervisorctl reload')
+    run('pkill -c gunicorn')
+
 def deploy_node():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl restart node_unread')

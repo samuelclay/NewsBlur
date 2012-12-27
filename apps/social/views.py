@@ -36,7 +36,6 @@ from vendor.timezones.utilities import localtime_for_timezone
     
 @json.json_view
 def load_social_stories(request, user_id, username=None):
-    start          = time.time()
     user           = get_user(request)
     social_user_id = int(user_id)
     social_user    = get_object_or_404(User, pk=social_user_id)
@@ -74,8 +73,6 @@ def load_social_stories(request, user_id, username=None):
     if not stories:
         return dict(stories=[], message=message)
     
-    checkpoint1 = time.time()
-    
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
 
     story_feed_ids = list(set(s['story_feed_id'] for s in stories))
@@ -99,8 +96,6 @@ def load_social_stories(request, user_id, username=None):
     classifier_titles  = classifier_titles + list(MClassifierTitle.objects(user_id=user.pk, feed_id__in=story_feed_ids))
     classifier_tags    = classifier_tags + list(MClassifierTag.objects(user_id=user.pk, feed_id__in=story_feed_ids))
 
-    checkpoint2 = time.time()
-    
     story_ids = [story['id'] for story in stories]
     userstories_db = MUserStory.objects(user_id=user.pk,
                                         feed_id__in=story_feed_ids,
@@ -168,10 +163,8 @@ def load_social_stories(request, user_id, username=None):
         socialsub.needs_unread_recalc = True
         socialsub.save()
     
-    diff1 = checkpoint1-start
-    diff2 = checkpoint2-start
-    logging.user(request, "~FYLoading ~FMshared stories~FY: ~SB%s%s ~SN(~SB%.4ss/%.4ss~SN)" % (
-    social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', diff1, diff2))
+    logging.user(request, "~FYLoading ~FMshared stories~FY: ~SB%s%s" % (
+    social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else ''))
 
     return {
         "stories": stories, 
@@ -331,7 +324,6 @@ def load_river_blurblog(request):
     }
     
 def load_social_page(request, user_id, username=None, **kwargs):
-    start = time.time()
     user = request.user
     social_user_id = int(user_id)
     social_user = get_object_or_404(User, pk=social_user_id)
@@ -365,8 +357,6 @@ def load_social_page(request, user_id, username=None, **kwargs):
             has_next_page = True
             stories = stories[:-1]
 
-    checkpoint1 = time.time()
-
     if not stories:
         params = {
             "user": user,
@@ -394,8 +384,6 @@ def load_social_page(request, user_id, username=None, **kwargs):
     stories, profiles = MSharedStory.stories_with_comments_and_profiles(stories, social_user.pk, 
                                                                         check_all=True)
 
-    checkpoint2 = time.time()
-    
     if user.is_authenticated():
         for story in stories:
             if user.pk in story['share_user_ids']:
@@ -446,12 +434,8 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'active_story'  : active_story,
     }
 
-    diff1 = checkpoint1-start
-    diff2 = checkpoint2-start
-    timediff = time.time()-start
-    logging.user(request, "~FYLoading ~FMsocial page~FY: ~SB%s%s ~SN(%.4s seconds, ~SB%.4s/%.4s~SN)" % (
-        social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else '', timediff,
-        diff1, diff2))
+    logging.user(request, "~FYLoading ~FMsocial page~FY: ~SB%s%s" % (
+        social_profile.title[:22], ('~SN/p%s' % page) if page > 1 else ''))
     if format == 'html':
         template = 'social/social_stories.xhtml'
     else:

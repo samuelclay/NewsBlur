@@ -584,6 +584,7 @@ class MUserStory(mongo.Document):
     story_date = mongo.DateTimeField()
     story = mongo.ReferenceField(MStory, dbref=True)
     found_story = mongo.GenericReferenceField()
+    shared = mongo.BooleanField()
     
     meta = {
         'collection': 'userstories',
