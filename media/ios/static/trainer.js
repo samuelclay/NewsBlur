@@ -14,5 +14,7 @@ Trainer.prototype = {
 
 Zepto(function($) {
       new Trainer();
-      attachFastClick();
+      attachFastClick({
+          skipEvent: true
+      });
 });

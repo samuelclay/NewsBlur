@@ -13,7 +13,8 @@
 
 @interface TrainerWebView : UIWebView {}
 
-- (void)changeTitle:(id)sender;
+- (void)focusTitle:(id)sender;
+- (void)hideTitle:(id)sender;
 
 @end
 
@@ -37,6 +38,8 @@
 @property (nonatomic, assign) BOOL feedTrainer;
 @property (nonatomic, assign) BOOL storyTrainer;
 
+- (void)refresh;
+- (NSString *)makeTrainerHTML;
 - (NSString *)makeTrainerSections;
 - (NSString *)makeStoryAuthor;
 - (NSString *)makeFeedAuthors;
@@ -47,6 +50,5 @@
 - (NSString *)makeClassifier:(NSString *)classifierName withType:(NSString *)classifierType score:(int)score;
 
 - (IBAction)doCloseDialog:(id)sender;
-- (void)changeTitle:(id)sender;
 
 @end

@@ -53,9 +53,10 @@
 }
 
 .NB-trainer-title .NB-title-trainer {
-    padding: 12px 0;
+    padding: 6px 0 12px;
     font-size: 18px;
-    line-height: 22px;
+    font-weight: bold;
+    line-height: 24px;
     -webkit-user-select: auto;
     -webkit-touch-callout: default;
     -webkit-highlight: auto; 
@@ -67,7 +68,7 @@
     color: #C0C0C0;
     font-weight: bold;
     font-size: 12px;
-    padding: 12px 0;
+    padding: 2px 0 4px;
 }
 
 .NB-story-title-positive {
@@ -152,9 +153,13 @@
   top: 2px;
   opacity: .2;
 }
-.pressed .NB-classifier .NB-classifier-icon-like,
-.pressed .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like {
+.NB-classifier.NB-classifier-like .NB-classifier-icon-like {
     opacity: 1;
+}
+.pressed .NB-classifier .NB-classifier-icon-like,
+.pressed .NB-classifier.NB-classifier-dislike .NB-classifier-icon-like,
+.pressed .NB-classifier.NB-classifier-like .NB-classifier-icon-dislike {
+    opacity: .8;
 }
 .pressed .NB-classifier.NB-classifier-like .NB-classifier-icon-like {
     opacity: 0;

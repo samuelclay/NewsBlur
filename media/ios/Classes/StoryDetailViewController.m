@@ -69,6 +69,10 @@
     
     self.webView.scalesPageToFit = YES;
     self.webView.multipleTouchEnabled = NO;
+    
+    [self.webView.scrollView setDelaysContentTouches:NO];
+    [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
+    
     self.pageIndex = -2;
 }
 
@@ -831,6 +835,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [request URL];
     NSArray *urlComponents = [url pathComponents];
     NSString *action = @"";
+    NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory
+                                                          objectForKey:@"story_feed_id"]];
     if ([urlComponents count] > 1) {
          action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
     }
@@ -904,11 +910,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             return NO;
         } else if ([action isEqualToString:@"classify-author"]) {
             NSString *author = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
-            [self toggleAuthorClassifier:author];
+            [self.appDelegate toggleAuthorClassifier:author feedId:feedId];
             return NO;
         } else if ([action isEqualToString:@"classify-tag"]) {
             NSString *tag = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
-            [self toggleTagClassifier:tag];
+            [self.appDelegate toggleTagClassifier:tag feedId:feedId];
             return NO;
         } else if ([action isEqualToString:@"show-profile"]) {
             appDelegate.activeUserProfileId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
@@ -1277,95 +1283,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:jsString];
     
 //    self.webView.hidden = NO;
-}
-
-#pragma mark -
-#pragma mark Classifiers
-
-- (void)toggleAuthorClassifier:(NSString *)author {
-    NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory
-                                                          objectForKey:@"story_feed_id"]];
-    int authorScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
-                         objectForKey:@"authors"]
-                        objectForKey:author] intValue];
-    if (authorScore > 0) {
-        authorScore = -1;
-    } else if (authorScore < 0) {
-        authorScore = 0;
-    } else {
-        authorScore = 1;
-    }
-    NSMutableDictionary *feedClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
-                                             mutableCopy];
-    NSMutableDictionary *authors = [[feedClassifiers objectForKey:@"authors"] mutableCopy];
-    [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
-    [feedClassifiers setObject:authors forKey:@"authors"];
-    [appDelegate.activeClassifiers setObject:feedClassifiers forKey:feedId];
-    [appDelegate.storyPageControl refreshHeaders];
-    
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:author
-                   forKey:authorScore >= 1 ? @"like_author" :
-                          authorScore <= -1 ? @"dislike_author" :
-                          @"remove_like_author"];
-    [request setPostValue:feedId forKey:@"feed_id"];
-    [request setDidFinishSelector:@selector(finishTrain:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
-    
-    [appDelegate recalculateIntelligenceScores:feedId];
-    [appDelegate.feedDetailViewController.storyTitlesTable reloadData];
-}
-
-- (void)toggleTagClassifier:(NSString *)tag {
-    NSLog(@"toggleTagClassifier: %@", tag);
-    NSString *feedId = [NSString stringWithFormat:@"%@", [self.activeStory
-                                                          objectForKey:@"story_feed_id"]];
-    int tagScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
-                      objectForKey:@"tags"]
-                     objectForKey:tag] intValue];
-
-    if (tagScore > 0) {
-        tagScore = -1;
-    } else if (tagScore < 0) {
-        tagScore = 0;
-    } else {
-        tagScore = 1;
-    }
-    
-    NSMutableDictionary *feedClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
-                                            mutableCopy];
-    NSMutableDictionary *tags = [[feedClassifiers objectForKey:@"tags"] mutableCopy];
-    [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
-    [feedClassifiers setObject:tags forKey:@"tags"];
-    [appDelegate.activeClassifiers setObject:feedClassifiers forKey:feedId];
-    [appDelegate.storyPageControl refreshHeaders];
-
-    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
-                           NEWSBLUR_URL];
-    NSURL *url = [NSURL URLWithString:urlString];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:tag
-                   forKey:tagScore >= 1 ? @"like_tag" :
-                          tagScore <= -1 ? @"dislike_tag" :
-                          @"remove_like_tag"];
-    [request setPostValue:feedId forKey:@"feed_id"];
-    [request setDidFinishSelector:@selector(finishTrain:)];
-    [request setDidFailSelector:@selector(requestFailed:)];
-    [request setDelegate:self];
-    [request startAsynchronous];
-    
-    [appDelegate recalculateIntelligenceScores:feedId];
-    [appDelegate.feedDetailViewController.storyTitlesTable reloadData];
-}
-
-- (void)finishTrain:(ASIHTTPRequest *)request {
-    id feedId = [self.activeStory objectForKey:@"story_feed_id"];
-    [appDelegate.feedsViewController refreshFeedList:feedId];
 }
 
 - (void)refreshHeader {

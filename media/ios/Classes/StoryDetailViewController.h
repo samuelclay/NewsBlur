@@ -66,9 +66,6 @@
 - (NSString *)getAvatars:(NSString *)key;
 - (NSDictionary *)getUser:(int)user_id;
 
-- (void)toggleAuthorClassifier:(NSString *)author;
-- (void)toggleTagClassifier:(NSString *)tag;
-- (void)finishTrain:(ASIHTTPRequest *)request;
 - (void)refreshHeader;
 
 

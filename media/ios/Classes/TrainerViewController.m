@@ -34,6 +34,8 @@
     
     navBar.tintColor = UIColorFromRGB(0x183353);
     [self hideGradientBackground:webView];
+    [self.webView.scrollView setDelaysContentTouches:YES];
+    [self.webView.scrollView setDecelerationRate:UIScrollViewDecelerationRateNormal];
 }
 - (void) hideGradientBackground:(UIView*)theView
 {
@@ -48,18 +50,33 @@
 - (void)viewWillAppear:(BOOL)animated {
     [[UIMenuController sharedMenuController]
      setMenuItems:[NSArray arrayWithObjects:
-                   [[UIMenuItem alloc] initWithTitle:@"👎 Hide" action:@selector(changeTitle:)],
-                   [[UIMenuItem alloc] initWithTitle:@"👍 Focus" action:@selector(changeTitle:)],
+                   [[UIMenuItem alloc] initWithTitle:@"👎 Hide" action:@selector(hideTitle:)],
+                   [[UIMenuItem alloc] initWithTitle:@"👍 Focus" action:@selector(focusTitle:)],
                    nil]];
     
     UILabel *titleLabel = (UILabel *)[appDelegate makeFeedTitle:appDelegate.activeFeed];
     titleLabel.shadowColor = UIColorFromRGB(0x306070);
     navBar.topItem.titleView = titleLabel;
-
+    
     NSString *path = [[NSBundle mainBundle] bundlePath];
     NSURL *baseURL = [NSURL fileURLWithPath:path];
+    [self.webView loadHTMLString:[self makeTrainerHTML] baseURL:baseURL];
+}
+
+- (void)refresh {
+    if (self.view.hidden || self.view.superview == nil) {
+        NSLog(@"Trainer hidden, ignoring redraw.");
+        return;
+    }
+    NSString *headerString = [[[self makeTrainerSections]
+                               stringByReplacingOccurrencesOfString:@"\'" withString:@"\\'"]
+                              stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+    NSString *jsString = [NSString stringWithFormat:@"document.getElementById('NB-trainer').innerHTML = '%@';",
+                          headerString];
     
-    [self.webView loadHTMLString:[self makeTrainerSections] baseURL:baseURL];
+    [self.webView stringByEvaluatingJavaScriptFromString:jsString];
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:@"attachFastClick({skipEvent: true});"];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -74,11 +91,8 @@
 #pragma mark -
 #pragma mark Story layout
 
-- (NSString *)makeTrainerSections {
-    NSString *storyAuthor = self.feedTrainer ? [self makeFeedAuthors] : [self makeStoryAuthor];
-    NSString *storyTags = self.feedTrainer ? [self makeFeedTags] : [self makeStoryTags];
-    NSString *storyTitle = self.feedTrainer ? @"" : [self makeTitle];
-    NSString *storyPublisher = [self makePublisher];
+- (NSString *)makeTrainerHTML {
+    NSString *trainerSections = [self makeTrainerSections];
     
     int contentWidth = self.view.frame.size.width;
     NSString *contentWidthClass;
@@ -105,21 +119,13 @@
                             "<html>"
                             "<head>%@</head>" // header string
                             "<body id=\"trainer\" class=\"%@\">"
-                            "  <div class=\"NB-trainer\"><div class=\"NB-trainer-inner\">"
-                            "    <div class=\"NB-trainer-title NB-trainer-section\">%@</div>"
-                            "    <div class=\"NB-trainer-author NB-trainer-section\">%@</div>"
-                            "    <div class=\"NB-trainer-tags NB-trainer-section\">%@</div>"
-                            "    <div class=\"NB-trainer-publisher NB-trainer-section\">%@</div>"
-                            "  </div></div>"
+                            "<div class=\"NB-trainer\" id=\"NB-trainer\">%@</div>"
                             "%@" // footer
                             "</body>"
                             "</html>",
                             headerString,
                             contentWidthClass,
-                            storyTitle,
-                            storyAuthor,
-                            storyTags,
-                            storyPublisher,
+                            trainerSections,
                             footerString
                             ];
     
@@ -128,6 +134,26 @@
     return htmlString;
 }
 
+- (NSString *)makeTrainerSections {
+    NSString *storyAuthor = self.feedTrainer ? [self makeFeedAuthors] : [self makeStoryAuthor];
+    NSString *storyTags = self.feedTrainer ? [self makeFeedTags] : [self makeStoryTags];
+    NSString *storyTitle = self.feedTrainer ? @"" : [self makeTitle];
+    NSString *storyPublisher = [self makePublisher];
+    
+    NSString *htmlString = [NSString stringWithFormat:@
+                            "<div class=\"NB-trainer-inner\">"
+                            "    <div class=\"NB-trainer-title NB-trainer-section\">%@</div>"
+                            "    <div class=\"NB-trainer-author NB-trainer-section\">%@</div>"
+                            "    <div class=\"NB-trainer-tags NB-trainer-section\">%@</div>"
+                            "    <div class=\"NB-trainer-publisher NB-trainer-section\">%@</div>"
+                            "</div>",
+                            storyTitle,
+                            storyAuthor,
+                            storyTags,
+                            storyPublisher];
+    
+    return htmlString;
+}
 - (NSString *)makeStoryAuthor {
     NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
                                                           objectForKey:@"story_feed_id"]];
@@ -292,13 +318,13 @@
                                 "  <div class=\"NB-trainer-section-title\">Publisher</div>"
                                 "  <div class=\"NB-trainer-section-body\">"
                                 "    <div class=\"NB-classifier-container\">"
-                                "      <a href=\"http://ios.newsblur.com/classify-publisher/%@\" "
-                                "         class=\"NB-story-publisher %@\">%@</a>"
+                                "      <a href=\"http://ios.newsblur.com/classify-feed/%@\" "
+                                "         class=\"NB-story-publisher NB-story-publisher-%@\">%@</a>"
                                 "    </div>"
                                 "  </div>"
                                 "</div",
                                 feedId,
-                                publisherScore > 0 ? @"NB-story-publisher-positive" : publisherScore < 0 ? @"NB-story-publisher-negative" : @"",
+                                publisherScore > 0 ? @"positive" : publisherScore < 0 ? @"negative" : @"",
                                 [self makeClassifier:feedTitle withType:@"publisher" score:publisherScore]];
     
     return storyPublisher;
@@ -308,31 +334,42 @@
     NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
                                                           objectForKey:@"story_feed_id"]];
     NSString *storyTitle = [appDelegate.activeStory objectForKey:@"story_title"];
-
+    
     if (!storyTitle) {
         return @"";
     }
     
-    NSMutableDictionary *titleClassifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
+    NSMutableDictionary *classifiers = [[appDelegate.activeClassifiers objectForKey:feedId]
                                              objectForKey:@"titles"];
-    for (NSString *titleClassifier in titleClassifiers) {
-        if ([storyTitle containsString:titleClassifier]) {
-            int titleScore = [[titleClassifiers objectForKey:titleClassifier] intValue];
-            storyTitle = [storyTitle
-                          stringByReplacingOccurrencesOfString:titleClassifier
-                          withString:[NSString stringWithFormat:@"  <span class=\"NB-story-title-%@\">%@</span>",
-                                      titleScore > 0 ? @"positive" : titleScore < 0 ? @"negative" : @"",
-                                      titleClassifier]];
+    NSMutableArray *titleStrings = [NSMutableArray array];
+    for (NSString *title in classifiers) {
+        if ([storyTitle containsString:title]) {
+            int titleScore = [[classifiers objectForKey:title] intValue];
+            NSString *titleClassifier = [NSString stringWithFormat:@
+                                         "<div class=\"NB-classifier-container\">"
+                                         "  <a href=\"http://ios.newsblur.com/classify-title/%@\" "
+                                         "     class=\"NB-story-title NB-story-title-%@\">%@</a>"
+                                         "</div>",
+                                         title,
+                                         titleScore > 0 ? @"positive" : titleScore < 0 ? @"negative" : @"",
+                                         [self makeClassifier:title withType:@"title" score:titleScore]];
+            [titleStrings addObject:titleClassifier];
         }
     }
     
+    NSString *titleClassifiers;
+    if ([titleStrings count]) {
+        titleClassifiers = [titleStrings componentsJoinedByString:@""];
+    } else {
+        titleClassifiers = @"<div class=\"NB-title-info\">Tap and hold the title</div>";
+    }
     NSString *titleTrainer = [NSString stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"
                               "  <div class=\"NB-trainer-section-title\">Story Title</div>"
                               "  <div class=\"NB-trainer-section-body NB-title\">"
                               "    <div class=\"NB-title-trainer\">%@</div>"
-                              "    <div class=\"NB-title-info\">Tap and hold the title</div>"
+                              "    %@"
                               "  </div>"
-                              "</div>", storyTitle];
+                              "</div>", storyTitle, titleClassifiers];
     return titleTrainer;
 }
 
@@ -359,17 +396,51 @@
     [appDelegate.trainerViewController dismissModalViewControllerAnimated:YES];
 }
 
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-    if (action == @selector(changeTitle:)) {
-        return YES;
-    } else {
-        return NO;
-    }
+- (void)changeTitle:(id)sender score:(int)score {
+    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
+                                                          objectForKey:@"story_feed_id"]];
+    NSString *selectedTitle = [self.webView
+                               stringByEvaluatingJavaScriptFromString:@"window.getSelection().toString()"];
+
+    [self.appDelegate toggleTitleClassifier:selectedTitle feedId:feedId score:score];
 }
 
-- (void)changeTitle:(id)sender {
-    NSString *selectedTitle = [self.webView stringByEvaluatingJavaScriptFromString:@"window.getSelection().toString()"];
-    NSLog(@"Selected: %@", selectedTitle);
+
+- (BOOL)webView:(UIWebView *)webView
+shouldStartLoadWithRequest:(NSURLRequest *)request
+ navigationType:(UIWebViewNavigationType)navigationType {
+    NSURL *url = [request URL];
+    NSArray *urlComponents = [url pathComponents];
+    NSString *action = @"";
+    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed
+                                                          objectForKey:@"id"]];
+    if ([urlComponents count] > 1) {
+        action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
+    }
+    
+    NSLog(@"Tapped url: %@", url);
+    if ([[url host] isEqualToString: @"ios.newsblur.com"]){
+        
+        if ([action isEqualToString:@"classify-author"]) {
+            NSString *author = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
+            [self.appDelegate toggleAuthorClassifier:author feedId:feedId];
+            return NO;
+        } else if ([action isEqualToString:@"classify-tag"]) {
+            NSString *tag = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
+            [self.appDelegate toggleTagClassifier:tag feedId:feedId];
+            return NO;
+        } else if ([action isEqualToString:@"classify-title"]) {
+            NSString *title = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
+            [self.appDelegate toggleTitleClassifier:title feedId:feedId score:0];
+            return NO;
+        } else if ([action isEqualToString:@"classify-feed"]) {
+            NSString *feedId = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
+            [self.appDelegate toggleFeedClassifier:feedId];
+            return NO;
+        }
+    }
+    
+    return YES;
 }
 
 @end
@@ -378,16 +449,21 @@
 @implementation TrainerWebView
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
-    if (action == @selector(changeTitle:)) {
+    if (action == @selector(focusTitle:) || action == @selector(hideTitle:)) {
         return YES;
     } else {
         return NO;
     }
 }
 
-- (void)changeTitle:(id)sender {
+- (void)focusTitle:(id)sender {
     NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
-    [appDelegate.trainerViewController changeTitle:sender];
+    [appDelegate.trainerViewController changeTitle:sender score:1];
+}
+
+- (void)hideTitle:(id)sender {
+    NewsBlurAppDelegate *appDelegate = [NewsBlurAppDelegate sharedAppDelegate];
+    [appDelegate.trainerViewController changeTitle:sender score:-1];
 }
 
 @end

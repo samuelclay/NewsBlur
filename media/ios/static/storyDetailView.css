@@ -313,6 +313,8 @@ div + p {
     text-shadow: 1px 1px 0 #EFEFEF;
     overflow: hidden;
     max-width: none;
+    
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .NB-iphone .NB-header {

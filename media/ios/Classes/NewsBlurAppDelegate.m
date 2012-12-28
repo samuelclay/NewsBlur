@@ -679,7 +679,7 @@
         
         for (NSString *feed in [classifiers objectForKey:@"feeds"]) {
             if ([[intelligence objectForKey:@"feed"] intValue] <= 0 &&
-                [[story objectForKey:@"story_feed_id"] isEqualToString:feed]) {
+                [storyFeedId isEqualToString:feed]) {
                 int score = [[[classifiers objectForKey:@"feeds"] objectForKey:feed] intValue];
                 [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"feed"];
             }
@@ -1667,6 +1667,181 @@
 
     [titleImageButton setImage:titleImage forState:UIControlStateNormal];
     return titleImageButton;
+}
+
+#pragma mark -
+#pragma mark Classifiers
+
+- (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId {
+    int authorScore = [[[[self.activeClassifiers objectForKey:feedId]
+                         objectForKey:@"authors"]
+                        objectForKey:author] intValue];
+    if (authorScore > 0) {
+        authorScore = -1;
+    } else if (authorScore < 0) {
+        authorScore = 0;
+    } else {
+        authorScore = 1;
+    }
+    NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    NSMutableDictionary *authors = [[feedClassifiers objectForKey:@"authors"] mutableCopy];
+    [authors setObject:[NSNumber numberWithInt:authorScore] forKey:author];
+    [feedClassifiers setObject:authors forKey:@"authors"];
+    [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPageControl refreshHeaders];
+    [self.trainerViewController refresh];
+    
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:author
+                   forKey:authorScore >= 1 ? @"like_author" :
+                          authorScore <= -1 ? @"dislike_author" :
+                          @"remove_like_author"];
+    [request setPostValue:feedId forKey:@"feed_id"];
+    [request setCompletionBlock:^{
+        [self.feedsViewController refreshFeedList:feedId];
+    }];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+    
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController.storyTitlesTable reloadData];
+}
+
+- (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId {
+    NSLog(@"toggleTagClassifier: %@", tag);
+    int tagScore = [[[[self.activeClassifiers objectForKey:feedId]
+                      objectForKey:@"tags"]
+                     objectForKey:tag] intValue];
+    
+    if (tagScore > 0) {
+        tagScore = -1;
+    } else if (tagScore < 0) {
+        tagScore = 0;
+    } else {
+        tagScore = 1;
+    }
+    
+    NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    NSMutableDictionary *tags = [[feedClassifiers objectForKey:@"tags"] mutableCopy];
+    [tags setObject:[NSNumber numberWithInt:tagScore] forKey:tag];
+    [feedClassifiers setObject:tags forKey:@"tags"];
+    [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPageControl refreshHeaders];
+    [self.trainerViewController refresh];
+    
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:tag
+                   forKey:tagScore >= 1 ? @"like_tag" :
+                          tagScore <= -1 ? @"dislike_tag" :
+                          @"remove_like_tag"];
+    [request setPostValue:feedId forKey:@"feed_id"];
+    [request setCompletionBlock:^{
+        [self.feedsViewController refreshFeedList:feedId];
+    }];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+    
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController.storyTitlesTable reloadData];
+}
+
+- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score {
+    NSLog(@"toggle Title: %@ (%@) / %d", title, feedId, score);
+    int titleScore = [[[[self.activeClassifiers objectForKey:feedId]
+                        objectForKey:@"titles"]
+                       objectForKey:title] intValue];
+    
+    if (score) {
+        titleScore = score;
+    } else {
+        if (titleScore > 0) {
+            titleScore = -1;
+        } else if (titleScore < 0) {
+            titleScore = 0;
+        } else {
+            titleScore = 1;
+        }
+    }
+    
+    NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    NSMutableDictionary *titles = [[feedClassifiers objectForKey:@"titles"] mutableCopy];
+    [titles setObject:[NSNumber numberWithInt:titleScore] forKey:title];
+    [feedClassifiers setObject:titles forKey:@"titles"];
+    [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPageControl refreshHeaders];
+    [self.trainerViewController refresh];
+    
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:title
+                   forKey:titleScore >= 1 ? @"like_title" :
+                          titleScore <= -1 ? @"dislike_title" :
+                          @"remove_like_title"];
+    [request setPostValue:feedId forKey:@"feed_id"];
+    [request setCompletionBlock:^{
+        [self.feedsViewController refreshFeedList:feedId];
+    }];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+    
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController.storyTitlesTable reloadData];
+}
+
+- (void)toggleFeedClassifier:(NSString *)feedId {
+    int feedScore = [[[[self.activeClassifiers objectForKey:feedId]
+                       objectForKey:@"feeds"]
+                      objectForKey:feedId] intValue];
+    
+    if (feedScore > 0) {
+        feedScore = -1;
+    } else if (feedScore < 0) {
+        feedScore = 0;
+    } else {
+        feedScore = 1;
+    }
+    
+    NSMutableDictionary *feedClassifiers = [[self.activeClassifiers objectForKey:feedId]
+                                            mutableCopy];
+    NSMutableDictionary *feeds = [[feedClassifiers objectForKey:@"feeds"] mutableCopy];
+    [feeds setObject:[NSNumber numberWithInt:feedScore] forKey:feedId];
+    [feedClassifiers setObject:feeds forKey:@"feeds"];
+    [self.activeClassifiers setObject:feedClassifiers forKey:feedId];
+    [self.storyPageControl refreshHeaders];
+    [self.trainerViewController refresh];
+    
+    NSString *urlString = [NSString stringWithFormat:@"http://%@/classifier/save",
+                           NEWSBLUR_URL];
+    NSURL *url = [NSURL URLWithString:urlString];
+    __block ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:feedId
+                   forKey:feedScore >= 1 ? @"like_feed" :
+                          feedScore <= -1 ? @"dislike_feed" :
+                          @"remove_like_feed"];
+    [request setPostValue:feedId forKey:@"feed_id"];
+    [request setCompletionBlock:^{
+        [self.feedsViewController refreshFeedList:feedId];
+    }];
+    [request setDidFailSelector:@selector(requestFailed:)];
+    [request setDelegate:self];
+    [request startAsynchronous];
+    
+    [self recalculateIntelligenceScores:feedId];
+    [self.feedDetailViewController.storyTitlesTable reloadData];
 }
 
 @end

@@ -293,6 +293,12 @@
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
 - (UIButton *)makeRightFeedTitle:(NSDictionary *)feed;
+
+- (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
+- (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
+- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
+- (void)toggleFeedClassifier:(NSString *)feedId;
+
 @end
 
 @interface UnreadCounts : NSObject {
