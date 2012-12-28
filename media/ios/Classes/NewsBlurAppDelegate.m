@@ -182,11 +182,11 @@
     }
     
     [splashView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-
+    splashView.alpha = 1.0;
     [window addSubview:splashView];
     [window bringSubviewToFront:splashView];
     [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:.5];
+    [UIView setAnimationDuration:.6];
     [UIView setAnimationTransition:UIViewAnimationTransitionNone forView:window cache:YES];
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(startupAnimationDone:finished:context:)];
@@ -415,23 +415,19 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 //        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-//        [navController presentModalViewController:trainerViewController animated:YES];
-        
+//        [navController presentModalViewController:trainerViewController animated:YES];        
         [self.masterContainerViewController showTrainingPopover:self.feedDetailViewController.settingsButton];
     } else {
         [navController presentModalViewController:trainerViewController animated:YES];
     }
 }
 
-- (void)openTrainStory {
+- (void)openTrainStory:(id)sender {
     UINavigationController *navController = self.navigationController;
     trainerViewController.feedTrainer = NO;
     trainerViewController.storyTrainer = YES;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-//        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-//        [navController presentModalViewController:trainerViewController animated:YES];
-        
-        [self.masterContainerViewController showTrainingPopover:self.storyPageControl.fontSettingsButton];
+        [self.masterContainerViewController showTrainingPopover:sender];
     } else {
         [navController presentModalViewController:trainerViewController animated:YES];
     }

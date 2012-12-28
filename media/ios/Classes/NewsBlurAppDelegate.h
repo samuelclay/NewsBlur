@@ -228,7 +228,7 @@
 - (void)showAddSiteModal:(id)sender;
 - (void)showMoveSite;
 - (void)openTrainSite;
-- (void)openTrainStory;
+- (void)openTrainStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView;

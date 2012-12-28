@@ -21,18 +21,18 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Classes/NewsBlurAppDelegate.m"
-         timestampString = "378357556.091978"
+         timestampString = "378362070.544376"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "685"
-         endingLineNumber = "685"
+         startingLineNumber = "681"
+         endingLineNumber = "681"
          landmarkName = "-recalculateIntelligenceScores:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>
    <SymbolicBreakpoints>
       <SymbolicBreakpoint
-         shouldBeEnabled = "No"
+         shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          symbolName = "objc_exception_throw"
@@ -41,7 +41,7 @@
    </SymbolicBreakpoints>
    <ExceptionBreakpoints>
       <ExceptionBreakpoint
-         shouldBeEnabled = "No"
+         shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          scope = "0"

@@ -61,8 +61,8 @@
     font-weight: bold;
     line-height: 24px;
     width: 100%;
-    min-height: 32px;
-    -webkit-user-select: auto;
+    min-height: 36px;
+    -webkit-user-select: text;
     -webkit-touch-callout: default;
     -webkit-highlight: auto; 
     -webkit-tap-highlight-color: auto;
@@ -74,6 +74,7 @@
     font-weight: bold;
     font-size: 12px;
     padding: 2px 0 4px;
+    -webkit-user-select: none;
 }
 
 .NB-story-title-positive {

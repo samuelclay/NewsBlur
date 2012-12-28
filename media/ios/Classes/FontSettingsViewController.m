@@ -209,7 +209,7 @@
     } else if (indexPath.row == 2) {
         [appDelegate.storyPageControl openSendToDialog];
     } else if (indexPath.row == 3) {
-        [appDelegate openTrainStory];
+        [appDelegate openTrainStory:appDelegate.storyPageControl.fontSettingsButton];
     } else if (indexPath.row == 4) {
         [appDelegate.storyPageControl.currentPage openShareDialog];
     }

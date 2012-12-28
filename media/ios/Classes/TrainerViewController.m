@@ -86,6 +86,7 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
+    [self.webView loadHTMLString:@"about:blank" baseURL:nil];
     [[UIMenuController sharedMenuController] setMenuItems:nil];
 }
 

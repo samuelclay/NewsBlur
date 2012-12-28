@@ -170,11 +170,16 @@
     sharingHtmlString = [NSString stringWithFormat:@
                          "<div class='NB-share-header'></div>"
                          "<div class='NB-share-wrapper'><div class='NB-share-inner-wrapper'>"
-                         "<div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
-                         "<a href=\"http://ios.newsblur.com/share\"><div>"
-                         "Share this story <span class=\"NB-share-icon\"></span>"
-                         "</div></a>"
-                         "</div>"
+                         "  <div id=\"NB-share-button-id\" class='NB-share-button NB-button'>"
+                         "    <a href=\"http://ios.newsblur.com/share\"><div>"
+                         "      <span class=\"NB-icon\"></span> Share this story"
+                         "    </div></a>"
+                         "  </div>"
+                         "  <div id=\"NB-share-button-id\" class='NB-share-button NB-train-button NB-button'>"
+                         "    <a href=\"http://ios.newsblur.com/train\"><div>"
+                         "      <span class=\"NB-icon\"></span> Train this story"
+                         "    </div></a>"
+                         "  </div>"
                          "</div></div>"];
 
     NSString *storyHeader = [self getHeader];
@@ -908,6 +913,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([action isEqualToString:@"share"]) {
             [self openShareDialog];
             return NO;
+        } else if ([action isEqualToString:@"train"]) {
+            [self openTrainingDialog:[[urlComponents objectAtIndex:2] intValue]
+                         yCoordinate:[[urlComponents objectAtIndex:3] intValue]
+                               width:[[urlComponents objectAtIndex:4] intValue]
+                              height:[[urlComponents objectAtIndex:5] intValue]];
+            return NO;
         } else if ([action isEqualToString:@"classify-author"]) {
             NSString *author = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:2]];
             [self.appDelegate toggleAuthorClassifier:author feedId:feedId];
@@ -1146,6 +1157,26 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                        setUsername:nil
                         setReplyId:nil];
     }
+}
+
+- (void)openTrainingDialog:(int)x yCoordinate:(int)y width:(int)width height:(int)height {
+    CGRect frame = CGRectZero;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        // only adjust for the bar if user is scrolling
+        if (appDelegate.isRiverView || appDelegate.isSocialView) {
+            if (self.webView.scrollView.contentOffset.y == -20) {
+                y = y + 20;
+            }
+        } else {
+            if (self.webView.scrollView.contentOffset.y == -9) {
+                y = y + 9;
+            }
+        }
+        
+        frame = CGRectMake(x, y, width, height);
+    }
+    NSLog(@"Open trainer: %@ (%d/%d/%d/%d)", NSStringFromCGRect(frame), x, y, width, height);
+    [appDelegate openTrainStory:[NSValue valueWithCGRect:frame]];
 }
 
 # pragma mark

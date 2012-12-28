@@ -318,14 +318,20 @@
                    dispatch_get_current_queue(), ^{
         popoverController = [[UIPopoverController alloc]
                              initWithContentViewController:appDelegate.trainerViewController];
-        
         popoverController.delegate = self;
         
-        
-        [popoverController setPopoverContentSize:CGSizeMake(420, 512)];
-        [popoverController presentPopoverFromBarButtonItem:sender
-                                  permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                  animated:NO];
+        [popoverController setPopoverContentSize:CGSizeMake(420, 382)];
+        if ([sender class] == [UIBarButtonItem class]) {
+           [popoverController presentPopoverFromBarButtonItem:sender
+                                     permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                     animated:NO];
+        } else {
+           CGRect frame = [sender CGRectValue];
+           [popoverController presentPopoverFromRect:frame
+                                              inView:self.storyPageControl.view
+                            permittedArrowDirections:UIPopoverArrowDirectionAny
+                                            animated:YES];
+        }
                    });
 }
 

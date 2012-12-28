@@ -14,6 +14,14 @@ $('a.NB-show-profile').live('click', function () {
     return false;
 });
 
+$('.NB-train-button a').live('click', function () {
+    var offset = $(this).offset();
+    console.log(offset);
+    var url = $(this).attr('href') + "/" + offset.left + "/" + (offset.top - window.pageYOffset) + "/" + offset.width + "/" + offset.height;
+    window.location = url;
+    return false;
+});
+
 $('.NB-button').live('touchstart', function () {
     $(this).addClass('selected');
 });

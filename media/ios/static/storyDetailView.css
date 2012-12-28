@@ -496,10 +496,14 @@ a.NB-show-profile {
 }
 
 .NB-button.NB-share-button {
-    float: none;
+    float: left;
     padding: 0px 0px 20px 0px;
-    margin-bottom: 0;
+    margin: 0 0 0 0;
     display: block;
+    width: 48%;
+}
+.NB-button.NB-train-button {
+    float: right;
 }
 
 .NB-button div {
@@ -536,13 +540,16 @@ a.NB-show-profile {
     text-shadow: 0 1px 0 #003366;
 }
 
-.NB-button.NB-share-button div span {
+.NB-button.NB-share-button .NB-icon {
     background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACGUlEQVR42o2TTUsbYRSFZ+MvcNn/0EU1rSCCgkSxVRCLFgyiqFSE1tDSpNKoEaQJiAvBryDZGCVQKWIpWIeAFMHWL1qKjUJ3KRQSNUgSJzPR5PieMRMqjuLibAaec+577xkJwJ30p0jqEloXiglpQlmh3F3AaaEogWhnMw6dPTgafIljtx3i262gTSgSKbuPQ8dzxEfsSEw6kHBV4NRThrOVAaSd0o2wX0iJdj9D3PMaJ/1WKF4LtMlHyExf6jw0CO2dZAovCmWOBl4gMeFAyv0AmTyoLVRCXa1H+nsLtMgUktslpsmZ46E+JGedUMcsl2CwCumvTVD22qAcdOjS/vmQ3LVce7PCZMLa+EMdVj/XQflp06G/ezZ8/NYAV6gKUz+GcM8vXTGI8M0c20hW5QYo4XacCnhxox5dK+Wo+1SKmuUSeHdcKJ6VrpwqF3//Cqnh0kIy4djvNoyuVeNJHmwNONDrCyIg/8LjN0sFgyhPlfK/5cL4Zo7NZB2uFWDjh6fonQliXg5jQd7H3JcwDQoNy/LOPBXT9YXlx2YyYXcgpIPe+S10emTCqtAmDdbZMJaEd+apuG0ujG/m2EwmbB9fM0CrsTsaxFhPNozpvDPTuW0ujG/m2EwmbID/G2jsNutJA5aEBjyVnu7T042xrWYGWf4Y7DbryYaxJLwzT8Vtc2FGuplBTog/BrvNerJhLAnvTNDQppnBBZHZrv4ITeFuAAAAAElFTkSuQmCC") no-repeat top right;
     width: 23px;
     display: inline-block;
     height: 16px;
-    margin-bottom: -2px;
-    margin-right: -23px;
+    margin: 0 2px -2px -12px;
+}
+
+.NB-button.NB-train-button .NB-icon {
+    background: url("data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACxElEQVR42qWT30+SURzG6a553d/QdffOq7Y2t4xEhgSYvCIM5ddUfi0QdcsMp6Ij8EcFgkoiGqFUCGYyp2Kp02XOzDUVGypcsKJYNzy9nM0517jq4tnOzvt9Pt/ne95zGAD+S/9sfHjcWhQ1qovfqRX8uIjCUWU5UbymGnNq+f2oQV2crykI2NA3xVIqJZJSCU5pU1qvR1qtJuukrA6pBhXWdI2xgoCvPHbuh9GIrLUfp9JaxLksInpN9vLfvnDKchGN4joBtDpNRRpbU7HKIufrxpU4YN1Gxu1GSl6PMxFFTOewM4kYCUpAj8QEDbhBAA8cmlh70AiTXwu9T4VD9h38CQTxy25Dsl5CIqcalfgu4OXNZJQjbvkFQDZcm7OEH8G9PAjjlDpPJ4CMvR8ZqxXp7i6cCAXEfEJVEcClBGJnFeZ3ZmEJd0A/2YD9exWkc8Y+gJ99fUh3mpGo5ueNBHBMd99ll+a0JvtNXZeniCEdFmL12xJmt4OYWB3FkK8NiwoKB9y75E/QKchZHPO52GeVYl4kRIvZg4ahKGTtYzFGnasGS3sLmNmcQmDDB0/MAe2EAiaDDTGKhzgNOuAwEavm4qG+F5LeCCwzWzC4l8HUe3MMmVOU8697MbnmgXfVDefSINReGZjGl3gV20eb8z3E3SFiokUA0r45CDvfgmUKgNFoUZbI7dKEfESCwQUrRlcc5CzKTX7MbcbhW9yDI/QJzSMrUA1EITC/IeaanjDYrQGQy5PNZq+oehUisY3K1LtFqHNRhB5aP8TYwi5e0Hoe3oawK0TMVHeIAEgC4LKUPfJrSov8KqdlKueMfIYjsoNndIIndPwqM+lMAJy2aZRpxnMFX5nE2F/CNwwnuHSh2fcRtuAWRD0R8Dpeo0znA0fzNElprbcKAC5GkzYP1VbqXRlO6zQd2Y8Kjeu3UGdrOq/5C7Lktmdg8uWWAAAAAElFTkSuQmCC") no-repeat top right;
 }
 
 .NB-iphone .NB-button .NB-story-comment-like-button-wrapper,
