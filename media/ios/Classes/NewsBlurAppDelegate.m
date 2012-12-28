@@ -663,6 +663,7 @@
         
         for (NSString *author in [classifiers objectForKey:@"authors"]) {
             if ([[intelligence objectForKey:@"author"] intValue] <= 0 &&
+                [[story objectForKey:@"story_authors"] class] != [NSNull class] &&
                 [[story objectForKey:@"story_authors"] containsString:author]) {
                 int score = [[[classifiers objectForKey:@"authors"] objectForKey:author] intValue];
                 [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"author"];
@@ -671,6 +672,7 @@
         
         for (NSString *tag in [classifiers objectForKey:@"tags"]) {
             if ([[intelligence objectForKey:@"tags"] intValue] <= 0 &&
+                [[story objectForKey:@"story_tags"] class] != [NSNull class] &&
                 [[story objectForKey:@"story_tags"] containsObject:tag]) {
                 int score = [[[classifiers objectForKey:@"tags"] objectForKey:tag] intValue];
                 [intelligence setObject:[NSNumber numberWithInt:score] forKey:@"tags"];
@@ -1506,6 +1508,21 @@
     }
     
     return folderName;
+}
+
+- (NSDictionary *)getFeed:(NSString *)feedId {
+    NSDictionary *feed;
+    if (self.isSocialView || self.isSocialRiverView) {
+        feed = [self.dictActiveFeeds objectForKey:feedId];
+        // this is to catch when a user is already subscribed
+        if (!feed) {
+            feed = [self.dictFeeds objectForKey:feedId];
+        }
+    } else {
+        feed = [self.dictFeeds objectForKey:feedId];
+    }
+    
+    return feed;
 }
 
 #pragma mark -

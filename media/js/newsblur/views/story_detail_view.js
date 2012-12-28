@@ -458,6 +458,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var options = {};
         if (NEWSBLUR.reader.flags['social_view']) {
             options['social_feed'] = true;
+            options['feed_loaded'] = true;
         }
         NEWSBLUR.reader.open_story_trainer(this.model.id, feed_id, options);
     },

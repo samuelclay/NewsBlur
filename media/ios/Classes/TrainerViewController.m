@@ -311,7 +311,8 @@
     } else {
         feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
                                                     objectForKey:@"story_feed_id"]];
-        feedTitle = [[appDelegate.dictFeeds objectForKey:feedId] objectForKey:@"feed_title"];
+        NSDictionary *feed = [appDelegate getFeed:feedId];
+        feedTitle = [feed objectForKey:@"feed_title"];
     }
     int publisherScore = [[[[appDelegate.activeClassifiers objectForKey:feedId]
                             objectForKey:@"feeds"] objectForKey:feedId] intValue];
@@ -415,8 +416,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSURL *url = [request URL];
     NSArray *urlComponents = [url pathComponents];
     NSString *action = @"";
-    NSString *feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed
-                                                          objectForKey:@"id"]];
+    NSString *feedId;
+    if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
+        feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeStory
+                                                    objectForKey:@"story_feed_id"]];
+    } else {
+        feedId = [NSString stringWithFormat:@"%@", [appDelegate.activeFeed
+                                                    objectForKey:@"id"]];
+    }
+    
     if ([urlComponents count] > 1) {
         action = [NSString stringWithFormat:@"%@", [urlComponents objectAtIndex:1]];
     }

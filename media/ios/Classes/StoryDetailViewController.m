@@ -219,20 +219,10 @@
     
     [webView loadHTMLString:htmlString baseURL:baseURL];
 
-    NSDictionary *feed;
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",
                            [self.activeStory
                             objectForKey:@"story_feed_id"]];
-    
-    if (appDelegate.isSocialView || appDelegate.isSocialRiverView) {
-        feed = [appDelegate.dictActiveFeeds objectForKey:feedIdStr];
-        // this is to catch when a user is already subscribed
-        if (!feed) {
-            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-        }
-    } else {
-        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-    }
+    NSDictionary *feed = [appDelegate getFeed:feedIdStr];
     
     self.feedTitleGradient = [appDelegate
                               makeFeedTitleGradient:feed

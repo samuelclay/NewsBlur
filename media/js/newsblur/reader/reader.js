@@ -1863,6 +1863,9 @@
             
             if (story_id && feed_id) {
                 options['feed_loaded'] = !this.flags['river_view'];
+                if (this.flags['social_view']) {
+                    options['feed_loaded'] = true;
+                }
                 if (this.flags['social_view'] && !_.string.contains(this.active_feed, 'river:')) {
                     options['social_feed_id'] = this.active_feed;
                 } else if (this.flags['social_view'] && story.get('friend_user_ids')) {
