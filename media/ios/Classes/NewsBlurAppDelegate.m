@@ -414,8 +414,10 @@
     trainerViewController.storyTrainer = NO;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-        [navController presentModalViewController:trainerViewController animated:YES];
+//        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+//        [navController presentModalViewController:trainerViewController animated:YES];
+        
+        [self.masterContainerViewController showTrainingPopover:self.feedDetailViewController.settingsButton];
     } else {
         [navController presentModalViewController:trainerViewController animated:YES];
     }
@@ -426,8 +428,10 @@
     trainerViewController.feedTrainer = NO;
     trainerViewController.storyTrainer = YES;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
-        [navController presentModalViewController:trainerViewController animated:YES];
+//        trainerViewController.modalPresentationStyle=UIModalPresentationFormSheet;
+//        [navController presentModalViewController:trainerViewController animated:YES];
+        
+        [self.masterContainerViewController showTrainingPopover:self.storyPageControl.fontSettingsButton];
     } else {
         [navController presentModalViewController:trainerViewController animated:YES];
     }

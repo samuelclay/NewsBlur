@@ -25,7 +25,7 @@
     
     IBOutlet UIBarButtonItem * closeButton;
     TrainerWebView *webView;
-    UINavigationBar *navBar;
+    IBOutlet UINavigationBar *navBar;
     
     BOOL feedTrainer;
     BOOL storyTrainer;

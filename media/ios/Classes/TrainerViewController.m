@@ -7,6 +7,7 @@
 //
 
 #import "TrainerViewController.h"
+#import "NBContainerViewController.h"
 #import "StringHelper.h"
 
 @implementation TrainerViewController
@@ -393,6 +394,7 @@
 #pragma mark Actions
 
 - (IBAction)doCloseDialog:(id)sender {
+    [appDelegate.masterContainerViewController hidePopover];
     [appDelegate.trainerViewController dismissModalViewControllerAnimated:YES];
 }
 
