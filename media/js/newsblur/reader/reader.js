@@ -3888,8 +3888,8 @@
         force_feed_refresh: function(feed_id, new_feed_id) {
             var self = this;
             feed_id  = feed_id || this.active_feed;
-            new_feed_id = new_feed_id || feed_id;
-
+            new_feed_id = _.isNumber(new_feed_id) && new_feed_id || feed_id;
+            console.log(["force_feed_refresh", feed_id, new_feed_id]);
             this.force_feeds_refresh(function() {
                 // Open the feed back up if it is being refreshed and is still open.
                 if (self.active_feed == feed_id || self.active_feed == new_feed_id) {
