@@ -193,13 +193,15 @@ class Feed(models.Model):
                 return
 
             if self.pk != duplicate_feed[0].pk:
-                merge_feeds(duplicate_feed[0].pk, self.pk)
-                return duplicate_feed[0]
+                logging.debug(" ---> ~FRFound different feed (%s), merging..." % duplicate_feed[0])
+                feed = Feed.get_by_id(merge_feeds(duplicate_feed[0].pk, self.pk))
+                return feed
             else:
                 duplicate_feed = Feed.objects.filter(
                     hash_address_and_link=self.hash_address_and_link)
                 if self.pk != duplicate_feed[0].pk:
-                    merge_feeds(duplicate_feed[0].pk, self.pk)
+                    feed = Feed.get_by_id(merge_feeds(duplicate_feed[0].pk, self.pk))
+                    return feed
                 return duplicate_feed[0]
                 
             return self
@@ -223,7 +225,7 @@ class Feed(models.Model):
         
     @classmethod
     def merge_feeds(cls, *args, **kwargs):
-        merge_feeds(*args, **kwargs)
+        return merge_feeds(*args, **kwargs)
         
     @property
     def favicon_fetching(self):
@@ -1667,13 +1669,13 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     
     if original_feed_id == duplicate_feed_id:
         logging.info(" ***> Merging the same feed. Ignoring...")
-        return
+        return original_feed_id
     try:
         original_feed = Feed.objects.get(pk=original_feed_id)
         duplicate_feed = Feed.objects.get(pk=duplicate_feed_id)
     except Feed.DoesNotExist:
         logging.info(" ***> Already deleted feed: %s" % duplicate_feed_id)
-        return
+        return original_feed_id
 
     if original_feed.num_subscribers < duplicate_feed.num_subscribers and not force:
         original_feed, duplicate_feed = duplicate_feed, original_feed
@@ -1728,11 +1730,14 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
         logging.debug(" ***> Duplicate feed is the same as original feed. Panic!")
     logging.debug(' ---> Deleted duplicate feed: %s/%s' % (duplicate_feed, duplicate_feed_id))
     original_feed.count_subscribers()
+    original_feed.save()
     logging.debug(' ---> Now original subscribers: %s' %
                   (original_feed.num_subscribers))
                   
           
     MSharedStory.switch_feed(original_feed_id, duplicate_feed_id)
+    
+    return original_feed_id
     
 def rewrite_folders(folders, original_feed, duplicate_feed):
     new_folders = []
