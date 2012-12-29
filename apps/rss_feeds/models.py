@@ -19,6 +19,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from mongoengine.queryset import OperationError, Q
 from mongoengine.base import ValidationError
+from vendor.timezones.utilities import localtime_for_timezone
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
 from apps.search.models import SearchStarredStory
 from utils import json_functions as json
@@ -1572,13 +1573,14 @@ class MFeedFetchHistory(mongo.Document):
         super(MFeedFetchHistory, self).save(*args, **kwargs)
         
     @classmethod
-    def feed_history(cls, feed_id):
+    def feed_history(cls, feed_id, timezone=None):
         fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')[:5]
         fetch_history = []
         for fetch in fetches:
             history                = {}
             history['message']     = fetch.message
-            history['fetch_date']  = fetch.fetch_date.strftime("%Y-%m-%d %H:%M:%S")
+            history['fetch_date'] = localtime_for_timezone(fetch.fetch_date,
+                                    timezone).strftime("%Y-%m-%d %H:%M:%S")
             history['status_code'] = fetch.status_code
             history['exception']   = fetch.exception
             fetch_history.append(history)
@@ -1605,13 +1607,14 @@ class MPageFetchHistory(mongo.Document):
         super(MPageFetchHistory, self).save(*args, **kwargs)
 
     @classmethod
-    def feed_history(cls, feed_id):
+    def feed_history(cls, feed_id, timezone=None):
         fetches = cls.objects(feed_id=feed_id).order_by('-fetch_date')[:5]
         fetch_history = []
         for fetch in fetches:
             history                = {}
             history['message']     = fetch.message
-            history['fetch_date']  = fetch.fetch_date.strftime("%Y-%m-%d %H:%M:%S")
+            history['fetch_date'] = localtime_for_timezone(fetch.fetch_date,
+                                    timezone).strftime("%Y-%m-%d %H:%M:%S")
             history['status_code'] = fetch.status_code
             history['exception']   = fetch.exception
             fetch_history.append(history)
@@ -1630,12 +1633,13 @@ class MFeedPushHistory(mongo.Document):
     }
     
     @classmethod
-    def feed_history(cls, feed_id):
+    def feed_history(cls, feed_id, timezone=None):
         pushes = cls.objects(feed_id=feed_id).order_by('-push_date')[:5]
         push_history = []
         for push in pushes:
             history = {}
-            history['push_date']  = push.push_date.strftime("%Y-%m-%d %H:%M:%S")
+            history['push_date'] = localtime_for_timezone(push.push_date,
+                                   timezone).strftime("%Y-%m-%d %H:%M:%S")
             push_history.append(history)
         return push_history
         

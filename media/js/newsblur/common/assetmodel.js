@@ -90,7 +90,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     return;
                 }
                 NEWSBLUR.log(['AJAX Error', e, e.status, textStatus, errorThrown, 
-                              !!error_callback, error_callback]);
+                              !!error_callback, error_callback, $.isFunction(callback)]);
                 
                 if (error_callback) {
                     error_callback(e, textStatus, errorThrown);
@@ -99,7 +99,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     if (NEWSBLUR.Globals.is_authenticated) {
                       message = "Sorry, there was an unhandled error.";
                     }
-                    callback({'message': message});
+                    callback({'message': message, status_code: e.status});
                 }
             }
         }, options)); 
@@ -706,7 +706,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             social_feed.set(feed);
         }, this));
         
-        callback && callback();
+        callback && callback(data);
     },
     
     refresh_feed: function(feed_id, callback) {
@@ -1172,8 +1172,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'feed_link': feed_link
             }, function(data) {
                 // NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
+                if (data.code < 0 || data.status_code != 200) {
+                    return callback(data);
+                }
                 self.post_refresh_feeds(data, callback);
-                NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
             }, error_callback);
         } else {
             if ($.isFunction(callback)) callback();
@@ -1189,8 +1191,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'feed_address': feed_address
             }, function(data) {
                 // NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
+                if (data.code < 0 || data.status_code != 200) {
+                    return callback(data);
+                }
                 self.post_refresh_feeds(data, callback);
-                NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
             }, error_callback);
         } else {
             if ($.isFunction(callback)) callback();
