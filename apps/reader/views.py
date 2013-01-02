@@ -1362,7 +1362,7 @@ def send_story_email(request):
     message    = 'OK'
     story_id   = request.POST['story_id']
     feed_id    = request.POST['feed_id']
-    to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').split(' ')
+    to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').strip().split(' ')
     from_name  = request.POST['from_name']
     from_email = request.POST['from_email']
     comments   = request.POST['comments']
@@ -1372,7 +1372,7 @@ def send_story_email(request):
     if not to_addresses:
         code = -1
         message = 'Please provide at least one email address.'
-    elif not all(email_re.match(to_address) for to_address in to_addresses):
+    elif not all(email_re.match(to_address) for to_address in to_addresses if to_addresses):
         code = -1
         message = 'You need to send the email to a valid email address.'
     elif not email_re.match(from_email):

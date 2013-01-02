@@ -23,6 +23,8 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         }, this);
         this.make_modal();
         this.open_modal();
+        this.existing_emails = $.evalJSON($.cookie('NB:email:addresses')) || [];
+        this.autocomplete_emails();
         
         if (!NEWSBLUR.Globals.is_authenticated) {
           this.save_callback({'code': -1, 'message': 'You must be logged in to send a story over email.'});
@@ -123,6 +125,12 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         } else {
           $save.val('Sent!');
           $.cookie('NB:email:to', $('input[name=to]', this.$modal).val());
+          var emails = $('input[name=to]', this.$modal).val();
+          emails = emails.replace(/[, ]+/g, ' ').split(' ');
+          emails = _.uniq(this.existing_emails.concat(emails));
+          emails = _.map(emails, function(e) { return _.string.trim(e); });
+          emails = _.compact(emails);
+          $.cookie('NB:email:addresses', $.toJSON(emails));
           this.close();
         }
     },
@@ -165,6 +173,51 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
             'Shared with NewsBlur.com'
         ].join('');
         window.open(url);
+    },
+    
+    autocomplete_emails: function() {
+        var $to = $('input[name=to]', this.$modal);
+        var existing_emails = this.existing_emails;
+        
+        var split = function(val) {
+            return val.split( /,\s*/ );
+        };
+        var extractLast = function(term) {
+            return split( term ).pop();
+        };
+
+        $to
+            // don't navigate away from the field on tab when selecting an item
+            .bind( "keydown", function( event ) {
+                if ( event.keyCode === $.ui.keyCode.TAB &&
+                        $( this ).data( "autocomplete" ).menu.active ) {
+                    event.preventDefault();
+                }
+            })
+            .autocomplete({
+                delay: 0,
+                minLength: 0,
+                source: function( request, response ) {
+                    // delegate back to autocomplete, but extract the last term
+                    response( $.ui.autocomplete.filter(
+                        existing_emails, extractLast( request.term ) ) );
+                },
+                focus: function() {
+                    // prevent value inserted on focus
+                    return false;
+                },
+                select: function( event, ui ) {
+                    var terms = split( this.value );
+                    // remove the current input
+                    terms.pop();
+                    // add the selected item
+                    terms.push( ui.item.value );
+                    // add placeholder to get the comma-and-space at the end
+                    terms.push( "" );
+                    this.value = terms.join( ", " );
+                    return false;
+                }
+            });
     },
     
     // ===========

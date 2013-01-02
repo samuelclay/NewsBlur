@@ -5684,6 +5684,7 @@ form.opml_import_form input {
   padding: 2px 0;
   position: relative;
   border-bottom: 1px solid #F6F6F6;
+  overflow: hidden;
 }
 
 .NB-modal-statistics .NB-statistics-facet-name {
