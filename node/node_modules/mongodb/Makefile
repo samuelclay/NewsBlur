@@ -6,20 +6,12 @@ name = all
 
 total: build_native
 
+test-coverage:
+	rm -rf lib-cov/
+	jscoverage lib/ lib-cov/
+	@TEST_COVERAGE=true nodeunit test/ test/gridstore test/connection
+
 build_native:
-	# $(MAKE) -C ./external-libs/bson all
-
-build_native_debug:
-	$(MAKE) -C ./external-libs/bson all_debug
-
-build_native_clang:
-	$(MAKE) -C ./external-libs/bson clang
-
-build_native_clang_debug:
-	$(MAKE) -C ./external-libs/bson clang_debug
-
-clean_native:
-	$(MAKE) -C ./external-libs/bson clean
 
 test: build_native
 	@echo "\n == Run All tests minus replicaset tests=="
@@ -27,18 +19,19 @@ test: build_native
 
 test_pure: build_native
 	@echo "\n == Run All tests minus replicaset tests=="
-	$(NODE) dev/tools/test_all.js --noreplicaset --boot --noactive
+	$(NODE) dev/tools/test_all.js --noreplicaset --boot --nonative
 
 test_junit: build_native
 	@echo "\n == Run All tests minus replicaset tests=="
-	$(NODE) dev/tools/test_all.js --junit --noreplicaset
+	$(NODE) dev/tools/test_all.js --junit --noreplicaset --nokill
+
+jenkins: build_native
+	@echo "\n == Run All tests minus replicaset tests=="
+	$(NODE) dev/tools/test_all.js --junit --noreplicaset --nokill
 
 test_nodeunit_pure:
 	@echo "\n == Execute Test Suite using Pure JS BSON Parser == "
 	@$(NODEUNIT) test/ test/gridstore test/bson
-
-test_js:
-	@$(NODEUNIT) $(TESTS)
 
 test_nodeunit_replicaset_pure:
 	@echo "\n == Execute Test Suite using Pure JS BSON Parser == "
@@ -46,7 +39,7 @@ test_nodeunit_replicaset_pure:
 
 test_nodeunit_native:
 	@echo "\n == Execute Test Suite using Native BSON Parser == "
-	@TEST_NATIVE=TRUE $(NODEUNIT) test/ test/gridstore test/bson	
+	@TEST_NATIVE=TRUE $(NODEUNIT) test/ test/gridstore test/bson
 
 test_nodeunit_replicaset_native:
 	@echo "\n == Execute Test Suite using Native BSON Parser == "

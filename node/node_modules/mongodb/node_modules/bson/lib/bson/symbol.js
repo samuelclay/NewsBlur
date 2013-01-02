@@ -45,6 +45,4 @@ Symbol.prototype.toJSON = function() {
   return this.value;
 }
 
-if(typeof window === 'undefined') {
-  exports.Symbol = Symbol;
-}
+exports.Symbol = Symbol;

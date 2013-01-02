@@ -287,8 +287,12 @@ static const CGFloat kFolderTitleHeight = 28;
     if ([request responseStatusCode] == 403) {
         return [appDelegate showLogin];
     } else if ([request responseStatusCode] == 404 ||
+               [request responseStatusCode] == 429 ||
                [request responseStatusCode] >= 500) {
         [pull finishedLoading];
+        if ([request responseStatusCode] == 429) {
+            return [self informError:@"Slow down. You're rate-limited."];
+        }
         return [self informError:@"The server barfed!"];
     }
     

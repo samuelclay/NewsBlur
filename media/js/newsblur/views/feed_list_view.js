@@ -101,6 +101,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         if (!this.options.feed_chooser) {
             _.defer(_.bind(function() {
                 NEWSBLUR.reader.open_dialog_after_feeds_loaded();
+                NEWSBLUR.reader.toggle_focus_in_slider();
                 this.selected();
                 if (NEWSBLUR.reader.socket) {
                     NEWSBLUR.reader.send_socket_active_feeds();

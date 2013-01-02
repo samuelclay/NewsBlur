@@ -1993,7 +1993,7 @@ background: transparent;
     font-size: 9px;
     padding: 0px 4px 1px;
     margin: 0 2px 2px;
-    background-color: #DBDBDB;
+    background-color: #D8DEE2;
     color: #9D9A95;
     text-shadow: 0 1px 0 #E9E9E9;
     border-radius: 4px;
@@ -2039,7 +2039,7 @@ background: transparent;
 }
 #story_pane .NB-feed-story-tag.NB-score-now-0:hover {
     /* Grey, active */
-    background-color: #DBDBDB;
+    background-color: #D8DEE2;
     color: #9D9A95;
     text-shadow: 0 1px 0 #E9E9E9;
     opacity: 1;
@@ -4163,7 +4163,7 @@ form.opml_import_form input {
     padding: 0 30px 0 26px;
     font-size: 12px;
     text-transform: uppercase;
-    background-color: #F5CD09;
+    background-color: #D8DEE2;
     position: relative;
     border: 1px solid transparent;
 }
@@ -4183,13 +4183,13 @@ form.opml_import_form input {
 }
 
 .NB-classifiers .NB-classifier label b {
-    color: #957D09;
+    color: rgba(0,0,0,.4);
     text-shadow: none;
     font-weight: normal;
 }
 
 .NB-classifiers .NB-classifier label span {
-    text-shadow: 1px 1px 0 #F4E576;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
 }
 
 .NB-classifiers .NB-classifier.NB-classifier-facet-disabled {
@@ -4264,7 +4264,7 @@ form.opml_import_form input {
 .NB-classifiers .NB-classifier.NB-classifier-like label span,
 .NB-classifiers .NB-classifier.NB-classifier-hover-like label span {
   color: white;
-  text-shadow: 1px 1px 0 #254E18;
+  text-shadow: 1px 1px 0  rgba(0, 0, 0, 0.5);
 }
 .NB-classifiers .NB-classifier.NB-classifier-like .NB-classifier-icon-dislike,
 .NB-classifiers .NB-classifier.NB-classifier-hover-like .NB-classifier-icon-dislike {
@@ -4320,7 +4320,7 @@ form.opml_import_form input {
 .NB-classifiers .NB-classifier.NB-classifier-dislike label span,
 .NB-classifiers .NB-classifier.NB-classifier-hover-dislike label span {
   color: white;
-  text-shadow: 1px 1px 0 #7F1012;
+  text-shadow: 1px 1px 0  rgba(0, 0, 0, 0.5);
 }
 /* =================== */
 /* = Mouse Indicator = */
@@ -5607,7 +5607,7 @@ form.opml_import_form input {
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half {
   float: left;
   text-align: center;
-  margin-right: 18px;
+  margin: 0 18px 6px 0;
 }
 .NB-modal-statistics .NB-statistics-stat .NB-statistics-fetches-half:last-child {
     margin-right: 0;
@@ -5629,36 +5629,36 @@ form.opml_import_form input {
   margin: 6px 8px 0;
 }
 
-.NB-modal-statistics .NB-statistics-history-fetch {
+.NB-history-fetch {
   overflow: hidden;
   clear: both;
   font-size: 10px;
   margin: 2px 0 0 8px;
   text-align: left;
 }
-.NB-modal-statistics .NB-statistics-history-fetch.NB-ok {
+.NB-history-fetch.NB-ok {
   color: #135500;
 }
-.NB-modal-statistics .NB-statistics-history-fetch.NB-errorcode {
+.NB-history-fetch.NB-errorcode {
   color: #6A1000;
 }
-.NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-code {
+.NB-history-fetch .NB-history-fetch-code {
   display: inline;
   font-weight: normal;
 }
-.NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-date {
+.NB-history-fetch .NB-history-fetch-date {
   float: left;
   padding-right: 4px;
 }
-.NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-message {
+.NB-history-fetch .NB-history-fetch-message {
   padding-right: 4px;
   margin-left: 110px;
   font-weight: bold;
 }
-.NB-modal-statistics .NB-statistics-history-fetch .NB-statistics-history-fetch-exception {
+.NB-history-fetch .NB-history-fetch-exception {
   display: none;
 }
-.NB-modal-statistics .NB-statistics-history-empty {
+.NB-history-empty {
     color: #C0C0C0;
     font-size: 10px;
     padding: 4px 12px;

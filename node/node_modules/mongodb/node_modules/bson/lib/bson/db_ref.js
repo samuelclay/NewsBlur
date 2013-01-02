@@ -28,6 +28,4 @@ DBRef.prototype.toJSON = function() {
   };
 }
 
-if(typeof window === 'undefined') {
-  exports.DBRef = DBRef;
-}
+exports.DBRef = DBRef;

@@ -1735,6 +1735,7 @@
                     message = "NewsBlur is down right now. <br> Try again soon.";
                 } else if (data.status == 503) {
                     message = "NewsBlur is in maintenace mode. <br> Try again soon.";
+                    this.show_maintenance_page();
                 }
             }
             var $error = $.make('div', { className: 'NB-feed-error' }, [
@@ -1766,6 +1767,10 @@
                 $error.remove();
               }
             });
+        },
+        
+        show_maintenance_page: function() {
+            this.switch_taskbar_view('page', {skip_save_type: 'maintenance'});
         },
         
         // ==========================
@@ -1858,6 +1863,9 @@
             
             if (story_id && feed_id) {
                 options['feed_loaded'] = !this.flags['river_view'];
+                if (this.flags['social_view']) {
+                    options['feed_loaded'] = true;
+                }
                 if (this.flags['social_view'] && !_.string.contains(this.active_feed, 'river:')) {
                     options['social_feed_id'] = this.active_feed;
                 } else if (this.flags['social_view'] && story.get('friend_user_ids')) {
@@ -3493,6 +3501,21 @@
             this.slide_intelligence_slider(unread_view, true);
         },
         
+        toggle_focus_in_slider: function() {
+            var $slider = this.$s.$intelligence_slider;
+            var $focus = $(".NB-intelligence-slider-green", $slider);
+            var show_focus = NEWSBLUR.assets.feeds.any(function(feed) { 
+                return feed.get('ps');
+            });
+
+            $focus.css('display', show_focus ? 'block' : 'none');
+            if (!show_focus) {
+                if (NEWSBLUR.assets.preference('unread_view') > 0) {
+                    this.slide_intelligence_slider(0);
+                }
+            }
+        },
+        
         slide_intelligence_slider: function(value, initial_load) {
             var $slider = this.$s.$intelligence_slider;
             var real_value = value;
@@ -3745,7 +3768,8 @@
             if (this.socket && !this.socket.socket.connected) {
                 this.socket.socket.connect();
             } else if (force || !this.socket || !this.socket.socket.connected) {
-                var server = window.location.protocol + '//' + window.location.hostname + ':8888';
+                var port = _.string.startsWith(window.location.protocol, 'https') ? 8889 : 8888;
+                var server = window.location.protocol + '//' + window.location.hostname + ':' + port;
                 this.socket = this.socket || io.connect(server);
                 
                 // this.socket.refresh_feeds = _.debounce(_.bind(this.force_feeds_refresh, this), 1000*10);
@@ -3864,8 +3888,8 @@
         force_feed_refresh: function(feed_id, new_feed_id) {
             var self = this;
             feed_id  = feed_id || this.active_feed;
-            new_feed_id = new_feed_id || feed_id;
-
+            new_feed_id = _.isNumber(new_feed_id) && new_feed_id || feed_id;
+            console.log(["force_feed_refresh", feed_id, new_feed_id]);
             this.force_feeds_refresh(function() {
                 // Open the feed back up if it is being refreshed and is still open.
                 if (self.active_feed == feed_id || self.active_feed == new_feed_id) {
@@ -3885,7 +3909,7 @@
 
             this.flags['pause_feed_refreshing'] = true;
             this.model.refresh_feeds(_.bind(function(updated_feeds) {
-              this.post_feed_refresh(updated_feeds, replace_active_feed, feed_id);
+                this.post_feed_refresh(updated_feeds, replace_active_feed, feed_id);
             }, this), this.flags['has_unfetched_feeds'], feed_id, error_callback);
         },
         
@@ -3900,6 +3924,7 @@
             this.flags['refresh_inline_feed_delay'] = false;
             this.flags['pause_feed_refreshing'] = false;
             this.check_feed_fetch_progress();
+            this.toggle_focus_in_slider();
         },
         
         feed_unread_count: function(feed_id) {

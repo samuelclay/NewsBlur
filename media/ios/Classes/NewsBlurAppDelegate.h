@@ -35,6 +35,7 @@
 @class LoginViewController;
 @class AddSiteViewController;
 @class MoveSiteViewController;
+@class TrainerViewController;
 @class OriginalStoryViewController;
 @class UserProfileViewController;
 @class NBContainerViewController;
@@ -71,6 +72,7 @@
     AddSiteViewController *addSiteViewController;
     FindSitesViewController *findSitesViewController;
     MoveSiteViewController *moveSiteViewController;
+    TrainerViewController *trainerViewController;
     OriginalStoryViewController *originalStoryViewController;
     UserProfileViewController *userProfileViewController;
 
@@ -89,6 +91,8 @@
     NSString *tryFeedStoryId;
     NSDictionary * activeFeed;
     NSMutableDictionary * activeClassifiers;
+    NSArray * activePopularTags;
+    NSArray * activePopularAuthors;
     NSString * activeFolder;
     NSDictionary * activeComment;
     NSString * activeShareType;
@@ -146,6 +150,7 @@
 @property (nonatomic) IBOutlet AddSiteViewController *addSiteViewController;
 @property (nonatomic) IBOutlet FindSitesViewController *findSitesViewController;
 @property (nonatomic) IBOutlet MoveSiteViewController *moveSiteViewController;
+@property (nonatomic) IBOutlet TrainerViewController *trainerViewController;
 @property (nonatomic) IBOutlet OriginalStoryViewController *originalStoryViewController;
 @property (nonatomic) IBOutlet ShareViewController *shareViewController;
 @property (nonatomic) IBOutlet FontSettingsViewController *fontSettingsViewController;
@@ -172,6 +177,8 @@
 @property (nonatomic, readwrite) BOOL inStoryDetail;
 @property (readwrite) NSDictionary * activeFeed;
 @property (strong, readwrite) NSMutableDictionary * activeClassifiers;
+@property (strong, readwrite) NSArray * activePopularTags;
+@property (strong, readwrite) NSArray * activePopularAuthors;
 @property (readwrite) NSString * activeFolder;
 @property (readwrite) NSDictionary * activeComment;
 @property (readwrite) NSString * activeShareType;
@@ -220,6 +227,8 @@
 
 - (void)showAddSiteModal:(id)sender;
 - (void)showMoveSite;
+- (void)openTrainSite;
+- (void)openTrainStory:(id)sender;
 - (void)loadFeedDetailView;
 - (void)loadTryFeedDetailView:(NSString *)feedId withStory:(NSString *)contentId isSocial:(BOOL)social withUser:(NSDictionary *)user showFindingStory:(BOOL)showHUD;
 - (void)loadRiverFeedDetailView;
@@ -280,10 +289,18 @@
 + (int)computeStoryScore:(NSDictionary *)intelligence;
 - (NSString *)extractFolderName:(NSString *)folderName;
 - (NSString *)extractParentFolderName:(NSString *)folderName;
+- (NSDictionary *)getFeed:(NSString *)feedId;
+
 + (UIView *)makeGradientView:(CGRect)rect startColor:(NSString *)start endColor:(NSString *)end;
 - (UIView *)makeFeedTitleGradient:(NSDictionary *)feed withRect:(CGRect)rect;
 - (UIView *)makeFeedTitle:(NSDictionary *)feed;
 - (UIButton *)makeRightFeedTitle:(NSDictionary *)feed;
+
+- (void)toggleAuthorClassifier:(NSString *)author feedId:(NSString *)feedId;
+- (void)toggleTagClassifier:(NSString *)tag feedId:(NSString *)feedId;
+- (void)toggleTitleClassifier:(NSString *)title feedId:(NSString *)feedId score:(int)score;
+- (void)toggleFeedClassifier:(NSString *)feedId;
+
 @end
 
 @interface UnreadCounts : NSObject {

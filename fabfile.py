@@ -42,7 +42,7 @@ env.roledefs ={
             ],
     'db': ['db01.newsblur.com', 
            'db02.newsblur.com', 
-           # 'db03.newsblur.com', 
+           'db03.newsblur.com', 
            'db04.newsblur.com', 
            'db05.newsblur.com',
            ],
@@ -150,16 +150,22 @@ def deploy_code(copy_assets=False, full=False):
             run('rm -fr static/*')
         if copy_assets:
             transfer_assets()
-        with settings(warn_only=True):
-            run('pkill -c gunicorn')            
-            # run('kill -HUP `cat logs/gunicorn.pid`')
+        # with settings(warn_only=True):
+        #     run('pkill -c gunicorn')            
+        #     # run('kill -HUP `cat logs/gunicorn.pid`')
+        sudo('supervisorctl reload')
         run('curl -s http://%s > /dev/null' % env.host)
         run('curl -s http://%s/api/add_site_load_script/ABCDEF > /dev/null' % env.host)
-        sudo('supervisorctl restart celery')
+
+@parallel
+def kill():
+    sudo('supervisorctl reload')
+    run('pkill -c gunicorn')
 
 def deploy_node():
     with cd(env.NEWSBLUR_PATH):
         run('sudo supervisorctl restart node_unread')
+        run('sudo supervisorctl restart node_unread_ssl')
         run('sudo supervisorctl restart node_favicons')
 
 def gunicorn_restart():
@@ -301,6 +307,7 @@ def setup_common():
     setup_logrotate()
     setup_nginx()
     configure_nginx()
+    setup_munin()
 
 def setup_app():
     setup_common()
@@ -326,7 +333,7 @@ def setup_db():
     # setup_memcached()
     # setup_postgres(standby=False)
     setup_mongo()
-    setup_gunicorn(supervisor=False)
+    # setup_gunicorn(supervisor=False)
     # setup_redis()
     setup_db_munin()
     
@@ -351,13 +358,12 @@ def setup_task():
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging munin munin-node munin-plugins-extra curl monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
     sudo('mkdir -p /var/run/postgresql')
     sudo('chown postgres.postgres /var/run/postgresql')
-    put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
     with settings(warn_only=True):
         run('git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh')
     run('curl -O http://peak.telecommunity.com/dist/ez_setup.py')
@@ -422,7 +428,7 @@ def setup_psycopg():
     
 def setup_python():
     # sudo('easy_install -U pip')
-    sudo('easy_install -U fabric django==1.3.1 readline pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil python-gflags cssutils raven pyes')
+    sudo('easy_install -U fabric django==1.3.1 readline chardet pyflakes iconv celery django-celery django-celery-with-redis django-compress South django-extensions pymongo==2.2.0 stripe BeautifulSoup pyyaml nltk lxml oauth2 pytz boto seacucumber django_ses mongoengine redis requests django-subdomains psutil python-gflags cssutils raven pyes')
     
     put('config/pystartup.py', '.pystartup')
     # with cd(os.path.join(env.NEWSBLUR_PATH, 'vendor/cjson')):
@@ -495,7 +501,7 @@ def setup_pymongo_repo():
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/pymongo*')
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/bson*')
     sudo('rm -fr /usr/local/lib/python2.7/dist-packages/gridgs*')
-    sudo('ln -s %s /usr/local/lib/python2.7/dist-packages/' % 
+    sudo('ln -fs %s /usr/local/lib/python2.7/dist-packages/' % 
          os.path.join(env.VENDOR_PATH, 'pymongo/{pymongo,bson,gridfs}'))
         
 def setup_forked_mongoengine():
@@ -560,10 +566,11 @@ def setup_baremetal():
 
 def setup_app_firewall():
     sudo('ufw default deny')
-    sudo('ufw allow ssh')
-    sudo('ufw allow 80')
-    sudo('ufw allow 8888')
-    sudo('ufw allow 443')
+    sudo('ufw allow ssh') # ssh
+    sudo('ufw allow 80') # http
+    sudo('ufw allow 8888') # socket.io
+    sudo('ufw allow 8889') # socket.io ssl
+    sudo('ufw allow 443') # https
     sudo('ufw --force enable')
 
 def setup_app_motd():
@@ -603,6 +610,7 @@ def setup_node():
 def configure_node():
     sudo('rm -fr /etc/supervisor/conf.d/node.conf')
     put('config/supervisor_node_unread.conf', '/etc/supervisor/conf.d/node_unread.conf', use_sudo=True)
+    put('config/supervisor_node_unread_ssl.conf', '/etc/supervisor/conf.d/node_unread_ssl.conf', use_sudo=True)
     put('config/supervisor_node_favicons.conf', '/etc/supervisor/conf.d/node_favicons.conf', use_sudo=True)
     sudo('supervisorctl reload')
 
@@ -614,12 +622,15 @@ def copy_certificates():
     run('mkdir -p %s/config/certificates/' % env.NEWSBLUR_PATH)
     put('config/certificates/comodo/newsblur.com.crt', '%s/config/certificates/' % env.NEWSBLUR_PATH)
     put('config/certificates/comodo/newsblur.com.key', '%s/config/certificates/' % env.NEWSBLUR_PATH)
+    put('config/certificates/comodo/EssentialSSLCA_2.crt', '%s/config/certificates/intermediate.crt' % env.NEWSBLUR_PATH)
 
+@parallel
 def maintenance_on():
     put('templates/maintenance_off.html', '%s/templates/maintenance_off.html' % env.NEWSBLUR_PATH)
     with cd(env.NEWSBLUR_PATH):
         run('mv templates/maintenance_off.html templates/maintenance_on.html')
-    
+
+@parallel    
 def maintenance_off():
     with cd(env.NEWSBLUR_PATH):
         run('mv templates/maintenance_on.html templates/maintenance_off.html')
@@ -717,6 +728,16 @@ def setup_redis():
     sudo('/etc/init.d/redis stop')
     sudo('/etc/init.d/redis start')
 
+def setup_munin():
+    sudo('apt-get update')
+    sudo('apt-get install -y munin munin-node munin-plugins-extra spawn-fcgi')
+    put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
+    put('config/spawn_fcgi_munin_graph.conf', '/etc/init.d/spawn_fcgi_munin_graph', use_sudo=True)
+    sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_graph')
+    sudo('/etc/init.d/spawn_fcgi_munin_graph start')
+    sudo('update-rc.d spawn_fcgi_munin_graph defaults')
+
+    
 def setup_db_munin():
     sudo('cp -frs %s/config/munin/mongo* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
     sudo('cp -frs %s/config/munin/pg_* /etc/munin/plugins/' % env.NEWSBLUR_PATH)
@@ -725,6 +746,7 @@ def setup_db_munin():
             run('git clone git://github.com/samuel/python-munin.git')
     with cd(os.path.join(env.VENDOR_PATH, 'python-munin')):
         run('sudo python setup.py install')
+    sudo('/etc/init.d/munin-node restart')
 
 def enable_celerybeat():
     with cd(env.NEWSBLUR_PATH):
@@ -773,6 +795,9 @@ def setup_task_motd():
     
 def enable_celery_supervisor():
     put('config/supervisor_celeryd.conf', '/etc/supervisor/conf.d/celeryd.conf', use_sudo=True)
+    sudo('supervisorctl reread')
+    sudo('supervisorctl update')
+
     
 def copy_task_settings():
     with settings(warn_only=True):

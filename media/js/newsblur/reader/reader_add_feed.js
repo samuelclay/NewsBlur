@@ -227,7 +227,7 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
         $loading.addClass('NB-active');
         $submit.addClass('NB-disabled').val('Adding...');
         
-        this.model.save_add_url(url, folder, $.rescope(this.post_save_add_url, this));
+        this.model.save_add_url(url, folder, $.rescope(this.post_save_add_url, this), $.rescope(this.error, this));
     },
     
     post_save_add_url: function(e, data) {
@@ -250,11 +250,16 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
             this.model.preference('has_setup_feeds', true);
             NEWSBLUR.reader.check_hide_getting_started();
         } else {
-            var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
-            $error.text(data.message);
-            $error.slideDown(300);
-            $submit.val('Add Site');
+            this.error(data);
         }
+    },
+    
+    error: function(data) {
+        var $submit = $('.NB-add-add-url input[type=submit]', this.$modal);
+        var $error = $('.NB-error', '.NB-fieldset.NB-add-add-url');
+        $error.text(data.message || "Oh no, there was a problem grabbing that URL and there's no good explanation for what happened.");
+        $error.slideDown(300);
+        $submit.val('Add Site');
     },
     
     save_add_folder: function() {
