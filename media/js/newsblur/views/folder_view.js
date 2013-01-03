@@ -23,7 +23,8 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     initialize: function() {
-        _.bindAll(this, 'update_title', 'update_selected', 'delete_folder', 'check_collapsed');
+        _.bindAll(this, 'update_title', 'update_selected', 'delete_folder', 'check_collapsed',
+                  'update_hidden');
 
         this.options.folder_title = this.model && this.model.get('folder_title');
 
@@ -31,6 +32,9 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             // Root folder does not have a model.
             this.model.bind('change:folder_title', this.update_title);
             this.model.bind('change:selected', this.update_selected);
+            this.model.bind('change:selected', this.update_hidden);
+            this.collection.bind('change:feed_selected', this.update_hidden);
+            this.collection.bind('change:counts', this.update_hidden);
             this.model.bind('delete', this.delete_folder);
             if (!this.options.feedbar) {
                 this.model.folder_view = this;
@@ -85,6 +89,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         }
         
         this.check_collapsed({skip_animation: true});
+        this.update_hidden();
         this.$('.folder_title').eq(0).bind('contextmenu', _.bind(this.show_manage_menu, this));
         
         return this;
@@ -140,6 +145,17 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         this.$el.toggleClass('NB-selected', this.model.get('selected'));
     },
     
+    update_hidden: function() {
+        if (!this.model) return;
+        
+        var has_unreads = this.model.has_unreads({include_selected: true});
+        if (has_unreads || !NEWSBLUR.assets.preference('hide_read_feeds')) {
+            this.$el.removeClass('NB-hidden');
+        } else {
+            this.$el.addClass('NB-hidden');
+        }
+    },
+    
     // ===========
     // = Actions =
     // ===========
@@ -174,7 +190,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
             });
         }
         
-        var $counts = new NEWSBLUR.Views.FolderCount({collection: this.collection}).render().$el;
+        this.folder_count = new NEWSBLUR.Views.FolderCount({
+            collection: this.collection
+        }).render();
+        var $counts = this.folder_count.$el;
         if (this.options.feedbar) {
             this.$('.NB-story-title-indicator-count').html($counts.clone());
         } else {
