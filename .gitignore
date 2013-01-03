@@ -4,6 +4,8 @@ logs/*.pid
 *.pyc
 static/*
 local_settings.py
+celerybeat-schedule
+celerybeat.pid
 media/iphone/NewsBlur/build
 media/iphone/build
 build/
@@ -25,3 +27,30 @@ config/settings
 static.tgz
 media/css/circular/.sass-cache
 media/css/circular/sass/.sass-cache
+media/css/circular
+config/settings
+config/secrets
+templates/maintenance_on.html
+
+# ----------------------
+# Android
+# ----------------------
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+media/android/NewsBlur/bin/
+media/android/NewsBlur/gen/
+media/android/NewsBlurTest/bin/
+media/android/NewsBlurTest/gen/
+
+# Local configuration file (sdk path, etc)
+media/android/NewsBlur/local.properties
+media/android/NewsBlurTest/local.properties

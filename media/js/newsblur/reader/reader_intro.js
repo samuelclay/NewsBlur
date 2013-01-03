@@ -16,6 +16,7 @@ NEWSBLUR.ReaderIntro = function(options) {
     this.page_number = this.options.page_number;
     this.slider_value = 0;
     this.intervals = {};
+    this.sync_checks = 0;
     this.runner();
 };
 
@@ -166,7 +167,9 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
             ])
         ]);
         
-        $('.carousel', this.$modal).carousel({});
+        var $carousel = $('.carousel', this.$modal);
+        $carousel.carousel({});
+        $carousel.carousel('pause');
     },
     
     // ==========
@@ -243,16 +246,18 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         }
 
         if (service_syncing) {
-            clearInterval(this.sync_interval);
-            this.sync_interval = setInterval(_.bind(function() {
+            clearTimeout(this.sync_interval);
+            this.sync_checks += 1;
+            this.sync_interval = _.delay(_.bind(function() {
                 this.fetch_friends();
-            }, this), 3000);
+            }, this), this.sync_checks * 1000);
         }
     },
     
     connect: function(service) {
         var options = "location=0,status=0,width=800,height=500";
         var url = "/oauth/" + service + "_connect";
+        this.sync_checks = 0;
         this.connect_window = window.open(url, '_blank', options);
         this.connect_window_timer = setInterval(_.bind(function() {
             console.log(["post connect window?", this.connect_window, this.connect_window.closed, this.connect_window.location]);
@@ -358,7 +363,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
           this.show_twitter_follow_buttons();
       }
       
-      clearInterval(this.sync_interval);
+      clearTimeout(this.sync_interval);
       NEWSBLUR.assets.preference('intro_page', page_number);
       _gaq.push(['_trackEvent', 'reader_intro', 'Page ' + this.page_number]);
     },
@@ -447,6 +452,7 @@ _.extend(NEWSBLUR.ReaderIntro.prototype, {
         var options = "location=0,status=0,width=800,height=500";
         var url = "/import/authorize";
         this.connect_window = window.open(url, '_blank', options);
+        clearInterval(this.connect_window_timer);
         this.connect_window_timer = setInterval(_.bind(function() {
             console.log(["post connect window?", this.connect_window, this.connect_window.closed, this.connect_window.location]);
             try {

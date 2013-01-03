@@ -11,7 +11,7 @@
 					<key>kind</key>
 					<string>software-package</string>
 					<key>url</key>
-					<string>http://www.newsblur.com/media/ios/NewsBlur.ipa</string>
+					<string>http://www.newsblur.com/ios/NewsBlur.ipa</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -35,7 +35,7 @@
 				<key>bundle-identifier</key>
 				<string>com.newsblur.NewsBlur</string>
 				<key>bundle-version</key>
-				<string>1.5</string>
+				<string>1.8</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>title</key>

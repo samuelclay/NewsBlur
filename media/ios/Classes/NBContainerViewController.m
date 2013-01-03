@@ -11,13 +11,16 @@
 #import "FeedDetailViewController.h"
 #import "DashboardViewController.h"
 #import "StoryDetailViewController.h"
+#import "StoryPageControl.h"
 #import "ShareViewController.h"
 #import "UserProfileViewController.h"
 #import "InteractionCell.h"
 #import "ActivityCell.h"
 #import "FeedsMenuViewController.h"
+#import "FeedDetailMenuViewController.h"
 #import "FontSettingsViewController.h"
 #import "AddSiteViewController.h"
+#import "TrainerViewController.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1004
@@ -35,6 +38,7 @@
 @property (nonatomic, strong) FeedDetailViewController *feedDetailViewController;
 @property (nonatomic, strong) DashboardViewController *dashboardViewController;
 @property (nonatomic, strong) StoryDetailViewController *storyDetailViewController;
+@property (nonatomic, strong) StoryPageControl *storyPageControl;
 @property (nonatomic, strong) ShareViewController *shareViewController;
 @property (nonatomic, strong) UIView *storyTitlesStub;
 @property (readwrite) BOOL storyTitlesOnLeft;
@@ -57,6 +61,7 @@
 @synthesize feedDetailViewController;
 @synthesize dashboardViewController;
 @synthesize storyDetailViewController;
+@synthesize storyPageControl;
 @synthesize shareViewController;
 @synthesize feedDetailIsVisible;
 @synthesize storyNavigationController;
@@ -80,8 +85,14 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShowOrHide:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShowOrHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
     
     self.view.backgroundColor = [UIColor blackColor]; 
     
@@ -90,6 +101,7 @@
     self.dashboardViewController = appDelegate.dashboardViewController;
     self.feedDetailViewController = appDelegate.feedDetailViewController;
     self.storyDetailViewController = appDelegate.storyDetailViewController;
+    self.storyPageControl = appDelegate.storyPageControl;
     self.shareViewController = appDelegate.shareViewController;
     
     // adding dashboardViewController 
@@ -102,7 +114,7 @@
     [self.view addSubview:self.masterNavigationController.view];
     [self.masterNavigationController didMoveToParentViewController:self];
     
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.storyDetailViewController];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.storyPageControl];
     self.storyNavigationController = nav;
     
     UINavigationController *shareNav = [[UINavigationController alloc] initWithRootViewController:self.shareViewController];
@@ -192,7 +204,7 @@
     } else {
         CGRect frame = [sender CGRectValue];
         [popoverController presentPopoverFromRect:frame 
-                                           inView:self.storyDetailViewController.view
+                                           inView:self.storyPageControl.view
                          permittedArrowDirections:UIPopoverArrowDirectionAny 
                                          animated:YES];
     } 
@@ -240,19 +252,38 @@
         popoverController = nil;
         return;
     }
-
+    
     popoverController = [[UIPopoverController alloc]
                          initWithContentViewController:appDelegate.feedsMenuViewController];
     
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(200, 86)];
-//    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
-//                                       initWithCustomView:sender];
-    [popoverController presentPopoverFromBarButtonItem:sender 
-                              permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                              animated:YES]; 
+    [popoverController setPopoverContentSize:CGSizeMake(200, 76)];
+    //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
+    //                                       initWithCustomView:sender];
+    [popoverController presentPopoverFromBarButtonItem:sender
+                              permittedArrowDirections:UIPopoverArrowDirectionAny
+                                              animated:YES];
+}
+
+- (void)showFeedDetailMenuPopover:(id)sender {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+        popoverController = nil;
+        return;
+    }
+    
+    popoverController = [[UIPopoverController alloc]
+                         initWithContentViewController:appDelegate.feedDetailMenuViewController];
+    
+    popoverController.delegate = self;
+    
+    
+    [popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38*4 : 38*6)];
+    [popoverController presentPopoverFromBarButtonItem:sender
+                              permittedArrowDirections:UIPopoverArrowDirectionAny
+                                              animated:YES];
 }
 
 - (void)showFontSettingsPopover:(id)sender {
@@ -268,12 +299,40 @@
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
-    //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+    [popoverController setPopoverContentSize:CGSizeMake(240, 38*7)];
+    //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
     //                                       initWithCustomView:sender];
-    [popoverController presentPopoverFromBarButtonItem:sender 
-                              permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                              animated:YES]; 
+    [popoverController presentPopoverFromBarButtonItem:sender
+                              permittedArrowDirections:UIPopoverArrowDirectionAny
+                                              animated:YES];
+}
+
+- (void)showTrainingPopover:(id)sender {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+//        popoverController = nil;
+//        return;
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .001 * NSEC_PER_SEC),
+                   dispatch_get_current_queue(), ^{
+        popoverController = [[UIPopoverController alloc]
+                             initWithContentViewController:appDelegate.trainerViewController];
+        popoverController.delegate = self;
+        
+        [popoverController setPopoverContentSize:CGSizeMake(420, 382)];
+        if ([sender class] == [UIBarButtonItem class]) {
+           [popoverController presentPopoverFromBarButtonItem:sender
+                                     permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                     animated:NO];
+        } else {
+           CGRect frame = [sender CGRectValue];
+           [popoverController presentPopoverFromRect:frame
+                                              inView:self.storyPageControl.view
+                            permittedArrowDirections:UIPopoverArrowDirectionAny
+                                            animated:YES];
+        }
+                   });
 }
 
 - (void)hidePopover {
@@ -286,7 +345,7 @@
 
 
 - (void)syncNextPreviousButtons {
-    [self.storyDetailViewController setNextPreviousButtons];
+    [self.storyPageControl setNextPreviousButtons];
 }
 
 # pragma mark Screen Transitions and Layout
@@ -303,11 +362,11 @@
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // add the back button
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = self.storyDetailViewController.buttonBack;
+        self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
         
         // set center title
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-        self.storyDetailViewController.navigationItem.titleView = titleLabel;
+        self.storyPageControl.navigationItem.titleView = titleLabel;
         
         if ([[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
             [self.masterNavigationController popViewControllerAnimated:NO];
@@ -318,10 +377,10 @@
         [self.masterNavigationController.view removeFromSuperview];
     } else {
         // remove the back button
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = nil;
+        self.storyPageControl.navigationItem.leftBarButtonItem = nil;
         
         // remove center title
-        self.storyDetailViewController.navigationItem.titleView = nil;
+        self.storyPageControl.navigationItem.titleView = nil;
         
         if (![[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
             [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];        
@@ -346,10 +405,10 @@
             self.storyTitlesOnLeft = YES;
             
             // remove the back button
-            self.storyDetailViewController.navigationItem.leftBarButtonItem = nil;
+            self.storyPageControl.navigationItem.leftBarButtonItem = nil;
             
             // remove center title
-            self.storyDetailViewController.navigationItem.titleView = nil;
+            self.storyPageControl.navigationItem.titleView = nil;
             
             if (![[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
                 [self.masterNavigationController pushViewController:self.feedDetailViewController animated:NO];        
@@ -379,11 +438,11 @@
         self.storyTitlesOnLeft = NO;
         
         // add the back button
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = self.storyDetailViewController.buttonBack;
+        self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
         
         // set center title
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-        self.storyDetailViewController.navigationItem.titleView = titleLabel;
+        self.storyPageControl.navigationItem.titleView = titleLabel;
         
         [UIView animateWithDuration:NB_DEFAULT_SLIDER_INTERVAL delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 //            self.masterNavigationController.view.frame = CGRectMake(-NB_DEFAULT_MASTER_WIDTH, 0, NB_DEFAULT_MASTER_WIDTH, vb.size.height);
@@ -407,37 +466,38 @@
 }
 
 - (void)transitionToFeedDetail {
-    NSLog(@"in transitionToFeedDetail");
     [self hidePopover];
     self.feedDetailIsVisible = YES;
     CGRect vb = [self.view bounds];
         
     // adding feedDetailViewController 
     [self addChildViewController:self.feedDetailViewController];
-    [self.view addSubview:self.feedDetailViewController.view];
+//    [self.view addSubview:self.feedDetailViewController.view];
     [self.feedDetailViewController didMoveToParentViewController:self];
     
-    // adding storyDetailViewController 
+    // adding storyDetailViewController
     [self addChildViewController:self.storyNavigationController];
     [self.view addSubview:self.storyNavigationController.view];
     [self.storyNavigationController didMoveToParentViewController:self];
     
     // reset the storyDetailViewController components
-    self.storyDetailViewController.webView.hidden = YES;
-    self.storyDetailViewController.bottomPlaceholderToolbar.hidden = NO;
-    self.storyDetailViewController.progressViewContainer.hidden = YES;
-    self.storyDetailViewController.navigationItem.rightBarButtonItems = nil;
+    self.storyPageControl.currentPage.webView.hidden = YES;
+    self.storyPageControl.nextPage.webView.hidden = YES;
+    self.storyPageControl.bottomPlaceholderToolbar.hidden = NO;
+    self.storyPageControl.progressViewContainer.hidden = YES;
+    self.storyPageControl.navigationItem.rightBarButtonItems = nil;
+    [self.storyPageControl resetPages];
     int unreadCount = appDelegate.unreadCount;
     if (unreadCount == 0) {
-        self.storyDetailViewController.progressView.progress = 1;
+        self.storyPageControl.progressView.progress = 1;
     } else {
-        self.storyDetailViewController.progressView.progress = 0;
+        self.storyPageControl.progressView.progress = 0;
     }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
         // CASE: story titles on bottom
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = self.storyDetailViewController.buttonBack;
+        self.storyPageControl.navigationItem.leftBarButtonItem = self.storyPageControl.buttonBack;
         
         self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width, storyTitlesYCoordinate);
         self.feedDetailViewController.view.frame = CGRectMake(vb.size.width, 
@@ -468,7 +528,7 @@
         
         // set center title
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
-        self.storyDetailViewController.navigationItem.titleView = titleLabel;
+        self.storyPageControl.navigationItem.titleView = titleLabel;
         
 //        // set right avatar title image
 //        if (appDelegate.isSocialView) {
@@ -476,20 +536,20 @@
 //            [titleImageButton addTarget:self action:@selector(showUserProfilePopover) forControlEvents:UIControlEventTouchUpInside];
 //            UIBarButtonItem *titleImageBarButton = [[UIBarButtonItem alloc] 
 //                                                    initWithCustomView:titleImageButton];
-//            self.storyDetailViewController.navigationItem.rightBarButtonItem = titleImageBarButton;
+//            self.storyPageControl.navigationItem.rightBarButtonItem = titleImageBarButton;
 //        } else {
-//            self.storyDetailViewController.navigationItem.rightBarButtonItem = nil;
+//            self.storyPageControl.navigationItem.rightBarButtonItem = nil;
 //        }
         
     } else {
         // CASE: story titles on left
-        self.storyDetailViewController.navigationItem.leftBarButtonItem = nil;
+        self.storyPageControl.navigationItem.leftBarButtonItem = nil;
         
         [self.masterNavigationController pushViewController:self.feedDetailViewController animated:YES];
-        self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
+        self.storyNavigationController.view.frame = CGRectMake(vb.size.width, 0,
+                                                               vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1,
+                                                               vb.size.height);
         
-        
-        // CASE: story titles on left
         [UIView animateWithDuration:.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 
                                                                    0, 
@@ -500,7 +560,7 @@
         }];
 
         // remove center title
-        self.storyDetailViewController.navigationItem.titleView = nil;
+        self.storyPageControl.navigationItem.titleView = nil;
     }
 }
 
@@ -515,7 +575,6 @@
         [self transitionFromShareView];
     }
     
-    [self.storyDetailViewController clearStory];
     self.feedDetailIsVisible = NO;
     CGRect vb = [self.view bounds];
     
@@ -581,20 +640,24 @@
     CGRect vb = [self.view bounds];
     self.isSharingStory = YES;
     
+    NSLog(@"VB: %@", NSStringFromCGRect(self.view.bounds));
     // adding shareViewController 
     [self addChildViewController:self.shareNavigationController];
-    [self.view insertSubview:self.shareNavigationController.view aboveSubview:self.storyNavigationController.view];
+    [self.view insertSubview:self.shareNavigationController.view
+                aboveSubview:self.storyNavigationController.view];
     [self.shareNavigationController didMoveToParentViewController:self];
 
     self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
                                                            vb.size.height, 
-                                                           self.storyDetailViewController.view.frame.size.width, 
+                                                           self.storyPageControl.view.frame.size.width,
                                                            NB_DEFAULT_SHARE_HEIGHT);
+    [self.storyPageControl resizeScrollView];
     
-    self.shareViewController.view.frame = CGRectMake(0, 
+    self.shareViewController.view.frame = CGRectMake(0,
                                            0, 
                                            self.shareNavigationController.view.frame.size.width, 
                                            self.shareNavigationController.view.frame.size.height - 44);
+    [self.shareNavigationController.view setNeedsDisplay];
     [self.shareViewController.commentField becomeFirstResponder];
 }
 
@@ -692,18 +755,17 @@
     NSDictionary *userInfo = notification.userInfo;
     NSTimeInterval duration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [[userInfo objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
-
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     CGRect vb = [self.view bounds];
     CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-     self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
-                                       vb.size.height,
-                                       self.storyNavigationController.view.frame.size.width,
-                                       NB_DEFAULT_SHARE_HEIGHT);
-                                       
     CGRect storyNavigationFrame = self.storyNavigationController.view.frame;
+    
+    self.shareNavigationController.view.frame = CGRectMake(storyNavigationFrame.origin.x,
+                                                           vb.size.height,
+                                                           storyNavigationFrame.size.width,
+                                                           NB_DEFAULT_SHARE_HEIGHT);
     CGRect shareViewFrame = self.shareNavigationController.view.frame;
     
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     
     if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
@@ -730,10 +792,10 @@
     // CASE: when dismissing the keyboard AND dismissing the share view
     } else if ([notification.name isEqualToString:@"UIKeyboardWillHideNotification"] && self.isHidingStory) {
         if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
-//            self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
-//                                                                   0,
-//                                                                   self.storyNavigationController.view.frame.size.width,
-//                                                                   vb.size.height);
+            self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                                   0,
+                                                                   self.storyNavigationController.view.frame.size.width,
+                                                                   vb.size.height);
         } else {
             self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
                                                                    0,
@@ -749,44 +811,45 @@
                           delay:0 
                         options:UIViewAnimationOptionBeginFromCurrentState | curve 
                      animations:^{
-                         if (self.isHidingStory) {
-                             self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
-                                                                              vb.size.height,
-                                                                              self.storyNavigationController.view.frame.size.width,
-                                                                              NB_DEFAULT_SHARE_HEIGHT);
-                             if (UIInterfaceOrientationIsPortrait(orientation)) {
-                                 self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
-                                                                                        0,
-                                                                                        self.storyNavigationController.view.frame.size.width,
-                                                                                        storyTitlesYCoordinate);
-                             } else {
-                                 self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
-                                                                                        0,
-                                                                                        self.storyNavigationController.view.frame.size.width,
-                                                                                        vb.size.height);
-                             }
-                         } else {
-                             self.shareNavigationController.view.frame = shareViewFrame;
-                             // if the toolbar is higher, animate
-                             if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
-                                 if (self.storyNavigationController.view.frame.size.height < newStoryNavigationFrameHeight) {
-                                     self.storyNavigationController.view.frame = storyNavigationFrame;
-                                 }
-                             }
-                         }
-                         
-                     } completion:^(BOOL finished) {
-                         if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
-                             self.storyNavigationController.view.frame = storyNavigationFrame;
-                             [self.storyDetailViewController scrolltoComment];
-                         } else {
-                             // remove the shareNavigationController after keyboard slides down
-                             if (self.isHidingStory) {
-                                 self.isHidingStory = NO;
-                                 [self.shareNavigationController.view removeFromSuperview];
-                             }
-                         }
-                     }];
+         if (self.isHidingStory) {
+             self.shareNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                              vb.size.height,
+                                                              self.storyNavigationController.view.frame.size.width,
+                                                              NB_DEFAULT_SHARE_HEIGHT);
+             if (UIInterfaceOrientationIsPortrait(orientation)) {
+                 self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                                        0,
+                                                                        self.storyNavigationController.view.frame.size.width,
+                                                                        storyTitlesYCoordinate);
+             } else {
+                 self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x,
+                                                                        0,
+                                                                        self.storyNavigationController.view.frame.size.width,
+                                                                        vb.size.height);
+             }
+         } else {
+             self.shareNavigationController.view.frame = shareViewFrame;
+             // if the toolbar is higher, animate
+             if (UIInterfaceOrientationIsPortrait(orientation) && !self.storyTitlesOnLeft) {
+                 if (self.storyNavigationController.view.frame.size.height < newStoryNavigationFrameHeight) {
+                     self.storyNavigationController.view.frame = storyNavigationFrame;
+                 }
+             }
+         }
+         
+     } completion:^(BOOL finished) {
+         if ([notification.name isEqualToString:@"UIKeyboardWillShowNotification"]) {
+             self.storyNavigationController.view.frame = storyNavigationFrame;
+             [self.storyPageControl.currentPage scrolltoComment];
+             [self.storyPageControl resizeScrollView];
+         } else {
+             // remove the shareNavigationController after keyboard slides down
+             if (self.isHidingStory) {
+                 self.isHidingStory = NO;
+                 [self.shareNavigationController.view removeFromSuperview];
+             }
+         }
+     }];
 }
     
 @end

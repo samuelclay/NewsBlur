@@ -135,7 +135,7 @@ def load_feed_statistics(request, feed_id):
         stats['next_update'] = relative_timeuntil(feed.next_scheduled_update)
 
     # Minutes between updates
-    update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
+    update_interval_minutes, _ = feed.get_next_scheduled_update(force=True, verbose=False)
     if feed.is_push:
         stats['update_interval_minutes'] = 0
     else:
@@ -144,7 +144,7 @@ def load_feed_statistics(request, feed_id):
     original_premium_subscribers = feed.premium_subscribers
     feed.active_premium_subscribers = max(feed.active_premium_subscribers+1, 1)
     feed.premium_subscribers += 1
-    premium_update_interval_minutes, _ = feed.get_next_scheduled_update(force=True)
+    premium_update_interval_minutes, _ = feed.get_next_scheduled_update(force=True, verbose=False)
     feed.active_premium_subscribers = original_active_premium_subscribers
     feed.premium_subscribers = original_premium_subscribers
     if feed.is_push:
@@ -169,9 +169,10 @@ def load_feed_statistics(request, feed_id):
     stats['classifier_counts'] = json.decode(feed.data.feed_classifier_counts)
     
     # Fetch histories
-    stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id)
-    stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id)
-    stats['feed_push_history'] = MFeedPushHistory.feed_history(feed_id)
+    timezone = request.user.profile.timezone
+    stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id, timezone=timezone)
+    stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id, timezone=timezone)
+    stats['feed_push_history'] = MFeedPushHistory.feed_history(feed_id, timezone=timezone)
     
     logging.user(request, "~FBStatistics: ~SB%s ~FG(%s/%s/%s subs)" % (feed, feed.num_subscribers, feed.active_subscribers, feed.premium_subscribers,))
 
@@ -181,10 +182,11 @@ def load_feed_statistics(request, feed_id):
 def load_feed_settings(request, feed_id):
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
+    timezone = request.user.profile.timezone
     
     stats['duplicate_addresses'] = feed.duplicate_addresses.all()
-    stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id)
-    stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id)
+    stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id, timezone=timezone)
+    stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id, timezone=timezone)
     
     return stats
     
@@ -236,6 +238,7 @@ def exception_change_feed_address(request):
     feed = get_object_or_404(Feed, pk=feed_id)
     original_feed = feed
     feed_address = request.POST['feed_address']
+    timezone = request.user.profile.timezone
     code = -1
 
     if feed.has_page_exception or feed.has_feed_exception:
@@ -260,6 +263,7 @@ def exception_change_feed_address(request):
         # Branch good feed
         logging.user(request, "~FRBranching feed by address: ~SB%s~SN to ~SB%s" % (feed.feed_address, feed_address))
         feed, _ = Feed.objects.get_or_create(feed_address=feed_address, feed_link=feed.feed_link)
+        code = 1
         if feed.pk != original_feed.pk:
             try:
                 feed.branch_from_feed = original_feed.branch_from_feed or original_feed
@@ -267,7 +271,6 @@ def exception_change_feed_address(request):
                 feed.branch_from_feed = original_feed
             feed.feed_address_locked = True
             feed.save()
-            code = 1
 
     feed = feed.update()
     feed = Feed.get_by_id(feed.pk)
@@ -279,7 +282,11 @@ def exception_change_feed_address(request):
             usersub = usersubs[0]
             usersub.switch_feed(feed, original_feed)
         else:
-            return {'code': -1}
+            return {
+                'code': -1,
+                'feed_fetch_history': MFeedFetchHistory.feed_history(feed_id, timezone=timezone),
+                'page_fetch_history': MPageFetchHistory.feed_history(feed_id, timezone=timezone),
+            }
 
     usersub.calculate_feed_scores(silent=False)
     
@@ -292,11 +299,13 @@ def exception_change_feed_address(request):
     
     if feed and feed.has_feed_exception:
         code = -1
-    
+        
     return {
         'code': code, 
         'feeds': feeds, 
         'new_feed_id': usersub.feed_id,
+        'feed_fetch_history': MFeedFetchHistory.feed_history(feed_id, timezone=timezone),
+        'page_fetch_history': MPageFetchHistory.feed_history(feed_id, timezone=timezone),
     }
     
 @ajax_login_required
@@ -306,6 +315,7 @@ def exception_change_feed_link(request):
     feed = get_object_or_404(Feed, pk=feed_id)
     original_feed = feed
     feed_link = request.POST['feed_link']
+    timezone = request.user.profile.timezone
     code = -1
     
     if feed.has_page_exception or feed.has_feed_exception:
@@ -332,6 +342,7 @@ def exception_change_feed_link(request):
         # Branch good feed
         logging.user(request, "~FRBranching feed by link: ~SB%s~SN to ~SB%s" % (feed.feed_link, feed_link))
         feed, _ = Feed.objects.get_or_create(feed_address=feed.feed_address, feed_link=feed_link)
+        code = 1
         if feed.pk != original_feed.pk:
             try:
                 feed.branch_from_feed = original_feed.branch_from_feed or original_feed
@@ -339,7 +350,6 @@ def exception_change_feed_link(request):
                 feed.branch_from_feed = original_feed
             feed.feed_link_locked = True
             feed.save()
-            code = 1
 
     feed = feed.update()
     feed = Feed.get_by_id(feed.pk)
@@ -352,7 +362,11 @@ def exception_change_feed_link(request):
             usersub = usersubs[0]
             usersub.switch_feed(feed, original_feed)
         else:
-            return {'code': -1}
+            return {
+                'code': -1,
+                'feed_fetch_history': MFeedFetchHistory.feed_history(feed_id, timezone=timezone),
+                'page_fetch_history': MPageFetchHistory.feed_history(feed_id, timezone=timezone),
+            }
         
     usersub.calculate_feed_scores(silent=False)
     
@@ -369,6 +383,8 @@ def exception_change_feed_link(request):
         'code': code, 
         'feeds': feeds, 
         'new_feed_id': usersub.feed_id,
+        'feed_fetch_history': MFeedFetchHistory.feed_history(feed_id, timezone=timezone),
+        'page_fetch_history': MPageFetchHistory.feed_history(feed_id, timezone=timezone),
     }
 
 @login_required

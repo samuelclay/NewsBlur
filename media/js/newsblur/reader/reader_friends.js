@@ -4,7 +4,7 @@ NEWSBLUR.ReaderFriends = function(options) {
     };
         
     this.options = $.extend({}, defaults, options);
-
+    this.sync_checks = 0;
     this.runner();
 };
 
@@ -89,10 +89,10 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
             console.log(["Find friends", data]);
             this.profile = NEWSBLUR.assets.user_profile;
             this.services = data.services;
-            if (!this.services['twitter'].syncing && !this.services['facebook'].syncing) {
-                clearInterval(this.sync_interval);
+            // if (!this.services['twitter'].syncing && !this.services['facebook'].syncing) {
+                clearTimeout(this.sync_interval);
                 this.make_find_friends_and_services();
-            }
+            // }
         }, this));
     },
     
@@ -155,10 +155,11 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
         }
         
         if (service_syncing) {
-            clearInterval(this.sync_interval);
-            this.sync_interval = setInterval(_.bind(function() {
+            clearTimeout(this.sync_interval);
+            this.sync_checks += 1;
+            this.sync_interval = _.delay(_.bind(function() {
                 this.check_services_sync_status();
-            }, this), 3000);
+            }, this), this.sync_checks * 1000);
         }
     },
     
@@ -248,7 +249,8 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     self.options.onShow();
                 }
             },
-            'onClose': function(dialog, callback) {
+            'onClose': _.bind(function(dialog, callback) {
+                clearTimeout(this.sync_interval);
                 dialog.data.hide().empty().remove();
                 dialog.container.hide().empty().remove();
                 dialog.overlay.fadeOut(200, function() {
@@ -256,7 +258,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
                     $.modal.close(callback);
                 });
                 $('.NB-modal-holder').empty().remove();
-            }
+            }, this)
         });
     },
     
@@ -278,21 +280,24 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
     
     connect: function(service) {
+        var self = this;
         var options = "location=0,status=0,width=800,height=500";
         var url = "/oauth/" + service + "_connect";
         this.connect_window = window.open(url, '_blank', options);
-        this.connect_window_timer = setInterval(_.bind(function() {
-            console.log(["post connect window?", this.connect_window, this.connect_window.closed, this.connect_window.location]);
+        clearInterval(this.connect_window_timer);
+        this.sync_checks = 0;
+        this.connect_window_timer = setInterval(function() {
+            console.log(["post connect window?", self, self.connect_window, self.connect_window.closed]);
             try {
-                if (!this.connect_window || 
-                    !this.connect_window.location || 
-                    this.connect_window.closed) {
-                    this.post_connect({});
+                if (!self.connect_window || 
+                    !self.connect_window.location || 
+                    self.connect_window.closed) {
+                    self.post_connect({});
                 }
             } catch (err) {
-                this.post_connect({});
+                self.post_connect({});
             }
-        }, this), 1000);
+        }, 1000);
     },
     
     disconnect: function(service) {
@@ -306,6 +311,7 @@ _.extend(NEWSBLUR.ReaderFriends.prototype, {
     },
     
     post_connect: function(data) {
+        console.log(["post_connect", data, this, this.connect_window_timer]);
         clearInterval(this.connect_window_timer);
         $('.NB-error', this.$modal).remove();
         if (data.error) {

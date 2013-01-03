@@ -42,10 +42,13 @@ def render_story_comments(context, story):
 @register.inclusion_tag('social/story_comment.xhtml', takes_context=True)
 def render_story_comment(context, story, comment):
     user = context['user']
+    MEDIA_URL = settings.MEDIA_URL
+    
     return {
         'user': user,
         'story': story,
         'comment': comment,
+        'MEDIA_URL': MEDIA_URL,
     }
 
 @register.inclusion_tag('mail/email_story_comment.xhtml')

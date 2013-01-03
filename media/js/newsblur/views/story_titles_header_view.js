@@ -3,7 +3,29 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     el: $('.NB-feedbar'),
     
     render: function() {
-        if (NEWSBLUR.reader.flags['river_view'] && NEWSBLUR.reader.active_folder && NEWSBLUR.reader.active_folder.get('fake')) {
+        if (NEWSBLUR.reader.active_feed == 'starred') {
+            var $view = $(_.template('\
+                <div class="NB-folder NB-no-hover">\
+                    <div class="NB-starred-icon"></div>\
+                    <div class="NB-feedlist-manage-icon"></div>\
+                    <div class="folder_title_text">Saved Stories</div>\
+                </div>\
+            ', {}));
+            var search_view = new NEWSBLUR.Views.FeedSearchView({
+                feedbar_view: this
+            }).render();
+            $view.append(search_view.$el);
+        } else if (NEWSBLUR.reader.flags['river_view'] && 
+            NEWSBLUR.reader.active_folder && 
+            NEWSBLUR.reader.active_folder.get('fake')) {
+            var title = "All Site Stories";
+            if (NEWSBLUR.reader.flags['social_view']) {
+                if (NEWSBLUR.reader.flags['global_blurblogs']) {
+                    title = "Global Shared Stories";
+                } else {
+                    title = "All Shared Stories";
+                }
+            }
             var $view = $(_.template('\
                 <div class="NB-folder NB-no-hover">\
                     <div class="NB-story-title-indicator">\
@@ -15,9 +37,11 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="folder_title_text"><%= folder_title %></div>\
                 </div>\
             ', {
-                folder_title: NEWSBLUR.reader.flags['social_view'] ? "All Blurblog Stories" : "All Site Stories"
+                folder_title: title
             }));
-        } else if (NEWSBLUR.reader.flags['river_view'] && NEWSBLUR.reader.active_folder && NEWSBLUR.reader.active_folder.get('folder_title')) {
+        } else if (NEWSBLUR.reader.flags['river_view'] && 
+                   NEWSBLUR.reader.active_folder &&
+                   NEWSBLUR.reader.active_folder.get('folder_title')) {
             var $view = new NEWSBLUR.Views.Folder({
                 model: NEWSBLUR.reader.active_folder,
                 collection: NEWSBLUR.reader.active_folder.folder_view.collection,

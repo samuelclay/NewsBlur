@@ -12,7 +12,7 @@
 #import "InteractionsModule.h"
 #import "UserProfileViewController.h"
 
-#define FEEDBACK_URL @"http://dev.newsblur.com/about"
+#define FEEDBACK_URL @"http://www.newsblur.com/about"
 
 @implementation DashboardViewController
 

@@ -8,8 +8,10 @@
 
     NEWSBLUR.PaypalReturn = function() {
         this.retries = 0;
-        this.detect_premium();
-        setInterval(_.bind(function() { this.detect_premium(); }, this), 1500);
+        _.delay(_.bind(function() {
+            this.detect_premium();
+            setInterval(_.bind(function() { this.detect_premium(); }, this), 1500);
+        }, this), 2000);
     };
 
     NEWSBLUR.PaypalReturn.prototype = {

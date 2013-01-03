@@ -51,6 +51,8 @@
                         <a href="/site/{{ story.feed.id }}/">{{ story.feed.feed_title }}</a>
                     </div>
                 {% endif %}
+                
+                <a href="{{ story.blurblog_permalink }}" class="NB-story-permalink">{{ story.shared_date|date:"D F j<\s\u\p>S</\s\u\p>, Y"|safe }}</a>
             </div>
 
             <div class="NB-story-content-wrapper">

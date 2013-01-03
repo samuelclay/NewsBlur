@@ -6,6 +6,7 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
         this.bind('change:ps', this.update_folder_counts);
         this.bind('change:nt', this.update_folder_counts);
         this.bind('change:ng', this.update_folder_counts);
+        this.bind('change:selected', this.update_folder_visibility);
         this.views = [];
         this.folders = [];
     },
@@ -19,9 +20,12 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
     update_folder_counts: function() {
         _.each(this.folders, function(folder) {
             folder.trigger('change:counts');
-            if (folder.parent_folder) {
-                folder.parent_folder.trigger('change:counts');
-            }
+        });
+    },
+    
+    update_folder_visibility: function() {
+        _.each(this.folders, function(folder) {
+            folder.trigger('change:feed_selected');
         });
     },
     
@@ -106,6 +110,23 @@ NEWSBLUR.Models.Feed = Backbone.Model.extend({
             nt: this.get('nt'),
             ng: this.get('ng')
         };
+    },
+    
+    has_unreads: function(options) {
+        options = options || {};
+        var unread_view = NEWSBLUR.assets.preference('unread_view');
+        
+        if (options.include_selected && this.get('selected')) {
+            return true;
+        }
+        
+        if (unread_view <= -1) {
+            return !!(this.get('ng') || this.get('nt') || this.get('ps'));
+        } else if (unread_view == 0) {
+            return !!(this.get('nt') || this.get('ps'));
+        } else if (unread_view > 0) {
+            return !!(this.get('ps'));
+        }
     }
     
 });
@@ -157,6 +178,10 @@ NEWSBLUR.Collections.Feeds = Backbone.Collection.extend({
     
     selected: function() {
         return this.detect(function(feed) { return feed.get('selected'); });
+    },
+    
+    active: function() {
+        return this.select(function(feed) { return feed.get('active'); });
     },
     
     has_chosen_feeds: function() {

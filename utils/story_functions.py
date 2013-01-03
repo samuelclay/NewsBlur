@@ -1,6 +1,12 @@
+import re
 import datetime
 import struct
+import dateutil
 from HTMLParser import HTMLParser
+from lxml.html.diff import tokenize, fixup_ins_del_tags, htmldiff_tokens
+from lxml.etree import ParserError, XMLSyntaxError
+import lxml.html, lxml.etree
+from lxml.html.clean import Cleaner
 from itertools import chain
 from django.utils.dateformat import DateFormat
 from django.utils.html import strip_tags as strip_tags_django
@@ -8,6 +14,8 @@ from django.conf import settings
 from utils.tornado_escape import linkify as linkify_tornado
 from utils.tornado_escape import xhtml_unescape as xhtml_unescape_tornado
 from vendor import reseekfile
+
+COMMENTS_RE = re.compile('\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>')
 
 def story_score(story, bottom_delta=None):
     # A) Date - Assumes story is unread and within unread range
@@ -61,8 +69,19 @@ def _extract_date_tuples(date):
     return parsed_date, date_tuple, today_tuple, yesterday_tuple
     
 def pre_process_story(entry):
-    publish_date = entry.get('published_parsed', entry.get('updated_parsed'))
-    entry['published'] = datetime.datetime(*publish_date[:6]) if publish_date else datetime.datetime.utcnow()
+    publish_date = entry.get('published_parsed') or entry.get('updated_parsed')
+    if publish_date:
+        publish_date = datetime.datetime(*publish_date[:6])
+    if not publish_date and entry.get('published'):
+        try:
+            publish_date = dateutil.parser.parse(entry.get('published')).replace(tzinfo=None)
+        except ValueError:
+            pass
+    
+    if publish_date:
+        entry['published'] = publish_date
+    else:
+        entry['published'] = datetime.datetime.utcnow()
     
     # entry_link = entry.get('link') or ''
     # protocol_index = entry_link.find("://")
@@ -173,6 +192,37 @@ def strip_tags(html):
     s.feed(html)
     return s.get_data()
 
+def strip_comments(html_string):
+    return COMMENTS_RE.sub('', html_string)
+    
+def strip_comments__lxml(html_string):
+    params = {
+        'comments': True,
+        'scripts': False,
+        'javascript': False,
+        'style': False,
+        'links': False,
+        'meta': False,
+        'page_structure': False,
+        'processing_instructions': False,
+        'embedded': False,
+        'frames': False,
+        'forms': False,
+        'annoying_tags': False,
+        'remove_tags': None,
+        'allow_tags': None,
+        'remove_unknown_tags': True,
+        'safe_attrs_only': False,
+    }
+    try:
+        cleaner = Cleaner(**params)
+        html = lxml.html.fromstring(html_string)
+        clean_html = cleaner.clean_html(html)
+
+        return lxml.etree.tostring(clean_html)
+    except XMLSyntaxError:
+        return html_string
+
 def linkify(*args, **kwargs):
     return xhtml_unescape_tornado(linkify_tornado(*args, **kwargs))
     
@@ -248,3 +298,14 @@ def image_size(datastream):
 
     return content_type, width, height
 
+def htmldiff(old_html, new_html):
+    try:
+        old_html_tokens = tokenize(old_html, include_hrefs=False) 
+        new_html_tokens = tokenize(new_html, include_hrefs=False) 
+    except (KeyError, ParserError):
+        return new_html
+    
+    result = htmldiff_tokens(old_html_tokens, new_html_tokens) 
+    result = ''.join(result).strip() 
+    
+    return fixup_ins_del_tags(result)

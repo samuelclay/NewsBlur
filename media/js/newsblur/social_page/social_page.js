@@ -197,8 +197,11 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     
     follow_user: function() {
         this.$(".NB-follow-user").html('Following...');
-        NEWSBLUR.assets.follow_user(NEWSBLUR.Globals.blurblog_user_id, _.bind(function() {
+        NEWSBLUR.assets.follow_user(NEWSBLUR.Globals.blurblog_user_id, _.bind(function(data) {
             var message = 'You are now following ' + NEWSBLUR.Globals.blurblog_username;
+            if (data.follow_profile.requested_follow) {
+                message = 'Your request to follow ' + NEWSBLUR.Globals.blurblog_username + ' has been sent';
+            }
             this.$(".NB-follow-user").replaceWith(message);
         }, this));
     }

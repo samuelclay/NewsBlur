@@ -65,7 +65,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         if (clear_queue) {
             this.ajax[options['ajax_group']].clear(true);
         }
-
         this.ajax[options['ajax_group']].add(_.extend({
             url: url,
             data: data,
@@ -90,7 +89,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 if (errorThrown == 'abort') {
                     return;
                 }
-                NEWSBLUR.log(['AJAX Error', e, textStatus, errorThrown, !!error_callback, error_callback]);
+                NEWSBLUR.log(['AJAX Error', e, e.status, textStatus, errorThrown, 
+                              !!error_callback, error_callback, $.isFunction(callback)]);
                 
                 if (error_callback) {
                     error_callback(e, textStatus, errorThrown);
@@ -99,7 +99,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                     if (NEWSBLUR.Globals.is_authenticated) {
                       message = "Sorry, there was an unhandled error.";
                     }
-                    callback({'message': message});
+                    callback({'message': message, status_code: e.status});
                 }
             }
         }, options)); 
@@ -136,9 +136,12 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     mark_social_story_as_read: function(story, social_feed, callback) {
         var self = this;
         var feed_id = story.get('story_feed_id');
-        var social_user_id = social_feed.get('user_id');
+        var social_user_id = social_feed && social_feed.get('user_id');
         if (!social_user_id) {
             social_user_id = story.get('friend_user_ids')[0];
+        }
+        if (!social_user_id) {
+            social_user_id = story.get('public_user_ids')[0];
         }
         var read = story.get('read_status');
 
@@ -402,12 +405,14 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.feed_id = feed_id;
 
         if (feed_id) {
+            console.log(["query", NEWSBLUR.reader.flags.search]);
             this.make_request('/reader/feed/'+feed_id,
                 {
                     page: page,
                     feed_address: this.feeds.get(feed_id).get('feed_address'),
                     order: this.view_setting(feed_id, 'order'),
-                    read_filter: this.view_setting(feed_id, 'read_filter')
+                    read_filter: this.view_setting(feed_id, 'read_filter'),
+                    query: NEWSBLUR.reader.flags.search
                 }, pre_callback,
                 error_callback,
                 {
@@ -429,7 +434,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.feeds.add(data.feeds);
             }
             if (data.classifiers) {
-                if (_.string.include(feed_id, ':')) {
+                if (_.string.include(feed_id, ':')) { // is_river or is_social
                     _.extend(this.classifiers, data.classifiers);
                 } else {
                     this.classifiers[feed_id] = _.extend({}, this.defaults['classifiers'], data.classifiers);
@@ -500,7 +505,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.feed_id = 'starred';
         
         this.make_request('/reader/starred_stories', {
-            page: page
+            page: page,
+            query: NEWSBLUR.reader.flags.search
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
             'request_type': 'GET'
@@ -538,7 +544,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         });
     },
     
-    fetch_river_blurblogs_stories: function(feed_id, page, callback, error_callback, first_load) {
+    fetch_river_blurblogs_stories: function(feed_id, page, options, callback, error_callback, first_load) {
         var self = this;
         
         var pre_callback = function(data) {
@@ -560,7 +566,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
 
         this.make_request('/social/river_stories', {
             page: page,
-            order: this.view_setting(feed_id, 'order')
+            order: this.view_setting(feed_id, 'order'),
+            global_feed: options.global
             // read_filter: this.view_setting(feed_id, 'read_filter')
         }, pre_callback, error_callback, {
             'ajax_group': (page ? 'feed_page' : 'feed'),
@@ -651,6 +658,20 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }
     },
     
+    feed_unread_count: function(feed_id, callback, error_callback) {
+        var self = this;
+        
+        var pre_callback = function(data) {
+            self.post_refresh_feeds(data, callback);
+        };
+        
+        if (NEWSBLUR.Globals.is_authenticated || feed_id) {
+            this.make_request('/reader/feed_unread_count',  {
+                'feed_id': feed_id
+            }, pre_callback, error_callback);
+        }
+    },
+    
     post_refresh_feeds: function(data, callback) {
         if (!data.feeds) return;
         
@@ -685,7 +706,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             social_feed.set(feed);
         }, this));
         
-        callback && callback();
+        callback && callback(data);
     },
     
     refresh_feed: function(feed_id, callback) {
@@ -1151,8 +1172,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'feed_link': feed_link
             }, function(data) {
                 // NEWSBLUR.log(['save_exception_change_feed_link pre_callback', feed_id, feed_link, data]);
+                if (data.code < 0 || data.status_code != 200) {
+                    return callback(data);
+                }
                 self.post_refresh_feeds(data, callback);
-                NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
             }, error_callback);
         } else {
             if ($.isFunction(callback)) callback();
@@ -1168,8 +1191,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 'feed_address': feed_address
             }, function(data) {
                 // NEWSBLUR.log(['save_exception_change_feed_address pre_callback', feed_id, feed_address, data]);
+                if (data.code < 0 || data.status_code != 200) {
+                    return callback(data);
+                }
                 self.post_refresh_feeds(data, callback);
-                NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
             }, error_callback);
         } else {
             if ($.isFunction(callback)) callback();
@@ -1206,6 +1231,15 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.social_services = data.services;
             this.follower_profiles = new NEWSBLUR.Collections.Users(data.follower_profiles);
             this.following_profiles = new NEWSBLUR.Collections.Users(data.following_profiles);
+            callback(data);
+        }, this), null, {
+            request_type: 'GET'
+        });
+    },
+    
+    fetch_follow_requests: function(callback) {
+        this.make_request('/social/load_follow_requests', null, _.bind(function(data) {
+            this.user_profile.set(data.user_profile);
             callback(data);
         }, this), null, {
             request_type: 'GET'
@@ -1288,6 +1322,18 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, this));
     },
     
+    approve_follower: function(user_id, callback) {
+        this.make_request('/social/approve_follower', {'user_id': user_id}, _.bind(function(data) {
+            callback(data);
+        }, this));
+    },
+    
+    ignore_follower: function(user_id, callback) {
+        this.make_request('/social/ignore_follower', {'user_id': user_id}, _.bind(function(data) {
+            callback(data);
+        }, this));
+    },
+    
     load_public_story_comments: function(story_id, feed_id, callback) {
         this.make_request('/social/public_comments', {
             'story_id': story_id,
@@ -1299,6 +1345,10 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             var comments = new NEWSBLUR.Collections.Comments(data.comments);
             callback(comments);
         }, this), null, {request_type: 'GET'});
+    },
+    
+    fetch_payment_history: function(callback) {
+        this.make_request('/profile/payment_history', {}, callback, null, {request_type: 'GET'});
     },
     
     follow_twitter_account: function(username, callback) {

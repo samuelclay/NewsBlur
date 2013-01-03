@@ -221,16 +221,16 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
         var $history;
         
         if (!fetches || !fetches.length) {
-            $history = $.make('div', { className: 'NB-statistics-history-empty' }, "Nothing recorded.");
+            $history = $.make('div', { className: 'NB-history-empty' }, "Nothing recorded.");
         } else {
             $history = _.map(fetches, function(fetch) {
                 var feed_ok = _.contains([200, 304], fetch.status_code) || !fetch.status_code;
                 var status_class = feed_ok ? ' NB-ok ' : ' NB-errorcode ';
-                return $.make('div', { className: 'NB-statistics-history-fetch' + status_class, title: feed_ok ? '' : fetch.exception }, [
-                    $.make('div', { className: 'NB-statistics-history-fetch-date' }, fetch.fetch_date || fetch.push_date),
-                    $.make('div', { className: 'NB-statistics-history-fetch-message' }, [
+                return $.make('div', { className: 'NB-history-fetch' + status_class, title: feed_ok ? '' : fetch.exception }, [
+                    $.make('div', { className: 'NB-history-fetch-date' }, fetch.fetch_date || fetch.push_date),
+                    $.make('div', { className: 'NB-history-fetch-message' }, [
                         fetch.message,
-                        (fetch.status_code && $.make('div', { className: 'NB-statistics-history-fetch-code' }, ' ('+fetch.status_code+')'))
+                        (fetch.status_code && $.make('div', { className: 'NB-history-fetch-code' }, ' ('+fetch.status_code+')'))
                     ])
                 ]);
             });

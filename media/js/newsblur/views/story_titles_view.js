@@ -37,13 +37,13 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     add: function(options) {
         var collection = this.collection;
         if (options.added) {
-            var $stories = _.map(this.collection.models.slice(-1 * options.added), function(story) {
+            var $stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function(story) {
                 if (story.story_title_view) return;
                 return new NEWSBLUR.Views.StoryTitleView({
                     model: story,
                     collection: collection
                 }).render().el;
-            });
+            }));
             this.$el.append($stories);
         }
         this.end_loading();

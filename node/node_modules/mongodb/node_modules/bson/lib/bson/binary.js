@@ -1,10 +1,8 @@
 /**
  * Module dependencies.
  */
-if(typeof window === 'undefined') {
-  var Buffer = require('buffer').Buffer; // TODO just use global Buffer
-  var bson = require('./bson');
-}
+var Buffer = require('buffer').Buffer; // TODO just use global Buffer
+var bson = require('./bson');
 
 // Binary default subtype
 var BSON_BINARY_SUBTYPE_DEFAULT = 0;
@@ -330,7 +328,5 @@ Binary.SUBTYPE_USER_DEFINED = 128;
 /**
  * Expose.
  */
-if(typeof window === 'undefined') {
-  exports.Binary = Binary;
-}
+exports.Binary = Binary;
 

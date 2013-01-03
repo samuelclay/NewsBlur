@@ -19,7 +19,7 @@
 				Math.max(Math.min( parseInt((fx.pos * (fx.end[1] - fx.start[1])) + fx.start[1]), 255), 0),
 				Math.max(Math.min( parseInt((fx.pos * (fx.end[2] - fx.start[2])) + fx.start[2]), 255), 0)
 			].join(",") + ")";
-		}
+		};
 	});
 
 	// Color Conversion functions from highlightFade

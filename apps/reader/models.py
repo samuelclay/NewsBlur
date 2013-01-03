@@ -107,22 +107,27 @@ class UserSubscription(models.Model):
     def get_stories(self, offset=0, limit=6, order='newest', read_filter='all', withscores=False):
         r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
         ignore_user_stories = False
-        
+    
         stories_key         = 'F:%s' % (self.feed_id)
         read_stories_key    = 'RS:%s:%s' % (self.user_id, self.feed_id)
         unread_stories_key  = 'U:%s:%s' % (self.user_id, self.feed_id)
 
-        if not r.exists(stories_key):
-            print " ---> No stories on feed: %s" % self
-            return []
-        elif read_filter != 'unread' or not r.exists(read_stories_key):
-            ignore_user_stories = True
-            unread_stories_key = stories_key
+        unread_ranked_stories_key  = 'zU:%s:%s' % (self.user_id, self.feed_id)
+        if offset and not withscores and r.exists(unread_ranked_stories_key):
+            pass
         else:
-            r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
-        sorted_stories_key          = 'zF:%s' % (self.feed_id)
-        unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
-        r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
+            r.delete(unread_ranked_stories_key)
+            if not r.exists(stories_key):
+                print " ---> No stories on feed: %s" % self
+                return []
+            elif read_filter != 'unread' or not r.exists(read_stories_key):
+                ignore_user_stories = True
+                unread_stories_key = stories_key
+            else:
+                r.sdiffstore(unread_stories_key, stories_key, read_stories_key)
+            sorted_stories_key          = 'zF:%s' % (self.feed_id)
+            unread_ranked_stories_key   = 'zU:%s:%s' % (self.user_id, self.feed_id)
+            r.zinterstore(unread_ranked_stories_key, [sorted_stories_key, unread_stories_key])
         
         current_time    = int(time.time() + 60*60*24)
         if order == 'oldest':
@@ -137,15 +142,22 @@ class UserSubscription(models.Model):
         else:
             byscorefunc = r.zrevrangebyscore
             min_score = current_time
-            # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
-            max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
+            if read_filter == 'unread':
+                # +1 for the intersection b/w zF and F, which carries an implicit score of 1.
+                max_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
+            else:
+                max_score = 0
 
         if settings.DEBUG:
-            print " ---> Unread all stories: %s" % r.zrevrange(unread_ranked_stories_key, 0, -1)
+            debug_stories = r.zrevrange(unread_ranked_stories_key, 0, -1, withscores=True)
+            print " ---> Unread all stories (%s - %s) %s stories: %s" % (
+                min_score,
+                max_score,
+                len(debug_stories),
+                debug_stories)
         story_ids = byscorefunc(unread_ranked_stories_key, min_score, 
-                                  max_score, start=offset, num=limit,
-                                  withscores=withscores)
-
+                                  max_score, start=offset, num=500,
+                                  withscores=withscores)[:limit]
         r.expire(unread_ranked_stories_key, 24*60*60)
         if not ignore_user_stories:
             r.delete(unread_stories_key)
@@ -153,7 +165,15 @@ class UserSubscription(models.Model):
         # XXX TODO: Remove below line after combing redis for these None's.
         story_ids = [s for s in story_ids if s and s != 'None'] # ugh, hack
         
-        return story_ids
+        if withscores:
+            return story_ids
+        elif story_ids:
+            story_date_order = "%sstory_date" % ('' if order == 'oldest' else '-')
+            mstories = MStory.objects(id__in=story_ids).order_by(story_date_order)
+            stories = Feed.format_stories(mstories)
+            return stories
+        else:
+            return []
         
     @classmethod
     def feed_stories(cls, user_id, feed_ids, offset=0, limit=6, order='newest', read_filter='all'):
@@ -167,7 +187,7 @@ class UserSubscription(models.Model):
         if not isinstance(feed_ids, list):
             feed_ids = [feed_ids]
 
-        unread_ranked_stories_keys  = 'zU:%s' % (user_id)
+        unread_ranked_stories_keys  = 'zU:%s:feeds' % (user_id)
         if offset and r.exists(unread_ranked_stories_keys):
             story_guids = range_func(unread_ranked_stories_keys, offset, limit)
             return story_guids
@@ -242,6 +262,7 @@ class UserSubscription(models.Model):
             
             from apps.social.models import MActivity
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
+                
             feed.setup_feed_for_premium_subscribers()
         
         return code, message, us
@@ -338,20 +359,20 @@ class UserSubscription(models.Model):
                 story = MStory.objects.filter(story_feed_id=self.feed_id, story_guid=story_id)[0]
             now = datetime.datetime.utcnow()
             date = now if now > story.story_date else story.story_date # For handling future stories
-            m, _ = MUserStory.objects.get_or_create(story=story, user_id=self.user_id, 
+            m, _ = MUserStory.objects.get_or_create(story_id=story_id, user_id=self.user_id, 
                                                     feed_id=self.feed_id, defaults={
                 'read_date': date, 
-                'story_id': story_id, 
+                'story': story, 
                 'story_date': story.story_date,
             })
                 
         return data
     
-    def calculate_feed_scores(self, silent=False, stories_db=None):
+    def calculate_feed_scores(self, silent=False, stories=None):
         # now = datetime.datetime.strptime("2009-07-06 22:30:03", "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
         UNREAD_CUTOFF = now - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-
+        
         if self.user.profile.last_seen_on < UNREAD_CUTOFF:
             # if not silent:
             #     logging.info(' ---> [%s] SKIPPING Computing scores: %s (1 week+)' % (self.user, self.feed))
@@ -376,23 +397,23 @@ class UserSubscription(models.Model):
         read_stories = MUserStory.objects(user_id=self.user_id,
                                           feed_id=self.feed_id,
                                           read_date__gte=self.mark_read_date)
-        # if not silent:
-        #     logging.info(' ---> [%s]    Read stories: %s' % (self.user, datetime.datetime.now() - now))
         read_stories_ids = [us.story_id for us in read_stories]
-        stories_db = stories_db or MStory.objects(story_feed_id=self.feed_id,
-                                                  story_date__gte=date_delta)
-        # if not silent:
-        #     logging.info(' ---> [%s]    MStory: %s' % (self.user, datetime.datetime.now() - now))
+        
+        if not stories:
+            stories_db = MStory.objects(story_feed_id=self.feed_id,
+                                        story_date__gte=date_delta)
+            stories = Feed.format_stories(stories_db, self.feed_id)
+
         oldest_unread_story_date = now
-        unread_stories_db = []
-        for story in stories_db:
-            if story.story_date < date_delta:
+        unread_stories = []
+        for story in stories:
+            if story['story_date'] < date_delta:
                 continue
-            if hasattr(story, 'story_guid') and story.story_guid not in read_stories_ids:
-                unread_stories_db.append(story)
-                if story.story_date < oldest_unread_story_date:
-                    oldest_unread_story_date = story.story_date
-        stories = Feed.format_stories(unread_stories_db, self.feed_id)
+            if story['id'] not in read_stories_ids:
+                unread_stories.append(story)
+                if story['story_date'] < oldest_unread_story_date:
+                    oldest_unread_story_date = story['story_date']
+
         # if not silent:
         #     logging.info(' ---> [%s]    Format stories: %s' % (self.user, datetime.datetime.now() - now))
         
@@ -408,7 +429,7 @@ class UserSubscription(models.Model):
             'feed': apply_classifier_feeds(classifier_feeds, self.feed),
         }
         
-        for story in stories:
+        for story in unread_stories:
             scores.update({
                 'author' : apply_classifier_authors(classifier_authors, story),
                 'tags'   : apply_classifier_tags(classifier_tags, story),
@@ -480,27 +501,31 @@ class UserSubscription(models.Model):
         for user_story in user_stories:
             user_story.feed_id = new_feed.pk
             duplicate_story = user_story.story
-            story_guid = duplicate_story.story_guid if hasattr(duplicate_story, 'story_guid') else duplicate_story.id
-            original_story = MStory.objects(story_feed_id=new_feed.pk,
-                                            story_guid=story_guid)
+            if duplicate_story:
+                story_guid = duplicate_story.story_guid if hasattr(duplicate_story, 'story_guid') else duplicate_story.id
+                original_story = MStory.objects(story_feed_id=new_feed.pk,
+                                                story_guid=story_guid)
         
-            if original_story:
-                user_story.story = original_story[0]
-                try:
-                    user_story.save()
-                except OperationError:
-                    # User read the story in the original feed, too. Ugh, just ignore it.
-                    pass
+                if original_story:
+                    user_story.story = original_story[0]
+                    try:
+                        user_story.save()
+                    except OperationError:
+                        # User read the story in the original feed, too. Ugh, just ignore it.
+                        pass
+                else:
+                    user_story.delete()
             else:
-                logging.info(" ***> Can't find original story: %s" % duplicate_story.id)
                 user_story.delete()
-        
+            
         def switch_feed_for_classifier(model):
             duplicates = model.objects(feed_id=old_feed.pk, user_id=self.user_id)
             if duplicates.count():
                 logging.info(" ---> Switching %s %s" % (duplicates.count(), model))
             for duplicate in duplicates:
                 duplicate.feed_id = new_feed.pk
+                if duplicate.social_user_id is None:
+                    duplicate.social_user_id = 0
                 try:
                     duplicate.save()
                     pass
@@ -555,10 +580,11 @@ class MUserStory(mongo.Document):
     user_id = mongo.IntField()
     feed_id = mongo.IntField()
     read_date = mongo.DateTimeField()
-    story_id = mongo.StringField(unique_with=('user_id', 'feed_id'))
+    story_id = mongo.StringField()
     story_date = mongo.DateTimeField()
     story = mongo.ReferenceField(MStory, dbref=True)
     found_story = mongo.GenericReferenceField()
+    shared = mongo.BooleanField()
     
     meta = {
         'collection': 'userstories',
@@ -566,9 +592,11 @@ class MUserStory(mongo.Document):
             {'fields': ('user_id', 'feed_id', 'story_id'), 'unique': True},
             ('feed_id', 'story_id'),   # Updating stories with new guids
             ('feed_id', 'story_date'), # Trimming feeds
+            ('feed_id', '-read_date'), # Trimming feeds
         ],
         'allow_inheritance': False,
         'index_drop_dups': True,
+        'cascade': False,
     }
     
     def save(self, *args, **kwargs):
@@ -587,8 +615,15 @@ class MUserStory(mongo.Document):
         
     @classmethod
     def delete_old_stories(cls, feed_id):
-        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD)
-        cls.objects(feed_id=feed_id, story_date__lte=UNREAD_CUTOFF).delete()
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD*5)
+        read_stories = cls.objects(feed_id=feed_id, read_date__lte=UNREAD_CUTOFF)
+        read_stories_count = read_stories.count()
+        if read_stories_count:
+            feed = Feed.objects.get(pk=feed_id)
+            total = cls.objects(feed_id=feed_id).count()    
+            logging.info(" ---> ~SN~FCTrimming ~SB%s~SN/~SB%s~SN read stories from %s..." %
+                         (read_stories_count, total, feed.title[:30]))
+            read_stories.delete()
         
     @classmethod
     def delete_marked_as_read_stories(cls, user_id, feed_id, mark_read_date=None):
@@ -641,10 +676,34 @@ class MUserStory(mongo.Document):
             r.srem('RS:%s:%s' % (self.user_id, self.feed_id), self.story_db_id)
         
     @classmethod
-    def sync_all_redis(cls):
-        read_stories = cls.objects.all()
-        for read_story in read_stories:
-            read_story.sync_redis()
+    def sync_all_redis(cls, user_id=None, feed_id=None, force=False):
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_POOL)
+        UNREAD_CUTOFF = datetime.datetime.utcnow() - datetime.timedelta(days=settings.DAYS_OF_UNREAD*2)
+
+        if feed_id:
+            read_stories = cls.objects.filter(feed_id=feed_id, read_date__gte=UNREAD_CUTOFF)
+            keys = r.keys("RS:*:%s" % feed_id)
+            print " ---> Deleting %s redis keys: %s" % (len(keys), keys)
+            for key in keys:
+                r.delete(key)
+        elif user_id:
+            read_stories = cls.objects.filter(user_id=user_id, read_date__gte=UNREAD_CUTOFF)
+            keys = r.keys("RS:%s:*" % user_id)
+            r.delete("RS:%s" % user_id)
+            print " ---> Deleting %s redis keys: %s" % (len(keys), keys)
+            for key in keys:
+                r.delete(key)            
+        elif force:
+            read_stories = cls.objects.all(read_date__gte=UNREAD_CUTOFF)
+        else:
+            raise "Specify user_id, feed_id, or force."
+
+        total = read_stories.count()
+        print " ---> Syncing %s stories (%s)" % (total, user_id or feed_id)
+        for i, read_story in enumerate(read_stories):
+            if (i+1) % 1000 == 0: 
+                print " ---> %s/%s" % (i+1, total)
+            read_story.sync_redis(r)
         
 class UserSubscriptionFolders(models.Model):
     """
@@ -832,6 +891,45 @@ class UserSubscriptionFolders(models.Model):
         folders = rewrite_folders(folders, original_feed, duplicate_feed)
         self.folders = json.encode(folders)
         self.save()
+    
+    def flat(self):
+        folders = json.decode(self.folders)
+        
+        def _flat(folder, feeds=None):
+            if not feeds:
+                feeds = []
+            for item in folder:
+                if isinstance(item, int) and item not in feeds:
+                    feeds.append(item)
+                elif isinstance(item, dict):
+                    for f_k, f_v in item.items():
+                        feeds.extend(_flat(f_v))
+            return feeds
+
+        return _flat(folders)
+    
+    @classmethod
+    def add_all_missing_feeds(cls):
+        usf = cls.objects.all().order_by('pk')
+        total = usf.count()
+        
+        for i, f in enumerate(usf):
+            print "%s/%s: %s" % (i, total, f)
+            f.add_missing_feeds()
+        
+    def add_missing_feeds(self):
+        all_feeds = self.flat()
+        subs = [us.feed_id for us in
+                UserSubscription.objects.filter(user=self.user).only('feed')]
+        
+        missing_feeds = set(all_feeds) - set(subs)
+        if missing_feeds:
+            logging.debug(" ---> %s is missing %s feeds. Adding %s..." % (
+                          self.user, len(missing_feeds), missing_feeds))
+            for feed_id in missing_feeds:
+                feed = Feed.get_by_id(feed_id)
+                if feed:
+                    UserSubscription.objects.get_or_create(user=self.user, feed=feed)
 
 
 class Feature(models.Model):

@@ -3,10 +3,8 @@ from celery.task import Task
 from utils import log as logging
 from django.contrib.auth.models import User
 from django.conf import settings
-from apps.reader.models import UserSubscription
+from apps.reader.models import UserSubscription, MUserStory
 from apps.social.models import MSocialSubscription
-from apps.statistics.models import MStatistics
-from apps.statistics.models import MFeedback
 
 
 class FreshenHomepage(Task):
@@ -34,20 +32,35 @@ class FreshenHomepage(Task):
             sub.save()
             sub.calculate_feed_scores(silent=True)
 
-
-class CollectStats(Task):
-    name = 'collect-stats'
-
-    def run(self, **kwargs):
-        logging.debug(" ---> Collecting stats...")
-        MStatistics.collect_statistics()
-        MStatistics.delete_old_stats()
-        
-        
-class CollectFeedback(Task):
-    name = 'collect-feedback'
+class CleanAnalytics(Task):
+    name = 'clean-analytics'
 
     def run(self, **kwargs):
-        logging.debug(" ---> Collecting feedback...")
-        MFeedback.collect_feedback()
+        logging.debug(" ---> Cleaning analytics... %s page loads and %s feed fetches" % (
+            settings.MONGOANALYTICSDB.nbanalytics.page_loads.count(),
+            settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.count(),
+        ))
+        day_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        settings.MONGOANALYTICSDB.nbanalytics.feed_fetches.remove({
+            "date": {"$lt": day_ago},
+        })
+        settings.MONGOANALYTICSDB.nbanalytics.page_loads.remove({
+            "date": {"$lt": day_ago},
+        })
         
+class CleanStories(Task):
+    name = 'clean-stories'
+
+    def run(self, **kwargs):
+        days_ago = (datetime.datetime.utcnow() -
+                    datetime.timedelta(days=settings.DAYS_OF_UNREAD*5))
+        old_stories = MUserStory.objects.filter(read_date__lte=days_ago)
+        logging.debug(" ---> Cleaning stories from %s days ago... %s/%s read stories" % (
+            settings.DAYS_OF_UNREAD*5,
+            MUserStory.objects.count(),
+            old_stories.count()
+        ))
+        for s, story in enumerate(old_stories):
+            if (s+1) % 1000 == 0:
+                logging.debug(" ---> %s stories removed..." % (s+1))
+            story.delete()

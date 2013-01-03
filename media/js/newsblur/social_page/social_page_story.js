@@ -57,7 +57,8 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
                 });
                 $sideoptions.append($(this.share_view.template({
                     story: this.model,
-                    social_services: NEWSBLUR.assets.social_services
+                    social_services: NEWSBLUR.assets.social_services,
+                    profile: NEWSBLUR.assets.user_profile
                 })));
             }, this), 50);
         }

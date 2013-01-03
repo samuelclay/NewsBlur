@@ -45,7 +45,7 @@ static UIFont *indicatorFont = nil;
     
     // set the background color
     UIColor *backgroundColor;
-    if (self.selected || self.highlighted) {
+    if (highlighted) {
         backgroundColor = UIColorFromRGB(NEWSBLUR_HIGHLIGHT_COLOR);
     } else {
         backgroundColor = [UIColor whiteColor];
@@ -61,7 +61,7 @@ static UIFont *indicatorFont = nil;
     font = [UIFont fontWithName:@"Helvetica-Bold" size:14];
     textColor = UIColorFromRGB(0x606060);
     
-    if (self.selected || self.highlighted) {
+    if (highlighted) {
         textColor = UIColorFromRGB(0x686868); //0x686868 
     }
     [textColor set];
@@ -75,7 +75,7 @@ static UIFont *indicatorFont = nil;
     textColor = UIColorFromRGB(0x333333);
     font = [UIFont fontWithName:@"Helvetica-Bold" size:12];
     
-    if (self.selected || self.highlighted) {
+    if (highlighted) {
         textColor = UIColorFromRGB(0x686868);
     }
     [textColor set];
@@ -88,7 +88,7 @@ static UIFont *indicatorFont = nil;
     textColor = UIColorFromRGB(0x262c6c);
     font = [UIFont fontWithName:@"Helvetica-Bold" size:10];
     
-    if (self.selected || self.highlighted) {
+    if (highlighted) {
         textColor = UIColorFromRGB(0x686868);
     }
     [textColor set];
@@ -109,7 +109,7 @@ static UIFont *indicatorFont = nil;
     CGContextStrokePath(context);
     
     CGContextSetLineWidth(context, 1.0f);
-    if (self.highlighted || self.selected) {
+    if (highlighted) {
         // top border
         UIColor *blue = UIColorFromRGB(0x6eadf5);
         

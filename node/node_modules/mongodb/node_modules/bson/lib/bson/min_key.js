@@ -10,6 +10,4 @@ function MinKey() {
   this._bsontype = 'MinKey';
 }
 
-if(typeof window === 'undefined') {
-  exports.MinKey = MinKey;
-}
+exports.MinKey = MinKey;

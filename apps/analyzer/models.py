@@ -95,7 +95,10 @@ class MClassifierFeed(mongo.Document):
     
     def __unicode__(self):
         user = User.objects.get(pk=self.user_id)
-        feed = Feed.objects.get(pk=self.feed_id) if self.feed_id else None
+        if self.feed_id:
+            feed = Feed.get_by_id(self.feed_id)
+        else:
+            feed = User.objects.get(pk=self.social_user_id)
         return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, feed)
     
     
@@ -132,15 +135,21 @@ def apply_classifier_tags(classifiers, story):
             if score > 0: return classifier.score
     return score
     
-def apply_classifier_feeds(classifiers, feed, social_user_id=None):
-    if not feed: return 0
-    feed_id = feed if isinstance(feed, int) else feed.pk
+def apply_classifier_feeds(classifiers, feed, social_user_ids=None):
+    if not feed and not social_user_ids: return 0
+    feed_id = None
+    if feed:
+        feed_id = feed if isinstance(feed, int) else feed.pk
     
+    if social_user_ids and not isinstance(social_user_ids, list):
+        social_user_ids = [social_user_ids]
+        
     for classifier in classifiers:
         if classifier.feed_id == feed_id:
             # print 'Feeds: %s -- %s' % (classifier.feed_id, feed.pk)
             return classifier.score
-        if social_user_id and not classifier.feed_id and social_user_id == classifier.social_user_id:
+        if (social_user_ids and not classifier.feed_id and 
+            classifier.social_user_id in social_user_ids):
             return classifier.score
     return 0
     

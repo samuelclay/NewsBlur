@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <fragment
+        android:id="@+id/fragment_feedintelligenceselector"
+        android:name="com.newsblur.fragment.FeedIntelligenceSelectorFragment"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:tag="feedIntelligenceSelector" />
+
+    <fragment
+        android:id="@+id/fragment_folderfeedlist"
+        android:name="com.newsblur.fragment.FolderListFragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/fragment_feedintelligenceselector"
+        android:layout_alignParentTop="true"
+        android:tag="folderFeedListFragment" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="8dip"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/orangeline_shadow" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="8dip"
+        android:layout_above="@id/fragment_feedintelligenceselector"
+        android:background="@drawable/inverted_orangeline_shadow" />
+
+</RelativeLayout>

@@ -1,9 +1,6 @@
 import sys
 
 class MuninGraph(object):
-    def __init__(self, graph_config, calculate_metrics):
-        self.graph_config = graph_config
-        self.calculate_metrics = calculate_metrics
 
     def run(self):
         cmd_name = None

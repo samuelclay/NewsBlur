@@ -3,21 +3,21 @@
 //  MWFeedParser
 //
 //  Copyright (c) 2010 Michael Waterfall
-//  
+//
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
 //  in the Software without restriction, including without limitation the rights
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //  copies of the Software, and to permit persons to whom the Software is
 //  furnished to do so, subject to the following conditions:
-//  
+//
 //  1. The above copyright notice and this permission notice shall be included
 //     in all copies or substantial portions of the Software.
-//  
+//
 //  2. This Software cannot be used to archive or collect data such as (but not
-//     limited to) that of events, news, experiences and activities, for the 
+//     limited to) that of events, news, experiences and activities, for the
 //     purpose of any concept relating to diary/journal keeping.
-//  
+//
 //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,22 +32,17 @@
 
 @implementation NSString (HTML)
 
-#pragma mark -
-#pragma mark Class Methods
+#pragma mark - Instance Methods
 
-#pragma mark -
-#pragma mark Instance Methods
-
-// Strip HTML tags
 - (NSString *)stringByConvertingHTMLToPlainText {
 	
 	// Pool
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	// Character sets
-	NSCharacterSet *stopCharacters = [NSCharacterSet characterSetWithCharactersInString:[NSString stringWithFormat:@"< \t\n\r%C%C%C%C", 0x0085, 0x000C, 0x2028, 0x2029]];
-	NSCharacterSet *newLineAndWhitespaceCharacters = [NSCharacterSet characterSetWithCharactersInString:[NSString stringWithFormat:@" \t\n\r%C%C%C%C", 0x0085, 0x000C, 0x2028, 0x2029]];
-	NSCharacterSet *tagNameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"]; /**/
+	NSCharacterSet *stopCharacters = [NSCharacterSet characterSetWithCharactersInString:[NSString stringWithFormat:@"< \t\n\r%C%C%C%C", (unichar)0x0085, (unichar)0x000C, (unichar)0x2028, (unichar)0x2029]];
+	NSCharacterSet *newLineAndWhitespaceCharacters = [NSCharacterSet characterSetWithCharactersInString:[NSString stringWithFormat:@" \t\n\r%C%C%C%C", (unichar)0x0085, (unichar)0x000C, (unichar)0x2028, (unichar)0x2029]];
+	NSCharacterSet *tagNameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"];
 	
 	// Scan and find all tags
 	NSMutableString *result = [[NSMutableString alloc] initWithCapacity:self.length];
@@ -71,7 +66,7 @@
 			if ([scanner scanString:@"!--" intoString:NULL]) {
 				
 				// Comment
-				[scanner scanUpToString:@"-->" intoString:NULL]; 
+				[scanner scanUpToString:@"-->" intoString:NULL];
 				[scanner scanString:@"-->" intoString:NULL];
 				
 			} else {
@@ -134,19 +129,22 @@
 	
 }
 
-// Decode all HTML entities using GTM
 - (NSString *)stringByDecodingHTMLEntities {
-	// gtm_stringByUnescapingFromHTML can return self so create new string ;)
-	return [NSString stringWithString:[self gtm_stringByUnescapingFromHTML]]; 
+    // Can return self so create new string if we're a mutable string
+    return [NSString stringWithString:[self gtm_stringByUnescapingFromHTML]];
 }
 
-// Encode all HTML entities using GTM
+
 - (NSString *)stringByEncodingHTMLEntities {
-	// gtm_stringByUnescapingFromHTML can return self so create new string ;)
-	return [NSString stringWithString:[self gtm_stringByEscapingForAsciiHTML]];
+    // Can return self so create new string if we're a mutable string
+    return [NSString stringWithString:[self gtm_stringByEscapingForAsciiHTML]];
 }
 
-// Replace newlines with <br /> tags
+- (NSString *)stringByEncodingHTMLEntities:(BOOL)isUnicode {
+    // Can return self so create new string if we're a mutable string
+    return [NSString stringWithString:(isUnicode ? [self gtm_stringByEscapingForHTML] : [self gtm_stringByEscapingForAsciiHTML])];
+}
+
 - (NSString *)stringWithNewLinesAsBRs {
 	
 	// Pool
@@ -164,7 +162,7 @@
 	NSMutableString *result = [[NSMutableString alloc] init];
 	NSString *temp;
 	NSCharacterSet *newLineCharacters = [NSCharacterSet characterSetWithCharactersInString:
-										 [NSString stringWithFormat:@"\n\r%C%C%C%C", 0x0085, 0x000C, 0x2028, 0x2029]];
+										 [NSString stringWithFormat:@"\n\r%C%C%C%C", (unichar)0x0085, (unichar)0x000C, (unichar)0x2028, (unichar)0x2029]];
 	// Scan
 	do {
 		
@@ -184,7 +182,7 @@
 			
 			// Scan other new line characters and add <br /> s
 			if (temp) {
-				for (int i = 0; i < temp.length; i++) {
+				for (NSUInteger i = 0; i < temp.length; i++) {
 					[result appendString:@"<br />"];
 				}
 			}
@@ -206,7 +204,6 @@
 	
 }
 
-// Remove newlines and white space from strong
 - (NSString *)stringByRemovingNewLinesAndWhitespace {
 	
 	// Pool
@@ -224,7 +221,7 @@
 	NSMutableString *result = [[NSMutableString alloc] init];
 	NSString *temp;
 	NSCharacterSet *newLineAndWhitespaceCharacters = [NSCharacterSet characterSetWithCharactersInString:
-													  [NSString stringWithFormat:@" \t\n\r%C%C%C%C", 0x0085, 0x000C, 0x2028, 0x2029]];
+													  [NSString stringWithFormat:@" \t\n\r%C%C%C%C", (unichar)0x0085, (unichar)0x000C, (unichar)0x2028, (unichar)0x2029]];
 	// Scan
 	while (![scanner isAtEnd]) {
 		
@@ -256,8 +253,17 @@
 	
 }
 
-// Strip HTML tags
-// DEPRECIATED - Please use NSString stringByConvertingHTMLToPlainText
+- (NSString *)stringByLinkifyingURLs {
+    if (!NSClassFromString(@"NSRegularExpression")) return self;
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSString *pattern = @"(?<!=\")\\b((http|https):\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%%&amp;:/~\\+#]*[\\w\\-\\@?^=%%&amp;/~\\+#])?)";
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:nil];
+    NSString *modifiedString = [[regex stringByReplacingMatchesInString:self options:0 range:NSMakeRange(0, [self length])
+                                                           withTemplate:@"<a href=\"$1\" class=\"linkified\">$1</a>"] retain];
+    [pool drain];
+    return [modifiedString autorelease];
+}
+
 - (NSString *)stringByStrippingTags {
 	
 	// Pool
@@ -312,9 +318,9 @@
 		}
 		
 		// Replace
-		[result replaceOccurrencesOfString:t 
+		[result replaceOccurrencesOfString:t
 								withString:replacement
-								   options:NSLiteralSearch 
+								   options:NSLiteralSearch
 									 range:NSMakeRange(0, result.length)];
 	}
 	

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/item_background" >
+
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/newsblur_blue"
+        android:id="@+id/addsites_button_bar"
+        android:gravity="right" 
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/login_addsites_nextstep"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:text="Next Step"
+            android:textSize="14sp" />
+        
+    </LinearLayout>
+    
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/addsites_button_bar" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:gravity="center"
+                android:text="Start your collection of great sites to follow."
+                android:textColor="@color/lightorange"
+                android:textSize="20sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@drawable/divider_light" />
+
+            <FrameLayout
+                android:id="@+id/addsites_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:padding="20dp" />
+        </LinearLayout>
+    </ScrollView>
+
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="8dip"
+        android:background="@drawable/inverted_orangeline_shadow"
+        android:layout_above="@id/addsites_button_bar" />
+    
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="8dip"
+        android:background="@drawable/orangeline_shadow" />
+
+</RelativeLayout>

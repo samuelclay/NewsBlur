@@ -14,4 +14,6 @@ urlpatterns = patterns('',
     url(r'^paypal_ipn/?', include('paypal.standard.ipn.urls'), name='paypal-ipn'),
     url(r'^stripe_form/?', views.stripe_form, name='stripe-form'),
     url(r'^activities/?', views.load_activities, name='profile-activities'),
+    url(r'^payment_history/?', views.payment_history, name='profile-payment-history'),
+    url(r'^delete_account/?', views.delete_account, name='profile-delete-account'),
 )

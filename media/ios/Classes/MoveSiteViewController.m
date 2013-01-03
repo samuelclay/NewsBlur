@@ -85,7 +85,7 @@
 
 
 - (void)reload {
-    BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""];
+    BOOL isTopLevel = [[appDelegate.activeFolder trim] isEqualToString:@""] || appDelegate.activeFolder == @"everything";
     int row = 0;
     [toFolderInput setText:@""];
     
@@ -235,6 +235,9 @@
     [self.folders addObject:@"— Top Level —"];
     
     for (NSString *folder in appDelegate.dictFoldersArray) {
+        if ([folder isEqualToString:@"everything"]) continue;
+        if ([folder isEqualToString:@"river_blurblogs"]) continue;
+        if ([folder isEqualToString:@"river_global"]) continue;
         if ([[folder trim] isEqualToString:@""]) continue;
         if (appDelegate.isRiverView) {
             if (![folder containsString:appDelegate.activeFolder]) {

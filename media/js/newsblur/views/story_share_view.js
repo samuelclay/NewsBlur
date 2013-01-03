@@ -16,7 +16,8 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template({
             story: this.model,
-            social_services: NEWSBLUR.assets.social_services
+            social_services: NEWSBLUR.assets.social_services,
+            profile: NEWSBLUR.assets.user_profile
         }));
         
         return this;
@@ -28,7 +29,9 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             <div class="NB-sideoption-share-wordcount"></div>\
             <div class="NB-sideoption-share-title">Comments:</div>\
             <textarea class="NB-sideoption-share-comments"><%= story.get("shared_comments") %></textarea>\
-            <% if ((social_services.twitter && social_services.twitter.twitter_uid) || (social_services.facebook && social_services.facebook.facebook_uid)) { %>\
+            <% if (!profile.get("private") && \
+                   ((social_services.twitter && social_services.twitter.twitter_uid) || \
+                    (social_services.facebook && social_services.facebook.facebook_uid))) { %>\
                 <div class="NB-sideoption-share-crosspost">\
                     <% if (social_services.twitter.twitter_uid) { %>\
                         <div class="NB-sideoption-share-crosspost-twitter"></div>\
@@ -167,7 +170,7 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
         var comments = _.string.trim((options.source == 'menu' ? $comments_menu : $comments_sideoptions).val());
         if (this.options.on_social_page) {
             var source_user_id = NEWSBLUR.Globals.blurblog_user_id;
-        } else if (NEWSBLUR.reader.active_feed == 'river:blurblogs') {
+        } else if (_.contains(['river:blurblogs', 'river:global'], NEWSBLUR.reader.active_feed)) {
             var friends = this.model.get('friend_user_ids');
             var source_user_id = friends && friends[0];
         } else {

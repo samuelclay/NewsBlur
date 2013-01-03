@@ -41,7 +41,7 @@ class OPMLExporter:
         self.user = user
         self.fetch_feeds()
         
-    def process(self):
+    def process(self, verbose=False):
         now = str(datetime.datetime.now())
 
         root = Element('opml')
@@ -57,19 +57,24 @@ class OPMLExporter:
         dm.text    = now
         folders    = self.get_folders()
         body       = SubElement(root, 'body')
-        self.process_outline(body, folders)
+        self.process_outline(body, folders, verbose=verbose)
         return tostring(root)
         
-    def process_outline(self, body, folders):
+    def process_outline(self, body, folders, verbose=False):
         for obj in folders:
             if isinstance(obj, int) and obj in self.feeds:
                 feed = self.feeds[obj]
+                if verbose:
+                    print "     ---> Adding feed: %s - %s" % (feed['id'],
+                                                              feed['feed_title'][:30])
                 feed_attrs = self.make_feed_row(feed)
                 body.append(Element('outline', feed_attrs))
             elif isinstance(obj, dict):
                 for folder_title, folder_objs in obj.items():
+                    if verbose:
+                        print " ---> Adding folder: %s" % folder_title
                     folder_element = Element('outline', {'text': folder_title, 'title': folder_title})
-                    body.append(self.process_outline(folder_element, folder_objs))
+                    body.append(self.process_outline(folder_element, folder_objs, verbose=verbose))
         return body
     
     def make_feed_row(self, feed):
@@ -78,8 +83,8 @@ class OPMLExporter:
             'title': feed['feed_title'],
             'type': 'rss',
             'version': 'RSS',
-            'htmlUrl': feed['feed_link'],
-            'xmlUrl': feed['feed_address'],
+            'htmlUrl': feed['feed_link'] or "",
+            'xmlUrl': feed['feed_address'] or "",
         }
         return feed_attrs
         
@@ -227,18 +232,20 @@ class GoogleReaderImporter(Importer):
             feeds_xml = self.send_request(sub_url)
         else:
             feeds_xml = self.xml
-        self.process_feeds(feeds_xml)
+        if feeds_xml:
+            self.process_feeds(feeds_xml)
         
     def send_request(self, url):
         user_tokens = OAuthToken.objects.filter(user=self.user)
 
         if user_tokens.count():
             user_token = user_tokens[0]
-            credential = pickle.loads(base64.b64decode(user_token.credential))
-            http = httplib2.Http()
-            http = credential.authorize(http)
-            content = http.request(url)
-            return content and content[1]
+            if user_token.credential:
+                credential = pickle.loads(base64.b64decode(user_token.credential))
+                http = httplib2.Http()
+                http = credential.authorize(http)
+                content = http.request(url)
+                return content and content[1]
         
     def process_feeds(self, feeds_xml):
         self.clear_feeds()

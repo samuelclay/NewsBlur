@@ -59,7 +59,9 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         this.$el.html($feeds);
         this.$el.animate({'opacity': 1}, {'duration': 700});
         // this.count_collapsed_unread_stories();
-        this.$s.$feed_link_loader.fadeOut(250);
+        this.$s.$feed_link_loader.fadeOut(250, _.bind(function() {
+            this.$s.$feed_link_loader.css({'display': 'none'});
+        }, this));
 
         if (!this.options.feed_chooser && 
             NEWSBLUR.Globals.is_authenticated && 
@@ -79,7 +81,15 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             // this.load_sortable_feeds();
             _.delay(_.bind(NEWSBLUR.reader.update_starred_count, NEWSBLUR.reader), 250);
             NEWSBLUR.reader.check_hide_getting_started();
+            $('.NB-feeds-header-river-sites-container').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({'opacity': 1}, {'duration': 700});
         }
+        $('.NB-feeds-header-river-global-container').css({
+            'display': 'block',
+            'opacity': 0
+        }).animate({'opacity': 1}, {'duration': 700});
         
         if (!this.options.feed_chooser &&
             (NEWSBLUR.reader.flags['showing_feed_in_tryfeed_view'] ||
@@ -91,6 +101,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         if (!this.options.feed_chooser) {
             _.defer(_.bind(function() {
                 NEWSBLUR.reader.open_dialog_after_feeds_loaded();
+                NEWSBLUR.reader.toggle_focus_in_slider();
                 this.selected();
                 if (NEWSBLUR.reader.socket) {
                     NEWSBLUR.reader.send_socket_active_feeds();
@@ -105,7 +116,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
     },
     
     make_social_feeds: function() {
-        var $social_feeds = this.$s.$social_feeds;
+        var $social_feeds = $('.NB-socialfeeds', this.$s.$social_feeds);
         var profile = NEWSBLUR.assets.user_profile;
         var $feeds = NEWSBLUR.assets.social_feeds.map(function(feed) {
             var feed_view = new NEWSBLUR.Views.FeedTitleView({
@@ -122,7 +133,15 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             'opacity': 0
         });            
         $social_feeds.html($feeds);
-        $social_feeds.animate({'opacity': 1}, {'duration': 700});
+        if (NEWSBLUR.assets.social_feeds.length) {
+            $('.NB-feeds-header-river-blurblogs-container').css({
+                'display': 'block',
+                'opacity': 0
+            }).animate({'opacity': 1}, {'duration': 700});
+        }
+
+        var collapsed = NEWSBLUR.app.sidebar.check_river_blurblog_collapsed({skip_animation: true});
+        $social_feeds.animate({'opacity': 1}, {'duration': collapsed ? 0 : 700});
 
         // if (this.socket) {
         //     this.send_socket_active_feeds();
@@ -211,6 +230,22 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
 
         if (!is_feed_visible) {
             var scroll = feed_view.$el.position().top;
+            var container = $feed_lists.scrollTop();
+            var height = $feed_lists.outerHeight();
+            $feed_lists.scrollTop(scroll+container-height/5);
+        }        
+    },
+    
+    scroll_to_show_highlighted_feed: function() {
+        var $feed_lists = this.$s.$feed_lists;
+        var $feed = $('.NB-feed-selector-selected');
+        
+        if (!$feed.length) return;
+        
+        var is_feed_visible = $feed_lists.isScrollVisible($feed);
+
+        if (!is_feed_visible) {
+            var scroll = $feed.position().top;
             var container = $feed_lists.scrollTop();
             var height = $feed_lists.outerHeight();
             $feed_lists.scrollTop(scroll+container-height/5);

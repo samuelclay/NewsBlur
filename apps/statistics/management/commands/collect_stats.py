@@ -9,4 +9,3 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         MStatistics.collect_statistics()
         
-        MStatistics.delete_old_stats()

@@ -26,8 +26,13 @@ def user(u, msg, request=None):
 
         if hasattr(request, 'start_time'):
             seconds = time.time() - request.start_time
-            time_elapsed = "[%s%.4ss] " % (
-                '~FB' if seconds < .5 else '~FR',
+            color = '~FK~SB'
+            if seconds >= 1:
+                color = '~FR'
+            elif seconds <= .2:
+                color = '~FB'
+            time_elapsed = "[%s%.4ss~SB] " % (
+                color,
                 seconds,
             )
     is_premium = u.is_authenticated() and u.profile.is_premium

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "NewsBlurAppDelegate.h"
+#import "UnreadCountView.h"
 #import "ABTableViewCell.h"
 
 @class NewsBlurAppDelegate;
@@ -20,8 +21,6 @@
     int _positiveCount;
     int _neutralCount;
     int _negativeCount;
-    NSString *_positiveCountStr;
-    NSString *_neutralCountStr;
     NSString *_negativeCountStr;
     BOOL isSocial;
 }
@@ -33,8 +32,6 @@
 @property (assign, nonatomic) int neutralCount;
 @property (assign, nonatomic) int negativeCount;
 @property (assign, nonatomic) BOOL isSocial;
-@property (nonatomic) NSString *positiveCountStr;
-@property (nonatomic) NSString *neutralCountStr;
 @property (nonatomic) NSString *negativeCountStr;
 
 @end

@@ -31,7 +31,8 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
                 story: self.model,
                 story_comments_view: self,
                 story_view: self.story_view,
-                model: comment
+                model: comment,
+                public_comment: $comment.closest(".NB-story-comments-public").length
             });
             self.comment_views.push(comment_view);
         });

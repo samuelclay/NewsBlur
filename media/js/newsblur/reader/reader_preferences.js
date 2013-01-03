@@ -454,6 +454,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Feed view styling'
                         ])
                     ]),
+                    $.make('div', { className: 'NB-preference NB-preference-public-comments' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-public-comments-1', type: 'radio', name: 'hide_public_comments', value: 'false' }),
+                                $.make('label', { 'for': 'NB-preference-public-comments-1' }, 'Show from both friends and the public')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-public-comments-2', type: 'radio', name: 'hide_public_comments', value: 'true' }),
+                                $.make('label', { 'for': 'NB-preference-public-comments-2' }, 'Only show comments from friends')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Show all comments'
+                        ])
+                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-tooltips' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -669,6 +684,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=story_styling]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.story_styling) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=hide_public_comments]', $modal).each(function() {
+            if ($(this).val() == ""+NEWSBLUR.Preferences.hide_public_comments) {
                 $(this).attr('checked', true);
                 return false;
             }

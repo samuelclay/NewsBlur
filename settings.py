@@ -2,8 +2,10 @@ import sys
 import logging
 import os
 import datetime
-from mongoengine import connect
 import redis
+import raven
+from mongoengine import connect
+from boto.s3.connection import S3Connection
 from utils import jammit
 
 # ===================
@@ -187,6 +189,7 @@ TEST_RUNNER             = "utils.testrunner.TestRunner"
 SESSION_COOKIE_NAME     = 'newsblur_sessionid'
 SESSION_COOKIE_AGE      = 60*60*24*365*2 # 2 years
 SESSION_COOKIE_DOMAIN   = '.newsblur.com'
+SENTRY_DSN              = 'https://XXXNEWSBLURXXX@app.getsentry.com/99999999'
 
 # ==============
 # = Subdomains =
@@ -230,6 +233,7 @@ INSTALLED_APPS = (
     'apps.push',
     'apps.social',
     'apps.oauth',
+    'apps.search',
     'apps.categories',
     'south',
     'utils',
@@ -242,6 +246,7 @@ INSTALLED_APPS = (
 if not DEVELOPMENT:
     INSTALLED_APPS += (
         'gunicorn',
+        'raven.contrib.django',
     )
 
 # ==========
@@ -310,13 +315,14 @@ CELERY_QUEUES = {
 CELERY_DEFAULT_QUEUE = "work_queue"
 BROKER_BACKEND = "redis"
 BROKER_URL = "redis://db01:6379/0"
-CELERY_REDIS_HOST = "db01"
+CELERY_RESULT_BACKEND = BROKER_URL
 
 CELERYD_PREFETCH_MULTIPLIER = 1
 CELERY_IMPORTS              = ("apps.rss_feeds.tasks", 
                                "apps.social.tasks", 
                                "apps.reader.tasks",
-                               "apps.feed_import.tasks",)
+                               "apps.feed_import.tasks",
+                               "apps.statistics.tasks",)
 CELERYD_CONCURRENCY         = 4
 CELERY_IGNORE_RESULT        = True
 CELERY_ACKS_LATE            = True # Retry if task fails
@@ -349,6 +355,21 @@ CELERYBEAT_SCHEDULE = {
     'share-popular-stories': {
         'task': 'share-popular-stories',
         'schedule': datetime.timedelta(hours=1),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'clean-analytics': {
+        'task': 'clean-analytics',
+        'schedule': datetime.timedelta(hours=12),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'clean-stories': {
+        'task': 'clean-stories',
+        'schedule': datetime.timedelta(hours=24),
+        'options': {'queue': 'beat_tasks'},
+    },
+    'premium-expire': {
+        'task': 'premium-expire',
+        'schedule': datetime.timedelta(hours=24),
         'options': {'queue': 'beat_tasks'},
     },
 }
@@ -400,14 +421,35 @@ REDIS = {
     'host': 'db01',
 }
 
+# =================
+# = Elasticsearch =
+# =================
+
+ELASTICSEARCH_HOSTS = ['db02:9200']
+
 # ===============
 # = Social APIs =
 # ===============
 
 FACEBOOK_APP_ID = '111111111111111'
 FACEBOOK_SECRET = '99999999999999999999999999999999'
+FACEBOOK_NAMESPACE = 'newsblur'
 TWITTER_CONSUMER_KEY = 'ooooooooooooooooooooo'
 TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+
+# ===============
+# = AWS Backing =
+# ===============
+
+BACKED_BY_AWS = {
+    'pages_on_s3': False,
+    'icons_on_s3': False,
+}
+
+PROXY_S3_PAGES = True
+S3_BACKUP_BUCKET = 'newsblur_backups'
+S3_PAGES_BUCKET_NAME = 'pages.newsblur.com'
+S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
 
 # ==================
 # = Configurations =
@@ -425,6 +467,9 @@ ACCOUNT_ACTIVATION_DAYS = 30
 AWS_ACCESS_KEY_ID = S3_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = S3_SECRET
 
+os.environ["AWS_ACCESS_KEY_ID"] = AWS_ACCESS_KEY_ID
+os.environ["AWS_SECRET_ACCESS_KEY"] = AWS_SECRET_ACCESS_KEY
+
 def custom_show_toolbar(request):
     return DEBUG
 
@@ -433,6 +478,7 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
     'HIDE_DJANGO_SQL': False,
 }
+RAVEN_CLIENT = raven.Client(SENTRY_DSN)
 
 # =========
 # = Mongo =
@@ -444,7 +490,15 @@ MONGO_DB_DEFAULTS = {
     'alias': 'default',
 }
 MONGO_DB = dict(MONGO_DB_DEFAULTS, **MONGO_DB)
+
+# if MONGO_DB.get('read_preference', pymongo.ReadPreference.PRIMARY) != pymongo.ReadPreference.PRIMARY:
+#     MONGO_PRIMARY_DB = MONGO_DB.copy()
+#     MONGO_PRIMARY_DB.update(read_preference=pymongo.ReadPreference.PRIMARY)
+#     MONGOPRIMARYDB = connect(MONGO_PRIMARY_DB.pop('name'), **MONGO_PRIMARY_DB)
+# else:
+#     MONGOPRIMARYDB = MONGODB
 MONGODB = connect(MONGO_DB.pop('name'), **MONGO_DB)
+
 
 MONGO_ANALYTICS_DB_DEFAULTS = {
     'name': 'nbanalytics',
@@ -453,6 +507,7 @@ MONGO_ANALYTICS_DB_DEFAULTS = {
 }
 MONGO_ANALYTICS_DB = dict(MONGO_ANALYTICS_DB_DEFAULTS, **MONGO_ANALYTICS_DB)
 MONGOANALYTICSDB = connect(MONGO_ANALYTICS_DB.pop('name'), **MONGO_ANALYTICS_DB)
+
 
 # =========
 # = Redis =
@@ -470,3 +525,14 @@ if DEBUG:
     MIDDLEWARE_CLASSES += ('utils.request_introspection_middleware.DumpRequestMiddleware',)
     MIDDLEWARE_CLASSES += ('utils.exception_middleware.ConsoleExceptionMiddleware',)
 
+# =======
+# = AWS =
+# =======
+
+S3_CONN = None
+if BACKED_BY_AWS.get('pages_on_s3') or BACKED_BY_AWS.get('icons_on_s3'):
+    S3_CONN = S3Connection(S3_ACCESS_KEY, S3_SECRET)
+    if BACKED_BY_AWS.get('pages_on_s3'):
+        S3_PAGES_BUCKET = S3_CONN.get_bucket(S3_PAGES_BUCKET_NAME)
+    if BACKED_BY_AWS.get('icons_on_s3'):
+        S3_ICONS_BUCKET = S3_CONN.get_bucket(S3_ICONS_BUCKET_NAME)

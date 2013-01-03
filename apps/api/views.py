@@ -17,6 +17,7 @@ from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import relative_timesince
 
+
 @json.json_view
 def login(request):
     code = -1
@@ -244,7 +245,7 @@ def share_story(request, token):
             code = -1
     
     if feed_id:
-        feed = Feed.objects.get(pk=feed_id)
+        feed = Feed.get_by_id(feed_id)
     else:
         if rss_url:
             feed = Feed.get_feed_from_url(rss_url, create=True, fetch=True)
@@ -286,6 +287,12 @@ def share_story(request, token):
         shared_story.save()
         logging.user(profile.user, "~BM~FY~SBUpdating~SN shared story from site: ~SB%s: %s" % (story_url, comments))
     
+    socialsub = MSocialSubscription.objects.get(user_id=profile.user.pk, 
+                                                subscription_user_id=profile.user.pk)
+    socialsub.mark_story_ids_as_read([shared_story.story_guid], 
+                                      shared_story.story_feed_id, 
+                                      request=request)
+
     shared_story.publish_update_to_subscribers()
     
     response = HttpResponse(json.encode({

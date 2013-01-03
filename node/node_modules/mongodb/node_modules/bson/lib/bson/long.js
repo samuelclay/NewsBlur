@@ -851,6 +851,4 @@ Long.TWO_PWR_24_ = Long.fromInt(1 << 24);
 /**
  * Expose.
  */
-if(typeof window === 'undefined') {
-  exports.Long = Long;
-}
+exports.Long = Long;

@@ -20,6 +20,15 @@ def localdatetime(context, date, date_format):
     date = localtime_for_timezone(date, user.profile.timezone).strftime(date_format)
     return date
     
+@register.inclusion_tag('reader/feeds_skeleton.xhtml', takes_context=True)
+def render_feeds_skeleton(context):
+    user         = get_user(context['user'])
+
+    return {
+        'user': user,
+        'MEDIA_URL': settings.MEDIA_URL,
+    }
+
 @register.inclusion_tag('reader/features_module.xhtml', takes_context=True)
 def render_features_module(context):
     user         = get_user(context['user'])

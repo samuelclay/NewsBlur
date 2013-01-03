@@ -84,6 +84,16 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
         var feed_ids_in_folder = this.feed_ids_in_folder();
         NEWSBLUR.assets.delete_folder(folder_title, in_folder, feed_ids_in_folder);
         this.trigger('delete');
+    },
+    
+    has_unreads: function(options) {
+        options = options || {};
+
+        if (options.include_selected && this.get('selected')) {
+            return true;
+        }
+        
+        return this.folders.has_unreads(options);
     }
     
 });
@@ -95,9 +105,12 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
     },
     
     initialize: function(models, options) {
+        _.bindAll(this, 'propagate_feed_selected');
         this.options = options || {};
         this.parent_folder = options && options.parent_folder;
         this.comparator = NEWSBLUR.Collections.Folders.comparator;
+        this.bind('change:feed_selected', this.propagate_feed_selected);
+        this.bind('change:counts', this.propagate_change_counts);
     },
     
     model: NEWSBLUR.Models.FeedOrFolder,
@@ -199,12 +212,46 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
             ng: 0
         });
         
+        this.counts = counts;
+        
         return counts;
+    },
+    
+    has_unreads: function(options) {
+        options = options || {};
+        
+        return this.any(function(item) {
+            if (item.is_feed()) {
+                return item.feed.has_unreads(options);
+            } else if (item.is_folder()) {
+                return item.has_unreads(options);
+            }
+        });
+    },
+        
+    propagate_feed_selected: function() {
+        if (this.parent_folder) {
+            this.parent_folder.trigger('change:feed_selected');
+        }
+    },
+
+    propagate_change_counts: function() {
+        if (this.parent_folder) {
+            this.parent_folder.trigger('change:counts');
+        }
+    },
+    
+    update_all_folder_visibility: function() {
+        this.each(function(item) {
+            if (item.is_folder()) {
+                item.folders.trigger('change:counts');
+                item.folders.update_all_folder_visibility();
+            }
+        });
     }
 
-    
 }, {
-    
+
     comparator: function(modelA, modelB) {
         var sort_order = NEWSBLUR.assets.preference('feed_order');
 
