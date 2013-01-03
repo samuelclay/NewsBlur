@@ -156,6 +156,7 @@ NEWSBLUR.utils = {
         // Also change in utils/page_importer.py.
         var BROKEN_URLS = [
             'nytimes.com',
+            'washingtonpost.com',
             'stackoverflow.com',
             'stackexchange.com',
             'twitter.com',

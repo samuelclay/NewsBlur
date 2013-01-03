@@ -784,6 +784,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     opacity: 1;
 }
 .NB-feedlist.NB-selector-active .NB-folder-collapsed .folder,
+.NB-feedlist.NB-selector-active .NB-hidden,
 .NB-socialfeeds-folder.NB-selector-active {
     display: block !important;
     opacity: 1 !important;
@@ -5684,6 +5685,7 @@ form.opml_import_form input {
   padding: 2px 0;
   position: relative;
   border-bottom: 1px solid #F6F6F6;
+  overflow: hidden;
 }
 
 .NB-modal-statistics .NB-statistics-facet-name {

@@ -226,7 +226,17 @@ class Feed(models.Model):
     @classmethod
     def merge_feeds(cls, *args, **kwargs):
         return merge_feeds(*args, **kwargs)
+    
+    @classmethod
+    def schedule_feed_fetches_immediately(cls, feed_ids):
+        logging.info(" ---> ~SN~FMScheduling immediate fetch of ~SB%s~SN feeds..." % 
+                     len(feed_ids))
         
+        feeds = Feed.objects.filter(pk__in=feed_ids)
+        for feed in feeds:
+            feed.count_subscribers()
+            feed.schedule_feed_fetch_immediately(verbose=False)
+            
     @property
     def favicon_fetching(self):
         return bool(not (self.favicon_not_found or self.favicon_color))
@@ -1222,8 +1232,10 @@ class Feed(models.Model):
 
         self.save()
 
-    def schedule_feed_fetch_immediately(self):
-        logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
+    def schedule_feed_fetch_immediately(self, verbose=True):
+        if verbose:
+            logging.debug('   ---> [%-30s] Scheduling feed fetch immediately...' % (unicode(self)[:30]))
+            
         self.next_scheduled_update = datetime.datetime.utcnow()
 
         return self.save()

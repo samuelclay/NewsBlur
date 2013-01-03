@@ -38,6 +38,7 @@ from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
 from apps.social.models import MSocialSubscription, MActivity
 from apps.categories.models import MCategory
 from apps.social.views import load_social_page
+from apps.rss_feeds.tasks import ScheduleImmediateFetches
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import relative_timesince
@@ -219,18 +220,22 @@ def load_feeds(request):
     
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
+    scheduled_feeds = []
     for sub in user_subs:
         pk = sub.feed_id
         if update_counts:
             sub.calculate_feed_scores(silent=True)
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
-            sub.feed.count_subscribers()
-            sub.feed.schedule_feed_fetch_immediately()
-        if sub.active and sub.feed.active_subscribers <= 0:
-            sub.feed.count_subscribers()
-            sub.feed.schedule_feed_fetch_immediately()
-            
+            scheduled_feeds.append(sub.feed.pk)
+        elif sub.active and sub.feed.active_subscribers <= 0:
+            scheduled_feeds.append(sub.feed.pk)
+    
+    if len(scheduled_feeds) > 0:
+        logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
+                     len(scheduled_feeds))
+        ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+
     starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     social_params = {
@@ -1357,7 +1362,7 @@ def send_story_email(request):
     message    = 'OK'
     story_id   = request.POST['story_id']
     feed_id    = request.POST['feed_id']
-    to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').split(' ')
+    to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').strip().split(' ')
     from_name  = request.POST['from_name']
     from_email = request.POST['from_email']
     comments   = request.POST['comments']
@@ -1367,7 +1372,7 @@ def send_story_email(request):
     if not to_addresses:
         code = -1
         message = 'Please provide at least one email address.'
-    elif not all(email_re.match(to_address) for to_address in to_addresses):
+    elif not all(email_re.match(to_address) for to_address in to_addresses if to_addresses):
         code = -1
         message = 'You need to send the email to a valid email address.'
     elif not email_re.match(from_email):

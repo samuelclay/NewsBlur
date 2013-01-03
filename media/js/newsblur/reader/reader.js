@@ -74,7 +74,7 @@
             this.constants = {
               FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
               FILL_OUT_PAGES: 50,
-              FIND_NEXT_UNREAD_STORY_TRIES: 12,
+              FIND_NEXT_UNREAD_STORY_TRIES: 50,
               RIVER_STORIES_FOR_STANDARD_ACCOUNT: 5,
               MIN_FEED_LIST_SIZE: 206
             };
@@ -3504,7 +3504,8 @@
         toggle_focus_in_slider: function() {
             var $slider = this.$s.$intelligence_slider;
             var $focus = $(".NB-intelligence-slider-green", $slider);
-            var show_focus = NEWSBLUR.assets.feeds.any(function(feed) { 
+            var show_focus = this.model.preference('lock_green_slider') || 
+                             NEWSBLUR.assets.feeds.any(function(feed) { 
                 return feed.get('ps');
             });
 
@@ -3513,6 +3514,8 @@
                 if (NEWSBLUR.assets.preference('unread_view') > 0) {
                     this.slide_intelligence_slider(0);
                 }
+            } else {
+                this.model.preference('lock_green_slider', true);
             }
         },
         
@@ -3544,6 +3547,7 @@
             }
             this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
             NEWSBLUR.app.sidebar_header.toggle_hide_read_preference();
+            NEWSBLUR.assets.folders.update_all_folder_visibility();
             NEWSBLUR.app.feed_list.scroll_to_show_selected_feed();
             NEWSBLUR.app.feed_list.scroll_to_show_selected_folder();
             

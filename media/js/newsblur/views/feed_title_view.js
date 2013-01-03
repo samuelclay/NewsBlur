@@ -197,6 +197,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     select_feed: function() {
         this.$el.toggleClass('selected', this.model.get('selected'));
         this.$el.toggleClass('NB-selected', this.model.get('selected'));
+        
+        _.each(this.folders, function(folder) {
+            folder.view.update_hidden();
+        });
     },
     
     flash_changes: function() {
