@@ -443,7 +443,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     display: block;
     color: #606060;
     text-transform: uppercase;
-    text-shadow: 1px 1px 0 #EEEEEE;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     cursor: pointer;
     position: relative;
 }
@@ -715,7 +715,7 @@ body.NB-theme-serif #story_pane .NB-feed-story-content {
     background: -moz-linear-gradient(center top , #F7BA55 0%, #F6A828 100%);
     border-top: 1px solid #C59977;
     border-bottom: 1px solid #C59977;
-    text-shadow: 1px 1px 0 #FAC898;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
 }
 .NB-feedlist .feed.NB-feed-selector-selected {
     background-color: #7AC0FE;
@@ -1228,7 +1228,7 @@ background: transparent;
     font-weight: bold;
     color: #606060;
     text-transform: uppercase;
-    text-shadow: 1px 1px 0 #EEEEEE;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
 #story_titles .NB-feedbar .NB-folder .NB-folder-icon {
@@ -1460,7 +1460,7 @@ background: transparent;
 }
 
 #story_titles .story.NB-selected .story_title .NB-storytitles-author {
-    text-shadow: 1px 1px 0 #E9E9E9;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
 #story_titles .story .story_title .NB-storytitles-tags {
@@ -1473,7 +1473,7 @@ background: transparent;
     padding: 0px 4px;
     margin: 0 2px;
     color: #9D9A95;
-    text-shadow: 0 1px 0 #F3F3F3;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     background-color: #E9E9E9;
     border-radius: 4px;
 }
@@ -1513,7 +1513,7 @@ background: transparent;
     line-height: 1.3em;
 }
 #story_titles .story.NB-selected .NB-story-feed .feed_title {
-    text-shadow: 1px 1px 0 #F0F0F0;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 .NB-story-pane-west #story_titles .story .NB-story-feed .feed_title {
     display: none;
@@ -1586,7 +1586,7 @@ background: transparent;
     clear: both;
 }
 #story_titles .story.NB-selected .story_date {
-    text-shadow: 1px 1px 0 #E6E6E6;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 #story_titles .story.NB-selected {
     color: #304080;
@@ -1924,7 +1924,7 @@ background: transparent;
     text-decoration: none;
     color: #101050;
     margin: 6px 0 6px;
-    text-shadow: 1px 1px 0 #e8e8e8;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
 #story_pane .read a.NB-feed-story-title {
@@ -1943,7 +1943,7 @@ background: transparent;
     font-size: 9px;
     text-transform: uppercase;
     margin: 4px 24px 0 0;
-    text-shadow: 1px 1px 0 #F0F0F0;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
     cursor: pointer;
 }
 #story_pane .read .NB-feed-story-author {
@@ -1996,7 +1996,7 @@ background: transparent;
     margin: 0 2px 2px;
     background-color: #D8DEE2;
     color: #9D9A95;
-    text-shadow: 0 1px 0 #E9E9E9;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     border-radius: 4px;
     cursor: pointer;
 } 
@@ -2008,20 +2008,20 @@ background: transparent;
     /* Green */
     background-color: #34912E;
     color: white;
-    text-shadow: 0 1px 0 #000;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
     opacity: .4;
 }
 #story_pane .NB-feed-story-tag.NB-score--1 {
     /* Red */
     background-color: #A90103;
     color: white;
-    text-shadow: 0 1px 0 #000;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
     opacity: .4;
 }
 #story_pane .NB-feed-story-tag:hover {
     /* Gray, active -> [Light] Green */
     background-color: #89AE6E;
-    text-shadow: 0 1px 0 #000;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
     color: white;
     opacity: .4;
 }
@@ -2029,33 +2029,33 @@ background: transparent;
     /* Green, active -> [Light] Red */
     background-color: #E35356;
     color: white;
-    text-shadow: 0 1px 0 #000;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
 }
 #story_pane .NB-feed-story-tag.NB-score--1:hover {
     /* Red, active -> [Light] Grey */
     background-color: #E2E2E2;
     color: #A7A399;
-    text-shadow: 0 1px 0 #E9E9E9;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     opacity: 1;
 }
 #story_pane .NB-feed-story-tag.NB-score-now-0:hover {
     /* Grey, active */
     background-color: #D8DEE2;
     color: #9D9A95;
-    text-shadow: 0 1px 0 #E9E9E9;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     opacity: 1;
 }
 #story_pane .NB-feed-story-tag.NB-score-now-1.NB-score-1:hover {
     /* Green, active */
     background-color: #34912E;
     color: white;
-    text-shadow: 0 1px 0 #000;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
 }
 #story_pane .NB-feed-story-tag.NB-score-now--1.NB-score--1:hover {
     /* Red, active */
     background-color: #A90103;
     color: white;
-    text-shadow: 0 1px 0 #000;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .7);
     opacity: .4;
 }
 
@@ -2070,7 +2070,7 @@ background: transparent;
     right: 12px;
     top: 6px;
     font-size: 11px;
-    text-shadow: 1px 1px 0 #E6E6E6;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 #story_pane .read .NB-feed-story-header .NB-feed-story-date {
     color: #606060;
@@ -2095,7 +2095,7 @@ background: transparent;
     font-size: 10px;
     background: transparent url('/media/embed/icons/silk/time.png') no-repeat 0 1px;
     padding-left: 20px;
-    text-shadow: 1px 1px 0 #E6E6E6;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
     color: #808080;
 }
 
@@ -2190,7 +2190,7 @@ background: transparent;
     color: #1D4BA6;
     font-weight: bold;
     margin: 0 10px 0 0;
-    text-shadow: 0 -1px 0 #F0F0F0;
+    text-shadow: 0 -1px 0 rgba(255, 255, 255, .5);
     cursor: pointer;
 }
 #story_pane .NB-story-comment .NB-story-comment-date {
@@ -2380,7 +2380,7 @@ background: transparent;
 #story_pane .NB-story-comments-public-header {
     background-color: #A0A0A0;
     color: #FFF;
-    text-shadow: 0 1px 0 #101010;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     
     background-image: -webkit-gradient(
       linear,
@@ -8914,4 +8914,39 @@ form.opml_import_form input {
 }
 .NB-searching .NB-story-title-search-input {
     width: 174px;
+}
+
+/* ================== */
+/* = Delete Account = */
+/* ================== */
+
+.NB-delete-form h2 {
+    margin: 24px auto;
+    line-height: 28px;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+}
+.NB-static-form.NB-delete-form {
+    width: 420px;
+    margin-bottom: 24px;
+}
+.NB-static-form.NB-delete-form label {
+    width: 200px;
+}
+.NB-static-form.NB-delete-form input[type=submit] {
+    width: 206px;
+    margin: 12px 0 4px 200px;
+    
+    -moz-box-shadow:2px 2px 0 #A0B998;
+    -webkit-box-shadow:2px 2px 0 #A0B998;
+    box-shadow:2px 2px 0 #A0B998;
+    
+    white-space: normal;
+    font-size: 13px;
+}
+.NB-fields {
+    clear: both;
+}
+.NB-static-form .NB-errors {
+    margin-left: 200px;
 }

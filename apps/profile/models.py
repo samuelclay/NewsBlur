@@ -79,8 +79,9 @@ class Profile(models.Model):
         from apps.social.models import MActivity, MInteraction
         try:
             social_profile = MSocialProfile.objects.get(user_id=self.user.pk)
-            print " ---> Unfollowing %s followings and %s followers" % (social_profile.following_count,
-                                                                        social_profile.follower_count)
+            logging.user(self.user, "Unfollowing %s followings and %s followers" %
+                         (social_profile.following_count,
+                         social_profile.follower_count))
             for follow in social_profile.following_user_ids:
                 social_profile.unfollow_user(follow)
             for follower in social_profile.follower_user_ids:
@@ -88,11 +89,11 @@ class Profile(models.Model):
                 follower_profile.unfollow_user(self.user.pk)
             social_profile.delete()
         except MSocialProfile.DoesNotExist:
-            print " ***> No social profile found. S'ok, moving on."
+            logging.user(self.user, " ***> No social profile found. S'ok, moving on.")
             pass
         
         shared_stories = MSharedStory.objects.filter(user_id=self.user.pk)
-        print " ---> Deleting %s shared stories" % shared_stories.count()
+        logging.user(self.user, "Deleting %s shared stories" % shared_stories.count())
         for story in shared_stories:
             try:
                 original_story = MStory.objects.get(pk=story.story_db_id)
@@ -102,26 +103,26 @@ class Profile(models.Model):
             story.delete()
             
         subscriptions = MSocialSubscription.objects.filter(subscription_user_id=self.user.pk)
-        print " ---> Deleting %s social subscriptions" % subscriptions.count()
+        logging.user(self.user, "Deleting %s social subscriptions" % subscriptions.count())
         subscriptions.delete()
         
         interactions = MInteraction.objects.filter(user_id=self.user.pk)
-        print " ---> Deleting %s interactions for user." % interactions.count()
+        logging.user(self.user, "Deleting %s interactions for user." % interactions.count())
         interactions.delete()
         
         interactions = MInteraction.objects.filter(with_user_id=self.user.pk)
-        print " ---> Deleting %s interactions with user." % interactions.count()
+        logging.user(self.user, "Deleting %s interactions with user." % interactions.count())
         interactions.delete()
         
         activities = MActivity.objects.filter(user_id=self.user.pk)
-        print " ---> Deleting %s activities for user." % activities.count()
+        logging.user(self.user, "Deleting %s activities for user." % activities.count())
         activities.delete()
         
         activities = MActivity.objects.filter(with_user_id=self.user.pk)
-        print " ---> Deleting %s activities with user." % activities.count()
+        logging.user(self.user, "Deleting %s activities with user." % activities.count())
         activities.delete()
         
-        print " ---> Deleting user: %s" % self.user
+        logging.user(self.user, "Deleting user: %s" % self.user)
         self.user.delete()
         
     def activate_premium(self):
