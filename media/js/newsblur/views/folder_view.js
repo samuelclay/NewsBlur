@@ -149,10 +149,10 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         if (!this.model) return;
         
         var has_unreads = this.model.has_unreads({include_selected: true});
-        if (has_unreads || !NEWSBLUR.assets.preference('hide_read_feeds')) {
-            this.$el.removeClass('NB-hidden');
-        } else {
+        if (!has_unreads && !NEWSBLUR.assets.preference('hide_read_feeds')) {
             this.$el.addClass('NB-hidden');
+        } else {
+            this.$el.removeClass('NB-hidden');
         }
     },
     
