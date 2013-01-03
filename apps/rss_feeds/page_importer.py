@@ -25,6 +25,7 @@ BROKEN_PAGES = [
 # Also change in reader_utils.js.
 BROKEN_PAGE_URLS = [
     'nytimes.com',
+    'washingtonpost.com',
     'stackoverflow.com',
     'stackexchange.com',
     'twitter.com',

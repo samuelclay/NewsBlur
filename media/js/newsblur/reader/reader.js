@@ -3504,7 +3504,8 @@
         toggle_focus_in_slider: function() {
             var $slider = this.$s.$intelligence_slider;
             var $focus = $(".NB-intelligence-slider-green", $slider);
-            var show_focus = NEWSBLUR.assets.feeds.any(function(feed) { 
+            var show_focus = this.model.preference('lock_green_slider') || 
+                             NEWSBLUR.assets.feeds.any(function(feed) { 
                 return feed.get('ps');
             });
 
@@ -3513,6 +3514,8 @@
                 if (NEWSBLUR.assets.preference('unread_view') > 0) {
                     this.slide_intelligence_slider(0);
                 }
+            } else {
+                this.model.preference('lock_green_slider', true);
             }
         },
         
