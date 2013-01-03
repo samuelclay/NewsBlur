@@ -35,4 +35,4 @@ class PremiumExpire(Task):
         logging.debug(" ---> %s users have expired premiums, deactivating and emailing..." % expired_profiles.count())
         for profile in expired_profiles:
             profile.send_premium_expire_email()
-            # profile.deactive_premium()
+            profile.deactive_premium()
