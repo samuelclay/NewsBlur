@@ -8,6 +8,7 @@ import mongoengine as mongo
 import zlib
 import hashlib
 import redis
+from collections import Counter
 from collections import defaultdict
 from operator import itemgetter
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
@@ -1656,7 +1657,37 @@ class MFeedPushHistory(mongo.Document):
                                    timezone).strftime("%Y-%m-%d %H:%M:%S")
             push_history.append(history)
         return push_history
-        
+    
+    @classmethod
+    def detect_dupes(cls):
+        top = datetime.datetime.now() - datetime.timedelta(minutes=9)
+        bottom = datetime.datetime.now() - datetime.timedelta(minutes=10)
+        history = cls.objects.filter(push_date__lte=top, push_date__gte=bottom)
+        print " ---> %s history" % history.count()
+
+        feeds = [Feed.get_by_id(h.feed_id) for h in history]
+        titles = dict((f.pk, f.feed_title) for f in feeds)
+        count = Counter(titles.values())
+        commons = count.most_common(10)
+
+        for common_title, common_count in commons:
+            common_feed_ids = list(set([pk for pk, t in titles.items() if t == common_title]))
+            print " ---> Checking %s (%s pushes -> %s feeds)" % (
+                common_title, common_count, len(common_feed_ids))
+            common_story_titles = []
+            for feed_id in common_feed_ids:
+                feed = Feed.get_by_id(feed_id)
+                stories = feed.get_stories()
+                story_titles = [s['story_title'] for s in stories]
+                if not common_story_titles:
+                    print "      ---> %s is original (%s subs)" % (feed_id, feed.num_subscribers)
+                    common_story_titles = story_titles
+                    print "      ---> %s" % common_story_titles
+                elif set(common_story_titles) == set(story_titles):
+                    print "      ---> %s is the same (%s subs)" % (feed_id, feed.num_subscribers)
+                else:
+                    print "      ***> %s is different (%s subs)" % (feed_id, feed.num_subscribers)
+
         
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, db_index=True)
