@@ -8,7 +8,7 @@ import mongoengine as mongo
 import zlib
 import hashlib
 import redis
-from collections import Counter
+from utils.feed_functions import Counter
 from collections import defaultdict
 from operator import itemgetter
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
