@@ -141,11 +141,12 @@ NEWSBLUR.Views.StoryComment = Backbone.View.extend({
             $error.text("You must be following " + this.user.get('username') + " to reply");
             return;
         }
-        
+        var reply_comments = options.reply && options.reply.stripped_comments();
+
         var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
             $.make('img', { className: 'NB-story-comment-reply-photo', src: current_user.get('photo_url') }),
             $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, current_user.get('username')),
-            $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments', value: options.reply && options.reply.get("comments") }),
+            $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments', value: reply_comments }),
             $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, options.is_editing ? 'Save' : 'Post'),
             (options.is_editing && $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-delete' }, 'Delete'))
         ]);
