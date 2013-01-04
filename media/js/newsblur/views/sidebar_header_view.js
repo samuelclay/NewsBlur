@@ -80,7 +80,10 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
         if (!this.unread_counts['ng'] && !this.unread_counts['ps']) {
             counts = [this.unread_counts['nt']];
         }
-        var title = '(' + counts.join('/') + ') NewsBlur';
+        var title = "NewsBlur";
+        if (_.any(counts)) {
+            title = '(' + counts.join('/') + ') ' + title;
+        }
         document.title = title;
     },
     
