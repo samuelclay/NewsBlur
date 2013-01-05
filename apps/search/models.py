@@ -1,4 +1,7 @@
 import pyes
+from pyes.query import FilteredQuery, FuzzyQuery, TextQuery, PrefixQuery
+from pyes.filters import RangeFilter
+from pyes.utils import ESRange
 from django.conf import settings
 from django.contrib.auth.models import User
 from utils import log as logging
@@ -76,17 +79,130 @@ class SearchStarredStory:
         
         if not results.total:
             logging.user(user, "~FGSearch ~FCsaved stories~FG by title: ~SB%s" % text)
-            q = pyes.query.FuzzyQuery('title', text)
+            q = FuzzyQuery('title', text)
             results = cls.ES.search(q)
             
         if not results.total:
             logging.user(user, "~FGSearch ~FCsaved stories~FG by content: ~SB%s" % text)
-            q = pyes.query.FuzzyQuery('content', text)
+            q = FuzzyQuery('content', text)
             results = cls.ES.search(q)
             
         if not results.total:
             logging.user(user, "~FGSearch ~FCsaved stories~FG by author: ~SB%s" % text)
-            q = pyes.query.FuzzyQuery('author', text)
+            q = FuzzyQuery('author', text)
             results = cls.ES.search(q)
+            
+        return results
+
+
+class SearchFeed:
+    
+    ES = pyes.ES(settings.ELASTICSEARCH_HOSTS)
+    name = "feeds"
+    
+    @classmethod
+    def create_elasticsearch_mapping(cls):
+        try:
+            cls.ES.delete_index("%s-index" % cls.name)
+        except pyes.TypeMissingException:
+            print "Index missing, can't delete: %s-index" % cls.name
+            
+        settings =  {
+            "index" : {
+              "analysis" : {
+                "analyzer" : {
+                  "url_analyzer" : {
+                    "type" : "custom",
+                    "tokenizer" : "urls",
+                    "filter"    : ["stop", "url_stop"]
+                  }
+                },
+                "tokenizer": {
+                    "urls": {
+                        "type": "uax_url_email",
+                        "max_token_length": 255,
+                    }
+                },
+                "filter" : {
+                  "url_stop" : {
+                    "type" : "stop",
+                    "stopwords" : ["http", "https"]
+                  },
+                  "url_ngram" : {
+                    "type" : "nGram",
+                    "min_gram" : 2,
+                    "max_gram" : 20,
+                  }
+                }
+              }
+            }
+          }
+        cls.ES.create_index("%s-index" % cls.name, settings)
+        mapping = { 
+            'address': {
+                'boost': 3.0,
+                'index': 'analyzed',
+                'store': 'yes',
+                'type': 'string',
+                "term_vector" : "with_positions_offsets",
+                "analyzer": "url_analyzer",
+            },
+            'title': {
+                'boost': 2.0,
+                'index': 'analyzed',
+                'store': 'yes',
+                'type': 'string',
+                "term_vector" : "with_positions_offsets",
+            },
+            'link': {
+                'boost': 1.0,
+                'index': 'analyzed',
+                'store': 'yes',
+                'type': 'string',
+                "term_vector" : "with_positions_offsets",
+                "analyzer": "url_analyzer",
+            },
+            'num_subscribers': {
+                'boost': 1.0,
+                'index': 'not_analyzed',
+                'store': 'yes',
+                'type': 'integer',
+            },
+            'feed_id': {
+                'store': 'yes',
+                'type': 'integer',
+            },
+        }
+        cls.ES.put_mapping("%s-type" % cls.name, {'properties': mapping}, ["%s-index" % cls.name])
+        
+    @classmethod
+    def index(cls, feed_id, title, address, link, num_subscribers):
+        doc = {
+            "feed_id": feed_id,
+            "title": title,
+            "address": address,
+            "link": link,
+            "num_subscribers": num_subscribers,
+        }
+        cls.ES.index(doc, "%s-index" % cls.name, "%s-type" % cls.name, feed_id)
+        
+    @classmethod
+    def query(cls, text):
+        cls.ES.refresh()
+        
+        sub_filter = RangeFilter(qrange=ESRange('num_subscribers', 2))
+        logging.info("~FGSearch ~FCfeeds~FG by address: ~SB%s" % text)
+        q = TextQuery('address', text)
+        results = cls.ES.search(FilteredQuery(q, sub_filter), sort="num_subscribers:desc", size=5)
+
+        if not results.total:
+            logging.info("~FGSearch ~FCfeeds~FG by title: ~SB%s" % text)
+            q = PrefixQuery('title', text)
+            results = cls.ES.search(FilteredQuery(q, sub_filter), sort="num_subscribers:desc", size=5)
+            
+        if not results.total:
+            logging.info("~FGSearch ~FCfeeds~FG by link: ~SB%s" % text)
+            q = TextQuery('link.partial', text)
+            results = cls.ES.search(FilteredQuery(q, sub_filter), sort="num_subscribers:desc", size=5)
             
         return results

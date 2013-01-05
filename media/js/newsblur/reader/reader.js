@@ -3547,6 +3547,7 @@
             }
             this.show_story_titles_above_intelligence_level({'animate': true, 'follow': true});
             NEWSBLUR.app.sidebar_header.toggle_hide_read_preference();
+            NEWSBLUR.app.sidebar_header.count();
             NEWSBLUR.assets.folders.update_all_folder_visibility();
             NEWSBLUR.app.feed_list.scroll_to_show_selected_feed();
             NEWSBLUR.app.feed_list.scroll_to_show_selected_folder();

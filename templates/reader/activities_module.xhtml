@@ -52,7 +52,7 @@
                     {{ username }} replied to <span class="NB-interaction-username NB-splash-link" data-user-id="{{ activity.with_user_id }}">{{ activity.with_user.username }}</span>:
                 </div>
                 <div class="NB-interaction-content">
-                    "<span class="NB-interaction-reply-content NB-splash-link" data-story-id="{{ activity.content_id }}">{{ activity.content|truncatewords:16 }}</span>"
+                    "<span class="NB-interaction-reply-content NB-splash-link" data-story-id="{{ activity.content_id }}">{{ activity.content|safe|truncatewords:16 }}</span>"
                 </div>
             {% endif %}
 
