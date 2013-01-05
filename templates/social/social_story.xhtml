@@ -9,7 +9,7 @@
             <div class="NB-story-header-wrapper">
                 <div class="NB-story-header">
                     <h2 class="NB-story-title">
-                        <a href="{{ story.story_permalink }}">{{ story.story_title }}</a> 
+                        <a href="{{ story.story_permalink }}" class="NB-story-title-link">{{ story.story_title }}</a> 
 
                         <div class="NB-story-metadata">
                         {% if story.story_authors %}
@@ -18,11 +18,15 @@
                         {% if story.has_modifications %}
                             <span class="NB-story-modifications-button" title="Show story changes"></span>
                         {% endif %}
-
-                        {{ story.shared_date|date:"D F j<\s\u\p>S</\s\u\p>, Y"|safe }} 
-                        <span class="NB-story-date-break"></span>
-                        <small>at</small>
-                        {{ story.shared_date|date:"g:i A"|safe }} 
+                        
+                        <div class="NB-story-permalink">
+                            <a href="{{ story.blurblog_permalink }}">
+                                {{ story.shared_date|date:"D F j<\s\u\p>S</\s\u\p>, Y"|safe }}
+                                <span class="NB-story-date-break"></span>
+                                <small>at</small>
+                                {{ story.shared_date|date:"g:i A"|safe }}
+                            </a>
+                        </div>
                     </div>
                     </h2>
                     {# {% if story.story_tags %} #}
@@ -51,8 +55,6 @@
                         <a href="/site/{{ story.feed.id }}/">{{ story.feed.feed_title }}</a>
                     </div>
                 {% endif %}
-                
-                <a href="{{ story.blurblog_permalink }}" class="NB-story-permalink">{{ story.shared_date|date:"D F j<\s\u\p>S</\s\u\p>, Y"|safe }}</a>
             </div>
 
             <div class="NB-story-content-wrapper">

@@ -144,11 +144,7 @@
 </header>
 
 <div class="NB-page">
-    <div class="NC-watermark">
-        <div class="NC-watermark-logo">
-            <a href="//{% current_domain %}"><img src="{{ MEDIA_URL }}img/circular/circular_footer.png" />
-        </div>
-    </div>
+
     {% for story in stories %}
         {% render_social_story story %}
     {% endfor %}

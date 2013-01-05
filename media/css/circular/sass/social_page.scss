@@ -150,8 +150,7 @@ blockquote {
 .NB-page {
     max-width: $page-width;
     min-width: 300px;
-    margin: 10px auto;
-    margin-bottom: 100px;
+    margin: 36px auto 100px;
     padding: 0 10px;
 }
 
@@ -184,7 +183,6 @@ blockquote {
 
 .NC-header {
     @include single-box-shadow(#7d7d7d, 0px, 0px, 10px, false, false);
-    position: fixed;
     width: 100%;
     left: 0;
     z-index: 10;
@@ -397,6 +395,7 @@ blockquote {
 
 .NB-story {
     border-left: 1px solid #fff;
+    border-right: 1px solid #fff;
     background: #fff;
     @include single-box-shadow(#c8c8c8, 0px, 0px, 5px, false, false);
     position: relative;
@@ -404,6 +403,7 @@ blockquote {
     
     .NB-story-inner {
         border-left: 4px solid #fff;
+        border-right: 4px solid #fff;
         padding: 25px 25px 15px;
         overflow: hidden;
         position: relative; /* contains all children */
@@ -414,7 +414,7 @@ blockquote {
     }
     
     .NB-story-title {
-        a {
+        .NB-story-title-link {
             font-size: $title-font-size;
             font-weight: bold;
             line-height: 120%;
@@ -423,6 +423,13 @@ blockquote {
             
             @media screen and ( max-width: 480px) {
                 font-size: $small-title-font-size;
+            }
+        }
+        .NB-story-permalink {
+            font-size: 12px;
+            margin: 4px 0 0;
+            a {
+                color: $light-text-color;
             }
         }
     }
