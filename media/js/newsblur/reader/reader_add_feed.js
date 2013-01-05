@@ -134,6 +134,11 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
             search: function(e, ui) {
             },
             open: function(e, ui) {
+                if (!$add.is(":focus")) {
+                    e.preventDefault();
+                    $add.autocomplete('close');
+                    return false;
+                }
             },
             close: function(e, ui) {
             },
@@ -147,6 +152,10 @@ _.extend(NEWSBLUR.ReaderAddFeed.prototype, {
                     $.make('div', { className: 'NB-add-autocomplete-address'}, item.value)
                 ])
             ]).data("item.autocomplete", item).appendTo(ul);
+        };
+        $add.data("autocomplete")._resizeMenu = function () {
+            var ul = this.menu.element;
+            ul.outerWidth(this.element.outerWidth());
         };
     },
     
