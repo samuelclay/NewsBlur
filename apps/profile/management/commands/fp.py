@@ -15,7 +15,7 @@ class Command(BaseCommand):
         if username:
             try:
                 user = User.objects.get(username__icontains=username)
-            except User.MultipleObjectsFound:
+            except User.MultipleObjectsReturned:
                 user = User.objects.get(username__iexact=username)
             except User.DoesNotExist:
                 user = User.objects.get(email__iexact=username)
@@ -24,9 +24,9 @@ class Command(BaseCommand):
         elif email:
             try:
                 user = User.objects.get(email__icontains=email)
-            except User.MultipleObjectsFound:
+            except User.MultipleObjectsReturned:
                 user = User.objects.get(email__iexact=email)
-            except User.MultipleObjectsFound:
+            except User.MultipleObjectsReturned:
                 users = User.objects.filter(email__iexact=email)
                 user = users[0]
             except User.DoesNotExist:
