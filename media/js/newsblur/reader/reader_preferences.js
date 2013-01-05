@@ -271,19 +271,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             'Site sidebar order'
                         ])
                     ]),
-                    $.make('div', { className: 'NB-preference NB-preference-showunreadcountsintitle' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showunreadcountsintitle-1', type: 'checkbox', name: 'show_unread_counts_in_title', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-showunreadcountsintitle-1' }, [
-                                    'Show unread counts in the window title'
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label'}, [
-                            'Window title'
-                        ])
-                    ]),
                     $.make('div', { className: 'NB-preference NB-preference-ssl' }, [
                         $.make('div', { className: 'NB-preference-options' }, [
                             $.make('div', [
@@ -630,12 +617,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=ssl]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.ssl) {
-                $(this).attr('checked', true);
-                return false;
-            }
-        });
-        $('input[name=show_unread_counts_in_title]', $modal).each(function() {
-            if (NEWSBLUR.Preferences.show_unread_counts_in_title) {
                 $(this).attr('checked', true);
                 return false;
             }

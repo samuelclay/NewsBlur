@@ -2,6 +2,7 @@ import stripe
 import datetime
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.contrib.auth import logout as logout_user
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
@@ -12,7 +13,7 @@ from django.core.mail import mail_admins
 from django.conf import settings
 from apps.profile.models import Profile, change_password, PaymentHistory
 from apps.reader.models import UserSubscription
-from apps.profile.forms import StripePlusPaymentForm, PLANS
+from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
@@ -288,3 +289,26 @@ def payment_history(request):
     history = PaymentHistory.objects.filter(user=request.user)
 
     return {'payments': history}
+
+@login_required
+@render_to('profile/delete_account.xhtml')
+def delete_account(request):
+    if request.method == 'POST':
+        form = DeleteAccountForm(request.POST, user=request.user)
+        if form.is_valid():
+            logging.user(request.user, "~SK~BC~FRDeleting ~SB%s~SN's account." %
+                         request.user.username)
+            request.user.profile.delete_user(confirm=True)
+            logout_user(request)
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            logging.user(request.user, "~BC~FRFailed attempt to delete ~SB%s~SN's account." %
+                         request.user.username)
+    else:
+        logging.user(request.user, "~BC~FRAttempting to delete ~SB%s~SN's account." %
+                     request.user.username)
+        form = DeleteAccountForm(user=request.user)
+
+    return {
+        'delete_form': form,
+    }

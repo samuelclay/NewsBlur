@@ -8,6 +8,7 @@ import mongoengine as mongo
 import zlib
 import hashlib
 import redis
+from utils.feed_functions import Counter
 from collections import defaultdict
 from operator import itemgetter
 # from nltk.collocations import TrigramCollocationFinder, BigramCollocationFinder, TrigramAssocMeasures, BigramAssocMeasures
@@ -21,7 +22,7 @@ from mongoengine.queryset import OperationError, Q
 from mongoengine.base import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
-from apps.search.models import SearchStarredStory
+from apps.search.models import SearchStarredStory, SearchFeed
 from utils import json_functions as json
 from utils import feedfinder, feedparser
 from utils import urlnorm
@@ -82,7 +83,12 @@ class Feed(models.Model):
         if not self.feed_title:
             self.feed_title = "[Untitled]"
             self.save()
-        return "%s (%s)" % (self.feed_title, self.pk)
+        return "%s (%s - %s/%s/%s)" % (
+            self.feed_title, 
+            self.pk, 
+            self.num_subscribers,
+            self.active_subscribers,
+            self.premium_subscribers)
     
     @property
     def title(self):
@@ -206,6 +212,14 @@ class Feed(models.Model):
                 
             return self
 
+    def index_for_search(self):
+        if self.num_subscribers > 1 and not self.branch_from_feed:
+            SearchFeed.index(feed_id=self.pk, 
+                             title=self.feed_title, 
+                             address=self.feed_address, 
+                             link=self.feed_link,
+                             num_subscribers=self.num_subscribers)
+    
     
     def sync_redis(self):
         return MStory.sync_all_redis(self.pk)
@@ -758,7 +772,17 @@ class Feed(models.Model):
                 duplicate_feeds = DuplicateFeed.objects.filter(duplicate_address=feed_address)
                 if duplicate_feeds:
                     return duplicate_feeds[0].feed
-                
+    
+    @classmethod
+    def get_by_name(cls, query, limit=1):
+        results = SearchFeed.query(query)
+        feed_ids = [result.feed_id for result in results]
+        
+        if limit == 1:
+            return Feed.get_by_id(feed_ids[0])
+        else:
+            return [Feed.get_by_id(f) for f in feed_ids][:limit]
+        
     def add_update_stories(self, stories, existing_stories, verbose=False):
         ret_values = dict(new=0, updated=0, same=0, error=0)
 
@@ -1656,7 +1680,37 @@ class MFeedPushHistory(mongo.Document):
                                    timezone).strftime("%Y-%m-%d %H:%M:%S")
             push_history.append(history)
         return push_history
-        
+    
+    @classmethod
+    def detect_dupes(cls):
+        top = datetime.datetime.now() - datetime.timedelta(minutes=9)
+        bottom = datetime.datetime.now() - datetime.timedelta(minutes=10)
+        history = cls.objects.filter(push_date__lte=top, push_date__gte=bottom)
+        print " ---> %s history" % history.count()
+
+        feeds = [Feed.get_by_id(h.feed_id) for h in history]
+        titles = dict((f.pk, f.feed_title) for f in feeds)
+        count = Counter(titles.values())
+        commons = count.most_common(10)
+
+        for common_title, common_count in commons:
+            common_feed_ids = list(set([pk for pk, t in titles.items() if t == common_title]))
+            print " ---> Checking %s (%s pushes -> %s feeds)" % (
+                common_title, common_count, len(common_feed_ids))
+            common_story_titles = []
+            for feed_id in common_feed_ids:
+                feed = Feed.get_by_id(feed_id)
+                stories = feed.get_stories()
+                story_titles = [s['story_title'] for s in stories]
+                if not common_story_titles:
+                    print "      ---> %s is original (%s subs)" % (feed_id, feed.num_subscribers)
+                    common_story_titles = story_titles
+                    print "      ---> %s" % common_story_titles
+                elif set(common_story_titles) == set(story_titles):
+                    print "      ---> %s is the same (%s subs)" % (feed_id, feed.num_subscribers)
+                else:
+                    print "      ***> %s is different (%s subs)" % (feed_id, feed.num_subscribers)
+
         
 class DuplicateFeed(models.Model):
     duplicate_address = models.CharField(max_length=255, db_index=True)

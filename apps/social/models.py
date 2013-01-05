@@ -2291,7 +2291,7 @@ class MInteraction(mongo.Document):
             'user_id': user_id,
             'with_user_id': reply_user_id,
             'category': 'comment_reply',
-            'content': reply_content,
+            'content': linkify(strip_tags(reply_content)),
             'feed_id': "social:%s" % user_id,
             'story_feed_id': story_feed_id,
             'title': story_title,
@@ -2302,7 +2302,7 @@ class MInteraction(mongo.Document):
             original = cls.objects.filter(**params).limit(1)
             if original:
                 original = original[0]
-                original.content = reply_content
+                original.content = linkify(strip_tags(reply_content))
                 original.save()
             else:
                 original_message = None
@@ -2316,7 +2316,7 @@ class MInteraction(mongo.Document):
             'user_id': user_id,
             'with_user_id': reply_user_id,
             'category': 'comment_reply',
-            'content': reply_content,
+            'content': linkify(strip_tags(reply_content)),
             'feed_id': "social:%s" % user_id,
             'story_feed_id': story_feed_id,
             'content_id': story_id,
@@ -2342,7 +2342,7 @@ class MInteraction(mongo.Document):
             'user_id': user_id,
             'with_user_id': reply_user_id,
             'category': 'reply_reply',
-            'content': reply_content,
+            'content': linkify(strip_tags(reply_content)),
             'feed_id': "social:%s" % comment_user_id,
             'story_feed_id': story_feed_id,
             'title': story_title,
@@ -2367,7 +2367,7 @@ class MInteraction(mongo.Document):
             'user_id': user_id,
             'with_user_id': reply_user_id,
             'category': 'reply_reply',
-            'content': reply_content,
+            'content': linkify(strip_tags(reply_content)),
             'feed_id': "social:%s" % comment_user_id,
             'story_feed_id': story_feed_id,
             'content_id': story_id,
@@ -2514,7 +2514,7 @@ class MActivity(mongo.Document):
             'user_id': user_id,
             'with_user_id': comment_user_id,
             'category': 'comment_reply',
-            'content': reply_content,
+            'content': linkify(strip_tags(reply_content)),
             'feed_id': "social:%s" % comment_user_id,
             'story_feed_id': story_feed_id,
             'title': story_title,
@@ -2525,7 +2525,7 @@ class MActivity(mongo.Document):
             original = cls.objects.filter(**params).limit(1)
             if original:
                 original = original[0]
-                original.content = reply_content
+                original.content = linkify(strip_tags(reply_content))
                 original.save()
             else:
                 original_message = None
@@ -2539,7 +2539,7 @@ class MActivity(mongo.Document):
             'user_id': user_id,
             'with_user_id': comment_user_id,
             'category': 'comment_reply',
-            'content': reply_content,
+            'content': linkify(strip_tags(reply_content)),
             'feed_id': "social:%s" % comment_user_id,
             'story_feed_id': story_feed_id,
             'content_id': story_id,

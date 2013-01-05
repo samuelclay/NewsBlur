@@ -75,7 +75,7 @@ def feed_autocomplete(request):
         return dict(code=-1, message="Specify a search 'term'.")
         
     feeds = []
-    for field in ['feed_address', 'feed_link', 'feed_title']:
+    for field in ['feed_address', 'feed_title', 'feed_link']:
         if not feeds:
             feeds = Feed.objects.filter(**{
                 '%s__icontains' % field: query,

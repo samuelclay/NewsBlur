@@ -15,8 +15,13 @@ NEWSBLUR.Models.Comment = Backbone.Model.extend({
     },
     
     strip_html_in_comments: function() {
-        this.attributes['comments'] = this.get('comments').replace(/<\/?[^>]+(>|$)/g, "");
+        this.attributes['comments'] = this.strip_html(this.get('comments'));
+    },
+    
+    strip_html: function(html) {
+        return html.replace(/<\/?[^>]+(>|$)/g, "");
     }
+
     
 });
 
@@ -30,7 +35,9 @@ NEWSBLUR.Collections.Comments = Backbone.Collection.extend({
 
 NEWSBLUR.Models.CommentReply = Backbone.Model.extend({
     
-    
+    stripped_comments: function() {
+        return NEWSBLUR.Models.Comment.prototype.strip_html(this.get('comments'));
+    }
     
 });
 

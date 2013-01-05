@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% load typogrify_tags utils_tags %}
+
+{% block bodyclass %}NB-static{% endblock %}
+{% block extra_head_js %}
+  {% include_stylesheets "common" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="NB-static-form-wrapper">
+    <div class="NB-delete-form NB-static-form">
+        
+        <h2>Are you positive you want to<br />delete your account?</h2>
+
+        <form action="" method="POST">{% csrf_token %}
+            <div class="NB-fields">
+                {{ delete_form.password.label_tag }}
+                {{ delete_form.password }}
+            </div>
+            
+            <div class="NB-fields">
+                {{ delete_form.confirm.label_tag }}
+                {{ delete_form.confirm }}
+            </div>
+
+            {% if delete_form.errors %}
+            <div class="NB-errors">
+                {% for field, error in delete_form.errors.items %}
+                    {{ error|safe }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        
+            <input type="submit" class="submit-button NB-modal-submit-button NB-modal-submit-green" value="Permanently delete my account"></button>
+        </form>
+
+    </div>  
+</div>
+
+{% endblock %}
