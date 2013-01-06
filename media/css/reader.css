@@ -7180,11 +7180,11 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference .NB-preference-options {
   float: right;
-  width: 370px;
+  width: 420px;
 }
 .NB-modal-preferences .NB-preference .NB-preference-label {
   float: left;
-  width: 150px;
+  width: 176px;
   position: relative;
 }
 .NB-modal-preferences .NB-preference .NB-preference-sublabel {
