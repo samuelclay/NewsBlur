@@ -68,8 +68,6 @@ body {
 
 .NB-theme-serif #story_pane .NB-feed-story-content {
     font-family: "Palatino Linotype", "Palatino", "URW Palladio L", "Nimbus Roman No9 L", Georgia, serif;
-    font-size: 14px;
-    line-height: 20px;
 }
 
 .chzn-drop {
@@ -1729,7 +1727,37 @@ background: transparent;
     width: auto !important;
     height: auto !important;
 }
+.NB-theme-sans-serif.NB-theme-size-xs #story_pane {
+    font-size: 11px;    
+}
+.NB-theme-sans-serif.NB-theme-size-s #story_pane {
+    font-size: 12px;    
+}
+.NB-theme-sans-serif.NB-theme-size-m #story_pane {
+    font-size: 13px;    
+}
+.NB-theme-sans-serif.NB-theme-size-l #story_pane {
+    font-size: 14px;    
+}
+.NB-theme-sans-serif.NB-theme-size-xl #story_pane {
+    font-size: 15px;    
+}
 
+.NB-theme-serif.NB-theme-size-xs #story_pane {
+    font-size: 12px;    
+}
+.NB-theme-serif.NB-theme-size-s #story_pane {
+    font-size: 13px;    
+}
+.NB-theme-serif.NB-theme-size-m #story_pane {
+    font-size: 14px;    
+}
+.NB-theme-serif.NB-theme-size-l #story_pane {
+    font-size: 15px;    
+}
+.NB-theme-serif.NB-theme-size-xl #story_pane {
+    font-size: 16px;    
+}
 
 #story_pane .wrapper {
     margin-left: 220px;
@@ -7246,6 +7274,27 @@ form.opml_import_form input {
 }
 .NB-modal-preferences .NB-preference-story-styling .NB-preference-story-styling-serif {
   font-family: "Palatino Linotype", Georgia, "URW Palladio L", "Century Schoolbook L", serif;  
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-options div {
+    clear: both;
+    overflow: hidden;
+    margin: 1px 0 0 0;
+    line-height: 18px;
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-story-size-xs {
+  font-size: 11px;
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-story-size-s {
+  font-size: 12px;
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-story-size-m {
+  font-size: 13px;
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-story-size-l {
+  font-size: 14px;
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-story-size-xl {
+  font-size: 15px;
 }
 .NB-modal-preferences .NB-preference-window input {
   margin-top: 4px;

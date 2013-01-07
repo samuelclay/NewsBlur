@@ -532,7 +532,34 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                             ])
                         ]),
                         $.make('div', { className: 'NB-preference-label'}, [
-                            'Feed view styling'
+                            'Feed view font family'
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-preference NB-preference-story-size' }, [
+                        $.make('div', { className: 'NB-preference-options' }, [
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-story-size-1', type: 'radio', name: 'story_size', value: 'xs' }),
+                                $.make('label', { 'for': 'NB-preference-story-size-1', className: 'NB-preference-story-size-xs' }, 'Extra small')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-story-size-2', type: 'radio', name: 'story_size', value: 's' }),
+                                $.make('label', { 'for': 'NB-preference-story-size-2', className: 'NB-preference-story-size-s' }, 'Small')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-story-size-3', type: 'radio', name: 'story_size', value: 'm' }),
+                                $.make('label', { 'for': 'NB-preference-story-size-3', className: 'NB-preference-story-size-m' }, 'Medium')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-story-size-4', type: 'radio', name: 'story_size', value: 'l' }),
+                                $.make('label', { 'for': 'NB-preference-story-size-4', className: 'NB-preference-story-size-l' }, 'Large')
+                            ]),
+                            $.make('div', [
+                                $.make('input', { id: 'NB-preference-story-size-5', type: 'radio', name: 'story_size', value: 'xl' }),
+                                $.make('label', { 'for': 'NB-preference-story-size-5', className: 'NB-preference-story-size-xl' }, 'Extra large')
+                            ])
+                        ]),
+                        $.make('div', { className: 'NB-preference-label'}, [
+                            'Feed view text size'
                         ])
                     ]),
                     $.make('div', { className: 'NB-preference NB-preference-public-comments' }, [
@@ -669,6 +696,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
         $('input[name=story_styling]', $modal).each(function() {
             if ($(this).val() == NEWSBLUR.Preferences.story_styling) {
+                $(this).attr('checked', true);
+                return false;
+            }
+        });
+        $('input[name=story_size]', $modal).each(function() {
+            if ($(this).val() == NEWSBLUR.Preferences.story_size) {
                 $(this).attr('checked', true);
                 return false;
             }
