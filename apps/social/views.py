@@ -503,7 +503,7 @@ def mark_story_as_shared(request):
     if not shared_story:
         story_db = {
             "story_guid": story.story_guid,
-            "story_permalink": story.story_guid,
+            "story_permalink": story.story_permalink,
             "story_title": story.story_title,
             "story_feed_id": story.story_feed_id,
             "story_content_z": story.story_content_z,
