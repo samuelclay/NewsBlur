@@ -50,24 +50,24 @@ a img {
 /* = Styling & Themes = */
 /* ==================== */
 
-body, body.NB-theme-sans-serif #story_pane {
+body {
+    font-family: "Lucida Sans", "Lucida Grande", "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.NB-theme-sans-serif-alt1 #story_pane {
     font-family: "Helvetica Neue", "Helvetica", sans-serif;
 }
 
-body.NB-theme-sans-serif-alt1 #story_pane {
-    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", sans-serif;
-}
-
-bodu.NB-theme-sans-serif-alt2 #story_pane {
+.NB-theme-sans-serif-alt2 #story_pane {
     font-family: "Open Sans", "Liberation Sans", sans-serif;
 }
 
-body.NB-theme-sans-serif-wide #story_pane {
+.NB-theme-sans-serif-wide #story_pane {
     font-family: "DejaVu Sans", "Bitstream Vera Sans", "Verdana", "Tahoma", "Geneva", sans-serif;
 }
 
-body.NB-theme-serif #story_pane .NB-feed-story-content {
-    font-family: "Perpetua", "Baskerville", "Big Caslon", "Palatino Linotype", "Palatino", "URW Palladio L", "Nimbus Roman No9 L", serif;
+.NB-theme-serif #story_pane .NB-feed-story-content {
+    font-family: "Palatino Linotype", "Palatino", "URW Palladio L", "Nimbus Roman No9 L", Georgia, serif;
     font-size: 14px;
     line-height: 20px;
 }
