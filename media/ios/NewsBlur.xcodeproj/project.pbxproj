@@ -1757,7 +1757,7 @@
 				FF2D8BDC1487EFF000057B80 /* Facebook */,
 				FF2D8BF31487EFF000057B80 /* Instapaper */,
 				FF2D8BF61487EFF000057B80 /* Pinboard */,
-				FF2D8BF91487EFF000057B80 /* Read It Later */,
+				FF2D8BF91487EFF000057B80 /* Pocket */,
 				FF2D8BFC1487EFF000057B80 /* Tumblr */,
 				FF2D8BFF1487EFF000057B80 /* Twitter */,
 			);
@@ -1793,7 +1793,7 @@
 			path = Pinboard;
 			sourceTree = "<group>";
 		};
-		FF2D8BF91487EFF000057B80 /* Read It Later */ = {
+		FF2D8BF91487EFF000057B80 /* Pocket */ = {
 			isa = PBXGroup;
 			children = (
 				FF2D8BFA1487EFF000057B80 /* SHKReadItLater.h */,

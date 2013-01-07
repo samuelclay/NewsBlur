@@ -84,7 +84,7 @@
 - (NSString*)facebookLocalAppId {
 	return @"";
 }
-// Read It Later - http://readitlaterlist.com/api/signup/ 
+// Pocket - http://getpocket.com/api/signup.php
 - (NSString*)readItLaterKey {
 	return @"";
 }
