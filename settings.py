@@ -441,6 +441,8 @@ TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 # = AWS Backing =
 # ===============
 
+ORIGINAL_PAGE_SERVER = "db01.newsblur.com:3060"
+
 BACKED_BY_AWS = {
     'pages_on_s3': False,
     'icons_on_s3': False,
