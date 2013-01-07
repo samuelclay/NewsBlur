@@ -56,7 +56,7 @@
 #define SHKFacebookLocalAppID      @""
 #define SHKFacebookSessionProxyURL  @""
 
-// Read It Later - http://readitlaterlist.com/api/?shk
+// Pocket - http://getpocket.com/api/signup.php
 #define SHKReadItLaterKey			@"c23d9HbTT2a8fma098AfIr9zQTgcF0l9"
 
 // Twitter - http://dev.twitter.com/apps/new
