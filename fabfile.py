@@ -8,6 +8,7 @@ from fabric.contrib import django
 import os
 import time
 import sys
+import re
 
 django.settings_module('settings')
 try:
@@ -603,7 +604,7 @@ def setup_node():
     sudo('add-apt-repository -y ppa:chris-lea/node.js')
     sudo('apt-get update')
     sudo('apt-get install -y nodejs')
-    run('curl http://npmjs.org/install.sh | sudo sh')
+    run('curl -L https://npmjs.org/install.sh | sudo sh')
     sudo('npm install -g supervisor')
     sudo('ufw allow 8888')
 
@@ -654,14 +655,14 @@ def setup_db_firewall():
     sudo('ufw allow ssh')
     sudo('ufw allow 80')
     
-    for port in ports:
-        sudo('ufw allow from 199.15.248.0/21 to any port %s ' % port)
+    sudo('ufw allow proto tcp from 199.15.248.0/21 to any port %s ' % ','.join(map(str, ports)))
 
     # EC2
     for host in env.roledefs['ec2task']:
+        ip = re.search('ec2-(\d+-\d+-\d+-\d+)', host).group(1).replace('-', '.')
         sudo('ufw allow proto tcp from %s to any port %s' % (
-            host,
-            ','.join(ports)
+            ip,
+            ','.join(map(str, ports))
         ))
 
     sudo('ufw --force enable')
