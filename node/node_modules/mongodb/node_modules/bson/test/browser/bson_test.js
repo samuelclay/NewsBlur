@@ -157,7 +157,25 @@ this.bson_test = {
       var data = binary.read(6, 5);
       test.ok(assertArrayEqual(stringToArrayBuffer('world'), data));
       test.done();
-    }    
+    },
+
+		'Should correctly handle toBson function for an object': function(test) {
+			// Test object
+			var doc = {
+				hello: new ObjectID(),
+				a:1
+			};
+			// Add a toBson method to the object
+			doc.toBSON = function() {
+				return {b:1};
+			}
+
+			// Serialize the data		
+			var serialized_data = BSON.serialize(doc, false, true);
+			var deserialized_doc = BSON.deserialize(serialized_data);	
+			test.equal(1, deserialized_doc.b);
+		  test.done();			
+		}
 };
 
 var assertArrayEqual = function(array1, array2) {

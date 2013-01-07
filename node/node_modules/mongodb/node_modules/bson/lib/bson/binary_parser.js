@@ -382,6 +382,4 @@ BinaryParserBuffer.prototype.readBits = function readBits (start, length) {
  */
 BinaryParser.Buffer = BinaryParserBuffer;
 
-if(typeof window === 'undefined') {
-  exports.BinaryParser = BinaryParser;
-}
+exports.BinaryParser = BinaryParser;

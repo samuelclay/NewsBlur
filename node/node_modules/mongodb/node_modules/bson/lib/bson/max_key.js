@@ -10,6 +10,4 @@ function MaxKey() {
   this._bsontype = 'MaxKey';  
 }
 
-if(typeof window === 'undefined') {
-  exports.MaxKey = MaxKey;
-}
+exports.MaxKey = MaxKey;

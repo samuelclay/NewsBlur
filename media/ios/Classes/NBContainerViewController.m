@@ -20,6 +20,7 @@
 #import "FeedDetailMenuViewController.h"
 #import "FontSettingsViewController.h"
 #import "AddSiteViewController.h"
+#import "TrainerViewController.h"
 
 #define NB_DEFAULT_MASTER_WIDTH 270
 #define NB_DEFAULT_STORY_TITLE_HEIGHT 1004
@@ -279,7 +280,7 @@
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38*3 : 38*5)];
+    [popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38*4 : 38*6)];
     [popoverController presentPopoverFromBarButtonItem:sender
                               permittedArrowDirections:UIPopoverArrowDirectionAny
                                               animated:YES];
@@ -298,12 +299,40 @@
     popoverController.delegate = self;
     
     
-    [popoverController setPopoverContentSize:CGSizeMake(240, 228)];
-    //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] 
+    [popoverController setPopoverContentSize:CGSizeMake(240, 38*7)];
+    //    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
     //                                       initWithCustomView:sender];
-    [popoverController presentPopoverFromBarButtonItem:sender 
-                              permittedArrowDirections:UIPopoverArrowDirectionAny 
-                                              animated:YES]; 
+    [popoverController presentPopoverFromBarButtonItem:sender
+                              permittedArrowDirections:UIPopoverArrowDirectionAny
+                                              animated:YES];
+}
+
+- (void)showTrainingPopover:(id)sender {
+    if (popoverController.isPopoverVisible) {
+        [popoverController dismissPopoverAnimated:NO];
+//        popoverController = nil;
+//        return;
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .001 * NSEC_PER_SEC),
+                   dispatch_get_current_queue(), ^{
+        popoverController = [[UIPopoverController alloc]
+                             initWithContentViewController:appDelegate.trainerViewController];
+        popoverController.delegate = self;
+        
+        [popoverController setPopoverContentSize:CGSizeMake(420, 382)];
+        if ([sender class] == [UIBarButtonItem class]) {
+           [popoverController presentPopoverFromBarButtonItem:sender
+                                     permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                     animated:NO];
+        } else {
+           CGRect frame = [sender CGRectValue];
+           [popoverController presentPopoverFromRect:frame
+                                              inView:self.storyPageControl.view
+                            permittedArrowDirections:UIPopoverArrowDirectionAny
+                                            animated:YES];
+        }
+                   });
 }
 
 - (void)hidePopover {

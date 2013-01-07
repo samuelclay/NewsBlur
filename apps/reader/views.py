@@ -30,6 +30,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders, MUserS
 from apps.reader.forms import SignupForm, LoginForm, FeatureForm
 from apps.rss_feeds.models import MFeedIcon
 from apps.statistics.models import MStatistics
+from apps.search.models import SearchStarredStory
 try:
     from apps.rss_feeds.models import Feed, MFeedPage, DuplicateFeed, MStory, MStarredStory
 except:
@@ -38,6 +39,7 @@ from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
 from apps.social.models import MSocialSubscription, MActivity
 from apps.categories.models import MCategory
 from apps.social.views import load_social_page
+from apps.rss_feeds.tasks import ScheduleImmediateFetches
 from utils import json_functions as json
 from utils.user_functions import get_user, ajax_login_required
 from utils.feed_functions import relative_timesince
@@ -219,18 +221,22 @@ def load_feeds(request):
     
     user_subs = UserSubscription.objects.select_related('feed').filter(user=user)
     
+    scheduled_feeds = []
     for sub in user_subs:
         pk = sub.feed_id
         if update_counts:
             sub.calculate_feed_scores(silent=True)
         feeds[pk] = sub.canonical(include_favicon=include_favicons)
         if not sub.feed.active and not sub.feed.has_feed_exception and not sub.feed.has_page_exception:
-            sub.feed.count_subscribers()
-            sub.feed.schedule_feed_fetch_immediately()
-        if sub.active and sub.feed.active_subscribers <= 0:
-            sub.feed.count_subscribers()
-            sub.feed.schedule_feed_fetch_immediately()
-            
+            scheduled_feeds.append(sub.feed.pk)
+        elif sub.active and sub.feed.active_subscribers <= 0:
+            scheduled_feeds.append(sub.feed.pk)
+    
+    if len(scheduled_feeds) > 0:
+        logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
+                     len(scheduled_feeds))
+        ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+
     starred_count = MStarredStory.objects(user_id=user.pk).count()
     
     social_params = {
@@ -248,7 +254,10 @@ def load_feeds(request):
     categories = None
     if not user_subs:
         categories = MCategory.serialize()
-    
+
+    logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials%s" % (
+            len(feeds.keys()), len(social_feeds), '. ~FCUpdating counts.' if update_counts else ''))
+
     data = {
         'feeds': feeds.values() if version == 2 else feeds,
         'social_feeds': social_feeds,
@@ -338,8 +347,8 @@ def load_feeds_flat(request):
     if not user_subs:
         categories = MCategory.serialize()
         
-    logging.user(request, "~FBLoading ~SB%s~SN/~SB%s~SN feeds/socials ~FMflat~FB. %s" % (
-            len(feeds.keys()), len(social_feeds), '~SBUpdating counts.' if update_counts else ''))
+    logging.user(request, "~FB~SBLoading ~FY%s~FB/~FM%s~FB feeds/socials ~FMflat~FB%s" % (
+            len(feeds.keys()), len(social_feeds), '. ~FCUpdating counts.' if update_counts else ''))
 
     data = {
         "flat_folders": flat_folders, 
@@ -455,6 +464,8 @@ def load_single_feed(request, feed_id):
     page         = int(request.REQUEST.get('page', 1))
     order        = request.REQUEST.get('order', 'newest')
     read_filter  = request.REQUEST.get('read_filter', 'all')
+    query        = request.REQUEST.get('query')
+
     dupe_feed_id = None
     userstories_db = None
     user_profiles = []
@@ -471,8 +482,10 @@ def load_single_feed(request, feed_id):
         usersub = UserSubscription.objects.get(user=user, feed=feed)
     except UserSubscription.DoesNotExist:
         usersub = None
-
-    if usersub and (read_filter == 'unread' or order == 'oldest'):
+    
+    if query:
+        stories = feed.find_stories(query, offset=offset, limit=limit)
+    elif usersub and (read_filter == 'unread' or order == 'oldest'):
         stories = usersub.get_stories(order=order, read_filter=read_filter, offset=offset, limit=limit)
     else:
         stories = feed.get_stories(offset, limit)
@@ -641,10 +654,21 @@ def load_starred_stories(request):
     offset = int(request.REQUEST.get('offset', 0))
     limit  = int(request.REQUEST.get('limit', 10))
     page   = int(request.REQUEST.get('page', 0))
+    query  = request.REQUEST.get('query')
     now    = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     if page: offset = limit * (page - 1)
-        
-    mstories       = MStarredStory.objects(user_id=user.pk).order_by('-starred_date')[offset:offset+limit]
+    
+    if query:
+        results = SearchStarredStory.query(user.pk, query)
+        story_ids = [result.db_id for result in results]
+        mstories = MStarredStory.objects(
+            user_id=user.pk, 
+            id__in=story_ids
+        ).order_by('-starred_date')[offset:offset+limit]
+    else:
+        mstories = MStarredStory.objects(
+            user_id=user.pk
+        ).order_by('-starred_date')[offset:offset+limit]
     stories        = Feed.format_stories(mstories)
     
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk, check_all=True)
@@ -700,9 +724,9 @@ def load_river_stories__redis(request):
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
 
-    if not feed_ids: 
-        logging.user(request, "~FCLoading empty river stories: page %s" % (page))
-        return dict(stories=[])
+    if not feed_ids:
+        usersubs = UserSubscription.objects.filter(user=user, active=True)
+        feed_ids = [sub.feed.pk for sub in usersubs]
     
     offset = (page-1) * limit
     limit = page * limit - 1
@@ -1353,7 +1377,7 @@ def send_story_email(request):
     message    = 'OK'
     story_id   = request.POST['story_id']
     feed_id    = request.POST['feed_id']
-    to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').split(' ')
+    to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').strip().split(' ')
     from_name  = request.POST['from_name']
     from_email = request.POST['from_email']
     comments   = request.POST['comments']
@@ -1363,7 +1387,7 @@ def send_story_email(request):
     if not to_addresses:
         code = -1
         message = 'Please provide at least one email address.'
-    elif not all(email_re.match(to_address) for to_address in to_addresses):
+    elif not all(email_re.match(to_address) for to_address in to_addresses if to_addresses):
         code = -1
         message = 'You need to send the email to a valid email address.'
     elif not email_re.match(from_email):

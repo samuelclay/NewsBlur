@@ -17,16 +17,17 @@
 @class NewsBlurAppDelegate;
 
 @interface NewsBlurViewController : BaseViewController 
-		   <UITableViewDelegate, UITableViewDataSource, 
-            UIAlertViewDelegate, PullToRefreshViewDelegate,
-            ASIHTTPRequestDelegate, NSCacheDelegate,
-            WEPopoverControllerDelegate,
-            UIPopoverControllerDelegate> {
+<UITableViewDelegate, UITableViewDataSource,
+UIAlertViewDelegate, PullToRefreshViewDelegate,
+ASIHTTPRequestDelegate, NSCacheDelegate,
+WEPopoverControllerDelegate,
+UIPopoverControllerDelegate> {
     NewsBlurAppDelegate *appDelegate;
     
     NSMutableDictionary * activeFeedLocations;
-    NSMutableDictionary *visibleFeeds;
     NSMutableDictionary *stillVisibleFeeds;
+    NSMutableDictionary *visibleFolders;
+
     BOOL viewShowingAllFeeds;
     PullToRefreshView *pull;
     NSDate *lastUpdate;
@@ -49,8 +50,8 @@
 @property (nonatomic) IBOutlet UISlider * feedScoreSlider;
 @property (nonatomic) IBOutlet UIBarButtonItem * homeButton;
 @property (nonatomic) NSMutableDictionary *activeFeedLocations;
-@property (nonatomic) NSMutableDictionary *visibleFeeds;
 @property (nonatomic) NSMutableDictionary *stillVisibleFeeds;
+@property (nonatomic) NSMutableDictionary *visibleFolders;
 @property (nonatomic, readwrite) BOOL viewShowingAllFeeds;
 @property (nonatomic) PullToRefreshView *pull;
 @property (nonatomic) NSDate *lastUpdate;
@@ -70,15 +71,14 @@
 - (void)didSelectSectionHeader:(UIButton *)button;
 - (IBAction)selectIntelligence;
 - (void)didCollapseFolder:(UIButton *)button;
+- (BOOL)isFeedVisible:(id)feedId;
 - (void)changeToAllMode;
-- (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel;
-- (void)calculateFeedLocations:(BOOL)markVisible;
+- (void)calculateFeedLocations;
 - (IBAction)sectionTapped:(UIButton *)button;
 - (IBAction)sectionUntapped:(UIButton *)button;
 - (IBAction)sectionUntappedOutside:(UIButton *)button;
 - (void)redrawUnreadCounts;
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed;
-- (void)switchSitesUnread;
 - (void)loadFavicons;
 - (void)loadAvatars;
 - (void)saveAndDrawFavicons:(ASIHTTPRequest *)request;

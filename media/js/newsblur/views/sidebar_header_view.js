@@ -61,29 +61,31 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     },
     
     count: function() {
-        // this.unread_counts = this.count_unreads_across_all_sites();
         this.unread_counts = NEWSBLUR.assets.folders.unread_counts();
         this.feeds_count = this.count_feeds();
           
-        if (NEWSBLUR.assets.preference('show_unread_counts_in_title')) {
-            var title = '(';
-            var counts = [];
-            var unread_view = _.isNumber(this.options.unread_view) && this.options.unread_view || NEWSBLUR.assets.preference('unread_view');
-            if (unread_view <= -1) {
-                counts.push(this.unread_counts['ng']);
-            }
-            if (unread_view <= 0) {
-                counts.push(this.unread_counts['nt']);
-            }
-            if (unread_view <= 1) {
-                counts.push(this.unread_counts['ps']);
-            }
-            if (!this.unread_counts['ng'] && !this.unread_counts['ps']) {
-                counts = [this.unread_counts['nt']];
-            }
-            title += counts.join('/') + ') NewsBlur';
-            document.title = title;
+        if (!NEWSBLUR.Globals.is_authenticated) return;
+        if (!NEWSBLUR.assets.preference('title_counts')) return;
+        
+        var counts = [];
+        var unread_view = _.isNumber(this.options.unread_view) && this.options.unread_view || NEWSBLUR.assets.preference('unread_view');
+        if (unread_view <= -1) {
+            counts.push(this.unread_counts['ng']);
         }
+        if (unread_view <= 0) {
+            counts.push(this.unread_counts['nt']);
+        }
+        if (unread_view <= 1) {
+            counts.push(this.unread_counts['ps']);
+        }
+        if (!this.unread_counts['ng'] && !this.unread_counts['ps']) {
+            counts = [this.unread_counts['nt']];
+        }
+        var title = "NewsBlur";
+        if (_.any(counts)) {
+            title = '(' + counts.join('/') + ') ' + title;
+        }
+        document.title = title;
     },
     
     count_unreads_across_all_sites: function() {

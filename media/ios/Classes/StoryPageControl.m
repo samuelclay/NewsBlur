@@ -141,8 +141,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     [self setNextPreviousButtons];
     [appDelegate adjustStoryDetailWebView];
-
-    previousPage.view.hidden = YES;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         if (!appDelegate.isSocialView) {
@@ -184,7 +182,8 @@
             self.navigationItem.titleView = imageView;
         }
     }
-
+    
+    previousPage.view.hidden = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -195,7 +194,7 @@
         //        self.subscribeButton.tintColor = UIColorFromRGB(0x0a6720);
     }
     appDelegate.isTryFeedView = NO;
-    previousPage.view.hidden = NO;
+    [self applyNewIndex:previousPage.pageIndex pageController:previousPage];
 }
 
 - (void)transitionFromFeedDetail {
@@ -299,13 +298,15 @@
 		pageFrame.origin.y = 0;
 		pageFrame.origin.x = self.scrollView.frame.size.width * newIndex;
         pageFrame.size.height = self.scrollView.frame.size.height;
+        pageController.view.hidden = NO;
 		pageController.view.frame = pageFrame;
 	} else {
 //        NSLog(@"Out of bounds: was %d, now %d", pageController.pageIndex, newIndex);
 		CGRect pageFrame = pageController.view.frame;
 		pageFrame.origin.x = self.scrollView.frame.size.width * newIndex;
-		pageFrame.origin.y = 48;
+		pageFrame.origin.y = self.scrollView.frame.size.height;
         pageFrame.size.height = self.scrollView.frame.size.height;
+        pageController.view.hidden = YES;
 		pageController.view.frame = pageFrame;
 	}
     
@@ -726,7 +727,7 @@
     }
     
     [appDelegate markActiveStorySaved:YES];
-    [self informMessage:@"This story is now saved"];
+    [self.currentPage flashCheckmarkHud:@"saved"];
 }
 
 - (void)markStoryAsUnsaved {
@@ -759,7 +760,7 @@
     //    [appDelegate.feedDetailViewController redrawUnreadStory];
     
     [appDelegate markActiveStorySaved:NO];
-    [self informMessage:@"This story is no longer saved"];
+    [self.currentPage flashCheckmarkHud:@"unsaved"];
 }
 
 - (void)markStoryAsUnread {
@@ -791,7 +792,7 @@
     [appDelegate markActiveStoryUnread];
     [appDelegate.feedDetailViewController redrawUnreadStory];
     
-    [self informMessage:@"This story is now unread"];
+    [self.currentPage flashCheckmarkHud:@"unread"];
 }
 
 - (IBAction)showOriginalSubview:(id)sender {
@@ -824,47 +825,7 @@
 #pragma mark Styles
 
 
-- (IBAction)toggleFontSize:(id)sender {
-    //    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-    //        if (popoverController == nil) {
-    //            popoverController = [[UIPopoverController alloc]
-    //                                 initWithContentViewController:appDelegate.fontSettingsViewController];
-    //
-    //            popoverController.delegate = self;
-    //        } else {
-    //            if (popoverController.isPopoverVisible) {
-    //                [popoverController dismissPopoverAnimated:YES];
-    //                return;
-    //            }
-    //
-    //            [popoverController setContentViewController:appDelegate.fontSettingsViewController];
-    //        }
-    //
-    //        [popoverController setPopoverContentSize:CGSizeMake(274.0, 130.0)];
-    //        UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc]
-    //                                           initWithCustomView:sender];
-    //
-    //        [popoverController presentPopoverFromBarButtonItem:settingsButton
-    //                                  permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    //    } else {
-    //        FontSettingsViewController *fontSettings = [[FontSettingsViewController alloc] init];
-    //        appDelegate.fontSettingsViewController = fontSettings;
-    //        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:appDelegate.fontSettingsViewController];
-    //
-    //        // adding Done button
-    //        UIBarButtonItem *donebutton = [[UIBarButtonItem alloc]
-    //                                       initWithTitle:@"Done"
-    //                                       style:UIBarButtonItemStyleDone
-    //                                       target:self
-    //                                       action:@selector(hideToggleFontSize)];
-    //
-    //        appDelegate.fontSettingsViewController.navigationItem.rightBarButtonItem = donebutton;
-    //        appDelegate.fontSettingsViewController.navigationItem.title = @"Style";
-    //        navController.navigationBar.tintColor = [UIColor colorWithRed:0.16f green:0.36f blue:0.46 alpha:0.9];
-    //        [self presentModalViewController:navController animated:YES];
-    //
-    //    }
-    
+- (IBAction)toggleFontSize:(id)sender {    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         [appDelegate.masterContainerViewController showFontSettingsPopover:sender];
     } else {
@@ -881,7 +842,7 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(240, 154)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(240, 38*7-2)];
         [self.popoverController presentPopoverFromBarButtonItem:self.fontSettingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionAny
                                                        animated:YES];

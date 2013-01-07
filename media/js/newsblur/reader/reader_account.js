@@ -129,6 +129,15 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                         'Emails'
                     ])
                 ]),
+                $.make('div', { className: 'NB-preference NB-preference-delete' }, [
+                    $.make('div', { className: 'NB-preference-options' }, [
+                        $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['delete-account'] }, 'Delete my account')
+                    ]),
+                    $.make('div', { className: 'NB-preference-label'}, [
+                        'Erase yourself',
+                        $.make('div', { className: 'NB-preference-sublabel' }, 'Warning: This is actually permanent')
+                    ])
+                ]),
                 $.make('div', { className: 'NB-modal-submit' }, [
                     $.make('input', { type: 'submit', disabled: 'true', className: 'NB-modal-submit-green NB-disabled', value: 'Change what you like above...' }),
                     ' or ',

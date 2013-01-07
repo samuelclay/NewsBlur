@@ -233,6 +233,7 @@ INSTALLED_APPS = (
     'apps.push',
     'apps.social',
     'apps.oauth',
+    'apps.search',
     'apps.categories',
     'south',
     'utils',
@@ -361,6 +362,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=12),
         'options': {'queue': 'beat_tasks'},
     },
+    'clean-stories': {
+        'task': 'clean-stories',
+        'schedule': datetime.timedelta(hours=24),
+        'options': {'queue': 'beat_tasks'},
+    },
     'premium-expire': {
         'task': 'premium-expire',
         'schedule': datetime.timedelta(hours=24),
@@ -414,6 +420,12 @@ class MasterSlaveRouter(object):
 REDIS = {
     'host': 'db01',
 }
+
+# =================
+# = Elasticsearch =
+# =================
+
+ELASTICSEARCH_HOSTS = ['db02:9200']
 
 # ===============
 # = Social APIs =

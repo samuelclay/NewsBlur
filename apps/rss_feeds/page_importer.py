@@ -24,6 +24,7 @@ BROKEN_PAGES = [
 # Also change in reader_utils.js.
 BROKEN_PAGE_URLS = [
     'nytimes.com',
+    'washingtonpost.com',
     'stackoverflow.com',
     'stackexchange.com',
     'twitter.com',
@@ -37,8 +38,6 @@ class PageImporter(object):
         
     @property
     def headers(self):
-        s = requests.session()
-        s.config['keep_alive'] = False
         return {
             'User-Agent': 'NewsBlur Page Fetcher (%s subscriber%s) - %s '
                           '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
@@ -79,7 +78,8 @@ class PageImporter(object):
                         response = requests.get(feed_link, headers=self.headers)
                     except requests.exceptions.TooManyRedirects:
                         response = requests.get(feed_link)
-                    except AttributeError:
+                    except AttributeError, e:
+                        logging.debug('   ***> [%-30s] Page fetch failed using requests: %s' % (self.feed, e))
                         self.save_no_page()
                         return
                     try:
@@ -129,7 +129,7 @@ class PageImporter(object):
         return html
         
     def save_no_page(self):
-        logging.debug('   --->> [%-30s] ~FYNo original page: %s' % (self.feed, self.feed.feed_link))
+        logging.debug('   ---> [%-30s] ~FYNo original page: %s' % (self.feed, self.feed.feed_link))
         self.feed.has_page = False
         self.feed.save()
         self.feed.save_page_history(404, "Feed has no original page.")

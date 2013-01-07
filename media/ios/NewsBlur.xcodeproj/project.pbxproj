@@ -51,9 +51,6 @@
 		436ACA8D15BF1088004E01CC /* NBContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 436ACA8C15BF1088004E01CC /* NBContainerViewController.m */; };
 		43763AD1158F90B100B3DBE2 /* FontSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */; };
 		43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */; };
-		437AA8C015929DFA005463F5 /* storyDetailView.css in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8BF15929DFA005463F5 /* storyDetailView.css */; };
-		437AA8C115929FFF005463F5 /* zepto.js in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8B815929D51005463F5 /* zepto.js */; };
-		437AA8C215929FFF005463F5 /* storyDetailView.js in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8BD15929DA7005463F5 /* storyDetailView.js */; };
 		437AA8CA159394E2005463F5 /* ShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437AA8C8159394E2005463F5 /* ShareViewController.m */; };
 		437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */; };
 		437F974C15ACA0ED0007136B /* DashboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 437F974A15ACA0ED0007136B /* DashboardViewController.m */; };
@@ -264,7 +261,6 @@
 		43E8382115BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43E8381A15BC73EB000553BE /* FirstTimeUserAddNewsBlurViewController.xib */; };
 		43E8382215BC73EB000553BE /* FirstTimeUserAddSitesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 43E8381C15BC73EB000553BE /* FirstTimeUserAddSitesViewController.m */; };
 		43E8382315BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 43E8381D15BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib */; };
-		43E8856015951F930032022E /* reader.css in Resources */ = {isa = PBXBuildFile; fileRef = 43E8855F15951F930032022E /* reader.css */; };
 		43F44B1C159D8DBC00F48F8A /* FeedTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F44B1B159D8D7200F48F8A /* FeedTableCell.m */; };
 		43F6A79915B0C57F0092EE91 /* flag_orange.png in Resources */ = {isa = PBXBuildFile; fileRef = 43F6A79815B0C57F0092EE91 /* flag_orange.png */; };
 		43F6A79D15B0CDC60092EE91 /* ActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F6A79C15B0CDC60092EE91 /* ActivityCell.m */; };
@@ -372,6 +368,17 @@
 		FF5F3A87162B834E008DBE3E /* bin_closed.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A86162B834E008DBE3E /* bin_closed.png */; };
 		FF5F3A89162B8377008DBE3E /* arrow_branch.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A88162B8377008DBE3E /* arrow_branch.png */; };
 		FF5F3A8B162B8390008DBE3E /* car.png in Resources */ = {isa = PBXBuildFile; fileRef = FF5F3A8A162B8390008DBE3E /* car.png */; };
+		FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF67D3B1168924C40057A7DA /* TrainerViewController.m */; };
+		FF67D3B51689746B0057A7DA /* bricks.png in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B41689746B0057A7DA /* bricks.png */; };
+		FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B6168977690057A7DA /* TrainerViewController.xib */; };
+		FF67D3B916897AD80057A7DA /* TrainerViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */; };
+		FF67D3BB168A70630057A7DA /* trainer.css in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BA168A70630057A7DA /* trainer.css */; };
+		FF67D3C0168A708D0057A7DA /* reader.css in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BC168A708D0057A7DA /* reader.css */; };
+		FF67D3C1168A708D0057A7DA /* storyDetailView.css in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BD168A708D0057A7DA /* storyDetailView.css */; };
+		FF67D3CC168A73380057A7DA /* storyDetailView.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BE168A708D0057A7DA /* storyDetailView.js */; };
+		FF67D3CD168A73380057A7DA /* zepto.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3BF168A708D0057A7DA /* zepto.js */; };
+		FF67D3CE168A73380057A7DA /* trainer.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3C4168A71870057A7DA /* trainer.js */; };
+		FF67D3CF168A73380057A7DA /* fastTouch.js in Resources */ = {isa = PBXBuildFile; fileRef = FF67D3C6168A71B30057A7DA /* fastTouch.js */; };
 		FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = FF6A233116448E0700E15989 /* StoryPageControl.m */; };
 		FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6A23361644903900E15989 /* StoryPageControl.xib */; };
 		FF793E1B13F1A9F700F282D2 /* ASIDataCompressor.m in Sources */ = {isa = PBXBuildFile; fileRef = FF793E1813F1A9F700F282D2 /* ASIDataCompressor.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -439,9 +446,6 @@
 		43763ACE158F90B100B3DBE2 /* FontSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontSettingsViewController.h; sourceTree = "<group>"; };
 		43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontSettingsViewController.m; sourceTree = "<group>"; };
 		43763AD0158F90B100B3DBE2 /* FontSettingsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = FontSettingsViewController.xib; path = ../Classes/FontSettingsViewController.xib; sourceTree = "<group>"; };
-		437AA8B815929D51005463F5 /* zepto.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = zepto.js; path = ../zepto.js; sourceTree = "<group>"; };
-		437AA8BD15929DA7005463F5 /* storyDetailView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = storyDetailView.js; path = ../storyDetailView.js; sourceTree = "<group>"; };
-		437AA8BF15929DFA005463F5 /* storyDetailView.css */ = {isa = PBXFileReference; explicitFileType = text.css; fileEncoding = 4; name = storyDetailView.css; path = ../storyDetailView.css; sourceTree = "<group>"; };
 		437AA8C7159394E2005463F5 /* ShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
 		437AA8C8159394E2005463F5 /* ShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
 		437AA8C9159394E2005463F5 /* ShareViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "ShareViewController~ipad.xib"; path = "Classes/ShareViewController~ipad.xib"; sourceTree = "<group>"; };
@@ -700,7 +704,6 @@
 		43E8381B15BC73EB000553BE /* FirstTimeUserAddSitesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FirstTimeUserAddSitesViewController.h; sourceTree = "<group>"; };
 		43E8381C15BC73EB000553BE /* FirstTimeUserAddSitesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FirstTimeUserAddSitesViewController.m; sourceTree = "<group>"; };
 		43E8381D15BC73EB000553BE /* FirstTimeUserAddSitesViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FirstTimeUserAddSitesViewController.xib; sourceTree = "<group>"; };
-		43E8855F15951F930032022E /* reader.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = reader.css; path = ../reader.css; sourceTree = "<group>"; };
 		43F44B1A159D8D7200F48F8A /* FeedTableCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedTableCell.h; sourceTree = "<group>"; };
 		43F44B1B159D8D7200F48F8A /* FeedTableCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedTableCell.m; sourceTree = "<group>"; };
 		43F6A79815B0C57F0092EE91 /* flag_orange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flag_orange.png; sourceTree = "<group>"; };
@@ -903,6 +906,18 @@
 		FF5F3A86162B834E008DBE3E /* bin_closed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bin_closed.png; sourceTree = "<group>"; };
 		FF5F3A88162B8377008DBE3E /* arrow_branch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow_branch.png; sourceTree = "<group>"; };
 		FF5F3A8A162B8390008DBE3E /* car.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = car.png; sourceTree = "<group>"; };
+		FF67D3B0168924C40057A7DA /* TrainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrainerViewController.h; sourceTree = "<group>"; };
+		FF67D3B1168924C40057A7DA /* TrainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrainerViewController.m; sourceTree = "<group>"; };
+		FF67D3B41689746B0057A7DA /* bricks.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bricks.png; sourceTree = "<group>"; };
+		FF67D3B6168977690057A7DA /* TrainerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TrainerViewController.xib; sourceTree = "<group>"; };
+		FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "TrainerViewController~ipad.xib"; path = "Resources-iPad/Classes/TrainerViewController~ipad.xib"; sourceTree = "<group>"; };
+		FF67D3BA168A70630057A7DA /* trainer.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = trainer.css; path = ../static/trainer.css; sourceTree = "<group>"; };
+		FF67D3BC168A708D0057A7DA /* reader.css */ = {isa = PBXFileReference; explicitFileType = text.css; fileEncoding = 4; name = reader.css; path = ../static/reader.css; sourceTree = "<group>"; };
+		FF67D3BD168A708D0057A7DA /* storyDetailView.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = storyDetailView.css; path = ../static/storyDetailView.css; sourceTree = "<group>"; };
+		FF67D3BE168A708D0057A7DA /* storyDetailView.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = storyDetailView.js; path = ../static/storyDetailView.js; sourceTree = "<group>"; };
+		FF67D3BF168A708D0057A7DA /* zepto.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = zepto.js; path = ../static/zepto.js; sourceTree = "<group>"; };
+		FF67D3C4168A71870057A7DA /* trainer.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = trainer.js; path = ../static/trainer.js; sourceTree = "<group>"; };
+		FF67D3C6168A71B30057A7DA /* fastTouch.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = fastTouch.js; path = ../static/fastTouch.js; sourceTree = "<group>"; };
 		FF6A233016448E0700E15989 /* StoryPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoryPageControl.h; sourceTree = "<group>"; };
 		FF6A233116448E0700E15989 /* StoryPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoryPageControl.m; sourceTree = "<group>"; };
 		FF6A23361644903900E15989 /* StoryPageControl.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StoryPageControl.xib; path = ../Classes/StoryPageControl.xib; sourceTree = "<group>"; };
@@ -1181,6 +1196,8 @@
 				43763ACF158F90B100B3DBE2 /* FontSettingsViewController.m */,
 				78095EC6128F30B500230C8E /* OriginalStoryViewController.h */,
 				78095EC7128F30B500230C8E /* OriginalStoryViewController.m */,
+				FF67D3B0168924C40057A7DA /* TrainerViewController.h */,
+				FF67D3B1168924C40057A7DA /* TrainerViewController.m */,
 			);
 			name = Story;
 			sourceTree = "<group>";
@@ -1367,8 +1384,9 @@
 		431B857715A132BE00DCE497 /* css */ = {
 			isa = PBXGroup;
 			children = (
-				437AA8BF15929DFA005463F5 /* storyDetailView.css */,
-				43E8855F15951F930032022E /* reader.css */,
+				FF67D3BC168A708D0057A7DA /* reader.css */,
+				FF67D3BD168A708D0057A7DA /* storyDetailView.css */,
+				FF67D3BA168A70630057A7DA /* trainer.css */,
 			);
 			name = css;
 			sourceTree = "<group>";
@@ -1376,8 +1394,10 @@
 		431B857815A132C500DCE497 /* js */ = {
 			isa = PBXGroup;
 			children = (
-				437AA8B815929D51005463F5 /* zepto.js */,
-				437AA8BD15929DA7005463F5 /* storyDetailView.js */,
+				FF67D3BE168A708D0057A7DA /* storyDetailView.js */,
+				FF67D3BF168A708D0057A7DA /* zepto.js */,
+				FF67D3C6168A71B30057A7DA /* fastTouch.js */,
+				FF67D3C4168A71870057A7DA /* trainer.js */,
 			);
 			name = js;
 			sourceTree = "<group>";
@@ -1385,6 +1405,7 @@
 		433323B5158901A40025064D /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FF67D3B41689746B0057A7DA /* bricks.png */,
 				432EBD1415D1A7800000729D /* user_on.png */,
 				432EBD1515D1A7800000729D /* user_on@2x.png */,
 				432EBD0C15D1A2B00000729D /* fountain_pen_on.png */,
@@ -1479,6 +1500,7 @@
 				43081E2115AFE84200B24D7A /* ShareViewController.xib */,
 				43B8F021156603170008733D /* StoryDetailViewController.xib */,
 				FF6A23361644903900E15989 /* StoryPageControl.xib */,
+				FF67D3B6168977690057A7DA /* TrainerViewController.xib */,
 				43A4BAEA15C893E300F3B8D4 /* FriendsListViewController.xib */,
 			);
 			path = "Resources-iPhone";
@@ -1493,6 +1515,7 @@
 				43D045241565BC150085F811 /* LoginViewController~ipad.xib */,
 				43D0451F1565BC150085F811 /* MainWindow~ipad.xib */,
 				43D045281565BC150085F811 /* MoveSiteViewController~ipad.xib */,
+				FF67D3B816897AD80057A7DA /* TrainerViewController~ipad.xib */,
 				43D045251565BC150085F811 /* OriginalStoryViewController~ipad.xib */,
 				43D045271565BC150085F811 /* AddSiteAutocompleteCell~ipad.xib */,
 				43D045221565BC150085F811 /* StoryDetailViewController~ipad.xib */,
@@ -1734,7 +1757,7 @@
 				FF2D8BDC1487EFF000057B80 /* Facebook */,
 				FF2D8BF31487EFF000057B80 /* Instapaper */,
 				FF2D8BF61487EFF000057B80 /* Pinboard */,
-				FF2D8BF91487EFF000057B80 /* Read It Later */,
+				FF2D8BF91487EFF000057B80 /* Pocket */,
 				FF2D8BFC1487EFF000057B80 /* Tumblr */,
 				FF2D8BFF1487EFF000057B80 /* Twitter */,
 			);
@@ -1770,7 +1793,7 @@
 			path = Pinboard;
 			sourceTree = "<group>";
 		};
-		FF2D8BF91487EFF000057B80 /* Read It Later */ = {
+		FF2D8BF91487EFF000057B80 /* Pocket */ = {
 			isa = PBXGroup;
 			children = (
 				FF2D8BFA1487EFF000057B80 /* SHKReadItLater.h */,
@@ -1962,11 +1985,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FF67D3CC168A73380057A7DA /* storyDetailView.js in Resources */,
+				FF67D3CD168A73380057A7DA /* zepto.js in Resources */,
+				FF67D3CE168A73380057A7DA /* trainer.js in Resources */,
+				FF67D3CF168A73380057A7DA /* fastTouch.js in Resources */,
 				FF2D8C341487EFF000057B80 /* SHKSharers.plist in Resources */,
 				FF2D8C3B1487EFF000057B80 /* ShareKit.bundle in Resources */,
 				FF2D8C8E1487F11500057B80 /* FBDialog.bundle in Resources */,
-				437AA8C115929FFF005463F5 /* zepto.js in Resources */,
-				437AA8C215929FFF005463F5 /* storyDetailView.js in Resources */,
 				43B8F022156603180008733D /* AddSiteAutocompleteCell.xib in Resources */,
 				43B8F023156603180008733D /* AddSiteViewController.xib in Resources */,
 				43B8F025156603180008733D /* FeedDetailViewController.xib in Resources */,
@@ -1997,9 +2022,7 @@
 				43C95C4B158BF8810086C69B /* google_reader_selected_background.png in Resources */,
 				43763AD2158F90B100B3DBE2 /* FontSettingsViewController.xib in Resources */,
 				439DAB211590DA350019B0EB /* FeedsMenuViewController.xib in Resources */,
-				437AA8C015929DFA005463F5 /* storyDetailView.css in Resources */,
 				437AA8CB159394E2005463F5 /* ShareViewController~ipad.xib in Resources */,
-				43E8856015951F930032022E /* reader.css in Resources */,
 				437F974D15ACA0ED0007136B /* DashboardViewController.xib in Resources */,
 				43081E2215AFE84200B24D7A /* ShareViewController.xib in Resources */,
 				43A4C44215B00A26008787B5 /* 06-arrow-south.png in Resources */,
@@ -2191,6 +2214,12 @@
 				FF4130AB162F3C2F00DDB6A7 /* archive_white.png in Resources */,
 				FF6A23391644957800E15989 /* StoryPageControl.xib in Resources */,
 				FFAD0BE71649EC1800EE33D0 /* StoryPageControl~ipad.xib in Resources */,
+				FF67D3B51689746B0057A7DA /* bricks.png in Resources */,
+				FF67D3B7168977690057A7DA /* TrainerViewController.xib in Resources */,
+				FF67D3B916897AD80057A7DA /* TrainerViewController~ipad.xib in Resources */,
+				FF67D3BB168A70630057A7DA /* trainer.css in Resources */,
+				FF67D3C1168A708D0057A7DA /* storyDetailView.css in Resources */,
+				FF67D3C0168A708D0057A7DA /* reader.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2341,6 +2370,7 @@
 				FFDE35EA162799B90034BFDE /* FeedDetailMenuViewController.m in Sources */,
 				FF4130A3162E10CF00DDB6A7 /* MenuTableViewCell.m in Sources */,
 				FF6A233216448E0700E15989 /* StoryPageControl.m in Sources */,
+				FF67D3B2168924C40057A7DA /* TrainerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

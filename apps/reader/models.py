@@ -393,16 +393,17 @@ class UserSubscription(models.Model):
             date_delta = self.mark_read_date
         else:
             self.mark_read_date = date_delta
-
-        read_stories = MUserStory.objects(user_id=self.user_id,
-                                          feed_id=self.feed_id,
-                                          read_date__gte=self.mark_read_date)
-        read_stories_ids = [us.story_id for us in read_stories]
         
         if not stories:
             stories_db = MStory.objects(story_feed_id=self.feed_id,
                                         story_date__gte=date_delta)
             stories = Feed.format_stories(stories_db, self.feed_id)
+        
+        story_ids = [s['id'] for s in stories]
+        read_stories = MUserStory.objects(user_id=self.user_id,
+                                          feed_id=self.feed_id,
+                                          story_id__in=story_ids)
+        read_stories_ids = [us.story_id for us in read_stories]
 
         oldest_unread_story_date = now
         unread_stories = []
@@ -469,7 +470,7 @@ class UserSubscription(models.Model):
             self.mark_feed_read()
         
         if not silent:
-            logging.info(' ---> [%s] Computing scores: %s (%s/%s/%s)' % (self.user, self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
+            logging.user(self.user, '~FC~SNComputing scores: %s (~SB%s~SN/~SB%s~SN/~SB%s~SN)' % (self.feed, feed_scores['negative'], feed_scores['neutral'], feed_scores['positive']))
             
         return self
     
@@ -584,6 +585,7 @@ class MUserStory(mongo.Document):
     story_date = mongo.DateTimeField()
     story = mongo.ReferenceField(MStory, dbref=True)
     found_story = mongo.GenericReferenceField()
+    shared = mongo.BooleanField()
     
     meta = {
         'collection': 'userstories',

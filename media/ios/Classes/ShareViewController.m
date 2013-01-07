@@ -366,7 +366,7 @@
     appDelegate.activeFeedStories = [NSArray arrayWithArray:newActiveFeedStories];
     
     self.commentField.text = nil;
-    [appDelegate.storyPageControl refreshPages];
+    [appDelegate.storyPageControl.currentPage setActiveStoryAtIndex:-1];
     [appDelegate.storyPageControl.currentPage refreshComments:replyId];
     [appDelegate changeActiveFeedDetailRow];
 

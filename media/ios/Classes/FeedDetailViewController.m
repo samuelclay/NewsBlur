@@ -222,6 +222,8 @@
     [self.storyTitlesTable reloadData];
     [storyTitlesTable scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
     appDelegate.activeClassifiers = [NSMutableDictionary dictionary];
+    appDelegate.activePopularAuthors = [NSArray array];
+    appDelegate.activePopularTags = [NSArray array];
     
     if (appDelegate.isRiverView) {
         [self fetchRiverPage:1 withCallback:nil];
@@ -244,6 +246,8 @@
 - (void)fetchFeedDetail:(int)page withCallback:(void(^)())callback {
     NSString *theFeedDetailURL;
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    
+    if (!appDelegate.activeFeed) return;
     
     if (callback || (!self.pageFetching && !self.pageFinished)) {
     
@@ -287,6 +291,7 @@
             [self informError:[request error]];
         }];
         [request setCompletionBlock:^(void) {
+            if (!appDelegate.activeFeed) return;
             [self finishedLoadingFeed:request];
             if (callback) {
                 callback();
@@ -397,7 +402,8 @@
                              options:kNilOptions 
                              error:&error];
     id feedId = [results objectForKey:@"feed_id"];
-        
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    
     if (!(appDelegate.isRiverView || appDelegate.isSocialView || appDelegate.isSocialRiverView) 
         && request.tag != [feedId intValue]) {
         return;
@@ -419,9 +425,10 @@
             [appDelegate.activeClassifiers setObject:[newClassifiers objectForKey:key] forKey:key];
         }
     } else {
-        NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
         [appDelegate.activeClassifiers setObject:newClassifiers forKey:feedIdStr];
     }
+    appDelegate.activePopularAuthors = [results objectForKey:@"feed_authors"];
+    appDelegate.activePopularTags = [results objectForKey:@"feed_tags"];
     
     NSArray *newStories = [results objectForKey:@"stories"];
     NSMutableArray *confirmedNewStories = [[NSMutableArray alloc] init];
@@ -882,7 +889,7 @@
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
     NSLog(@"mark feeds read: %d %d", appDelegate.isRiverView, includeHidden);
-    if ([appDelegate.activeFolder isEqualToString:@"everything"]) {
+    if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
         // Mark folder as read
         NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_all_as_read",
                                NEWSBLUR_URL];
@@ -1078,7 +1085,7 @@
         if ([self.popoverController respondsToSelector:@selector(setContainerViewProperties:)]) {
             [self.popoverController setContainerViewProperties:[self improvedContainerViewProperties]];
         }
-        [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 3 : 38 * 5)];
+        [self.popoverController setPopoverContentSize:CGSizeMake(260, appDelegate.isRiverView ? 38 * 4 : 38 * 6)];
         [self.popoverController presentPopoverFromBarButtonItem:self.settingsButton
                                        permittedArrowDirections:UIPopoverArrowDirectionDown
                                                        animated:YES];
@@ -1173,6 +1180,10 @@
 
 - (void)openMoveView {
     [appDelegate showMoveSite];
+}
+
+- (void)openTrainSite {
+    [appDelegate openTrainSite];
 }
 
 - (void)showUserProfile {

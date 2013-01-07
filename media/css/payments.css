@@ -19,14 +19,14 @@
   font-size: 36px;
   margin: 0 0 12px;
   color: #303030;
-  text-shadow: 1px 1px 0 #FFF;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
   text-transform: uppercase;
 }
 
 .NB-paypal-return .NB-paypal-return-subtitle {
   font-size: 24px;
   color: #324A15;
-  text-shadow: 1px 1px 0 #FFF;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
 
 .NB-paypal-return .NB-paypal-return-loading {
@@ -39,7 +39,7 @@
 /* = Stripe = */
 /* ========== */
 
-.NB-stripe-form-wrapper {
+.NB-static-form-wrapper {
   margin: 56px 0 18px;
   background-color: #D3E7BA;
   border-top: 1px solid #A0A0A0;
@@ -50,14 +50,14 @@
   background-image: -webkit-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
   background-image: -ms-linear-gradient(bottom, rgb(188,214,167) 0%, rgb(223,247,212) 100%);
 }
-.NB-stripe-form {
+.NB-static-form {
     margin: 0 auto;
     width: 360px;
     overflow: hidden;
 }
 
-.NB-stripe-form input,
-.NB-stripe-form select {
+.NB-static-form input,
+.NB-static-form select {
     margin: 6px 0 2px;
     width: 200px;
     font-size: 14px;
@@ -68,11 +68,11 @@
     box-shadow:2px 2px 0 #A0B998;
 }
 
-.NB-stripe-form input.error,
-.NB-stripe-form select.error {
+.NB-static-form input.error,
+.NB-static-form select.error {
     border-color: #830C0C;
 }
-.NB-stripe-form button {
+.NB-static-form button {
     width: 200px;
     margin: 12px 0 4px 150px;
     
@@ -80,73 +80,73 @@
     -webkit-box-shadow:2px 2px 0 #A0B998;
     box-shadow:2px 2px 0 #A0B998;
 }
-.NB-stripe-form .helptext {
+.NB-static-form .helptext {
     display: none;
 }
 
-.NB-stripe-form #id_card_cvv {
+.NB-static-form #id_card_cvv {
     width: 42px;
 }
 
-.NB-stripe-form .NB-stripe-username {
+.NB-static-form .NB-stripe-username {
     margin: 6px 0 12px;
 }
 
-.NB-stripe-form label {
+.NB-static-form label {
     width: 150px;
     display: block;
     float: left;
     clear: both;
     margin: 6px 0 0;
     padding: 2px 0 0;
-    text-shadow: 0 1px 0 #F3FFED;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
     text-transform: uppercase;
     font-size: 12px;
     font-weight: bold;
 }
 
-.NB-stripe-form .NB-creditcards {
+.NB-static-form .NB-creditcards {
     margin: 8px 0 0 150px;
 }
 
-.NB-stripe-form input[type=submit] {
+.NB-static-form input[type=submit] {
     margin-left: 150px;
     width: 200px;
 }
 
-.NB-stripe-form label.error {
+.NB-static-form label.error {
     width: 100%;
     margin-left: 150px;
     text-transform: none;
 }
 
-.NB-stripe-form p {
+.NB-static-form p {
     overflow: hidden;
 }
 
-.NB-stripe-form .NB-stripe-plan-choice {
+.NB-static-form .NB-stripe-plan-choice {
     float: left;
     width: 200px;
     margin-top: 4px;
     padding: 0 2px;
     font-weight: bold;
 }
-.NB-stripe-form .NB-stripe-plan-choice label {
+.NB-static-form .NB-stripe-plan-choice label {
     width: auto;
     float: left;
     margin-top: 0;
 }
-.NB-stripe-form .NB-stripe-plan-choice input {
+.NB-static-form .NB-stripe-plan-choice input {
     width: auto;
     margin-right: 4px;
 }
 
-.NB-stripe-form .NB-small {
+.NB-static-form .NB-small {
     font-size: 10px;
     margin-left: 4px;
     color: #575857;
 }
-.NB-stripe-form .payment-errors {
+.NB-static-form .payment-errors {
     margin: 8px 0 0 150px;
     color: #600000;
     display: block;

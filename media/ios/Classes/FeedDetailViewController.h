@@ -74,6 +74,7 @@
 - (void)deleteSite;
 - (void)deleteFolder;
 - (void)openMoveView;
+- (void)openTrainSite;
 - (void)showUserProfile;
 - (void)changeActiveFeedDetailRow;
 - (void)instafetchFeed;

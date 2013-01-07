@@ -52,7 +52,8 @@ NEWSBLUR.ReaderClassifierStory = function(story_id, feed_id, options) {
     this.cache = {};
     this.story_id = story_id;
     this.feed_id = feed_id;
-    if (options.social_feed_id) this.feed_id = options.social_feed_id;
+    this.original_feed_id = feed_id;
+    // if (options.social_feed_id) this.feed_id = options.social_feed_id;
     this.trainer_iterator = -1;
     this.options = $.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
@@ -885,7 +886,9 @@ var classifier_prototype = {
         var $save = $('.NB-modal-submit-save', this.$modal);
         var data = this.serialize_classifier();
         var feed_id = this.feed_id;
-        
+        if (this.options.social_feed && this.story_id) {
+            feed_id = this.original_feed_id;
+        }
         
         if (this.options['training']) {
             this.cache[this.feed_id] = this.$modal.clone();
@@ -899,7 +902,7 @@ var classifier_prototype = {
         NEWSBLUR.assets.recalculate_story_scores(feed_id);
         this.model.save_classifier(data, function() {
             if (!keep_modal_open) {
-                NEWSBLUR.reader.force_feeds_refresh(null, true);
+                NEWSBLUR.reader.feed_unread_count(feed_id);
                 // NEWSBLUR.reader.force_feed_refresh();
                 // NEWSBLUR.reader.open_feed(self.feed_id, true);
                 // TODO: Update counts in active feed.

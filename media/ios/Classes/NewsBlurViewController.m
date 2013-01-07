@@ -48,8 +48,8 @@ static const CGFloat kFolderTitleHeight = 28;
 @synthesize homeButton;
 @synthesize intelligenceControl;
 @synthesize activeFeedLocations;
-@synthesize visibleFeeds;
 @synthesize stillVisibleFeeds;
+@synthesize visibleFolders;
 @synthesize viewShowingAllFeeds;
 @synthesize pull;
 @synthesize lastUpdate;
@@ -137,19 +137,13 @@ static const CGFloat kFolderTitleHeight = 28;
     [MBProgressHUD hideHUDForView:appDelegate.storyPageControl.view animated:NO];
     
     if (appDelegate.activeFeed || appDelegate.isRiverView) {        
-        [self.feedTitlesTable beginUpdates];
-        [self.feedTitlesTable 
-         reloadRowsAtIndexPaths:[self.feedTitlesTable indexPathsForVisibleRows]
-         withRowAnimation:UITableViewRowAnimationNone];
-        [self.feedTitlesTable endUpdates];
-        
         NSInteger previousLevel = [self.intelligenceControl selectedSegmentIndex] - 1;
         NSInteger newLevel = [appDelegate selectedIntelligence];
         if (newLevel != previousLevel) {
             [appDelegate setSelectedIntelligence:newLevel];
-            if (!self.viewShowingAllFeeds) {
-                [self updateFeedsWithIntelligence:previousLevel newLevel:newLevel];
-            }
+            [self calculateFeedLocations];
+            [self.feedTitlesTable beginUpdates];
+            [self.feedTitlesTable endUpdates];
             [self redrawUnreadCounts];
         }
     }
@@ -293,8 +287,12 @@ static const CGFloat kFolderTitleHeight = 28;
     if ([request responseStatusCode] == 403) {
         return [appDelegate showLogin];
     } else if ([request responseStatusCode] == 404 ||
+               [request responseStatusCode] == 429 ||
                [request responseStatusCode] >= 500) {
         [pull finishedLoading];
+        if ([request responseStatusCode] == 429) {
+            return [self informError:@"Slow down. You're rate-limited."];
+        }
         return [self informError:@"The server barfed!"];
     }
     
@@ -311,7 +309,6 @@ static const CGFloat kFolderTitleHeight = 28;
 //    NSLog(@"results are %@", results);
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     self.stillVisibleFeeds = [NSMutableDictionary dictionary];
-    self.visibleFeeds = [NSMutableDictionary dictionary];
     [pull finishedLoading];
     [self loadFavicons];
 
@@ -467,19 +464,14 @@ static const CGFloat kFolderTitleHeight = 28;
         [appDelegate.dictFoldersArray insertObject:@"saved_stories" atIndex:appDelegate.dictFoldersArray.count];
     }
 
-    if (self.viewShowingAllFeeds) {
-        [self calculateFeedLocations:NO];
-    } else {
-        [self calculateFeedLocations:YES];
-    }
     
-    // test for empty
-    
+    // test for empty    
     if ([[appDelegate.dictFeeds allKeys] count] == 0 &&
         [[appDelegate.dictSocialFeeds allKeys] count] == 0) {
         appDelegate.hasNoSites = YES;
     }
     
+    [self calculateFeedLocations];
     [self.feedTitlesTable reloadData];
 
     // assign categories for FTUX
@@ -597,88 +589,6 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 }
 
-- (void)switchSitesUnread {
-    NSDictionary *feed;
-
-    NSInteger intelligenceLevel = [appDelegate selectedIntelligence];
-    NSMutableArray *indexPaths = [NSMutableArray array];
-    
-    // if show all sites, calculate feeds and mark visible
-    if (self.viewShowingAllFeeds) {
-        [self calculateFeedLocations:NO];
-    }
-    
-    //    NSLog(@"View showing all: %d and %@", self.viewShowingAllFeeds, self.stillVisibleFeeds);
-    
-    for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
-        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
-        NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-        NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
-        for (int f=0; f < [activeFolderFeeds count]; f++) {
-            int location = [[activeFolderFeeds objectAtIndex:f] intValue];
-            id feedId = [originalFolder objectAtIndex:location];
-            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:f inSection:s];
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-            if ([appDelegate isSocialFeed:feedIdStr]) {
-                feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
-            } else {
-                feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-            }
-            
-            int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
-            
-//            BOOL isUser = [[NSString stringWithFormat:@"%@", feedId]
-//                           isEqualToString:
-//                           [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]]];
-            
-            // if unread
-            if (!self.viewShowingAllFeeds) {
-                if (maxScore < intelligenceLevel) {
-                    [indexPaths addObject:indexPath];
-                }
-            } else if (self.viewShowingAllFeeds && ![self.stillVisibleFeeds objectForKey:feedIdStr]) {
-                if (maxScore < intelligenceLevel) {
-                    [indexPaths addObject:indexPath];
-                }
-            }
-        }
-    }
-        
-    // if show unreads, calculate feeds and mark visible
-    if (!self.viewShowingAllFeeds) {
-        [self calculateFeedLocations:YES];
-    }
-    
-//    @try {
-        [self.feedTitlesTable beginUpdates];
-        if ([indexPaths count] > 0) {
-            if (self.viewShowingAllFeeds) {
-                [self.feedTitlesTable insertRowsAtIndexPaths:indexPaths 
-                                            withRowAnimation:UITableViewRowAnimationNone];
-            } else {
-                [self.feedTitlesTable deleteRowsAtIndexPaths:indexPaths 
-                                            withRowAnimation:UITableViewRowAnimationNone];
-            }
-        }
-        [self.feedTitlesTable endUpdates];
-//    }
-//    @catch (NSException *exception) {
-//        NSLog(@"EXCEPTION: %@", exception);
-//        [self.feedTitlesTable beginUpdates];
-//        [self.feedTitlesTable endUpdates];
-//        [self.feedTitlesTable reloadData];
-//    }
-    
-    CGPoint offset = CGPointMake(0, 0);
-    [self.feedTitlesTable setContentOffset:offset animated:YES];
-    
-    // Forget still visible feeds, since they won't be populated when
-    // all feeds are showing, and shouldn't be populated after this
-    // hide/show runs.
-    self.stillVisibleFeeds = [NSMutableDictionary dictionary];
-    [self redrawUnreadCounts];
-}
-
 #pragma mark -
 #pragma mark Table View - Feed List
 
@@ -700,7 +610,7 @@ static const CGFloat kFolderTitleHeight = 28;
 
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
     
-    return [[self.activeFeedLocations objectForKey:folderName] count];
+    return [[appDelegate.dictFolders objectForKey:folderName] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
@@ -722,18 +632,19 @@ static const CGFloat kFolderTitleHeight = 28;
         
         return cell;
     }
-
     
-    NSDictionary *feed;
+    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
+    id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
 
-    NSString *CellIdentifier;
-    
-    if (indexPath.section == 0) {
+    NSString *CellIdentifier;    
+    if (indexPath.section == 0 || indexPath.section == 1) {
         CellIdentifier = @"BlurblogCellIdentifier";
     } else {
         CellIdentifier = @"FeedCellIdentifier";
     }
-        
+    
     FeedTableCell *cell = (FeedTableCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];    
     if (cell == nil) {
         cell = [[FeedTableCell alloc]
@@ -742,21 +653,14 @@ static const CGFloat kFolderTitleHeight = 28;
         cell.appDelegate = appDelegate;
     }
     
-    NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
-    NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
-    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-    int location = [[activeFolderFeeds objectAtIndex:indexPath.row] intValue];
-    id feedId = [feeds objectAtIndex:location];    
-    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
-
-    if (isSocial) {
-        feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
-        cell.feedFavicon = [Utilities getImage:feedIdStr isSocial:YES];
-    } else {
-        feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-        cell.feedFavicon = [Utilities getImage:feedIdStr];
+    if (![self isFeedVisible:feedId]) {
+        return cell;
     }
+    
+    NSDictionary *feed = isSocial ?
+                         [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
+                         [appDelegate.dictFeeds objectForKey:feedIdStr];
+    cell.feedFavicon = [Utilities getImage:feedIdStr isSocial:isSocial];
     cell.feedTitle     = [feed objectForKey:@"feed_title"];
     cell.positiveCount = [[feed objectForKey:@"ps"] intValue];
     cell.neutralCount  = [[feed objectForKey:@"nt"] intValue];
@@ -778,7 +682,6 @@ static const CGFloat kFolderTitleHeight = 28;
     // set the current row pointer
     self.currentRowAtIndexPath = indexPath;
     
-    NSDictionary *feed;
     NSString *folderName;
     if (indexPath.section == 0) {
         folderName = @"river_global";
@@ -789,12 +692,9 @@ static const CGFloat kFolderTitleHeight = 28;
     } else {
         folderName = [appDelegate.dictFoldersArray objectAtIndex:indexPath.section];
     }
-    NSArray *feeds = [appDelegate.dictFolders objectForKey:folderName];
-    NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-    int location = [[activeFolderFeeds objectAtIndex:indexPath.row] intValue];
-    id feedId = [feeds objectAtIndex:location];
+    id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
     NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-    
+    NSDictionary *feed;
     if ([appDelegate isSocialFeed:feedIdStr]) {
         feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
         appDelegate.isSocialView = YES;
@@ -802,7 +702,7 @@ static const CGFloat kFolderTitleHeight = 28;
         feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
         appDelegate.isSocialView = NO;
     }
-    
+
     // If all feeds are already showing, no need to remember this one.
     if (!self.viewShowingAllFeeds) {
         [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];
@@ -846,10 +746,15 @@ static const CGFloat kFolderTitleHeight = 28;
         return 0;
     }
     
+    id feedId = [[appDelegate.dictFolders objectForKey:folderName] objectAtIndex:indexPath.row];
+    if (![self isFeedVisible:feedId]) {
+        return 0;
+    }
+    
     if ([folderName isEqualToString:@"river_blurblogs"] ||
         [folderName isEqualToString:@"river_global"]) { // blurblogs
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-            return kBlurblogTableViewRowHeight;            
+            return kBlurblogTableViewRowHeight;
         } else {
             return kPhoneBlurblogTableViewRowHeight;
         }
@@ -888,14 +793,12 @@ static const CGFloat kFolderTitleHeight = 28;
     button.backgroundColor = [UIColor clearColor];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView
+heightForHeaderInSection:(NSInteger)section {
     NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:section];
-//    if ([[folder stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
-//        return 0;
-//    }
     
-    int rows = [tableView.dataSource tableView:tableView numberOfRowsInSection:section];
-    if (rows == 0 && section != 2 && section != 0 && folderName != @"saved_stories") {
+    BOOL visibleFeeds = [[self.visibleFolders objectForKey:folderName] boolValue];
+    if (!visibleFeeds && section != 2 && section != 0 && folderName != @"saved_stories") {
         return 0;
     }
     
@@ -957,7 +860,12 @@ static const CGFloat kFolderTitleHeight = 28;
 
     }
     appDelegate.activeFolderFeeds = feeds;
-    
+    if (!self.viewShowingAllFeeds) {
+        for (id feedId in feeds) {
+            NSString *feedIdStr = [NSString stringWithFormat:@"%@", feedId];
+            [self.stillVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
+        }
+    }
     [appDelegate.folderCountCache removeObjectForKey:appDelegate.activeFolder];
     
     [appDelegate loadRiverFeedDetailView];
@@ -987,9 +895,9 @@ static const CGFloat kFolderTitleHeight = 28;
     }
     [userPreferences synchronize];
     
+    [self.feedTitlesTable beginUpdates];
     [self.feedTitlesTable reloadSections:[NSIndexSet indexSetWithIndex:button.tag]
                         withRowAnimation:UITableViewRowAnimationFade];
-    [self.feedTitlesTable beginUpdates];
     [self.feedTitlesTable endUpdates];
     
     // Scroll to section header if collapse causes it to scroll far off screen
@@ -1008,9 +916,32 @@ static const CGFloat kFolderTitleHeight = 28;
     
 }
 
+- (BOOL)isFeedVisible:(id)feedId {
+    NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
+    BOOL isSocial = [appDelegate isSocialFeed:feedIdStr];
+
+    NSDictionary *feed = isSocial ?
+                         [appDelegate.dictSocialFeeds objectForKey:feedIdStr] :
+                         [appDelegate.dictFeeds objectForKey:feedIdStr];
+    
+    NSIndexPath *stillVisible = [self.stillVisibleFeeds objectForKey:feedIdStr];
+    if (!stillVisible &&
+        appDelegate.selectedIntelligence >= 1 &&
+        [[feed objectForKey:@"ps"] intValue] <= 0) {
+        return NO;
+    } else if (!stillVisible &&
+               !self.viewShowingAllFeeds &&
+               ([[feed objectForKey:@"ps"] intValue] <= 0 &&
+                [[feed objectForKey:@"nt"] intValue] <= 0)) {
+        return NO;
+    }
+
+    return YES;
+}
+
 - (void)changeToAllMode {
     [self.intelligenceControl setSelectedSegmentIndex:0];
-    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
+    NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
     [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
     [userPreferences synchronize];
 }
@@ -1021,172 +952,56 @@ static const CGFloat kFolderTitleHeight = 28;
 	hud.mode = MBProgressHUDModeText;
 	hud.removeFromSuperViewOnHide = YES;
     
+    NSIndexPath *topRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
     int selectedSegmentIndex = [self.intelligenceControl selectedSegmentIndex];
+    self.stillVisibleFeeds = [NSMutableDictionary dictionary];
     
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];
+    int direction;
     if (selectedSegmentIndex == 0) {
         hud.labelText = @"All Stories";
         [userPreferences setInteger:-1 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
-        if (appDelegate.selectedIntelligence != 0) {
-            int previousLevel = appDelegate.selectedIntelligence;
-            [appDelegate setSelectedIntelligence:0];
-            [self updateFeedsWithIntelligence:previousLevel newLevel:0];
-            [self redrawUnreadCounts];
-        }
+        direction = -1;
         self.viewShowingAllFeeds = YES;
-        [self switchSitesUnread];
+        [appDelegate setSelectedIntelligence:0];
     } else if(selectedSegmentIndex == 1) {
-//        NSString *unreadStr = [NSString stringWithFormat:@"%i Unread Stories", appDelegate.allUnreadCount];
         hud.labelText = @"Unread Stories";
         [userPreferences setInteger:0 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
-        if (appDelegate.selectedIntelligence != 0) {
-            int previousLevel = appDelegate.selectedIntelligence;
-            [appDelegate setSelectedIntelligence:0];
-            [self updateFeedsWithIntelligence:previousLevel newLevel:0];
-            [self redrawUnreadCounts];
-        }
+        direction = self.viewShowingAllFeeds ? 1 : -1;
         self.viewShowingAllFeeds = NO;
-        [self switchSitesUnread];
+        [appDelegate setSelectedIntelligence:0];
     } else {
         hud.labelText = @"Focus Stories";
         [userPreferences setInteger:1 forKey:@"selectedIntelligence"];
         [userPreferences synchronize];
         
-        if (self.viewShowingAllFeeds == YES) {
-            self.viewShowingAllFeeds = NO;
-            [self switchSitesUnread];
-        }
+        direction = 1;
+        self.viewShowingAllFeeds = NO;
         [appDelegate setSelectedIntelligence:1];
-        [self updateFeedsWithIntelligence:0 newLevel:1];
-        [self redrawUnreadCounts];
     }
-    
+
+    [self calculateFeedLocations];
+    [self.feedTitlesTable reloadData];
+
+    NSIndexPath *newMiddleRow;
+    if ([self.feedTitlesTable numberOfRowsInSection:topRow.section] == 0) {
+        newMiddleRow = [[self.feedTitlesTable indexPathsForVisibleRows] objectAtIndex:0];
+    } else {
+        newMiddleRow = [NSIndexPath indexPathForRow:0 inSection:topRow.section];
+    }
+    [self.feedTitlesTable scrollToRowAtIndexPath:newMiddleRow
+                                atScrollPosition:UITableViewScrollPositionTop
+                                        animated:NO];
+    [self.feedTitlesTable
+     reloadRowsAtIndexPaths:[self.feedTitlesTable indexPathsForVisibleRows]
+     withRowAnimation:direction == 1 ? UITableViewRowAnimationLeft : UITableViewRowAnimationRight];
+    [self redrawUnreadCounts];
+
 	[hud hide:YES afterDelay:0.5];
-        
-//    [self.feedTitlesTable reloadData];
-}
-
-- (void)updateFeedsWithIntelligence:(int)previousLevel newLevel:(int)newLevel {
-    NSMutableArray *insertIndexPaths = [NSMutableArray array];
-    NSMutableArray *deleteIndexPaths = [NSMutableArray array];
-    NSMutableDictionary *addToVisibleFeeds = [NSMutableDictionary dictionary];
-    
-    if (newLevel <= previousLevel) {
-        [self calculateFeedLocations:NO];
-    }
-    
-    for (int s=0; s < [appDelegate.dictFoldersArray count]; s++) {
-        NSString *folderName = [appDelegate.dictFoldersArray objectAtIndex:s];
-        NSArray *activeFolderFeeds = [self.activeFeedLocations objectForKey:folderName];
-        NSArray *originalFolder = [appDelegate.dictFolders objectForKey:folderName];
-        
-//        if (s == 9) {
-//            NSLog(@"Section %d: %@. %d to %d", s, folderName, previousLevel, newLevel);
-//        }
-        
-        for (int f=0; f < [originalFolder count]; f++) {
-            NSNumber *feedId = [originalFolder objectAtIndex:f];
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-            NSDictionary *feed;
-            
-//            BOOL isUser = [feedIdStr isEqualToString:
-//                           [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]]];
-            
-            if ([appDelegate isSocialFeed:feedIdStr]) {
-                feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr]; 
-            } else {
-                feed = [appDelegate.dictFeeds objectForKey:feedIdStr]; 
-            }
-            int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
-            
-//            if (s == 9) {
-//                NSLog(@"MaxScore: %d for %@ (%@/%@/%@). Visible: %@", maxScore, 
-//                      [feed objectForKey:@"feed_title"],
-//                      [feed objectForKey:@"ng"], [feed objectForKey:@"nt"], [feed objectForKey:@"ng"],
-//                      [self.visibleFeeds objectForKey:feedIdStr]);
-//            }
-            
-            if ([self.visibleFeeds objectForKey:feedIdStr]) {
-                if (maxScore < newLevel) {
-                    for (int l=0; l < [activeFolderFeeds count]; l++) {
-                        if ([originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] == feedId) {
-                            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:l inSection:s];
-                            [deleteIndexPaths addObject:indexPath];
-                            if ([self.stillVisibleFeeds objectForKey:feedIdStr]) {
-                                [self.stillVisibleFeeds removeObjectForKey:feedIdStr];
-                            }
-                            break;
-                        }
-                    }
-                }
-            } else {
-                if (maxScore >= newLevel) {
-                    for (int l=0; l < [activeFolderFeeds count]; l++) {
-                        if ([originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] == feedId) {
-                            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:l inSection:s];
-                            [addToVisibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
-                            [insertIndexPaths addObject:indexPath];
-                            break;
-                        }
-                    }
-                }
-                
-            }
-        }
-    }
-    
-    for (id feedIdStr in addToVisibleFeeds) {
-        [self.visibleFeeds setObject:[addToVisibleFeeds objectForKey:feedIdStr] forKey:feedIdStr];
-    }
-    
-    for (id feedIdStr in [self.stillVisibleFeeds allKeys]) {
-        NSDictionary *feed;
-        if ([appDelegate isSocialFeed:feedIdStr]) {
-            feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
-        } else {
-            feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-        }
-
-        int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
-        if (previousLevel != newLevel && maxScore < newLevel) {
-            [deleteIndexPaths addObject:[self.stillVisibleFeeds objectForKey:feedIdStr]];
-            [self.stillVisibleFeeds removeObjectForKey:feedIdStr];
-            [self.visibleFeeds removeObjectForKey:feedIdStr];
-        }
-    }
-    
-    if (newLevel > previousLevel) {
-        [self calculateFeedLocations:NO];
-    }
-    
-    @try {
-        [self.feedTitlesTable beginUpdates];
-        if ([deleteIndexPaths count] > 0) {
-            [self.feedTitlesTable deleteRowsAtIndexPaths:deleteIndexPaths 
-                                        withRowAnimation:UITableViewRowAnimationNone];
-        }
-        if ([insertIndexPaths count] > 0) {
-            [self.feedTitlesTable insertRowsAtIndexPaths:insertIndexPaths 
-                                        withRowAnimation:UITableViewRowAnimationNone];
-        }
-        [self.feedTitlesTable endUpdates];
-    }
-    @catch (NSException *exception) {
-        NSLog(@"Exception: %@", exception);
-        [self.feedTitlesTable reloadData];
-    }
-    
-    // scrolls to the top and fixes header rendering bug
-    CGPoint offsetOne = CGPointMake(0, 1);
-    CGPoint offset = CGPointMake(0, 0);
-    [self.feedTitlesTable setContentOffset:offsetOne animated:NO];
-    [self.feedTitlesTable setContentOffset:offset animated:NO];
-
-    [self calculateFeedLocations:YES];
 }
 
 - (void)redrawUnreadCounts {
@@ -1200,54 +1015,26 @@ static const CGFloat kFolderTitleHeight = 28;
     }
 }
 
-- (void)calculateFeedLocations:(BOOL)markVisible {
-    NSDictionary *feed; 
+- (void)calculateFeedLocations {
     self.activeFeedLocations = [NSMutableDictionary dictionary];
-    if (markVisible) {
-        self.visibleFeeds = [NSMutableDictionary dictionary];
-    }
+    self.visibleFolders = [NSMutableDictionary dictionary];
+    
     for (NSString *folderName in appDelegate.dictFoldersArray) {
         if ([folderName isEqualToString:@"river_global"]) continue;
         NSArray *folder = [appDelegate.dictFolders objectForKey:folderName];
         NSMutableArray *feedLocations = [NSMutableArray array];
         for (int f = 0; f < [folder count]; f++) {
             id feedId = [folder objectAtIndex:f];
-            NSString *feedIdStr = [NSString stringWithFormat:@"%@",feedId];
-            
-            if ([folderName isEqualToString:@"river_blurblogs"]){
-                feed = [appDelegate.dictSocialFeeds objectForKey:feedIdStr];
-            } else {
-                feed = [appDelegate.dictFeeds objectForKey:feedIdStr];
-            }      
-            
-//            BOOL isUser = [[NSString stringWithFormat:@"%@", feedId]
-//                           isEqualToString:
-//                           [NSString stringWithFormat:@"%@", [appDelegate.dictUserProfile objectForKey:@"id"]]];
-
-            if (self.viewShowingAllFeeds) {
+            if ([self isFeedVisible:feedId]) {
                 NSNumber *location = [NSNumber numberWithInt:f];
                 [feedLocations addObject:location];
-            } else {
-                int maxScore = [NewsBlurViewController computeMaxScoreForFeed:feed];
-//                if ([folderName isEqualToString:@"river_blurblogs"]){
-//                NSLog(@"Computing score for %@: %d in %d (markVisible: %d)", 
-//                        [feed objectForKey:@"feed_title"], maxScore, appDelegate.selectedIntelligence, markVisible);
-//                }
-                               
-                if (maxScore >= appDelegate.selectedIntelligence) {
-                    NSNumber *location = [NSNumber numberWithInt:f];
-                    [feedLocations addObject:location];
-                    if (markVisible) {
-                        [self.visibleFeeds setObject:[NSNumber numberWithBool:YES] forKey:feedIdStr];
-                    }
+                if (![[self.visibleFolders objectForKey:folderName] boolValue]) {
+                    [self.visibleFolders setObject:[NSNumber numberWithBool:YES] forKey:folderName];
                 }
             }
-
         }
         [self.activeFeedLocations setObject:feedLocations forKey:folderName];
-        
     }
-//    NSLog(@"Active feed locations %@", self.activeFeedLocations);
 }
 
 + (int)computeMaxScoreForFeed:(NSDictionary *)feed {
@@ -1413,8 +1200,10 @@ static const CGFloat kFolderTitleHeight = 28;
                     for (int l=0; l < [activeFolderFeeds count]; l++) {
                         if ([[originalFolder objectAtIndex:[[activeFolderFeeds objectAtIndex:l] intValue]] intValue] == [feed intValue]) {
                             indexPath = [NSIndexPath indexPathForRow:l inSection:s];
+                            break;
                         }
                     }
+                    if (indexPath) break;
                 }
                 if (indexPath) {
                     [self.stillVisibleFeeds setObject:indexPath forKey:feedIdStr];

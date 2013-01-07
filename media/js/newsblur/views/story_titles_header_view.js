@@ -3,7 +3,21 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     el: $('.NB-feedbar'),
     
     render: function() {
-        if (NEWSBLUR.reader.flags['river_view'] && NEWSBLUR.reader.active_folder && NEWSBLUR.reader.active_folder.get('fake')) {
+        if (NEWSBLUR.reader.active_feed == 'starred') {
+            var $view = $(_.template('\
+                <div class="NB-folder NB-no-hover">\
+                    <div class="NB-starred-icon"></div>\
+                    <div class="NB-feedlist-manage-icon"></div>\
+                    <div class="folder_title_text">Saved Stories</div>\
+                </div>\
+            ', {}));
+            var search_view = new NEWSBLUR.Views.FeedSearchView({
+                feedbar_view: this
+            }).render();
+            $view.append(search_view.$el);
+        } else if (NEWSBLUR.reader.flags['river_view'] && 
+            NEWSBLUR.reader.active_folder && 
+            NEWSBLUR.reader.active_folder.get('fake')) {
             var title = "All Site Stories";
             if (NEWSBLUR.reader.flags['social_view']) {
                 if (NEWSBLUR.reader.flags['global_blurblogs']) {
@@ -25,7 +39,9 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
             ', {
                 folder_title: title
             }));
-        } else if (NEWSBLUR.reader.flags['river_view'] && NEWSBLUR.reader.active_folder && NEWSBLUR.reader.active_folder.get('folder_title')) {
+        } else if (NEWSBLUR.reader.flags['river_view'] && 
+                   NEWSBLUR.reader.active_folder &&
+                   NEWSBLUR.reader.active_folder.get('folder_title')) {
             var $view = new NEWSBLUR.Views.Folder({
                 model: NEWSBLUR.reader.active_folder,
                 collection: NEWSBLUR.reader.active_folder.folder_view.collection,

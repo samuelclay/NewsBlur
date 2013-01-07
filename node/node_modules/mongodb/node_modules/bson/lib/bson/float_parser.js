@@ -117,7 +117,5 @@ var writeIEEE754 = function(buffer, value, offset, endian, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-if(typeof window === 'undefined') {
-  exports.readIEEE754 = readIEEE754;
-  exports.writeIEEE754 = writeIEEE754;
-}
+exports.readIEEE754 = readIEEE754;
+exports.writeIEEE754 = writeIEEE754;

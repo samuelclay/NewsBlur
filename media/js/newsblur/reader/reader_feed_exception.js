@@ -59,9 +59,15 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         settings_fn.call(this.model, this.feed_id, _.bind(this.populate_settings, this));
     },
     
-    populate_settings: function() {
+    populate_settings: function(data) {
         var $submit = $('.NB-modal-submit-save', this.$modal);
         var $loading = $('.NB-modal-loading', this.$modal);
+        var $page_history = $(".NB-exception-page-history", this.$modal);
+        var $feed_history = $(".NB-exception-feed-history", this.$modal);
+        
+        $feed_history.html(this.make_history(data, 'feed_fetch'));
+        $page_history.html(this.make_history(data, 'page_fetch'));
+        
         $loading.removeClass('NB-active');
         this.resize();
     },
@@ -148,7 +154,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     ]),
                     (!this.options.social_feed && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
                         $.make('input', { type: 'submit', value: 'Parse this RSS/XML Feed', className: 'NB-modal-submit-green NB-modal-submit-address' }),
-                        $.make('div', { className: 'NB-error' })
+                        $.make('div', { className: 'NB-error' }),
+                        $.make('div', { className: 'NB-exception-feed-history' })
                     ]))
                 ])
             ]),
@@ -169,7 +176,8 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                     ]),
                     (!this.options.social_feed && $.make('div', { className: 'NB-exception-submit-wrapper' }, [
                         $.make('input', { type: 'submit', value: 'Fetch Feed From Website', className: 'NB-modal-submit-green NB-modal-submit-link' }),
-                        $.make('div', { className: 'NB-error' })
+                        $.make('div', { className: 'NB-error' }),
+                        $.make('div', { className: 'NB-exception-page-history' })
                     ]))
                 ])
             ]),
@@ -187,6 +195,27 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
                 ])
             ])
         ]);
+    },
+    
+    make_history: function(data, fetch_type) {
+        var fetches = data[fetch_type+'_history'];
+        var $history;
+        
+        if (fetches && fetches.length) {
+            $history = _.map(fetches, function(fetch) {
+                var feed_ok = _.contains([200, 304], fetch.status_code) || !fetch.status_code;
+                var status_class = feed_ok ? ' NB-ok ' : ' NB-errorcode ';
+                return $.make('div', { className: 'NB-history-fetch' + status_class, title: feed_ok ? '' : fetch.exception }, [
+                    $.make('div', { className: 'NB-history-fetch-date' }, fetch.fetch_date || fetch.push_date),
+                    $.make('div', { className: 'NB-history-fetch-message' }, [
+                        fetch.message,
+                        (fetch.status_code && $.make('div', { className: 'NB-history-fetch-code' }, ' ('+fetch.status_code+')'))
+                    ])
+                ]);
+            });
+        }
+
+        return $.make('div', $history);
     },
     
     show_recommended_options_meta: function() {
@@ -264,24 +293,25 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         $error.hide().html('');
         
         if (feed_address.length) {
-            this.model.save_exception_change_feed_address(feed_id, feed_address, function(code) {
-                NEWSBLUR.reader.force_feed_refresh(feed_id);
-                $.modal.close();
-            }, function(data) {
-                if (data.new_feed_id) {
+            this.model.save_exception_change_feed_address(feed_id, feed_address, _.bind(function(data) {
+                console.log(["return to change address", data]);
+                if (data && data.new_feed_id) {
                     NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
                 }
                 
-                var feed = NEWSBLUR.assets.get_feed(data.new_feed_id);
+                var feed = NEWSBLUR.assets.get_feed(data.new_feed_id || feed_id);
                 console.log(["feed address", feed, NEWSBLUR.assets.get_feed(feed_id)]);
-                var error = "There was a problem fetching the feed from this URL.";
-                if (parseInt(feed.get('exception_code'), 10) == 404) {
-                    error = "URL gives a 404 - page not found.";
+                if (!data || data.code < 0 || !data.new_feed_id) {
+                    var error = data.message || "There was a problem fetching the feed from this URL.";
+                    if (parseInt(feed.get('exception_code'), 10) == 404) {
+                        error = "URL gives a 404 - page not found.";
+                    }
+                    $error.show().html((data && data.message) || error);
                 }
-                $error.show().html((data && data.message) || error);
                 $loading.removeClass('NB-active');
                 $submit.removeClass('NB-disabled').attr('value', 'Parse this RSS/XML Feed');
-            });
+                this.populate_settings(data);
+            }, this));
         }
     },
     
@@ -298,23 +328,24 @@ _.extend(NEWSBLUR.ReaderFeedException.prototype, {
         $error.hide().html('');
 
         if (feed_link.length) {
-            this.model.save_exception_change_feed_link(feed_id, feed_link, function(code) {
-                NEWSBLUR.reader.force_feed_refresh(feed_id);
-                $.modal.close();
-            }, function(data) {
+            this.model.save_exception_change_feed_link(feed_id, feed_link, _.bind(function(data) {
                 if (data.new_feed_id) {
                     NEWSBLUR.reader.force_feed_refresh(feed_id, data.new_feed_id);
                 }
 
                 var feed = NEWSBLUR.assets.get_feed(data.new_feed_id);
-                var error = "There was a problem fetching the feed from this URL.";
-                if (feed.get('exception_code') == '404') {
-                    error = "URL gives a 404 - page not found.";
+                
+                if (!data || data.code < 0 || !data.new_feed_id) {
+                    var error = data.message || "There was a problem fetching the feed from this URL.";
+                    if (feed.get('exception_code') == '404') {
+                        error = "URL gives a 404 - page not found.";
+                    }
+                    $error.show().html((data && data.message) || error);
                 }
-                $error.show().html((data && data.message) || error);
                 $loading.removeClass('NB-active');
                 $submit.removeClass('NB-disabled').attr('value', 'Fetch Feed from Website');
-            });
+                this.populate_settings(data);
+            }, this));
         }
     },
             
