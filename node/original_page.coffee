@@ -3,6 +3,9 @@ path = require 'path'
 fs = require 'fs'
 mkdirp = require 'mkdirp'
 
+DEV = process.env.NODE_ENV == 'development'
+
+DB_PATH = if DEV then 'originals' else '/srv/originals'
 app = express.createServer()
 app.use express.bodyParser()
 
@@ -13,7 +16,7 @@ app.get /^\/original_page\/(\d+)\/?/, (req, res) =>
     etag = req.header('If-None-Match')
     lastModified = req.header('If-Modified-Since')
     feedIdDir = splitFeedId feedId
-    filePath = "originals/#{feedIdDir}.zhtml"
+    filePath = "#{DB_PATH}/#{feedIdDir}.zhtml"
     
     path.exists filePath, (exists, err) ->
         console.log " ---> Loading: #{feedId} (#{filePath}). " +
@@ -35,7 +38,7 @@ app.post /^\/original_page\/(\d+)\/?/, (req, res) =>
     feedId = parseInt(req.params, 10)
     feedIdDir = splitFeedId feedId
     html = req.param "original_page"
-    filePath = "originals/#{feedIdDir}.zhtml"
+    filePath = "#{DB_PATH}/#{feedIdDir}.zhtml"
     filePathDir = path.dirname filePath
     mkdirp filePathDir, (err) ->
         fs.rename req.files.original_page.path, filePath, (err) ->

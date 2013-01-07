@@ -180,7 +180,7 @@ class PageImporter(object):
             
         if settings.BACKED_BY_AWS.get('pages_on_node'):
             saved = self.save_page_node(html)
-            if saved and self.feed.s3_page:
+            if saved and self.feed.s3_page and settings.BACKED_BY_AWS.get('pages_on_s3'):
                 self.delete_page_s3()
             
         if settings.BACKED_BY_AWS.get('pages_on_s3') and not saved:

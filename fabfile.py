@@ -777,7 +777,8 @@ def setup_db_mdadm():
 
 def setup_original_page_server():
     setup_node()
-    sudo('rm -fr /etc/supervisor/conf.d/node.conf')
+    sudo('mkdir -p /srv/originals')
+    sudo('chown sclay.sclay -R /srv/originals')
     put('config/supervisor_node_original.conf', 
         '/etc/supervisor/conf.d/node_original.conf', use_sudo=True)
     sudo('supervisorctl reread')
