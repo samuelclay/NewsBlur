@@ -78,7 +78,7 @@
                         <div>
                             <div class="NB-signup-optional">
                                 {% if login_form.errors and login_form.errors|length %}
-                                    <a href="mailto:password@newsblur.com?subject=Forgot%20Password%20on%20NewsBlur&amp;body=Hello!%20My%20username%20is:%20" class="NB-splash-link">Forgot?</a>
+                                    <a href="{% url profile-forgot-password %}" class="NB-splash-link">Forgot?</a>
                                 {% else %}
                                     Optional
                                 {% endif %}

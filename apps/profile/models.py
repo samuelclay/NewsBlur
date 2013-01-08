@@ -309,9 +309,6 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
         
-        user.set_password('')
-        user.save()
-        
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
         
     def send_upload_opml_finished_email(self, feed_count):

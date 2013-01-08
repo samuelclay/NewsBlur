@@ -188,10 +188,11 @@ def autologin(request, username, secret):
     login_user(request, user)
     logging.user(user, "~FG~BB~SKAuto-Login. Next stop: %s~FW" % (next if next else 'Homepage',))
     
-    if next:
+    if next and not next.startswith('/'):
         next = '?next=' + next
-        
-    return HttpResponseRedirect(reverse('index') + next)
+        return HttpResponseRedirect(reverse('index') + next)
+    else:
+        return HttpResponseRedirect(next)
     
 @ratelimit(minutes=1, requests=24)
 @never_cache
@@ -232,7 +233,7 @@ def load_feeds(request):
         elif sub.active and sub.feed.active_subscribers <= 0:
             scheduled_feeds.append(sub.feed.pk)
     
-    if len(scheduled_feeds) > 0:
+    if len(scheduled_feeds) > 0 and request.user.is_authenticated():
         logging.user(request, "~SN~FMTasking the scheduling immediate fetch of ~SB%s~SN feeds..." % 
                      len(scheduled_feeds))
         ScheduleImmediateFetches.apply_async(kwargs=dict(feed_ids=scheduled_feeds))

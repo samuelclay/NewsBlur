@@ -14,6 +14,7 @@ from django.conf import settings
 from apps.profile.models import Profile, change_password, PaymentHistory
 from apps.reader.models import UserSubscription
 from apps.profile.forms import StripePlusPaymentForm, PLANS, DeleteAccountForm
+from apps.profile.forms import ForgotPasswordForm, ForgotPasswordReturnForm
 from apps.social.models import MSocialServices, MActivity, MSocialProfile
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required
@@ -311,4 +312,47 @@ def delete_account(request):
 
     return {
         'delete_form': form,
+    }
+    
+
+@render_to('profile/forgot_password.xhtml')
+def forgot_password(request):
+    if request.method == 'POST':
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            logging.user(request.user, "~BC~FRForgot password: ~SB%s" % request.POST['email'])
+            try:
+                user = User.objects.get(email__iexact=request.POST['email'])
+            except User.MultipleObjectsReturned:
+                user = User.objects.filter(email__iexact=request.POST['email'])[0]
+            user.profile.send_forgot_password_email()
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            logging.user(request.user, "~BC~FRFailed forgot password: ~SB%s~SN" %
+                         request.POST['email'])
+    else:
+        logging.user(request.user, "~BC~FRAttempting to retrieve forgotton password.")
+        form = ForgotPasswordForm()
+
+    return {
+        'forgot_password_form': form,
+    }
+    
+@login_required
+@render_to('profile/forgot_password_return.xhtml')
+def forgot_password_return(request):
+    if request.method == 'POST':
+        logging.user(request.user, "~BC~FRReseting ~SB%s~SN's password." %
+                     request.user.username)
+        new_password = request.POST.get('password', '')
+        request.user.set_password(new_password)
+        request.user.save()
+        return HttpResponseRedirect(reverse('index'))
+    else:
+        logging.user(request.user, "~BC~FRAttempting to reset ~SB%s~SN's password." %
+                     request.user.username)
+        form = ForgotPasswordReturnForm()
+
+    return {
+        'forgot_password_return_form': form,
     }
