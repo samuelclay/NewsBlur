@@ -1713,8 +1713,8 @@ class MFeedPushHistory(mongo.Document):
 
         
 class DuplicateFeed(models.Model):
-    duplicate_address = models.CharField(max_length=255, db_index=True)
-    duplicate_link = models.CharField(max_length=255, null=True, db_index=True)
+    duplicate_address = models.CharField(max_length=764, db_index=True)
+    duplicate_link = models.CharField(max_length=764, null=True, db_index=True)
     duplicate_feed_id = models.CharField(max_length=255, null=True, db_index=True)
     feed = models.ForeignKey(Feed, related_name='duplicate_addresses')
    

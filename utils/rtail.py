@@ -16,13 +16,17 @@ import sys
 
 def main():
     op = optparse.OptionParser()
+    op.add_option("-i", "--identity", dest="identity")
     options, args = op.parse_args()
     streams = list()
     for arg in args:
         if re.match(r"^(.+@)?[a-zA-Z0-9.-]+:.+", arg):
             # this is a remote location
             hostname, path = arg.split(":", 1)
-            s = subprocess.Popen(["ssh", hostname, "tail -f " + path], stdout=subprocess.PIPE)
+            if options.identity:
+                s = subprocess.Popen(["ssh", "-i", options.identity, hostname, "tail -f " + path], stdout=subprocess.PIPE)
+            else:
+                s = subprocess.Popen(["ssh", hostname, "tail -f " + path], stdout=subprocess.PIPE)
             s.name = arg
             streams.append(s)
         else:
