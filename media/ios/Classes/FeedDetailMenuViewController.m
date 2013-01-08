@@ -92,9 +92,9 @@
     [options addObject:[deleteText uppercaseString]];
     
     [options addObject:[@"Move to another folder" uppercaseString]];
-    [options addObject:[@"Train this site" uppercaseString]];
     
     if (!appDelegate.isRiverView) {
+        [options addObject:[@"Train this site" uppercaseString]];
         [options addObject:[@"Insta-fetch stories" uppercaseString]];
     }
     

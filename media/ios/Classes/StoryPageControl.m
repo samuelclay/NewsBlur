@@ -207,7 +207,6 @@
 }
 
 - (void)resetPages {
-    NSLog(@"resetPages");
     [currentPage clearStory];
     [nextPage clearStory];
     [previousPage clearStory];
@@ -219,7 +218,7 @@
     CGRect frame = self.scrollView.frame;
     self.scrollView.contentSize = frame.size;
     
-    NSLog(@"Pages are at: %f / %f / %f", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x);
+//    NSLog(@"Pages are at: %f / %f / %f", previousPage.view.frame.origin.x, currentPage.view.frame.origin.x, nextPage.view.frame.origin.x);
     currentPage.view.frame = self.scrollView.frame;
     nextPage.view.frame = self.scrollView.frame;
     previousPage.view.frame = self.scrollView.frame;
@@ -231,7 +230,6 @@
 }
 
 - (void)refreshPages {
-    NSLog(@"refreshPages");
     [self resizeScrollView];
     [appDelegate adjustStoryDetailWebView];
     int pageIndex = currentPage.pageIndex;
@@ -253,7 +251,6 @@
 	if (widthCount == 0) {
 		widthCount = 1;
 	}
-    NSLog(@"resizeScrollView: %@", NSStringFromCGRect(self.scrollView.frame));
     self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width
                                              * widthCount,
                                              self.scrollView.frame.size.height);
@@ -310,9 +307,8 @@
 		pageController.view.frame = pageFrame;
 	}
     
-    int wasIndex = pageController.pageIndex;
 	pageController.pageIndex = newIndex;
-    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories - %d]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.activeFeedStoryLocations count], outOfBounds);
+//    NSLog(@"Applied Index: Was %d, now %d (%d/%d/%d) [%d stories - %d]", wasIndex, newIndex, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex, [appDelegate.activeFeedStoryLocations count], outOfBounds);
     
     if (newIndex > 0 && newIndex >= [appDelegate.activeFeedStoryLocations count]) {
         pageController.pageIndex = -2;
@@ -320,7 +316,7 @@
             !self.appDelegate.feedDetailViewController.pageFinished &&
             !self.appDelegate.feedDetailViewController.pageFetching) {
             [self.appDelegate.feedDetailViewController fetchNextPage:^() {
-                NSLog(@"Fetched next page, %d stories", [appDelegate.activeFeedStoryLocations count]);
+//                NSLog(@"Fetched next page, %d stories", [appDelegate.activeFeedStoryLocations count]);
                 [self applyNewIndex:newIndex pageController:pageController];
             }];
         } else if (!self.appDelegate.feedDetailViewController.pageFinished &&
@@ -342,7 +338,7 @@
             [pageController drawStory];
         } else {
             [pageController clearStory];
-            NSLog(@"Skipping drawing %d (waiting for %d)", newIndex, self.scrollingToPage);
+//            NSLog(@"Skipping drawing %d (waiting for %d)", newIndex, self.scrollingToPage);
         }
     } else if (outOfBounds) {
         [pageController clearStory];
@@ -367,34 +363,34 @@
 //    NSLog(@"Did Scroll: %f = %d (%d/%d/%d)", fractionalPage, lowerNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
 	if (lowerNumber == currentPage.pageIndex) {
 		if (upperNumber != nextPage.pageIndex) {
-            NSLog(@"Next was %d, now %d (A)", nextPage.pageIndex, upperNumber);
+//            NSLog(@"Next was %d, now %d (A)", nextPage.pageIndex, upperNumber);
 			[self applyNewIndex:upperNumber pageController:nextPage];
 		}
 		if (previousNumber != previousPage.pageIndex) {
-            NSLog(@"Prev was %d, now %d (A)", previousPage.pageIndex, previousNumber);
+//            NSLog(@"Prev was %d, now %d (A)", previousPage.pageIndex, previousNumber);
 			[self applyNewIndex:previousNumber pageController:previousPage];
 		}
 	} else if (upperNumber == currentPage.pageIndex) {
         // Going backwards
 		if (lowerNumber != previousPage.pageIndex) {
-            NSLog(@"Prev was %d, now %d (B)", previousPage.pageIndex, previousNumber);
+//            NSLog(@"Prev was %d, now %d (B)", previousPage.pageIndex, previousNumber);
 			[self applyNewIndex:lowerNumber pageController:previousPage];
 		}
 	} else {
         // Going forwards
 		if (lowerNumber == nextPage.pageIndex) {
-            NSLog(@"Prev was %d, now %d (C1)", previousPage.pageIndex, previousNumber);
+//            NSLog(@"Prev was %d, now %d (C1)", previousPage.pageIndex, previousNumber);
 //			[self applyNewIndex:upperNumber pageController:nextPage];
 //			[self applyNewIndex:lowerNumber pageController:currentPage];
 			[self applyNewIndex:previousNumber pageController:previousPage];
 		} else if (upperNumber == nextPage.pageIndex) {
-            NSLog(@"Prev was %d, now %d (C2)", previousPage.pageIndex, previousNumber);
+//            NSLog(@"Prev was %d, now %d (C2)", previousPage.pageIndex, previousNumber);
 			[self applyNewIndex:lowerNumber pageController:currentPage];
 			[self applyNewIndex:previousNumber pageController:previousPage];
 		} else {
-            NSLog(@"Next was %d, now %d (C3)", nextPage.pageIndex, upperNumber);
-            NSLog(@"Current was %d, now %d (C3)", currentPage.pageIndex, lowerNumber);
-            NSLog(@"Prev was %d, now %d (C3)", previousPage.pageIndex, previousNumber);
+//            NSLog(@"Next was %d, now %d (C3)", nextPage.pageIndex, upperNumber);
+//            NSLog(@"Current was %d, now %d (C3)", currentPage.pageIndex, lowerNumber);
+//            NSLog(@"Prev was %d, now %d (C3)", previousPage.pageIndex, previousNumber);
 			[self applyNewIndex:lowerNumber pageController:currentPage];
 			[self applyNewIndex:upperNumber pageController:nextPage];
 			[self applyNewIndex:previousNumber pageController:previousPage];
@@ -448,7 +444,7 @@
 }
 
 - (void)changePage:(NSInteger)pageIndex animated:(BOOL)animated {
-    NSLog(@"changePage to %d (animated: %d)", pageIndex, animated);
+//    NSLog(@"changePage to %d (animated: %d)", pageIndex, animated);
 	// update the scroll view to the appropriate page
     [self resizeScrollView];
 
@@ -487,14 +483,14 @@
     }
     
 	if (currentPage.pageIndex < nearestNumber) {
-        NSLog(@"Swap next into current, current into previous: %d / %d", currentPage.pageIndex, nearestNumber);
+//        NSLog(@"Swap next into current, current into previous: %d / %d", currentPage.pageIndex, nearestNumber);
 		StoryDetailViewController *swapCurrentController = currentPage;
 		StoryDetailViewController *swapPreviousController = previousPage;
 		currentPage = nextPage;
 		previousPage = swapCurrentController;
         nextPage = swapPreviousController;
 	} else if (currentPage.pageIndex > nearestNumber) {
-        NSLog(@"Swap previous into current: %d / %d", currentPage.pageIndex, nearestNumber);
+//        NSLog(@"Swap previous into current: %d / %d", currentPage.pageIndex, nearestNumber);
 		StoryDetailViewController *swapCurrentController = currentPage;
 		StoryDetailViewController *swapNextController = nextPage;
 		currentPage = previousPage;
@@ -502,7 +498,7 @@
         previousPage = swapNextController;
     }
     
-    NSLog(@"Set Story from scroll: %f = %d (%d/%d/%d)", fractionalPage, nearestNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
+//    NSLog(@"Set Story from scroll: %f = %d (%d/%d/%d)", fractionalPage, nearestNumber, previousPage.pageIndex, currentPage.pageIndex, nextPage.pageIndex);
     
     nextPage.webView.scrollView.scrollsToTop = NO;
     previousPage.webView.scrollView.scrollsToTop = NO;
@@ -513,6 +509,7 @@
     self.scrollView.scrollsToTop = NO;
     
     if (self.isDraggingScrollview || self.scrollingToPage == currentPage.pageIndex) {
+        if (currentPage.pageIndex == -2) return;
         self.scrollingToPage = -1;
         int storyIndex = [appDelegate indexFromLocation:currentPage.pageIndex];
         appDelegate.activeStory = [appDelegate.activeFeedStories objectAtIndex:storyIndex];
@@ -544,15 +541,15 @@
     [appDelegate changeActiveFeedDetailRow];
     
     if (self.currentPage.pageIndex != location) {
-        NSLog(@"Updating Current: from %d to %d", currentPage.pageIndex, location);
+//        NSLog(@"Updating Current: from %d to %d", currentPage.pageIndex, location);
         [self applyNewIndex:location pageController:self.currentPage];
     }
     if (self.nextPage.pageIndex != location+1) {
-        NSLog(@"Updating Next: from %d to %d", nextPage.pageIndex, location+1);
+//        NSLog(@"Updating Next: from %d to %d", nextPage.pageIndex, location+1);
         [self applyNewIndex:location+1 pageController:self.nextPage];
     }
     if (self.previousPage.pageIndex != location-1) {
-        NSLog(@"Updating Previous: from %d to %d", previousPage.pageIndex, location-1);
+//        NSLog(@"Updating Previous: from %d to %d", previousPage.pageIndex, location-1);
         [self applyNewIndex:location-1 pageController:self.previousPage];
     }
 }

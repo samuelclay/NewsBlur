@@ -421,6 +421,7 @@
                 self.storyNavigationController.view.frame = CGRectMake(NB_DEFAULT_MASTER_WIDTH + 1, 0, vb.size.width - NB_DEFAULT_MASTER_WIDTH - 1, vb.size.height);
             } completion:^(BOOL finished) {
                 [self.feedDetailViewController checkScroll];
+                [appDelegate.storyPageControl refreshPages];
                 [appDelegate adjustStoryDetailWebView];
                 [self.feedDetailViewController.storyTitlesTable reloadData];
             }];
@@ -450,7 +451,7 @@
             [self.masterNavigationController.view removeFromSuperview];
             self.storyNavigationController.view.frame = CGRectMake(0, 0, vb.size.width, storyTitlesYCoordinate);
             
-            self.storyTitlesStub.frame = CGRectMake(0, storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
+            self.storyTitlesStub.frame = CGRectMake(0, storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate - 44 - 20);
         } completion:^(BOOL finished) {
             if ([[self.masterNavigationController viewControllers] containsObject:self.feedDetailViewController]) {
                 [self.masterNavigationController popViewControllerAnimated:NO];
@@ -459,6 +460,7 @@
             self.feedDetailViewController.view.frame = CGRectMake(0, storyTitlesYCoordinate, vb.size.width, vb.size.height - storyTitlesYCoordinate);
             self.storyTitlesStub.hidden = YES;
             [self.feedDetailViewController checkScroll];
+            [appDelegate.storyPageControl refreshPages];
             [appDelegate adjustStoryDetailWebView];
             [self.feedDetailViewController.storyTitlesTable reloadData];
         }];    
@@ -472,7 +474,7 @@
         
     // adding feedDetailViewController 
     [self addChildViewController:self.feedDetailViewController];
-//    [self.view addSubview:self.feedDetailViewController.view];
+    [self.view addSubview:self.feedDetailViewController.view];
     [self.feedDetailViewController didMoveToParentViewController:self];
     
     // adding storyDetailViewController
@@ -529,18 +531,6 @@
         // set center title
         UIView *titleLabel = [appDelegate makeFeedTitle:appDelegate.activeFeed];
         self.storyPageControl.navigationItem.titleView = titleLabel;
-        
-//        // set right avatar title image
-//        if (appDelegate.isSocialView) {
-//            UIButton *titleImageButton = [appDelegate makeRightFeedTitle:appDelegate.activeFeed];
-//            [titleImageButton addTarget:self action:@selector(showUserProfilePopover) forControlEvents:UIControlEventTouchUpInside];
-//            UIBarButtonItem *titleImageBarButton = [[UIBarButtonItem alloc] 
-//                                                    initWithCustomView:titleImageButton];
-//            self.storyPageControl.navigationItem.rightBarButtonItem = titleImageBarButton;
-//        } else {
-//            self.storyPageControl.navigationItem.rightBarButtonItem = nil;
-//        }
-        
     } else {
         // CASE: story titles on left
         self.storyPageControl.navigationItem.leftBarButtonItem = nil;
@@ -640,8 +630,7 @@
     CGRect vb = [self.view bounds];
     self.isSharingStory = YES;
     
-    NSLog(@"VB: %@", NSStringFromCGRect(self.view.bounds));
-    // adding shareViewController 
+    // adding shareViewController
     [self addChildViewController:self.shareNavigationController];
     [self.view insertSubview:self.shareNavigationController.view
                 aboveSubview:self.storyNavigationController.view];
@@ -707,13 +696,9 @@
     NSUserDefaults *userPreferences = [NSUserDefaults standardUserDefaults];   
     
     if (yCoordinate > 344 && yCoordinate <= (vb.size.height)) {
-        
-        // save coordinate
         self.storyTitlesYCoordinate = yCoordinate;
         [userPreferences setInteger:yCoordinate forKey:@"storyTitlesYCoordinate"];
         [userPreferences synchronize];
-        
-        // change frames
 
         self.storyNavigationController.view.frame = CGRectMake(self.storyNavigationController.view.frame.origin.x, 
                                                                0, 
@@ -733,7 +718,6 @@
             [self.feedDetailViewController checkScroll];
         }
     } else if (yCoordinate >= (vb.size.height)){
-        // save coordinate
         [userPreferences setInteger:1004 forKey:@"storyTitlesYCoordinate"];
         [userPreferences synchronize];
         self.storyTitlesYCoordinate = 1004;
@@ -749,6 +733,7 @@
                                                     0);
         }
     }
+    
 }
 
 -(void)keyboardWillShowOrHide:(NSNotification*)notification {
@@ -781,7 +766,6 @@
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT;
         } else {
             storyNavigationFrame.size.height = vb.size.height - NB_DEFAULT_SHARE_HEIGHT + 44;
-            NSLog(@"storyNavigationFrame.size.height %f", storyNavigationFrame.size.height);
             shareViewFrame.origin.y = vb.size.height - NB_DEFAULT_SHARE_HEIGHT;
         }
     }

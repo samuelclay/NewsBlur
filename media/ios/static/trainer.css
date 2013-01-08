@@ -56,18 +56,25 @@
     padding: 0 12px 12px;
 }
 .NB-trainer-title .NB-title-trainer {
-    padding: 18px 0 12px;
     font-size: 18px;
     font-weight: bold;
     line-height: 24px;
     width: 100%;
-    min-height: 36px;
     -webkit-user-select: text;
-    -webkit-touch-callout: default;
-    -webkit-highlight: auto; 
     -webkit-tap-highlight-color: auto;
 }
-
+.NB-trainer-title .NB-title-trainer span {
+    display: block;
+    padding: 18px 0 18px;
+    min-height: 36px;
+}
+.NB-trainer-title .NB-title-trainer .NB-spacer {
+    display: block;
+    height: 1px;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: none;
+}
 .NB-title-info {
     text-transform: uppercase;
     color: #C0C0C0;
