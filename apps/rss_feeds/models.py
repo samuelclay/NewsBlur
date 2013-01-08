@@ -1401,7 +1401,7 @@ class MFeedPage(mongo.Document):
 
 class MStory(mongo.Document):
     '''A feed item'''
-    story_feed_id            = mongo.IntField()
+    story_feed_id            = mongo.IntField(unique_with='story_guid')
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
     story_content            = mongo.StringField()

@@ -351,7 +351,7 @@ class UserSubscription(models.Model):
         
         for story_id in set(story_ids):
             try:
-                story = MStory.get_story(story_feed_id=self.feed_id, story_guid=story_id)
+                story = MStory.objects.get(story_feed_id=self.feed_id, story_guid=story_id)
             except MStory.DoesNotExist:
                 # Story has been deleted, probably by feed_fetcher.
                 continue
