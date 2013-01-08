@@ -24,6 +24,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         this.fetch_user_profile();
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
+        this.$modal.bind('change', $.rescope(this.handle_change, this));
         this.handle_profile_counts();
         this.delegate_change();
     },
@@ -217,7 +218,9 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
     make_profile_photo_chooser: function() {
         var $profiles = $('.NB-friends-profilephoto', this.$modal).empty();
         
-        _.each(['nothing', 'twitter', 'facebook', 'gravatar'], _.bind(function(service) {
+        $profiles.append($.make('div', { className: "NB-photo-upload-error NB-error" }));
+        
+        _.each(['nothing', 'upload', 'twitter', 'facebook', 'gravatar'], _.bind(function(service) {
             var $profile = $.make('div', { className: 'NB-friends-profile-photo-group NB-friends-photo-'+service }, [
                 $.make('div', { className: 'NB-friends-photo-title' }, [
                     $.make('input', { type: 'radio', name: 'profile_photo_service', value: service, id: 'NB-profile-photo-service-'+service }),
@@ -233,8 +236,10 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                     ])
                 ]),
                 (service == 'upload' && $.make('div', { className: 'NB-photo-link' }, [
-                    $.make('a', { href: '#', className: 'NB-photo-upload-link NB-splash-link' }, 'Upload picture'),
-                    $.make('input', { type: 'file', name: 'photo' })
+                    $.make('form', { method: 'post', enctype: 'multipart/form-data', encoding: 'multipart/form-data' }, [
+                        $.make('a', { href: '#', className: 'NB-photo-upload-link NB-splash-link' }, 'upload picture'),
+                        $.make('input', { type: 'file', name: 'photo', id: "NB-photo-upload-file", className: 'NB-photo-upload-file' })
+                    ])
                 ])),
                 (service == 'gravatar' && $.make('div', { className: 'NB-gravatar-link' }, [
                     $.make('a', { href: 'http://www.gravatar.com', className: 'NB-splash-link', target: '_blank' }, 'gravatar.com')
@@ -463,6 +468,15 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
         });
     },
     
+    handle_change: function(elem, e) {
+        var self = this;
+        $.targetIs(e, { tagSelector: '.NB-photo-upload-file' }, function($t, $p) {
+            e.preventDefault();
+            
+            self.handle_photo_upload();
+        });
+    },
+    
     handle_cancel: function() {
         var $cancel = $('.NB-modal-cancel', this.$modal);
         
@@ -490,6 +504,65 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             var $count = $input.next('.NB-count').eq(0);
             $count.hide();
         });
+    },
+    
+    
+    handle_photo_upload: function() {
+        var self = this;
+        var $loading = $('.NB-modal-loading', this.$modal);
+        var $error = $('.NB-photo-upload-error', this.$modal);
+        var $file = $('.NB-photo-upload-file', this.$modal);
+
+        $error.slideUp(300);
+        $loading.addClass('NB-active');
+
+        var params = {
+            url: NEWSBLUR.URLs['upload-avatar'],
+            type: 'POST',
+            dataType: 'json',
+            success: _.bind(function(data, status) {
+                if (data.code < 0) {
+                    this.error_uploading_photo();
+                } else {
+                    $loading.removeClass('NB-active');
+                    console.log(["success uploading", data, status, this]);
+                    NEWSBLUR.assets.user_profile.set(data.user_profile);
+                    this.services = data.services;
+                    this.make_profile_section();
+                    this.make_profile_photo_chooser();
+                }
+            }, this),
+            error: _.bind(this.error_uploading_photo, this),
+            cache: false,
+            contentType: false,
+            processData: false
+        };
+        if (window.FormData) {
+            var formData = new FormData($file.closest('form')[0]);
+            params['data'] = formData;
+            
+            $.ajax(params);
+        } else {
+            // IE9 has no FormData
+            params['secureuri'] = false;
+            params['fileElementId'] = 'NB-photo-upload-file';
+            params['dataType'] = 'json';
+            
+            $.ajaxFileUpload(params);
+        }
+        
+        $file.replaceWith($file.clone());
+        
+        return false;
+    },
+    
+    error_uploading_photo: function() {
+        var $loading = $('.NB-modal-loading', this.$modal);
+        var $error = $('.NB-photo-upload-error', this.$modal);
+        
+        $loading.removeClass('NB-active');
+        $error.text("There was a problem uploading your photo.");
+        $error.slideDown(300);
     },
     
     delegate_change: function() {

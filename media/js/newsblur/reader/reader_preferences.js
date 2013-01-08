@@ -593,7 +593,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     },
     
     resize_modal: function() {
-        var $scroll = $('.NB-preferences-scroll', this.$modal);
+        var $scroll = $('.NB-tab.NB-active', this.$modal);
         var $modal = this.$modal;
         var $modal_container = $modal.closest('.simplemodal-container');
         

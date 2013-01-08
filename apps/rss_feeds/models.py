@@ -1401,7 +1401,7 @@ class MFeedPage(mongo.Document):
 
 class MStory(mongo.Document):
     '''A feed item'''
-    story_feed_id            = mongo.IntField(unique_with='story_guid')
+    story_feed_id            = mongo.IntField()
     story_date               = mongo.DateTimeField()
     story_title              = mongo.StringField(max_length=1024)
     story_content            = mongo.StringField()
@@ -1414,6 +1414,7 @@ class MStory(mongo.Document):
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
     story_guid               = mongo.StringField()
+    story_hash               = mongo.StringField()
     story_tags               = mongo.ListField(mongo.StringField(max_length=250))
     comment_count            = mongo.IntField()
     comment_user_ids         = mongo.ListField(mongo.IntField())
@@ -1432,6 +1433,10 @@ class MStory(mongo.Document):
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()[:6]
+
+    @property
+    def feed_guid_hash(self):
+        return hashlib.sha1("%s:%s" % (self.story_feed_id, self.story_guid)).hexdigest()[:6]
     
     def save(self, *args, **kwargs):
         story_title_max = MStory._fields['story_title'].max_length
@@ -1449,6 +1454,7 @@ class MStory(mongo.Document):
             self.story_title = self.story_title[:story_title_max]
         if self.story_content_type and len(self.story_content_type) > story_content_type_max:
             self.story_content_type = self.story_content_type[:story_content_type_max]
+        
         super(MStory, self).save(*args, **kwargs)
         
         self.sync_redis()

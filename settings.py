@@ -452,6 +452,7 @@ PROXY_S3_PAGES = True
 S3_BACKUP_BUCKET = 'newsblur_backups'
 S3_PAGES_BUCKET_NAME = 'pages.newsblur.com'
 S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
+S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 
 # ==================
 # = Configurations =

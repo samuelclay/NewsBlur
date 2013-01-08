@@ -870,7 +870,24 @@ def save_user_profile(request):
     
     return dict(code=1, user_profile=profile.to_json(include_follows=True))
 
-    
+
+@ajax_login_required
+@json.json_view
+def upload_avatar(request):
+    photo = request.FILES['photo']
+    profile = MSocialProfile.get_user(request.user.pk)
+    social_services = MSocialServices.objects.get(user_id=request.user.pk)
+    image_url = social_services.save_uploaded_photo(photo)
+    if image_url:
+        profile = social_services.set_photo('upload')
+
+    return {
+        "code": 1 if image_url else -1,
+        "uploaded": image_url,
+        "services": social_services,
+        "user_profile": profile.to_json(include_follows=True),
+    }
+
 @ajax_login_required
 @json.json_view
 def save_blurblog_settings(request):
