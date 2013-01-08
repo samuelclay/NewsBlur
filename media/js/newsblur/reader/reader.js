@@ -4610,7 +4610,9 @@
                 $module.removeClass('NB-loading');
                 $module.replaceWith(resp);
                 self.load_javascript_elements_on_page();
-            }, $.noop);
+            }, function() {
+                $module.removeClass('NB-loading');
+            });
         },
         
         // ===================
