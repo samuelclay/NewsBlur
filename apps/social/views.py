@@ -877,6 +877,9 @@ def upload_avatar(request):
     photo = request.FILES['photo']
     profile = MSocialProfile.get_user(request.user.pk)
     social_services = MSocialServices.objects.get(user_id=request.user.pk)
+
+    logging.user(request, "~FC~BM~SBUploading photo...")
+
     image_url = social_services.save_uploaded_photo(photo)
     if image_url:
         profile = social_services.set_photo('upload')
