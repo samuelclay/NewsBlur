@@ -417,7 +417,7 @@ def original_text(request):
         return {'code': -1, 'message': 'Story not found.'}
     
     original_text = story.fetch_original_text(force=force, request=request)
-    
+
     return {
         'feed_id': feed_id,
         'story_id': story_id,

@@ -1,5 +1,12 @@
 NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     
+    events: {
+        "click .NB-premium-only a" : function(e) {
+            e.preventDefault();
+            NEWSBLUR.reader.open_feedchooser_modal();
+        }
+    },
+    
     initialize: function() {
         this.setElement(NEWSBLUR.reader.$s.$text_view);
         this.collection.bind('change:selected', this.select_story, this);
@@ -59,6 +66,10 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             duration: 250,
             queue: false
         });
+        
+        if (!NEWSBLUR.Globals.is_premium) {
+            this.append_premium_only_notification();
+        }
     },
     
     unload: function() {
@@ -81,6 +92,29 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         
         var $content = this.$('.NB-feed-story-content');
         $content.html(this.story.get('story_content'));
+    },
+    
+    append_premium_only_notification: function() {
+        var $content = this.$('.NB-feed-story-content');
+        var $notice = $.make('div', { className: 'NB-text-view-premium-only' }, [
+            $.make('div', { className: 'NB-feed-story-premium-only-divider'}),
+            $.make('div', { className: 'NB-feed-story-premium-only-text'}, [
+                'The full ',
+                $.make('img', { src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/silk/application_view_columns.png' }),
+                ' Text view is a ',
+                $.make('a', { href: '#', className: 'NB-splash-link' }, 'premium feature'),
+                '.'
+            ])
+        ]);
+        
+        $notice.hide();
+        this.$('.NB-feed-story-premium-only').remove();
+        $content.after($notice);
+        this.$el.addClass('NB-premium-only');
+        
+        $notice.css('opacity', 0);
+        $notice.show();
+        $notice.animate({'opacity': 1}, {'duration': 250, 'queue': false});
     },
     
     // ==========
