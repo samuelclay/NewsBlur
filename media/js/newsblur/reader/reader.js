@@ -184,8 +184,10 @@
                 (NEWSBLUR.reader.layout.contentLayout.panes.center &&
                  NEWSBLUR.reader.layout.contentLayout.panes.center.width() < 700)) {
                 this.$s.$feed_view.addClass('NB-feed-story-view-narrow');
+                this.$s.$text_view.addClass('NB-feed-story-view-narrow');
             } else {
                 this.$s.$feed_view.removeClass('NB-feed-story-view-narrow');
+                this.$s.$text_view.removeClass('NB-feed-story-view-narrow');
             }
         },
         
@@ -489,7 +491,6 @@
             var story = NEWSBLUR.assets.stories.get_next_story(direction, {
                 score: this.get_unread_view_score()
             });
-            console.log(["show_next_story", direction, story]);
             if (story) {
                 story.set('selected', true);
             }
@@ -1722,6 +1723,12 @@
             var i_width = $progress.width();
             var o_width = this.$s.$story_taskbar.width();
             var left = (o_width / 2.0) - (i_width / 2.0);
+            var view_taskbar_width = $('.taskbar_nav_view').width();
+
+            if (left < view_taskbar_width) {
+                left += view_taskbar_width - left + 12;
+            }
+
             $progress.css({'left': left});
         },
         
@@ -2112,13 +2119,14 @@
                     collection: collection
                 }).render();
             }
-
             NEWSBLUR.app.story_unread_counter.$el.css({'opacity': 0});
             this.$s.$story_taskbar.append(NEWSBLUR.app.story_unread_counter.$el);
             _.delay(function() {
                 NEWSBLUR.app.story_unread_counter.center();
-                NEWSBLUR.app.story_unread_counter.$el.animate({'opacity': .2}, {'duration': 1000, 'queue': false});
-            }, 500);
+                NEWSBLUR.app.story_unread_counter.$el.animate({
+                    'opacity': .2
+                }, {'duration': 600, 'queue': false});
+            }, 200);
             
         },
         
