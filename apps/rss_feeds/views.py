@@ -13,11 +13,13 @@ from apps.rss_feeds.models import MFeedFetchHistory, MPageFetchHistory, MFeedPus
 from apps.rss_feeds.models import MFeedIcon
 from apps.analyzer.models import get_classifiers_for_user
 from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import MStory
 from utils.user_functions import ajax_login_required
 from utils import json_functions as json, feedfinder
 from utils.feed_functions import relative_timeuntil, relative_timesince
 from utils.user_functions import get_user
 from utils.view_functions import get_argument_or_404
+from utils.view_functions import required_params
 
 
 @json.json_view
@@ -400,3 +402,24 @@ def status(request):
     return render_to_response('rss_feeds/status.xhtml', {
         'feeds': feeds
     }, context_instance=RequestContext(request))
+
+@required_params('story_id', feed_id=int)
+@json.json_view
+def original_text(request):
+    story_id = request.GET['story_id']
+    feed_id = request.GET['feed_id']
+    force = request.GET.get('force', False)
+    
+    story, _ = MStory.find_story(story_id=story_id, story_feed_id=feed_id)
+
+    if not story:
+        logging.user(request, "~FYFetching ~FGoriginal~FY story text: ~FRstory not found")
+        return {'code': -1, 'message': 'Story not found.'}
+    
+    original_text = story.fetch_original_text(force=force, request=request)
+    
+    return {
+        'feed_id': feed_id,
+        'story_id': story_id,
+        'original_text': original_text,
+    }

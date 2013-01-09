@@ -16,6 +16,10 @@ def getlogger():
 
 def user(u, msg, request=None):
     from apps.statistics.models import MAnalyticsPageLoad
+    
+    if not u:
+        return debug(msg)
+        
     platform = '------'
     time_elapsed = ""
     if isinstance(u, WSGIRequest) or request:

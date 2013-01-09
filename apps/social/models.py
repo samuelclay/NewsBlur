@@ -22,11 +22,11 @@ from apps.reader.models import UserSubscription, MUserStory
 from apps.analyzer.models import MClassifierFeed, MClassifierAuthor, MClassifierTag, MClassifierTitle
 from apps.analyzer.models import apply_classifier_titles, apply_classifier_feeds, apply_classifier_authors, apply_classifier_tags
 from apps.rss_feeds.models import Feed, MStory
+from apps.rss_feeds.text_importer import TextImporter
 from apps.profile.models import Profile, MSentEmail
 from vendor import facebook
 from vendor import tweepy
 from vendor import pynliner
-from vendor.readability import readability
 from utils import log as logging
 from utils import json_functions as json
 from utils.feed_functions import relative_timesince
@@ -1186,7 +1186,7 @@ class MSharedStory(mongo.Document):
     story_content_z          = mongo.BinaryField()
     story_original_content   = mongo.StringField()
     story_original_content_z = mongo.BinaryField()
-    original_article_z       = mongo.BinaryField()
+    original_text_z          = mongo.BinaryField()
     story_content_type       = mongo.StringField(max_length=255)
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
@@ -1900,25 +1900,8 @@ class MSharedStory(mongo.Document):
         return image_sizes
     
     def fetch_original_text(self):
-        headers = {
-            'User-Agent': 'NewsBlur Content Fetcher - %s '
-                          '(Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_1) '
-                          'AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 '
-                          'Safari/534.48.3)' % (
-                settings.NEWSBLUR_URL
-            ),
-            'Connection': 'close',
-        }
-        html = requests.get(self.story_permalink, headers=headers).text
-        original_text_doc = readability.Document(html)
-        content = original_text_doc.content()
-        self.original_article_z = content and zlib.compress(content)
-        self.save()
-        
-        logging.debug(" ---> ~SN~FGFetched original text on shared story: now ~SB%s bytes~SN vs. was ~SB%s bytes" % (
-            len(unicode(content)),
-            len(zlib.decompress(self.story_content_z))
-        ))
+        ti = TextImporter(self)
+        original_text_doc = ti.fetch()
         
         return original_text_doc
 

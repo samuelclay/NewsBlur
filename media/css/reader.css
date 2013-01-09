@@ -1683,7 +1683,8 @@ background: transparent;
 }
 
 #story_pane .NB-feed-iframe,
-#story_pane .NB-story-iframe {
+#story_pane .NB-story-iframe,
+#story_pane .NB-text-view {
     width: 100%;
     height: 100%;
     border: 0;
@@ -1696,6 +1697,10 @@ background: transparent;
 
 #story_pane .NB-story-iframe {
     left: 200%;
+    top: 0;
+}
+#story_pane .NB-text-view {
+    left: 300%;
     top: 0;
 }
 
@@ -1881,10 +1886,14 @@ background: transparent;
 /*    text-shadow: 0 1px 0 #E0E0E0;*/
 }
 
-#story_pane .NB-feed-stories .NB-feed-story .NB-feed-story-content div {
+.NB-feed-story .NB-feed-story-content div {
     max-width: 100%;
 }
-#story_pane .NB-feed-stories .NB-feed-story .NB-feed-story-content img {
+.NB-feed-story .NB-feed-story-content pre,
+.NB-feed-story .NB-feed-story-content code {
+    white-space: normal;
+}
+.NB-feed-story .NB-feed-story-content img {
   max-width: 100% !important;
   width: auto;
   height: auto !important;
@@ -2543,7 +2552,7 @@ background: transparent;
     background: -moz-linear-gradient(center bottom, #bababa 0%, #dadada 100%);
 }
 
-#story_pane .NB-feed-stories .NB-feed-story {
+.NB-feed-story {
     margin: 0;
     clear: both;
     overflow: hidden;
@@ -3341,6 +3350,9 @@ background: transparent;
 }
 .NB-taskbar .task_button.task_view_story .NB-task-image {
     background: transparent url('/media/embed/icons/silk/application_view_gallery.png') no-repeat 0 0;
+}
+.NB-taskbar .task_button.task_view_text .NB-task-image {
+    background: transparent url('/media/embed/icons/silk/application_view_columns.png') no-repeat 0 0;
 }
 .NB-taskbar .task_button.task_view_story.NB-disabled-page .NB-task-image {
     background-image: url('/media/embed/icons/silk/error.png');

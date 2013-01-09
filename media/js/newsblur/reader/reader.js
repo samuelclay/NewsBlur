@@ -29,6 +29,7 @@
                 $feed_stories: $('.NB-feed-stories'),
                 $feed_iframe: $('.NB-feed-iframe'),
                 $story_iframe: $('.NB-story-iframe'),
+                $text_view: $('.NB-text-view'),
                 $intelligence_slider: $('.NB-intelligence-slider'),
                 $mouse_indicator: $('#mouse-indicator'),
                 $feed_link_loader: $('#NB-feeds-list-loader'),
@@ -113,6 +114,7 @@
             NEWSBLUR.app.story_list = new NEWSBLUR.Views.StoryListView({collection: NEWSBLUR.assets.stories});
             NEWSBLUR.app.original_tab_view = new NEWSBLUR.Views.OriginalTabView({collection: NEWSBLUR.assets.stories});
             NEWSBLUR.app.story_tab_view = new NEWSBLUR.Views.StoryTabView({collection: NEWSBLUR.assets.stories});
+            NEWSBLUR.app.text_tab_view = new NEWSBLUR.Views.TextTabView({collection: NEWSBLUR.assets.stories});
             NEWSBLUR.app.feed_selector = new NEWSBLUR.Views.FeedSelector();
             NEWSBLUR.app.follow_requests_module = new NEWSBLUR.Views.FollowRequestsModule();
             
@@ -487,7 +489,7 @@
             var story = NEWSBLUR.assets.stories.get_next_story(direction, {
                 score: this.get_unread_view_score()
             });
-            
+            console.log(["show_next_story", direction, story]);
             if (story) {
                 story.set('selected', true);
             }
@@ -1190,7 +1192,7 @@
                 this.make_story_titles_pane_counter();
                 this.find_story_with_action_preference_on_open_feed();
                 
-                if (this.story_view == 'story' &&
+                if (_.contains(['story', 'text'], this.story_view) &&
                     !this.active_story &&
                     !this.counts['find_next_unread_on_page_of_feed_stories_load']) {
                     this.show_next_story(1);
@@ -1683,7 +1685,8 @@
         // = Story loading =
         // =================
         
-        show_stories_progress_bar: function(feeds_loading) {
+        show_stories_progress_bar: function(feeds_loading, message) {
+            message = message || "Fetching stories";
             if (NEWSBLUR.app.story_unread_counter) {
                 NEWSBLUR.app.story_unread_counter.remove();
             }
@@ -1703,7 +1706,7 @@
             else unreads = this.get_unread_count(false) / 10;
             this.animate_progress_bar($bar, unreads / 10);
             
-            $('.NB-river-progress-text', $progress).text('Fetching stories');
+            $('.NB-river-progress-text', $progress).text(message);
             // Center the progress bar
             var i_width = $progress.width();
             var o_width = this.$s.$story_taskbar.width();
@@ -1722,14 +1725,14 @@
             });
         },
         
-        show_stories_error: function(data) {
+        show_stories_error: function(data, message) {
             NEWSBLUR.log(["show_stories_error", data]);
             this.hide_stories_progress_bar();
             
             NEWSBLUR.app.original_tab_view.iframe_not_busting();
             this.model.flags['no_more_stories'] = true;
             
-            var message = "Oh no! <br> There was an error!";
+            message = message || "Oh no! <br> There was an error!";
             if (data && data.status) {
                 if (data.status == 502) {
                     message = "NewsBlur is down right now. <br> Try again soon.";
@@ -2371,6 +2374,18 @@
                 if (!this.active_story) {
                     this.show_next_story(1);
                 }
+            } else if (view == 'text') {
+                $story_pane.animate({
+                    'left': -3 * $feed_iframe.width()
+                }, {
+                    'easing': 'easeInOutQuint',
+                    'duration': this.model.preference('animations') ? 550 : 0,
+                    'queue': false
+                });
+                NEWSBLUR.app.text_tab_view.load_story();
+                if (!this.active_story) {
+                    this.show_next_story(1);
+                }
             }
             
             this.setup_mousemove_on_views();
@@ -2387,6 +2402,8 @@
                     view = 'page';
                 } else if ($active.hasClass('task_view_story')) {
                     view = 'feed';
+                } else if ($active.hasClass('task_view_text')) {
+                    view = 'story';
                 } 
             } else if (direction == 1) {
                 if ($active.hasClass('task_view_page')) {
@@ -2394,6 +2411,8 @@
                 } else if ($active.hasClass('task_view_feed')) {
                     view = 'story';
                 } else if ($active.hasClass('task_view_story')) {
+                    view = 'text';
+                } else if ($active.hasClass('task_view_text')) {
                     // view = 'story';
                 } 
             }
@@ -5041,6 +5060,10 @@
             $.targetIs(e, { tagSelector: '.task_view_story' }, function($t, $p){
                 e.preventDefault();
                 self.switch_taskbar_view('story');
+            });
+            $.targetIs(e, { tagSelector: '.task_view_text' }, function($t, $p){
+                e.preventDefault();
+                self.switch_taskbar_view('text');
             });
             $.targetIs(e, { tagSelector: '.NB-task-return' }, function($t, $p){
                 e.preventDefault();
