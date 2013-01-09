@@ -65,6 +65,7 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
         this.feeds_count = this.count_feeds();
           
         if (!NEWSBLUR.Globals.is_authenticated) return;
+        if (!NEWSBLUR.assets.preference('title_counts')) return;
         
         var counts = [];
         var unread_view = _.isNumber(this.options.unread_view) && this.options.unread_view || NEWSBLUR.assets.preference('unread_view');

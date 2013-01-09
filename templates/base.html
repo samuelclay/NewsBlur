@@ -59,8 +59,10 @@
       'view_settings'           : {},
       'collapsed_folders'       : [],
       'story_styling'           : 'sans-serif',
+      'story_size'              : 's',
       'hide_public_comments'    : false,
       'timezone'                : "{{ user_profile.timezone }}",
+      'title_counts'            : true,
       'story_share_twitter'     : true,
       'story_share_facebook'    : true,
       'story_share_readitlater' : false,
@@ -70,6 +72,7 @@
     };
     NEWSBLUR.URLs = {
       'google-reader-authorize' : "{% url google-reader-authorize %}",
+      'upload-avatar'           : "{% url upload-avatar %}",
       'opml-upload'             : "{% url opml-upload %}",
       'opml-export'             : "{% url opml-export %}",
       'domain'                  : "{% current_domain %}",

@@ -1,5 +1,6 @@
 NEWSBLUR.ReaderAccount = function(options) {
     var defaults = {
+        'width': 700,
         'animate_email': false,
         'change_password': false,
         'onOpen': _.bind(function() {

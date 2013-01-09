@@ -1165,7 +1165,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         
         frame = CGRectMake(x, y, width, height);
     }
-    NSLog(@"Open trainer: %@ (%d/%d/%d/%d)", NSStringFromCGRect(frame), x, y, width, height);
+//    NSLog(@"Open trainer: %@ (%d/%d/%d/%d)", NSStringFromCGRect(frame), x, y, width, height);
     [appDelegate openTrainStory:[NSValue valueWithCGRect:frame]];
 }
 

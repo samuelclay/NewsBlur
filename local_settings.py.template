@@ -89,9 +89,12 @@ REDIS = {
 ELASTICSEARCH_HOSTS = ['127.0.0.1:9200']
 
 BACKED_BY_AWS = {
+    'pages_on_node': False,
     'pages_on_s3': False,
     'icons_on_s3': False,
 }
+
+ORIGINAL_PAGE_SERVER = "127.0.0.1:3060"
 
 # ===========
 # = Logging =

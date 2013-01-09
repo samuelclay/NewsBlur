@@ -1,7 +1,10 @@
-from boto.s3.connection import S3Connection
-from boto.s3.key import Key
 import os
 import sys
+import time
+import mimetypes
+from boto.s3.connection import S3Connection
+from boto.s3.key import Key
+from utils.image_functions import ImageOps
 
 if '/home/sclay/newsblur' not in ' '.join(sys.path):
     sys.path.append("/home/sclay/newsblur")
@@ -60,3 +63,62 @@ if __name__ == '__main__':
             delete_all_backups()
         else:
             print 'Usage: %s <get/set/list/delete> <backup_filename>' % (sys.argv[0])
+
+
+class S3Store:
+    
+    def __init__(self, bucket_name=settings.S3_AVATARS_BUCKET_NAME):
+        self.s3 = S3Connection(ACCESS_KEY, SECRET)
+        self.bucket = self.create_bucket(bucket_name)
+    
+    def create_bucket(self, bucket_name):
+        return self.s3.create_bucket(bucket_name)
+        
+    def save_profile_picture(self, user_id, filename, image_body):
+        mimetype, extension = self._extract_mimetype(filename)
+        if not mimetype or not extension:
+            return
+            
+        image_name = 'profile_%s.%s' % (int(time.time()), extension)
+        
+        image = ImageOps.resize_image(image_body, 'fullsize', fit_to_size=False)
+        if image:
+            key = 'avatars/%s/large_%s' % (user_id, image_name)
+            self._save_object(key, image, mimetype=mimetype)
+
+        image = ImageOps.resize_image(image_body, 'thumbnail', fit_to_size=True)
+        if image:
+            key = 'avatars/%s/thumbnail_%s' % (user_id, image_name)
+            self._save_object(key, image, mimetype=mimetype)
+        
+        return image and image_name
+
+    def _extract_mimetype(self, filename):
+        mimetype = mimetypes.guess_type(filename)[0]
+        extension = None
+        
+        if mimetype == 'image/jpeg':
+            extension = 'jpg'
+        elif mimetype == 'image/png':
+            extension = 'png'
+        elif mimetype == 'image/gif':
+            extension = 'gif'
+            
+        return mimetype, extension
+        
+    def _make_key(self):
+        return Key(bucket=self.bucket)
+    
+    def _save_object(self, key, file_object, mimetype=None):
+        k = self._make_key()
+        k.key = key
+        file_object.seek(0)
+        
+        if mimetype:
+            k.set_contents_from_file(file_object, headers={
+                'Content-Type': mimetype,
+            })
+        else:
+            k.set_contents_from_file(file_object)
+        k.set_acl('public-read')
+        

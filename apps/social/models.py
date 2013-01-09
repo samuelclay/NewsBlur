@@ -32,6 +32,7 @@ from utils import json_functions as json
 from utils.feed_functions import relative_timesince
 from utils.story_functions import truncate_chars, strip_tags, linkify, image_size
 from utils.scrubber import SelectiveScriptScrubber
+from utils import s3_utils
 
 RECOMMENDATIONS_LIMIT = 5
 IGNORE_IMAGE_SOURCES = [
@@ -303,6 +304,8 @@ class MSocialProfile(mongo.Document):
             return photo_url + '?type=large'
         elif 'twimg' in photo_url:
             return photo_url.replace('_normal', '')
+        elif '/avatars/' in photo_url:
+            return photo_url.replace('thumbnail_', 'large_')
         return photo_url
             
     @property
@@ -2050,6 +2053,22 @@ class MSocialServices(mongo.Document):
     def profile(cls, user_id):
         profile = cls.get_user(user_id=user_id)
         return profile.to_json()
+    
+    def save_uploaded_photo(self, photo):
+        photo_body = photo.read()
+        filename = photo.name
+
+        s3 = s3_utils.S3Store()
+        image_name = s3.save_profile_picture(self.user_id, filename, photo_body)
+        if image_name:        
+            self.upload_picture_url = "https://s3.amazonaws.com/%s/avatars/%s/thumbnail_%s" % (
+                settings.S3_AVATARS_BUCKET_NAME,
+                self.user_id,
+                image_name,
+            )
+            self.save()
+        
+        return image_name and self.upload_picture_url
 
     def twitter_api(self):
         twitter_consumer_key = settings.TWITTER_CONSUMER_KEY

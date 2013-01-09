@@ -6,10 +6,9 @@ import feedparser
 import time
 import urllib2
 import httplib
-import gzip
-import StringIO
 from boto.s3.key import Key
 from django.conf import settings
+from django.utils.text import compress_string
 from utils import log as logging
 from apps.rss_feeds.models import MFeedPage
 from utils.feed_functions import timelimit, mail_feed_error_to_admin
@@ -174,35 +173,65 @@ class PageImporter(object):
         return ''.join(ret)
         
     def save_page(self, html):
-        if html and len(html) > 100:
-            if settings.BACKED_BY_AWS.get('pages_on_s3'):
-                k = Key(settings.S3_PAGES_BUCKET)
-                k.key = self.feed.s3_pages_key
-                k.set_metadata('Content-Encoding', 'gzip')
-                k.set_metadata('Content-Type', 'text/html')
-                k.set_metadata('Access-Control-Allow-Origin', '*')
-                out = StringIO.StringIO()
-                f = gzip.GzipFile(fileobj=out, mode='w')
-                f.write(html)
-                f.close()
-                compressed_html = out.getvalue()
-                k.set_contents_from_string(compressed_html)
-                k.set_acl('public-read')
-                
-                try:
-                    feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
-                    feed_page.delete()
-                    logging.debug('   --->> [%-30s] ~FYTransfering page data to S3...' % (self.feed))
-                except MFeedPage.DoesNotExist:
-                    pass
-
-                self.feed.s3_page = True
-                self.feed.save()
-            else:
-                try:
-                    feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
-                    feed_page.page_data = html
-                    feed_page.save()
-                except MFeedPage.DoesNotExist:
-                    feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, page_data=html)
-                return feed_page
+        saved = False
+        
+        if not html or len(html) < 100:
+            return
+            
+        if settings.BACKED_BY_AWS.get('pages_on_node'):
+            saved = self.save_page_node(html)
+            if saved and self.feed.s3_page and settings.BACKED_BY_AWS.get('pages_on_s3'):
+                self.delete_page_s3()
+            
+        if settings.BACKED_BY_AWS.get('pages_on_s3') and not saved:
+            saved = self.save_page_s3(html)
+            
+        if not saved:
+            try:
+                feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
+                feed_page.page_data = html
+                feed_page.save()
+            except MFeedPage.DoesNotExist:
+                feed_page = MFeedPage.objects.create(feed_id=self.feed.pk, page_data=html)
+            return feed_page
+    
+    def save_page_node(self, html):
+        url = "http://%s/original_page/%s" % (
+            settings.ORIGINAL_PAGE_SERVER,
+            self.feed.pk,
+        )
+        response = requests.post(url, files={
+            'original_page': compress_string(html),
+        })
+        if response.status_code == 200:
+            return True
+    
+    def save_page_s3(self, html):
+        k = Key(settings.S3_PAGES_BUCKET)
+        k.key = self.feed.s3_pages_key
+        k.set_metadata('Content-Encoding', 'gzip')
+        k.set_metadata('Content-Type', 'text/html')
+        k.set_metadata('Access-Control-Allow-Origin', '*')
+        k.set_contents_from_string(compress_string(html))
+        k.set_acl('public-read')
+        
+        try:
+            feed_page = MFeedPage.objects.get(feed_id=self.feed.pk)
+            feed_page.delete()
+            logging.debug('   ---> [%-30s] ~FYTransfering page data to S3...' % (self.feed))
+        except MFeedPage.DoesNotExist:
+            pass
+            
+        if not self.feed.s3_page:
+            self.feed.s3_page = True
+            self.feed.save()
+        
+        return True
+    
+    def delete_page_s3(self):
+        k = Key(settings.S3_PAGES_BUCKET)
+        k.key = self.feed.s3_pages_key
+        k.delete()
+        
+        self.feed.s3_page = False
+        self.feed.save()

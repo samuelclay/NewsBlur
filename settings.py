@@ -441,6 +441,8 @@ TWITTER_CONSUMER_SECRET = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
 # = AWS Backing =
 # ===============
 
+ORIGINAL_PAGE_SERVER = "db01.newsblur.com:3060"
+
 BACKED_BY_AWS = {
     'pages_on_s3': False,
     'icons_on_s3': False,
@@ -450,6 +452,7 @@ PROXY_S3_PAGES = True
 S3_BACKUP_BUCKET = 'newsblur_backups'
 S3_PAGES_BUCKET_NAME = 'pages.newsblur.com'
 S3_ICONS_BUCKET_NAME = 'icons.newsblur.com'
+S3_AVATARS_BUCKET_NAME = 'avatars.newsblur.com'
 
 # ==================
 # = Configurations =

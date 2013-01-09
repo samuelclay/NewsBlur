@@ -1,7 +1,9 @@
 NEWSBLUR.Modal = function(options) {
-    var defaults = {};
+    var defaults = {
+        width: 600
+    };
     
-    this.options = $.extend({}, defaults, options);
+    this.options = _.extend({}, defaults, options);
     this.model = NEWSBLUR.assets;
     this.runner();
     this.flags = {};
@@ -15,8 +17,8 @@ NEWSBLUR.Modal.prototype = {
         var self = this;
         
         this.$modal.modal({
-            'minWidth': 600,
-            'maxWidth': 600,
+            'minWidth': this.options.width || 600,
+            'maxWidth': this.options.width || 600,
             'overlayClose': true,
             'onOpen': function (dialog) {
                 self.flags.open = true;

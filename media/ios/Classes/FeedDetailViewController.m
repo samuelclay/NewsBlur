@@ -888,7 +888,6 @@
 
 
 - (void)markFeedsReadWithAllStories:(BOOL)includeHidden {
-    NSLog(@"mark feeds read: %d %d", appDelegate.isRiverView, includeHidden);
     if (appDelegate.isRiverView && [appDelegate.activeFolder isEqualToString:@"everything"]) {
         // Mark folder as read
         NSString *urlString = [NSString stringWithFormat:@"http://%@/reader/mark_all_as_read",
@@ -1193,7 +1192,6 @@
 }
 
 - (void)changeActiveFeedDetailRow {
-    NSLog(@"changeActiveFeedDetailRow in feed detail view");
     int rowIndex = [appDelegate locationOfActiveStory];
                     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
@@ -1209,7 +1207,6 @@
     cellRect = [storyTitlesTable convertRect:cellRect toView:storyTitlesTable.superview];
     
     BOOL completelyVisible = CGRectContainsRect(storyTitlesTable.frame, cellRect);
-    
     if (!completelyVisible) {
         [storyTitlesTable scrollToRowAtIndexPath:offsetIndexPath 
                                 atScrollPosition:UITableViewScrollPositionTop 
@@ -1224,9 +1221,7 @@
 // called when the user taps refresh button
 
 - (void)instafetchFeed {
-    NSLog(@"Instafetch");
-    
-    NSString *urlString = [NSString 
+    NSString *urlString = [NSString
                            stringWithFormat:@"http://%@/reader/refresh_feed/%@", 
                            NEWSBLUR_URL,
                            [appDelegate.activeFeed objectForKey:@"id"]];

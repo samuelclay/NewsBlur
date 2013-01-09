@@ -2,6 +2,7 @@ from django import forms
 from vendor.zebra.forms import StripePaymentForm
 from django.utils.safestring import mark_safe
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 
 PLANS = [
     ("newsblur-premium-12", mark_safe("$12 / year <span class='NB-small'>($1/month)</span>")),
@@ -59,3 +60,28 @@ class DeleteAccountForm(forms.Form):
             raise forms.ValidationError('Please type "DELETE" to confirm deletion.')
 
         return self.cleaned_data
+
+class ForgotPasswordForm(forms.Form):
+    email = forms.CharField(widget=forms.TextInput(),
+                               label="Your email address",
+                               required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(ForgotPasswordForm, self).__init__(*args, **kwargs)
+    
+    def clean_email(self):
+        if not self.cleaned_data['email']:
+            raise forms.ValidationError('Please enter in an email address.')
+        try:
+            User.objects.get(email__iexact=self.cleaned_data['email'])
+        except User.MultipleObjectsReturned:
+            pass
+        except User.DoesNotExist:
+            raise forms.ValidationError('No user has that email address.')
+
+        return self.cleaned_data
+
+class ForgotPasswordReturnForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput(),
+                               label="Your new password",
+                               required=False)

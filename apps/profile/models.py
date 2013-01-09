@@ -309,9 +309,6 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         msg.attach_alternative(html, "text/html")
         msg.send(fail_silently=True)
         
-        user.set_password('')
-        user.save()
-        
         logging.user(self.user, "~BB~FM~SBSending email for forgotten password: %s" % self.user.email)
         
     def send_upload_opml_finished_email(self, feed_count):
@@ -360,7 +357,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         
     def send_premium_expire_grace_period_email(self, force=False):
         if not self.user.email:
-            logging.user(self.user, "~FM~SB~FRNot~FM sending premium expire grace for user: %s" % (self.user))
+            logging.user(self.user, "~FM~SB~FRNot~FM~SN sending premium expire grace for user: %s" % (self.user))
             return
 
         emails_sent = MSentEmail.objects.filter(receiver_user_id=self.user.pk,
@@ -368,7 +365,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
         for email in emails_sent:
             if email.date_sent > day_ago:
-                logging.user(self.user, "~SK~FMNot sending premium expire grace email, already sent before.")
+                logging.user(self.user, "~SN~FMNot sending premium expire grace email, already sent before.")
                 return
         
         self.premium_expire = datetime.datetime.now()
@@ -400,7 +397,7 @@ NewsBlur""" % {'user': self.user.username, 'feeds': subs.count()}
         day_ago = datetime.datetime.now() - datetime.timedelta(days=360)
         for email in emails_sent:
             if email.date_sent > day_ago:
-                logging.user(self.user, "~SK~FMNot sending premium expire email, already sent before.")
+                logging.user(self.user, "~FM~SBNot sending premium expire email, already sent before.")
                 return
         
         delta      = datetime.datetime.now() - self.last_seen_on

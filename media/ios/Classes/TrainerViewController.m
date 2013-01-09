@@ -369,7 +369,9 @@
     NSString *titleTrainer = [NSString stringWithFormat:@"<div class=\"NB-trainer-section-inner\">"
                               "  <div class=\"NB-trainer-section-title\">Story Title</div>"
                               "  <div class=\"NB-trainer-section-body NB-title\">"
-                              "    <div class=\"NB-title-trainer\">%@</div>"
+                              "    <div class=\"NB-title-trainer\">"
+                              "      <span>%@</span>"
+                              "    </div>"
                               "    %@"
                               "  </div>"
                               "</div>", storyTitle, titleClassifiers];

@@ -51,17 +51,23 @@ a img {
 /* ==================== */
 
 body {
-    font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+    font-family: "Lucida Sans", "Lucida Grande", Verdana, "Helvetica Neue", Helvetica, sans-serif;
 }
 
-body.NB-theme-sans-serif #story_pane {
-    font-family: "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+.NB-theme-sans-serif-alt1 #story_pane {
+    font-family: "Helvetica Neue", "Helvetica", sans-serif;
 }
 
-body.NB-theme-serif #story_pane .NB-feed-story-content {
-    font-family: "Palatino Linotype", Georgia, "URW Palladio L", "Century Schoolbook L", serif;
-    font-size: 14px;
-    line-height: 20px;
+.NB-theme-sans-serif-alt2 #story_pane {
+    font-family: "Open Sans", "Liberation Sans", sans-serif;
+}
+
+.NB-theme-sans-serif-wide #story_pane {
+    font-family: "DejaVu Sans", "Bitstream Vera Sans", "Verdana", "Tahoma", "Geneva", sans-serif;
+}
+
+.NB-theme-serif #story_pane .NB-feed-story-content {
+    font-family: "Palatino Linotype", "Palatino", "URW Palladio L", "Nimbus Roman No9 L", Georgia, serif;
 }
 
 .chzn-drop {
@@ -1721,7 +1727,37 @@ background: transparent;
     width: auto !important;
     height: auto !important;
 }
+.NB-theme-sans-serif.NB-theme-size-xs #story_pane {
+    font-size: 11px;    
+}
+.NB-theme-sans-serif.NB-theme-size-s #story_pane {
+    font-size: 12px;    
+}
+.NB-theme-sans-serif.NB-theme-size-m #story_pane {
+    font-size: 13px;    
+}
+.NB-theme-sans-serif.NB-theme-size-l #story_pane {
+    font-size: 14px;    
+}
+.NB-theme-sans-serif.NB-theme-size-xl #story_pane {
+    font-size: 15px;    
+}
 
+.NB-theme-serif.NB-theme-size-xs #story_pane {
+    font-size: 12px;    
+}
+.NB-theme-serif.NB-theme-size-s #story_pane {
+    font-size: 13px;    
+}
+.NB-theme-serif.NB-theme-size-m #story_pane {
+    font-size: 14px;    
+}
+.NB-theme-serif.NB-theme-size-l #story_pane {
+    font-size: 15px;    
+}
+.NB-theme-serif.NB-theme-size-xl #story_pane {
+    font-size: 16px;    
+}
 
 #story_pane .wrapper {
     margin-left: 220px;
@@ -7161,7 +7197,7 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preferences-scroll {
     overflow: auto;
-    max-height: 500px;
+    max-height: 600px;
     width: 100%;
     padding-right: 12px;
 }
@@ -7180,11 +7216,11 @@ form.opml_import_form input {
 
 .NB-modal-preferences .NB-preference .NB-preference-options {
   float: right;
-  width: 370px;
+  width: 420px;
 }
 .NB-modal-preferences .NB-preference .NB-preference-label {
   float: left;
-  width: 150px;
+  width: 176px;
   position: relative;
 }
 .NB-modal-preferences .NB-preference .NB-preference-sublabel {
@@ -7238,6 +7274,27 @@ form.opml_import_form input {
 }
 .NB-modal-preferences .NB-preference-story-styling .NB-preference-story-styling-serif {
   font-family: "Palatino Linotype", Georgia, "URW Palladio L", "Century Schoolbook L", serif;  
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-options div {
+    clear: both;
+    overflow: hidden;
+    margin: 1px 0 0 0;
+    line-height: 18px;
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-story-size-xs {
+  font-size: 11px;
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-story-size-s {
+  font-size: 12px;
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-story-size-m {
+  font-size: 13px;
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-story-size-l {
+  font-size: 14px;
+}
+.NB-modal-preferences .NB-preference-story-size .NB-preference-story-size-xl {
+  font-size: 15px;
 }
 .NB-modal-preferences .NB-preference-window input {
   margin-top: 4px;
