@@ -46,6 +46,18 @@ a img {
   line-height: 12px;
 }
 
+/* ================ */
+/* = Restrictions = */
+/* ================ */
+
+.NB-staff-only {
+    display: none !important;
+}
+
+.NB-staff .NB-staff-only {
+    display: block !important;
+}
+
 /* ==================== */
 /* = Styling & Themes = */
 /* ==================== */
