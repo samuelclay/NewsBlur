@@ -14,6 +14,8 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         if (!story) story = NEWSBLUR.reader.active_story;
         if (!story) return;
         
+        if (this.story == story) return;
+        
         this.story = story;
         this.$story.html(new NEWSBLUR.Views.StoryDetailView({
             model: this.story,
@@ -45,6 +47,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             this.error();
         } else {
             $content.html(original_text);
+            NEWSBLUR.reader.make_story_titles_pane_counter();
         }
         $content.css('opacity', 0);
         $content.show();

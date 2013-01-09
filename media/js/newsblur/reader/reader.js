@@ -755,6 +755,11 @@
                     top: dir+'='+scroll_height, 
                     left:'+=0'
                 }, 230, {queue: false});
+            } else if (this.story_view == 'text') {
+                this.$s.$text_view.scrollTo({
+                    top: dir+'='+scroll_height, 
+                    left:'+=0'
+                }, 230, {queue: false});
             }
             
             this.show_mouse_indicator();
@@ -1421,14 +1426,18 @@
                 } else if (this.counts['select_story_in_feed'] || this.flags['select_story_in_feed']) {
                     this.select_story_in_feed();
                 }
-                if (first_load) {
-                    this.find_story_with_action_preference_on_open_feed();
-                }
                 this.hide_stories_progress_bar();
                 if (NEWSBLUR.Globals.is_anonymous) {
                     this.show_tryout_signup_button();
                 } else if (first_load) {
                     this.make_story_titles_pane_counter();
+                    this.find_story_with_action_preference_on_open_feed();
+                    if (_.contains(['story', 'text'], this.story_view) &&
+                        !this.active_story &&
+                        !this.counts['find_next_unread_on_page_of_feed_stories_load']) {
+                        this.show_next_story(1);
+                    }
+
                 }
             }
         },
