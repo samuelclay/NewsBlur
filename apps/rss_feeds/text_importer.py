@@ -25,8 +25,8 @@ class TextImporter:
     
     def fetch(self):
         html = requests.get(self.story.story_permalink, headers=self.headers)
-        original_text_doc = readability.Document(html.text)
-        content = original_text_doc.summary()
+        original_text_doc = readability.Document(html.text, url=html.url, debug=settings.DEBUG)
+        content = original_text_doc.summary(html_partial=True)
         if content:
             self.story.original_text_z = zlib.compress(content)
             self.story.save()

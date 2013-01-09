@@ -41,7 +41,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
         var original_text = data.original_text;
         this.hide_loading();
         var $content = this.$('.NB-feed-story-content');
-        if (original_text.length < this.story.get('story_content').length) {
+        if (original_text.length < (this.story.get('story_content').length / 3)) {
             this.error();
         } else {
             $content.html(original_text);
@@ -54,6 +54,11 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             duration: 250,
             queue: false
         });
+    },
+    
+    unload: function() {
+        var $content = this.$('.NB-text-view-detail');
+        $content.empty();
     },
     
     show_loading: function() {

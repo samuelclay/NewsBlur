@@ -1365,7 +1365,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             feed_id: feed_id
         }, callback, error_callback, {
             request_type: 'GET',
-            ajax_group: 'feed'
+            ajax_group: 'statistics'
         });
     },
     
