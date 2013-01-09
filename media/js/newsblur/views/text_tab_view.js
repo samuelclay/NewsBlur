@@ -23,10 +23,12 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             skip_content: true,
             text_view: true
         }).render().el);
-
-        // NEWSBLUR.reader.switch_taskbar_view('text', {
-        //     skip_save_type: is_temporary ? 'text' : false
-        // });
+        
+        if (is_temporary) {
+            NEWSBLUR.reader.switch_taskbar_view('text', {
+                skip_save_type: is_temporary ? 'text' : false
+            });
+        }
         
         this.show_loading();
         NEWSBLUR.assets.fetch_original_text(story.get('id'), story.get('story_feed_id'), 
@@ -87,6 +89,9 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     
     select_story: function(story, selected) {
         if (selected && NEWSBLUR.reader.story_view == 'text') {
+            if (NEWSBLUR.reader.flags['temporary_story_view']) {
+                NEWSBLUR.reader.switch_to_correct_view();
+            }
             this.load_story(story);
         }
     }

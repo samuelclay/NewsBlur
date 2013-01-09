@@ -88,12 +88,26 @@ NEWSBLUR.ReaderKeyboard.prototype = {
                 ])
               ]),        
               $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
-                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open in Story view'),
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Quick search for a site'),
                 $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                    'enter'
+                    'g'
                 ]),
                 $.make('div', { className: 'NB-keyboard-shortcut-image' }, [
                     $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/reader/keyboard_enter.png', width: 268, height: 29 })
+                ])
+              ])
+            ]),
+            $.make('div', { className: 'NB-keyboard-group' }, [              
+              $.make('div', { className: 'NB-keyboard-shortcut' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open in Story view'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'enter'
+                ])
+              ]),        
+              $.make('div', { className: 'NB-keyboard-shortcut NB-last' }, [
+                $.make('div', { className: 'NB-keyboard-shortcut-explanation' }, 'Open in Text view'),
+                $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
+                    'shift+enter'
                 ])
               ])
             ]),
