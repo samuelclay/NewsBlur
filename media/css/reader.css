@@ -2197,8 +2197,18 @@ background: transparent;
     margin: -32px 200px 42px 28px;
     cursor: default;
     max-width: 700px;
+    position: relative;
 }
 
+.NB-text-view-premium-only .NB-feed-story-premium-only-divider {
+    position: absolute;
+    width: 100%;
+    height: 50px;
+    background: transparent url('/media/embed/reader/white_fade.png') repeat-x 0 0;
+    top: -51px;
+    left: 0;
+    background-size: 25px 50px;
+}
 .NB-text-view-premium-only img {
     width: 16px;
     height: 16px;
