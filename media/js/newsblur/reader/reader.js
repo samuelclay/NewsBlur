@@ -1816,6 +1816,7 @@
                     // NEWSBLUR.log(['turn on feed view', this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
                     this.flags['page_view_showing_feed_view'] = true;
                     this.flags['feed_view_showing_story_view'] = false;
+                    this.flags['temporary_story_view'] = false;
                     this.switch_taskbar_view('feed', {skip_save_type: 'page'});
                     NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
                 }
@@ -1824,6 +1825,7 @@
                   // NEWSBLUR.log(['turn off feed view', this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
                   this.flags['page_view_showing_feed_view'] = false;
                   this.flags['feed_view_showing_story_view'] = false;
+                  this.flags['temporary_story_view'] = false;
                   this.switch_taskbar_view('page');
               } else if (this.flags['feed_view_showing_story_view']) {
                   // NEWSBLUR.log(['turn off story view', this.flags['page_view_showing_feed_view'], this.flags['feed_view_showing_story_view']]);
@@ -2351,6 +2353,8 @@
             $feed_to_story_arrow.hide();
             $to_text_arrow.hide();
             this.flags['page_view_showing_feed_view'] = false;
+            this.flags['feed_view_showing_story_view'] = false;
+            this.flags['temporary_story_view'] = false;
             if (options.skip_save_type == 'page') {
                 $page_to_feed_arrow.show();
                 this.flags['page_view_showing_feed_view'] = true;

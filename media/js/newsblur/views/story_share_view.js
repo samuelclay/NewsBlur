@@ -243,8 +243,6 @@ NEWSBLUR.Views.StoryShareView = Backbone.View.extend({
             this.model.social_page_story.$el.toggleClass('NB-story-shared', this.model.get('shared'));
             this.model.social_page_story.replace_shares_and_comments(data);
         } else {
-            this.model.story_view.$el.toggleClass('NB-story-shared', this.model.get('shared'));
-            this.model.story_view.render_comments();
             NEWSBLUR.reader.hide_confirm_story_share_menu_item(true);
         }
         

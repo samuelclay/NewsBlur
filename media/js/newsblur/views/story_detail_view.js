@@ -30,6 +30,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:starred', this.toggle_starred, this);
         this.model.bind('change:intelligence', this.render_header, this);
         this.model.bind('change:intelligence', this.toggle_score, this);
+        this.model.bind('change:shared', this.render_comments, this);
+        this.model.bind('change:comments', this.render_comments, this);
         
         // Binding directly instead of using event delegation. Need for speed.
         // this.$el.bind('mouseenter', this.mouseenter);
@@ -282,7 +284,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             NEWSBLUR.app.story_list.scroll_to_selected_story(model, options);
         }
         
-        if (NEWSBLUR.reader.flags['feed_view_showing_story_view']) {
+        if (NEWSBLUR.reader.flags['feed_view_showing_story_view'] ||
+            NEWSBLUR.reader.flags['temporary_story_view']) {
             NEWSBLUR.reader.switch_to_correct_view();
         }
     },
