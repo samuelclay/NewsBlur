@@ -756,7 +756,8 @@
                     top: dir+'='+scroll_height, 
                     left:'+=0'
                 }, 230, {queue: false});
-            } else if (this.story_view == 'feed' || 
+            } else if ((this.story_view == 'feed' &&
+                        !this.flags['temporary_story_view']) || 
                        this.flags['page_view_showing_feed_view']) {
                 this.$s.$feed_stories.scrollTo({
                     top: dir+'='+scroll_height, 

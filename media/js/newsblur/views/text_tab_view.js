@@ -19,6 +19,10 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
     
     load_story: function(story, is_temporary) {
         if (!story) story = NEWSBLUR.reader.active_story;
+        if (!story && is_temporary) {
+            NEWSBLUR.reader.show_next_story(1);
+            story = NEWSBLUR.reader.active_story;
+        }
         if (!story) return;
 
         if (is_temporary) {
