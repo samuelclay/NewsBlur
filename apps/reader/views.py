@@ -742,6 +742,12 @@ def load_river_stories__redis(request):
     found_feed_ids = list(set([story['story_feed_id'] for story in stories]))
     stories, user_profiles = MSharedStory.stories_with_comments_and_profiles(stories, user.pk)
     
+    feed_marked_read_dates = None
+    if read_filter == 'all':
+        feed_marked_read_dates = dict((us.feed_id, us.mark_read_date) 
+                                      for us in UserSubscription.objects.filter(user=user,
+                                      feed__in=found_feed_ids).only(
+                                      'feed', 'mark_read_date'))
     # Find starred stories
     if found_feed_ids:
         if read_filter == 'all':
@@ -789,12 +795,14 @@ def load_river_stories__redis(request):
 
     # Just need to format stories
     for story in stories:
-        if read_filter == 'all' and story['id'] in userstories:
-            story['read_status'] = 1
-        elif story['story_date'] < UNREAD_CUTOFF:
-            story['read_status'] = 1
-        else:
-            story['read_status'] = 0
+        story['read_status'] = 0
+        if read_filter == 'all':
+            if story['id'] in userstories:
+                story['read_status'] = 1
+            elif story['story_date'] < feed_marked_read_dates[story['story_feed_id']]:
+                story['read_status'] = 1
+            elif story['story_date'] < UNREAD_CUTOFF:
+                story['read_status'] = 1
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
