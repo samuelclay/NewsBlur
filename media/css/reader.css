@@ -1707,11 +1707,11 @@ background: transparent;
     position: absolute;
 }
 
-#story_pane .NB-story-iframe {
+#story_pane .NB-text-view {
     left: 200%;
     top: 0;
 }
-#story_pane .NB-text-view {
+#story_pane .NB-story-iframe {
     left: 300%;
     top: 0;
 }
@@ -3226,7 +3226,7 @@ background: transparent;
 .NB-taskbar .NB-task-view-switch-arrow {
     position: absolute;
     top: 8px;
-    right: -8px;
+    left: -8px;
     width: 16px;
     height: 16px;
     background: transparent url('/media/embed/icons/silk/arrow_switch.png') no-repeat center 0px;

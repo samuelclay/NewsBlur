@@ -742,6 +742,17 @@ def load_river_stories__redis(request):
     
     # Find starred stories
     if found_feed_ids:
+        if read_filter == 'all':
+            story_ids = [story['id'] for story in stories]
+            userstories_db = MUserStory.objects(user_id=user.pk,
+                                                feed_id__in=found_feed_ids,
+                                                story_id__in=story_ids
+                                                ).only('story_id').hint([('user_id', 1),
+                                                                         ('feed_id', 1),
+                                                                         ('story_id', 1)])
+            userstories = set(us.story_id for us in userstories_db)
+        else:
+            userstories = []
         starred_stories = MStarredStory.objects(
             user_id=user.pk,
             story_feed_id__in=found_feed_ids
@@ -749,6 +760,7 @@ def load_river_stories__redis(request):
         starred_stories = dict([(story.story_guid, story.starred_date) 
                                 for story in starred_stories])
     else:
+        userstories = []
         starred_stories = {}
     
     # Intelligence classifiers for all feeds involved
@@ -772,9 +784,13 @@ def load_river_stories__redis(request):
                                            classifier_titles=classifier_titles,
                                            classifier_tags=classifier_tags)
     
+        
     # Just need to format stories
     for story in stories:
-        story['read_status'] = 0
+        if read_filter == 'all' and story['id'] in userstories:
+            story['read_status'] = 1
+        else:
+            story['read_status'] = 0
         story_date = localtime_for_timezone(story['story_date'], user.profile.timezone)
         story['short_parsed_date'] = format_story_link_date__short(story_date, now)
         story['long_parsed_date']  = format_story_link_date__long(story_date, now)
