@@ -724,6 +724,8 @@ def load_river_stories__redis(request):
     order             = request.REQUEST.get('order', 'newest')
     read_filter       = request.REQUEST.get('read_filter', 'unread')
     now               = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
+    UNREAD_CUTOFF     = (datetime.datetime.utcnow() -
+                         datetime.timedelta(days=settings.DAYS_OF_UNREAD))
 
     if not feed_ids:
         usersubs = UserSubscription.objects.filter(user=user, active=True)
@@ -784,10 +786,12 @@ def load_river_stories__redis(request):
                                            classifier_titles=classifier_titles,
                                            classifier_tags=classifier_tags)
     
-        
+
     # Just need to format stories
     for story in stories:
         if read_filter == 'all' and story['id'] in userstories:
+            story['read_status'] = 1
+        elif story['story_date'] < UNREAD_CUTOFF:
             story['read_status'] = 1
         else:
             story['read_status'] = 0

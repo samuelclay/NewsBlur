@@ -1403,8 +1403,14 @@
                     NEWSBLUR.router.navigate(url);
                 }
             }
-
-            var feeds = this.list_feeds_with_unreads_in_folder(this.active_folder.folders, false, true);
+            
+            var visible_only = this.model.view_setting(this.active_feed, 'read_filter') == 'unread';
+            var feeds;
+            if (visible_only) {
+                feeds = this.list_feeds_with_unreads_in_folder(this.active_folder.folders, false, visible_only);
+            } else {
+                feeds = this.active_folder.feed_ids_in_folder();
+            }
             this.cache['river_feeds_with_unreads'] = feeds;
             this.hide_stories_error();
             this.show_stories_progress_bar(feeds.length);
