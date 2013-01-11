@@ -1320,5 +1320,4 @@ def comment(request, comment_id):
         shared_story = MSharedStory.objects.get(id=comment_id)
     except MSharedStory.DoesNotExist:
         raise Http404
-    
     return shared_story.comments_with_author()

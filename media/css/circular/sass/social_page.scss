@@ -8,6 +8,7 @@ $max-story-height: 300px;
 $text-color: #333333;
 $highlight-text-color: #62a4d3;
 $light-text-color: #808080;
+$lighter-text-color: #A0A0A0;
 $more-text-color: #1a9fff;
 $more-text-color-hover: #306187;
 $more-text-color-active: #722125;
@@ -18,6 +19,8 @@ $small-title-font-size: 16px;
 $small-font-size: 14px;
 $smallest-font-size: 12px;
 $smallest-iphone-font-size: 11px;
+$tiny-font-size: 11px;
+$tiny-iphone-font-size: 10px;
 
 $default-text-shadow-color: white;
 $default-text-shadow-blur: 1px;
@@ -138,6 +141,8 @@ blockquote {
     height: 16px;
     background: url('/media/embed/reader/recycle_spinner.gif') no-repeat 0 0;
     display: none;
+    float: right;
+    margin-top: -2px;
 }
 .NB-spinner.NB-active {
     display: block;
@@ -404,16 +409,16 @@ blockquote {
 }
 
 .NB-story {
-    border-left: 1px solid #404040;
-    border-right: 1px solid #404040;
+    border-left: 4px solid #6A6A6A;
+    border-right: 4px solid #6A6A6A;
     background: #fff;
-    @include single-box-shadow(#c8c8c8, 0px, 0px, 5px, false, false);
+    @include single-box-shadow(rgba(0, 0, 0, .15), 0px, 0px, 10px, false, false);
     position: relative;
     z-index: 1;
     
     .NB-story-inner {
-        border-left: 4px solid #525252;
-        border-right: 4px solid #525252;
+        border-left: 1px solid #525252;
+        border-right: 1px solid #525252;
         padding: 25px 25px 15px;
         overflow: hidden;
         position: relative; /* contains all children */
@@ -442,11 +447,16 @@ blockquote {
         }
     }
     
+    .NB-story-author {
+        color: $light-text-color;
+        white-space: nowrap;
+    }
+    
     .NB-story-metadata {
         font-size: $small-font-size;
         color: $light-text-color;
         font-weight: normal;
-        display: block; /* to ensure that the author is always on one line */
+        display: block;
         margin: 5px 0 8px;
         
         @media screen and ( max-width: 480px) {
@@ -706,6 +716,7 @@ blockquote {
         
         .NB-story-comment-date {
             float: right;
+            margin-left: 6px;
             font-size: $smallest-font-size;
             color: $light-text-color;
             @include single-text-shadow;
@@ -716,20 +727,16 @@ blockquote {
         }
         
         .NB-story-comment-location {
-            font-size: $smallest-font-size;
-            color: $light-text-color;
-            padding-top: 6px;
+            font-size: $tiny-font-size;
+            color: $lighter-text-color;
+            padding-top: 10px;
+            text-transform: uppercase;
             @include single-text-shadow;
             @media screen and (max-width: 480px) {
-                font-size: $smallest-iphone-font-size;
+                font-size: $tiny-iphone-font-size;
                 padding-top: 4px;
             }
         } 
-        
-        .NB-story-comment-reply-button,
-        .NB-story-comment-edit-button {
-            display: none; 
-        }
         
         .NB-story-comment-content {
             padding-top: 4px;
@@ -758,13 +765,58 @@ blockquote {
         min-height: 32px;
         
         @media screen and ( max-width: 480px)    {
-            padding: 8px 0 0px 32px
+            margin-top: 6px;
+            padding: 6px 0 0px 32px
         }
         
         .NB-story-comment-reply-content {
             padding-top: 4px;
             line-height: 18px;
             clear: both;
+        }
+    }
+    
+    .NB-story-comment-button {
+        margin-top: -5px;
+        padding: 4px 6px;
+        float: right;
+        cursor: pointer;
+        
+        .NB-story-comment-button-wrapper {
+            text-transform: uppercase;
+            background-color: #E9AF86;
+            color: white;
+            padding: 3px 4px 1px;
+            line-height: 9px;
+            font-size: 9px;
+            @media screen and ( max-width: 480px)    {
+                margin-top: 2px;
+                padding-top: 1px;
+            }
+        }
+    }
+    
+    .NB-story-comment-reply-button {
+        .NB-story-comment-reply-button-wrapper {
+            background-color: #E9AF86;
+        }
+        &:hover .NB-story-comment-reply-button-wrapper {
+            background-color: #DE772B;
+        }
+        &:active .NB-story-comment-reply-button-wrapper {
+            background-color: #9F3A00;
+        }
+    }
+    
+    .NB-story-comment-edit-button {
+        .NB-story-comment-edit-button-wrapper {
+            background-color: #74A2E7;
+        }
+        &:hover .NB-story-comment-edit-button-wrapper {
+            background-color: #5073BC;
+        }
+        &:active .NB-story-comment-edit-button-wrapper {
+            background-color: #2A3B72;
         }
     }
     
@@ -777,6 +829,35 @@ blockquote {
         border: 1px solid $border-color;
     }
     
+    .NB-story-comment-reply-form {
+        padding-top: 11px;
+        
+        .NB-story-comment-reply-username {
+            margin: 12px 8px 6px 0;
+        }
+        .NB-story-comment-reply-comments {
+            margin: 6px 8px 4px 0;
+            width: 62%;
+            display: block;
+            float: left;
+            font-size: 12px;
+            height: 20px;
+        }
+        .NB-modal-submit-button {
+            float: left;
+            margin-top: 4px;
+            @include NB-default-button;
+        }
+        .NB-error {
+            font-size: 10px;
+            color: #6A1000;
+            padding: 4px 0 0;
+            line-height: 14px;
+            font-weight: bold;
+            clear: both;
+        }
+    }
+
     .NB-story-comment-buttons {
         .NB-story-comment-save {
             position: absolute;

@@ -19,15 +19,9 @@
         {% endfor %}
 
         <div class="NB-story-comment-edit NB-story-comment {% if story.shared_by_user %}NB-hidden{% endif %}" data-user-id="{{ user_social_profile.user_id }}">
-            {% if user_social_profile.large_photo_url %}
-                <a href="{{ user_social_profile.blurblog_url }}" class="NB-user-avatar">
-                    <img src="{{ user_social_profile.large_photo_url }}">
-                </a>
-            {% else %}
-                <div class="NB-user-avatar">
-                    <img src="{{ MEDIA_URL }}img/circular/circular_avatar.png">
-                </div>
-            {% endif %}
+            <a href="{{ user_social_profile.blurblog_url }}" class="NB-user-avatar">
+                <img src="{{ user_social_profile.photo_url }}">
+            </a>
             <div class="NB-story-comment-input-form">
                 <textarea class="NB-story-comment-input" placeholder="Comment on this story..."></textarea>
                 <div class="NB-story-comment-buttons">
