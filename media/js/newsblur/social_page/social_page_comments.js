@@ -88,13 +88,12 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
         this.initialize();
     },
     
-    replace_comment: function(comment_user_id, html) {
-        var comment_view = _.detect(this.comment_views, function(view) {
-            return view.model.get('user_id') == comment_user_id;
-        });
+    replace_comment: function(comment_view, html) {
         var $new_comment = $(html);
+        
         comment_view.$el.replaceWith($new_comment);
         comment_view.setElement($new_comment);
+
         this.story_view.attach_tooltips();
         this.initialize();
     }

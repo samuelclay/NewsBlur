@@ -27,7 +27,16 @@
                 <div class="NB-story-comment-button-wrapper NB-story-comment-edit-button-wrapper">edit</div>
             </div>
         {% endif %}
-        <div class="NB-story-comment-likes"></div>
+        <div class="NB-story-comment-likes">
+            <div class="NB-story-comment-like {% if user.pk in comment.liking_user_ids %}NB-active{% endif %}"></div>
+            <div class="NB-story-comment-likes-users">
+                {% for user in comment.liking_users %}
+                    <a href="{{ user.feed_link }}" class="NB-user-avatar" title="{{ user.username }}">
+                        <img src="{{ user.photo_url }}">
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
         <div class="NB-story-comment-error"></div>
         <div class="NB-spinner"></div>
     </div>

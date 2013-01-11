@@ -166,6 +166,7 @@ blockquote {
 // ========
 
 .NB-container {
+    background: transparent;
     width: 100%;
     height: 100%;
 }
@@ -885,6 +886,42 @@ blockquote {
         font-size: $smallest-font-size;
         border-bottom: 1px solid $border-color;
         padding: 3px 0;
+    }
+    
+    .NB-story-comment-likes {
+        overflow: hidden;
+        height: 14px;
+        margin: 3px 2px 0;
+    }
+    .NB-story-comment-like {
+        float: right;
+        width: 16px;
+        background: transparent url('/media/embed/reader/star_grey.png') no-repeat center 0;
+        text-transform: uppercase;
+        padding: 1px 6px 1px 6px;
+        height: 11px;
+
+        &:hover,
+        &.NB-active {
+            cursor: pointer;
+            background: transparent url('/media/embed/reader/star_green.png') no-repeat center 0;
+        }
+        &:active {
+            cursor: pointer;
+        }
+    }
+    .NB-story-comment-likes-users {
+        .NB-user-avatar {
+            float: right;
+            width: auto;
+            height: auto;
+            img {
+                position: static;
+                width: 12px;
+                height: 12px;
+            }
+        }
+
     }
 }
 

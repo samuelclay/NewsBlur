@@ -55,7 +55,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 }
 
 body {
-  background: #ebedee url('/../../../media/img/circular/background.png?1357864825') repeat 0 0;
+  background: #ebedee url('/../../../media/img/circular/background.png?1357879882') repeat 0 0;
   font-family: Helvetica, arial, sans-serif;
   color: #333333;
 }
@@ -128,6 +128,7 @@ blockquote {
 }
 
 .NB-container {
+  background: transparent;
   width: 100%;
   height: 100%;
 }
@@ -217,7 +218,7 @@ blockquote {
 }
 
 .NB-authenticated .NB-header {
-  background: #f2f2f2 url('/../../../media/img/circular/header_background_logged_in.png?1357864825') repeat 0 0;
+  background: #f2f2f2 url('/../../../media/img/circular/header_background_logged_in.png?1357879882') repeat 0 0;
   height: 44px;
   bottom: 0;
 }
@@ -242,7 +243,7 @@ blockquote {
 }
 .NB-authenticated .NB-header ul li.NB-active {
   cursor: default;
-  background: url('/../../../media/img/circular/header_highlight_border.png?1357864825') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header_highlight_border.png?1357879882') no-repeat center bottom;
 }
 .NB-authenticated .NB-header ul li.NB-active div.NB-tab-inner {
   color: #62a4d3;
@@ -273,22 +274,22 @@ blockquote {
 .NB-authenticated .NB-header ul li.NB-trending-tab .NB-icon {
   width: 17px;
   height: 17px;
-  background: url('/../../../media/img/circular/header/icon_trending.png?1357864825') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_trending.png?1357879882') no-repeat center bottom;
 }
 .NB-authenticated .NB-header ul li.NB-active.NB-trending-tab .NB-icon, .NB-authenticated .NB-header ul li.NB-trending-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_trending_active.png?1357864825') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_trending_active.png?1357879882') no-repeat center bottom;
 }
 .NB-authenticated .NB-header ul li.NB-following-tab .NB-icon {
   width: 17px;
   height: 17px;
-  background: url('/../../../media/img/circular/header/icon_follow.png?1357864825') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_follow.png?1357879882') no-repeat center bottom;
 }
 .NB-authenticated .NB-header ul li.NB-active.NB-following-tab .NB-icon, .NB-authenticated .NB-header ul li.NB-following-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_follow_active.png?1357864825') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_follow_active.png?1357879882') no-repeat center bottom;
 }
 
 .NB-unauthenticated .NB-header {
-  background: url('/../../../media/img/circular/header_background_transparent.png?1357864825') repeat 0 0;
+  background: url('/../../../media/img/circular/header_background_transparent.png?1357879882') repeat 0 0;
   height: 72px;
   top: 0;
 }
@@ -436,10 +437,10 @@ blockquote {
 .NB-popover .NB-popover-inner {
   width: 240px;
   padding: 45px 38px 0 30px;
-  background: transparent url('/../../../media/img/circular/popover_top.png?1357864825') no-repeat 0 0;
+  background: transparent url('/../../../media/img/circular/popover_top.png?1357879882') no-repeat 0 0;
 }
 .NB-popover .NB-popover-bottom {
-  background: transparent url('/../../../media/img/circular/popover_bottom.png?1357864825') no-repeat left bottom;
+  background: transparent url('/../../../media/img/circular/popover_bottom.png?1357879882') no-repeat left bottom;
   height: 40px;
 }
 .NB-popover input {
@@ -587,7 +588,7 @@ blockquote {
   width: 100%;
   height: 14px;
   z-index: 0;
-  background: transparent url('/../../../media/img/circular/module_cutoff.png?1357864825') repeat-x left bottom;
+  background: transparent url('/../../../media/img/circular/module_cutoff.png?1357879882') repeat-x left bottom;
 }
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
@@ -986,6 +987,36 @@ blockquote {
   font-size: 12px;
   border-bottom: 1px solid #bdbdbd;
   padding: 3px 0;
+}
+.NB-story-comments-container .NB-story-comment-likes {
+  overflow: hidden;
+  height: 14px;
+  margin: 3px 2px 0;
+}
+.NB-story-comments-container .NB-story-comment-like {
+  float: right;
+  width: 16px;
+  background: transparent url("/media/embed/reader/star_grey.png") no-repeat center 0;
+  text-transform: uppercase;
+  padding: 1px 6px 1px 6px;
+  height: 11px;
+}
+.NB-story-comments-container .NB-story-comment-like:hover, .NB-story-comments-container .NB-story-comment-like.NB-active {
+  cursor: pointer;
+  background: transparent url("/media/embed/reader/star_green.png") no-repeat center 0;
+}
+.NB-story-comments-container .NB-story-comment-like:active {
+  cursor: pointer;
+}
+.NB-story-comments-container .NB-story-comment-likes-users .NB-user-avatar {
+  float: right;
+  width: auto;
+  height: auto;
+}
+.NB-story-comments-container .NB-story-comment-likes-users .NB-user-avatar img {
+  position: static;
+  width: 12px;
+  height: 12px;
 }
 
 .NB-page-controls {

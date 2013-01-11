@@ -131,13 +131,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
                                       comment_user_id, comment_reply, 
                                       reply_id,
                                       _.bind(function(data) {
-            if (this.options.on_social_page) {
-                this.options.story_comments_view.replace_comment(this.model.get('user_id'), data);
-            } else {
-                this.model.set(data.comment);
-                this.render();
-                NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-            }
+            this.options.story_comments_view.replace_comment(this, data);
         }, this), _.bind(function(data) {
             var message = data && data.message || "Sorry, this reply could not be posted. Probably a bug.";
             if (!NEWSBLUR.Globals.is_authenticated) {
@@ -174,13 +168,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
                                              this.options.story.get('story_feed_id'), 
                                              comment_user_id, reply_id,
                                              _.bind(function(data) {
-            if (this.options.on_social_page) {
-                this.options.story_comments_view.replace_comment(this.model.get('user_id'), data);
-            } else {
-                this.model.set(data.comment);
-                this.render();
-                NEWSBLUR.app.story_list.fetch_story_locations_in_feed_view();
-            }
+            this.options.story_comments_view.replace_comment(this, data);
         }, this), _.bind(function(data) {
             var message = data && data.message || "Sorry, this reply could not be deleted.";
             var $error = $.make('div', { className: 'NB-error' }, message);
@@ -195,20 +183,22 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
     },
     
     like_comment: function() {
-        var liking_user_ids = this.model.get('liking_users') || [];
+        console.log(["like_comment", this]);
         var comment_user_id = this.model.get('user_id');
-        var liked = _.contains(liking_user_ids, NEWSBLUR.Globals.user_id);
+        var liked = $(".NB-story-comment-like", this.$el).hasClass('NB-active');
         
         if (!liked) {
-            this.model.set('liking_users', _.union(liking_user_ids, NEWSBLUR.Globals.user_id));
             NEWSBLUR.assets.like_comment(this.options.story.id, 
                                          this.options.story.get('story_feed_id'),
-                                         comment_user_id);
+                                         comment_user_id, _.bind(function(data) {
+            this.options.story_comments_view.replace_comment(this, data);
+        }, this));
         } else {
-            this.model.set('liking_users', _.without(liking_user_ids, NEWSBLUR.Globals.user_id));
             NEWSBLUR.assets.remove_like_comment(this.options.story.id, 
                                                 this.options.story.get('story_feed_id'),
-                                                comment_user_id);
+                                                comment_user_id, _.bind(function(data) {
+            this.options.story_comments_view.replace_comment(this, data);
+        }, this));
         }
     }
     

@@ -1709,6 +1709,9 @@ class MSharedStory(mongo.Document):
                     for r, reply in enumerate(comment['replies']):
                         if reply['user_id'] in profiles:
                             stories[s][comment_set][c]['replies'][r]['user'] = profiles[reply['user_id']]
+                    stories[s][comment_set][c]['liking_user_ids'] = list(comment['liking_users'])
+                    for u, user_id in enumerate(comment['liking_users']):
+                        stories[s][comment_set][c]['liking_users'][u] = profiles[user_id]
 
         return stories
     
@@ -1720,6 +1723,9 @@ class MSharedStory(mongo.Document):
             comment['source_user'] = profiles[comment['source_user_id']]
         for r, reply in enumerate(comment['replies']):
             comment['replies'][r]['user'] = profiles[reply['user_id']]
+        comment['liking_user_ids'] = list(comment['liking_users'])
+        for u, user_id in enumerate(comment['liking_users']):
+            comment['liking_users'][u] = profiles[user_id]
 
         return comment
         

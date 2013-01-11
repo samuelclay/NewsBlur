@@ -124,6 +124,28 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         });
     },
     
+    like_comment: function(story_id, story_feed_id, comment_user_id, callback, error_callback) {
+        this.make_request('/social/like_comment', {
+            story_id: story_id,
+            story_feed_id: story_feed_id,
+            comment_user_id: comment_user_id,
+            format: 'html'
+        }, callback, error_callback, {
+            request_type: 'POST'
+        });
+    },
+    
+    remove_like_comment: function(story_id, story_feed_id, comment_user_id, callback, error_callback) {
+        this.make_request('/social/remove_like_comment', {
+            story_id: story_id,
+            story_feed_id: story_feed_id,
+            comment_user_id: comment_user_id,
+            format: 'html'
+        }, callback, error_callback, {
+            request_type: 'POST'
+        });
+    },
+    
     login: function(username, password, callback, error_callback) {
         this.make_request('/api/login', {
             username: username,
