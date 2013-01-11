@@ -41,12 +41,17 @@
     {% if comment.replies %}
     <div class="NB-story-comment-replies">
         {% for reply in comment.replies %}
-        <div class="NB-story-comment-reply">
+        <div class="NB-story-comment-reply" data-id="{{ reply.reply_id }}">
             <a href="{{ reply.user.feed_link }}">
                 <img class="NB-user-avatar NB-story-comment-reply-photo" src="{{ reply.user.photo_url }}" />
             </a>
             <a href="{{ reply.user.feed_link }}" class="NB-story-comment-username NB-story-comment-reply-username">{{ reply.user.username }}</a>
             <div class="NB-story-comment-date NB-story-comment-reply-date">{{ reply.publish_date }} ago</div>
+            {% if reply.user_id == user.pk %}
+                <div class="NB-story-comment-button NB-story-comment-edit-reply-button">
+                    <div class="NB-story-comment-button-wrapper NB-story-comment-edit-button-wrapper">edit</div>
+                </div>
+            {% endif %}
             <div class="NB-story-comment-reply-content">{{ reply.comments|safe }}</div>
         </div>
         {% endfor %}

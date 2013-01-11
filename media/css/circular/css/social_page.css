@@ -1,4 +1,3 @@
-/* line 17, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -20,102 +19,90 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 
-/* line 22, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html {
   line-height: 1;
 }
 
-/* line 24, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 ol, ul {
   list-style: none;
 }
 
-/* line 26, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* line 28, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 caption, th, td {
   text-align: left;
   font-weight: normal;
   vertical-align: middle;
 }
 
-/* line 30, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q, blockquote {
   quotes: none;
 }
-/* line 103, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q:before, q:after, blockquote:before, blockquote:after {
   content: "";
   content: none;
 }
 
-/* line 32, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 a img {
   border: none;
 }
 
-/* line 116, ../../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
   display: block;
 }
 
-/* line 94, ../sass/social_page.scss */
 body {
   background: #ebedee url('/../../../media/img/circular/background.png?1357864825') repeat 0 0;
   font-family: Helvetica, arial, sans-serif;
   color: #333333;
 }
 @media screen and (max-width: 480px) {
-  /* line 94, ../sass/social_page.scss */
   body {
     overflow-y: scroll;
     overflow-x: hidden;
   }
 }
 
-/* line 105, ../sass/social_page.scss */
 a {
-  color: #333333;
+  color: #22258c;
   text-decoration: none;
 }
+a:hover {
+  color: #740417;
+}
+a:active {
+  color: #550b14;
+}
 
-/* line 110, ../sass/social_page.scss */
 .NB-hidden {
   display: none;
 }
 
-/* line 114, ../sass/social_page.scss */
 .NB-left {
   float: left;
 }
 
-/* line 117, ../sass/social_page.scss */
 .NB-right {
   float: right;
 }
 
-/* line 120, ../sass/social_page.scss */
 .NB-raquo {
   font-size: 18px;
   vertical-align: baseline;
   line-height: 12px;
 }
 
-/* line 126, ../sass/social_page.scss */
 .tipsy {
   font-size: 11px;
 }
 
-/* line 129, ../sass/social_page.scss */
 .tipsy-inner {
   padding: 2px 9px 2px;
 }
 
-/* line 133, ../sass/social_page.scss */
 blockquote {
   background-color: #F0F0F0;
   border-left: 1px solid #9B9B9B;
@@ -123,7 +110,6 @@ blockquote {
   margin: 10px;
 }
 
-/* line 139, ../sass/social_page.scss */
 .NB-spinner {
   width: 16px;
   height: 16px;
@@ -133,23 +119,19 @@ blockquote {
   margin-top: -2px;
 }
 
-/* line 147, ../sass/social_page.scss */
 .NB-spinner.NB-active {
   display: block;
 }
 
-/* line 151, ../sass/social_page.scss */
 .tipsy .tipsy-arrow {
   display: none;
 }
 
-/* line 160, ../sass/social_page.scss */
 .NB-container {
   width: 100%;
   height: 100%;
 }
 
-/* line 169, ../sass/social_page.scss */
 .NB-page {
   max-width: 700px;
   min-width: 300px;
@@ -157,7 +139,6 @@ blockquote {
   padding: 0 10px;
 }
 
-/* line 176, ../sass/social_page.scss */
 .NB-watermark-logo {
   margin: 20px auto;
   max-width: 700px;
@@ -167,18 +148,15 @@ blockquote {
   height: 60px;
 }
 @media screen and (max-width: 480px) {
-  /* line 176, ../sass/social_page.scss */
   .NB-watermark-logo {
     height: 40px;
     margin: 10px auto;
   }
 }
-/* line 189, ../sass/social_page.scss */
 .NB-authenticated .NB-watermark-logo {
   opacity: 0.4;
 }
 
-/* line 194, ../sass/social_page.scss */
 .NB-blue-button {
   border: 1px solid #4388b5;
   -webkit-border-radius: 4px 4px;
@@ -204,7 +182,6 @@ blockquote {
   font-size: 14px;
   font-weight: normal;
 }
-/* line 80, ../sass/social_page.scss */
 .NB-blue-button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
   background-image: -webkit-linear-gradient(#6bb1e0, #6bb1e0);
@@ -212,7 +189,6 @@ blockquote {
   background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
   background-image: linear-gradient(#6bb1e0, #6bb1e0);
 }
-/* line 84, ../sass/social_page.scss */
 .NB-blue-button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
   background-image: -webkit-linear-gradient(#4d98d2, #4d98d2);
@@ -224,7 +200,6 @@ blockquote {
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
 
-/* line 199, ../sass/social_page.scss */
 .NB-header {
   -webkit-box-shadow: 0px 0px 10px #7d7d7d;
   -moz-box-shadow: 0px 0px 10px #7d7d7d;
@@ -233,7 +208,6 @@ blockquote {
   left: 0;
   z-index: 10;
 }
-/* line 205, ../sass/social_page.scss */
 .NB-header .NB-header-inner {
   padding: 0 10px;
   max-width: 700px;
@@ -242,17 +216,14 @@ blockquote {
   position: relative;
 }
 
-/* line 214, ../sass/social_page.scss */
 .NB-authenticated .NB-header {
   background: #f2f2f2 url('/../../../media/img/circular/header_background_logged_in.png?1357864825') repeat 0 0;
   height: 44px;
   bottom: 0;
 }
-/* line 219, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul {
   margin: 0 70px;
 }
-/* line 222, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li {
   height: 44px;
   float: left;
@@ -269,29 +240,23 @@ blockquote {
   text-shadow: 0px 1px 1px white;
   cursor: pointer;
 }
-/* line 237, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li.NB-active {
   cursor: default;
   background: url('/../../../media/img/circular/header_highlight_border.png?1357864825') no-repeat center bottom;
 }
-/* line 241, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li.NB-active div.NB-tab-inner {
   color: #62a4d3;
 }
-/* line 247, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li:hover div.NB-tab-inner {
   color: #62a4d3;
 }
-/* line 252, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li div.NB-tab-inner {
   display: inline-block;
   line-height: 44px;
 }
-/* line 257, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li:first-child {
   border-left: 1px solid #cdcdcd;
 }
-/* line 261, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li.NB-user-tab img {
   height: 16px;
   width: 16px;
@@ -299,66 +264,55 @@ blockquote {
   -moz-border-radius: 3px / 3px;
   border-radius: 3px / 3px;
 }
-/* line 268, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li img,
 .NB-authenticated .NB-header ul li .NB-icon {
   float: left;
   margin-top: 13px;
   margin-right: 7px;
 }
-/* line 275, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li.NB-trending-tab .NB-icon {
   width: 17px;
   height: 17px;
   background: url('/../../../media/img/circular/header/icon_trending.png?1357864825') no-repeat center bottom;
 }
-/* line 282, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li.NB-active.NB-trending-tab .NB-icon, .NB-authenticated .NB-header ul li.NB-trending-tab:hover .NB-icon {
   background: url('/../../../media/img/circular/header/icon_trending_active.png?1357864825') no-repeat center bottom;
 }
-/* line 286, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li.NB-following-tab .NB-icon {
   width: 17px;
   height: 17px;
   background: url('/../../../media/img/circular/header/icon_follow.png?1357864825') no-repeat center bottom;
 }
-/* line 293, ../sass/social_page.scss */
 .NB-authenticated .NB-header ul li.NB-active.NB-following-tab .NB-icon, .NB-authenticated .NB-header ul li.NB-following-tab:hover .NB-icon {
   background: url('/../../../media/img/circular/header/icon_follow_active.png?1357864825') no-repeat center bottom;
 }
 
-/* line 300, ../sass/social_page.scss */
 .NB-unauthenticated .NB-header {
   background: url('/../../../media/img/circular/header_background_transparent.png?1357864825') repeat 0 0;
   height: 72px;
   top: 0;
 }
 @media screen and (max-width: 480px) {
-  /* line 300, ../sass/social_page.scss */
   .NB-unauthenticated .NB-header {
     height: 40px;
   }
 }
-/* line 309, ../sass/social_page.scss */
 .NB-unauthenticated .NB-header h1.NB-logo a {
   display: block;
   float: left;
   padding-top: 16px;
 }
 @media screen and (max-width: 480px) {
-  /* line 309, ../sass/social_page.scss */
   .NB-unauthenticated .NB-header h1.NB-logo a {
     float: none;
     text-align: center;
     padding-top: 6px;
   }
-  /* line 319, ../sass/social_page.scss */
   .NB-unauthenticated .NB-header h1.NB-logo a img {
     height: 30px;
     width: 120px;
   }
 }
-/* line 326, ../sass/social_page.scss */
 .NB-unauthenticated .NB-header .NB-request-toggle-button {
   float: right;
   border: 1px solid #4388b5;
@@ -387,7 +341,6 @@ blockquote {
   margin-top: 20px;
   margin-left: 10px;
 }
-/* line 80, ../sass/social_page.scss */
 .NB-unauthenticated .NB-header .NB-request-toggle-button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
   background-image: -webkit-linear-gradient(#6bb1e0, #6bb1e0);
@@ -395,7 +348,6 @@ blockquote {
   background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
   background-image: linear-gradient(#6bb1e0, #6bb1e0);
 }
-/* line 84, ../sass/social_page.scss */
 .NB-unauthenticated .NB-header .NB-request-toggle-button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
   background-image: -webkit-linear-gradient(#4d98d2, #4d98d2);
@@ -406,7 +358,6 @@ blockquote {
   -moz-box-shadow: inset 0px 0px 10px #1f74b8;
   box-shadow: inset 0px 0px 10px #1f74b8;
 }
-/* line 334, ../sass/social_page.scss */
 .NB-unauthenticated .NB-header .NB-logout-button,
 .NB-unauthenticated .NB-header .NB-login-toggle-button {
   float: right;
@@ -436,7 +387,6 @@ blockquote {
   margin-top: 20px;
   margin-left: 10px;
 }
-/* line 53, ../sass/social_page.scss */
 .NB-unauthenticated .NB-header .NB-logout-button:hover,
 .NB-unauthenticated .NB-header .NB-login-toggle-button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f6f6f6), color-stop(100%, #ffffff));
@@ -445,7 +395,6 @@ blockquote {
   background-image: -o-linear-gradient(#f6f6f6, #ffffff);
   background-image: linear-gradient(#f6f6f6, #ffffff);
 }
-/* line 57, ../sass/social_page.scss */
 .NB-unauthenticated .NB-header .NB-logout-button:active,
 .NB-unauthenticated .NB-header .NB-login-toggle-button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e9e9e9), color-stop(100%, #e9e9e9));
@@ -460,13 +409,11 @@ blockquote {
   color: #333333;
 }
 @media screen and (max-width: 480px) {
-  /* line 341, ../sass/social_page.scss */
   .NB-unauthenticated .NB-header .NB-button {
     display: none;
   }
 }
 
-/* line 348, ../sass/social_page.scss */
 .NB-popover {
   position: absolute;
   top: 50px;
@@ -475,32 +422,26 @@ blockquote {
   opacity: 0;
   display: none;
 }
-/* line 356, ../sass/social_page.scss */
 .NB-popover.NB-request-popover {
   top: 50px;
   left: 329px;
 }
-/* line 361, ../sass/social_page.scss */
 .NB-popover.NB-login-popover {
   top: 50px;
   left: 456px;
 }
-/* line 366, ../sass/social_page.scss */
 .NB-popover.NB-active {
   display: block;
 }
-/* line 370, ../sass/social_page.scss */
 .NB-popover .NB-popover-inner {
   width: 240px;
   padding: 45px 38px 0 30px;
   background: transparent url('/../../../media/img/circular/popover_top.png?1357864825') no-repeat 0 0;
 }
-/* line 376, ../sass/social_page.scss */
 .NB-popover .NB-popover-bottom {
   background: transparent url('/../../../media/img/circular/popover_bottom.png?1357864825') no-repeat left bottom;
   height: 40px;
 }
-/* line 381, ../sass/social_page.scss */
 .NB-popover input {
   border: 1px solid #bdbdbd;
   border: 1px solid #BDBDBD;
@@ -510,7 +451,6 @@ blockquote {
   font-size: 14px;
   font-weight: normal;
 }
-/* line 391, ../sass/social_page.scss */
 .NB-popover .NB-error {
   font-size: 12px;
   color: #6A1000;
@@ -521,12 +461,10 @@ blockquote {
   margin: 0 10px;
 }
 
-/* line 407, ../sass/social_page.scss */
 .NB-shared-story {
   margin: 20px 0 50px 0;
 }
 
-/* line 411, ../sass/social_page.scss */
 .NB-story {
   border-left: 4px solid #6A6A6A;
   border-right: 4px solid #6A6A6A;
@@ -537,7 +475,6 @@ blockquote {
   position: relative;
   z-index: 1;
 }
-/* line 419, ../sass/social_page.scss */
 .NB-story .NB-story-inner {
   border-left: 1px solid #525252;
   border-right: 1px solid #525252;
@@ -547,12 +484,10 @@ blockquote {
   /* contains all children */
 }
 @media screen and (max-width: 480px) {
-  /* line 419, ../sass/social_page.scss */
   .NB-story .NB-story-inner {
     padding: 12px 12px 15px;
   }
 }
-/* line 432, ../sass/social_page.scss */
 .NB-story .NB-story-title .NB-story-title-link {
   font-size: 21px;
   font-weight: bold;
@@ -561,21 +496,17 @@ blockquote {
   color: #333333;
 }
 @media screen and (max-width: 480px) {
-  /* line 432, ../sass/social_page.scss */
   .NB-story .NB-story-title .NB-story-title-link {
     font-size: 16px;
   }
 }
-/* line 444, ../sass/social_page.scss */
 .NB-story .NB-story-title .NB-story-permalink a {
   color: gray;
 }
-/* line 450, ../sass/social_page.scss */
 .NB-story .NB-story-author {
   color: gray;
   white-space: nowrap;
 }
-/* line 455, ../sass/social_page.scss */
 .NB-story .NB-story-metadata {
   font-size: 14px;
   color: gray;
@@ -584,42 +515,35 @@ blockquote {
   margin: 5px 0 8px;
 }
 @media screen and (max-width: 480px) {
-  /* line 455, ../sass/social_page.scss */
   .NB-story .NB-story-metadata {
     font-size: 12px;
   }
 }
-/* line 467, ../sass/social_page.scss */
 .NB-story .NB-feed {
   margin: 2px 10px 10px 0;
   text-transform: capitalize;
   float: left;
   white-space: nowrap;
 }
-/* line 474, ../sass/social_page.scss */
 .NB-story .NB-feed .NB-feed-favicon,
 .NB-story .NB-feed .NB-feed-title {
   float: left;
 }
 @media screen and (max-width: 480px) {
-  /* line 467, ../sass/social_page.scss */
   .NB-story .NB-feed {
     clear: both;
   }
 }
-/* line 483, ../sass/social_page.scss */
 .NB-story .NB-feed a {
   display: inline-block;
   color: gray;
   font-size: 12px;
 }
 @media screen and (max-width: 480px) {
-  /* line 483, ../sass/social_page.scss */
   .NB-story .NB-feed a {
     font-size: 11px;
   }
 }
-/* line 493, ../sass/social_page.scss */
 .NB-story .NB-feed img {
   float: left;
   width: 16px;
@@ -627,17 +551,14 @@ blockquote {
   margin-right: 4px;
 }
 
-/* line 502, ../sass/social_page.scss */
 .NB-story-content-wrapper {
   max-height: 300px;
   position: relative;
   clear: both;
 }
-/* line 507, ../sass/social_page.scss */
 .NB-story-content-wrapper.NB-story-content-wrapper-height-fudged {
   max-height: none;
 }
-/* line 511, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander {
   display: none;
   position: absolute;
@@ -649,20 +570,16 @@ blockquote {
   font-size: 12px;
   background: #fff;
 }
-/* line 522, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-inner {
   position: relative;
   padding: 18px 25px 14px 0;
 }
-/* line 527, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander:hover {
   color: #306187;
 }
-/* line 530, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander:active {
   color: #722125;
 }
-/* line 534, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-cutoff {
   position: absolute;
   top: -14px;
@@ -672,26 +589,22 @@ blockquote {
   z-index: 0;
   background: transparent url('/../../../media/img/circular/module_cutoff.png?1357864825') repeat-x left bottom;
 }
-/* line 545, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
   display: inline-block;
 }
-/* line 549, ../sass/social_page.scss */
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
   line-height: 8px;
   padding: 0 12px;
   font-size: 24px;
 }
 @media screen and (max-width: 480px) {
-  /* line 549, ../sass/social_page.scss */
   .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {
     padding: 0 4px;
     font-size: 16px;
   }
 }
 
-/* line 562, ../sass/social_page.scss */
 .NB-story-content {
   font-size: 14px;
   line-height: 140%;
@@ -700,33 +613,27 @@ blockquote {
   margin: 10px 0;
 }
 @media screen and (max-width: 480px) {
-  /* line 562, ../sass/social_page.scss */
   .NB-story-content {
     font-size: 12px;
     line-height: 160%;
   }
 }
-/* line 574, ../sass/social_page.scss */
 .NB-story-content p {
   margin: 10px 0;
 }
-/* line 578, ../sass/social_page.scss */
 .NB-story-content img {
   margin: 10px 0;
   max-width: 100% !important;
   height: auto !important;
 }
-/* line 584, ../sass/social_page.scss */
 .NB-story-content ins {
   text-decoration: none;
   color: inherit;
 }
-/* line 589, ../sass/social_page.scss */
 .NB-story-content del {
   display: none;
 }
 
-/* line 599, ../sass/social_page.scss */
 .NB-story-shares-container {
   text-align: right;
   color: gray;
@@ -735,20 +642,17 @@ blockquote {
   float: right;
 }
 @media screen and (max-width: 480px) {
-  /* line 599, ../sass/social_page.scss */
   .NB-story-shares-container {
     float: none;
     text-align: left;
     font-size: 11px;
   }
 }
-/* line 612, ../sass/social_page.scss */
 .NB-story-shares-container .NB-story-share-label {
   display: inline-block;
   vertical-align: top;
   margin-top: 3px;
 }
-/* line 622, ../sass/social_page.scss */
 .NB-story-shares-container .NB-story-share-profiles,
 .NB-story-shares-container .NB-story-share-profiles-shares-friends,
 .NB-story-shares-container .NB-story-share-profiles-shares-public,
@@ -756,23 +660,19 @@ blockquote {
 .NB-story-shares-container .NB-story-share-profiles-comments-public {
   display: inline;
 }
-/* line 627, ../sass/social_page.scss */
 .NB-story-shares-container .NB-story-share-profiles-shares-public,
 .NB-story-shares-container .NB-story-share-profiles-comments-public {
   opacity: .5;
 }
-/* line 631, ../sass/social_page.scss */
 .NB-story-shares-container .NB-user-avatar {
   display: inline-block;
   margin: 2px 1px 0 2px;
 }
 @media screen and (max-width: 480px) {
-  /* line 631, ../sass/social_page.scss */
   .NB-story-shares-container .NB-user-avatar {
     margin: 2px 3px 0 0px;
   }
 }
-/* line 639, ../sass/social_page.scss */
 .NB-story-shares-container .NB-user-avatar img {
   -webkit-box-shadow: 0px 0px 1px #bdbdbd;
   -moz-box-shadow: 0px 0px 1px #bdbdbd;
@@ -782,7 +682,6 @@ blockquote {
   display: block;
 }
 
-/* line 650, ../sass/social_page.scss */
 .NB-story-comments-container {
   font-size: 14px;
   z-index: 10;
@@ -793,18 +692,15 @@ blockquote {
   border-top: 0;
 }
 @media screen and (max-width: 480px) {
-  /* line 650, ../sass/social_page.scss */
   .NB-story-comments-container {
     margin: 0 10px;
     padding: 0 10px;
     font-size: 11px;
   }
-  /* line 664, ../sass/social_page.scss */
   .NB-story-comments-container .NB-story-comment-edit {
     display: none;
   }
 }
-/* line 670, ../sass/social_page.scss */
 .NB-story-comments-container .NB-user-avatar img,
 .NB-story-comments-container img.NB-user-avatar {
   position: absolute;
@@ -818,7 +714,6 @@ blockquote {
   /* @include single-box-shadow; gets in the way of transparent PNGs */
 }
 @media screen and (max-width: 480px) {
-  /* line 670, ../sass/social_page.scss */
   .NB-story-comments-container .NB-user-avatar img,
   .NB-story-comments-container img.NB-user-avatar {
     height: 24px;
@@ -826,7 +721,6 @@ blockquote {
     top: 8px;
   }
 }
-/* line 687, ../sass/social_page.scss */
 .NB-story-comments-container .NB-user-avatar.NB-story-comment-reshare img {
   top: 27px;
   left: 0px;
@@ -835,14 +729,12 @@ blockquote {
   height: 24px;
 }
 @media screen and (max-width: 480px) {
-  /* line 687, ../sass/social_page.scss */
   .NB-story-comments-container .NB-user-avatar.NB-story-comment-reshare img {
     height: 24px;
     width: 24px;
     top: 8px;
   }
 }
-/* line 701, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment {
   margin-top: -1px;
   padding: 15px 0 18px 44px;
@@ -851,18 +743,15 @@ blockquote {
   min-height: 32px;
 }
 @media screen and (max-width: 480px) {
-  /* line 701, ../sass/social_page.scss */
   .NB-story-comments-container .NB-story-comment {
     padding: 8px 0 8px 34px;
   }
 }
-/* line 711, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-username {
   float: left;
   font-size: 12px;
   font-weight: bold;
 }
-/* line 717, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
   float: right;
   margin-left: 6px;
@@ -871,13 +760,11 @@ blockquote {
   text-shadow: 0px 1px 1px white;
 }
 @media screen and (max-width: 480px) {
-  /* line 717, ../sass/social_page.scss */
   .NB-story-comments-container .NB-story-comment .NB-story-comment-date {
     padding-top: 1px;
     font-size: 11px;
   }
 }
-/* line 729, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-location {
   font-size: 11px;
   color: #a0a0a0;
@@ -886,19 +773,16 @@ blockquote {
   text-shadow: 0px 1px 1px white;
 }
 @media screen and (max-width: 480px) {
-  /* line 729, ../sass/social_page.scss */
   .NB-story-comments-container .NB-story-comment .NB-story-comment-location {
     font-size: 10px;
     padding-top: 4px;
   }
 }
-/* line 741, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 747, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
   top: 15px;
   left: 12px;
@@ -907,12 +791,10 @@ blockquote {
   height: 20px;
 }
 @media screen and (max-width: 480px) {
-  /* line 747, ../sass/social_page.scss */
   .NB-story-comments-container .NB-story-comment .NB-story-comment-reshares .NB-user-avatar img {
     display: none;
   }
 }
-/* line 760, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply {
   margin-top: 15px;
   padding: 15px 0 0px 44px;
@@ -921,26 +803,22 @@ blockquote {
   min-height: 32px;
 }
 @media screen and (max-width: 480px) {
-  /* line 760, ../sass/social_page.scss */
   .NB-story-comments-container .NB-story-comment-reply {
     margin-top: 6px;
     padding: 6px 0 0px 32px;
   }
 }
-/* line 772, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply .NB-story-comment-reply-content {
   padding-top: 4px;
   line-height: 18px;
   clear: both;
 }
-/* line 779, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-button {
   margin-top: -5px;
   padding: 4px 6px;
   float: right;
   cursor: pointer;
 }
-/* line 785, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-button .NB-story-comment-button-wrapper {
   text-transform: uppercase;
   background-color: #E9AF86;
@@ -950,37 +828,29 @@ blockquote {
   font-size: 9px;
 }
 @media screen and (max-width: 480px) {
-  /* line 785, ../sass/social_page.scss */
   .NB-story-comments-container .NB-story-comment-button .NB-story-comment-button-wrapper {
     margin-top: 2px;
     padding-top: 1px;
   }
 }
-/* line 800, ../sass/social_page.scss */
-.NB-story-comments-container .NB-story-comment-reply-button .NB-story-comment-reply-button-wrapper {
+.NB-story-comments-container .NB-story-comment-button .NB-story-comment-reply-button-wrapper {
   background-color: #E9AF86;
 }
-/* line 803, ../sass/social_page.scss */
-.NB-story-comments-container .NB-story-comment-reply-button:hover .NB-story-comment-reply-button-wrapper {
+.NB-story-comments-container .NB-story-comment-button:hover .NB-story-comment-reply-button-wrapper {
   background-color: #DE772B;
 }
-/* line 806, ../sass/social_page.scss */
-.NB-story-comments-container .NB-story-comment-reply-button:active .NB-story-comment-reply-button-wrapper {
+.NB-story-comments-container .NB-story-comment-button:active .NB-story-comment-reply-button-wrapper {
   background-color: #9F3A00;
 }
-/* line 812, ../sass/social_page.scss */
-.NB-story-comments-container .NB-story-comment-edit-button .NB-story-comment-edit-button-wrapper {
+.NB-story-comments-container .NB-story-comment-button .NB-story-comment-edit-button-wrapper {
   background-color: #74A2E7;
 }
-/* line 815, ../sass/social_page.scss */
-.NB-story-comments-container .NB-story-comment-edit-button:hover .NB-story-comment-edit-button-wrapper {
+.NB-story-comments-container .NB-story-comment-button:hover .NB-story-comment-edit-button-wrapper {
   background-color: #5073BC;
 }
-/* line 818, ../sass/social_page.scss */
-.NB-story-comments-container .NB-story-comment-edit-button:active .NB-story-comment-edit-button-wrapper {
+.NB-story-comments-container .NB-story-comment-button:active .NB-story-comment-edit-button-wrapper {
   background-color: #2A3B72;
 }
-/* line 823, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-input {
   width: 371px;
   height: 16px;
@@ -989,27 +859,23 @@ blockquote {
   margin-top: 1px;
   border: 1px solid #bdbdbd;
 }
-/* line 832, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply-form {
   padding-top: 11px;
 }
-/* line 835, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply-form .NB-story-comment-reply-username {
   margin: 12px 8px 6px 0;
 }
-/* line 838, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply-form .NB-story-comment-reply-comments {
   margin: 6px 8px 4px 0;
-  width: 62%;
+  width: 50%;
   display: block;
   float: left;
   font-size: 12px;
   height: 20px;
 }
-/* line 846, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply-form .NB-modal-submit-button {
   float: left;
-  margin-top: 4px;
+  margin: 4px 4px 0 0;
   border: 1px solid #bdbdbd;
   -webkit-border-radius: 4px 4px;
   -moz-border-radius: 4px / 4px;
@@ -1034,7 +900,6 @@ blockquote {
   font-size: 14px;
   font-weight: normal;
 }
-/* line 53, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply-form .NB-modal-submit-button:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f6f6f6), color-stop(100%, #ffffff));
   background-image: -webkit-linear-gradient(#f6f6f6, #ffffff);
@@ -1042,7 +907,6 @@ blockquote {
   background-image: -o-linear-gradient(#f6f6f6, #ffffff);
   background-image: linear-gradient(#f6f6f6, #ffffff);
 }
-/* line 57, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-reply-form .NB-modal-submit-button:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e9e9e9), color-stop(100%, #e9e9e9));
   background-image: -webkit-linear-gradient(#e9e9e9, #e9e9e9);
@@ -1055,7 +919,9 @@ blockquote {
   text-shadow: 0px -1px 1px white;
   color: #333333;
 }
-/* line 851, ../sass/social_page.scss */
+.NB-story-comments-container .NB-story-comment-reply-form .NB-modal-submit-button:last-child {
+  margin-right: 0;
+}
 .NB-story-comments-container .NB-story-comment-reply-form .NB-error {
   font-size: 10px;
   color: #6A1000;
@@ -1064,7 +930,6 @@ blockquote {
   font-weight: bold;
   clear: both;
 }
-/* line 862, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save {
   position: absolute;
   top: 16px;
@@ -1094,7 +959,6 @@ blockquote {
   font-size: 14px;
   font-weight: normal;
 }
-/* line 53, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save:hover {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f6f6f6), color-stop(100%, #ffffff));
   background-image: -webkit-linear-gradient(#f6f6f6, #ffffff);
@@ -1102,7 +966,6 @@ blockquote {
   background-image: -o-linear-gradient(#f6f6f6, #ffffff);
   background-image: linear-gradient(#f6f6f6, #ffffff);
 }
-/* line 57, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save:active {
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e9e9e9), color-stop(100%, #e9e9e9));
   background-image: -webkit-linear-gradient(#e9e9e9, #e9e9e9);
@@ -1115,11 +978,9 @@ blockquote {
   text-shadow: 0px -1px 1px white;
   color: #333333;
 }
-/* line 870, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-delete {
   display: none;
 }
-/* line 875, ../sass/social_page.scss */
 .NB-story-comments-container .NB-story-comments-public-header-wrapper {
   color: gray;
   font-size: 12px;
@@ -1127,7 +988,6 @@ blockquote {
   padding: 3px 0;
 }
 
-/* line 887, ../sass/social_page.scss */
 .NB-page-controls {
   margin: 0 auto 54px;
   border-top: 2px solid #626262;
@@ -1138,7 +998,6 @@ blockquote {
   overflow: hidden;
 }
 
-/* line 898, ../sass/social_page.scss */
 .NB-page-controls-next,
 .NB-page-controls-end {
   background-color: #6eb4e3;
@@ -1152,7 +1011,6 @@ blockquote {
   -o-transition: all .12s ease-out;
   -ms-transition: all .12s ease-out;
 }
-/* line 912, ../sass/social_page.scss */
 .NB-page-controls-next .NB-page-controls-text,
 .NB-page-controls-end .NB-page-controls-text {
   position: absolute;
@@ -1163,43 +1021,36 @@ blockquote {
   font-size: 20px;
   color: white;
 }
-/* line 922, ../sass/social_page.scss */
 .NB-page-controls-next:hover,
 .NB-page-controls-end:hover {
   background-color: #2B478C;
   background-image: none;
   cursor: pointer;
 }
-/* line 927, ../sass/social_page.scss */
 .NB-page-controls-next.NB-loaded,
 .NB-page-controls-end.NB-loaded {
   cursor: default;
 }
-/* line 930, ../sass/social_page.scss */
 .NB-page-controls-next.NB-loading,
 .NB-page-controls-end.NB-loading {
   cursor: wait;
 }
 
-/* line 935, ../sass/social_page.scss */
 .NB-page-controls-end {
   background-color: #3B3E49;
   cursor: default;
   height: auto;
 }
-/* line 940, ../sass/social_page.scss */
 .NB-page-controls-end .NB-page-controls-text {
   height: auto;
   position: static;
 }
-/* line 944, ../sass/social_page.scss */
 .NB-page-controls-end:hover {
   background-color: #3B3E49;
   background-image: none;
   cursor: default;
 }
 
-/* line 951, ../sass/social_page.scss */
 footer {
   overflow: hidden;
 }

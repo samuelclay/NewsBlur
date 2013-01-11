@@ -6,6 +6,9 @@ $comment-width: 586px;
 $max-story-height: 300px;
 
 $text-color: #333333;
+$link-color: #22258C;
+$link-color-hover: #740417;
+$link-color-active: #550B14;
 $highlight-text-color: #62a4d3;
 $light-text-color: #808080;
 $lighter-text-color: #A0A0A0;
@@ -25,11 +28,9 @@ $tiny-iphone-font-size: 10px;
 $default-text-shadow-color: white;
 $default-text-shadow-blur: 1px;
 $default-text-shadow-v-offset: 1px;
-
 $default-box-shadow-color: $border-color;
 $default-box-shadow-v-offset: 0px;
 $default-box-shadow-blur: 1px;
-
 
 // ==========
 // = Mixins =
@@ -103,8 +104,15 @@ body {
 }
 
 a {
-    color: $text-color;
+    color: $link-color;
     text-decoration: none;
+    
+    &:hover {
+        color: $link-color-hover;
+    }
+    &:active {
+        color: $link-color-active;
+    }
 }
 
 .NB-hidden {
@@ -794,9 +802,7 @@ blockquote {
                 padding-top: 1px;
             }
         }
-    }
-    
-    .NB-story-comment-reply-button {
+
         .NB-story-comment-reply-button-wrapper {
             background-color: #E9AF86;
         }
@@ -806,9 +812,7 @@ blockquote {
         &:active .NB-story-comment-reply-button-wrapper {
             background-color: #9F3A00;
         }
-    }
-    
-    .NB-story-comment-edit-button {
+
         .NB-story-comment-edit-button-wrapper {
             background-color: #74A2E7;
         }
@@ -837,7 +841,7 @@ blockquote {
         }
         .NB-story-comment-reply-comments {
             margin: 6px 8px 4px 0;
-            width: 62%;
+            width: 50%;
             display: block;
             float: left;
             font-size: 12px;
@@ -845,8 +849,12 @@ blockquote {
         }
         .NB-modal-submit-button {
             float: left;
-            margin-top: 4px;
+            margin: 4px 4px 0 0;
             @include NB-default-button;
+            
+            &:last-child {
+                margin-right: 0;
+            }
         }
         .NB-error {
             font-size: 10px;

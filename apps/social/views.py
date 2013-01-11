@@ -1321,3 +1321,14 @@ def comment(request, comment_id):
     except MSharedStory.DoesNotExist:
         raise Http404
     return shared_story.comments_with_author()
+
+@json.json_view
+def comment_reply(request, comment_id, reply_id):
+    try:
+        shared_story = MSharedStory.objects.get(id=comment_id)
+    except MSharedStory.DoesNotExist:
+        raise Http404
+        
+    for story_reply in shared_story.replies:
+        if story_reply.reply_id == ObjectId(reply_id):
+            return story_reply

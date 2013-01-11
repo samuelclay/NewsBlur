@@ -50,7 +50,7 @@ class CleanAnalytics(Task):
         
 class CleanStories(Task):
     name = 'clean-stories'
-
+    
     def run(self, **kwargs):
         days_ago = (datetime.datetime.utcnow() -
                     datetime.timedelta(days=settings.DAYS_OF_UNREAD*5))

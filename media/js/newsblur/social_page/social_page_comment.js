@@ -6,6 +6,7 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
         "click .NB-story-comment-reply .NB-modal-submit-green": "save_social_comment_reply",
         "click .NB-story-comment-reply .NB-modal-submit-delete": "delete_social_comment_reply",
         "click .NB-story-comment-reply-button": "open_reply",
+        "click .NB-story-comment-edit-reply-button": "edit_reply",
         "click .NB-story-comment-like": "like_comment"
     },
     
@@ -47,6 +48,17 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
         }, this));
     },
     
+    edit_reply: function(e) {
+        var $reply = $(e.currentTarget).closest(".NB-story-comment-reply");
+        
+        this.open_reply({
+            $reply: $reply,
+            is_editing: true,
+            reply_comments: $(".NB-story-comment-reply-content", $reply).text(),
+            reply_id: $reply.data("id")
+        });
+    },
+    
     open_reply: function(options) {
         options = options || {};
         var current_user = NEWSBLUR.assets.user_profile;
@@ -56,18 +68,17 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
             $error.text("You must be following " + NEWSBLUR.Globals.blurblog_username + " to reply");
             return;
         }
-        var reply_comments = options.reply && options.reply.stripped_comments();
         var $form = $.make('div', { className: 'NB-story-comment-reply NB-story-comment-reply-form' }, [
             $.make('img', { className: 'NB-user-avatar NB-story-comment-reply-photo', src: current_user.get('photo_url') }),
             $.make('div', { className: 'NB-story-comment-username NB-story-comment-reply-username' }, current_user.get('username')),
-            $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments', value: reply_comments }),
+            $.make('input', { type: 'text', className: 'NB-input NB-story-comment-reply-comments', value: options.reply_comments }),
             $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green' }, options.is_editing ? 'Save' : 'Post'),
             (options.is_editing && $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-delete' }, 'Delete'))
         ]);
         this.remove_social_comment_reply_form();
         
         if (options.is_editing && options.$reply) {
-            $form.data('reply_id', options.reply.get("reply_id"));
+            $form.data('reply_id', options.reply_id);
             options.$reply.hide().addClass('NB-story-comment-reply-hidden');
             options.$reply.after($form);
         } else {
