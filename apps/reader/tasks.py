@@ -50,6 +50,7 @@ class CleanAnalytics(Task):
         
 class CleanStories(Task):
     name = 'clean-stories'
+    time_limit = 60 * 60 # 1 hour
     
     def run(self, **kwargs):
         days_ago = (datetime.datetime.utcnow() -
