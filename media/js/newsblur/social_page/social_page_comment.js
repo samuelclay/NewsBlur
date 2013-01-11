@@ -183,7 +183,6 @@ NEWSBLUR.Views.SocialPageComment = Backbone.View.extend({
     },
     
     like_comment: function() {
-        console.log(["like_comment", this]);
         var comment_user_id = this.model.get('user_id');
         var liked = $(".NB-story-comment-like", this.$el).hasClass('NB-active');
         

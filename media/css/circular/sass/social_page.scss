@@ -786,7 +786,7 @@ blockquote {
     }
     
     .NB-story-comment-button {
-        margin-top: -5px;
+        margin-top: -6px;
         padding: 4px 6px;
         float: right;
         cursor: pointer;
@@ -794,9 +794,14 @@ blockquote {
         .NB-story-comment-button-wrapper {
             text-transform: uppercase;
             background-color: #E9AF86;
+            border-top: 1px solid rgba(255, 255, 255, .15);
+            border-left: 1px solid rgba(255, 255, 255, .15);
+            border-bottom: 1px solid rgba(0, 0, 0, .1);
+            border-right: 1px solid rgba(0, 0, 0, .1);
+            text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
             color: white;
-            padding: 3px 4px 1px;
-            line-height: 9px;
+            padding: 2px 4px 1px;
+            line-height: 10px;
             font-size: 9px;
             @media screen and ( max-width: 480px)    {
                 margin-top: 2px;
@@ -915,6 +920,8 @@ blockquote {
             float: right;
             width: auto;
             height: auto;
+            margin-left: 4px;
+            
             img {
                 position: static;
                 width: 12px;
