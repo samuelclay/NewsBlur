@@ -2500,7 +2500,7 @@ background: transparent;
 #story_pane .NB-story-comments-public-header {
     background-color: #A0A0A0;
     color: #FFF;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
     
     background-image: -webkit-gradient(
       linear,
