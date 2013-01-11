@@ -13,9 +13,6 @@
             </div>
         {% endif %}
         <a href="{{ comment.user.feed_link }}" class="NB-story-comment-username">{{ comment.user.username }}</a>
-        {% if comment.user.location %}
-            <div class="NB-story-comment-location">{{ comment.user.location }}</div>
-        {% endif %}
         <div class="NB-story-comment-date">{{ comment.shared_date }} ago</div>
         <div class="NB-story-comment-reply-button">
             <div class="NB-story-comment-reply-button-wrapper">
@@ -30,13 +27,17 @@
                 <div class="NB-story-comment-edit-button-wrapper">edit</div>
             </div>
         {% endif %}
-        {# <div class="NB-story-comment-likes"></div> #}
+        <div class="NB-story-comment-likes"></div>
         <div class="NB-story-comment-error"></div>
         <div class="NB-spinner"></div>
     </div>
     <div class="NB-story-comment-content">
         {{ comment.comments|safe|linebreaksbr }}
     </div>
+    {% if comment.user.location %}
+        <div class="NB-story-comment-location">{{ comment.user.location }}</div>
+    {% endif %}
+
     {% if comment.replies %}
     <div class="NB-story-comment-replies">
         {% for reply in comment.replies %}

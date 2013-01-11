@@ -404,16 +404,16 @@ blockquote {
 }
 
 .NB-story {
-    border-left: 1px solid #fff;
-    border-right: 1px solid #fff;
+    border-left: 1px solid #404040;
+    border-right: 1px solid #404040;
     background: #fff;
     @include single-box-shadow(#c8c8c8, 0px, 0px, 5px, false, false);
     position: relative;
     z-index: 1;
     
     .NB-story-inner {
-        border-left: 4px solid #fff;
-        border-right: 4px solid #fff;
+        border-left: 4px solid #525252;
+        border-right: 4px solid #525252;
         padding: 25px 25px 15px;
         overflow: hidden;
         position: relative; /* contains all children */
@@ -436,8 +436,6 @@ blockquote {
             }
         }
         .NB-story-permalink {
-            font-size: 12px;
-            margin: 4px 0 0;
             a {
                 color: $light-text-color;
             }
@@ -544,7 +542,8 @@ blockquote {
             font-size: 24px;
             
             @media screen and ( max-width: 480px)    {
-                display: none;
+                padding: 0 4px;
+                font-size: 16px;
             }
         }
     }
@@ -710,17 +709,20 @@ blockquote {
             font-size: $smallest-font-size;
             color: $light-text-color;
             @include single-text-shadow;
+            @media screen and (max-width: 480px) {
+                padding-top: 1px;
+                font-size: $smallest-iphone-font-size;
+            }
         }
         
         .NB-story-comment-location {
-            float: left;
             font-size: $smallest-font-size;
             color: $light-text-color;
+            padding-top: 6px;
             @include single-text-shadow;
-            margin-left: 15px;
-            
-            @media screen and ( max-width: 480px)    {
-                display: none;
+            @media screen and (max-width: 480px) {
+                font-size: $smallest-iphone-font-size;
+                padding-top: 4px;
             }
         } 
         
@@ -852,7 +854,12 @@ blockquote {
 .NB-page-controls-end {
     background-color: #3B3E49;
     cursor: default;
+    height: auto;
 
+    .NB-page-controls-text {
+        height: auto;
+        position: static;
+    }
     &:hover {
         background-color: #3B3E49;
         background-image: none;

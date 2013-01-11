@@ -3,31 +3,26 @@
 <div class="NB-shared-story NB-mark {% if story.saved %}NB-story-saved{% endif %} {% if story.shared_by_user %}NB-story-shared{% endif %}" data-feed-id="{{ story.story_feed_id }}" data-story-id="{{ story.id }}" data-guid="{{ story.guid_hash }}" {% if story.user_comments %}data-user-comments="{{ story.user_comments }}"{% endif %}>
     <div class="NB-divider"></div>
     
-    <div class="NB-story" style="border-color: #{{ story.feed.favicon_border }};">
-        <div class="NB-story-inner" style="border-color: #{{ story.feed.favicon_color }};">
+    <div class="NB-story" {% if story.feed.favicon_border %}style="border-color: #{{ story.feed.favicon_border }};"{% endif %}>
+        <div class="NB-story-inner" {% if story.feed.favicon_border %}style="border-color: #{{ story.feed.favicon_color }};"{% endif %}>
             
             <div class="NB-story-header-wrapper">
                 <div class="NB-story-header">
                     <h2 class="NB-story-title">
                         <a href="{{ story.story_permalink }}" class="NB-story-title-link">{{ story.story_title }}</a> 
-
                         <div class="NB-story-metadata">
-                        {% if story.story_authors %}
-                            <span class="NB-story-author">{{ story.story_authors }}, </span>
-                        {% endif %}
-                        {% if story.has_modifications %}
-                            <span class="NB-story-modifications-button" title="Show story changes"></span>
-                        {% endif %}
-                        
-                        <div class="NB-story-permalink">
-                            <a href="{{ story.blurblog_permalink }}">
-                                {{ story.shared_date|date:"D F j<\s\u\p>S</\s\u\p>, Y"|safe }}
-                                <span class="NB-story-date-break"></span>
-                                <small>at</small>
-                                {{ story.shared_date|date:"g:i A"|safe }}
-                            </a>
+                            {% if story.story_authors %}
+                                <span class="NB-story-author">{{ story.story_authors }}, </span>
+                            {% endif %}
+                            <span class="NB-story-permalink">
+                                <a href="{{ story.blurblog_permalink }}">
+                                    {{ story.shared_date|date:"l F j<\s\u\p>S</\s\u\p>, Y"|safe }}
+                                    <span class="NB-story-date-break"></span>
+                                    <small>at</small>
+                                    {{ story.shared_date|date:"g:i A"|safe }}
+                                </a>
+                            </span>
                         </div>
-                    </div>
                     </h2>
                     {# {% if story.story_tags %} #}
                     {#     <div class="NB-story-tags"> #}
