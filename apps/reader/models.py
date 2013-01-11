@@ -132,7 +132,7 @@ class UserSubscription(models.Model):
         current_time    = int(time.time() + 60*60*24)
         if order == 'oldest':
             byscorefunc = r.zrangebyscore
-            if read_filter == 'unread' or True:
+            if read_filter == 'unread':
                 min_score = int(time.mktime(self.mark_read_date.timetuple())) + 1
             else:
                 now = datetime.datetime.now()

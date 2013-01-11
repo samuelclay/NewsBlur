@@ -479,9 +479,6 @@ header {
     padding: 12px 78px 0 28px;
     position: relative;
 }
-.NB-unauthenticated .NB-story-content {
-    padding-right: 228px;
-}
 /*@media all and (max-width: 800px) {
     .NB-story-content {
         padding-right: 100px;

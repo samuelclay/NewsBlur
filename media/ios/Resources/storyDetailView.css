@@ -257,7 +257,7 @@ body.NB-iphone {
 .NB-story code {
     overflow: auto;
     clear: both;
-
+    white-space: normal;
 }
 
 .NB-story h1, 

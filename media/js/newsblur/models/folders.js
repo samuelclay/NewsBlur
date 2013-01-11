@@ -228,6 +228,18 @@ NEWSBLUR.Collections.Folders = Backbone.Collection.extend({
             }
         });
     },
+    
+    feeds_with_unreads: function(options) {
+        options = options || {};
+        
+        return _.compact(_.flatten(this.map(function(item) {
+            if (item.is_feed()) {
+                return item.feed.has_unreads(options) && item.feed;
+            } else if (item.is_folder()) {
+                return item.folders.feeds_with_unreads(options);
+            }
+        })));
+    },
         
     propagate_feed_selected: function() {
         if (this.parent_folder) {

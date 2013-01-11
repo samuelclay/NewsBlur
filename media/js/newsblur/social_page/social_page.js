@@ -99,8 +99,9 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     },
     
     scroll_to_story: function(story_view, run) {
-        $('body').scrollTo(story_view.$mark, {
-            offset: -32,
+        $('html,body').stop().animate({
+            scrollTop: story_view.$mark.offset().top - 8
+        }, {
             duration: run == 1 ? 1000 : 500,
             easing: run == 1 ? 'easeInQuint' : 'easeOutQuint',
             queue: false

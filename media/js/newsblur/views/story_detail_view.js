@@ -30,12 +30,14 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         this.model.bind('change:starred', this.toggle_starred, this);
         this.model.bind('change:intelligence', this.render_header, this);
         this.model.bind('change:intelligence', this.toggle_score, this);
+        this.model.bind('change:shared', this.render_comments, this);
+        this.model.bind('change:comments', this.render_comments, this);
         
         // Binding directly instead of using event delegation. Need for speed.
         // this.$el.bind('mouseenter', this.mouseenter);
         // this.$el.bind('mouseleave', this.mouseleave);
         
-        if (!this.options.feed_floater) {
+        if (!this.options.feed_floater && !this.options.text_view) {
             this.model.story_view = this;
         }
     },
@@ -56,6 +58,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             profile: NEWSBLUR.assets.user_profile
         });
         this.$el.html(this.template(params));
+        if (this.feed) {
+            this.$el.toggleClass('NB-inverse', this.feed.is_light());
+        }
         this.toggle_classes();
         this.toggle_read_status();
         this.toggle_score();
@@ -75,10 +80,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     get_render_params: function() {
         this.feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
         this.classifiers = NEWSBLUR.assets.classifiers[this.model.get('story_feed_id')];
-        
+        var show_feed_title = NEWSBLUR.reader.flags.river_view || this.options.show_feed_title;
         return {
             story            : this.model,
-            feed             : NEWSBLUR.reader.flags.river_view && this.feed,
+            feed             : show_feed_title && this.feed,
             tag              : _.first(this.model.get("story_tags")),
             title            : this.make_story_title(),
             authors_score    : this.classifiers && this.classifiers.authors[this.model.get('story_authors')],
@@ -139,7 +144,9 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         <%= story_header %>\
         <div class="NB-feed-story-shares-container"></div>\
         <div class="NB-feed-story-content">\
-            <%= story.get("story_content") %>\
+            <% if (!options.skip_content) { %>\
+                <%= story.get("story_content") %>\
+            <% } %>\
         </div>\
         <div class="NB-feed-story-comments-container"></div>\
         <div class="NB-feed-story-sideoptions-container">\
@@ -176,9 +183,10 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         $header.css('textShadow',       NEWSBLUR.utils.generate_shadow(this.feed));
     },
     
-    make_story_title: function() {
-        var title = this.model.get('story_title');
-        var classifiers = NEWSBLUR.assets.classifiers[this.model.get('story_feed_id')];
+    make_story_title: function(story) {
+        story = story || this.model;
+        var title = story.get('story_title');
+        var classifiers = NEWSBLUR.assets.classifiers[story.get('story_feed_id')];
         var feed_titles = classifiers && classifiers.titles || [];
         
         _.each(feed_titles, function(score, title_classifier) {
@@ -229,9 +237,6 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         var unread_view = NEWSBLUR.reader.get_unread_view_score();
         var score = story.score();
         
-        if (this.feed) {
-            this.$el.toggleClass('NB-inverse', this.feed.is_light());
-        }
         this.$el.toggleClass('NB-river-story', NEWSBLUR.reader.flags.river_view);
         this.$el.toggleClass('NB-story-starred', !!story.get('starred'));
         this.$el.toggleClass('NB-story-shared', !!story.get('shared'));
@@ -279,7 +284,8 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             NEWSBLUR.app.story_list.scroll_to_selected_story(model, options);
         }
         
-        if (NEWSBLUR.reader.flags['feed_view_showing_story_view']) {
+        if (NEWSBLUR.reader.flags['feed_view_showing_story_view'] ||
+            NEWSBLUR.reader.flags['temporary_story_view']) {
             NEWSBLUR.reader.switch_to_correct_view();
         }
     },

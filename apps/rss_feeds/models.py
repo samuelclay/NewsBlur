@@ -22,6 +22,7 @@ from mongoengine.queryset import OperationError, Q
 from mongoengine.base import ValidationError
 from vendor.timezones.utilities import localtime_for_timezone
 from apps.rss_feeds.tasks import UpdateFeeds, PushFeeds
+from apps.rss_feeds.text_importer import TextImporter
 from apps.search.models import SearchStarredStory, SearchFeed
 from utils import json_functions as json
 from utils import feedfinder, feedparser
@@ -1410,6 +1411,7 @@ class MStory(mongo.Document):
     story_original_content_z = mongo.BinaryField()
     story_latest_content     = mongo.StringField()
     story_latest_content_z   = mongo.BinaryField()
+    original_text_z          = mongo.BinaryField()
     story_content_type       = mongo.StringField(max_length=255)
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
@@ -1465,17 +1467,19 @@ class MStory(mongo.Document):
         super(MStory, self).delete(*args, **kwargs)
     
     @classmethod
-    def find_story(cls, story_feed_id, story_id):
+    def find_story(cls, story_feed_id, story_id, original_only=False):
         from apps.social.models import MSharedStory
         original_found = True
 
         story = cls.objects(story_feed_id=story_feed_id,
                             story_guid=story_id).limit(1).first()
+        
         if not story:
             original_found = False
+        if not story and not original_only:
             story = MSharedStory.objects.filter(story_feed_id=story_feed_id, 
                                                 story_guid=story_id).limit(1).first()
-        if not story:
+        if not story and not original_only:
             story = MStarredStory.objects.filter(story_feed_id=story_feed_id, 
                                                  story_guid=story_id).limit(1).first()
         
@@ -1543,6 +1547,18 @@ class MStory(mongo.Document):
         self.share_count = shares.count()
         self.share_user_ids = [s['user_id'] for s in shares]
         self.save()
+        
+    def fetch_original_text(self, force=False, request=None):
+        original_text_z = self.original_text_z
+        
+        if not original_text_z or force:
+            ti = TextImporter(self, request=request)
+            original_text = ti.fetch()
+        else:
+            logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
+            original_text = zlib.decompress(original_text_z)
+        
+        return original_text
 
 
 class MStarredStory(mongo.Document):

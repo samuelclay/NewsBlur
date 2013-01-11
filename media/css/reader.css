@@ -46,6 +46,18 @@ a img {
   line-height: 12px;
 }
 
+/* ================ */
+/* = Restrictions = */
+/* ================ */
+
+.NB-staff-only {
+    display: none !important;
+}
+
+.NB-staff .NB-staff-only {
+    display: block !important;
+}
+
 /* ==================== */
 /* = Styling & Themes = */
 /* ==================== */
@@ -1683,7 +1695,8 @@ background: transparent;
 }
 
 #story_pane .NB-feed-iframe,
-#story_pane .NB-story-iframe {
+#story_pane .NB-story-iframe,
+#story_pane .NB-text-view {
     width: 100%;
     height: 100%;
     border: 0;
@@ -1694,8 +1707,12 @@ background: transparent;
     position: absolute;
 }
 
-#story_pane .NB-story-iframe {
+#story_pane .NB-text-view {
     left: 200%;
+    top: 0;
+}
+#story_pane .NB-story-iframe {
+    left: 300%;
     top: 0;
 }
 
@@ -1881,10 +1898,14 @@ background: transparent;
 /*    text-shadow: 0 1px 0 #E0E0E0;*/
 }
 
-#story_pane .NB-feed-stories .NB-feed-story .NB-feed-story-content div {
+.NB-feed-story .NB-feed-story-content div {
     max-width: 100%;
 }
-#story_pane .NB-feed-stories .NB-feed-story .NB-feed-story-content img {
+.NB-feed-story .NB-feed-story-content pre,
+.NB-feed-story .NB-feed-story-content code {
+    white-space: normal;
+}
+.NB-feed-story .NB-feed-story-content img {
   max-width: 100% !important;
   width: auto;
   height: auto !important;
@@ -2165,6 +2186,57 @@ background: transparent;
 #story_pane .NB-story-hide-changes .NB-feed-story-content del {
     display: none;
 }
+
+/* ============= */
+/* = Text View = */
+/* ============= */
+
+#story_pane .NB-text-view-detail .NB-feed-story-content {
+    min-height: 120px;
+}
+
+#story_pane .NB-premium-only .NB-text-view-detail .NB-feed-story-content {
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.NB-text-view-premium-only {
+    border-top: 1px solid #C0C0C0;
+    font-size: 13px;
+    text-align: center;
+    padding: 12px 0;
+    font-weight: bold;
+    margin: -32px 200px 42px 28px;
+    cursor: default;
+    max-width: 700px;
+    position: relative;
+}
+
+.NB-text-view-premium-only .NB-feed-story-premium-only-divider {
+    position: absolute;
+    width: 100%;
+    height: 50px;
+    background: transparent url('/media/embed/reader/white_fade.png') repeat-x 0 0;
+    top: -51px;
+    left: 0;
+    background-size: 25px 50px;
+}
+.NB-text-view-premium-only img {
+    width: 16px;
+    height: 16px;
+    vertical-align: text-bottom;
+    margin: 0 -2px 0 2px;
+}
+
+.NB-premium-only .NB-feed-story-sideoptions-container {
+    bottom: 60px;
+}
+
+
+/* ============ */
+/* = Comments = */
+/* ============ */
+
 #story_pane .NB-feed-story-comments {
     margin: -24px 200px 32px 28px;
 /*    padding: 1px 0 0;*/
@@ -2543,7 +2615,7 @@ background: transparent;
     background: -moz-linear-gradient(center bottom, #bababa 0%, #dadada 100%);
 }
 
-#story_pane .NB-feed-stories .NB-feed-story {
+.NB-feed-story {
     margin: 0;
     clear: both;
     overflow: hidden;
@@ -3154,7 +3226,7 @@ background: transparent;
 .NB-taskbar .NB-task-view-switch-arrow {
     position: absolute;
     top: 8px;
-    right: -8px;
+    left: -8px;
     width: 16px;
     height: 16px;
     background: transparent url('/media/embed/icons/silk/arrow_switch.png') no-repeat center 0px;
@@ -3341,6 +3413,9 @@ background: transparent;
 }
 .NB-taskbar .task_button.task_view_story .NB-task-image {
     background: transparent url('/media/embed/icons/silk/application_view_gallery.png') no-repeat 0 0;
+}
+.NB-taskbar .task_button.task_view_text .NB-task-image {
+    background: transparent url('/media/embed/icons/silk/application_view_columns.png') no-repeat 0 0;
 }
 .NB-taskbar .task_button.task_view_story.NB-disabled-page .NB-task-image {
     background-image: url('/media/embed/icons/silk/error.png');
@@ -6997,10 +7072,10 @@ form.opml_import_form input {
     background: transparent url('/media/embed/icons/silk/lock.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-5 .NB-feedchooser-premium-bullet-image {
-    background: transparent url('/media/embed/icons/silk/lorry.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/silk/star.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-6 .NB-feedchooser-premium-bullet-image {
-    background: transparent url('/media/embed/icons/silk/star.png') no-repeat 0 0;
+    background: transparent url('/media/embed/icons/silk/lorry.png') no-repeat 0 0;
 }
 .NB-modal-feedchooser .NB-feedchooser-premium-bullets li.NB-7 .NB-feedchooser-premium-bullet-image {
     background: transparent url('/media/embed/icons/silk/lightbulb.png') no-repeat 0 0;
