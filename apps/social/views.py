@@ -1075,7 +1075,7 @@ def like_comment(request):
     code     = 1
     feed_id  = int(request.POST['story_feed_id'])
     story_id = request.POST['story_id']
-    comment_user_id = request.POST['comment_user_id']
+    comment_user_id = int(request.POST['comment_user_id'])
     format = request.REQUEST.get('format', 'json')
     
     if comment_user_id == request.user.pk:

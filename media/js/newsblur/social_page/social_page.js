@@ -10,7 +10,8 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         
     events: {
         "click .NB-page-controls-next:not(.NB-loaded):not(.NB-loading)" : "next_page",
-        "click .NB-follow-user" : "follow_user"
+        "click .NB-button-follow" : "follow_user",
+        "click .NB-button-following" : "unfollow_user"
     },
     
     stories: {},
@@ -200,13 +201,14 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     },
     
     follow_user: function() {
-        this.$(".NB-follow-user").html('Following...');
+        var $button = this.$(".NB-button-follow");
+        $button.html('Following...');
         NEWSBLUR.assets.follow_user(NEWSBLUR.Globals.blurblog_user_id, _.bind(function(data) {
             var message = 'You are now following ' + NEWSBLUR.Globals.blurblog_username;
             if (data.follow_profile.requested_follow) {
                 message = 'Your request to follow ' + NEWSBLUR.Globals.blurblog_username + ' has been sent';
             }
-            this.$(".NB-follow-user").replaceWith(message);
+            $button.html('Following').removeClass('NB-button-follow').addClass('NB-button-following');
         }, this));
     }
     

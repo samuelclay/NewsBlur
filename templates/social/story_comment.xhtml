@@ -28,7 +28,9 @@
             </div>
         {% endif %}
         <div class="NB-story-comment-likes">
+            {% if comment.liking_user_ids or user.pk != comment.user_id %}
             <div class="NB-story-comment-like {% if user.pk in comment.liking_user_ids %}NB-active{% endif %}"></div>
+            {% endif %}
             <div class="NB-story-comment-likes-users">
                 {% for user in comment.liking_users %}
                     <a href="{{ user.feed_link }}" class="NB-user-avatar" title="{{ user.username }}">

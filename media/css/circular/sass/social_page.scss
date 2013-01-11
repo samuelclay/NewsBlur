@@ -88,6 +88,10 @@ $default-box-shadow-blur: 1px;
     }
 }
 
+.NB-button {
+    @include NB-default-button;
+}
+
 // ===========
 // = Globals =
 // ===========
@@ -178,7 +182,7 @@ blockquote {
 .NB-page {
     max-width: $page-width;
     min-width: 300px;
-    margin: 36px auto 100px;
+    margin: 36px auto 54px;
     padding: 0 10px;
 }
 
@@ -267,7 +271,12 @@ blockquote {
                 border-left: 1px solid #cdcdcd;
             }
             
-            &.NB-user-tab img {
+            &.NB-user-tab img.NB-arrow {
+                float: right;
+                margin-right: -8px;
+                margin-left: 4px;
+            }
+            &.NB-user-tab img.NB-user-avatar {
                 height: 16px;
                 width: 16px;
                 @include border-radius(3px, 3px);
@@ -279,6 +288,17 @@ blockquote {
                 margin-top: 13px;
                 margin-right: 7px;
                 
+            }
+            
+            &.NB-blurblog-tab .NB-icon {
+                width: 17px;
+                height: 17px; 
+                background: image-url('header/icon_activity.png') no-repeat center bottom;
+            }
+            
+            &.NB-active.NB-blurblog-tab .NB-icon,
+            &.NB-blurblog-tab:hover .NB-icon {
+                background: image-url('header/icon_activity_active.png') no-repeat center bottom;
             }
             
             &.NB-trending-tab .NB-icon {
@@ -354,6 +374,10 @@ blockquote {
     }
 }
 
+// ===========
+// = Popover =
+// ===========
+
 .NB-popover {
     position: absolute;
     top: 50px;
@@ -408,6 +432,149 @@ blockquote {
     }
 }    
 
+// ==========
+// = Banner =
+// ==========
+
+.NB-banner {
+    padding: 12px 0 24px 0;
+    overflow: hidden;
+
+    @media screen and (max-width: 500px) {
+        padding: 24px 0;
+    }
+
+    .NB-banner-table {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+    .NB-banner-table td {
+        text-align: left;
+    }
+
+    .NB-title-photo {
+        vertical-align: top;
+        padding: 0 18px 0 0;
+        z-index: 2;
+        position: relative;
+    }
+    .NB-title-photo img {
+        max-width: 108px;
+        max-height: 108px;
+        border-radius: 4px;
+        border: 1px solid rgba(0, 0, 0, .5);
+    }
+    @media all and (max-width: 500px) {
+        .NB-title-photo img {
+            max-width: 72px;
+            max-height: 72px;
+        }
+        .NB-banner-right {
+            display: none;
+        }
+    }
+    .NB-title {
+        vertical-align: middle;
+        width: 100%;
+        font-weight: bold;
+        margin: 0;
+        position: relative;
+        text-shadow: 1px 1px 0 #E0E0E0;
+    }
+    .NB-title-content {
+        padding: 0 0 12px;
+        z-index: 1;
+        position: relative;
+    }
+    .NB-title .NB-title-name {
+        font-size: 28px;
+        line-height: 28px;
+    }
+    .NB-title.NB-title-no-bio .NB-title-name {
+        margin-bottom: 6px;
+    }
+    .NB-title .NB-title-name a {
+        text-decoration: none;
+        color: #202020;
+    }
+    .NB-title .NB-title-name a:hover {
+        text-decoration: none;
+        color: #182066;
+    }
+    .NB-title .NB-title-location {
+        float: left;
+        color: #F0F0F0;
+        text-shadow: none;
+        background-color: #C0C0C0;
+        border-radius: 8px;
+        font-size: 12px;
+        display: block;
+        padding: 2px 8px 1px;
+        margin: 4px 16px 0 0;
+        text-transform: uppercase;
+    }
+    .NB-title .NB-title-bio {
+        clear: left;
+        color: $lighter-text-color;
+        font-size: $small-title-font-size;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+        line-height: 22px;
+        padding-top: 6px;
+    }
+    .NB-button-follow,
+    .NB-button-following {
+        width: 108px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .NB-button-follow {
+    }
+    .NB-button-following {
+        @include NB-blue-button;
+        padding: 2px 0;
+    }
+}
+
+/* ================ */
+/* = Right banner = */
+/* ================ */
+
+.NB-banner-right {
+    z-index: 1;
+    vertical-align: middle;
+    padding: 0 0 6px 12px;
+    white-space: nowrap;
+    
+    .NB-banner-stats {
+        font-size: 14px;
+        font-weight: bold;
+        color: $lighter-text-color;
+        text-align: center;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, .75);
+        
+        .NB-banner-stat {
+            float: left;
+            border-right: 1px solid rgba(0, 0, 0, .3);
+            border-left: 1px solid rgba(255, 255, 255, .6);
+            padding: 6px 12px;
+            
+            &:first-child {
+                border-left: none;
+                padding-left: 0;
+            }
+            &:last-child {
+                border-right: none;
+            }
+            b {
+                color: $text-color;
+                display: block;
+                margin: 0 0 2px;
+                font-size: 20px;
+            }
+        }
+    }
+}
 
 // =========
 // = Story =
@@ -942,13 +1109,11 @@ blockquote {
     border-bottom: 2px solid #626262;
     padding: 1px 0;
     text-align: center;
-    max-width: 800px;
     overflow: hidden;
 }
 
 .NB-page-controls-next,
 .NB-page-controls-end {
-    
     background-color: #6eb4e3;
     height: 20px;
     padding: 20px 28px 20px;
@@ -988,6 +1153,7 @@ blockquote {
     background-color: #3B3E49;
     cursor: default;
     height: auto;
+    margin-bottom: 0;
 
     .NB-page-controls-text {
         height: auto;
@@ -1002,4 +1168,14 @@ blockquote {
 
 footer {
     overflow: hidden;
+    background-color: rgba(240, 240, 230, .4);
+    text-align: center;
+    border-top: 1px solid #C0C0C0;
+}
+.NB-footer-logo {
+    border-top: 1px solid #FFF;
+}
+.NB-footer-logo img {
+    margin: 36px auto;
+    border: none;
 }

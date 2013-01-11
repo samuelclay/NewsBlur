@@ -1,8 +1,10 @@
 {% load social_tags %}
 
-{% for story in stories %}
-    {% render_social_story story %}
-{% endfor %}
+<div class="NB-page">
+    {% for story in stories %}
+        {% render_social_story story %}
+    {% endfor %}
+</div>
 
 {% if has_next_page %}
     <div class="NB-page-controls">

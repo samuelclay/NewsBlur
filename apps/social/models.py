@@ -325,6 +325,7 @@ class MSocialProfile(mongo.Document):
             'user_id': self.user_id,
             'username': self.username,
             'photo_url': self.email_photo_url,
+            'large_photo_url': self.large_photo_url,
             'location': self.location,
             'num_subscribers': self.follower_count,
             'feed_title': self.title,

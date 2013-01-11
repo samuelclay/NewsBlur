@@ -95,16 +95,10 @@
     <div class="NB-header-inner">
         {% if user.is_authenticated %}
         <ul>
-            <li class="NB-user-tab NB-active">
-                <div class="NB-tab-inner">
-                    <span><img src="{{ social_profile.large_photo_url }}" /></span>
-                    {{ social_profile.username }}
-                </div>
-            </li>
-            <li class="NB-trending-tab">
+            <li class="NB-blurblog-tab NB-active">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
-                    Trending
+                    Blurblogs
                 </div>
             </li>
             <li class="NB-following-tab">
@@ -113,9 +107,17 @@
                     Following
                 </div>
             </li>
-            <li class="NB-activity-tab NB-logout-button">
+            <li class="NB-trending-tab">
                 <div class="NB-tab-inner">
-                    Logout
+                    <span class="NB-icon"></span>
+                    Global
+                </div>
+            </li>
+            <li class="NB-user-tab">
+                <div class="NB-tab-inner">
+                    <span><img src="{{ user_social_profile.large_photo_url }}" class="NB-user-avatar" /></span>
+                    <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
+                    {{ user_social_profile.username }}
                 </div>
             </li>
         </ul>
@@ -146,24 +148,69 @@
 
 <div class="NB-page">
 
+    <div class="NB-banner">
+        <table class="NB-banner-table">
+            <tr>
+                <td class="NB-title-photo">
+                    <a href="/">
+                        <img src="{{ social_profile.large_photo_url }}" />
+                    </a>
+                    {% if user.is_authenticated %}
+                        <div class="NB-banner-following-user">
+                            {% if user_following_social_profile %}
+                                {% if social_profile.user_id != user.pk %}
+                                    <div class="NB-button NB-button-following">Following</div>
+                                {% endif %}
+                            {% else %}
+                                <div class="NB-button NB-button-follow">Follow {{ social_profile.username }}</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </td>
+                <td class="NB-title">
+                    <div class="NB-title-content">
+                        <div class="NB-title-name">
+                            <a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}">{{ social_profile.title }}</a>
+                        </div>
+                        {% if social_profile.bio %}
+                            <div class="NB-title-bio">
+                                {{ social_profile.bio }}
+                            </div>
+                        {% endif %}
+                        </div>
+                    </div>
+                </td>
+                <td class="NB-banner-right">
+                    <div class="NB-banner-stats">
+                        <div class="NB-banner-stat"><b>{{ social_profile.shared_stories_count }}</b> {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
+                        <div class="NB-banner-stat"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="NB-banner-feed">
+            {# <a type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}">RSS feed for this page</a> #}
+        </div>
+    </div>
+    
     {% for story in stories %}
         {% render_social_story story %}
     {% endfor %}
 
-    {% if has_next_page %}
-        <div class="NB-page-controls">
-            <div class="NB-page-controls-next">
-                <div class="NB-page-controls-text NB-page-controls-text-next">
-                    Next Page of Stories
-                </div>
-                <div class="NB-page-controls-text NB-page-controls-text-loading"></div>
-                <div class="NB-page-controls-text NB-page-controls-text-loaded">
-                </div>
+</div>
+
+{% if has_next_page %}
+    <div class="NB-page-controls">
+        <div class="NB-page-controls-next">
+            <div class="NB-page-controls-text NB-page-controls-text-next">
+                Next Page of Stories
+            </div>
+            <div class="NB-page-controls-text NB-page-controls-text-loading"></div>
+            <div class="NB-page-controls-text NB-page-controls-text-loaded">
             </div>
         </div>
-    {% endif %}
-    
-</div>
+    </div>
+{% endif %}
     
 <footer>
     <div class="NB-footer-logo">
@@ -178,13 +225,6 @@
 <script type="text/javascript" charset="utf-8">
     _.extend(NEWSBLUR.Preferences, {% if user_profile.preferences %}{{ user_profile.preferences|safe }}{% else %}{}{% endif %});
 </script>
-
-<script>
-// if ($(window).width() < 600) { 
-//     $('meta[name=viewport]').attr('content','initial-scale=0.9, maximum-scale=1.5'); 
-// }
-</script>
-
 
 </body>
 
