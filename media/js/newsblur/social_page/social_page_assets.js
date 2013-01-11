@@ -112,6 +112,18 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         });
     },
     
+    delete_comment_reply: function(story_id, story_feed_id, comment_user_id, reply_id, callback, error_callback) {
+        this.make_request('/social/remove_comment_reply', {
+            story_id: story_id,
+            story_feed_id: story_feed_id,
+            comment_user_id: comment_user_id,
+            reply_id: reply_id,
+            format: 'html'
+        }, callback, error_callback, {
+            request_type: 'POST'
+        });
+    },
+    
     login: function(username, password, callback, error_callback) {
         this.make_request('/api/login', {
             username: username,
