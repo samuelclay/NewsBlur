@@ -1,3 +1,4 @@
+import struct
 from django.contrib.sites.models import Site
 from django.conf import settings
 from django import template
@@ -82,6 +83,17 @@ def render_activities_module(context, page=1):
 def get(h, key):
     print h, key
     return h[key]
+
+@register.filter
+def hex2rgba(hex, alpha):
+    colors = struct.unpack('BBB', hex.decode('hex'))
+    return "rgba(%s, %s, %s, %s)" % (colors[0], colors[1], colors[2], alpha)
+    
+@register.filter
+def rgb2rgba(rgb, alpha):
+    rgb = rgb.replace('rgb', 'rgba')
+    rgb = rgb.replace(')', ", %s)" % alpha)
+    return rgb
     
 @register.filter
 def get_range( value ):

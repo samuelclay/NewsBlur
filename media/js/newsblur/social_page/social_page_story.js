@@ -90,7 +90,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     
     truncate_story_height: function() {
         var $expander = this.$(".NB-story-content-expander");
-        var $expander_cutoff = this.$(".NC-story-cutoff");
+        var $expander_cutoff = this.$(".NB-story-cutoff");
         var $wrapper = this.$(".NB-story-content-wrapper");
         var $content = this.$(".NB-story-content");
         
@@ -247,7 +247,7 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     expand_story: function(options) {
         options = options || {};
         var $expander = this.$(".NB-story-content-expander");
-        var $expander_cutoff = this.$(".NC-story-cutoff");
+        var $expander_cutoff = this.$(".NB-story-cutoff");
         var $wrapper = this.$(".NB-story-content-wrapper");
         var $content = this.$(".NB-story-content");
         var max_height = parseInt($wrapper.css('maxHeight'), 10) || this.STORY_CONTENT_MAX_HEIGHT;

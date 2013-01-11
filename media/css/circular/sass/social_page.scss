@@ -32,7 +32,7 @@ $default-box-shadow-blur: 1px;
 // = Mixins =
 // ==========
 
-@mixin NC-default-button {
+@mixin NB-default-button {
     border: 1px solid $border-color;
     @include border-radius(4px, 4px);
     @include single-box-shadow(white, 0px, 0px, 2px, false, true);
@@ -59,7 +59,7 @@ $default-box-shadow-blur: 1px;
     }
 }
 
-@mixin NC-blue-button {
+@mixin NB-blue-button {
     border: 1px solid #4388b5;
     @include border-radius(4px, 4px);
     @include single-box-shadow(#80c5f2, 0px, 0px, 2px, false, true);
@@ -142,6 +142,20 @@ blockquote {
 .NB-spinner.NB-active {
     display: block;
 }
+.tipsy {
+    .tipsy-arrow {
+        display: none;
+    }
+}
+
+// ========
+// = Page =
+// ========
+
+.NB-container {
+    width: 100%;
+    height: 100%;
+}
 
 // ==========
 // = Header =
@@ -154,11 +168,7 @@ blockquote {
     padding: 0 10px;
 }
 
-.NB-header {
-    display: none;
-}
-
-.NC-watermark-logo {
+.NB-watermark-logo {
     margin: 20px auto;
     max-width: $page-width;
     min-width: 300px;
@@ -176,18 +186,18 @@ blockquote {
     }
 }
 
-.NC-blue-button {
-    @include NC-blue-button;
+.NB-blue-button {
+    @include NB-blue-button;
 }
 
 
-.NC-header {
+.NB-header {
     @include single-box-shadow(#7d7d7d, 0px, 0px, 10px, false, false);
     width: 100%;
     left: 0;
     z-index: 10;
     
-    .NC-header-inner {
+    .NB-header-inner {
         padding: 0 10px;
         max-width: $page-width;
         min-width: 300px;
@@ -196,7 +206,7 @@ blockquote {
     }
 
 }
-.NB-authenticated .NC-header {
+.NB-authenticated .NB-header {
     background: #f2f2f2 image-url('header_background_logged_in.png') repeat 0 0;
     height: 44px;
     bottom: 0;
@@ -219,22 +229,22 @@ blockquote {
 
             cursor: pointer;
             
-            &.NC-active {
+            &.NB-active {
                 cursor: default;
                 background: image-url('header_highlight_border.png') no-repeat center bottom;
                 
-                div.NC-tab-inner {
+                div.NB-tab-inner {
                     color: $highlight-text-color;
                 }
             }
             
             &:hover {
-                div.NC-tab-inner {
+                div.NB-tab-inner {
                     color: $highlight-text-color;
                 }                    
             }
             
-            div.NC-tab-inner {
+            div.NB-tab-inner {
                 display: inline-block;
                 line-height: 44px;
             }
@@ -243,46 +253,46 @@ blockquote {
                 border-left: 1px solid #cdcdcd;
             }
             
-            &.NC-user-tab img {
+            &.NB-user-tab img {
                 height: 16px;
                 width: 16px;
                 @include border-radius(3px, 3px);
             }
             
             img,
-            .NC-icon {
+            .NB-icon {
                 float: left;
                 margin-top: 13px;
                 margin-right: 7px;
                 
             }
             
-            &.NC-trending-tab .NC-icon {
+            &.NB-trending-tab .NB-icon {
                 width: 17px;
                 height: 17px; 
                 background: image-url('header/icon_trending.png') no-repeat center bottom;
             }
             
-            &.NC-active.NC-trending-tab .NC-icon,
-            &.NC-trending-tab:hover .NC-icon {
+            &.NB-active.NB-trending-tab .NB-icon,
+            &.NB-trending-tab:hover .NB-icon {
                 background: image-url('header/icon_trending_active.png') no-repeat center bottom;
             }
             
-            &.NC-following-tab .NC-icon {
+            &.NB-following-tab .NB-icon {
                 width: 17px;
                 height: 17px; 
                 background: image-url('header/icon_follow.png') no-repeat center bottom;
             }
             
-            &.NC-active.NC-following-tab .NC-icon,
-            &.NC-following-tab:hover .NC-icon {
+            &.NB-active.NB-following-tab .NB-icon,
+            &.NB-following-tab:hover .NB-icon {
                 background: image-url('header/icon_follow_active.png') no-repeat center bottom;
             }
         }
     }
 }
 
-.NB-unauthenticated .NC-header {
+.NB-unauthenticated .NB-header {
     background: image-url('header_background_transparent.png') repeat 0 0;
     height: 72px;
     top: 0;
@@ -291,7 +301,7 @@ blockquote {
         height: 40px;
     }
 
-    h1.NC-logo a {
+    h1.NB-logo a {
         display: block;
         float: left;
         padding-top: 16px;
@@ -308,29 +318,29 @@ blockquote {
         }
     }
         
-    .NC-request-toggle-button {
+    .NB-request-toggle-button {
         float: right;
-        @include NC-blue-button;
+        @include NB-blue-button;
         margin-top: 20px;
         margin-left: 10px;
     }
     
-    .NC-logout-button,
-    .NC-login-toggle-button {
+    .NB-logout-button,
+    .NB-login-toggle-button {
         float: right;
-        @include NC-default-button;
+        @include NB-default-button;
         margin-top: 20px;
         margin-left: 10px;
     }
     
-    .NC-button {
+    .NB-button {
         @media screen and ( max-width: 480px)    {
             display: none;
         }
     }
 }
 
-.NC-popover {
+.NB-popover {
     position: absolute;
     top: 50px;
     left: 200px;
@@ -338,27 +348,27 @@ blockquote {
     opacity: 0;
     display: none;
     
-    &.NC-request-popover {
+    &.NB-request-popover {
         top: 50px;
         left: 329px;
     }
     
-    &.NC-login-popover {
+    &.NB-login-popover {
         top: 50px;
         left: 456px;
     }
     
-    &.NC-active {
+    &.NB-active {
         display: block;
     }
     
-    .NC-popover-inner {
+    .NB-popover-inner {
         width: 240px;
         padding: 45px 38px 0 30px;
         background: transparent image-url('popover_top.png') no-repeat 0 0;
     }
     
-    .NC-popover-bottom {
+    .NB-popover-bottom {
         background: transparent image-url('popover_bottom.png') no-repeat left bottom;
         height: 40px;
     }
@@ -513,7 +523,7 @@ blockquote {
             color: $more-text-color-active;
         }
         
-        .NC-story-cutoff {
+        .NB-story-cutoff {
             position: absolute;
             top: -14px;
             left: 0;
@@ -573,6 +583,9 @@ blockquote {
     
 }
 
+// ==========
+// = Shares =
+// ==========
 
 .NB-story-shares-container {
     text-align: right;
@@ -697,11 +710,6 @@ blockquote {
             font-size: $smallest-font-size;
             color: $light-text-color;
             @include single-text-shadow;
-            @media screen and ( max-width: 480px)    {
-                float: left;
-                clear: both;
-                margin-top: 4px;
-            }
         }
         
         .NB-story-comment-location {
@@ -773,7 +781,7 @@ blockquote {
             top: 16px;
             right: 0;
             width: 140px;
-            @include NC-default-button;
+            @include NB-default-button;
         }
         
         .NB-story-comment-delete {
@@ -789,13 +797,29 @@ blockquote {
     }
 }
 
+// ==========
+// = Footer =
+// ==========
+
+.NB-page-controls {
+    margin: 0 auto 54px;
+    border-top: 2px solid #626262;
+    border-bottom: 2px solid #626262;
+    padding: 1px 0;
+    text-align: center;
+    max-width: 800px;
+    overflow: hidden;
+}
+
 .NB-page-controls-next,
 .NB-page-controls-end {
     
     background-color: #6eb4e3;
-    @include NC-blue-button;
+    height: 20px;
+    padding: 20px 28px 20px;
     position: relative;
     overflow: hidden;
+    text-shadow: 0 1px 0 #141F48;
     
     -webkit-transition: all .12s ease-out;
     -moz-transition: all .12s ease-out;
@@ -806,17 +830,36 @@ blockquote {
         position: absolute;
         left: 0;
         width: 100%;
-        margin-bottom: -15px;
+        height: 20px;
         bottom: 20px;
+        font-size: 20px;
+        color: white;
+    }
+    
+    &:hover {
+        background-color: #2B478C;
+        background-image: none;
+        cursor: pointer;
+    }
+    &.NB-loaded {
+        cursor: default;
+    }
+    &.NB-loading {
+        cursor: wait;
     }
 }
 
 .NB-page-controls-end {
-    @include NC-default-button;
+    background-color: #3B3E49;
+    cursor: default;
+
+    &:hover {
+        background-color: #3B3E49;
+        background-image: none;
+        cursor: default;
+    }
 }
 
-.tipsy {
-    .tipsy-arrow {
-        display: none;
-    }
+footer {
+    overflow: hidden;
 }

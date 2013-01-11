@@ -1,11 +1,11 @@
 NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     events: {
-        "click .NC-login-toggle-button"     : "toggle_login_dialog",
-        "click .NC-request-toggle-button"   : "toggle_request_dialog",
-        "click .NC-logout-button"           : "logout",
-        "click .NC-login-button"            : "login",
-        "click .NC-request-button"          : "request_invite"
+        "click .NB-login-toggle-button"     : "toggle_login_dialog",
+        "click .NB-request-toggle-button"   : "toggle_request_dialog",
+        "click .NB-logout-button"           : "logout",
+        "click .NB-login-button"            : "login",
+        "click .NB-request-button"          : "request_invite"
     },
 
     initialize: function() {
@@ -14,14 +14,14 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     toggle_login_dialog: function(options) {
         console.log('open');
         options = options || {};
-        var $popover = this.$('.NC-login-popover');
-        var $other_popover = this.$('.NC-request-popover');
+        var $popover = this.$('.NB-login-popover');
+        var $other_popover = this.$('.NB-request-popover');
         var $login_username = this.$('input[name=login_username]');
         var $login_password = this.$('input[name=login_password]');
         
         if (options.open != true &&
             (options.close ||
-            ($popover.hasClass('NC-active')))) {
+            ($popover.hasClass('NB-active')))) {
             // Close
             $popover.animate({
                 'opacity': 0
@@ -31,15 +31,15 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                 'queue': false,
                 'complete': _.bind(function() {
                     this.$('.NB-error').remove();
-                    $popover.removeClass('NC-active');
+                    $popover.removeClass('NB-active');
                 }, this)
             });
             $(document).unbind('mousedown.loginView');
         } else {
             // Open/resize
             this.$('.NB-error').remove();
-            $other_popover.removeClass('NC-active');
-            $popover.addClass('NC-active');
+            $other_popover.removeClass('NB-active');
+            $popover.addClass('NB-active');
             $popover.animate({
                 'opacity': 1
             }, {
@@ -70,12 +70,12 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     toggle_request_dialog: function(options) {
         options = options || {};
-        var $popover = this.$('.NC-request-popover');
-        var $other_popover = this.$('.NC-login-popover');
+        var $popover = this.$('.NB-request-popover');
+        var $other_popover = this.$('.NB-login-popover');
         var $request_email = this.$('input[name=request_email]');
         
         if (options.close ||
-            ($popover.hasClass('NC-active'))) {
+            ($popover.hasClass('NB-active'))) {
             // Close
             $popover.animate({
                 'opacity': 0
@@ -84,14 +84,14 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
                 'easing': 'easeInOutQuint',
                 'queue': false,
                 'complete': _.bind(function() {
-                    $popover.removeClass('NC-active');
+                    $popover.removeClass('NB-active');
                 }, this)
             });
 
             $(document).unbind('mousedown.loginView');
         } else {
-            $other_popover.removeClass('NC-active');
-            $popover.addClass('NC-active');
+            $other_popover.removeClass('NB-active');
+            $popover.addClass('NB-active');
             $popover.animate({
                 'opacity': 1
             }, {
@@ -121,10 +121,10 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     },
     
     hide_popovers: function(e) {
-        var $popover = this.$('.NC-popover');        
+        var $popover = this.$('.NB-popover');        
         
         if (e) { 
-            if (($(e.target).closest(".NC-popover").length) || ($(e.target).closest(".NC-button").length)) return;
+            if (($(e.target).closest(".NB-popover").length) || ($(e.target).closest(".NB-button").length)) return;
         }
         
         $(document).unbind('mousedown.loginView');
@@ -136,7 +136,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
             'easing': 'easeInOutQuint',
             'queue': false
         });
-        $popover.removeClass('NC-active'); 
+        $popover.removeClass('NB-active'); 
     },
         
     // ==========
@@ -165,7 +165,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         this.clean();
         
         var error = _.first(_.values(data.errors))[0];
-        this.$('.NC-login-popover .NC-popover-inner').append($.make('div', { className: 'NB-error' }, error));
+        this.$('.NB-login-popover .NB-popover-inner').append($.make('div', { className: 'NB-error' }, error));
     },
      
     logout: function() {
@@ -190,7 +190,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     post_request_invite: function(data) {
         NEWSBLUR.log(["request data", data]);
         this.hide_popovers();
-        this.$('.NC-request-toggle-button').html('Invite Requested');
+        this.$('.NB-request-toggle-button').html('Invite Requested');
     },
     
     request_invite_error: function(data) {

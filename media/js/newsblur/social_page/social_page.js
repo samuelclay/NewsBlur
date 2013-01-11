@@ -72,11 +72,14 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
             return;
         }
         
-        var page_control_y = this.$('.NB-page-controls').last().offset().top - 500;
-        if (viewport_y > page_control_y) {
-            this.cached_page_control_y = page_control_y;
-            this.flags.loading_page = true;
-            this.next_page();
+        var $controls = this.$('.NB-page-controls');
+        if ($controls.length) {
+            var page_control_y = $controls.last().offset().top - 500;
+            if (viewport_y > page_control_y) {
+                this.cached_page_control_y = page_control_y;
+                this.flags.loading_page = true;
+                this.next_page();
+            }
         }
     },
     
@@ -100,7 +103,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     
     scroll_to_story: function(story_view, run) {
         $('html,body').stop().animate({
-            scrollTop: story_view.$mark.offset().top - 8
+            scrollTop: story_view.$mark.offset().top - 12
         }, {
             duration: run == 1 ? 1000 : 500,
             easing: run == 1 ? 'easeInQuint' : 'easeOutQuint',

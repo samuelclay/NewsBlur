@@ -4,14 +4,14 @@
 <html>
 
 <head>
-    <title>Circular</title><!--{{ social_profile.title }}-->
+    <title>{{ social_profile.title }}</title>
     <link rel="alternate" type="application/rss+xml" href="{% url shared-stories-rss-feed social_profile.user_id social_profile.username|slugify %}" title="{{ social_profile.feed_title }} RSS feed">
     <link rel="shortcut icon" href="{{ social_profile.photo_url }}">
     <link rel="icon" href="{{ social_profile.photo_url }}">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1.5">
     <link rel="apple-touch-icon" href="{{ MEDIA_URL }}img/circular/circular_apple_icon.png"/>
     <meta name="apple-mobile-web-app-capable" content="yes" />  
-    <meta name="viewport" content="width=device-width; initial-scale = 1.0; maximum-scale=1.0; user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale = 1.0; maximum-scale=1.0, user-scalable=no" />
     
     {% if active_story %}
         <meta property="fb:app_id"               content="{{ facebook_app_id }}"> 
@@ -89,55 +89,56 @@
 </head>
 
 <body class="{% if user.is_authenticated %}NB-authenticated{% else %}NB-unauthenticated{% endif %}">
-<header class="NC-header">
-    <div class="NC-header-inner">
+<div class="NB-container" style="background-color: {% if social_profile.custom_bgcolor %}{{ social_profile.custom_bgcolor|rgb2rgba:".1 " }}{% else %}#EBC55F{% endif %}">
+    
+<header class="NB-header">
+    <div class="NB-header-inner">
         {% if user.is_authenticated %}
         <ul>
-            <li class="NC-user-tab NC-active">
-                <div class="NC-tab-inner">
+            <li class="NB-user-tab NB-active">
+                <div class="NB-tab-inner">
                     <span><img src="{{ social_profile.large_photo_url }}" /></span>
                     {{ social_profile.username }}
                 </div>
             </li>
-            <li class="NC-trending-tab">
-                <div class="NC-tab-inner">
-                    <span class="NC-icon"></span>
+            <li class="NB-trending-tab">
+                <div class="NB-tab-inner">
+                    <span class="NB-icon"></span>
                     Trending
                 </div>
             </li>
-            <li class="NC-following-tab">
-                <div class="NC-tab-inner">
-                    <span class="NC-icon"></span>
+            <li class="NB-following-tab">
+                <div class="NB-tab-inner">
+                    <span class="NB-icon"></span>
                     Following
                 </div>
             </li>
-            <li class="NC-activity-tab NC-logout-button">
-                <div class="NC-tab-inner">
+            <li class="NB-activity-tab NB-logout-button">
+                <div class="NB-tab-inner">
                     Logout
                 </div>
             </li>
         </ul>
         {% else %}
-            <h1 class="NC-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}img/circular/circular_logo.png" width="180" height="45"></a></h1>
-                <div class="NC-button NC-login-toggle-button">Sign In</div>
+            <h1 class="NB-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}img/circular/circular_logo.png" width="180" height="45"></a></h1>
+            <div class="NB-button NB-login-toggle-button">Sign In</div>
 
-                <div class="NC-button NC-request-toggle-button">Request an Invite</div>
+            <div class="NB-button NB-request-toggle-button">Request an Invite</div>
 
-                <div class="NC-login-popover NC-popover">
-                    <div class="NC-popover-inner">
-                        <input type="text" placeholder="Username or email" name="login_username" class="NC-input" />
-                        <input placeholder="Password" type="password" name="login_password" class="NC-input" />
-                        <div class="NC-login-button NC-blue-button">Login</div>
-                    </div>
-                    <div class="NC-popover-bottom"></div>
+            <div class="NB-login-popover NB-popover">
+                <div class="NB-popover-inner">
+                    <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
+                    <input placeholder="Password" type="password" name="login_password" class="NB-input" />
+                    <div class="NB-login-button NB-blue-button">Login</div>
                 </div>
-                <div class="NC-request-popover NC-popover">
-                    <div class="NC-popover-inner">
-                        <input type="text" placeholder="Email Address" name="request_email" class="NC-input" />
-                        <div class="NC-request-button NC-blue-button">Request</div>
-                    </div>
-                    <div class="NC-popover-bottom"></div>
+                <div class="NB-popover-bottom"></div>
+            </div>
+            <div class="NB-request-popover NB-popover">
+                <div class="NB-popover-inner">
+                    <input type="text" placeholder="Email Address" name="request_email" class="NB-input" />
+                    <div class="NB-request-button NB-blue-button">Request</div>
                 </div>
+                <div class="NB-popover-bottom"></div>
             </div>
         {% endif %}
     </div>
@@ -170,6 +171,8 @@
     </div>
 </footer>
 
+</div>
+
 {% include_javascripts "blurblog" %}
 
 <script type="text/javascript" charset="utf-8">
@@ -181,6 +184,7 @@
 //     $('meta[name=viewport]').attr('content','initial-scale=0.9, maximum-scale=1.5'); 
 // }
 </script>
+
 
 </body>
 
