@@ -93,7 +93,6 @@
     
 <header class="NB-header">
     <div class="NB-header-inner">
-        {% if user.is_authenticated %}
         <ul>
             <li class="NB-blurblog-tab NB-active">
                 <div class="NB-tab-inner">
@@ -113,36 +112,40 @@
                     Global
                 </div>
             </li>
-            <li class="NB-user-tab">
-                <div class="NB-tab-inner">
-                    <span><img src="{{ user_social_profile.large_photo_url }}" class="NB-user-avatar" /></span>
-                    <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
-                    {{ user_social_profile.username }}
-                </div>
-            </li>
+            {% if user.is_authenticated %}
+                <li class="NB-user-tab">
+                    <div class="NB-tab-inner">
+                            <span><img src="{{ user_social_profile.large_photo_url }}" class="NB-user-avatar" /></span>
+                            <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
+                            {{ user_social_profile.username }}
+
+                            <div class="NB-user-popover NB-popover">
+                                <div class="NB-popover-inner">
+                                
+                                </div>
+                                <div class="NB-popover-bottom"></div>
+                            </div>
+                    </div>
+                </li>
+            {% else %}
+                <li class="NB-circular-tab">
+                    <div class="NB-tab-inner">
+                        <span class="NB-icon"></span>
+                        <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
+                        NewsBlur
+
+                        <div class="NB-login-popover NB-popover">
+                            <div class="NB-popover-inner">
+                                <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
+                                <input placeholder="Password" type="password" name="login_password" class="NB-input" />
+                                <div class="NB-login-button NB-blue-button">Login</div>
+                            </div>
+                            <div class="NB-popover-bottom"></div>
+                        </div>
+                    </div>
+                </li>            
+            {% endif %}
         </ul>
-        {% else %}
-            <h1 class="NB-logo"><a href="{% url index %}"><img src="{{ MEDIA_URL }}img/circular/circular_logo.png" width="180" height="45"></a></h1>
-            <div class="NB-button NB-login-toggle-button">Sign In</div>
-
-            <div class="NB-button NB-request-toggle-button">Request an Invite</div>
-
-            <div class="NB-login-popover NB-popover">
-                <div class="NB-popover-inner">
-                    <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
-                    <input placeholder="Password" type="password" name="login_password" class="NB-input" />
-                    <div class="NB-login-button NB-blue-button">Login</div>
-                </div>
-                <div class="NB-popover-bottom"></div>
-            </div>
-            <div class="NB-request-popover NB-popover">
-                <div class="NB-popover-inner">
-                    <input type="text" placeholder="Email Address" name="request_email" class="NB-input" />
-                    <div class="NB-request-button NB-blue-button">Request</div>
-                </div>
-                <div class="NB-popover-bottom"></div>
-            </div>
-        {% endif %}
     </div>
 </header>
 

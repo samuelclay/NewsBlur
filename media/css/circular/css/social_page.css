@@ -176,6 +176,7 @@ blockquote {
   background: transparent;
   width: 100%;
   height: 100%;
+  padding-top: 36px;
 }
 
 .NB-page {
@@ -252,29 +253,42 @@ blockquote {
   box-shadow: 0px 0px 10px #7d7d7d;
   width: 100%;
   left: 0;
+  top: 0;
   z-index: 10;
+  position: fixed;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f3f3f3), color-stop(70%, #f3f3f3), color-stop(100%, #e0e0e0));
+  background-image: -webkit-linear-gradient(#f3f3f3, #f3f3f3 70%, #e0e0e0);
+  background-image: -moz-linear-gradient(#f3f3f3, #f3f3f3 70%, #e0e0e0);
+  background-image: -o-linear-gradient(#f3f3f3, #f3f3f3 70%, #e0e0e0);
+  background-image: linear-gradient(#f3f3f3, #f3f3f3 70%, #e0e0e0);
+  height: 44px;
+  bottom: 0;
+}
+@media screen and (max-width: 480px) {
+  .NB-header {
+    position: absolute;
+    height: 60px;
+  }
 }
 .NB-header .NB-header-inner {
-  padding: 0 10px;
   max-width: 700px;
   min-width: 300px;
   margin: 0 auto;
   position: relative;
 }
-
-.NB-authenticated .NB-header {
-  background: #f2f2f2 url('/../../../media/img/circular/header_background_logged_in.png?1357930476') repeat 0 0;
-  height: 44px;
-  bottom: 0;
-}
-.NB-authenticated .NB-header ul {
+.NB-header ul {
   margin: 0 70px;
 }
-.NB-authenticated .NB-header ul li {
+@media screen and (max-width: 480px) {
+  .NB-header ul {
+    margin: 0 0;
+  }
+}
+.NB-header ul li {
   height: 44px;
   float: left;
   vertical-align: top;
-  width: 24%;
+  width: 25%;
   text-transform: uppercase;
   font-size: 12px;
   border-right: 1px solid #cdcdcd;
@@ -286,191 +300,98 @@ blockquote {
   text-shadow: 0px 1px 1px white;
   cursor: pointer;
 }
-.NB-authenticated .NB-header ul li.NB-active {
+@media screen and (max-width: 480px) {
+  .NB-header ul li {
+    height: 60px;
+    font-size: 11px;
+  }
+}
+.NB-header ul li.NB-active {
   cursor: default;
   background: url('/../../../media/img/circular/header_highlight_border.png?1357930476') no-repeat center bottom;
 }
-.NB-authenticated .NB-header ul li.NB-active div.NB-tab-inner {
+.NB-header ul li.NB-active div.NB-tab-inner {
   color: #62a4d3;
 }
-.NB-authenticated .NB-header ul li:hover div.NB-tab-inner {
+.NB-header ul li:hover div.NB-tab-inner {
   color: #62a4d3;
 }
-.NB-authenticated .NB-header ul li div.NB-tab-inner {
+.NB-header ul li div.NB-tab-inner {
   display: inline-block;
   line-height: 44px;
 }
-.NB-authenticated .NB-header ul li:first-child {
+@media screen and (max-width: 480px) {
+  .NB-header ul li div.NB-tab-inner {
+    line-height: 28px;
+  }
+}
+.NB-header ul li:first-child {
   border-left: 1px solid #cdcdcd;
 }
-.NB-authenticated .NB-header ul li.NB-user-tab img.NB-arrow {
+.NB-header ul li img.NB-arrow {
   float: right;
   margin-right: -8px;
   margin-left: 4px;
 }
-.NB-authenticated .NB-header ul li.NB-user-tab img.NB-user-avatar {
+@media screen and (max-width: 480px) {
+  .NB-header ul li img.NB-arrow {
+    display: none;
+  }
+}
+.NB-header ul li img.NB-user-avatar {
   height: 16px;
   width: 16px;
   -webkit-border-radius: 3px 3px;
   -moz-border-radius: 3px / 3px;
   border-radius: 3px / 3px;
 }
-.NB-authenticated .NB-header ul li img,
-.NB-authenticated .NB-header ul li .NB-icon {
+.NB-header ul li img,
+.NB-header ul li .NB-icon {
   float: left;
   margin-top: 13px;
   margin-right: 7px;
-}
-.NB-authenticated .NB-header ul li.NB-blurblog-tab .NB-icon {
   width: 17px;
   height: 17px;
-  background: url('/../../../media/img/circular/header/icon_activity.png?1357930476') no-repeat center bottom;
-}
-.NB-authenticated .NB-header ul li.NB-active.NB-blurblog-tab .NB-icon, .NB-authenticated .NB-header ul li.NB-blurblog-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_activity_active.png?1357930476') no-repeat center bottom;
-}
-.NB-authenticated .NB-header ul li.NB-trending-tab .NB-icon {
-  width: 17px;
-  height: 17px;
-  background: url('/../../../media/img/circular/header/icon_trending.png?1357930476') no-repeat center bottom;
-}
-.NB-authenticated .NB-header ul li.NB-active.NB-trending-tab .NB-icon, .NB-authenticated .NB-header ul li.NB-trending-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_trending_active.png?1357930476') no-repeat center bottom;
-}
-.NB-authenticated .NB-header ul li.NB-following-tab .NB-icon {
-  width: 17px;
-  height: 17px;
-  background: url('/../../../media/img/circular/header/icon_follow.png?1357930476') no-repeat center bottom;
-}
-.NB-authenticated .NB-header ul li.NB-active.NB-following-tab .NB-icon, .NB-authenticated .NB-header ul li.NB-following-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_follow_active.png?1357930476') no-repeat center bottom;
-}
-
-.NB-unauthenticated .NB-header {
-  background: url('/../../../media/img/circular/header_background_transparent.png?1357930476') repeat 0 0;
-  height: 72px;
-  top: 0;
 }
 @media screen and (max-width: 480px) {
-  .NB-unauthenticated .NB-header {
-    height: 40px;
-  }
-}
-.NB-unauthenticated .NB-header h1.NB-logo a {
-  display: block;
-  float: left;
-  padding-top: 16px;
-}
-@media screen and (max-width: 480px) {
-  .NB-unauthenticated .NB-header h1.NB-logo a {
+  .NB-header ul li img,
+  .NB-header ul li .NB-icon {
     float: none;
-    text-align: center;
-    padding-top: 6px;
-  }
-  .NB-unauthenticated .NB-header h1.NB-logo a img {
-    height: 30px;
-    width: 120px;
+    display: block;
+    margin: 10px auto 0;
   }
 }
-.NB-unauthenticated .NB-header .NB-request-toggle-button {
-  float: right;
-  border: 1px solid #4388b5;
-  -webkit-border-radius: 4px 4px;
-  -moz-border-radius: 4px / 4px;
-  border-radius: 4px / 4px;
-  -webkit-box-shadow: inset 0px 0px 2px #80c5f2;
-  -moz-box-shadow: inset 0px 0px 2px #80c5f2;
-  box-shadow: inset 0px 0px 2px #80c5f2;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6eb4e3), color-stop(100%, #4d98d2));
-  background-image: -webkit-linear-gradient(#6eb4e3, #4d98d2);
-  background-image: -moz-linear-gradient(#6eb4e3, #4d98d2);
-  background-image: -o-linear-gradient(#6eb4e3, #4d98d2);
-  background-image: linear-gradient(#6eb4e3, #4d98d2);
-  -webkit-box-shadow: rgba(153, 153, 153, 0.4) 0 0 5px, #70b5e3 0 2px 1px inset;
-  -moz-box-shadow: rgba(153, 153, 153, 0.4) 0 0 5px, #70b5e3 0 2px 1px inset;
-  box-shadow: rgba(153, 153, 153, 0.4) 0 0 5px, #70b5e3 0 2px 1px inset;
-  color: white;
-  height: 20px;
-  line-height: 20px;
-  text-align: center;
-  cursor: pointer;
-  padding: 4px 12px;
-  font-size: 14px;
-  font-weight: normal;
-  margin-top: 20px;
-  margin-left: 10px;
+.NB-header ul li.NB-blurblog-tab .NB-icon {
+  background: url('/../../../media/img/circular/header/icon_activity.png?1357949866') no-repeat center bottom;
+  background-size: 17px;
 }
-.NB-unauthenticated .NB-header .NB-request-toggle-button:hover {
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #6bb1e0));
-  background-image: -webkit-linear-gradient(#6bb1e0, #6bb1e0);
-  background-image: -moz-linear-gradient(#6bb1e0, #6bb1e0);
-  background-image: -o-linear-gradient(#6bb1e0, #6bb1e0);
-  background-image: linear-gradient(#6bb1e0, #6bb1e0);
+.NB-header ul li.NB-active.NB-blurblog-tab .NB-icon, .NB-header ul li.NB-blurblog-tab:hover .NB-icon {
+  background: url('/../../../media/img/circular/header/icon_activity_active.png?1357949934') no-repeat center bottom;
+  background-size: 17px;
 }
-.NB-unauthenticated .NB-header .NB-request-toggle-button:active {
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
-  background-image: -webkit-linear-gradient(#4d98d2, #4d98d2);
-  background-image: -moz-linear-gradient(#4d98d2, #4d98d2);
-  background-image: -o-linear-gradient(#4d98d2, #4d98d2);
-  background-image: linear-gradient(#4d98d2, #4d98d2);
-  -webkit-box-shadow: inset 0px 0px 10px #1f74b8;
-  -moz-box-shadow: inset 0px 0px 10px #1f74b8;
-  box-shadow: inset 0px 0px 10px #1f74b8;
+.NB-header ul li.NB-trending-tab .NB-icon {
+  background: url('/../../../media/img/circular/header/icon_trending.png?1357949986') no-repeat center bottom;
+  background-size: 17px;
 }
-.NB-unauthenticated .NB-header .NB-logout-button,
-.NB-unauthenticated .NB-header .NB-login-toggle-button {
-  float: right;
-  border: 1px solid #bdbdbd;
-  -webkit-border-radius: 4px 4px;
-  -moz-border-radius: 4px / 4px;
-  border-radius: 4px / 4px;
-  -webkit-box-shadow: inset 0px 0px 2px white;
-  -moz-box-shadow: inset 0px 0px 2px white;
-  box-shadow: inset 0px 0px 2px white;
-  -webkit-box-shadow: rgba(153, 153, 153, 0.4) 0 0 5px, white 0 2px 1px inset;
-  -moz-box-shadow: rgba(153, 153, 153, 0.4) 0 0 5px, white 0 2px 1px inset;
-  box-shadow: rgba(153, 153, 153, 0.4) 0 0 5px, white 0 2px 1px inset;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #f6f6f6));
-  background-image: -webkit-linear-gradient(#ffffff, #f6f6f6);
-  background-image: -moz-linear-gradient(#ffffff, #f6f6f6);
-  background-image: -o-linear-gradient(#ffffff, #f6f6f6);
-  background-image: linear-gradient(#ffffff, #f6f6f6);
-  color: gray;
-  height: 20px;
-  line-height: 20px;
-  text-align: center;
-  cursor: pointer;
-  padding: 4px 12px;
-  font-size: 14px;
-  font-weight: normal;
-  margin-top: 20px;
-  margin-left: 10px;
+.NB-header ul li.NB-active.NB-trending-tab .NB-icon, .NB-header ul li.NB-trending-tab:hover .NB-icon {
+  background: url('/../../../media/img/circular/header/icon_trending_active.png?1357949967') no-repeat center bottom;
+  background-size: 17px;
 }
-.NB-unauthenticated .NB-header .NB-logout-button:hover,
-.NB-unauthenticated .NB-header .NB-login-toggle-button:hover {
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f6f6f6), color-stop(100%, #ffffff));
-  background-image: -webkit-linear-gradient(#f6f6f6, #ffffff);
-  background-image: -moz-linear-gradient(#f6f6f6, #ffffff);
-  background-image: -o-linear-gradient(#f6f6f6, #ffffff);
-  background-image: linear-gradient(#f6f6f6, #ffffff);
+.NB-header ul li.NB-following-tab .NB-icon {
+  background: url('/../../../media/img/circular/header/icon_follow.png?1357950040') no-repeat center bottom;
+  background-size: 17px;
 }
-.NB-unauthenticated .NB-header .NB-logout-button:active,
-.NB-unauthenticated .NB-header .NB-login-toggle-button:active {
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #e9e9e9), color-stop(100%, #e9e9e9));
-  background-image: -webkit-linear-gradient(#e9e9e9, #e9e9e9);
-  background-image: -moz-linear-gradient(#e9e9e9, #e9e9e9);
-  background-image: -o-linear-gradient(#e9e9e9, #e9e9e9);
-  background-image: linear-gradient(#e9e9e9, #e9e9e9);
-  -webkit-box-shadow: inset 0px 0px 10px #c1c1c1;
-  -moz-box-shadow: inset 0px 0px 10px #c1c1c1;
-  box-shadow: inset 0px 0px 10px #c1c1c1;
-  text-shadow: 0px -1px 1px white;
-  color: #333333;
+.NB-header ul li.NB-active.NB-following-tab .NB-icon, .NB-header ul li.NB-following-tab:hover .NB-icon {
+  background: url('/../../../media/img/circular/header/icon_follow_active.png?1357950047') no-repeat center bottom;
+  background-size: 17px;
 }
-@media screen and (max-width: 480px) {
-  .NB-unauthenticated .NB-header .NB-button {
-    display: none;
-  }
+.NB-header ul li.NB-circular-tab .NB-icon {
+  background: url('/../../../media/img/circular/header/icon_circular.png?1357950104') no-repeat center bottom;
+  background-size: 17px;
+}
+.NB-header ul li.NB-active.NB-circular-tab .NB-icon, .NB-header ul li.NB-circular-tab:hover .NB-icon {
+  background: url('/../../../media/img/circular/header/icon_circular_active.png?1357950133') no-repeat center bottom;
+  background-size: 17px;
 }
 
 .NB-popover {
@@ -524,7 +445,7 @@ blockquote {
   padding: 12px 0 24px 0;
   overflow: hidden;
 }
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 480px) {
   .NB-banner {
     padding: 24px 0;
   }
@@ -549,7 +470,7 @@ blockquote {
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.5);
 }
-@media all and (max-width: 500px) {
+@media all and (max-width: 480px) {
   .NB-banner .NB-title-photo img {
     max-width: 72px;
     max-height: 72px;

@@ -173,6 +173,7 @@ blockquote {
     background: transparent;
     width: 100%;
     height: 100%;
+    padding-top: 36px;
 }
 
 // ==========
@@ -213,30 +214,37 @@ blockquote {
     @include single-box-shadow(#7d7d7d, 0px, 0px, 10px, false, false);
     width: 100%;
     left: 0;
+    top: 0;
     z-index: 10;
+    position: fixed;
+    @include background-image(linear-gradient(#f3f3f3, #f3f3f3 70%, #e0e0e0));
+    height: 44px;
+    bottom: 0;
+    
+    @media screen and ( max-width: 480px) {
+        position: absolute;
+        height: 60px;
+    }
     
     .NB-header-inner {
-        padding: 0 10px;
         max-width: $page-width;
         min-width: 300px;
         margin: 0 auto;
         position: relative;
     }
-
-}
-.NB-authenticated .NB-header {
-    background: #f2f2f2 image-url('header_background_logged_in.png') repeat 0 0;
-    height: 44px;
-    bottom: 0;
     
     ul {
         margin: 0 70px;
         
+        @media screen and ( max-width: 480px) {
+            margin: 0 0;
+        }
+
         li {
             height: 44px;
             float: left;
             vertical-align: top;
-            width: 24%;
+            width: 25%;
             text-transform: uppercase;
             font-size: $smallest-font-size;
             border-right: 1px solid #cdcdcd;
@@ -244,8 +252,12 @@ blockquote {
             text-align: center;
             font-weight: bold;
             @include single-text-shadow;
-
             cursor: pointer;
+            
+            @media screen and (max-width: 480px) {
+                height: 60px;
+                font-size: $smallest-iphone-font-size;
+            }
             
             &.NB-active {
                 cursor: default;
@@ -265,18 +277,26 @@ blockquote {
             div.NB-tab-inner {
                 display: inline-block;
                 line-height: 44px;
+                
+                @media screen and (max-width: 480px) {
+                    line-height: 28px;
+                }
             }
             
             &:first-child{
                 border-left: 1px solid #cdcdcd;
             }
             
-            &.NB-user-tab img.NB-arrow {
+            img.NB-arrow {
                 float: right;
                 margin-right: -8px;
                 margin-left: 4px;
+                
+                @media screen and (max-width: 480px) {
+                    display: none;
+                }
             }
-            &.NB-user-tab img.NB-user-avatar {
+            img.NB-user-avatar {
                 height: 16px;
                 width: 16px;
                 @include border-radius(3px, 3px);
@@ -287,89 +307,59 @@ blockquote {
                 float: left;
                 margin-top: 13px;
                 margin-right: 7px;
-                
+                width: 17px;
+                height: 17px; 
+
+                @media screen and (max-width: 480px) {
+                    float: none;
+                    display: block;
+                    margin: 10px auto 0;
+                }
             }
             
             &.NB-blurblog-tab .NB-icon {
-                width: 17px;
-                height: 17px; 
                 background: image-url('header/icon_activity.png') no-repeat center bottom;
+                background-size: 17px;
             }
             
             &.NB-active.NB-blurblog-tab .NB-icon,
             &.NB-blurblog-tab:hover .NB-icon {
                 background: image-url('header/icon_activity_active.png') no-repeat center bottom;
+                background-size: 17px;
             }
             
             &.NB-trending-tab .NB-icon {
-                width: 17px;
-                height: 17px; 
                 background: image-url('header/icon_trending.png') no-repeat center bottom;
+                background-size: 17px;
             }
             
             &.NB-active.NB-trending-tab .NB-icon,
             &.NB-trending-tab:hover .NB-icon {
                 background: image-url('header/icon_trending_active.png') no-repeat center bottom;
+                background-size: 17px;
             }
             
             &.NB-following-tab .NB-icon {
-                width: 17px;
-                height: 17px; 
                 background: image-url('header/icon_follow.png') no-repeat center bottom;
+                background-size: 17px;
             }
             
             &.NB-active.NB-following-tab .NB-icon,
             &.NB-following-tab:hover .NB-icon {
                 background: image-url('header/icon_follow_active.png') no-repeat center bottom;
+                background-size: 17px;
             }
-        }
-    }
-}
-
-.NB-unauthenticated .NB-header {
-    background: image-url('header_background_transparent.png') repeat 0 0;
-    height: 72px;
-    top: 0;
-    
-    @media screen and ( max-width: 480px) {
-        height: 40px;
-    }
-
-    h1.NB-logo a {
-        display: block;
-        float: left;
-        padding-top: 16px;
-        
-        @media screen and ( max-width: 480px) {
-            float: none;
-            text-align: center;
-            padding-top: 6px;
             
-            img {
-                height: 30px;
-                width: 120px;
+            &.NB-circular-tab .NB-icon {
+                background: image-url('header/icon_circular.png') no-repeat center bottom;
+                background-size: 17px;
             }
-        }
-    }
-        
-    .NB-request-toggle-button {
-        float: right;
-        @include NB-blue-button;
-        margin-top: 20px;
-        margin-left: 10px;
-    }
-    
-    .NB-logout-button,
-    .NB-login-toggle-button {
-        float: right;
-        @include NB-default-button;
-        margin-top: 20px;
-        margin-left: 10px;
-    }
-    
-    .NB-button {
-        @media screen and ( max-width: 480px)    {
-            display: none;
+            
+            &.NB-active.NB-circular-tab .NB-icon,
+            &.NB-circular-tab:hover .NB-icon {
+                background: image-url('header/icon_circular_active.png') no-repeat center bottom;
+                background-size: 17px;
+            }
         }
     }
 }
@@ -440,7 +430,7 @@ blockquote {
     padding: 12px 0 24px 0;
     overflow: hidden;
 
-    @media screen and (max-width: 500px) {
+    @media screen and (max-width: 480px) {
         padding: 24px 0;
     }
 
@@ -465,7 +455,7 @@ blockquote {
         border-radius: 4px;
         border: 1px solid rgba(0, 0, 0, .5);
     }
-    @media all and (max-width: 500px) {
+    @media all and (max-width: 480px) {
         .NB-title-photo img {
             max-width: 72px;
             max-height: 72px;
