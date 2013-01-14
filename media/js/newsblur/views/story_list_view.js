@@ -116,7 +116,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             var $story = story.story_view.$el;
             $header = $('.NB-feed-story-header-feed', $story);
             var $new_header = $header.clone();
-            if (this.feed_title_floater) this.feed_title_floater.destroy();
+            if (this.feed_title_floater) this.feed_title_floater.remove();
             this.feed_title_floater = new NEWSBLUR.Views.StoryDetailView({
                 feed_floater: true,
                 model: story, 
@@ -129,7 +129,7 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
             $feed_floater.toggleClass('NB-inverse', feed && feed.is_light());
             $feed_floater.width($header.outerWidth());
         } else if (!story || !story.get('story_feed_id')) {
-            if (this.feed_title_floater) this.feed_title_floater.destroy();
+            if (this.feed_title_floater) this.feed_title_floater.remove();
             this.cache.feed_title_floater_feed_id = null;
         }
           

@@ -1,8 +1,8 @@
 NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
     
     initialize: function(model) {
-        if (_.isNumber(model)) {
-            this.feed = NEWSBLUR.assets.feeds.get(model);
+        if (_.isNumber(model) || model['feed_id']) {
+            this.feed = NEWSBLUR.assets.feeds.get(model['feed_id'] || model);
 
             // The feed needs to exists as a model as well. Otherwise, toss it.
             if (this.feed) {
@@ -16,10 +16,18 @@ NEWSBLUR.Models.FeedOrFolder = Backbone.Model.extend({
             this.folder_views = [];
             this.folders = new NEWSBLUR.Collections.Folders([], {
                 title: title,
-                parent_folder: this.collection
+                parent_folder: this.collection,
+                parse: true
             });
-            this.folders.reset(_.compact(children));
+            this.folders.reset(_.compact(children), {parse: true});
         }
+    },
+    
+    parse: function(attrs) {
+        if (_.isNumber(attrs)) {
+            attrs = {'feed_id': attrs};
+        }
+        return attrs;
     },
     
     is_feed: function() {
