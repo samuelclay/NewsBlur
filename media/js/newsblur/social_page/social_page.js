@@ -210,6 +210,18 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
             }
             $button.html('Following').removeClass('NB-button-follow').addClass('NB-button-following');
         }, this));
+    },
+    
+    unfollow_user: function() {
+        var $button = this.$(".NB-button-following");
+        $button.html('Unfollowing...');
+        NEWSBLUR.assets.unfollow_user(NEWSBLUR.Globals.blurblog_user_id, _.bind(function(data) {
+            var message = 'You are now following ' + NEWSBLUR.Globals.blurblog_username;
+            if (data.follow_profile.requested_follow) {
+                message = 'Your request to follow ' + NEWSBLUR.Globals.blurblog_username + ' has been sent';
+            }
+            $button.html('Follow').removeClass('NB-button-following').addClass('NB-button-follow');
+        }, this));
     }
     
 });

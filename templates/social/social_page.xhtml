@@ -115,16 +115,15 @@
             {% if user.is_authenticated %}
                 <li class="NB-user-tab">
                     <div class="NB-tab-inner">
-                            <span><img src="{{ user_social_profile.large_photo_url }}" class="NB-user-avatar" /></span>
-                            <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
-                            {{ user_social_profile.username }}
+                        <span><img src="{{ user_social_profile.large_photo_url }}" class="NB-user-avatar" /></span>
+                        <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
+                        {{ user_social_profile.username }}
 
-                            <div class="NB-user-popover NB-popover">
-                                <div class="NB-popover-inner">
-                                
-                                </div>
-                                <div class="NB-popover-bottom"></div>
-                            </div>
+                        <div class="NB-user-popover NB-popover">
+                            Logout...
+                            <div class="NB-arrow"></div>
+                        </div>
+                        
                     </div>
                 </li>
             {% else %}
@@ -135,12 +134,10 @@
                         NewsBlur
 
                         <div class="NB-login-popover NB-popover">
-                            <div class="NB-popover-inner">
-                                <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
-                                <input placeholder="Password" type="password" name="login_password" class="NB-input" />
-                                <div class="NB-login-button NB-blue-button">Login</div>
-                            </div>
-                            <div class="NB-popover-bottom"></div>
+                            <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
+                            <input placeholder="Password" type="password" name="login_password" class="NB-input" />
+                            <div class="NB-login-button NB-blue-button">Login</div>
+                            <div class="NB-arrow"></div>
                         </div>
                     </div>
                 </li>            

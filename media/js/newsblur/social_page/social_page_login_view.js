@@ -1,11 +1,11 @@
 NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     events: {
-        "click .NB-login-toggle-button"     : "toggle_login_dialog",
-        "click .NB-request-toggle-button"   : "toggle_request_dialog",
-        "click .NB-logout-button"           : "logout",
-        "click .NB-login-button"            : "login",
-        "click .NB-request-button"          : "request_invite"
+        "click .NB-circular-tab"    : "toggle_login_dialog",
+        "click .NB-user-tab"        : "toggle_request_dialog",
+        "click .NB-logout-button"   : "logout",
+        "click .NB-login-button"    : "login",
+        "click .NB-request-button"  : "request_invite"
     },
 
     initialize: function() {
@@ -68,9 +68,9 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         }
     },
     
-    toggle_request_dialog: function(options) {
+    toggle_request_dialog: function(e, options) {
         options = options || {};
-        var $popover = this.$('.NB-request-popover');
+        var $popover = this.$('.NB-user-popover');
         var $other_popover = this.$('.NB-login-popover');
         var $request_email = this.$('input[name=request_email]');
         
@@ -92,6 +92,8 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         } else {
             $other_popover.removeClass('NB-active');
             $popover.addClass('NB-active');
+            console.log(["Opening", e.currentTarget, $popover]);
+            $popover.align(e.currentTarget, "bottom");
             $popover.animate({
                 'opacity': 1
             }, {

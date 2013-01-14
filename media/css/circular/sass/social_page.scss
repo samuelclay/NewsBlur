@@ -88,10 +88,6 @@ $default-box-shadow-blur: 1px;
     }
 }
 
-.NB-button {
-    @include NB-default-button;
-}
-
 // ===========
 // = Globals =
 // ===========
@@ -208,6 +204,9 @@ blockquote {
 .NB-blue-button {
     @include NB-blue-button;
 }
+.NB-grey-button {
+    @include NB-default-button;
+}
 
 
 .NB-header {
@@ -230,7 +229,6 @@ blockquote {
         max-width: $page-width;
         min-width: 300px;
         margin: 0 auto;
-        position: relative;
     }
     
     ul {
@@ -254,9 +252,20 @@ blockquote {
             @include single-text-shadow;
             cursor: pointer;
             
+            &:first-child{
+                border-left: 1px solid #cdcdcd;
+            }
+            
             @media screen and (max-width: 480px) {
                 height: 60px;
                 font-size: $smallest-iphone-font-size;
+                
+                &:last-child {
+                    border-right: none;
+                }
+                &:first-child{
+                    border-left: none;
+                }
             }
             
             &.NB-active {
@@ -281,10 +290,6 @@ blockquote {
                 @media screen and (max-width: 480px) {
                     line-height: 28px;
                 }
-            }
-            
-            &:first-child{
-                border-left: 1px solid #cdcdcd;
             }
             
             img.NB-arrow {
@@ -369,12 +374,16 @@ blockquote {
 // ===========
 
 .NB-popover {
-    position: absolute;
-    top: 50px;
-    left: 200px;
-    width: 308px;
-    opacity: 0;
     display: none;
+    position: absolute;
+    z-index: 2;
+    width: 308px;
+    @include border-radius(8px, 8px);
+    @include box-shadow(rgba(#333, 0.3) 0 0 2px, rgba(#333, 0.3) 0 3px 8px inset);
+    @include background-image(linear-gradient(white, #E6EBF0));
+    text-shadow: 0 1px 0 white;
+    font-size: 14px;
+    opacity: 0;
     
     &.NB-request-popover {
         top: 50px;
@@ -390,15 +399,10 @@ blockquote {
         display: block;
     }
     
-    .NB-popover-inner {
-        width: 240px;
-        padding: 45px 38px 0 30px;
-        background: transparent image-url('popover_top.png') no-repeat 0 0;
-    }
-    
-    .NB-popover-bottom {
-        background: transparent image-url('popover_bottom.png') no-repeat left bottom;
-        height: 40px;
+    .NB-arrow {
+        position: absolute;
+        background: transparent image-url('popover/arrow.png') no-repeat 0 0;
+        background-size: 26px 17px;
     }
 
     input {
