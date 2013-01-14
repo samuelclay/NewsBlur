@@ -640,6 +640,8 @@ NEWSBLUR.Views.OriginalTabView = Backbone.View.extend({
     },
     
     toggle_selected_story: function(model, selected, options) {
+        options = options || {};
+        
         if (selected && 
             NEWSBLUR.reader.story_view == 'page' && 
             !options.selected_in_original &&
