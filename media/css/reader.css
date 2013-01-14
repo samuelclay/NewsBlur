@@ -1707,11 +1707,11 @@ background: transparent;
     position: absolute;
 }
 
-#story_pane .NB-story-iframe {
+#story_pane .NB-text-view {
     left: 200%;
     top: 0;
 }
-#story_pane .NB-text-view {
+#story_pane .NB-story-iframe {
     left: 300%;
     top: 0;
 }
@@ -2364,7 +2364,14 @@ background: transparent;
     line-height: 9px;
     font-size: 9px;
     height: 9px;
+    
+    border-top: 1px solid rgba(255, 255, 255, .15);
+    border-left: 1px solid rgba(255, 255, 255, .15);
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    border-right: 1px solid rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
 }
+
 #story_pane .NB-story-comment .NB-story-comment-reply-button:hover .NB-story-comment-reply-button-wrapper {
     background-color: #DE772B;
 }
@@ -2384,7 +2391,7 @@ background: transparent;
     overflow: hidden;
     clear: both;
     position: relative;
-    padding: 6px 0 6px 32px;
+    padding: 5px 0 7px 32px;
     line-height: 18px;
 }
 #story_pane .NB-story-comment-reply .NB-story-comment-reply-photo {
@@ -2398,7 +2405,7 @@ background: transparent;
 }
 
 #story_pane .NB-story-comment-edit-button {
-    padding: 4px 8px 4px 12px;
+    padding: 3px 8px 5px 12px;
     float: left;
     cursor: pointer;
 }
@@ -2410,6 +2417,11 @@ background: transparent;
     line-height: 9px;
     font-size: 9px;
     height: 9px;
+    border-top: 1px solid rgba(255, 255, 255, .15);
+    border-left: 1px solid rgba(255, 255, 255, .15);
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    border-right: 1px solid rgba(0, 0, 0, .1);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
 }
 #story_pane .NB-story-comment-edit-button:hover .NB-story-comment-edit-button-wrapper {
     background-color: #5073BC;
@@ -2488,7 +2500,7 @@ background: transparent;
 #story_pane .NB-story-comments-public-header {
     background-color: #A0A0A0;
     color: #FFF;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .5);
     
     background-image: -webkit-gradient(
       linear,
@@ -3226,7 +3238,7 @@ background: transparent;
 .NB-taskbar .NB-task-view-switch-arrow {
     position: absolute;
     top: 8px;
-    right: -8px;
+    left: -8px;
     width: 16px;
     height: 16px;
     background: transparent url('/media/embed/icons/silk/arrow_switch.png') no-repeat center 0px;

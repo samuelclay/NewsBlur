@@ -19,7 +19,8 @@ NEWSBLUR.Views.SocialPageStory = Backbone.View.extend({
     initialize: function() {
         var story_id = this.$el.data("storyId");
         var feed_id = this.$el.data("feedId");
-        var story_guid = this.$el.data("guid");
+        // attr because .data munges numeral guids (ex: 002597 vs. a05bd2)
+        var story_guid = ""+this.$el.attr("data-guid"); 
         var user_comments = this.$el.data("userComments");
         var shared = this.$el.hasClass('NB-story-shared');
         var $sideoptions = this.$('.NB-feed-story-sideoptions-container');

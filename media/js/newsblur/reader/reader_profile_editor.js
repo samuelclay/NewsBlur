@@ -70,7 +70,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
                                 'Privacy',
                                 (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-profile-privacy-notpremium' }, [
                                     'You must have a ',
-                                    $.make('div', { className: 'NB-splash-link NB-premium' }, 'premium account'),
+                                    $.make('div', { className: 'NB-splash-link NB-premium-link' }, 'premium account'),
                                     ' to change privacy.'
                                 ]))
                             ]),
@@ -462,7 +462,7 @@ _.extend(NEWSBLUR.ReaderProfileEditor.prototype, {
             e.preventDefault();
             self.set_active_color($t);
         });
-        $.targetIs(e, { tagSelector: '.NB-premium' }, function($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-premium-link' }, function($t, $p) {
             e.preventDefault();
             self.close_and_load_feedchooser();
         });
