@@ -36,6 +36,10 @@ NEWSBLUR.Collections.Users = Backbone.Collection.extend({
     
     find: function(user_id) {
         return this.detect(function(user) { return user.get('user_id') == user_id; });
+    },
+    
+    comparator: function(model) {
+        return -1 * model.get('shared_stories_count');
     }
     
 });

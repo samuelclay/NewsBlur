@@ -19,10 +19,10 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     },
     
     initialize: function() {
-        _.bindAll(this, 'render', 'delete_feed');
+        _.bindAll(this, 'render', 'delete_feed', 'changed', 'render_updated_time');
         if (!this.options.feed_chooser) {
-            this.model.bind('change', this.changed, this);
-            this.model.bind('change:updated', this.render_updated_time, this);
+            this.listenTo(this.model, 'change', this.changed);
+            this.listenTo(this.model, 'change:updated', this.render_updated_time);
         }
         
         if (this.model.is_social() && !this.model.get('feed_title')) {
@@ -31,19 +31,17 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         }
     },
     
-    destroy: function() {
-        this.$el.empty();
-        this.model.unbind(null, this);
-    },
-    
     changed: function(model, options) {
-        var counts_changed = options.changes && _.any(_.keys(options.changes), function(key) { 
+        options = options || {};
+        var changes = _.keys(this.model.changedAttributes());
+        
+        var counts_changed = _.any(changes, function(key) { 
             return _.contains(['ps', 'nt', 'ng'], key);
         });
-        var only_counts_changed = options.changes && !_.any(_.keys(options.changes), function(key) { 
+        var only_counts_changed = !_.any(changes, function(key) { 
             return !_.contains(['ps', 'nt', 'ng'], key);
         });
-        var only_selected_changed = options.changes && !_.any(_.keys(options.changes), function(key) { 
+        var only_selected_changed = !_.any(changes, function(key) { 
             return key != 'selected';
         });
         

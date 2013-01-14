@@ -342,7 +342,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         var pre_callback = function(feeds, subscriptions) {
             self.flags['favicons_fetching'] = self.feeds.any(function(feed) { return feed.get('favicons_fetching'); });
 
-            self.folders.reset(_.compact(subscriptions.folders));
+            self.folders.reset(_.compact(subscriptions.folders), {parse: true});
             self.starred_count = subscriptions.starred_count;
             self.social_feeds.reset(subscriptions.social_feeds);
             self.user_profile.set(subscriptions.social_profile);
@@ -405,7 +405,6 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.feed_id = feed_id;
 
         if (feed_id) {
-            console.log(["query", NEWSBLUR.reader.flags.search]);
             this.make_request('/reader/feed/'+feed_id,
                 {
                     page: page,
@@ -1229,8 +1228,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/social/load_user_friends', null, _.bind(function(data) {
             this.user_profile.set(data.user_profile);
             this.social_services = data.services;
-            this.follower_profiles = new NEWSBLUR.Collections.Users(data.follower_profiles);
-            this.following_profiles = new NEWSBLUR.Collections.Users(data.following_profiles);
+            this.follower_profiles.reset(data.follower_profiles);
+            this.following_profiles.reset(data.following_profiles);
             callback(data);
         }, this), null, {
             request_type: 'GET'

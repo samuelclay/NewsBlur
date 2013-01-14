@@ -268,6 +268,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     },
     
     toggle_selected: function(model, selected, options) {
+        options = options || {};
         this.$el.toggleClass('NB-selected', !!this.model.get('selected'));
         
         if (selected && options.scroll_to_comments) {

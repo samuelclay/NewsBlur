@@ -10,7 +10,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         this.story_title = this.get('story_title');
     },
     
-    populate_comments: function(story, collection, changes) {
+    populate_comments: function(story, collection) {
         this.friend_comments = new NEWSBLUR.Collections.Comments(this.get('friend_comments'));
         this.public_comments = new NEWSBLUR.Collections.Comments(this.get('public_comments'));
     },
@@ -43,7 +43,7 @@ NEWSBLUR.Models.Story = Backbone.Model.extend({
         return NEWSBLUR.assets.stories.mark_read(this, options);
     },
     
-    change_selected: function(model, selected, changes) {
+    change_selected: function(model, selected) {
         if (model.collection) {
             model.collection.detect_selected_story(model, selected);
         }

@@ -2208,11 +2208,7 @@
             }
             
             if (NEWSBLUR.app.story_titles_header) {
-                if (NEWSBLUR.app.story_titles_header.destroy) {
-                    NEWSBLUR.app.story_titles_header.destroy();
-                } else {
-                    NEWSBLUR.app.story_titles_header.remove();
-                }
+                NEWSBLUR.app.story_titles_header.remove();
             }
 
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader({
