@@ -25,10 +25,14 @@
                 {% if story.comment_count %}
                     {{ story.comment_count }}
                     {{ story.comment_count|pluralize:"Comment,Comments" }}
-                    and
+                    {% if story.share_count != story.comment_count %}
+                        and
+                    {% endif %}
                 {% endif %}
-                {{ story.share_count }}
-                {{ story.share_count|pluralize:"Share,Shares" }}
+                {% if story.share_count != story.comment_count %}
+                    {{ story.share_count }}
+                    {{ story.share_count|pluralize:"Share,Shares" }}
+                {% endif %}
             </div>
             
             <div class="NB-story-share-profiles NB-story-share-profiles-comments">

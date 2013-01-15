@@ -52,7 +52,8 @@ javascripts:
         - media/js/vendor/jquery.effects.core.js
         - media/js/vendor/jquery.effects.slideOffscreen.js
         # - media/js/vendor/jquery.linkify.js
-        - media/js/vendor/bootstrap.*.js
+        - media/js/vendor/bootstrap-tooltip.js
+        - media/js/vendor/bootstrap-*.js
         - media/js/vendor/audio.js
         - media/js/vendor/socket.io-client.*.js
         - media/js/vendor/inflector.js
@@ -104,6 +105,8 @@ javascripts:
         - media/js/vendor/backbone-*.js
         - media/js/vendor/jquery.tipsy.js
         - media/js/vendor/inflector.js
+        - media/js/vendor/bootstrap-tooltip.js
+        - media/js/vendor/bootstrap-*.js
         - media/js/newsblur/social_page/*.js
         - media/js/newsblur/models/comments.js
         - media/js/newsblur/views/story_share_view.js
@@ -131,3 +134,4 @@ stylesheets:
     blurblog:
         - media/css/jquery.tipsy.css
         - media/css/circular/css/social_page.css
+        - media/css/vendor/bootstrap-*.css

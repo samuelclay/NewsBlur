@@ -75,7 +75,7 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
         
         var $controls = this.$('.NB-page-controls');
         if ($controls.length) {
-            var page_control_y = $controls.last().offset().top - 500;
+            var page_control_y = $controls.last().offset().top + 25;
             if (viewport_y > page_control_y) {
                 this.cached_page_control_y = page_control_y;
                 this.flags.loading_page = true;
@@ -103,8 +103,10 @@ NEWSBLUR.Views.SocialPage = Backbone.View.extend({
     },
     
     scroll_to_story: function(story_view, run) {
+        var offset = navigator.platform.indexOf("iPhone") != -1 ? 12 : 12 + 48;
+        
         $('html,body').stop().animate({
-            scrollTop: story_view.$mark.offset().top - 12
+            scrollTop: story_view.$mark.offset().top - offset
         }, {
             duration: run == 1 ? 1000 : 500,
             easing: run == 1 ? 'easeInQuint' : 'easeOutQuint',

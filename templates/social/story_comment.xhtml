@@ -17,7 +17,7 @@
         <div class="NB-story-comment-button NB-story-comment-reply-button">
             <div class="NB-story-comment-button-wrapper NB-story-comment-reply-button-wrapper">
                 {% if comment.user.protected %}
-                    <img src="{{ MEDIA_URL }}img/icons/silk/lock.png">
+                    <img src="{{ MEDIA_URL }}img/icons/silk/lock.png" class="NB-reply-lock">
                 {% endif %}
                 reply
             </div>

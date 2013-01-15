@@ -93,41 +93,40 @@
     
 <header class="NB-header">
     <div class="NB-header-inner">
-        <ul>
-            <li class="NB-blurblog-tab NB-active">
+        <ul class="NB-header-tabs">
+            <li class="NB-header-tab NB-blurblog-tab NB-active">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
                     Blurblogs
                 </div>
             </li>
-            <li class="NB-following-tab">
+            <li class="NB-header-tab NB-following-tab">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
                     Following
                 </div>
             </li>
-            <li class="NB-trending-tab">
+            <li class="NB-header-tab NB-trending-tab">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
                     Global
                 </div>
             </li>
             {% if user.is_authenticated %}
-                <li class="NB-user-tab">
-                    <div class="NB-tab-inner">
+                <li class="NB-header-tab NB-user-tab dropdown">
+                    <div class="NB-tab-inner dropdown-toggle" data-toggle="dropdown">
                         <span><img src="{{ user_social_profile.large_photo_url }}" class="NB-user-avatar" /></span>
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
                         {{ user_social_profile.username }}
-
-                        <div class="NB-user-popover NB-popover">
-                            Logout...
-                            <div class="NB-arrow"></div>
-                        </div>
-                        
                     </div>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Other thing</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">Logout</a></li>
+                    </ul>
                 </li>
             {% else %}
-                <li class="NB-circular-tab">
+                <li class="NB-header-tab NB-circular-tab">
                     <div class="NB-tab-inner">
                         <span class="NB-icon"></span>
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
