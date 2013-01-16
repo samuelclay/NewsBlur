@@ -133,5 +133,5 @@ stylesheets:
         - media/css/bookmarklet/bookmarklet.css
     blurblog:
         - media/css/jquery.tipsy.css
-        - media/css/circular/css/social_page.css
         - media/css/vendor/bootstrap-*.css
+        - media/css/circular/css/social_page.css

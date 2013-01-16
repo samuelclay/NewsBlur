@@ -1,17 +1,33 @@
 NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     events: {
-        "click .NB-logout-button"   : "logout",
+        "click .NB-menu-newsblur"   : "open_in_newsblur",
+        "click .NB-menu-logout"     : "logout",
         "click .NB-login-button"    : "login",
         "click .NB-request-button"  : "request_invite"
     },
 
     initialize: function() {
+        this.setup_login_popover();
     },
-        
+    
+    setup_login_popover: function() {
+        this.$(".NB-circular-tab .NB-tab-inner").popover({
+            html: true,
+            placement: "bottom",
+            content: this.$(".NB-circular-tab .NB-popover-content").html(),
+            title: this.$(".NB-circular-tab .NB-popover-title").html()
+        });
+    },
+    
     // ==========
     // = Events =
     // ==========
+    
+    open_in_newsblur: function(e) {
+        e.preventDefault();
+        window.location.href = NEWSBLUR.URLs.newsblur_page;
+    },
     
     clean: function() {
         this.$('.NB-error').remove();
@@ -35,7 +51,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         this.clean();
         
         var error = _.first(_.values(data.errors))[0];
-        this.$('.NB-login-popover .NB-popover-inner').append($.make('div', { className: 'NB-error' }, error));
+        this.$('.popover .popover-content').append($.make('div', { className: 'NB-error' }, error));
     },
      
     logout: function() {

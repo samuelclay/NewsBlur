@@ -56,6 +56,9 @@
         'email'            : "{{ user.email|safe }}",
         'MEDIA_URL'        : "{{ MEDIA_URL }}",
     };
+    NEWSBLUR.URLs = {
+        "newsblur_page": "http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}"
+    };
     {% if user_social_profile_page %}
         NEWSBLUR.user_social_profile = {{ user_social_profile_page|safe }};
     {% endif %}
@@ -120,9 +123,9 @@
                         {{ user_social_profile.username }}
                     </div>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Other thing</a></li>
+                        <li><a href="#" class="NB-menu-newsblur">View on NewsBlur</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Logout</a></li>
+                        <li><a href="#" class="NB-menu-logout">Logout</a></li>
                     </ul>
                 </li>
             {% else %}
@@ -132,12 +135,15 @@
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
                         NewsBlur
 
-                        <div class="NB-login-popover NB-popover">
-                            <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
-                            <input placeholder="Password" type="password" name="login_password" class="NB-input" />
-                            <div class="NB-login-button NB-blue-button">Login</div>
-                            <div class="NB-arrow"></div>
-                        </div>
+                    </div>
+                    <div class="NB-popover-title">
+                        <div class="NB-signup-button NB-grey-button">Create an account</div>
+                    </div>
+                    <div class="NB-popover-content">
+                        <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
+                        <input placeholder="Password" type="password" name="login_password" class="NB-input" />
+                        <div class="NB-login-button NB-blue-button">Login</div>
+                        <div class="NB-arrow"></div>
                     </div>
                 </li>            
             {% endif %}

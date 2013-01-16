@@ -20,7 +20,7 @@
 
         <div class="NB-story-comment-edit NB-story-comment {% if story.shared_by_user %}NB-hidden{% endif %}" data-user-id="{{ user_social_profile.user_id }}">
             <a href="{{ user_social_profile.blurblog_url }}" class="NB-user-avatar">
-                <img src="{{ user_social_profile.photo_url }}">
+                <img src="{% if user_social_profile.photo_url %}{{ user_social_profile.photo_url }}{% else %}{{ MEDIA_URL }}/img/circular/circular_avatar.png{% endif %}">
             </a>
             <div class="NB-story-comment-input-form">
                 <textarea class="NB-story-comment-input" placeholder="Comment on this story..."></textarea>

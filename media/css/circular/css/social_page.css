@@ -179,6 +179,7 @@ blockquote {
   padding: 4px 12px;
   font-size: 14px;
   font-weight: normal;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 .NB-blue-button:hover {
   border: 1px solid #3573a5;
@@ -212,12 +213,12 @@ blockquote {
   -ms-border-radius: 2px;
   -o-border-radius: 2px;
   border-radius: 2px;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fcfcfc), color-stop(100%, #f2f2f2));
-  background-image: -webkit-linear-gradient(#fcfcfc, #f2f2f2);
-  background-image: -moz-linear-gradient(#fcfcfc, #f2f2f2);
-  background-image: -o-linear-gradient(#fcfcfc, #f2f2f2);
-  background-image: linear-gradient(#fcfcfc, #f2f2f2);
-  text-shadow: 0px -1px 0px white;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f8f8f8), color-stop(100%, #e5e5e5));
+  background-image: -webkit-linear-gradient(#f8f8f8, #e5e5e5);
+  background-image: -moz-linear-gradient(#f8f8f8, #e5e5e5);
+  background-image: -o-linear-gradient(#f8f8f8, #e5e5e5);
+  background-image: linear-gradient(#f8f8f8, #e5e5e5);
+  text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.5);
   color: gray;
   height: 20px;
   line-height: 20px;
@@ -229,11 +230,12 @@ blockquote {
 }
 .NB-grey-button:hover {
   border: 1px solid #ababab;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f8f8f8), color-stop(100%, #e5e5e5));
-  background-image: -webkit-linear-gradient(#f8f8f8, #e5e5e5);
-  background-image: -moz-linear-gradient(#f8f8f8, #e5e5e5);
-  background-image: -o-linear-gradient(#f8f8f8, #e5e5e5);
-  background-image: linear-gradient(#f8f8f8, #e5e5e5);
+  color: #707070;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #efefef), color-stop(100%, #dfdfdf));
+  background-image: -webkit-linear-gradient(#efefef, #dfdfdf);
+  background-image: -moz-linear-gradient(#efefef, #dfdfdf);
+  background-image: -o-linear-gradient(#efefef, #dfdfdf);
+  background-image: linear-gradient(#efefef, #dfdfdf);
 }
 .NB-grey-button:active {
   border: 1px solid #9d9d9d;
@@ -245,7 +247,6 @@ blockquote {
   -webkit-box-shadow: inset 0px 0px 10px #c1c1c1;
   -moz-box-shadow: inset 0px 0px 10px #c1c1c1;
   box-shadow: inset 0px 0px 10px #c1c1c1;
-  text-shadow: 0px -1px 1px white;
   color: #333333;
 }
 @media screen and (max-width: 480px) {
@@ -406,63 +407,8 @@ blockquote {
   background-size: 17px;
 }
 
-.NB-popover {
-  display: none;
-  position: absolute;
-  z-index: 2;
-  width: 308px;
-  -webkit-border-radius: 8px 8px;
-  -moz-border-radius: 8px / 8px;
-  border-radius: 8px / 8px;
-  -webkit-box-shadow: rgba(51, 51, 51, 0.3) 0 0 2px, rgba(51, 51, 51, 0.3) 0 3px 8px inset;
-  -moz-box-shadow: rgba(51, 51, 51, 0.3) 0 0 2px, rgba(51, 51, 51, 0.3) 0 3px 8px inset;
-  box-shadow: rgba(51, 51, 51, 0.3) 0 0 2px, rgba(51, 51, 51, 0.3) 0 3px 8px inset;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #e6ebf0));
-  background-image: -webkit-linear-gradient(#ffffff, #e6ebf0);
-  background-image: -moz-linear-gradient(#ffffff, #e6ebf0);
-  background-image: -o-linear-gradient(#ffffff, #e6ebf0);
-  background-image: linear-gradient(#ffffff, #e6ebf0);
-  text-shadow: 0 1px 0 white;
-  font-size: 14px;
-  opacity: 0;
-}
-.NB-popover.NB-request-popover {
-  top: 50px;
-  left: 329px;
-}
-.NB-popover.NB-login-popover {
-  top: 50px;
-  left: 456px;
-}
-.NB-popover.NB-active {
-  display: block;
-}
-.NB-popover .NB-arrow {
-  position: absolute;
-  background: transparent url('/../../../media/img/circular/popover/arrow.png?1358278259') no-repeat 0 0;
-  background-size: 26px 17px;
-}
-.NB-popover input {
-  border: 1px solid #bdbdbd;
-  border: 1px solid #bdbdbd;
-  padding: 5px;
-  width: 228px;
-  margin-bottom: 15px;
-  font-size: 14px;
-  font-weight: normal;
-}
-.NB-popover .NB-error {
-  font-size: 12px;
-  color: #6A1000;
-  padding: 15px 0 0;
-  font-weight: bold;
-  line-height: 140%;
-  text-align: center;
-  margin: 0 10px;
-}
-
 .NB-banner {
-  padding: 12px 0 24px 0;
+  padding: 12px 0 18px 0;
   overflow: hidden;
 }
 @media screen and (max-width: 480px) {
@@ -561,6 +507,7 @@ blockquote {
   padding: 4px 12px;
   font-size: 14px;
   font-weight: normal;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
   padding: 2px 0;
 }
 .NB-banner .NB-button-following:hover {
@@ -1063,12 +1010,12 @@ blockquote {
   -ms-border-radius: 2px;
   -o-border-radius: 2px;
   border-radius: 2px;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fcfcfc), color-stop(100%, #f2f2f2));
-  background-image: -webkit-linear-gradient(#fcfcfc, #f2f2f2);
-  background-image: -moz-linear-gradient(#fcfcfc, #f2f2f2);
-  background-image: -o-linear-gradient(#fcfcfc, #f2f2f2);
-  background-image: linear-gradient(#fcfcfc, #f2f2f2);
-  text-shadow: 0px -1px 0px white;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f8f8f8), color-stop(100%, #e5e5e5));
+  background-image: -webkit-linear-gradient(#f8f8f8, #e5e5e5);
+  background-image: -moz-linear-gradient(#f8f8f8, #e5e5e5);
+  background-image: -o-linear-gradient(#f8f8f8, #e5e5e5);
+  background-image: linear-gradient(#f8f8f8, #e5e5e5);
+  text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.5);
   color: gray;
   height: 20px;
   line-height: 20px;
@@ -1080,11 +1027,12 @@ blockquote {
 }
 .NB-story-comments-container .NB-story-comment-reply-form .NB-modal-submit-button:hover {
   border: 1px solid #ababab;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f8f8f8), color-stop(100%, #e5e5e5));
-  background-image: -webkit-linear-gradient(#f8f8f8, #e5e5e5);
-  background-image: -moz-linear-gradient(#f8f8f8, #e5e5e5);
-  background-image: -o-linear-gradient(#f8f8f8, #e5e5e5);
-  background-image: linear-gradient(#f8f8f8, #e5e5e5);
+  color: #707070;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #efefef), color-stop(100%, #dfdfdf));
+  background-image: -webkit-linear-gradient(#efefef, #dfdfdf);
+  background-image: -moz-linear-gradient(#efefef, #dfdfdf);
+  background-image: -o-linear-gradient(#efefef, #dfdfdf);
+  background-image: linear-gradient(#efefef, #dfdfdf);
 }
 .NB-story-comments-container .NB-story-comment-reply-form .NB-modal-submit-button:active {
   border: 1px solid #9d9d9d;
@@ -1096,7 +1044,6 @@ blockquote {
   -webkit-box-shadow: inset 0px 0px 10px #c1c1c1;
   -moz-box-shadow: inset 0px 0px 10px #c1c1c1;
   box-shadow: inset 0px 0px 10px #c1c1c1;
-  text-shadow: 0px -1px 1px white;
   color: #333333;
 }
 @media screen and (max-width: 480px) {
@@ -1126,12 +1073,12 @@ blockquote {
   -ms-border-radius: 2px;
   -o-border-radius: 2px;
   border-radius: 2px;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fcfcfc), color-stop(100%, #f2f2f2));
-  background-image: -webkit-linear-gradient(#fcfcfc, #f2f2f2);
-  background-image: -moz-linear-gradient(#fcfcfc, #f2f2f2);
-  background-image: -o-linear-gradient(#fcfcfc, #f2f2f2);
-  background-image: linear-gradient(#fcfcfc, #f2f2f2);
-  text-shadow: 0px -1px 0px white;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f8f8f8), color-stop(100%, #e5e5e5));
+  background-image: -webkit-linear-gradient(#f8f8f8, #e5e5e5);
+  background-image: -moz-linear-gradient(#f8f8f8, #e5e5e5);
+  background-image: -o-linear-gradient(#f8f8f8, #e5e5e5);
+  background-image: linear-gradient(#f8f8f8, #e5e5e5);
+  text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.5);
   color: gray;
   height: 20px;
   line-height: 20px;
@@ -1143,11 +1090,12 @@ blockquote {
 }
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save:hover {
   border: 1px solid #ababab;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f8f8f8), color-stop(100%, #e5e5e5));
-  background-image: -webkit-linear-gradient(#f8f8f8, #e5e5e5);
-  background-image: -moz-linear-gradient(#f8f8f8, #e5e5e5);
-  background-image: -o-linear-gradient(#f8f8f8, #e5e5e5);
-  background-image: linear-gradient(#f8f8f8, #e5e5e5);
+  color: #707070;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #efefef), color-stop(100%, #dfdfdf));
+  background-image: -webkit-linear-gradient(#efefef, #dfdfdf);
+  background-image: -moz-linear-gradient(#efefef, #dfdfdf);
+  background-image: -o-linear-gradient(#efefef, #dfdfdf);
+  background-image: linear-gradient(#efefef, #dfdfdf);
 }
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save:active {
   border: 1px solid #9d9d9d;
@@ -1159,7 +1107,6 @@ blockquote {
   -webkit-box-shadow: inset 0px 0px 10px #c1c1c1;
   -moz-box-shadow: inset 0px 0px 10px #c1c1c1;
   box-shadow: inset 0px 0px 10px #c1c1c1;
-  text-shadow: 0px -1px 1px white;
   color: #333333;
 }
 @media screen and (max-width: 480px) {
@@ -1287,12 +1234,12 @@ footer {
   border: none;
 }
 
-ul.dropdown-menu {
+.dropdown-menu {
   min-width: 138px;
   text-align: left;
   cursor: default;
 }
-ul.dropdown-menu:before {
+.dropdown-menu:before {
   position: absolute;
   top: -7px;
   left: 60px;
@@ -1303,7 +1250,7 @@ ul.dropdown-menu:before {
   border-bottom-color: rgba(0, 0, 0, 0.2);
   content: '';
 }
-ul.dropdown-menu:after {
+.dropdown-menu:after {
   position: absolute;
   top: -6px;
   left: 61px;
@@ -1313,13 +1260,56 @@ ul.dropdown-menu:after {
   border-left: 6px solid rgba(0, 0, 0, 0);
   content: '';
 }
-ul.dropdown-menu li:hover {
+.dropdown-menu li:hover {
   cursor: pointer;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 }
-ul.dropdown-menu .divider {
+.dropdown-menu .divider {
   margin: 4px 0;
 }
-ul.dropdown-menu .divider:hover {
+.dropdown-menu .divider:hover {
   cursor: default;
+}
+
+.NB-popover-content,
+.NB-popover-title {
+  display: none;
+}
+
+.popover {
+  text-shadow: inherit;
+}
+.popover.bottom .arrow:after {
+  border-bottom-color: #F7F7F7;
+}
+.popover .popover-title {
+  padding: 14px 14px;
+  border-bottom: 1px solid silver;
+}
+.popover .popover-content {
+  padding: 16px 14px;
+}
+.popover input {
+  border: 1px solid #bdbdbd;
+  border: 1px solid #bdbdbd;
+  padding: 5px;
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: normal;
+  -webkit-box-sizing: border-box;
+  /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;
+  /* Firefox, other Gecko */
+  box-sizing: border-box;
+  /* Opera/IE 8+ */
+}
+.popover .NB-error {
+  font-size: 12px;
+  color: #6A1000;
+  padding: 15px 0 0;
+  font-weight: bold;
+  line-height: 140%;
+  text-align: center;
+  margin: 0 10px;
 }
