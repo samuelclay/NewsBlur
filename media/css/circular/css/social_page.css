@@ -173,7 +173,6 @@ blockquote {
   background-image: -o-linear-gradient(#6bb1e0, #5aa1d8);
   background-image: linear-gradient(#6bb1e0, #5aa1d8);
   color: white;
-  height: 20px;
   line-height: 20px;
   text-align: center;
   cursor: pointer;
@@ -225,7 +224,6 @@ blockquote {
   background-image: linear-gradient(#f8f8f8, #e5e5e5);
   text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.5);
   color: gray;
-  height: 20px;
   line-height: 20px;
   text-align: center;
   cursor: pointer;
@@ -1001,7 +999,6 @@ blockquote {
   background-image: linear-gradient(#f8f8f8, #e5e5e5);
   text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.5);
   color: gray;
-  height: 20px;
   line-height: 20px;
   text-align: center;
   cursor: pointer;
@@ -1073,7 +1070,6 @@ blockquote {
   background-image: linear-gradient(#f8f8f8, #e5e5e5);
   text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.5);
   color: gray;
-  height: 20px;
   line-height: 20px;
   text-align: center;
   cursor: pointer;
