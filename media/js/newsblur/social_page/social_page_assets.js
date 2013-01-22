@@ -161,7 +161,7 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         });
     },
     
-    signup: function(username, password, email, callback, error_callback) {
+    signup: function(username, email, password, callback, error_callback) {
         this.make_request('/api/signup', {
             username: username,
             password: password,

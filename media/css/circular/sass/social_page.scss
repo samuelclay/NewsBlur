@@ -265,6 +265,10 @@ blockquote {
             @include single-text-shadow;
             cursor: pointer;
             
+            .popover {
+                cursor: default;
+            }
+            
             &:first-child{
                 border-left: 1px solid #cdcdcd;
             }
@@ -1185,18 +1189,21 @@ footer {
 
 .popover {
     text-shadow: inherit;
+    cursor: normal;
 
     &.bottom .arrow:after {
         border-bottom-color: #F7F7F7;
     }
     
     .popover-title {
-        padding: 14px 14px;
+        padding: 16px 14px;
         border-bottom: 1px solid #C0C0C0;
+        position: relative;
     }
     
     .popover-content {
         padding: 16px 14px;
+        position: relative;
     }
     
     input {
@@ -1218,7 +1225,34 @@ footer {
         padding: 15px 0 0;
         font-weight: bold;
         line-height: 140%;
-        text-align: center;
-        margin: 0 10px;
+        text-transform: none;
     }
 }    
+
+// ==================
+// = Login / Signup =
+// ==================
+
+.NB-switch-login-button {
+    display: none;
+}
+
+.NB-signup {
+    display: none;
+}
+
+.NB-show-signup {
+    .NB-switch-login-button {
+        display: block;
+    }
+    .NB-switch-signup-button {
+        display: none;
+    }
+    
+    .NB-signup {
+        display: block;
+    }
+    .NB-login {
+        display: none;
+    }
+}

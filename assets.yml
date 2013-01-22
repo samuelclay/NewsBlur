@@ -107,6 +107,7 @@ javascripts:
         - media/js/vendor/inflector.js
         - media/js/vendor/bootstrap-tooltip.js
         - media/js/vendor/bootstrap-*.js
+        - media/js/vendor/bootstrapx-*.js
         - media/js/newsblur/social_page/*.js
         - media/js/newsblur/models/comments.js
         - media/js/newsblur/views/story_share_view.js

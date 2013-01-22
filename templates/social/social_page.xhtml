@@ -133,16 +133,25 @@
                     <div class="NB-tab-inner">
                         <span class="NB-icon"></span>
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
-                        NewsBlur
+                        Log in
 
                     </div>
                     <div class="NB-popover-title">
-                        <div class="NB-signup-button NB-grey-button">Create an account</div>
+                        <div class="NB-login">
+                            <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
+                            <input placeholder="Password" type="password" name="login_password" class="NB-input" />
+                            <div class="NB-login-button NB-blue-button">Sign in</div>
+                        </div>
+                        <div class="NB-signup">
+                            <input type="text" placeholder="Username" name="signup_username" class="NB-input" />
+                            <input type="text" placeholder="Email address" name="signup_email" class="NB-input" />
+                            <input placeholder="Password" type="password" name="signup_password" class="NB-input" />
+                            <div class="NB-signup-button NB-blue-button">Create account</div>
+                        </div>
                     </div>
                     <div class="NB-popover-content">
-                        <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
-                        <input placeholder="Password" type="password" name="login_password" class="NB-input" />
-                        <div class="NB-login-button NB-blue-button">Login</div>
+                        <div class="NB-switch-button NB-switch-signup-button NB-grey-button">Create an account</div>
+                        <div class="NB-switch-button NB-switch-login-button NB-grey-button">Log in</div>
                         <div class="NB-arrow"></div>
                     </div>
                 </li>            
