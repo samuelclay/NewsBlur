@@ -310,8 +310,15 @@ def setup_common():
     configure_nginx()
     setup_munin()
 
-def setup_app():
+def setup_all():
     setup_common()
+    setup_app(skip_common=True)
+    setup_db(skip_common=True)
+    setup_task(skip_common=True)
+    
+def setup_app(skip_common=False):
+    if not skip_common:
+        setup_common()
     setup_vps()
     setup_app_firewall()
     setup_app_motd()
@@ -325,24 +332,26 @@ def setup_app():
     deploy()
     config_monit_app()
 
-def setup_db():
-    setup_common()
+def setup_db(skip_common=False):
+    if not skip_common:
+        setup_common()
     setup_baremetal()
     setup_db_firewall()
     setup_db_motd()
     copy_task_settings()
-    # setup_memcached()
-    # setup_postgres(standby=False)
+    setup_memcached()
+    setup_postgres(standby=False)
     setup_mongo()
-    # setup_gunicorn(supervisor=False)
-    # setup_redis()
+    setup_gunicorn(supervisor=False)
+    setup_redis()
     setup_db_munin()
     
-    if env.user == 'ubuntu':
-        setup_db_mdadm()
+    # if env.user == 'ubuntu':
+    #     setup_db_mdadm()
 
-def setup_task():
-    setup_common()
+def setup_task(skip_common=False):
+    if not skip_common:
+        setup_common()
     setup_vps()
     setup_task_firewall()
     setup_task_motd()
