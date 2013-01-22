@@ -183,7 +183,14 @@ NEWSBLUR.SocialPageAssets = Backbone.Router.extend({
         this.make_request('/social/follow', {'user_id': user_id}, callback, callback, {
             request_type: 'POST'
         });
+    },
+    
+    unfollow_user: function(user_id, callback) {
+        this.make_request('/social/unfollow', {'user_id': user_id}, callback, callback, {
+            request_type: 'POST'
+        });
     }
+
 
     
 });

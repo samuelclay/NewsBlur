@@ -2,7 +2,9 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
     
     events: {
         "click .NB-story-comment-reply-button"  : "check_reply_or_login",
-        "focus .NB-story-comment-input"         : "check_comment_or_login",
+        "click .NB-story-comment-input"         : "check_comment_or_login",
+        "click .NB-story-comment-save"          : "check_comment_or_login",
+        "click .NB-story-comment-like"          : "check_comment_or_login",
         "click .NB-story-comments-public-teaser": "load_public_story_comments"
     },
     
@@ -51,7 +53,6 @@ NEWSBLUR.Views.SocialPageComments = Backbone.View.extend({
     },
     
     check_comment_or_login: function(e) {
-        console.log(['check_comment_or_login', e, NEWSBLUR.Globals.is_authenticated, this.page_view.login_view]);
         if (!NEWSBLUR.Globals.is_authenticated) {
             e.preventDefault();
             e.stopPropagation();

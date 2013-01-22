@@ -471,9 +471,9 @@ blockquote {
         padding-right: 0;
     }
     .NB-button-follow {
+        padding: 2px 0;
     }
     .NB-button-following {
-        @include NB-blue-button;
         padding: 2px 0;
     }
 }
@@ -482,38 +482,25 @@ blockquote {
 /* = Right banner = */
 /* ================ */
 
-.NB-banner-right {
-    z-index: 1;
-    vertical-align: middle;
-    padding: 0 0 6px 12px;
-    white-space: nowrap;
+.NB-banner-stats {
+    font-size: 14px;
+    font-weight: bold;
+    color: $lighter-text-color;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    margin-top: 6px;
     
-    .NB-banner-stats {
-        font-size: 14px;
-        font-weight: bold;
-        color: $lighter-text-color;
-        text-align: center;
-        text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
+    .NB-banner-stat {
+        float: left;
+        padding: 0 6px;
         
-        .NB-banner-stat {
-            float: left;
-            border-right: 1px solid rgba(0, 0, 0, .3);
-            border-left: 1px solid rgba(255, 255, 255, .6);
-            padding: 6px 12px;
-            
-            &:first-child {
-                border-left: none;
-                padding-left: 0;
-            }
-            &:last-child {
-                border-right: none;
-            }
-            b {
-                color: $text-color;
-                display: block;
-                margin: 0 0 2px;
-                font-size: 20px;
-            }
+        &:first-child {
+            padding-left: 0;
+        }
+        b {
+            color: $light-text-color;
+            margin: 0 0 2px;
+            font-size: 16px;
         }
     }
 }

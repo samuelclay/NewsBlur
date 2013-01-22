@@ -490,88 +490,35 @@ blockquote {
   padding-left: 0;
   padding-right: 0;
 }
-.NB-banner .NB-button-following {
-  border: 1px solid #4388b5;
-  -webkit-border-radius: 2px;
-  -moz-border-radius: 2px;
-  -ms-border-radius: 2px;
-  -o-border-radius: 2px;
-  border-radius: 2px;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #6bb1e0), color-stop(100%, #5aa1d8));
-  background-image: -webkit-linear-gradient(#6bb1e0, #5aa1d8);
-  background-image: -moz-linear-gradient(#6bb1e0, #5aa1d8);
-  background-image: -o-linear-gradient(#6bb1e0, #5aa1d8);
-  background-image: linear-gradient(#6bb1e0, #5aa1d8);
-  color: white;
-  height: 20px;
-  line-height: 20px;
-  text-align: center;
-  cursor: pointer;
-  padding: 4px 12px;
-  font-size: 14px;
-  font-weight: normal;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+.NB-banner .NB-button-follow {
   padding: 2px 0;
 }
-.NB-banner .NB-button-following:hover {
-  border: 1px solid #3573a5;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #5aa1d8), color-stop(100%, #4d98d2));
-  background-image: -webkit-linear-gradient(#5aa1d8, #4d98d2);
-  background-image: -moz-linear-gradient(#5aa1d8, #4d98d2);
-  background-image: -o-linear-gradient(#5aa1d8, #4d98d2);
-  background-image: linear-gradient(#5aa1d8, #4d98d2);
-}
-.NB-banner .NB-button-following:active {
-  border: 1px solid #2b5c84;
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #4d98d2), color-stop(100%, #4d98d2));
-  background-image: -webkit-linear-gradient(#4d98d2, #4d98d2);
-  background-image: -moz-linear-gradient(#4d98d2, #4d98d2);
-  background-image: -o-linear-gradient(#4d98d2, #4d98d2);
-  background-image: linear-gradient(#4d98d2, #4d98d2);
-  -webkit-box-shadow: inset 0px 0px 10px #1f74b8;
-  -moz-box-shadow: inset 0px 0px 10px #1f74b8;
-  box-shadow: inset 0px 0px 10px #1f74b8;
-}
-@media screen and (max-width: 480px) {
-  .NB-banner .NB-button-following {
-    font-size: 14px;
-  }
+.NB-banner .NB-button-following {
+  padding: 2px 0;
 }
 
 /* ================ */
 /* = Right banner = */
 /* ================ */
-.NB-banner-right {
-  z-index: 1;
-  vertical-align: middle;
-  padding: 0 0 6px 12px;
-  white-space: nowrap;
-}
-.NB-banner-right .NB-banner-stats {
+.NB-banner-stats {
   font-size: 14px;
   font-weight: bold;
   color: #a0a0a0;
   text-align: center;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  margin-top: 6px;
 }
-.NB-banner-right .NB-banner-stats .NB-banner-stat {
+.NB-banner-stats .NB-banner-stat {
   float: left;
-  border-right: 1px solid rgba(0, 0, 0, 0.3);
-  border-left: 1px solid rgba(255, 255, 255, 0.6);
-  padding: 6px 12px;
+  padding: 0 6px;
 }
-.NB-banner-right .NB-banner-stats .NB-banner-stat:first-child {
-  border-left: none;
+.NB-banner-stats .NB-banner-stat:first-child {
   padding-left: 0;
 }
-.NB-banner-right .NB-banner-stats .NB-banner-stat:last-child {
-  border-right: none;
-}
-.NB-banner-right .NB-banner-stats .NB-banner-stat b {
-  color: #333333;
-  display: block;
+.NB-banner-stats .NB-banner-stat b {
+  color: gray;
   margin: 0 0 2px;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .NB-shared-story {

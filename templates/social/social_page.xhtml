@@ -136,7 +136,7 @@
                         Log in
 
                     </div>
-                    <div class="NB-popover-title">
+                    <div class="NB-circular-popover-title NB-hidden">
                         <div class="NB-login">
                             <input type="text" placeholder="Username or email" name="login_username" class="NB-input" />
                             <input placeholder="Password" type="password" name="login_password" class="NB-input" />
@@ -149,12 +149,12 @@
                             <div class="NB-signup-button NB-blue-button">Create account</div>
                         </div>
                     </div>
-                    <div class="NB-popover-content">
+                    <div class="NB-circular-popover-content NB-hidden">
                         <div class="NB-switch-button NB-switch-signup-button NB-grey-button">Create an account</div>
                         <div class="NB-switch-button NB-switch-login-button NB-grey-button">Log in</div>
                         <div class="NB-arrow"></div>
                     </div>
-                </li>            
+                </li>
             {% endif %}
         </ul>
     </div>
@@ -173,10 +173,10 @@
                         <div class="NB-banner-following-user">
                             {% if user_following_social_profile %}
                                 {% if social_profile.user_id != user.pk %}
-                                    <div class="NB-button NB-button-following">Following</div>
+                                    <div class="NB-button NB-grey-button NB-button-following">Following</div>
                                 {% endif %}
                             {% else %}
-                                <div class="NB-button NB-button-follow">Follow {{ social_profile.username }}</div>
+                                <div class="NB-button NB-blue-button NB-button-follow">Follow {{ social_profile.username }}</div>
                             {% endif %}
                         </div>
                     {% endif %}
@@ -191,13 +191,11 @@
                                 {{ social_profile.bio }}
                             </div>
                         {% endif %}
+                        <div class="NB-banner-stats">
+                            <div class="NB-banner-stat"><b>{{ social_profile.shared_stories_count }}</b> {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
+                            <div class="NB-banner-stat"><b>&middot;</b></div>
+                            <div class="NB-banner-stat NB-stat-followers"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
                         </div>
-                    </div>
-                </td>
-                <td class="NB-banner-right">
-                    <div class="NB-banner-stats">
-                        <div class="NB-banner-stat"><b>{{ social_profile.shared_stories_count }}</b> {{ social_profile.shared_stories_count|pluralize:"story,stories" }}</div>
-                        <div class="NB-banner-stat"><b>{{ social_profile.follower_count }}</b> follower{{ social_profile.follower_count|pluralize }}</div>
                     </div>
                 </td>
             </tr>

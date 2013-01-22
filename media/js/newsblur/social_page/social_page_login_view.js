@@ -16,11 +16,11 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     },
     
     setup_login_popover: function() {
-        this.$(".NB-circular-tab .NB-tab-inner").clickover({
+        this.login_popover = this.$(".NB-circular-tab").clickover({
             html: true,
             placement: "bottom",
-            content: this.$(".NB-circular-tab .NB-popover-content").html(),
-            title: this.$(".NB-circular-tab .NB-popover-title").html(),
+            content: this.$(".NB-circular-popover-content").html(),
+            title: this.$(".NB-circular-popover-title").html(),
             onShown: _.bind(this.on_show_popover, this),
             onHidden: _.bind(this.on_hide_popover, this)
         });
@@ -28,11 +28,19 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     on_show_popover: function() {
         this.$('.NB-circular-tab').addClass('NB-active');
-        this.$('input[name=login_username]').focus();
+        this.$('.popover input[name=login_username]').focus();
     },
     
     on_hide_popover: function() {
         this.$('.NB-circular-tab').removeClass('NB-active');
+    },
+    
+    toggle_login_dialog: function(options) {
+        options = options || {};
+        
+        _.defer(_.bind(function() {
+            this.login_popover.data('clickover').clickery();
+        }, this));
     },
     
     // ==========
@@ -63,8 +71,8 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     login: function() {
         this.clean();
         
-        var username = this.$('input[name=login_username]').val();
-        var password = this.$('input[name=login_password]').val();
+        var username = this.$('.popover input[name=login_username]').val();
+        var password = this.$('.popover input[name=login_password]').val();
         
         NEWSBLUR.assets.login(username, password, _.bind(this.post_login, this), _.bind(this.login_error, this));
     },
@@ -95,9 +103,9 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     signup: function() {
         this.clean();        
-        var username    = this.$('input[name=signup_username]').val();
-        var email    = this.$('input[name=signup_email]').val();
-        var password    = this.$('input[name=signup_password]').val();
+        var username    = this.$('.popover input[name=signup_username]').val();
+        var email    = this.$('.popover input[name=signup_email]').val();
+        var password    = this.$('.popover input[name=signup_password]').val();
         
         NEWSBLUR.assets.signup(username, email, password, _.bind(this.post_signup, this), _.bind(this.signup_error, this));
     },
@@ -122,7 +130,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         this.$(".popover").removeClass("NB-show-signup")
                           .removeClass("NB-show-login")
                           .addClass("NB-show-signup");
-        this.$('input[name=signup_username]').focus();
+        this.$('.popover input[name=signup_username]').focus();
     },
     
     switch_login: function() {
@@ -130,7 +138,7 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         this.$(".popover").removeClass("NB-show-signup")
                           .removeClass("NB-show-login")
                           .addClass("NB-show-login");
-        this.$('input[name=login_username]').focus();
+        this.$('.popover input[name=login_username]').focus();
     }
     
 });
