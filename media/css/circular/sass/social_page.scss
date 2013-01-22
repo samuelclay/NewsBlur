@@ -23,7 +23,7 @@ $border-color-active: #9D9D9D;
 $title-font-size: 21px;
 $small-title-font-size: 16px;
 $small-font-size: 14px;
-$small-iphone-font-size: 14px;
+$small-iphone-font-size: 12px;
 $smallest-font-size: 12px;
 $smallest-iphone-font-size: 11px;
 $tiny-font-size: 11px;
@@ -54,7 +54,11 @@ $default-box-shadow-blur: 1px;
     padding: 4px 12px;
     font-size: $small-font-size;
     font-weight: normal;
-    
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
     &:hover {
         border: 1px solid $border-color-hover;
         color: $grey-text-color;
@@ -67,7 +71,8 @@ $default-box-shadow-blur: 1px;
         @include single-box-shadow(#c1c1c1, 0px, 0px, 10px, false, true);
         color: $text-color;
     }
-    @media screen and (max-width: 480px) {
+    @media screen and (max-width: 580px) {
+        padding: 2px 6px;
         font-size: $small-iphone-font-size;
     }
 }
@@ -85,6 +90,10 @@ $default-box-shadow-blur: 1px;
     font-size: $small-font-size;
     font-weight: normal;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
+
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     
     &:hover {
         border: 1px solid #3573A5;
@@ -96,7 +105,8 @@ $default-box-shadow-blur: 1px;
         @include background-image(linear-gradient(#4d98d2, #4d98d2));
         @include single-box-shadow(#1f74b8, 0px, 0px, 10px, false, true);
     }
-    @media screen and (max-width: 480px) {
+    @media screen and (max-width: 580px) {
+        padding: 2px 6px;
         font-size: $small-iphone-font-size;
     }
 }
@@ -109,8 +119,9 @@ body {
     background: #ebedee image-url('background.png') repeat 0 0;
     font-family: Helvetica, arial, sans-serif;
     color: $text-color;
+    -webkit-text-size-adjust: none;
     
-    @media screen and ( max-width: 480px) {
+    @media screen and ( max-width: 580px) {
         overflow-y: scroll;
         overflow-x: hidden;
     }
@@ -204,7 +215,7 @@ blockquote {
     opacity: 0.0;
     height: 60px;
     
-    @media screen and ( max-width: 480px) {
+    @media screen and ( max-width: 580px) {
         height: 40px;
         margin: 10px auto;
     }
@@ -233,7 +244,7 @@ blockquote {
     height: 44px;
     bottom: 0;
     
-    @media screen and ( max-width: 480px) {
+    @media screen and ( max-width: 580px) {
         position: absolute;
         height: 60px;
     }
@@ -247,7 +258,7 @@ blockquote {
     .NB-header-tabs {
         margin: 0 70px;
         
-        @media screen and ( max-width: 480px) {
+        @media screen and ( max-width: 580px) {
             margin: 0 0;
         }
 
@@ -273,7 +284,7 @@ blockquote {
                 border-left: 1px solid #cdcdcd;
             }
             
-            @media screen and (max-width: 480px) {
+            @media screen and (max-width: 580px) {
                 height: 60px;
                 font-size: $smallest-iphone-font-size;
                 
@@ -304,7 +315,7 @@ blockquote {
                 display: inline-block;
                 line-height: 44px;
                 
-                @media screen and (max-width: 480px) {
+                @media screen and (max-width: 580px) {
                     line-height: 28px;
                 }
             }
@@ -314,7 +325,7 @@ blockquote {
                 margin-right: -8px;
                 margin-left: 4px;
                 
-                @media screen and (max-width: 480px) {
+                @media screen and (max-width: 580px) {
                     display: none;
                 }
             }
@@ -332,7 +343,7 @@ blockquote {
                 width: 17px;
                 height: 17px; 
 
-                @media screen and (max-width: 480px) {
+                @media screen and (max-width: 580px) {
                     float: none;
                     display: block;
                     margin: 10px auto 0;
@@ -394,7 +405,7 @@ blockquote {
     padding: 12px 0 18px 0;
     overflow: hidden;
 
-    @media screen and (max-width: 480px) {
+    @media screen and (max-width: 580px) {
         padding: 18px 0 0;
     }
 
@@ -419,7 +430,7 @@ blockquote {
         border-radius: 2px;
         border: 1px solid rgba(0, 0, 0, .2);
     }
-    @media all and (max-width: 480px) {
+    @media all and (max-width: 580px) {
         .NB-title-photo img {
             max-width: 72px;
             max-height: 72px;
@@ -466,15 +477,14 @@ blockquote {
     }
     .NB-button-follow,
     .NB-button-following {
-        width: 108px;
-        padding-left: 0;
-        padding-right: 0;
+        height: auto;
+
+        @media screen and (max-width: 580px) {
+            line-height: 14px;
+        }
     }
-    .NB-button-follow {
-        padding: 2px 0;
-    }
-    .NB-button-following {
-        padding: 2px 0;
+    .NB-button-follow, .NB-button-following {
+        padding: 2px;
     }
 }
 
@@ -528,7 +538,7 @@ blockquote {
         overflow: hidden;
         position: relative; /* contains all children */
         
-        @media screen and ( max-width: 480px) {
+        @media screen and ( max-width: 580px) {
             padding: 12px 12px 15px;
         }
     }
@@ -541,7 +551,7 @@ blockquote {
             text-decoration: none;
             color: $text-color;
             
-            @media screen and ( max-width: 480px) {
+            @media screen and ( max-width: 580px) {
                 font-size: $small-title-font-size;
             }
         }
@@ -557,7 +567,7 @@ blockquote {
         font-size: $title-font-size;
         white-space: nowrap;
         
-        @media screen and ( max-width: 480px) {
+        @media screen and ( max-width: 580px) {
             font-size: $small-title-font-size;
         }
     }
@@ -569,7 +579,7 @@ blockquote {
         display: block;
         margin: 5px 0 8px;
         
-        @media screen and ( max-width: 480px) {
+        @media screen and ( max-width: 580px) {
             font-size: $smallest-font-size;
         }
     }
@@ -586,7 +596,7 @@ blockquote {
         }
         
         
-        @media screen and ( max-width: 480px)    {
+        @media screen and ( max-width: 580px)    {
             clear: both;
         }
 
@@ -595,7 +605,7 @@ blockquote {
             color: $light-text-color;
             font-size: $smallest-font-size;
             
-            @media screen and ( max-width: 480px) {
+            @media screen and ( max-width: 580px) {
                 font-size: $smallest-iphone-font-size;
             }
         }
@@ -661,7 +671,7 @@ blockquote {
             padding: 0 12px;
             font-size: 24px;
             
-            @media screen and ( max-width: 480px)    {
+            @media screen and ( max-width: 580px)    {
                 padding: 0 4px;
                 font-size: 16px;
             }
@@ -676,7 +686,7 @@ blockquote {
     overflow: hidden;
     margin: 10px 0;
     
-    @media screen and ( max-width: 480px)    {
+    @media screen and ( max-width: 580px)    {
         font-size: $smallest-font-size;
         line-height: 160%;
     }
@@ -713,7 +723,7 @@ blockquote {
     line-height: 16px;
     float: right;
     
-    @media screen and ( max-width: 480px)    {
+    @media screen and ( max-width: 580px)    {
         text-align: left;
         font-size: $smallest-iphone-font-size;
     }
@@ -742,7 +752,7 @@ blockquote {
         float: left;
         margin: 2px 1px 0 2px;
         
-        @media screen and ( max-width: 480px)    {
+        @media screen and ( max-width: 580px)    {
             margin: 2px 3px 0 0px;
         }
     
@@ -766,7 +776,7 @@ blockquote {
     padding: 0 20px;
     border-top: 0;
 
-    @media screen and ( max-width: 480px)    {
+    @media screen and ( max-width: 580px)    {
        margin: 0 10px;
        padding: 0 10px;
        font-size: $smallest-iphone-font-size;
@@ -786,7 +796,7 @@ blockquote {
          @include border-radius(3px, 3px);
          /* @include single-box-shadow; gets in the way of transparent PNGs */
          
-        @media screen and ( max-width: 480px)    {
+        @media screen and ( max-width: 580px)    {
             height: 24px;
             width: 24px;
             top: 12px;
@@ -801,7 +811,7 @@ blockquote {
         width: 24px;
         height: 24px;
         
-        @media screen and ( max-width: 480px)    {
+        @media screen and ( max-width: 580px)    {
             height: 24px;
             width: 24px;
             top: 8px;
@@ -815,7 +825,7 @@ blockquote {
         position: relative;
         min-height: 32px;
 
-        @media screen and (max-width: 480px) {
+        @media screen and (max-width: 580px) {
             padding: 10px 0 12px 34px;
         }
         
@@ -831,7 +841,7 @@ blockquote {
             font-size: $smallest-font-size;
             color: $light-text-color;
             @include single-text-shadow;
-            @media screen and (max-width: 480px) {
+            @media screen and (max-width: 580px) {
                 padding-top: 1px;
                 font-size: $smallest-iphone-font-size;
             }
@@ -843,7 +853,7 @@ blockquote {
             padding-top: 10px;
             text-transform: uppercase;
             @include single-text-shadow;
-            @media screen and (max-width: 480px) {
+            @media screen and (max-width: 580px) {
                 font-size: $tiny-iphone-font-size;
                 padding-top: 4px;
             }
@@ -853,6 +863,11 @@ blockquote {
             padding-top: 4px;
             line-height: 18px;
             clear: both;
+            
+            @media screen and (max-width: 580px) {
+                padding-top: 0;
+                line-height: 16px;
+            }
         }
                 
         .NB-story-comment-reshares .NB-user-avatar img {
@@ -862,7 +877,7 @@ blockquote {
             width: 20px;
             height: 20px;
             
-            @media screen and ( max-width: 480px)    {
+            @media screen and (max-width: 580px) {
                 display: none;
             }
         }
@@ -874,17 +889,24 @@ blockquote {
         border-top: 1px solid $border-color;
         position: relative;
         min-height: 32px;
+        overflow: hidden;
         
-        @media screen and ( max-width: 480px)    {
+        @media screen and ( max-width: 580px)    {
             margin-top: 6px;
-            padding: 6px 0 0px 32px
+            padding: 12px 0 0px 32px;
         }
         
         .NB-story-comment-reply-content {
             padding-top: 4px;
             line-height: 18px;
             clear: both;
+            
+            @media screen and (max-width: 580px) {
+                padding-top: 0;
+                line-height: 16px;
+            }
         }
+        
     }
     
     .NB-story-comment-button {
@@ -905,7 +927,7 @@ blockquote {
             padding: 2px 4px 1px;
             line-height: 10px;
             font-size: 9px;
-            @media screen and ( max-width: 480px)    {
+            @media screen and (max-width: 580px)    {
                 margin-top: 2px;
                 padding-top: 1px;
             }
@@ -954,6 +976,10 @@ blockquote {
         
         .NB-story-comment-reply-username {
             margin: 12px 8px 6px 0;
+
+            @media screen and (max-width: 580px) {
+                margin: 6px 6px 6px 0;
+            }
         }
         .NB-story-comment-reply-comments {
             margin: 6px 8px 4px 0;
@@ -962,11 +988,20 @@ blockquote {
             float: left;
             font-size: 12px;
             height: 20px;
+
+            @media screen and (max-width: 580px) {
+                clear: both;
+                margin: 4px 4px 4px 0;
+            }
         }
         .NB-modal-submit-button {
             float: left;
             margin: 4px 4px 0 0;
             @include NB-default-button;
+            
+            @media screen and (max-width: 580px) {
+                height: auto;
+            }
             
             &:last-child {
                 margin-right: 0;
@@ -1213,6 +1248,17 @@ footer {
         font-weight: bold;
         line-height: 140%;
         text-transform: none;
+    }
+    
+    @media screen and (max-width: 580px) {
+        .arrow {
+            left: 88% !important;
+        }
+        
+        & {
+            left: inherit !important;
+            right: 12px !important;
+        }
     }
 }    
 
