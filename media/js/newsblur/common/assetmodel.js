@@ -930,7 +930,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     move_feed_to_folder: function(feed_id, in_folder, to_folder, callback) {
         var pre_callback = _.bind(function(data) {
-            this.folders.reset(data.folders);
+            this.folders.reset(_.compact(data.folders), {parse: true});
             return callback();
         }, this);
 
@@ -943,7 +943,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     
     move_folder_to_folder: function(folder_name, in_folder, to_folder, callback) {
         var pre_callback = _.bind(function(data) {
-            this.folders.reset(data.folders);
+            this.folders.reset(_.compact(data.folders), {parse: true});
             return callback();
         }, this);
 
