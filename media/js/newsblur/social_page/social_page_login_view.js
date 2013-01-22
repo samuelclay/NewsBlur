@@ -1,12 +1,13 @@
 NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     events: {
+        "click .NB-user-tab"        : "open_user_dropdown",
         "click .NB-menu-newsblur"   : "open_in_newsblur",
         "click .NB-menu-logout"     : "logout",
         "click .NB-login-button"    : "login",
         "click .NB-signup-button"   : "signup",
-        "click .NB-switch-login-button"   : "switch_login",
-        "click .NB-switch-signup-button"   : "switch_signup",
+        "click .NB-switch-login-button"  : "switch_login",
+        "click .NB-switch-signup-button" : "switch_signup",
         "keypress .NB-login input"  : "maybe_login",
         "keypress .NB-signup input" : "maybe_signup"
     },
@@ -43,11 +44,30 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         }, this));
     },
     
+    open_user_dropdown: function(e) {
+        if (e.currentTarget != e.target && $(e.target).parent().get(0) != e.currentTarget) {
+            return;
+        }
+        var $button = this.$(".NB-user-tab");
+        
+        if (!$button.hasClass('open')) {
+            _.defer(function() {
+                $('html').one('click', function() {
+                    $button.removeClass('open');
+                });
+            });
+            $button.addClass('open');
+        } else {
+            $button.removeClass('open');
+        }
+    },
+    
     // ==========
     // = Events =
     // ==========
     
     open_in_newsblur: function(e) {
+        console.log(["open_in_newsblur", e]);
         e.preventDefault();
         window.location.href = NEWSBLUR.URLs.newsblur_page;
     },
@@ -89,7 +109,8 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
         this.error(error);
     },
      
-    logout: function() {
+    logout: function(e) {
+        e.preventDefault();
         NEWSBLUR.assets.logout(_.bind(this.post_logout, this), _.bind(this.logout_error, this));
     },
     

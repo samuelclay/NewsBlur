@@ -116,8 +116,8 @@
                 </div>
             </li>
             {% if user.is_authenticated %}
-                <li class="NB-header-tab NB-user-tab dropdown">
-                    <div class="NB-tab-inner dropdown-toggle" data-toggle="dropdown">
+                <li class="NB-header-tab NB-user-tab dropdown" data-toggle="dropdown">
+                    <div class="NB-tab-inner">
                         <span><img src="{{ user_social_profile.large_photo_url }}" class="NB-user-avatar" /></span>
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
                         {{ user_social_profile.username }}
