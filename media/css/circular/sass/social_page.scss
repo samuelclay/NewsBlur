@@ -960,12 +960,22 @@ blockquote {
     }
     
     .NB-story-comment-input {
-        width: 371px;
-        height: 16px;
+        width: 380px;
+        height: 32px;
         font-size: 12px;
         padding: 6px 4px;
         margin-top: 3px;
         border: 1px solid $border-color;
+        float: left;
+        
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+
+        @media screen and (max-width: 580px) {
+            width: 100%;
+            float: none;
+        }
     }
     
     .NB-story-comment-reply-form {
@@ -989,6 +999,7 @@ blockquote {
             @media screen and (max-width: 580px) {
                 clear: both;
                 margin: 4px 4px 4px 0;
+                width: 68%;
             }
         }
         .NB-modal-submit-button {
@@ -1016,11 +1027,17 @@ blockquote {
 
     .NB-story-comment-buttons {
         .NB-story-comment-save {
-            position: absolute;
-            top: 13px;
-            right: 0;
-            width: 140px;
+            float: right;
+            width: 164px;
+            margin: 3px 0 0 0;
             @include NB-default-button;
+            
+            @media screen and (max-width: 580px) {
+                clear: both;
+                float: none;
+                margin: 8px 0 0;
+                width: 100%;
+            }
         }
         
         .NB-story-comment-delete {
@@ -1029,6 +1046,8 @@ blockquote {
     }
     
     .NB-story-comments-public-header-wrapper {
+        clear: both;
+        margin-top: 6px;
         color: $light-text-color;
         font-size: $smallest-font-size;
         border-bottom: 1px solid $border-color;

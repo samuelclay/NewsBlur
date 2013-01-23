@@ -950,12 +950,22 @@ blockquote {
   float: left;
 }
 .NB-story-comments-container .NB-story-comment-input {
-  width: 371px;
-  height: 16px;
+  width: 380px;
+  height: 32px;
   font-size: 12px;
   padding: 6px 4px;
   margin-top: 3px;
   border: 1px solid #bdbdbd;
+  float: left;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+@media screen and (max-width: 580px) {
+  .NB-story-comments-container .NB-story-comment-input {
+    width: 100%;
+    float: none;
+  }
 }
 .NB-story-comments-container .NB-story-comment-reply-form {
   padding-top: 11px;
@@ -980,6 +990,7 @@ blockquote {
   .NB-story-comments-container .NB-story-comment-reply-form .NB-story-comment-reply-comments {
     clear: both;
     margin: 4px 4px 4px 0;
+    width: 68%;
   }
 }
 .NB-story-comments-container .NB-story-comment-reply-form .NB-modal-submit-button {
@@ -1052,10 +1063,9 @@ blockquote {
   clear: both;
 }
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save {
-  position: absolute;
-  top: 13px;
-  right: 0;
-  width: 140px;
+  float: right;
+  width: 164px;
+  margin: 3px 0 0 0;
   border: 1px solid #bdbdbd;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
@@ -1106,10 +1116,20 @@ blockquote {
     font-size: 12px;
   }
 }
+@media screen and (max-width: 580px) {
+  .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-save {
+    clear: both;
+    float: none;
+    margin: 8px 0 0;
+    width: 100%;
+  }
+}
 .NB-story-comments-container .NB-story-comment-buttons .NB-story-comment-delete {
   display: none;
 }
 .NB-story-comments-container .NB-story-comments-public-header-wrapper {
+  clear: both;
+  margin-top: 6px;
   color: gray;
   font-size: 12px;
   border-bottom: 1px solid #bdbdbd;
