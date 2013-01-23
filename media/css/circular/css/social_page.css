@@ -55,10 +55,12 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 }
 
 body {
-  background: #ebedee url('/../../../media/img/circular/background.png?1358878506') repeat 0 0;
+  background: #ebedee url('/../../../media/img/circular/background.png?1358965163') repeat 0 0;
   font-family: Helvetica, arial, sans-serif;
   color: #333333;
-  -webkit-text-size-adjust: none;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
 }
 @media screen and (max-width: 580px) {
   body {
@@ -334,7 +336,7 @@ blockquote {
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active {
   cursor: default;
-  background: url('/../../../media/img/circular/header_highlight_border.png?1358878506') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header_highlight_border.png?1358965163') no-repeat center bottom;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active div.NB-tab-inner {
   color: #62a4d3;
@@ -385,35 +387,35 @@ blockquote {
   }
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-blurblog-tab .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_activity.png?1358878506') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_activity.png?1358965163') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-blurblog-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-blurblog-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_activity_active.png?1358878506') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_activity_active.png?1358965163') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-trending-tab .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_trending.png?1358878506') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_trending.png?1358965163') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-trending-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-trending-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_trending_active.png?1358878506') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_trending_active.png?1358965163') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-following-tab .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_follow.png?1358878506') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_follow.png?1358965163') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-following-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-following-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_follow_active.png?1358878506') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_follow_active.png?1358965163') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-circular-tab .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_circular.png?1358878506') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_circular.png?1358965163') no-repeat center bottom;
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-circular-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-circular-tab:hover .NB-icon {
-  background: url('/../../../media/img/circular/header/icon_circular_active.png?1358878506') no-repeat center bottom;
+  background: url('/../../../media/img/circular/header/icon_circular_active.png?1358965163') no-repeat center bottom;
   background-size: 17px;
 }
 
@@ -658,7 +660,7 @@ blockquote {
   width: 100%;
   height: 14px;
   z-index: 0;
-  background: transparent url('/../../../media/img/circular/module_cutoff.png?1358878506') repeat-x left bottom;
+  background: transparent url('/../../../media/img/circular/module_cutoff.png?1358965163') repeat-x left bottom;
 }
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-text,
 .NB-story-content-wrapper .NB-story-content-expander .NB-story-content-expander-pages {

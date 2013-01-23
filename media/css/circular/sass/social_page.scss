@@ -117,7 +117,9 @@ body {
     background: #ebedee image-url('background.png') repeat 0 0;
     font-family: Helvetica, arial, sans-serif;
     color: $text-color;
-    -webkit-text-size-adjust: none;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
     
     @media screen and ( max-width: 580px) {
         overflow-y: scroll;
