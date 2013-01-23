@@ -59,8 +59,8 @@ class FetchFeed:
             etag = None
 
         USER_AGENT = 'NewsBlur Feed Fetcher - %s subscriber%s - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2)' % (
-            self.feed.num_subscribers,
-            's' if self.feed.num_subscribers != 1 else '',
+            f.num_subscribers,
+            's' if f.num_subscribers != 1 else '',
             settings.NEWSBLUR_URL
         )
         if self.options.get('feed_xml'):
@@ -231,7 +231,7 @@ class ProcessFeed:
             hub_url = None
             self_url = self.feed.feed_address
             for link in self.fpf.feed.links:
-                if link['rel'] == 'hub':
+                if link['rel'] == 'hub' and not hub_url:
                     hub_url = link['href']
                 elif link['rel'] == 'self':
                     self_url = link['href']
