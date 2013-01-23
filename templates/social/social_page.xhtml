@@ -123,7 +123,7 @@
                         {{ user_social_profile.username }}
                     </div>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#" class="NB-menu-newsblur">View on NewsBlur</a></li>
+                        <li><a href="http://{% current_domain %}/social/{{ social_profile.user_id }}/{{ social_profile.username|slugify }}" class="NB-menu-newsblur">View on NewsBlur</a></li>
                         <li class="divider"></li>
                         <li><a href="#" class="NB-menu-logout">Logout</a></li>
                     </ul>

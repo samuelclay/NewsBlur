@@ -2,7 +2,6 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     
     events: {
         "click .NB-user-tab"        : "open_user_dropdown",
-        "click .NB-menu-newsblur"   : "open_in_newsblur",
         "click .NB-menu-logout"     : "logout",
         "click .NB-login-button"    : "login",
         "click .NB-signup-button"   : "signup",
@@ -45,7 +44,8 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     },
     
     open_user_dropdown: function(e) {
-        if (e.currentTarget != e.target && $(e.target).parent().get(0) != e.currentTarget) {
+        if (e.currentTarget != e.target && 
+            $(e.target).closest('.NB-tab-inner').parent().get(0) != e.currentTarget) {
             return;
         }
         var $button = this.$(".NB-user-tab");

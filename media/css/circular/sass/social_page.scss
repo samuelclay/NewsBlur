@@ -1163,11 +1163,13 @@ footer {
     min-width: 138px;
     text-align: left;
     cursor: default;
+    left: inherit;
+    right: 0;
 
     &:before {
         position: absolute;
         top: -7px;
-        left: 60px;
+        right: 60px;
         display: inline-block;
         border-right: 7px solid rgba(0, 0, 0, 0);
         border-bottom: 7px solid #CCC;
@@ -1178,7 +1180,7 @@ footer {
     &:after {
         position: absolute;
         top: -6px;
-        left: 61px;
+        right: 61px;
         display: inline-block;
         border-right: 6px solid rgba(0, 0, 0, 0);
         border-bottom: 6px solid #FFF;
