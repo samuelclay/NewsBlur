@@ -896,7 +896,6 @@ blockquote {
 }
 @media screen and (max-width: 580px) {
   .NB-story-comments-container .NB-story-comment-reply .NB-story-comment-reply-content {
-    padding-top: 0;
     line-height: 16px;
   }
 }
