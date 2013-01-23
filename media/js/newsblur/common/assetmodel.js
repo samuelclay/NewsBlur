@@ -172,7 +172,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         $.isFunction(callback) && callback(read);
     },
     
-    mark_story_as_unread: function(story_id, feed_id, callback) {
+    mark_story_as_unread: function(story_id, feed_id, callback, error_callback) {
         var self = this;
         var read = true;
         var story = this.get_story(story_id);
@@ -182,7 +182,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             this.make_request('/reader/mark_story_as_unread', {
                 story_id: story_id,
                 feed_id: feed_id
-            }, null, null, {});
+            }, null, error_callback, {});
         }
         
         $.isFunction(callback) && callback();
