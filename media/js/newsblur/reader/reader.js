@@ -74,8 +74,8 @@
             this.layout = {};
             this.constants = {
               FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
-              FILL_OUT_PAGES: 50,
-              FIND_NEXT_UNREAD_STORY_TRIES: 50,
+              FILL_OUT_PAGES: 100,
+              FIND_NEXT_UNREAD_STORY_TRIES: 100,
               RIVER_STORIES_FOR_STANDARD_ACCOUNT: 5,
               MIN_FEED_LIST_SIZE: 206
             };

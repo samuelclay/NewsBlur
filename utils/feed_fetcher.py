@@ -231,7 +231,7 @@ class ProcessFeed:
             hub_url = None
             self_url = self.feed.feed_address
             for link in self.fpf.feed.links:
-                if link['rel'] == 'hub':
+                if link['rel'] == 'hub' and not hub_url:
                     hub_url = link['href']
                 elif link['rel'] == 'self':
                     self_url = link['href']
