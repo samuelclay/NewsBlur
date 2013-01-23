@@ -334,13 +334,6 @@ blockquote {
     border-left: none;
   }
 }
-.NB-header .NB-header-tabs .NB-header-tab.NB-active {
-  cursor: default;
-  background: url('/../../../media/img/circular/header_highlight_border.png?1358969250') no-repeat center bottom;
-}
-.NB-header .NB-header-tabs .NB-header-tab.NB-active div.NB-tab-inner {
-  color: #62a4d3;
-}
 .NB-header .NB-header-tabs .NB-header-tab:hover div.NB-tab-inner, .NB-header .NB-header-tabs .NB-header-tab.open div.NB-tab-inner {
   color: #62a4d3;
 }
@@ -429,6 +422,13 @@ blockquote {
 .NB-header .NB-header-tabs .NB-header-tab.NB-active.NB-circular-tab .NB-icon, .NB-header .NB-header-tabs .NB-header-tab.NB-circular-tab:hover .NB-icon {
   background: url('/../../../media/img/circular/header/icon_circular_active.png?1358969250') no-repeat center bottom;
   background-size: 17px;
+}
+.NB-header .NB-header-tabs .NB-header-tab.NB-active {
+  cursor: default;
+  background: url('/../../../media/img/circular/header_highlight_border.png?1358969250') no-repeat center bottom;
+}
+.NB-header .NB-header-tabs .NB-header-tab.NB-active div.NB-tab-inner {
+  color: #62a4d3;
 }
 
 .NB-banner {

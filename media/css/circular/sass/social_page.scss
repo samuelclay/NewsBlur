@@ -296,15 +296,6 @@ blockquote {
                 }
             }
             
-            &.NB-active {
-                cursor: default;
-                background: image-url('header_highlight_border.png') no-repeat center bottom;
-                
-                div.NB-tab-inner {
-                    color: $highlight-text-color;
-                }
-            }
-            
             &:hover, &.open {
                 div.NB-tab-inner {
                     color: $highlight-text-color;
@@ -404,6 +395,15 @@ blockquote {
             &.NB-circular-tab:hover .NB-icon {
                 background: image-url('header/icon_circular_active.png') no-repeat center bottom;
                 background-size: 17px;
+            }
+            
+            &.NB-active {
+                cursor: default;
+                background: image-url('header_highlight_border.png') no-repeat center bottom;
+                
+                div.NB-tab-inner {
+                    color: $highlight-text-color;
+                }
             }
         }
     }
