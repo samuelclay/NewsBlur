@@ -59,8 +59,8 @@ class FetchFeed:
             etag = None
 
         USER_AGENT = 'NewsBlur Feed Fetcher - %s subscriber%s - %s (Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/536.2.3 (KHTML, like Gecko) Version/5.2)' % (
-            f.num_subscribers,
-            's' if f.num_subscribers != 1 else '',
+            self.feed.num_subscribers,
+            's' if self.feed.num_subscribers != 1 else '',
             settings.NEWSBLUR_URL
         )
         if self.options.get('feed_xml'):
