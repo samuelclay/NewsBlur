@@ -78,6 +78,18 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
                   ' Your email: '
                 ]),
                 $.make('input', { className: 'NB-input NB-modal-email-from', name: 'from_email', id: 'NB-send-email-from-email', value: NEWSBLUR.Globals.email || this.model.preference('email') || '' })
+              ]),
+              $.make('div', { style: 'margin-top: 8px' }, [
+                $.make('label', { 'for': 'NB-send-email-cc' }, [
+                  $.make('span', { className: 'NB-raquo' }, '&raquo;'),
+                  ' CC me: '
+                ]),
+                $.make('div', { className: 'NB-modal-email-cc-wrapper' }, [
+                    $.make('input', { className: 'NB-modal-email-cc', name: 'email_cc', id: 'NB-send-email-cc', type: "checkbox", checked: this.model.preference('email_cc') }),
+                    $.make('label', { 'for': 'NB-send-email-cc' }, [
+                        "Yes, send me a copy of this email"
+                    ])
+                ])
               ])
             ]),
             $.make('form', { className: 'NB-recommend-form' }, [
@@ -95,6 +107,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         var from_name  = $('input[name=from_name]', this.$modal).val();
         var from_email = $('input[name=from_email]', this.$modal).val();
         var to         = $('input[name=to]', this.$modal).val();
+        var email_cc   = $('input[name=email_cc]', this.$modal).is(":checked");
         var comments   = $('textarea', this.$modal).val();
         var $save      = $('input[type=submit]', this.$modal);
         var $error     = $('.NB-modal-error', this.$modal);
@@ -104,6 +117,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
         $('.NB-modal-loading', this.$modal).addClass('NB-active');
         this.model.preference('full_name', from_name);
         this.model.preference('email', from_email);
+        this.model.preference('email_cc', email_cc);
         $('.NB-error', this.$modal).fadeOut(500);
         
         this.model.send_story_email({
@@ -111,6 +125,7 @@ _.extend(NEWSBLUR.ReaderSendEmail.prototype, {
           feed_id    : this.feed_id,
           from_name  : from_name,
           from_email : from_email,
+          email_cc   : email_cc,
           to         : to,
           comments   : comments
         }, this.save_callback, this.error);
