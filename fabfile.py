@@ -368,7 +368,7 @@ def setup_task(skip_common=False):
 def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y upgrade')
-    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit')
+    sudo('apt-get -y install build-essential gcc scons libreadline-dev sysstat iotop git zsh python-dev locate python-software-properties software-properties-common libpcre3-dev libncurses5-dev libdbd-pg-perl libssl-dev make pgbouncer python-psycopg2 libmemcache0 python-memcache libyaml-0-2 python-yaml python-numpy python-scipy python-imaging curl monit')
     # sudo('add-apt-repository ppa:pitti/postgresql')
     sudo('apt-get -y update')
     sudo('apt-get -y install postgresql-client')
@@ -750,8 +750,9 @@ def setup_munin():
     put('config/munin.conf', '/etc/munin/munin.conf', use_sudo=True)
     put('config/spawn_fcgi_munin_graph.conf', '/etc/init.d/spawn_fcgi_munin_graph', use_sudo=True)
     sudo('chmod u+x /etc/init.d/spawn_fcgi_munin_graph')
-    sudo('/etc/init.d/spawn_fcgi_munin_graph start')
-    sudo('update-rc.d spawn_fcgi_munin_graph defaults')
+    with settings(warn_only=True):
+        sudo('/etc/init.d/spawn_fcgi_munin_graph start')
+        sudo('update-rc.d spawn_fcgi_munin_graph defaults')
 
     
 def setup_db_munin():
