@@ -58,6 +58,8 @@ def index(request, **kwargs):
     if request.method == "GET" and request.subdomain and request.subdomain not in ['dev', 'app02', 'app01', 'www']:
         username = request.subdomain
         try:
+            if '.dev' in username:
+                username = username.replace('.dev', '')
             if '.' in username:
                 username = username.split('.')[0]
             user = User.objects.get(username__iexact=username)
