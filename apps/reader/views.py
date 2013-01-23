@@ -1419,6 +1419,7 @@ def send_story_email(request):
     to_addresses = request.POST.get('to', '').replace(',', ' ').replace('  ', ' ').strip().split(' ')
     from_name  = request.POST['from_name']
     from_email = request.POST['from_email']
+    email_cc   = is_true(request.POST.get('email_cc', 'true'))
     comments   = request.POST['comments']
     comments   = comments[:2048] # Separated due to PyLint
     from_address = 'share@newsblur.com'
@@ -1442,11 +1443,14 @@ def send_story_email(request):
         text    = render_to_string('mail/email_story_text.xhtml', locals())
         html    = render_to_string('mail/email_story_html.xhtml', locals())
         subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
+        cc      = None
+        if email_cc:
+            cc = ['%s <%s>' % (from_name, from_email)]
         subject = subject.replace('\n', ' ')
         msg     = EmailMultiAlternatives(subject, text, 
                                          from_email='NewsBlur <%s>' % from_address,
                                          to=to_addresses, 
-                                         cc=['%s <%s>' % (from_name, from_email)],
+                                         cc=cc,
                                          headers={'Reply-To': '%s <%s>' % (from_name, from_email)})
         msg.attach_alternative(html, "text/html")
         try:

@@ -5909,10 +5909,12 @@ form.opml_import_form input {
   padding-top: 4px;
 }
 
-.NB-modal-email .NB-input {
+.NB-modal-email .NB-input,
+.NB-modal-email .NB-modal-email-cc-wrapper {
   width: 430px;
   margin-left: 120px;
   display: block;
+  overflow: hidden;
 }
 .NB-modal-email .NB-modal-email-feed {
   font-size: 11px;
@@ -5963,7 +5965,9 @@ form.opml_import_form input {
 }
 .NB-modal-email .NB-modal-email-from-container {
 }
-.NB-modal-email .NB-modal-email-from {
+.NB-modal-email .NB-modal-email-cc {
+    float: left;
+    margin: 4px 6px 0 0;
 }
 .NB-modal-email .NB-modal-email-explanation {
   clear: both;
