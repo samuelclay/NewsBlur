@@ -350,6 +350,9 @@ blockquote {
                 }
             }
             
+            &.NB-blurblog-tab {
+                background: image-url('header/icon_activity_active.png') no-repeat -9999px -9999px;
+            }
             &.NB-blurblog-tab .NB-icon {
                 background: image-url('header/icon_activity.png') no-repeat center bottom;
                 background-size: 17px;
@@ -361,6 +364,9 @@ blockquote {
                 background-size: 17px;
             }
             
+            &.NB-trending-tab {
+                background: image-url('header/icon_trending_active.png') no-repeat -9999px -9999px;
+            }
             &.NB-trending-tab .NB-icon {
                 background: image-url('header/icon_trending.png') no-repeat center bottom;
                 background-size: 17px;
@@ -372,6 +378,9 @@ blockquote {
                 background-size: 17px;
             }
             
+            &.NB-following-tab {
+                background: image-url('header/icon_follow_active.png') no-repeat -9999px -9999px;
+            }
             &.NB-following-tab .NB-icon {
                 background: image-url('header/icon_follow.png') no-repeat center bottom;
                 background-size: 17px;
@@ -383,6 +392,9 @@ blockquote {
                 background-size: 17px;
             }
             
+            &.NB-circular-tab {
+                background: image-url('header/icon_circular_active.png') no-repeat -9999px -9999px;
+            }
             &.NB-circular-tab .NB-icon {
                 background: image-url('header/icon_circular.png') no-repeat center bottom;
                 background-size: 17px;
