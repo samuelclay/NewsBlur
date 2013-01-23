@@ -315,6 +315,7 @@ blockquote {
   font-weight: bold;
   text-shadow: 0px 1px 1px white;
   cursor: pointer;
+  color: #333333;
 }
 .NB-header .NB-header-tabs .NB-header-tab .popover {
   cursor: default;

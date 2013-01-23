@@ -337,24 +337,51 @@ def load_social_page(request, user_id, username=None, **kwargs):
     user_social_profile = None
     user_social_services = None
     user_following_social_profile = None
+    relative_user_id = user_id
     if user.is_authenticated():
         user_social_profile = MSocialProfile.get_user(user.pk)
         user_social_services = MSocialServices.get_user(user.pk)
         user_following_social_profile = user_social_profile.is_following_user(social_user_id)
     social_profile = MSocialProfile.get_user(social_user_id)
+    
+    current_tab = "blurblogs"
+    global_feed = False
+    if username == "popular":
+        current_tab = username
+    elif username == "popular.global":
+        current_tab = "global"
+        global_feed = True
 
     if social_profile.private and (not user.is_authenticated() or 
                                    not social_profile.is_followed_by_user(user.pk)):
         stories = []
+    elif global_feed:
+        socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id) 
+        social_user_ids = [s.subscription_user_id for s in socialsubs]
+        story_ids, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
+                                                 offset=offset, limit=limit+1,
+                                                 # order=order, read_filter=read_filter,
+                                                 relative_user_id=relative_user_id,
+                                                 everything_unread=True)
+        mstories = MStory.find_by_id(story_ids)
+        story_id_to_dates = dict(zip(story_ids, story_dates))
+        def sort_stories_by_id(a, b):
+            return int(story_id_to_dates[str(b.id)]) - int(story_id_to_dates[str(a.id)])
+        sorted_mstories = sorted(mstories, cmp=sort_stories_by_id)
+        stories = Feed.format_stories(sorted_mstories)
+        for story in stories:
+            story['shared_date'] = story['story_date']
     else:
         params = dict(user_id=social_user.pk)
         if feed_id:
             params['story_feed_id'] = feed_id
+
         mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
         stories = Feed.format_stories(mstories)
-        if len(stories) > limit:
-            has_next_page = True
-            stories = stories[:-1]
+
+    if len(stories) > limit:
+        has_next_page = True
+        stories = stories[:-1]
 
     if not stories:
         params = {
@@ -431,6 +458,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         'holzer_truism' : random.choice(jennyholzer.TRUISMS), #if not has_next_page else None
         'facebook_app_id': settings.FACEBOOK_APP_ID,
         'active_story'  : active_story,
+        'current_tab'   : current_tab,
     }
 
     logging.user(request, "~FYLoading ~FMsocial ~SBpage~SN~FY: ~SB%s%s" % (

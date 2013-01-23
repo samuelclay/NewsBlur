@@ -45,6 +45,8 @@ NEWSBLUR.Views.SocialPageLoginSignupView = Backbone.View.extend({
     },
     
     open_user_dropdown: function(e) {
+        e.preventDefault();
+        
         if (e.currentTarget != e.target && 
             $(e.target).closest('.NB-tab-inner').parent().get(0) != e.currentTarget) {
             return;

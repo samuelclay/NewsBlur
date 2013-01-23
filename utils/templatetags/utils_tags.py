@@ -94,6 +94,13 @@ def rgb2rgba(rgb, alpha):
     rgb = rgb.replace('rgb', 'rgba')
     rgb = rgb.replace(')', ", %s)" % alpha)
     return rgb
+
+@register.filter
+def color2rgba(color, alpha):
+    if "#" in color:
+        return hex2rgba(color, alpha)
+    elif "rgb" in color:
+        return rgb2rgba(color, alpha)
     
 @register.filter
 def get_range( value ):

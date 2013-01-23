@@ -275,6 +275,7 @@ blockquote {
             font-weight: bold;
             @include single-text-shadow;
             cursor: pointer;
+            color: $text-color;
             
             .popover {
                 cursor: default;

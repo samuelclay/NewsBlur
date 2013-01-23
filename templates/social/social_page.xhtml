@@ -92,31 +92,31 @@
 </head>
 
 <body class="{% if user.is_authenticated %}NB-authenticated{% else %}NB-unauthenticated{% endif %}">
-<div class="NB-container" style="background-color: {% if social_profile.custom_bgcolor %}{{ social_profile.custom_bgcolor|rgb2rgba:".1 " }}{% else %}#EBC55F{% endif %}">
+<div class="NB-container" style="background-color: {% if social_profile.custom_bgcolor %}{{ social_profile.custom_bgcolor|color2rgba:".1 " }}{% else %}rgba(235, 197, 95, .1){% endif %}">
     
 <header class="NB-header">
     <div class="NB-header-inner">
-        <ul class="NB-header-tabs">
-            <li class="NB-header-tab NB-blurblog-tab NB-active">
+        <div class="NB-header-tabs">
+            <a class="NB-header-tab NB-blurblog-tab {% if current_tab == "blurblogs" %}NB-active{% endif %}" href="{% if user_social_profile %}{{ user_social_profile.blurblog_url }}{% endif %}">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
                     Blurblogs
                 </div>
-            </li>
-            <li class="NB-header-tab NB-following-tab">
-                <div class="NB-tab-inner">
-                    <span class="NB-icon"></span>
-                    Following
-                </div>
-            </li>
-            <li class="NB-header-tab NB-trending-tab">
+            </a>
+            <a class="NB-header-tab NB-following-tab {% if current_tab == "global" %}NB-active{% endif %}" href="//popular.global.{% current_domain %}">
                 <div class="NB-tab-inner">
                     <span class="NB-icon"></span>
                     Global
                 </div>
-            </li>
+            </a>
+            <a class="NB-header-tab NB-trending-tab {% if current_tab == "popular" %}NB-active{% endif %}" href="//popular.{% current_domain %}">
+                <div class="NB-tab-inner">
+                    <span class="NB-icon"></span>
+                    Popular
+                </div>
+            </a>
             {% if user.is_authenticated %}
-                <li class="NB-header-tab NB-user-tab dropdown" data-toggle="dropdown">
+                <div class="NB-header-tab NB-user-tab dropdown" data-toggle="dropdown">
                     <div class="NB-tab-inner">
                         <span><img src="{{ user_social_profile.large_photo_url }}" class="NB-user-avatar" /></span>
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
@@ -127,9 +127,9 @@
                         <li class="divider"></li>
                         <li><a href="#" class="NB-menu-logout">Logout</a></li>
                     </ul>
-                </li>
+                </div>
             {% else %}
-                <li class="NB-header-tab NB-circular-tab">
+                <a class="NB-header-tab NB-circular-tab" href="#">
                     <div class="NB-tab-inner">
                         <span class="NB-icon"></span>
                         <img src="{{ MEDIA_URL }}img/icons/silk/bullet_arrow_down.png" class="NB-arrow" />
@@ -154,9 +154,9 @@
                         <div class="NB-switch-button NB-switch-login-button NB-grey-button">Log in</div>
                         <div class="NB-arrow"></div>
                     </div>
-                </li>
+                </a>
             {% endif %}
-        </ul>
+        </div>
     </div>
 </header>
 
