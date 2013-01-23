@@ -1423,6 +1423,7 @@ def send_story_email(request):
     comments   = request.POST['comments']
     comments   = comments[:2048] # Separated due to PyLint
     from_address = 'share@newsblur.com'
+    share_user_profile = MSocialProfile.get_user(request.user.pk)
 
     if not to_addresses:
         code = -1
