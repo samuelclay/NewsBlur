@@ -114,6 +114,9 @@ NEWSBLUR.Collections.Stories = Backbone.Collection.extend({
         options = options || {};
         NEWSBLUR.assets.mark_story_as_unread(story.id, story.get('story_feed_id'), _.bind(function(read) {
             this.update_read_count(story, {unread: true});
+        }, this), _.bind(function(data) {
+            story.set('read_status', 1, {'error_marking_unread': true, 'message': data.message});
+            this.update_read_count(story, {unread: false});
         }, this));
         story.set('read_status', 0);
     },

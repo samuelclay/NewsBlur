@@ -987,6 +987,13 @@ def mark_story_as_unread(request):
         # Mark stories as read only after the mark_read_date has been moved, otherwise
         # these would be ignored.
         data = usersub.mark_story_ids_as_read(newer_stories, request=request)
+
+    UNREAD_CUTOFF = (datetime.datetime.utcnow() -
+                     datetime.timedelta(days=settings.DAYS_OF_UNREAD))
+    if story.story_date < UNREAD_CUTOFF:
+        data['code'] = -1
+        data['message'] = "Story is more than %s days old, cannot mark as unread." % (
+                            settings.DAYS_OF_UNREAD)
     
     social_subs = MSocialSubscription.mark_dirty_sharing_story(user_id=request.user.pk, 
                                                                story_feed_id=feed_id, 
@@ -998,8 +1005,11 @@ def mark_story_as_unread(request):
         m = MUserStory.objects.get(user_id=request.user.pk, feed_id=feed_id, story_id=story_id)
         m.delete()
     except MUserStory.DoesNotExist:
-        logging.user(request, "~BY~SB~FRCouldn't find read story to mark as unread.")
-
+        if usersub and story.story_date > usersub.mark_read_date:
+            logging.user(request, "~SB~FRCouldn't find read story to mark as unread.")
+        else:
+            data['code'] = -1
+    
     r = redis.Redis(connection_pool=settings.REDIS_POOL)
     r.publish(request.user.username, 'feed:%s' % feed_id)
 

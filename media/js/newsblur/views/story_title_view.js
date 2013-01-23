@@ -94,8 +94,41 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
                 .addClass('NB-story-'+this.model.score_name(score));
     },
     
-    toggle_read_status: function() {
+    toggle_read_status: function(model, read_status, options) {
+        options = options || {};
         this.$el.toggleClass('read', !!this.model.get('read_status'));
+        
+        if (options.error_marking_unread) {
+            var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
+            var $star = this.$('.NB-storytitles-sentiment');
+
+            $star.attr({'title': options.message || 'Failed to mark as unread'});
+            $star.tipsy({
+                gravity: pane_alignment == 'north' ? 'nw' : 'sw',
+                fade: true,
+                trigger: 'manual',
+                offsetOpposite: -1
+            });
+            var tipsy = $star.data('tipsy');
+            _.defer(function() {
+                tipsy.enable();
+                tipsy.show();
+            });
+
+            $star.animate({
+                'opacity': 1
+            }, {
+                'duration': 1850,
+                'queue': false,
+                'complete': function() {
+                    if (tipsy.enabled) {
+                        tipsy.hide();
+                        tipsy.disable();
+                    }
+                }
+            });
+
+        }
     },
     
     toggle_selected: function(model, selected, options) {
@@ -110,7 +143,6 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         var pane_alignment = NEWSBLUR.assets.preference('story_pane_anchor');
         var $star = this.$('.NB-storytitles-star');
         NEWSBLUR.app.story_titles.scroll_to_selected_story(this.model);
-        
         
         if (this.model.get('starred')) {
             $star.attr({'title': 'Saved!'});
