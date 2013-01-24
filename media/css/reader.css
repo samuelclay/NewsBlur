@@ -3543,7 +3543,7 @@ background: transparent;
     width: 2px;
 }
 .ui-layout-toggler {
-    display: none !important;
+/*    display: none !important;*/
 }
 .right-pane .ui-layout-resizer-west {
     background: #e0e0e0 url('/media/embed/reader/resize_west_small.png') repeat-y 50% 50%;

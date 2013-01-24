@@ -51,9 +51,9 @@ javascripts:
         - media/js/vendor/jquery.chosen.js
         - media/js/vendor/jquery.effects.core.js
         - media/js/vendor/jquery.effects.slideOffscreen.js
-        # - media/js/vendor/jquery.linkify.js
         - media/js/vendor/bootstrap-tooltip.js
         - media/js/vendor/bootstrap-*.js
+        - media/js/vendor/bootstrapx-*.js
         - media/js/vendor/audio.js
         - media/js/vendor/socket.io-client.*.js
         - media/js/vendor/inflector.js
@@ -124,6 +124,7 @@ stylesheets:
         - media/css/status.css
         - media/css/jquery-ui/jquery.theme.css
         - media/css/jquery.tipsy.css
+        - media/css/vendor/bootstrap-*.css
         - media/css/*.css
     mobile:
         - media/css/mobile/jquery.mobile-1.0b1.css
