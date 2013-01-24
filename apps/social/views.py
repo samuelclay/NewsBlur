@@ -329,11 +329,13 @@ def load_social_page(request, user_id, username=None, **kwargs):
     social_user = get_object_or_404(User, pk=social_user_id)
     offset = int(request.REQUEST.get('offset', 0))
     limit = int(request.REQUEST.get('limit', 6))
-    page = request.REQUEST.get('page')
+    page = int(request.REQUEST.get('page', 1))
     format = request.REQUEST.get('format', None)
     has_next_page = False
     feed_id = kwargs.get('feed_id') or request.REQUEST.get('feed_id')
-    if page: offset = limit * (int(page) - 1)
+    if page: 
+        offset = limit * (page - 1)
+        limit = page * limit
     user_social_profile = None
     user_social_services = None
     user_following_social_profile = None
@@ -361,10 +363,13 @@ def load_social_page(request, user_id, username=None, **kwargs):
         socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id) 
         social_user_ids = [s.subscription_user_id for s in socialsubs]
         story_ids, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
-                                                 offset=offset, limit=limit+1,
+                                                 offset=offset, limit=limit,
                                                  # order=order, read_filter=read_filter,
                                                  relative_user_id=relative_user_id,
                                                  everything_unread=True)
+        if len(story_ids) > (limit - offset):
+            has_next_page = True
+            story_ids = story_ids[:-1]
         mstories = MStory.find_by_id(story_ids)
         story_id_to_dates = dict(zip(story_ids, story_dates))
         def sort_stories_by_id(a, b):
@@ -378,12 +383,12 @@ def load_social_page(request, user_id, username=None, **kwargs):
         if feed_id:
             params['story_feed_id'] = feed_id
 
-        mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:offset+limit+1]
+        mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:limit+1]
         stories = Feed.format_stories(mstories)
 
-    if len(stories) > limit:
-        has_next_page = True
-        stories = stories[:-1]
+        if len(stories) > limit:
+            has_next_page = True
+            stories = stories[:-1]
 
     if not stories:
         params = {

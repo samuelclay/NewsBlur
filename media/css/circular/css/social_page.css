@@ -425,7 +425,6 @@ blockquote {
   background-size: 17px;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active {
-  cursor: default;
   background: url('/../../../media/img/circular/header_highlight_border.png?1358969250') no-repeat center bottom;
 }
 .NB-header .NB-header-tabs .NB-header-tab.NB-active div.NB-tab-inner {
