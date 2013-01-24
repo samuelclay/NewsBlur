@@ -241,7 +241,7 @@
                 fxSettings:             { duration: 560, easing: "easeInOutQuint" },
                 animatePaneSizing:      true,
                 north__paneSelector:    ".left-north",
-                north__size:            18,
+                north__size:            56,
                 north__resizeable:      false,
                 north__spacing_open:    0,
                 center__paneSelector:   ".left-center",
@@ -404,9 +404,7 @@
             }
             $('.right-pane').show();
             $('#NB-splash,.NB-splash').hide();
-            $('.NB-splash-info').hide();
             $('#NB-splash-overlay').hide();
-            this.$s.$dashboard.addClass('NB-active');
 
             if (resize) {
                 this.$s.$layout.layout().resizeAll();
@@ -419,10 +417,9 @@
         show_splash_page: function(skip_router) {
             this.reset_feed();
             $('.right-pane').hide();
-            $('.NB-splash-info').show();
             $('#NB-splash,.NB-splash').show();
             $('#NB-splash-overlay').show();
-            this.$s.$dashboard.removeClass('NB-active');
+
             if (!skip_router) {
                 NEWSBLUR.router.navigate('');
             }

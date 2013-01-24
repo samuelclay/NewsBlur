@@ -1,7 +1,7 @@
 NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
 
     options: {
-        el: '.NB-feeds-header-dashboard'
+        el: '.left-north'
     },
     
     events: {
@@ -28,16 +28,13 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
         var hide_read_feeds = NEWSBLUR.assets.preference('hide_read_feeds');
         // NEWSBLUR.log(["render feed list header", this.collection.length, this.feeds_count, hide_read_feeds]);
         var $header = _.template('\
-            <div class="NB-feeds-header-dashboard">\
-                <div class="NB-feeds-header-right">\
-                    <div class="NB-feeds-header-sites <%= hide_read_feeds ? "NB-feedlist-hide-read-feeds" : "" %>"><%= feeds_count %></div>\
-                </div>\
-                <div class="NB-feeds-header-left">\
-                    <span class="NB-feeds-header-count NB-feeds-header-negative <% if (!negative_count) { %>NB-empty<% } %>"><%= negative_count %></span>\
-                    <span class="NB-feeds-header-count NB-feeds-header-neutral <% if (!neutral_count) { %>NB-empty<% } %>"><%= neutral_count %></span>\
-                    <span class="NB-feeds-header-count NB-feeds-header-positive <% if (!positive_count) { %>NB-empty<% } %>"><%= positive_count %></span>\
-                </div>\
-                <div class="NB-feeds-header-home">Dashboard</div>\
+            <div class="NB-feeds-header-right">\
+                <div class="NB-feeds-header-sites <%= hide_read_feeds ? "NB-feedlist-hide-read-feeds" : "" %>"><%= feeds_count %></div>\
+            </div>\
+            <div class="NB-feeds-header-left">\
+                <span class="NB-feeds-header-count NB-feeds-header-negative <% if (!negative_count) { %>NB-empty<% } %>"><%= negative_count %></span>\
+                <span class="NB-feeds-header-count NB-feeds-header-neutral <% if (!neutral_count) { %>NB-empty<% } %>"><%= neutral_count %></span>\
+                <span class="NB-feeds-header-count NB-feeds-header-positive <% if (!positive_count) { %>NB-empty<% } %>"><%= positive_count %></span>\
             </div>\
         ', {
             feeds_count     : (this.feeds_count ? Inflector.pluralize(' site', this.feeds_count, true) : '&nbsp;'),
@@ -47,7 +44,7 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
             hide_read_feeds : !!hide_read_feeds
         });
             
-        $(this.el).html($header);
+        this.$('.NB-feeds-header-dashboard').html($header);
         
         this.toggle_hide_read_preference();
         

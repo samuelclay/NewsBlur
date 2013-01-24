@@ -4,6 +4,26 @@
     <div class="left-pane">
 
         <div class="left-north">
+            <div class="NB-feeds-header-user">
+                <div class="NB-feeds-header-user-image">
+                    {% if social_profile.large_photo_url %}
+                        <img src="{{ social_profile.photo_url }}">
+                    {% else %}
+                        {% if user.profile.is_premium %}
+                            <img src="{{ MEDIA_URL }}/img/reader/account_premium_{{ account_images|random }}.jpg" />
+                        {% else %}
+                            <img src="{{ MEDIA_URL }}/img/reader/account_standard_{{ account_images|random }}.jpg" />
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="NB-feeds-header-user-name">{{ social_profile.username }}</div>
+                <div class="NB-feeds-header-user-notifications">
+                    <img src="{{ MEDIA_URL }}/img/circular/header/icon_activity.png">
+                </div>
+                <div class="NB-feeds-header-user-dashboard">
+                    <img src="{{ MEDIA_URL }}/img/circular/header/circular_avatar.png">
+                </div>
+            </div>
             <div class="NB-feeds-header-dashboard"></div>
             <div class="NB-feeds-selector">
                 <input type="text" name="feeds_selector" class="NB-feeds-selector-input NB-search-input" />

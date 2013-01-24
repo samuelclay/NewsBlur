@@ -26,10 +26,12 @@ def localdatetime(context, date, date_format):
     
 @register.inclusion_tag('reader/feeds_skeleton.xhtml', takes_context=True)
 def render_feeds_skeleton(context):
-    user         = get_user(context['user'])
+    user = get_user(context['user'])
+    social_profile = MSocialProfile.get_user(user.pk)
 
     return {
         'user': user,
+        'social_profile': social_profile,
         'MEDIA_URL': settings.MEDIA_URL,
     }
 

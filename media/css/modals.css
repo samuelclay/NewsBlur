@@ -83,21 +83,23 @@
 .NB-modal h5,
 .NB-module h5 {
     margin: 0;
-    padding: 8px 12px 6px;
+    padding: 6px 12px 6px;
 
-    background-color: #E3ECF8;
-    background-image: -moz-linear-gradient(top, #E3ECF8, #CBDBF5); /* FF3.6 */
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#E3ECF8), to(#CBDBF5)); /* Saf4+, Chrome */
-    background-image: linear-gradient(top, #E3ECF8, #CBDBF5);
-
+    background-color: #F5F6F2;
+    background-image: -moz-linear-gradient(top, #F5F6F2, #E5E6E0); /* FF3.6 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F5F6F2), to(#E5E6E0)); /* Saf4+, Chrome */
+    background-image: linear-gradient(top, #F5F6F2, #E5E6E0);
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 2px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+    
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-    border-top: 1px solid #D1DAF7;
-    border-bottom: 1px solid #A1A9CF;
     color:#505050;
-    font-size: 14px;
+    font-size: 12px;
     font-family: "Gill Sans", "Lucida Sans", "Lucida Grande", Verdana, Arial, Helvetica, sans-serif, inherit;
-    font-weight: normal;
+    font-weight: bold;
     text-transform: uppercase;
+    text-align: center;
     position: relative;
 }
 

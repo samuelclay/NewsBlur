@@ -95,11 +95,11 @@ body {
 }
 
 .NB-account {
-    position: absolute;
-    right: 0px;
-    top: 0;
+    float: left;
     z-index: 1;
     overflow: hidden;
+    width: 180px;
+    margin: 0 0 32px 0;
 }
 
 .NB-account .NB-module-header-login {
@@ -351,7 +351,7 @@ body {
 .left-pane {
     display: none;
     overflow: hidden !important;
-    background-color: #D7DDE6;
+    background-color: #F7F8F5;
 }
 
 .left-center-content {
@@ -424,7 +424,7 @@ body {
 }
 
 .NB-feedlist {
-    background-color: #D7DDE6;
+    background-color: #F7F8F5;
     overflow-y: auto;
     overflow-x: hidden;
     font-size: 11px;
@@ -489,10 +489,10 @@ body {
 .NB-feedlist .feed {
     position: relative;
     cursor: pointer;
-    border-top: 1px solid #D7DDE6;
-    border-bottom: 1px solid #D7DDE6;
+    border-top: 1px solid #F7F8F5;
+    border-bottom: 1px solid #F7F8F5;
     padding-right: 2px;
-    background-color: #D7DDE6;
+    background-color: #F7F8F5;
 }
 
 .NB-feedlist .feed.NB-feed-exception {
@@ -2972,25 +2972,58 @@ background: transparent;
   border-bottom: 1px solid #777D86;
 }
 
+.NB-feeds-header-user {
+    font-size: 13px;
+}
+
 .NB-feeds-header-dashboard {
-  background: #4F5358 url("/media/embed/reader/feeds_header_background.png") repeat-x 0 -22px;
-  color: #FFF;
   height: 15px;
   font-size: 11px;
   padding: 0 0 2px 0;
-  text-transform: uppercase;
-  text-shadow: 0 1px 0 #303030;
-  border-bottom: 1px solid #E9E9E9;
+  border-top: 1px solid #FFF;
 }
 
-.NB-feeds-header-dashboard.NB-active:hover {
-  color: #DCDCDC;
-  cursor: pointer;
+.NB-feeds-header-user,
+.NB-feeds-header-dashboard {
+    cursor: default;
+    color: #505050;
+    overflow: hidden;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#E8EBE4));
+    background: -moz-linear-gradient(center top , #FFF 0%, #E8EBE4 100%);
+    background-image: linear-gradient(top, #FFF, #E8EBE4);
+    border-bottom: 1px solid #C2C5BE;
 }
-
+.NB-feeds-header-user .NB-feeds-header-user-image {
+    line-height: 0;
+    float: left;
+    padding: 4px;
+}
+.NB-feeds-header-user .NB-feeds-header-user-image img {
+    width: 28px;
+    height: 28px;
+    border-radius: 2px;
+}
+.NB-feeds-header-user-notifications,
+.NB-feeds-header-user-dashboard {
+    cursor: pointer;
+    padding: 10px 8px 8px;
+    float: right;
+    line-height: 0;
+}
+.NB-feeds-header-user-notifications img,
+.NB-feeds-header-user-dashboard img {
+    width: 17px;
+    height: 17px;
+}
+.NB-feeds-header-user .NB-feeds-header-user-name {
+    float: left;
+    padding: 10px 0 0 6px;
+    font-weight: bold;
+}
 .NB-feeds-header-dashboard .NB-feeds-header-right {
   float: right;
-  color: #808080;
 }
 .NB-feeds-header-dashboard.NB-active:hover .NB-feeds-header-right {
     display: none;
@@ -2998,7 +3031,6 @@ background: transparent;
 
 .NB-feeds-header-dashboard .NB-feeds-header-left {
   float: left;
-  color: #FFF;
   padding-top: 1px;
 }
 
@@ -3025,30 +3057,8 @@ background: transparent;
 }
 .NB-feeds-header-dashboard .NB-feeds-header-sites {
     float: right;
-    padding-right: 16px;
+    padding-right: 6px;
     padding-top: 1px;
-    background: transparent url('/media/embed/icons/silk/bullet_orange.png') no-repeat right 0;
-}
-.NB-feedlist-hide-read-feeds .NB-feeds-header-dashboard .NB-feeds-header-sites {
-    background-image: url('/media/embed/icons/silk/bullet_blue.png');
-}
-.NB-feeds-header-dashboard.NB-active:hover {
-  cursor: pointer;
-}
-.NB-feeds-header-dashboard .NB-feeds-header-home {
-    display: none;
-    padding: 1px 18px 0 4px;
-    color: #7493C7;
-    text-align: center;
-}
-.NB-feeds-header-dashboard.NB-active:hover {
-  cursor: pointer;
-}
-.NB-feeds-header-dashboard.NB-active:hover .NB-feeds-header-home {
-    display: block;
-}
-.NB-feeds-header-dashboard.NB-active:hover .NB-feeds-header-count {
-    display: none;
 }
 
 /* =================== */
@@ -3529,9 +3539,12 @@ background: transparent;
 /* ======================= */
 
 .ui-layout-resizer-west {
-    background: #e0e0e0 url('/media/embed/reader/resize_west_small.png') repeat-y 50% 50%;
+    border-left: 1px solid #C2C5BE;
+    width: 2px;
 }
-
+.ui-layout-toggler {
+    display: none !important;
+}
 .right-pane .ui-layout-resizer-west {
     background: #e0e0e0 url('/media/embed/reader/resize_west_small.png') repeat-y 50% 50%;
 }
@@ -3618,7 +3631,7 @@ form.opml_import_form input {
     bottom: 0;
     right: 0;
     overflow-y: auto;
-    margin: 32px 0;
+    margin: 0 0 32px;
 }
 
 .NB-splash-info {
@@ -3649,7 +3662,7 @@ form.opml_import_form input {
   border-bottom: 1px solid #C9CDE0;
 }
 .NB-body-main .NB-splash-info.NB-splash-top {
-    height: 30px;
+    display: none;
 }
 .NB-splash-info.NB-splash-bottom {
   border-top: 1px solid #E9ECF6;
@@ -4550,6 +4563,9 @@ form.opml_import_form input {
     overflow: hidden;
 }
 
+.NB-modules-center h5.NB-module-header {
+    text-align: left;
+}
 .NB-module .NB-module-header-left {
     float: left;
 }
@@ -4577,29 +4593,19 @@ form.opml_import_form input {
     display: block;
 }
 .NB-module .NB-module-content-header {
-    border-bottom: 1px solid #F0F0F0;
     padding: 4px 0 0px;
-    margin: 12px 0 4px 128px;
+    margin: 12px 0 4px 4px;
     font-size: 13px;
     text-transform: uppercase;
     color: #134160;
-    text-shadow: 1px 1px 0 #E0E0E0;
     clear: both;
-}
-
-.NB-module-stats .NB-module-content-header {
-    margin-left: 12px;
-}
-.NB-modules-center .NB-module-content-header {
-    margin-right: 12px;
-    margin-left: 12px;
 }
 
 .NB-module .NB-module-content-subtitle {
     float: right;
     color: #C0C0C0;
     text-shadow: none;
-    margin: 2px 12px 0 0;
+    margin: 2px 0 0 0;
     font-size: 10px;
     white-space: nowrap;
 }
@@ -4680,7 +4686,6 @@ form.opml_import_form input {
 .NB-account .NB-module {
     margin: 24px 0 0;
     padding: 0;
-    width: 398px;
     clear: both;
     overflow: hidden;
 }
@@ -4716,8 +4721,8 @@ form.opml_import_form input {
     overflow: hidden;
 }
 .NB-module.NB-module-features .NB-module-content-header {
-    margin-left: 12px;
-    padding-right: 12px;
+    border-bottom: 1px solid #E8EAE4;
+    padding-bottom: 4px;
 }
 
 .NB-module-account .NB-module-item-image {
@@ -4728,7 +4733,6 @@ form.opml_import_form input {
 .NB-module-account .NB-module-item .NB-module-item-title {
     clear: none;
     overflow: hidden;
-    margin-left: 0;
 }
 .NB-module-account .NB-module-item .NB-module-item-image img {
     width: 100px;
@@ -4808,46 +4812,56 @@ form.opml_import_form input {
 /* = Stats Module = */
 /* ================ */
 
-.NB-module-stats .NB-module-stats-count {
-  float: left;
-  width: 33%;
-  margin: 0 0 18px 0;
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 12px;
+.NB-module-stats-counts {
+    border-radius: 4px;
+    background-color: #F7F8F5;
+    border: 1px solid rgba(0, 0, 0, .1);
+    overflow: hidden;
 }
-.NB-module-stats .NB-module-stats-count-shared-stories {
+
+.NB-module-stats-count {
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 12px;
+    overflow: hidden;
+    padding: 6px 0;
+}
+.NB-module-stats-count:last-child {
+    border-bottom: none;
+}
+.NB-module-stats-count-shared-stories {
     width: 38%;
 }
-.NB-module-stats .NB-module-stats-count-following,
-.NB-module-stats .NB-module-stats-count-followers {
+.NB-module-stats-count-following,
+.NB-module-stats-count-followers {
     width: 31%;
 }
 
-.NB-module-stats .NB-module-stats-count-number {
+.NB-module-stats-count-number {
   clear: both;
   font-size: 18px;
-  margin: 8px 0 0 0;
   color: #0D003C;
   text-shadow: 1px 1px 0 #E8E8E8;
   font-weight: bold;
 }
-.NB-module-stats .NB-module-stats-count-description {
+.NB-module-stats-count-description {
   margin: 4px 0 0 0;
-  color: #808080;
+  color: #A0A0A0;
   clear: both;
 }
 
-.NB-module-stats .NB-module-stats-count-graph {
+.NB-module-stats-count-graph {
   clear: both;
-  padding: 0 0 0 16px;
+  margin: 0 auto;
+  width: 100px;
 }
 .NB-graph-value {
   float: left;
-  height: 38px;
+  height: 30px;
   width: 3px;
   padding: 0 1px 0 0;
-  margin: 0 0 18px 0;
+  margin: 0 0 14px 0;
   position: relative;
 }
 
@@ -4882,8 +4896,10 @@ form.opml_import_form input {
 /* ================== */
 
 .NB-modules-center {
-    margin: 24px 398px 0 0px;
+    margin: 24px 0 0 0px;
     padding: 0 24px;
+    max-width: 500px;
+    float: left;
 }
 
 .NB-modules-center .NB-module {
@@ -4931,10 +4947,8 @@ form.opml_import_form input {
     text-transform: uppercase;
     padding: 4px 8px;
     margin: 0;
-    color: #134160;
-    text-shadow: 1px 1px 0 #E0E0E0;
+    color: #808080;
     font-size: 12px;
-    font-weight: bold;
     line-height: 20px;
     white-space: nowrap;
     min-width: 100px;
@@ -6823,7 +6837,7 @@ form.opml_import_form input {
     width: auto;
 }
 .NB-modal-feedchooser .NB-feedchooser {
-    background-color: #D7DDE6;
+    background-color: #F7F8F5;
     overflow-y: auto;
     font-size: 11px;
     list-style: none;
