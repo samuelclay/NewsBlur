@@ -5570,10 +5570,6 @@
                 e.preventDefault();
                 self.mark_active_story_read();
             });
-            $document.bind('keydown', 'm', function(e) {
-                e.preventDefault();
-                self.mark_active_story_read();
-            });
             $document.bind('keydown', 'g', function(e) {
                 e.preventDefault();
                 NEWSBLUR.app.feed_selector.toggle();
