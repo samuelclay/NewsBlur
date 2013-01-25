@@ -923,8 +923,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/reader/add_folder/', {
             'folder': folder,
             'parent_folder': parent_folder
-        }, callback, function() {
-          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this folder. Please try a different URL.'});
+        }, callback, function(data) {
+          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : data.message || 'There was a problem trying to add this folder.'});
         });
     },
     
