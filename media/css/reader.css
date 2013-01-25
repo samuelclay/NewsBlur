@@ -34,6 +34,10 @@ a img {
   display: none;
 }
 
+.NB-group {
+    clear: both;
+    overflow: hidden;
+}
 .NB-left {
   float: left;
 }
@@ -3024,7 +3028,7 @@ background: transparent;
     text-transform: uppercase;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
     background-image: -webkit-gradient(linear, left top, left bottom, from(#FFF), to(#E8EBE4));
-    background: -moz-linear-gradient(center top , #FFF 0%, #E8EBE4 100%);
+    background-image: -moz-linear-gradient(center top , #FFF 0%, #E8EBE4 100%);
     background-image: linear-gradient(top, #FFF, #E8EBE4);
     border-bottom: 1px solid #C2C5BE;
 }
@@ -3700,19 +3704,9 @@ form.opml_import_form input {
 .NB-splash-info {
   width: 100%;
   height: 55px;
-  background-color: #F3F6F9;
-  background-image: -webkit-gradient(
-      linear,
-      left bottom,
-      left top,
-      color-stop(0.10, #E9EAEF),
-      color-stop(0.84, #F3F6F9)
-  );
-  background-image: -moz-linear-gradient(
-      center bottom,
-      #E9EAEF 10%,
-      #F3F6F9 84%
-  );
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F4F5F2), to(#E1E5DC));
+    background: -moz-linear-gradient(center top , #F4F5F2 0%, #E1E5DC 100%);
+    background-image: linear-gradient(top, #F4F5F2, #E1E5DC);
 
   bottom: 0;
   position: absolute;
@@ -3728,7 +3722,7 @@ form.opml_import_form input {
     display: none;
 }
 .NB-splash-info.NB-splash-bottom {
-  border-top: 1px solid #E9ECF6;
+  border-top: 1px solid #C2C5BE;
   height: 30px;
 }
 .NB-splash-info .NB-splash-title {
@@ -4015,7 +4009,7 @@ form.opml_import_form input {
 /* ======================= */
 
 .NB-taskbar-intelligence {
-    margin: 5px auto 0;
+    margin: 4px auto 0;
     font-size: 9px;
     white-space: nowrap;
     overflow: hidden;
@@ -4060,7 +4054,7 @@ form.opml_import_form input {
     height: 17px;
     line-height: 17px;
     position: relative;
-    padding: 0 8px;
+    padding: 1px 8px;
 }
 .NB-narrow .NB-intelligence-slider .NB-intelligence-label {
     display: none;
@@ -4088,6 +4082,76 @@ form.opml_import_form input {
     margin: 14px 0 0 16px;
 }
 
+.NB-add-form {
+    border-radius: 2px;
+    background-color: #F7F8F5;
+    border: 1px solid rgba(0, 0, 0, .1);
+    padding: 8px;
+}
+
+.NB-add-form .NB-module-content-header {
+    margin-top: 0;
+}
+
+.NB-add-form .NB-add-url {
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 2px 0 6px;
+}
+.NB-add-form .NB-folders {
+    clear: both;
+    float: left;
+    width: 120px;
+    font-size: 16px;
+    margin: 8px 0 0 1px;
+}
+
+.NB-add-form .NB-add-folder-icon {
+    float: left;
+    margin: 11px 0 0 4px;
+    width: 16px;
+    height: 16px;
+    background: transparent url('/media/embed/icons/silk/folder.png') no-repeat 0 0;    
+    cursor: pointer;
+}
+
+.NB-add-form .NB-loading {
+    float: right;
+    width: 16px;
+    height: 16px;
+    margin: 10px 0 0;
+}
+.NB-add .NB-add-form .NB-add-url-submit,
+.NB-add .NB-add-form .NB-add-folder-submit {
+    float: right;
+    margin: 6px 0 6px 0;
+}
+
+.NB-add-form .NB-add-folder {
+    overflow: hidden;
+}
+.NB-add-form .NB-add-folder-input {
+    width: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 6px 0 0 0;
+    font-size: 12px;
+    padding: 4px;
+}
+.NB-add-form .NB-error {
+    font-size: 11px;
+    clear: both;
+    color: darkred;
+    line-height: 14px;
+    font-weight: bold;
+    display: none;
+}
+.NB-add-form .NB-error-message {
+    padding: 6px 0 0;
+}
 .NB-add .NB-add-danger {
     display: block;
     clear: both;
@@ -4103,68 +4167,29 @@ form.opml_import_form input {
     padding: 0 4px 0 0 ;
 }
 
-.NB-add .NB-add-folders {
-    text-transform: none;
-    position: absolute;
-    right: 8px;
-    top: 3px;
-}
-
-.NB-add .NB-add-folders select {
-    width: 200px;
-    font-size: 11px;
-}
-
-.NB-add input[type=file] {
-    font-size: 14px;
-}
-
-.NB-add input[type=submit] {
-    font-size: 12px;
-    margin: 0 0 0 4px;
-}
-
-.NB-add input[type=text] {
-    width: 100px;
-    margin-bottom: 16px;
-}
 .NB-add input[type=text].ui-autocomplete-loading {
-  background: white url('/media/embed/reader/recycle_spinner.gif') no-repeat right 2px;
-}
-.NB-add .NB-add-add-folder input[type=text] {
-    width: 176px;
+  background: white url('/media/embed/reader/recycle_spinner.gif') no-repeat right 3px;
 }
 
-.NB-add .NB-folder-icon {
-    float: left;
-    margin: 4px 0px 4px;
-    background: transparent url('/media/embed/icons/silk/folder.png') no-repeat 0 0;    
-    width: 16px;
-    height: 16px;
-}
-
-.NB-add input.NB-add-folder {
-    margin-left: 6px;
-}
-
-.NB-add .NB-add-google-reader-arrow {
-    width: 16px;
-    height: 16px;
-    vertical-align: bottom;
-    margin: 0 4px;
-}
-
-.NB-add .NB-add-import-button {
-    margin: 4px 0 6px 0;
-    text-decoration: none;
-    float: left;
-    display: block;
-}
-
-.ui-autocomplete {
+.ui-autocomplete.ui-widget-content {
   width: 344px;
   padding: 0;
   margin: 0;
+  border: 1px solid rgba(0, 0, 0, .2);
+  border-radius: none;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -moz-border-radius-topright: 5px;
+  -moz-border-radius-topleft: 5px;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  -webkit-border-bottom-right-radius: 0;
+  -webkit-border-bottom-left-radius: 0;
+  -moz-border-radius-bottomright: 0;
+  -moz-border-radius-bottomleft: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+
 }
 .ui-autocomplete li {
   padding: 0;
@@ -4183,6 +4208,9 @@ form.opml_import_form input {
 .ui-autocomplete li a.ui-state-hover {
   border: none;
   font-weight: normal;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#F2F8FE), to(#E9F1FB));
+  background-image: -moz-linear-gradient(center top , #F2F8FE 0%, #E9F1FB 100%);
+  background-image: linear-gradient(top, #F2F8FE, #E9F1FB);
 }
 
 .ui-autocomplete li a .NB-add-autocomplete-subscribers {
@@ -4649,8 +4677,11 @@ form.opml_import_form input {
     display: block;
 }
 .NB-module .NB-module-content-header {
+    padding-left: 4px;
+}
+.NB-module-content-header {
     padding: 4px 0 0px;
-    margin: 12px 0 4px 4px;
+    margin: 12px 0 4px 0;
     font-size: 13px;
     text-transform: uppercase;
     color: #134160;
@@ -5733,14 +5764,6 @@ form.opml_import_form input {
     clear: none;
     padding: 1px 12px 0;
     font-size: 10px;
-    color: #E0E0E0;
-}
-.NB-menu-manage .NB-menu-manage-controls .segmented-control li:hover {
-    background-color: #639510;
-}
-.NB-menu-manage .NB-menu-manage-controls .segmented-control li.NB-active {
-    color: white;
-    background-color: transparent;
 }
 /* ==================== */
 /* = Statistics Modal = */
@@ -9210,7 +9233,7 @@ form.opml_import_form input {
   border-radius: 5px 5px 0 0;
 }
 .popover-content {
-  padding: 9px 14px;
+  padding: 9px;
 }
 .popover .arrow,
 .popover .arrow:after {
@@ -9239,7 +9262,7 @@ form.opml_import_form input {
   bottom: -11px;
 }
 .popover.top-left .arrow {
-    left: 18px;
+    left: 14px;
 }
 .popover.top-right .arrow {
     left: 90%;

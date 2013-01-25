@@ -8,6 +8,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
     
     initialize: function(options) {
         this.options = _.extend({}, {
+            width: 236,
             animate: true,
             offset: {
                 top: 0,
@@ -30,6 +31,8 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
             ])
         ]);
         this.setElement($popover);
+        
+        this.$el.width(this.options.width);
         
         $('body').append(this.$el);
         

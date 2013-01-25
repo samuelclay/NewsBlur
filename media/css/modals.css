@@ -24,10 +24,10 @@
     font-size: 14px;
     padding: 2px;
     margin: 2px 4px 2px;
-    border: 1px solid #606060;
-    -moz-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
-    -webkit-box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
-    box-shadow:2px 2px 0 rgba(50, 50, 50, 0.15);
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 1px;
+    -moz-box-shadow: inset 0 2px 2px rgba(50, 50, 50, 0.15);
+    box-shadow: inset 0 2px 2px rgba(50, 50, 50, 0.15);
 }
 
 /* ========== */
@@ -69,7 +69,7 @@
     background: transparent url('/media/img/reader/recycle_spinner.gif') no-repeat 0 0;
 }
 
-.NB-modal .NB-loading.NB-active {
+.NB-loading.NB-active {
     background: transparent url('/media/img/reader/spinner_ball.gif') no-repeat 0 0;
 }
 

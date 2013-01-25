@@ -914,8 +914,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'url': url,
             'folder': folder,
             'auto_active': options.auto_active
-        }, callback, function() {
-          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : 'There was a problem trying to add this site. Please try a different URL.'});
+        }, callback, function(data) {
+          callback({'message': NEWSBLUR.Globals.is_anonymous ? 'Please create an account. Not much to do without an account.' : data.message || 'There was a problem trying to add this site. Please try a different URL.'});
         });
     },
     

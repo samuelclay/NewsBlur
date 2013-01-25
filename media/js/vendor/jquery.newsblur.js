@@ -107,7 +107,7 @@ NEWSBLUR.log = function(msg) {
               height  : target.innerHeight()
             };
           }
-          console.log(["target", targOff.top, target.innerHeight(), b.top, b.bottom]);
+
           var elb = {
             width : el.innerWidth(),
             height : el.innerHeight()
@@ -138,11 +138,13 @@ NEWSBLUR.log = function(msg) {
           } else { // Centered.
             top = b.top + (b.height - elb.height) / 2;
           }
-          console.log(["align", pos.indexOf('bottom') >= 0, bottom, top, b.top, elb.height, b.height]);
+
           var constrain = (pos.indexOf('no-constraint') >= 0) ? false : true;
 
           left += offset.left || 0;
           top += offset.top || 0;
+          bottom += offset.top || 0;
+          right += offset.left || 0;
 
           if (constrain) {
             left = Math.max(scrollLeft, Math.min(left, scrollLeft + clientWidth - elb.width));
@@ -193,13 +195,13 @@ NEWSBLUR.log = function(msg) {
               me.forceHide = null;
             };
             me._autohider = function(e) {
+                console.log(["autohider", e, e.target]);
               if (me._autoignore) return;
               if (options.clickable && (me[0] == e.target || _.include($(e.target).parents(), me[0]))) return;
               if (options.onHide && !options.onHide(e, _.bind(me.forceHide, me))) return;
               me.forceHide(e);
             };
             me._checkesc = function(e) {
-                console.log(["keyup", e.keyCode]);
                 if (e.keyCode == 27) {
                     options.clickable = false;
                     me._autohider(e);
