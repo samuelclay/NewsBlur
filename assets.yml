@@ -51,9 +51,6 @@ javascripts:
         - media/js/vendor/jquery.chosen.js
         - media/js/vendor/jquery.effects.core.js
         - media/js/vendor/jquery.effects.slideOffscreen.js
-        - media/js/vendor/bootstrap-tooltip.js
-        - media/js/vendor/bootstrap-*.js
-        - media/js/vendor/bootstrapx-*.js
         - media/js/vendor/audio.js
         - media/js/vendor/socket.io-client.*.js
         - media/js/vendor/inflector.js
@@ -65,6 +62,7 @@ javascripts:
         - media/js/newsblur/views/*.js
         - media/js/newsblur/reader/reader_utils.js
         - media/js/newsblur/reader/reader.js
+        - media/js/newsblur/reader/reader_popover.js
         - media/js/newsblur/reader/*.js
         - media/js/newsblur/welcome/*.js
     mobile:

@@ -90,6 +90,8 @@ NEWSBLUR.log = function(msg) {
             var b = {
               left    : scrollLeft,
               top     : scrollTop,
+              right   : $(window).width() - scrollLeft,
+              bottom  : $(window).height() - scrollTop,
               width   : $(window).width(),
               height  : $(window).height()
             };
@@ -99,42 +101,44 @@ NEWSBLUR.log = function(msg) {
             var b = {
               left    : targOff.left,
               top     : targOff.top,
+              right   : clientWidth - targOff.left,
+              bottom  : clientHeight - targOff.top,
               width   : target.innerWidth(),
               height  : target.innerHeight()
             };
           }
-
+          console.log(["target", targOff.top, target.innerHeight(), b.top, b.bottom]);
           var elb = {
             width : el.innerWidth(),
             height : el.innerHeight()
           };
 
-          var left, top;
+          var left, top, bottom, right;
 
           if (pos.indexOf('-left') >= 0) {
             left = b.left;
           } else if (pos.indexOf('left') >= 0) {
             left = b.left - elb.width;
           } else if (pos.indexOf('-right') >= 0) {
-            left = b.left + b.width - elb.width;
+            right = b.right - elb.width;
           } else if (pos.indexOf('right') >= 0) {
-            left = b.left + b.width;
+            right = b.right;
           } else { // Centered.
             left = b.left + (b.width - elb.width) / 2;
           }
 
           if (pos.indexOf('-top') >= 0) {
-            top = b.top;
+            bottom = b.bottom - elb.height;
           } else if (pos.indexOf('top') >= 0) {
-            top = b.top - elb.height;
+            bottom = b.bottom;
           } else if (pos.indexOf('-bottom') >= 0) {
-            top = b.top + b.height - elb.height;
+            top = b.top;
           } else if (pos.indexOf('bottom') >= 0) {
-            top = b.top + b.height;
+            top = b.top - elb.height;
           } else { // Centered.
             top = b.top + (b.height - elb.height) / 2;
           }
-
+          console.log(["align", pos.indexOf('bottom') >= 0, bottom, top, b.top, elb.height, b.height]);
           var constrain = (pos.indexOf('no-constraint') >= 0) ? false : true;
 
           left += offset.left || 0;
@@ -143,6 +147,8 @@ NEWSBLUR.log = function(msg) {
           if (constrain) {
             left = Math.max(scrollLeft, Math.min(left, scrollLeft + clientWidth - elb.width));
             top = Math.max(scrollTop, Math.min(top, scrollTop + clientHeight - elb.height));
+            // bottom = Math.max(scrollTop, Math.min(bottom, scrollTop + clientHeight - elb.height));
+            // right = Math.max(scrollTop, Math.min(right, scrollLeft + clientWidth - elb.height));
           }
 
           // var offParent;
@@ -150,9 +156,59 @@ NEWSBLUR.log = function(msg) {
           //   left -= offParent.offset().left;
           //   top -= offParent.offset().top;
           // }
-
-          $(el).css({position : 'absolute', left : left + 'px', top : top + 'px'});
+          $(el).css({position : 'absolute'});
+          if (pos.indexOf('bottom') >= 0) {
+              $(el).css({top : top + 'px', bottom: 'auto'});
+          } else {
+              $(el).css({bottom : bottom + 'px', top: 'auto'});
+          }
+          if (pos.indexOf('right') >= 0) {
+              $(el).css({right : right + 'px', left: 'auto'});
+          } else {
+              $(el).css({left : left + 'px', right: 'auto'});
+          }
           return el;
+        },
+        
+        // When the next click or keypress happens, anywhere on the screen, hide the
+        // element. 'clickable' makes the element and its contents clickable without
+        // hiding. The 'onHide' callback runs when the hide fires, and has a chance
+        // to cancel it.
+        autohide : function(options) {
+          var me = this;
+          options = _.extend({clickable : null, onHide : null}, options || {});
+          me._autoignore = true;
+          setTimeout(function(){ delete me._autoignore; }, 0);
+
+          if (!me._autohider) {
+            me.forceHide = function(e) {
+                console.log(["forceHide", e]);
+              if (!e && options.onHide) options.onHide();
+              me.hide();
+              $(document).unbind('click', me._autohider);
+              $(document).unbind('keypress', me._autohider);
+              $(document).unbind('keyup', me._checkesc);
+              me._autohider = null;
+              me._checkesc = null;
+              me.forceHide = null;
+            };
+            me._autohider = function(e) {
+              if (me._autoignore) return;
+              if (options.clickable && (me[0] == e.target || _.include($(e.target).parents(), me[0]))) return;
+              if (options.onHide && !options.onHide(e, _.bind(me.forceHide, me))) return;
+              me.forceHide(e);
+            };
+            me._checkesc = function(e) {
+                console.log(["keyup", e.keyCode]);
+                if (e.keyCode == 27) {
+                    options.clickable = false;
+                    me._autohider(e);
+                }
+            };
+            $(document).bind('click', this._autohider);
+            $(document).bind('keypress', this._autohider);
+            $(document).bind('keyup', this._checkesc);
+          }
         }
         
     });

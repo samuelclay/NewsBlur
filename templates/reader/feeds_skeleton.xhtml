@@ -17,11 +17,11 @@
                     {% endif %}
                 </div>
                 <div class="NB-feeds-header-user-name">{{ social_profile.username }}</div>
-                <div class="NB-feeds-header-user-notifications">
-                    <img src="{{ MEDIA_URL }}/img/circular/header/icon_activity.png">
-                </div>
                 <div class="NB-feeds-header-user-dashboard">
                     <img src="{{ MEDIA_URL }}/img/circular/header/circular_avatar.png">
+                </div>
+                <div class="NB-feeds-header-user-notifications">
+                    <img src="{{ MEDIA_URL }}/img/circular/header/icon_activity.png">
                 </div>
             </div>
             <div class="NB-feeds-header-dashboard"></div>
@@ -110,46 +110,48 @@
 
         </div>
 
-        <div class="NB-taskbar-container left-south">
-            <div class="NB-taskbar">
-                <div class="NB-callout-ftux NB-callout">
-                    <div class="NB-callout-container">
-                        <div class="NB-callout-text"></div>
-                        <div class="NB-callout-arrow"></div>
-                    </div>
-                </div>
-                <ul class="taskbar_nav taskbar_nav_feeds">
-                    <li class="task_button task_button_menu NB-task-add">
-                        <div class="NB-task-button-wrapper">
-                            <div class="task_button_background"></div>
-                            <div class="NB-task-image"></div>
+        <div class="left-south">
+            <div class="NB-taskbar-container">
+                <div class="NB-taskbar">
+                    <div class="NB-callout-ftux NB-callout">
+                        <div class="NB-callout-container">
+                            <div class="NB-callout-text"></div>
+                            <div class="NB-callout-arrow"></div>
                         </div>
-                    </li>
-                    <li class="task_button task_button_menu NB-task-manage NB-disabled">
-                        <div class="NB-task-button-wrapper">
-                            <div class="task_button_background"></div>
-                            <div class="NB-task-image"></div>
-                        </div>
-                    </li>
-                </ul>
-                <div class="NB-taskbar-intelligence">
-                    <div class="NB-intelligence-slider">
-                        <ul class="segmented-control">
-                            <li class="NB-intelligence-slider-control NB-intelligence-slider-red">
-                                All
-                            </li>
-                            <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow">
-                                <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_yellow.png">
-                                <span class="NB-intelligence-label">Unread</span>
-                            </li>
-                            <li class="NB-intelligence-slider-control NB-intelligence-slider-green">
-                                <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
-                                <span class="NB-intelligence-label">Focus</span>
-                            </li>
-                        </ul>
                     </div>
+                    <ul class="taskbar_nav taskbar_nav_feeds">
+                        <li class="task_button task_button_menu NB-task-add">
+                            <div class="NB-task-button-wrapper">
+                                <div class="task_button_background"></div>
+                                <div class="NB-task-image"></div>
+                            </div>
+                        </li>
+                        <li class="task_button task_button_menu NB-task-manage NB-disabled">
+                            <div class="NB-task-button-wrapper">
+                                <div class="task_button_background"></div>
+                                <div class="NB-task-image"></div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="NB-taskbar-intelligence">
+                        <div class="NB-intelligence-slider">
+                            <ul class="segmented-control">
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-red">
+                                    All
+                                </li>
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-yellow">
+                                    <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_yellow.png">
+                                    <span class="NB-intelligence-label">Unread</span>
+                                </li>
+                                <li class="NB-intelligence-slider-control NB-intelligence-slider-green">
+                                    <img src="{{ MEDIA_URL }}embed/icons/silk/bullet_green.png">
+                                    <span class="NB-intelligence-label">Focus</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    {# <div class="NB-taskbar-sidebar-toggle-close" title="Hide sidebar (shift + u)"></div> #}
                 </div>
-                {# <div class="NB-taskbar-sidebar-toggle-close" title="Hide sidebar (shift + u)"></div> #}
             </div>
         </div>
 

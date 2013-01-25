@@ -39,7 +39,8 @@
       this.init( type, element, options );
 
       // setup our own handlers
-      this.$element.on( 'click', this.options.selector, $.proxy(this.clickery, this) );
+      // this.$element.on( 'click', this.options.selector, $.proxy(this.clickery, this) );
+      // REMOVED: Handle click events in NewsBlur's modal view.
 
       // soon add click hanlder to body to close this element
       // will need custom handler inside here
@@ -152,8 +153,14 @@
           case 'bottom':
             tp = {top: pos.top + pos.height, left: pos.left + pos.width / 2 - actualWidth / 2}
             break
+          case 'bottom-left':
+            tp = {top: pos.top + pos.height, left: pos.left}
+            break
           case 'top':
             tp = {top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2}
+            break
+          case 'top-left':
+            tp = {top: pos.top - actualHeight, left: pos.left}
             break
           case 'left':
             tp = {top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth}

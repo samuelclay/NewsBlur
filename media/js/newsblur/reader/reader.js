@@ -42,7 +42,8 @@
                 $tryfeed_header: $('.NB-feeds-header-tryfeed'),
                 $taskbar: $('.taskbar_nav'),
                 $feed_floater: $('.NB-feed-story-view-floater'),
-                $feedbar: $('.NB-feedbar')
+                $feedbar: $('.NB-feedbar'),
+                $add_button: $('.NB-task-add')
             };
             this.flags = {
                 'bouncing_callout': false,
@@ -250,9 +251,9 @@
                 south__paneSelector:    ".left-south",
                 south__size:            31,
                 south__resizable:       false,
-                south__spacing_open:    0,
                 enableCursorHotkey:     false,
-                togglerLength_open:     0
+                togglerLength_open:     0,
+                south__spacing_open:    1
             });
             
             this.layout.leftCenterLayout = $('.left-center').layout({
@@ -2489,7 +2490,11 @@
             clearInterval(this.flags['bouncing_callout']);
             $.modal.close();
             
-            NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed(options);
+            if (NEWSBLUR.add_feed && NEWSBLUR.add_feed._open) {
+                NEWSBLUR.add_feed.close();
+            } else {
+                NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed(options);
+            }
         },
         
         open_manage_feed_modal: function(feed_id) {
@@ -3082,7 +3087,7 @@
             $manage_menu_container.data('item', $item && $item[0]);
             $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
             if (type == 'site') {
-                $manage_menu_container.align($('.NB-task-manage'), '-bottom -left', {
+                $manage_menu_container.align($('.NB-task-manage'), 'top -left', {
                     'top': -32, 
                     'left': -2
                 });
@@ -3112,7 +3117,7 @@
                         }
                     }
                     
-                    $manage_menu_container.align($align, '-bottom -left', {
+                    $manage_menu_container.align($align, 'top -left', {
                         'top': -1 * top, 
                         'left': left
                     });
@@ -3142,7 +3147,7 @@
                             $align = $('.NB-storytitles-sentiment', $item);
                         }
                     }
-                    $manage_menu_container.align($align, '-top -left', {
+                    $manage_menu_container.align($align, '-bottom -left', {
                         'top': top, 
                         'left': left
                     });
