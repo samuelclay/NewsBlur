@@ -57,6 +57,7 @@ javascripts:
         - media/js/vendor/underscore-*.js
         - media/js/vendor/underscore.string.js
         - media/js/vendor/backbone-*.js
+        - media/js/vendor/bootstrap-transition.js
         - media/js/newsblur/common/*.js
         - media/js/newsblur/models/*.js
         - media/js/newsblur/views/*.js
