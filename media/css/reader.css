@@ -3225,6 +3225,7 @@ background: transparent;
     background: -moz-linear-gradient(center top , #F4F5F2 0%, #E8EBE4 100%);
     background-image: linear-gradient(top, #F4F5F2, #E8EBE4);
     z-index: 10;
+    height: 30px;
 }
 
 .NB-taskbar {
@@ -3396,6 +3397,11 @@ background: transparent;
 }
 .NB-feed-taskbar .NB-task-button {
     padding: 6px 8px;
+    cursor: pointer;
+    opacity: .9;
+}
+.NB-feed-taskbar .NB-task-button:hover {
+    opacity: 1;
 }
 .NB-feed-taskbar .NB-task-add {
     float: left;
@@ -4052,18 +4058,10 @@ form.opml_import_form input {
 }
 .NB-intelligence-slider .NB-intelligence-slider-control {
     height: 17px;
-    text-transform: uppercase;
-    text-shadow: 0 1px 0 #C8C8C8;
-    text-align: center;
     line-height: 17px;
     position: relative;
     padding: 0 8px;
 }
-.NB-intelligence-slider .NB-intelligence-slider-control.NB-active {
-    color: white;
-    text-shadow: 0 1px 0 #303030;
-}
-
 .NB-narrow .NB-intelligence-slider .NB-intelligence-label {
     display: none;
 }
@@ -7567,7 +7565,6 @@ form.opml_import_form input {
     float: left;
 /*    height: 14px;*/
     width: auto;
-    color: white;
     overflow: hidden;
     text-align: center;
     text-transform: uppercase;
@@ -7579,14 +7576,6 @@ form.opml_import_form input {
     clear: none;
     padding: 1px 12px 0;
     font-size: 12px;
-    color: #E0E0E0;
-}
-.NB-modal-preferences .segmented-control li:hover {
-    background-color: #639510;
-}
-.NB-modal-preferences .segmented-control li.NB-active {
-    color: white;
-    background-color: transparent;
 }
 
 /* ================== */

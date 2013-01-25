@@ -1,5 +1,5 @@
 ul.segmented-control {
-    background-color: #595959;
+    background-color: #AEB0A7;
     list-style-type: none;
     width: 120px;
     overflow: hidden;
@@ -18,24 +18,26 @@ ul.segmented-control {
 
 .segmented-control li {
     background: none;
-    background-color: #909090;
+    background-color: #DDDFD9;
     float: left;
     margin-left: 1px;
     cursor: pointer;
     margin: 0;
     padding: 0;
-}
 
-.segmented-control li {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .1)), to(rgba(255, 255, 255, 0)));
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .3)), to(rgba(255, 255, 255, 0)));
     
-    background-image: -moz-linear-gradient(0 0 -90deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, 0));
-}
+    background-image: -moz-linear-gradient(0 0 -90deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0));
 
-.segmented-control li {
-    -webkit-box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .1);
-    -moz-box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .1);
-    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, .1);
+    -webkit-box-shadow: inset 0 2px 2px rgba(0, 0, 0, .1);
+    -moz-box-shadow: inset 0 2px 2px rgba(0, 0, 0, .1);
+    box-shadow: inset 0 2px 2px rgba(0, 0, 0, .1);
+
+    color: #8F9289;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
+    text-align: center;
+    border-right: 1px solid rgba(0, 0, 0, .2);
 }
 
 .segmented-control li:first-child {
@@ -56,48 +58,29 @@ ul.segmented-control {
     -moz-border-radius-bottomright: 3px;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
-}
-
-.segmented-control a {
-    font-size: 12px;
-    font-weight: bold;
-    line-height: 24px;
-    text-align: center;
-    text-decoration: none;
-    display: block;
-    width: 70px;
-    height: 25px;
-}
-
-.segmented-control a {
-    color: #262626;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .15);
-}
-
-.segmented-control li:active a {
-    text-shadow: 0 1px 0 rgba(255, 255, 255, .1);
-    position: relative;
-    top: 1px;
+    border-right: none;
 }
 
 .segmented-control li:active,
 .segmented-control li.NB-active {
     background-image:
-        -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 0)), to(rgba(255, 255, 255, .1))),
-        url(/media/img/reader/background-control.png);
+        -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, .05))),
+        url(/media/img/reader/background-control-light.png);
     
     background-image:
-        -moz-linear-gradient(0% 0% -90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .1)),
-        url(/media/img/reader/background-control.png);
+        -moz-linear-gradient(0% 0% -90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, .05)),
+        url(/media/img/reader/background-control-light.png);
     
-    background-color: #898989;
+    background-color: #FDFDFD;
     
-    -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, .15),
-                        inset 0 0 5px rgba(0, 0, 0, .1);
-    -moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, .15),
-                     inset 0 0 5px rgba(0, 0, 0, .1);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .15),
-                inset 0 0 5px rgba(0, 0, 0, .1);
+    -webkit-box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
+                        inset 0 0 5px rgba(255, 255, 255, .1);
+    -moz-box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
+                     inset 0 0 5px rgba(255, 255, 255, .1);
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, .15),
+                inset 0 0 5px rgba(255, 255, 255, .1);
+
+    color: #303030;
 }
 
 .segmented-control li:active {
@@ -115,6 +98,8 @@ ul.segmented-control {
                      inset 0 0 5px rgba(0, 0, 0, .1);
     box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
                 inset 0 0 5px rgba(0, 0, 0, .1);
+
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
 }
 
 
