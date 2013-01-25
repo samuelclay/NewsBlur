@@ -2839,10 +2839,10 @@
                             $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first'),
                             $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest')
                         ]),
-                        (NEWSBLUR.Globals.is_admin && $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
+                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
                             $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
                             $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
-                        ]))
+                        ])
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-folder-move' }, [
