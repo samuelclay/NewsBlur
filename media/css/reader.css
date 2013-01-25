@@ -90,16 +90,49 @@ body {
 /* = Splash page = */
 /* =============== */
 
+.right-pane {
+    display: none !important;
+}
+.NB-show-reader .right-pane {
+    display: block !important;
+}
+.NB-splash {
+    display: block;
+}
+.NB-show-reader .NB-splash {
+    display: none;
+}
+#NB-splash {
+    display: block;
+}
+.NB-show-reader #NB-splash {
+    display: none;
+}
+#NB-splash-overlay {
+    display: block;
+}
+.NB-show-reader #NB-splash-overlay {
+    display: none;
+}
+.NB-splash-bottom {
+    display: block;
+}
+.NB-show-reader .NB-splash-bottom {
+    display: none;
+}
+
+
 .NB-splash-heading {
     display: none;
 }
 
 .NB-account {
-    float: left;
+    position: absolute;
+    right: 0;
     z-index: 1;
     overflow: hidden;
     width: 180px;
-    margin: 0 0 32px 0;
+    margin: 0 24px 32px 0;
 }
 
 .NB-account .NB-module-header-login {
@@ -3276,7 +3309,6 @@ background: transparent;
     border-left: 1px solid #828282;
 }
 
-.NB-taskbar .taskbar_nav_feeds,
 .NB-taskbar .taskbar_nav_view {
     float: left;
 }
@@ -3349,24 +3381,38 @@ background: transparent;
     cursor: pointer;
 }
 
-.NB-taskbar .task_button.NB-disabled {
+.NB-taskbar .task_button.NB-disabled,
+.NB-feed-taskbar .NB-task-button.NB-disabled {
     opacity: .3;
     cursor: default;
 }
 
-.NB-taskbar .task_button.NB-task-add .NB-task-image {
-    left: 12px;
+/* ================ */
+/* = Feed Taskbar = */
+/* ================ */
+
+.NB-feed-taskbar {
+    overflow: hidden;
+}
+.NB-feed-taskbar .NB-task-button {
+    padding: 6px 8px;
+}
+.NB-feed-taskbar .NB-task-add {
+    float: left;
+}
+.NB-feed-taskbar .NB-task-manage {
+    float: right;
+}
+.NB-feed-taskbar .NB-task-image {
+    width: 16px;
+    height: 16px;
+}
+.NB-feed-taskbar .NB-task-add .NB-task-image {
     background: transparent url('/media/embed/icons/silk/add.png') no-repeat 0 0;
 }
-.NB-taskbar .task_button.NB-task-manage .NB-task-image {
-    left: 12px;
+.NB-feed-taskbar .NB-task-manage .NB-task-image {
     background: transparent url('/media/embed/icons/silk/cog.png') no-repeat 0 0;
 }
-.NB-taskbar .task_button.task_profile .NB-task-image {
-    left: 12px;
-    background: transparent url('/media/embed/icons/silk/user.png') no-repeat 0 0;
-}
-
 
 .NB-taskbar .taskbar_nav_story {
   right: 0;
@@ -3640,6 +3686,11 @@ form.opml_import_form input {
     margin: 0 0 32px;
 }
 
+.NB-splash-modules {
+    max-width: 750px;
+    min-width: 500px;
+    position: relative;
+}
 .NB-splash-info {
   width: 100%;
   height: 55px;
@@ -3958,11 +4009,11 @@ form.opml_import_form input {
 /* ======================= */
 
 .NB-taskbar-intelligence {
-    position: absolute;
-    left: 90px;
-    top: 6px;
+    margin: 5px auto 0;
     font-size: 9px;
     white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
 }
 
 .NB-taskbar-intelligence.NB-modal-slider {
@@ -3993,6 +4044,7 @@ form.opml_import_form input {
 }
 
 .NB-intelligence-slider {
+    display: inline-block;
 }
 .NB-intelligence-slider .segmented-control {
     float: left;
@@ -4690,7 +4742,7 @@ form.opml_import_form input {
 /* =========================== */
 
 .NB-account .NB-module {
-    margin: 24px 0 0;
+    margin: 24px 0;
     padding: 0;
     clear: both;
     overflow: hidden;
@@ -4902,7 +4954,7 @@ form.opml_import_form input {
 /* ================== */
 
 .NB-modules-center {
-    margin: 24px 0 0 0px;
+    margin: 24px 204px 0 0px;
     padding: 0 24px;
     max-width: 500px;
     float: left;
@@ -4910,12 +4962,6 @@ form.opml_import_form input {
 
 .NB-modules-center .NB-module {
     margin: 0 0 24px;
-}
-
-@media screen and (max-width: 950px) {
-    .NB-modules-center {
-        display: none;
-    }
 }
 
 /* ============ */

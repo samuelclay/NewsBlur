@@ -197,7 +197,6 @@
         
         apply_resizable_layout: function(refresh) {
             var story_anchor = this.model.preference('story_pane_anchor');
-            var right_pane_hidden = !$('.right-pane').is(':visible');
             
             if (refresh) {
                 this.layout.contentLayout && this.layout.contentLayout.destroy();
@@ -310,15 +309,10 @@
             }
             this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions); 
 
-            if (!refresh) {
-                $('.right-pane').hide();
-            } else {
+            if (refresh) {
                 this.$s.$feed_stories.append(feed_stories_bin.children());
                 this.$s.$story_titles.append(story_titles_bin.children());
                 this.resize_window();
-                if (right_pane_hidden) {
-                    $('.right-pane').hide();
-                }
             }
         },
         
@@ -356,7 +350,7 @@
             var feed_pane_size = state.size;
             
             $('#NB-splash').css('left', feed_pane_size);
-            $pane.toggleClass("NB-narrow", this.layout.outerLayout.state.west.size < 240);
+            $pane.toggleClass("NB-narrow", this.layout.outerLayout.state.west.size < 220);
             this.flags.set_feed_pane_size = this.flags.set_feed_pane_size || _.debounce( _.bind(function() {
                 var feed_pane_size = this.layout.outerLayout.state.west.size;
                 this.model.preference('feed_pane_size', feed_pane_size);
@@ -408,10 +402,7 @@
             if (!$('.right-pane').is(':visible')) {
                 resize = true;
             }
-            $('.right-pane').show();
-            $('#NB-splash,.NB-splash').hide();
-            $('#NB-splash-overlay').hide();
-            $('.NB-splash-bottom').hide();
+            this.$s.$body.addClass('NB-show-reader');
 
             if (resize) {
                 this.$s.$layout.layout().resizeAll();
@@ -423,10 +414,7 @@
         
         show_splash_page: function(skip_router) {
             this.reset_feed();
-            $('.right-pane').hide();
-            $('#NB-splash,.NB-splash').show();
-            $('#NB-splash-overlay').show();
-            $('.NB-splash-bottom').show();
+            this.$s.$body.removeClass('NB-show-reader');
 
             if (!skip_router) {
                 NEWSBLUR.router.navigate('');

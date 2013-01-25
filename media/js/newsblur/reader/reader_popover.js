@@ -14,14 +14,13 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 left: 0
             }
         }, this.options, options);
-        console.log(["options", options, this.options]);
         this.render();
     },
     
     render: function() {
         var self = this;
         this._open = true;
-        console.log(["popover render", this.$el, this.options]);
+
         var $popover = $.make("div", { className: "NB-popover popover fade" }, [
             $.make('div', { className: "arrow" }),
             $.make('div', { className: "popover-inner" }, [
@@ -49,7 +48,6 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
     },
     
     close: function(e, hide_callback) {
-        console.log(["close", hide_callback, this.$el, $.support.transition, this.$el.hasClass('fade')]);
         var $el = this.$el;
         var self = this;
         if (_.isFunction(e)) hide_callback = e;
@@ -59,7 +57,6 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
 
         function removeWithAnimation() {
             var timeout = setTimeout(function () {
-                console.log(["transition timeout", $el]);
                 $el.off($.support.transition.end);
                 self._open = false;
                 self.remove();
@@ -71,7 +68,6 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 self._open = false;
                 self.remove();
                 hide_callback();
-                console.log(["transition end", $el]);
             });
         }
 

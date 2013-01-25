@@ -32,7 +32,7 @@
 <h2 class="NB-splash-heading">- The best stories from your friends and favorite blogs, all in one place.</h2>
 
 <div id="NB-splash" style="left: {% firstof user_profile.feed_pane_size 240 %}px">
-
+    <div class="NB-splash-modules">
     <div class="NB-modules-center">
     
         {# {% render_interactions_module %} #}
@@ -153,7 +153,7 @@
     {% endif %}
 
   </div>
-  
+  </div>
 </div>
 
 {% render_feeds_skeleton %}

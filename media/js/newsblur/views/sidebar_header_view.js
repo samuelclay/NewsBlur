@@ -5,7 +5,7 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
     },
     
     events: {
-        'click .NB-feeds-header-dashboard' : 'show_splash_page'
+        'click .NB-feeds-header-user-dashboard' : 'show_splash_page'
     },
     
     initialize: function() {
