@@ -3076,36 +3076,36 @@
             $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
             if (type == 'site') {
                 $manage_menu_container.align($('.NB-task-manage'), 'top -left', {
-                    'top': -32, 
+                    'top': 0, 
                     'left': -2
                 });
                 $('.NB-task-manage').addClass('NB-hover');
                 $manage_menu_container.corner('tl tr 8px');
             } else if (type == 'feed' || type == 'folder' || type == 'story' || type == 'socialfeed') {
                 var left, top;
-                // NEWSBLUR.log(['menu open', $item, inverse, toplevel, type]);
+                NEWSBLUR.log(['menu open', $item, inverse, toplevel, type]);
                 if (inverse) {
                     var $align = $item;
                     if (type == 'feed') {
                         left = toplevel ? 2 : -20;
-                        top = toplevel ? 21 : 21;
+                        top = toplevel ? 1 : 1;
                     } else if (type == 'socialfeed') {
-                        left = toplevel ? 2 : -20;
-                        top = toplevel ? 21 : 21;
+                        left = 2;
+                        top = 1;
                     } else if (type == 'folder') {
                         left = toplevel ? 0 : -20;
-                        top = toplevel ? 23 : 24;
+                        top = toplevel ? 1 : 2;
                         $align = $('.folder_title', $item);
                     } else if (type == 'story') {
                         left = 4;
-                        top = 24    ;
+                        top = 2;
                         $align = $('.NB-story-manage-icon,.NB-feed-story-manage-icon', $item);
                         if (!$align.is(':visible')) {
                             $align = $('.NB-storytitles-sentiment', $item);
                         }
                     }
                     
-                    $manage_menu_container.align($align, 'top -left', {
+                    $manage_menu_container.align($align, 'bottom -left', {
                         'top': -1 * top, 
                         'left': left
                     });

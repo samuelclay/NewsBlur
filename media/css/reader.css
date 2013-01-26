@@ -1064,8 +1064,10 @@ background: transparent;
     font-weight: bold;
     font-size: 16px;
     padding: 2px 208px 2px 4px;
-    background: #dadada url('/media/css/jquery-ui/images/dadada_40x100_textures_03_highlight_soft_75.png') 0 50% repeat-x;
-    border-bottom: 2px solid #404040;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#F3F4EF));
+    background-image: -moz-linear-gradient(center top , #FEFEFE 0%, #F3F4EF 100%);
+    background-image: linear-gradient(top, #FEFEFE, #F3F4EF);
+    border-bottom: 1px solid #C2C5BE;
     position: relative;
     overflow: hidden;
 }
@@ -1086,6 +1088,28 @@ background: transparent;
 /*    float: left;*/
   display: block;
   margin-left: 24px;
+  color: #40413E;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
+}
+#story_titles .NB-feedbar .NB-feedbar-option {
+    color: rgba(0, 0, 0, .5);
+    border: 1px solid rgba(0, 0, 0, .1);
+    border-radius: 16px;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding: 0 4px 0 8px;
+    line-height: 14px;
+    margin: 0 0 -2px 6px;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+#story_titles .NB-feedbar .NB-feedbar-option .NB-icon {
+    float: right;
+    width: 16px;
+    height: 12px;
+    background: transparent url('/media/embed/icons/silk/bullet_arrow_down.png') no-repeat 0 -1px;
+    margin: 0 0 0 4px;
 }
 
 #story_titles .NB-feedbar .NB-feedbar-settings {

@@ -73,6 +73,14 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             <% } %>\
             <%= feed.get("feed_title") %>\
             <% if (type == "story") { %>\
+                <span class="NB-feedbar-option NB-feedbar-readfilter">\
+                    <div class="NB-icon"></div>\
+                    <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
+                </span>\
+                <span class="NB-feedbar-option NB-feedbar-order">\
+                    <div class="NB-icon"></div>\
+                    <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
+                </span>\
                 <span class="NB-feedbar-settings" title="Site settings"></span>\
             <% } %>\
           </span>\
@@ -256,6 +264,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         e.preventDefault();
         e.stopPropagation();
         
+        if (this.options.type == "story") return;
         if ($('.NB-modal-feedchooser').is(':visible')) return;
         
         NEWSBLUR.reader.mark_feed_as_read(this.model.id);
