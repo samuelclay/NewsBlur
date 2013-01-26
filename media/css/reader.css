@@ -1091,7 +1091,7 @@ background: transparent;
   color: #40413E;
   text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
 }
-#story_titles .NB-feedbar .NB-feedbar-option {
+#story_titles .NB-feedbar .NB-feedbar-options {
     color: rgba(0, 0, 0, .5);
     border: 1px solid rgba(0, 0, 0, .1);
     border-radius: 16px;
@@ -1104,7 +1104,7 @@ background: transparent;
     display: inline-block;
     cursor: pointer;
 }
-#story_titles .NB-feedbar .NB-feedbar-option .NB-icon {
+#story_titles .NB-feedbar .NB-feedbar-options .NB-icon {
     float: right;
     width: 16px;
     height: 12px;
@@ -1242,11 +1242,11 @@ background: transparent;
     background-position: 3px 5px;
 }
 
-#story_titles .NB-feedbar .feed .NB-feedlist-manage-icon:hover {
+#story_titles .NB-feedbar .NB-feedlist-manage-icon:hover {
     background: transparent url('/media/embed/icons/silk/bullet_arrow_down.png') no-repeat 3px 4px;
 }
 
-#story_titles .NB-feedbar .feed.NB-hover-inverse .NB-feedlist-manage-icon:hover {
+#story_titles .NB-feedbar .NB-hover-inverse .NB-feedlist-manage-icon:hover {
     background: transparent url('/media/embed/icons/silk/bullet_arrow_up.png') no-repeat 3px 4px;
 }
 
@@ -1332,6 +1332,23 @@ background: transparent;
 .NB-feeds-header .NB-feedlist-collapse-icon {
     display: none;
 }
+
+.NB-filter-popover .segmented-control {
+    display: inline-block;
+    margin: 4px 0 0;
+    width: auto;
+    color: white;
+    overflow: hidden;
+    text-align: center;
+    line-height: 18px;
+}
+.NB-filter-popover .segmented-control li {
+    clear: none;
+    padding: 2px 12px 0;
+    font-size: 11px;
+    width: 82px;
+}
+
 
 /* ============================= */
 /* = Story Titles Hidden Count = */

@@ -37,7 +37,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         $('body').append(this.$el);
         
         this.$el.addClass(this.options.placement.replace('-', '').replace(' ', '-'));
-        this.$el.align(this.options.anchor(), this.options.placement, this.options.offset);
+        this.$el.align(this.anchor(), this.options.placement, this.options.offset);
         this.$el.autohide({
             clickable: true,
             onHide: _.bind(this.close, this)
@@ -83,6 +83,26 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         }
         
         return false;
+    },
+    
+    anchor: function() {
+        if (_.isFunction(this.options.anchor)) {
+            return this.options.anchor();
+        } else {
+            return $(this.options.anchor);
+        }
+    }
+    
+}, {
+    
+    create: function(options) {
+        
+        if (this._popover && this._popover._open) {
+            this._popover.close();
+        } else {
+            this._popover = new this(options);
+        }
+        
     }
     
 });

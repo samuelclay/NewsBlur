@@ -1257,30 +1257,7 @@
 
             this.story_view = view;
         },
-        
-        change_view_setting: function(feed_id, setting, $feed) {
-            var changed = NEWSBLUR.assets.view_setting(feed_id, setting);
             
-            if (!changed) return;
-            
-            if (feed_id == this.active_feed && this.flags.social_view) {
-                this.open_social_stories(feed_id, {$feed: $feed});
-            } else if (feed_id == this.active_feed && this.flags.river_view) {
-                var folder_view = NEWSBLUR.assets.folders.get_view($feed);
-                if (folder_view) {
-                    var folder = folder_view.model;
-                } else {
-                    var folder = this.active_folder;
-                    $feed = folder.folder_view.$el;
-                }
-                this.open_river_stories($feed, folder);
-            } else if (feed_id == this.active_feed) {
-                this.open_feed(feed_id, {$feed: $feed});
-            }
-            
-            this.show_correct_feed_view_options_in_menu();
-        },
-        
         // ===============
         // = Feed Header =
         // ===============
@@ -2478,11 +2455,7 @@
             clearInterval(this.flags['bouncing_callout']);
             $.modal.close();
             
-            if (NEWSBLUR.add_feed && NEWSBLUR.add_feed._open) {
-                NEWSBLUR.add_feed.close();
-            } else {
-                NEWSBLUR.add_feed = new NEWSBLUR.ReaderAddFeed(options);
-            }
+            NEWSBLUR.add_feed = NEWSBLUR.ReaderAddFeed.create(options);
         },
         
         open_manage_feed_modal: function(feed_id) {
@@ -2686,17 +2659,6 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Insta-fetch stories')
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
-                            $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first'),
-                            $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest')
-                        ]),
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
-                            $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
-                            $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
-                        ])
-                    ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
@@ -2775,17 +2737,6 @@
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Mark as read')
                     ])),
                     $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-feed' }, [
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
-                            $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first'),
-                            $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest')
-                        ]),
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
-                            $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
-                            $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
-                        ])
-                    ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-feed-stats' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Statistics')
@@ -2829,17 +2780,6 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-folder-subfolder' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Create a new subfolder')
-                    ]),
-                    $.make('li', { className: 'NB-menu-separator' }),
-                    $.make('li', { className: 'NB-menu-subitem NB-menu-manage-controls NB-menu-manage-controls-folder' }, [
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-order' }, [
-                            $.make('li', { className: 'NB-view-setting-order-newest NB-active' }, 'Newest first'),
-                            $.make('li', { className: 'NB-view-setting-order-oldest' }, 'Oldest')
-                        ]),
-                        $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [
-                            $.make('li', { className: 'NB-view-setting-readfilter-all  NB-active' }, 'All stories'),
-                            $.make('li', { className: 'NB-view-setting-readfilter-unread' }, 'Unread only')
-                        ])
                     ]),
                     $.make('li', { className: 'NB-menu-separator' }),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-move NB-menu-manage-folder-move' }, [
@@ -3070,7 +3010,6 @@
             var toplevel = options.toplevel || $item.hasClass("NB-toplevel") ||
                            $item.children('.folder_title').hasClass("NB-toplevel");
             var $manage_menu = this.make_manage_menu(type, feed_id, story_id, inverse, $item);
-            this.show_correct_feed_view_options_in_menu($manage_menu);
             $manage_menu_container.empty().append($manage_menu);
             $manage_menu_container.data('item', $item && $item[0]);
             $('.NB-task-manage').parents('.NB-taskbar').css('z-index', 2);
@@ -3090,12 +3029,11 @@
                         left = toplevel ? 2 : -20;
                         top = toplevel ? 1 : 1;
                     } else if (type == 'socialfeed') {
-                        left = 2;
+                        left = 1;
                         top = 1;
                     } else if (type == 'folder') {
                         left = toplevel ? 0 : -20;
-                        top = toplevel ? 1 : 2;
-                        $align = $('.folder_title', $item);
+                        top = toplevel ? 1 : 1;
                     } else if (type == 'story') {
                         left = 4;
                         top = 2;
@@ -3250,29 +3188,6 @@
             $('.NB-task-manage').removeClass('NB-hover');
             
             this.blur_to_page({manage_menu: true});
-        },
-        
-        show_correct_feed_view_options_in_menu: function($manage_menu) {
-            $manage_menu = $manage_menu || $('.NB-menu-manage');
-            
-            if ($manage_menu.hasClass("NB-menu-manage-feed")) {
-                var feed_id = $manage_menu.data('feed_id');
-            } else {
-                var feed_id = 'river:' + $manage_menu.data('folder_name');
-            }
-
-            var order = NEWSBLUR.assets.view_setting(feed_id, 'order');
-            var read_filter = NEWSBLUR.assets.view_setting(feed_id, 'read_filter');
-            var $oldest = $('.NB-view-setting-order-oldest', $manage_menu);
-            var $newest = $('.NB-view-setting-order-newest', $manage_menu);
-            var $unread = $('.NB-view-setting-readfilter-unread', $manage_menu);
-            var $all = $('.NB-view-setting-readfilter-all', $manage_menu);
-            $oldest.toggleClass('NB-active', order == 'oldest');
-            $newest.toggleClass('NB-active', order != 'oldest');
-            $oldest.text('Oldest' + (order == 'oldest' ? ' first' : ''));
-            $newest.text('Newest' + (order != 'oldest' ? ' first' : ''));
-            $unread.toggleClass('NB-active', read_filter == 'unread');
-            $all.toggleClass('NB-active', read_filter != 'unread');
         },
         
         // ========================
@@ -4969,46 +4884,6 @@
                 var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
                 self.open_social_profile_modal(feed_id);
             });  
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-controls-feed .NB-menu-manage-view-setting-order li' }, function($t, $p){
-                e.preventDefault();
-                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                var $feed = $t.parents('.NB-menu-manage').data('$feed');
-                if ($t.hasClass('NB-view-setting-order-oldest')) {
-                    self.change_view_setting(feed_id, {order: 'oldest'}, $feed);
-                } else {
-                    self.change_view_setting(feed_id, {order: 'newest'}, $feed);
-                }
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-controls-folder .NB-menu-manage-view-setting-order li' }, function($t, $p){
-                e.preventDefault();
-                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
-                var $folder = $t.parents('.NB-menu-manage').data('$folder');
-                if ($t.hasClass('NB-view-setting-order-oldest')) {
-                    self.change_view_setting('river:'+folder_name, {order: 'oldest'}, $folder);
-                } else {
-                    self.change_view_setting('river:'+folder_name, {order: 'newest'}, $folder);
-                }
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-controls-feed .NB-menu-manage-view-setting-readfilter li' }, function($t, $p){
-                e.preventDefault();
-                var feed_id = $t.parents('.NB-menu-manage').data('feed_id');
-                var $feed = $t.parents('.NB-menu-manage').data('$feed');
-                if ($t.hasClass('NB-view-setting-readfilter-unread')) {
-                    self.change_view_setting(feed_id, {read_filter: 'unread'}, $feed);
-                } else {
-                    self.change_view_setting(feed_id, {read_filter: 'all'}, $feed);
-                }
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-menu-manage-controls-folder .NB-menu-manage-view-setting-readfilter li' }, function($t, $p){
-                e.preventDefault();
-                var folder_name = $t.parents('.NB-menu-manage').data('folder_name');
-                var $folder = $t.parents('.NB-menu-manage').data('$folder');
-                if ($t.hasClass('NB-view-setting-readfilter-unread')) {
-                    self.change_view_setting('river:'+folder_name, {read_filter: 'unread'}, $folder);
-                } else {
-                    self.change_view_setting('river:'+folder_name, {read_filter: 'all'}, $folder);
-                }
-            }); 
 
             $.targetIs(e, { tagSelector: '.NB-menu-manage-keyboard' }, function($t, $p){
                 e.preventDefault();

@@ -1,6 +1,16 @@
 NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
     
+    events: {
+        "click .NB-feedbar-options"         : "open_options_popover"
+    },
+    
     el: $('.NB-feedbar'),
+    
+    initialize: function() {
+        this.showing_fake_folder = NEWSBLUR.reader.flags['river_view'] && 
+            NEWSBLUR.reader.active_folder && 
+            NEWSBLUR.reader.active_folder.get('fake');
+    },
     
     render: function() {
         var $view;
@@ -17,9 +27,7 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                 feedbar_view: this
             }).render();
             $view.append(this.view.$el);
-        } else if (NEWSBLUR.reader.flags['river_view'] && 
-            NEWSBLUR.reader.active_folder && 
-            NEWSBLUR.reader.active_folder.get('fake')) {
+        } else if (this.showing_fake_folder) {
             var title = "All Site Stories";
             if (NEWSBLUR.reader.flags['social_view']) {
                 if (NEWSBLUR.reader.flags['global_blurblogs']) {
@@ -37,6 +45,12 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                     <div class="NB-folder-icon"></div>\
                     <div class="NB-feedlist-manage-icon"></div>\
                     <div class="folder_title_text"><%= folder_title %></div>\
+                    <span class="NB-feedbar-options">\
+                        <div class="NB-icon"></div>\
+                        <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter") %>\
+                        &middot;\
+                        <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
+                    </span>\
                 </div>\
             ', {
                 folder_title: title
@@ -153,6 +167,16 @@ NEWSBLUR.Views.StoryTitlesHeader = Backbone.View.extend({
                       .addClass('unread_threshold_negative');
             $indicator.animate({'opacity': 0}, {'duration': 500}).css('display', 'none');
         }
+    },
+    
+    open_options_popover: function() {
+        if (!this.showing_fake_folder) return;
+        
+        NEWSBLUR.FeedOptionsPopover.create({
+            anchor: this.$(".NB-feedbar-options"),
+            feed_id: this.model.id
+        });
     }
+
     
 });

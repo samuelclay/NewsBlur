@@ -18,6 +18,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
         "click .NB-feedbar-settings"        : "open_settings",
         "click .NB-feedbar-mark-feed-read"  : "mark_folder_as_read",
         "click .NB-story-title-indicator"   : "show_hidden_story_titles",
+        "click .NB-feedbar-options"         : "open_options_popover",
         "mouseenter"                        : "add_hover_inverse",
         "mouseleave"                        : "remove_hover_inverse"
     },
@@ -109,7 +110,12 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
                         <div class="NB-story-title-indicator-count"></div>\
                         <span class="NB-story-title-indicator-text">show hidden stories</span>\
                     </div>\
-                    <span class="NB-feedbar-settings" title="Site settings"></span>\
+                    <span class="NB-feedbar-options">\
+                        <div class="NB-icon"></div>\
+                        <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "read_filter") %>\
+                        &middot;\
+                        <%= NEWSBLUR.assets.view_setting("river:"+folder_title, "order") %>\
+                    </span>\
                     <div class="NB-feedbar-mark-feed-read">Mark All as Read</div>\
               <% } %>\
             </div>\
@@ -337,7 +343,15 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     
     show_hidden_story_titles: function() {
         NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
+    },
+    
+    open_options_popover: function() {
+        NEWSBLUR.FeedOptionsPopover.create({
+            anchor: this.$(".NB-feedbar-options"),
+            feed_id: "river:" + this.options.folder_title
+        });
     }
+
 
     
 });

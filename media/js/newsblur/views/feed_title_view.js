@@ -12,6 +12,7 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
         "click .NB-feedbar-statistics"      : "open_statistics",
         "click .NB-feedbar-settings"        : "open_settings",
         "click .NB-feedlist-manage-icon"    : "show_manage_menu",
+        "click .NB-feedbar-options"         : "open_options_popover",
         "dblclick"                          : "open_feed_link",
         "click"                             : "open",
         "mouseenter"                        : "add_hover_inverse",
@@ -73,15 +74,12 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
             <% } %>\
             <%= feed.get("feed_title") %>\
             <% if (type == "story") { %>\
-                <span class="NB-feedbar-option NB-feedbar-readfilter">\
+                <span class="NB-feedbar-options">\
                     <div class="NB-icon"></div>\
                     <%= NEWSBLUR.assets.view_setting(feed.id, "read_filter") %>\
-                </span>\
-                <span class="NB-feedbar-option NB-feedbar-order">\
-                    <div class="NB-icon"></div>\
+                    &middot;\
                     <%= NEWSBLUR.assets.view_setting(feed.id, "order") %>\
                 </span>\
-                <span class="NB-feedbar-settings" title="Site settings"></span>\
             <% } %>\
           </span>\
           <% if (type == "story") { %>\
@@ -331,6 +329,13 @@ NEWSBLUR.Views.FeedTitleView = Backbone.View.extend({
     
     show_hidden_story_titles: function() {
         NEWSBLUR.app.story_titles_header.show_hidden_story_titles();
+    },
+    
+    open_options_popover: function() {
+        NEWSBLUR.FeedOptionsPopover.create({
+            anchor: this.$(".NB-feedbar-options"),
+            feed_id: this.model.id
+        });
     }
     
 });
