@@ -138,7 +138,7 @@ NEWSBLUR.Views.Folder = Backbone.View.extend({
     },
     
     update_title: function() {
-        this.$('.folder_title_text').eq(0).html(this.options.folder_title);
+        this.$('.folder_title_text').eq(0).html(this.model.get('folder_title'));
     },
     
     update_selected: function() {
