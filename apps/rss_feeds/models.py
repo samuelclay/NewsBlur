@@ -1573,6 +1573,7 @@ class MStarredStory(mongo.Document):
     story_content_z          = mongo.BinaryField()
     story_original_content   = mongo.StringField()
     story_original_content_z = mongo.BinaryField()
+    original_text_z          = mongo.BinaryField()
     story_content_type       = mongo.StringField(max_length=255)
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
@@ -1611,7 +1612,19 @@ class MStarredStory(mongo.Document):
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()[:6]
-    
+
+    def fetch_original_text(self, force=False, request=None):
+        original_text_z = self.original_text_z
+        
+        if not original_text_z or force:
+            ti = TextImporter(self, request=request)
+            original_text = ti.fetch()
+        else:
+            logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
+            original_text = zlib.decompress(original_text_z)
+        
+        return original_text
+        
 
 class MFeedFetchHistory(mongo.Document):
     feed_id = mongo.IntField()

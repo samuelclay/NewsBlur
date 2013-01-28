@@ -23,13 +23,18 @@ class TextImporter:
             'Connection': 'close',
         }
     
-    def fetch(self):
-        html = requests.get(self.story.story_permalink, headers=self.headers)
-        original_text_doc = readability.Document(html.text, url=html.url, debug=settings.DEBUG)
-        content = original_text_doc.summary(html_partial=True)
+    def fetch(self, skip_save=False):
+        try:
+            html = requests.get(self.story.story_permalink, headers=self.headers)
+            original_text_doc = readability.Document(html.text, url=html.url, debug=settings.DEBUG)
+            content = original_text_doc.summary(html_partial=True)
+        except:
+            content = None
+        
         if content:
-            self.story.original_text_z = zlib.compress(content)
-            self.story.save()
+            if not skip_save:
+                self.story.original_text_z = zlib.compress(content)
+                self.story.save()
             logging.user(self.request, "~SN~FYFetched ~FGoriginal text~FY: now ~SB%s bytes~SN vs. was ~SB%s bytes" % (
                 len(unicode(content)),
                 self.story.story_content_z and len(zlib.decompress(self.story.story_content_z))

@@ -3,7 +3,7 @@ from utils import log as logging
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 from django.conf import settings
-# from mongoengine.queryset import OperationError
+from mongoengine.queryset import NotUniqueError
 from apps.rss_feeds.models import Feed
 from apps.reader.models import UserSubscription
 from apps.analyzer.models import MClassifierTitle, MClassifierAuthor, MClassifierFeed, MClassifierTag
@@ -80,10 +80,10 @@ def save_classifier(request):
                     if content_type == 'feed':
                         if not post_content.startswith('social:'):
                             classifier_dict['feed_id'] = post_content
-                    # try:
-                    classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
-                    # except OperationError:
-                    #     continue
+                    try:
+                        classifier, created = ClassifierCls.objects.get_or_create(**classifier_dict)
+                    except NotUniqueError:
+                        continue
                     if score == 0:
                         classifier.delete()
                     elif classifier.score != score:

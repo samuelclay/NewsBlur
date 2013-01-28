@@ -1899,11 +1899,17 @@ class MSharedStory(mongo.Document):
         
         return image_sizes
     
-    def fetch_original_text(self):
-        ti = TextImporter(self)
-        original_text_doc = ti.fetch()
+    def fetch_original_text(self, force=False, request=None):
+        original_text_z = self.original_text_z
         
-        return original_text_doc
+        if not original_text_z or force:
+            ti = TextImporter(self, request=request)
+            original_text = ti.fetch()
+        else:
+            logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
+            original_text = zlib.decompress(original_text_z)
+        
+        return original_text
 
 class MSocialServices(mongo.Document):
     user_id               = mongo.IntField()
