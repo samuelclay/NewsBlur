@@ -41,11 +41,14 @@ def twitter_connect(request):
         # Be sure that two people aren't using the same Twitter account.
         existing_user = MSocialServices.objects.filter(twitter_uid=unicode(twitter_user.id))
         if existing_user and existing_user[0].user_id != request.user.pk:
-            user = User.objects.get(pk=existing_user[0].user_id)
-            logging.user(request, "~BB~FRFailed Twitter connect, another user: %s" % user.username)
-            return dict(error=("Another user (%s, %s) has "
-                               "already connected with those Twitter credentials."
-                               % (user.username, user.email or "no email")))
+            try:
+                user = User.objects.get(pk=existing_user[0].user_id)
+                logging.user(request, "~BB~FRFailed Twitter connect, another user: %s" % user.username)
+                return dict(error=("Another user (%s, %s) has "
+                                   "already connected with those Twitter credentials."
+                                   % (user.username, user.email or "no email")))
+            except User.DoesNotExist:
+                existing_user.delete()
 
         social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
         social_services.twitter_uid = unicode(twitter_user.id)
@@ -102,11 +105,14 @@ def facebook_connect(request):
         # Be sure that two people aren't using the same Facebook account.
         existing_user = MSocialServices.objects.filter(facebook_uid=uid)
         if existing_user and existing_user[0].user_id != request.user.pk:
-            user = User.objects.get(pk=existing_user[0].user_id)
-            logging.user(request, "~BB~FRFailed FB connect, another user: %s" % user.username)
-            return dict(error=("Another user (%s, %s) has "
-                               "already connected with those Facebook credentials."
-                               % (user.username, user.email or "no email")))
+            try:
+                user = User.objects.get(pk=existing_user[0].user_id)
+                logging.user(request, "~BB~FRFailed FB connect, another user: %s" % user.username)
+                return dict(error=("Another user (%s, %s) has "
+                                   "already connected with those Facebook credentials."
+                                   % (user.username, user.email or "no email")))
+            except User.DoesNotExist:
+                existing_user.delete()
 
         social_services, _ = MSocialServices.objects.get_or_create(user_id=request.user.pk)
         social_services.facebook_uid = uid
