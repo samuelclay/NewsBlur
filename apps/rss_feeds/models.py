@@ -791,7 +791,7 @@ class Feed(models.Model):
             logging.debug("   ---> [%-30s] ~FBChecking ~SB%s~SN new/updated against ~SB%s~SN stories" % (
                           self.title[:30],
                           len(stories),
-                          len(existing_stories)))
+                          len(existing_stories.keys())))
         
         for story in stories:
             if not story.get('title'):
@@ -1112,12 +1112,13 @@ class Feed(models.Model):
         story_in_system = None
         story_has_changed = False
         story_link = self.get_permalink(story)
+        existing_stories_guids = existing_stories.keys()
         # story_pub_date = story.get('published')
         # story_published_now = story.get('published_now', False)
         # start_date = story_pub_date - datetime.timedelta(hours=8)
         # end_date = story_pub_date + datetime.timedelta(hours=8)
         
-        for existing_story in existing_stories:
+        for existing_story in existing_stories.values():
             content_ratio = 0
             # existing_story_pub_date = existing_story.story_date
             # print 'Story pub date: %s %s' % (story_published_now, story_pub_date)
@@ -1135,7 +1136,10 @@ class Feed(models.Model):
                 
             if isinstance(existing_story.id, unicode):
                 existing_story.story_guid = existing_story.id
-            if story.get('guid') and story.get('guid') == existing_story.story_guid:
+            if (story.get('guid') in existing_stories_guids and 
+                story.get('guid') != existing_story.story_guid):
+                continue
+            elif story.get('guid') == existing_story.story_guid:
                 story_in_system = existing_story
             
             # Title distance + content distance, checking if story changed
@@ -1167,8 +1171,10 @@ class Feed(models.Model):
                 
             if story_in_system and not story_has_changed:
                 if story_content != existing_story_content:
+                    # print "Content difference - %s/%s" % (story_content, existing_story_content)
                     story_has_changed = True
                 if story_link != existing_story.story_permalink:
+                    # print "Permalink difference - %s/%s" % (story_link, existing_story.story_permalink)
                     story_has_changed = True
                 # if story_pub_date != existing_story.story_date:
                 #     story_has_changed = True
@@ -1573,6 +1579,7 @@ class MStarredStory(mongo.Document):
     story_content_z          = mongo.BinaryField()
     story_original_content   = mongo.StringField()
     story_original_content_z = mongo.BinaryField()
+    original_text_z          = mongo.BinaryField()
     story_content_type       = mongo.StringField(max_length=255)
     story_author_name        = mongo.StringField()
     story_permalink          = mongo.StringField()
@@ -1611,7 +1618,19 @@ class MStarredStory(mongo.Document):
     @property
     def guid_hash(self):
         return hashlib.sha1(self.story_guid).hexdigest()[:6]
-    
+
+    def fetch_original_text(self, force=False, request=None):
+        original_text_z = self.original_text_z
+        
+        if not original_text_z or force:
+            ti = TextImporter(self, request=request)
+            original_text = ti.fetch()
+        else:
+            logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
+            original_text = zlib.decompress(original_text_z)
+        
+        return original_text
+        
 
 class MFeedFetchHistory(mongo.Document):
     feed_id = mongo.IntField()

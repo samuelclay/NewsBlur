@@ -10,7 +10,7 @@ import random
 import requests
 from collections import defaultdict
 from BeautifulSoup import BeautifulSoup
-# from mongoengine.queryset import OperationError
+from mongoengine.queryset import NotUniqueError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -963,10 +963,10 @@ class MSocialSubscription(mongo.Document):
                                                             "read_date": date,
                                                             "story_date": story.shared_date,
                                                         })
-            # except OperationError:
-            #     if not mark_all_read:
-            #         logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
-            #     continue
+            except NotUniqueError:
+                if not mark_all_read:
+                    logging.user(request, "~FRAlready saved read story: %s" % story.story_guid)
+                continue
             except MUserStory.MultipleObjectsReturned:
                 if not mark_all_read:
                     logging.user(request, "~BR~FW~SKMultiple read stories: %s" % story.story_guid)
@@ -1965,11 +1965,17 @@ class MSharedStory(mongo.Document):
         
         return image_sizes
     
-    def fetch_original_text(self):
-        ti = TextImporter(self)
-        original_text_doc = ti.fetch()
+    def fetch_original_text(self, force=False, request=None):
+        original_text_z = self.original_text_z
         
-        return original_text_doc
+        if not original_text_z or force:
+            ti = TextImporter(self, request=request)
+            original_text = ti.fetch()
+        else:
+            logging.user(request, "~FYFetching ~FGoriginal~FY story text, ~SBfound.")
+            original_text = zlib.decompress(original_text_z)
+        
+        return original_text
 
 class MSocialServices(mongo.Document):
     user_id               = mongo.IntField()

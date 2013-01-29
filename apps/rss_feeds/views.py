@@ -123,6 +123,7 @@ def feed_autocomplete(request):
     
 @json.json_view
 def load_feed_statistics(request, feed_id):
+    user = get_user(request)
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
     feed.save_feed_story_history_statistics()
@@ -171,7 +172,7 @@ def load_feed_statistics(request, feed_id):
     stats['classifier_counts'] = json.decode(feed.data.feed_classifier_counts)
     
     # Fetch histories
-    timezone = request.user.profile.timezone
+    timezone = user.profile.timezone
     stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id, timezone=timezone)
     stats['page_fetch_history'] = MPageFetchHistory.feed_history(feed_id, timezone=timezone)
     stats['feed_push_history'] = MFeedPushHistory.feed_history(feed_id, timezone=timezone)
@@ -184,7 +185,8 @@ def load_feed_statistics(request, feed_id):
 def load_feed_settings(request, feed_id):
     stats = dict()
     feed = get_object_or_404(Feed, pk=feed_id)
-    timezone = request.user.profile.timezone
+    user = get_user(request)
+    timezone = user.profile.timezone
     
     stats['duplicate_addresses'] = feed.duplicate_addresses.all()
     stats['feed_fetch_history'] = MFeedFetchHistory.feed_history(feed_id, timezone=timezone)

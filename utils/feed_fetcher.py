@@ -216,7 +216,7 @@ class ProcessFeed:
             stories.append(story)
             story_guids.append(story.get('guid'))
 
-        existing_stories = list(MStory.objects(
+        existing_stories = dict((s.story_guid, s) for s in MStory.objects(
             # story_guid__in=story_guids,
             story_date__gte=start_date,
             story_feed_id=self.feed.pk

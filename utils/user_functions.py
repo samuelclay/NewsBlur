@@ -83,6 +83,8 @@ def extract_user_agent(request):
         platform = 'Blar'
     elif 'Android' in user_agent:
         platform = 'Androd'
+    elif 'Metroblur' in user_agent:
+        platform = 'Metrob'
     elif 'MSIE' in user_agent:
         platform = 'IE'
         if 'MSIE 9' in user_agent:

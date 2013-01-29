@@ -3924,7 +3924,10 @@
         },
         
         feed_unread_count: function(feed_id) {
-            this.model.feed_unread_count(feed_id || this.active_feed);
+            feed_id = feed_id || this.active_feed;
+            if (!feed_id) return;
+            
+            this.model.feed_unread_count(feed_id);
         },
         
         // ===================
@@ -5439,10 +5442,6 @@
                 self.open_river_stories();
             });
             $document.bind('keydown', 'u', function(e) {
-                e.preventDefault();
-                self.mark_active_story_read();
-            });
-            $document.bind('keydown', 'm', function(e) {
                 e.preventDefault();
                 self.mark_active_story_read();
             });

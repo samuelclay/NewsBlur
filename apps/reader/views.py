@@ -589,7 +589,7 @@ def load_single_feed(request, feed_id):
                 feed_tags=feed_tags, 
                 feed_authors=feed_authors, 
                 classifiers=classifiers,
-                last_update=last_update,
+                updated=last_update,
                 feed_id=feed.pk,
                 elapsed_time=round(float(timediff), 2))
     
