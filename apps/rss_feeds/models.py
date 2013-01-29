@@ -84,12 +84,13 @@ class Feed(models.Model):
         if not self.feed_title:
             self.feed_title = "[Untitled]"
             self.save()
-        return "%s (%s - %s/%s/%s)" % (
+        return "%s (%s - %s/%s/%s)%s" % (
             self.feed_title, 
             self.pk, 
             self.num_subscribers,
             self.active_subscribers,
-            self.premium_subscribers)
+            self.premium_subscribers,
+            (" [B: %s]" % self.branch_from_feed if self.branch_from_feed else ""))
     
     @property
     def title(self):
@@ -191,25 +192,25 @@ class Feed(models.Model):
             return self
         except IntegrityError, e:
             logging.debug(" ---> ~FRFeed save collision (%s), checking dupe..." % e)
-            duplicate_feed = Feed.objects.filter(feed_address=self.feed_address,
-                                                 feed_link=self.feed_link)
-            if not duplicate_feed:
+            duplicate_feeds = Feed.objects.filter(feed_address=self.feed_address,
+                                                  feed_link=self.feed_link)
+            if not duplicate_feeds:
                 # Feed has been deleted. Just ignore it.
-                logging.debug("%s: %s" % (self.feed_address, duplicate_feed))
+                logging.debug("%s: %s" % (self.feed_address, duplicate_feeds))
                 logging.debug(' ***> [%-30s] Feed deleted (%s).' % (unicode(self)[:30], self.pk))
                 return
 
-            if self.pk != duplicate_feed[0].pk:
-                logging.debug(" ---> ~FRFound different feed (%s), merging..." % duplicate_feed[0])
-                feed = Feed.get_by_id(merge_feeds(duplicate_feed[0].pk, self.pk))
+            if self.pk != duplicate_feeds[0].pk:
+                logging.debug(" ---> ~FRFound different feed (%s), merging..." % duplicate_feeds[0])
+                feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
                 return feed
             else:
-                duplicate_feed = Feed.objects.filter(
+                duplicate_feeds = Feed.objects.filter(
                     hash_address_and_link=self.hash_address_and_link)
-                if self.pk != duplicate_feed[0].pk:
-                    feed = Feed.get_by_id(merge_feeds(duplicate_feed[0].pk, self.pk))
+                if self.pk != duplicate_feeds[0].pk:
+                    feed = Feed.get_by_id(merge_feeds(duplicate_feeds[0].pk, self.pk))
                     return feed
-                return duplicate_feed[0]
+                return duplicate_feeds[0]
                 
             return self
 
@@ -751,6 +752,8 @@ class Feed(models.Model):
         feed = disp.run_jobs()
         
         feed = Feed.get_by_id(feed.pk)
+        if not feed: return
+        
         feed.last_update = datetime.datetime.utcnow()
         feed.set_next_scheduled_update()
         
@@ -1783,21 +1786,27 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     except Feed.DoesNotExist:
         logging.info(" ***> Already deleted feed: %s" % duplicate_feed_id)
         return original_feed_id
-
-    if original_feed.num_subscribers < duplicate_feed.num_subscribers and not force:
+    
+    heavier_dupe = original_feed.num_subscribers < duplicate_feed.num_subscribers
+    branched_original = original_feed.branch_from_feed
+    if (heavier_dupe or branched_original) and not force:
         original_feed, duplicate_feed = duplicate_feed, original_feed
         original_feed_id, duplicate_feed_id = duplicate_feed_id, original_feed_id
+        if branched_original:
+            original_feed.feed_address = duplicate_feed.feed_address
         
     logging.info(" ---> Feed: [%s - %s] %s - %s" % (original_feed_id, duplicate_feed_id,
                                                     original_feed, original_feed.feed_link))
-    logging.info("            Orig ++> %s: (%s subs) %s / %s" % (original_feed.pk, 
+    logging.info("            Orig ++> %s: (%s subs) %s / %s %s" % (original_feed.pk, 
                                                   original_feed.num_subscribers,
                                                   original_feed.feed_address,
-                                                  original_feed.feed_link))
-    logging.info("            Dupe --> %s: (%s subs) %s / %s" % (duplicate_feed.pk,
+                                                  original_feed.feed_link,
+                                                  " [B: %s]" % original_feed.branch_from_feed if original_feed.branch_from_feed else ""))
+    logging.info("            Dupe --> %s: (%s subs) %s / %s %s" % (duplicate_feed.pk,
                                                   duplicate_feed.num_subscribers,
                                                   duplicate_feed.feed_address,
-                                                  duplicate_feed.feed_link))
+                                                  duplicate_feed.feed_link,
+                                                  " [B: %s]" % duplicate_feed.branch_from_feed if duplicate_feed.branch_from_feed else ""))
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by('-pk')
     for user_sub in user_subs:
@@ -1836,6 +1845,7 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
     else:
         logging.debug(" ***> Duplicate feed is the same as original feed. Panic!")
     logging.debug(' ---> Deleted duplicate feed: %s/%s' % (duplicate_feed, duplicate_feed_id))
+    original_feed.branch_from_feed = None
     original_feed.count_subscribers()
     original_feed.save()
     logging.debug(' ---> Now original subscribers: %s' %
