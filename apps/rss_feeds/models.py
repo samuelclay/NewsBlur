@@ -90,7 +90,7 @@ class Feed(models.Model):
             self.num_subscribers,
             self.active_subscribers,
             self.premium_subscribers,
-            (" [B: %s]" % self.branch_from_feed if self.branch_from_feed else ""))
+            (" [B: %s]" % self.branch_from_feed.pk if self.branch_from_feed else ""))
     
     @property
     def title(self):
@@ -1801,12 +1801,12 @@ def merge_feeds(original_feed_id, duplicate_feed_id, force=False):
                                                   original_feed.num_subscribers,
                                                   original_feed.feed_address,
                                                   original_feed.feed_link,
-                                                  " [B: %s]" % original_feed.branch_from_feed if original_feed.branch_from_feed else ""))
+                                                  " [B: %s]" % original_feed.branch_from_feed.pk if original_feed.branch_from_feed else ""))
     logging.info("            Dupe --> %s: (%s subs) %s / %s %s" % (duplicate_feed.pk,
                                                   duplicate_feed.num_subscribers,
                                                   duplicate_feed.feed_address,
                                                   duplicate_feed.feed_link,
-                                                  " [B: %s]" % duplicate_feed.branch_from_feed if duplicate_feed.branch_from_feed else ""))
+                                                  " [B: %s]" % duplicate_feed.branch_from_feed.pk if duplicate_feed.branch_from_feed else ""))
 
     user_subs = UserSubscription.objects.filter(feed=duplicate_feed).order_by('-pk')
     for user_sub in user_subs:
