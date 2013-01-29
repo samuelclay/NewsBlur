@@ -680,7 +680,9 @@
             
             var $feeds = $('.feed:visible:not(.NB-empty)', $feed_list).filter(function() {
               var $this = $(this);
-              if (unread_view == 'positive') {
+              if ($this.hasClass('selected')) {
+                  return true;
+              } else if (unread_view == 'positive') {
                 return $this.is('.unread_positive');
               } else if (unread_view == 'neutral') {
                 return $this.is('.unread_positive,.unread_neutral');
@@ -692,7 +694,7 @@
               $next_feed = $feeds.first();
             } else {
               $feeds.each(function(i) {
-                  if (this == $current_feed[0]) {
+                  if (this == $current_feed.get(0)) {
                       current_feed = i;
                       return false;
                   }
