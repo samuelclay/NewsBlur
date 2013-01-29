@@ -450,6 +450,11 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                 this.user_profiles.add(profiles);
             }
             
+            if (data.updated) {
+                var feed = this.get_feed(feed_id);
+                feed.set('updated', data.updated);
+            }
+            
             if (data.stories && first_load) {
                 this.feed_tags = data.feed_tags || {};
                 this.feed_authors = data.feed_authors || {};
