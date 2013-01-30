@@ -21,6 +21,8 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
         "click .NB-tab" : "switch_tab"
     },
     
+    end_of_list: {},
+    
     initialize: function(options) {
         this.options = _.extend({}, this.options, options);
         NEWSBLUR.ReaderPopover.prototype.initialize.call(this);
@@ -61,7 +63,6 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
             $.make('div', { className: 'NB-activities-container ' + (this.options.tab == 'activities' && 'NB-active') })
         ]);
         
-        console.log(["render", this.$el, $tab]);
         this.$el.html($tab);
         this.$el.removeClass("NB-active-interactions");
         this.$el.removeClass("NB-active-activities");
@@ -80,12 +81,21 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
     show_loading: function() {
         this.hide_loading();
         
-        var $loading = $.make('div', { className: "NB-loading" });
-        this.$(".NB-"+this.options.tab+"-container").append($loading);
+        var $endline = $.make('div', { className: "NB-end-line NB-short" });
+        $endline.css({'background': '#E1EBFF'});
+        this.$(".NB-"+this.options.tab+"-container").append($endline);
+        
+        $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+                .animate({'backgroundColor': '#E1EBFF'}, 1050);
+        this.interactions_loading = setInterval(function() {
+            $endline.animate({'backgroundColor': '#5C89C9'}, {'duration': 650})
+                    .animate({'backgroundColor': '#E1EBFF'}, 1050);
+        }, 1500);        
     },
     
     hide_loading: function() {
-        this.$(".NB-loading").remove();
+        clearInterval(this.interactions_loading);
+        this.$(".NB-end-line").remove();
     },
     
     fetch_next_page: function() {
@@ -99,12 +109,27 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
             if (type != this.options.tab) return;
             this.fetching = false;
             this.hide_loading();
-            this.$(".NB-"+this.options.tab+"-container").append($(resp));
-            this.fill_out();
+            var $interactions = $(resp);
+            if (!resp || !$(".NB-interaction", $interactions).length) {
+                this.no_more();
+            } else {
+                this.$(".NB-"+this.options.tab+"-container").append($interactions);
+                this.fill_out();
+            }
         }, this));
     },
     
+    no_more: function() {
+        this.end_of_list[this.options.tab] = true;
+        var $end = $.make('div', { className: "NB-end-line" }, [
+            $.make('div', { className: 'NB-fleuron' })
+        ]);
+        this.$(".NB-"+this.options.tab+"-container").append($end);
+    },
+    
     fill_out: function() {
+        if (this.end_of_list[this.options.tab]) return;
+        
         var $container = this.$(".NB-"+this.options.tab+"-container");
         var containerHeight = $container.height();
         var scrollTop = $container.scrollTop();
@@ -118,6 +143,7 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
     
     reset: function(type) {
+        this.end_of_list = {};
         this.options.tab = type;
         this.page = 0;
         this.fetching = false;

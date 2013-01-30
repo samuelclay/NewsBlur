@@ -191,9 +191,9 @@ NEWSBLUR.log = function(msg) {
             };
             me.removeHide = function() {
                 console.log(["remove autohide"]);
-              $(document).unbind('click', me._autohider);
-              $(document).unbind('keypress', me._autohider);
-              $(document).unbind('keyup', me._checkesc);
+              $(document).unbind('click.autohide', me._autohider);
+              $(document).unbind('keypress.autohide', me._autohider);
+              $(document).unbind('keyup.autohide', me._checkesc);
               me._autohider = null;
               me._checkesc = null;
               me.forceHide = null;
@@ -211,9 +211,9 @@ NEWSBLUR.log = function(msg) {
                     me._autohider(e);
                 }
             };
-            $(document).on('click', this._autohider);
-            $(document).on('keypress', this._autohider);
-            $(document).on('keyup', this._checkesc);
+            $(document).bind('click.autohide', this._autohider);
+            $(document).bind('keypress.autohide', this._autohider);
+            $(document).bind('keyup.autohide', this._checkesc);
           }
           
           return this;

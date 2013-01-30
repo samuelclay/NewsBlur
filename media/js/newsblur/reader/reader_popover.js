@@ -109,7 +109,6 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
 }, {
     
     create: function(options) {
-        
         if (this._popover && this._popover._open) {
             this._popover.close();
         } else {

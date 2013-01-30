@@ -99,10 +99,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         if (NEWSBLUR.assets.flags['no_more_stories']) return;
         
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
-        var $endline = $('.NB-story-titles-end-stories-line', $story_titles);
+        var $endline = $('.NB-end-line', $story_titles);
         
         if (!$endline.length) {
-            $endline = $.make('div', { className: 'NB-story-titles-end-stories-line' });
+            var $endline = $.make('div', { className: "NB-end-line NB-short" });
             $story_titles.append($endline);
         }
         $endline.css({'background': '#E1EBFF'});
@@ -139,7 +139,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
     
     end_loading: function() {
-        var $endbar = NEWSBLUR.reader.$s.$story_titles.find('.NB-story-titles-end-stories-line');
+        var $endbar = NEWSBLUR.reader.$s.$story_titles.find('.NB-end-line');
         $endbar.remove();
         clearInterval(this.feed_stories_loading);
 
@@ -150,10 +150,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     
     show_no_more_stories: function() {
         var $story_titles = NEWSBLUR.reader.$s.$story_titles;
-        $('.NB-story-titles-end-stories-line', $story_titles).remove();
-        var $end_stories_line = $.make('div', { 
-            className: 'NB-story-titles-end-stories-line'
-        });
+        $('.NB-end-line', $story_titles).remove();
+        var $end_stories_line = $.make('div', { className: "NB-end-line" }, [
+            $.make('div', { className: 'NB-fleuron' })
+        ]);
 
         $story_titles.append($end_stories_line);
     },
