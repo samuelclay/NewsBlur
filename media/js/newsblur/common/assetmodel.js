@@ -41,6 +41,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
                                                                      abortIsNoSuccess: false, 
                                                                      domCompleteTrigger: true}); 
         this.ajax['statistics']  = $.manageAjax.create('statistics', {queue: 'clear', abortOld: true}); 
+        this.ajax['interactions']  = $.manageAjax.create('interactions', {queue: 'clear', abortOld: true}); 
         $.ajaxSettings.traditional = true;
     },
     
@@ -59,6 +60,9 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             clear_queue = true;
         }
         if (options['ajax_group'] == 'statistics') {
+            clear_queue = true;
+        }
+        if (options['ajax_group'] == 'interactions') {
             clear_queue = true;
         }
         
@@ -1068,14 +1072,24 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/social/interactions', {
             'page': page,
             'format': 'html'
-        }, callback, error_callback, {request_type: 'GET'});
+        }, function(data) {
+            callback(data, 'interactions');
+        }, error_callback, {
+            'ajax_group': 'interactions',
+            'request_type': 'GET'
+        });
     },
     
     load_activities_page: function(page, callback, error_callback) {
         this.make_request('/profile/activities', {
             'page': page,
             'format': 'html'
-        }, callback, error_callback, {request_type: 'GET'});
+        }, function(data) {
+            callback(data, 'activities');
+        }, error_callback, {
+            'ajax_group': 'interactions',
+            'request_type': 'GET'
+        });
     },
     
     approve_feed_in_moderation_queue: function(feed_id, date, callback) {

@@ -11,36 +11,33 @@
         {% if interaction.with_user %}data-username="{{ interaction.with_user.username }}"{% endif %}>
         {% if interaction.category == 'follow' %}
             <img class="NB-interaction-photo" src="{{ interaction.photo_url }}"  data-user-id="{{ interaction.with_user_id }}">
-            <div class="NB-interaction-date">
-                {{ interaction.time_since }} ago
-            </div>
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
                 </span> is now following you.
             </div>
+            <div class="NB-interaction-date">
+                {{ interaction.time_since }} ago
+            </div>
         {% endif %}
 
         {% if interaction.category == 'comment_reply' or interaction.category == 'reply_reply' %}
             <img class="NB-interaction-photo" src="{{ interaction.photo_url }}"  data-user-id="{{ interaction.with_user_id }}">
-            <div class="NB-interaction-date">
-                {{ interaction.time_since }} ago
-            </div>
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
                 </span> replied to your {% if interaction.category == 'comment_reply' %}comment{% else %}reply{% endif %}:
             </div>
             <div class="NB-interaction-content">
-                "<span class="NB-interaction-reply-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
+                "<span class="NB-interaction-reply-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
+            </div>
+            <div class="NB-interaction-date">
+                {{ interaction.time_since }} ago
             </div>
         {% endif %}
         
         {% if interaction.category == 'story_reshare' %}
             <img class="NB-interaction-photo" src="{{ interaction.photo_url }}"  data-user-id="{{ interaction.with_user_id }}">
-            <div class="NB-interaction-date">
-                {{ interaction.time_since }} ago
-            </div>
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
@@ -48,23 +45,26 @@
             </div>
             {% if interaction.content %}
                 <div class="NB-interaction-content">
-                    "<span class="NB-interaction-sharedstory-content NB-splash-link" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
+                    "<span class="NB-interaction-sharedstory-content" data-social-user-id="{{ interaction.feed_id }}">{{ interaction.content|safe|truncatewords:16 }}</span>"
                 </div>
             {% endif %}
+            <div class="NB-interaction-date">
+                {{ interaction.time_since }} ago
+            </div>
         {% endif %}
         
         {% if interaction.category == 'comment_like' %}
             <img class="NB-interaction-photo" src="{{ interaction.photo_url }}"  data-user-id="{{ interaction.with_user_id }}">
-            <div class="NB-interaction-date">
-                {{ interaction.time_since }} ago
-            </div>
             <div class="NB-interaction-title">
                 <span class="NB-interaction-username NB-splash-link" data-user-id="{{ interaction.with_user_id }}">
                     {{ interaction.with_user.username }}
                 </span> favorited your comments on <span class="NB-interaction-sharedstory-title NB-splash-link">{{ interaction.title|safe|truncatewords:6 }}</span>:
             </div>
             <div class="NB-interaction-content">
-                "<span class="NB-interaction-sharedstory-content NB-splash-link">{{ interaction.content|truncatewords:16 }}</span>"
+                "<span class="NB-interaction-sharedstory-content">{{ interaction.content|truncatewords:16 }}</span>"
+            </div>
+            <div class="NB-interaction-date">
+                {{ interaction.time_since }} ago
             </div>
         {% endif %}
     </li>

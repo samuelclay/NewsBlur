@@ -6,6 +6,7 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
         'width': 336,
         'anchor': '.NB-feeds-header-user-interactions',
         'placement': '-bottom',
+        'popover_class': 'NB-interactions-popover-container',
         'overlay_top': true,
         offset: {
             top: 36,
@@ -66,6 +67,9 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.$el.removeClass("NB-active-activities");
         this.$el.addClass("NB-active-" + this.options.tab);
         
+        this.$(".NB-interactions-container,.NB-activities-container").unbind('scroll')
+            .bind('scroll', _.bind(this.fill_out, this));
+        
         return this;
     },
     
@@ -85,13 +89,38 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
     },
     
     fetch_next_page: function() {
+        if (this.fetching) return;
         this.page += 1;
         this.show_loading();
+        this.fetching = true;
         
-        this.model['load_'+this.options.tab+'_page'](this.page, _.bind(function(resp) {
+        this.model['load_'+this.options.tab+'_page'](this.page, _.bind(function(resp, type) {
+            console.log(["type", type, this.options.tab]);
+            if (type != this.options.tab) return;
+            this.fetching = false;
             this.hide_loading();
             this.$(".NB-"+this.options.tab+"-container").append($(resp));
+            this.fill_out();
         }, this));
+    },
+    
+    fill_out: function() {
+        var $container = this.$(".NB-"+this.options.tab+"-container");
+        var containerHeight = $container.height();
+        var scrollTop = $container.scrollTop();
+        var $bottom = $(".NB-interaction,.NB-activity", $container).last();
+        var bottomOffset = $bottom.offset().top - $container.offset().top + $bottom.height();
+
+        if (bottomOffset < containerHeight) {
+            this.fetch_next_page();
+        }
+        
+    },
+    
+    reset: function(type) {
+        this.options.tab = type;
+        this.page = 0;
+        this.fetching = false;
     },
     
     // ==========
@@ -104,13 +133,11 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
         e.stopPropagation();
         
         if ($tab.hasClass("NB-tab-interactions")) {
-            this.options.tab = "interactions";
-            this.page = 0;
+            this.reset('interactions');
             this.render();
             this.fetch_next_page();
         } else if ($tab.hasClass("NB-tab-activities")) {
-            this.options.tab = "activities";
-            this.page = 0;
+            this.reset('activities');
             this.render();
             this.fetch_next_page();
         }

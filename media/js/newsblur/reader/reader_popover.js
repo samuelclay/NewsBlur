@@ -36,6 +36,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         $('body').append(this.$popover);
         
         this.$popover.addClass(this.options.placement.replace('-', '').replace(' ', '-'));
+        this.$popover.addClass(this.options.popover_class);
         this.$popover.align(this.anchor(), this.options.placement, this.options.offset);
         this.autohide = this.$popover.autohide({
             clickable: true,
@@ -51,7 +52,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
     },
     
     close: function(e, hide_callback) {
-        var $el = this.$popover;
+        var $el = window.a = this.$popover;
         var self = this;
         if (_.isFunction(e)) hide_callback = e;
         hide_callback = hide_callback || $.noop;
@@ -64,9 +65,9 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 $el.off($.support.transition.end);
                 if (!self._open) return;
                 self._open = false;
-                self.autohide.remove();
-                self.$popover.remove();
+                $el.remove();
                 self.$overlay.remove();
+                self.autohide.removeHide();
                 self.remove();
                 hide_callback();
             }, 500);
@@ -75,9 +76,9 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 clearTimeout(timeout);
                 if (!self._open) return;
                 self._open = false;
-                self.autohide.remove();
-                self.$popover.remove();
+                $el.remove();
                 self.$overlay.remove();
+                self.autohide.removeHide();
                 self.remove();
                 hide_callback();
             });
@@ -87,9 +88,9 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
             removeWithAnimation();
         } else {
             this._open = false;
-            this.autohide.remove();
             this.$popover.remove();
             this.$overlay.remove();
+            this.autohide.removeHide();
             this.remove();
             hide_callback();
         }
@@ -115,6 +116,12 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
             this._popover = new this(options);
         }
         
+    },
+    
+    close: function() {
+        if (this._popover && this._popover._open) {
+            this._popover.close();
+        }
     }
     
 });

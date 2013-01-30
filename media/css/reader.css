@@ -124,7 +124,10 @@ body {
 .NB-show-reader .NB-splash-bottom {
     display: none;
 }
-
+.NB-show-reader .NB-feeds-header-user-dashboard {
+    opacity: 1;
+    cursor: pointer;
+}
 
 .NB-splash-heading {
     display: none;
@@ -437,7 +440,7 @@ body {
 /* ============= */
 
 #NB-feeds-list-loader {
-  background: transparent url("/media/embed/reader/big_spinner.gif") no-repeat 0 0;
+  background: transparent url("/media/embed/reader/big_spinner.gif?v2") no-repeat 0 0;
   color: #C7CDD6;
   font-size: 16px;
   height: 51px;
@@ -1687,13 +1690,22 @@ background: transparent;
 #story_titles .story.NB-selected .story_date {
     text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
 }
-#story_titles .story.NB-selected {
+#story_titles .story.NB-selected,
+.NB-interaction:hover {
     color: #304080;
     border-top: 1px solid #6EADF5;
     border-bottom: 1px solid #6EADF5;
     background-color: #D2E6FD;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#E9EFF5), to(#E2EEFB));
     background: -moz-linear-gradient(center top , #E9EFF5 0%, #E2EEFB 100%);
+}
+.NB-interaction:active {
+    color: #304080;
+    border-top: 1px solid #6EADF5;
+    border-bottom: 1px solid #6EADF5;
+    background-color: #D4E2F2;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#D4E2F2), to(#C8DEF8));
+    background: -moz-linear-gradient(center top , #D4E2F2 0%, #C8DEF8 100%);
 }
 
 #story_titles .NB-story-titles-end-stories-line {
@@ -3098,6 +3110,10 @@ background: transparent;
     width: 17px;
     height: 17px;
 }
+.NB-feeds-header-user-dashboard {
+    opacity: .3;
+    cursor: default;
+}
 .NB-feeds-header-user .NB-feeds-header-user-name {
     float: left;
     padding: 10px 0 0 6px;
@@ -3805,6 +3821,7 @@ form.opml_import_form input {
   display: block;
   overflow: hidden;
   line-height: 12px;
+  height: 30px;
   margin: 0;
   float: left;
 }
@@ -9010,6 +9027,9 @@ form.opml_import_form input {
 /* = Interactions Module = */
 /* ======================= */
 
+.NB-interactions-popover-container .popover-content {
+    padding: 0;
+}
 .NB-interactions-popover .NB-loading {
     margin: 12px auto;
     background: transparent url('/media/img/reader/spinner_ball.gif') no-repeat 0 0;
@@ -9051,12 +9071,13 @@ form.opml_import_form input {
 .NB-interactions-container,
 .NB-activities-container {
     max-height: 300px;
+    overflow: auto;
 }
 
 .NB-interactions {
     list-style: none;
     padding: 0;
-    margin: 12px 0;
+    margin: 0;
 }
 .NB-interaction {
     list-style: none;
@@ -9077,24 +9098,6 @@ form.opml_import_form input {
     background-color: #FFFFF6;
     border-bottom: 1px solid #F0F0E6;
 }
-.NB-interaction:last-child {
-    border-bottom: 1px solid transparent;
-    margin-bottom: 0;
-}
-.NB-interaction:hover:not(.NB-disabled) {
-    background-color: #F3F6FD;
-    background-image: -moz-linear-gradient(top, #F5F7FB, #EBF1FE); /* FF3.6 */
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F9FAFE), to(#F2F6FE)); /* Saf4+, Chrome */
-    background-image: linear-gradient(top, #F5F7FB, #EBF1FE);
-    border: 1px solid #DFE9FE;
-}
-.NB-interaction:active:not(.NB-disabled) {
-    background-color: #FBE5C7;
-    background-image: -moz-linear-gradient(top, #FBE5C7, #F7D9AD); /* FF3.6 */
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#FBE5C7), to(#F7D9AD)); /* Saf4+, Chrome */
-    background-image: linear-gradient(top, #FBE5C7, #F7D9AD);
-    border: 1px solid #F4C37D;
-}
 .NB-interaction .NB-splash-link:hover {
     color: #405BA8;
 }
@@ -9113,9 +9116,8 @@ form.opml_import_form input {
 .NB-interaction-date {
     color: #B0B0B0;
     font-size: 10px;
-    float: right;
     text-transform: uppercase;
-    padding: 5px 0 3px 4px;
+    padding: 5px 0 0;
 }
 .NB-interaction:hover:not(.NB-disabled) .NB-interaction-date { 
     color: #808080;
@@ -9129,7 +9131,7 @@ form.opml_import_form input {
 }
 .NB-interaction-content {
     font-size: 12px;
-    padding-top: 8px;
+    padding-top: 4px;
     line-height: 16px;
     color: #808080;
 }

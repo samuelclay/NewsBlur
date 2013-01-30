@@ -187,9 +187,9 @@ NEWSBLUR.log = function(msg) {
                 console.log(["forceHide", e]);
               if (!e && options.onHide) options.onHide();
               me.hide();
-              me.remove();
+              me.removeHide();
             };
-            me.remove = function() {
+            me.removeHide = function() {
                 console.log(["remove autohide"]);
               $(document).unbind('click', me._autohider);
               $(document).unbind('keypress', me._autohider);
