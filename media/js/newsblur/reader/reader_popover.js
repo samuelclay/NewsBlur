@@ -15,39 +15,35 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 left: 0
             }
         }, this.options, options);
-        this.render();
     },
     
-    render: function() {
+    render: function($content) {
         var self = this;
         this._open = true;
-
-        var $popover = $.make("div", { className: "NB-popover popover fade" }, [
+        console.log(["popover render", this.$el, this.options.animate]);
+        this.$popover = $.make("div", { className: "NB-popover popover fade" }, [
             $.make('div', { className: "arrow" }),
             $.make('div', { className: "popover-inner" }, [
-                $.make('div', { className: "popover-content" }, [
-                    this.$el
-                ])
+                $.make('div', { className: "popover-content" }, $content || this.$el)
             ])
         ]);
-        this.setElement($popover);
         
         this.$overlay = $.make('div', { className: 'NB-overlay fade ' + (this.options.overlay_top && "NB-top") });
         $('body').append(this.$overlay);
         
-        this.$el.width(this.options.width);
+        this.$popover.width(this.options.width);
         
-        $('body').append(this.$el);
+        $('body').append(this.$popover);
         
-        this.$el.addClass(this.options.placement.replace('-', '').replace(' ', '-'));
-        this.$el.align(this.anchor(), this.options.placement, this.options.offset);
-        this.$el.autohide({
+        this.$popover.addClass(this.options.placement.replace('-', '').replace(' ', '-'));
+        this.$popover.align(this.anchor(), this.options.placement, this.options.offset);
+        this.autohide = this.$popover.autohide({
             clickable: true,
             onHide: _.bind(this.close, this)
         });
         
         if (this.options.animate) {
-            this.$el.addClass("in");
+            this.$popover.addClass("in");
             this.$overlay.addClass("in");
         }
         
@@ -55,38 +51,46 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
     },
     
     close: function(e, hide_callback) {
-        var $el = this.$el;
+        var $el = this.$popover;
         var self = this;
         if (_.isFunction(e)) hide_callback = e;
         hide_callback = hide_callback || $.noop;
-        this.$el.removeClass('in');
+        this.$popover.removeClass('in');
         this.$overlay.removeClass('in');
         this.options.on_hide && this.options.on_hide();
 
         function removeWithAnimation() {
             var timeout = setTimeout(function () {
                 $el.off($.support.transition.end);
+                if (!self._open) return;
                 self._open = false;
-                self.remove();
+                self.autohide.remove();
+                self.$popover.remove();
                 self.$overlay.remove();
+                self.remove();
                 hide_callback();
             }, 500);
 
             $el.one($.support.transition.end, function () {
                 clearTimeout(timeout);
+                if (!self._open) return;
                 self._open = false;
-                self.remove();
+                self.autohide.remove();
+                self.$popover.remove();
                 self.$overlay.remove();
+                self.remove();
                 hide_callback();
             });
         }
 
-        if ($.support.transition && this.$el.hasClass('fade')) {
+        if ($.support.transition && this.$popover.hasClass('fade')) {
             removeWithAnimation();
         } else {
             this._open = false;
-            this.remove();
+            this.autohide.remove();
+            this.$popover.remove();
             this.$overlay.remove();
+            this.remove();
             hide_callback();
         }
         

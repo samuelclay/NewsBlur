@@ -9010,6 +9010,49 @@ form.opml_import_form input {
 /* = Interactions Module = */
 /* ======================= */
 
+.NB-interactions-popover .NB-loading {
+    margin: 12px auto;
+    background: transparent url('/media/img/reader/spinner_ball.gif') no-repeat 0 0;
+    width: 16px;
+    height: 16px;
+}
+.NB-interactions-popover .NB-interactions-header {
+    text-transform: uppercase;
+    font-size: 10px;
+    text-align: center;
+    overflow: hidden;
+}
+.NB-interactions-popover .NB-tab {
+    width: 50%;
+    color: #A0A0A0;
+    cursor: pointer;
+    padding: 8px 0;
+    background-color: rgba(0, 0, 0, .05);
+}
+.NB-interactions-popover .NB-tab span {
+    display: block;
+    padding: 2px 0;
+}
+.NB-interactions-popover .NB-tab-interactions {
+    float: left;
+}
+.NB-interactions-popover .NB-tab-interactions span {
+    border-right: 1px solid rgba(0, 0, 0, .2);
+}
+.NB-interactions-popover .NB-tab-activities {
+    float: right;
+}
+.NB-interactions-popover.NB-active-interactions .NB-tab-interactions,
+.NB-interactions-popover.NB-active-activities .NB-tab-activities {
+    color: #505050;
+    font-weight: bold;
+}
+
+.NB-interactions-container,
+.NB-activities-container {
+    max-height: 300px;
+}
+
 .NB-interactions {
     list-style: none;
     padding: 0;

@@ -18,21 +18,22 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     initialize: function(options) {
         this.options = _.extend({}, this.options, options);
+        NEWSBLUR.ReaderPopover.prototype.initialize.call(this);
         this.model = NEWSBLUR.assets;
-        this.make_modal();
-        
-        NEWSBLUR.ReaderPopover.prototype.initialize.apply(this);
+        this.render();
         
         this.show_correct_feed_view_options_in_menu();
     },
     
     close: function() {
         NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").removeClass('NB-active');
-        NEWSBLUR.ReaderPopover.prototype.close.apply(this);
+        NEWSBLUR.ReaderPopover.prototype.close.call(this);
     },
 
-    make_modal: function() {
+    render: function() {
         var self = this;
+        
+        NEWSBLUR.ReaderPopover.prototype.render.call(this);
         
         this.$el.html($.make('div', [
             $.make('ul', { className: 'segmented-control NB-menu-manage-view-setting-readfilter' }, [

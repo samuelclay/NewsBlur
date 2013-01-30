@@ -29,13 +29,12 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
     
     initialize: function(options) {
         this.options = _.extend({}, this.options, options);
+        NEWSBLUR.ReaderPopover.prototype.initialize.call(this);
         this.model = NEWSBLUR.assets;
-        this.make_modal();
+        this.render();
         this.handle_keystrokes();
         this.setup_autocomplete();
         
-        NEWSBLUR.ReaderPopover.prototype.initialize.apply(this);
-
         // this.setup_chosen();
         this.focus_add_feed();
     },
@@ -48,8 +47,10 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         
     },
     
-    make_modal: function() {
+    render: function() {
         var self = this;
+
+        NEWSBLUR.ReaderPopover.prototype.render.call(this);
         
         this.$el.html($.make('div', { className: 'NB-add' }, [
             $.make('div', { className: 'NB-add-form' }, [
@@ -96,7 +97,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
         if (NEWSBLUR.Globals.is_anonymous) {
             this.$el.addClass('NB-signed-out');
         }
-        
+
         return this;
     },
     
