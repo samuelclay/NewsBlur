@@ -32,6 +32,9 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         ]);
         this.setElement($popover);
         
+        this.$overlay = $.make('div', { className: 'NB-overlay fade ' + (this.options.overlay_top && "NB-top") });
+        $('body').append(this.$overlay);
+        
         this.$el.width(this.options.width);
         
         $('body').append(this.$el);
@@ -45,6 +48,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         
         if (this.options.animate) {
             this.$el.addClass("in");
+            this.$overlay.addClass("in");
         }
         
         return this;
@@ -56,6 +60,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         if (_.isFunction(e)) hide_callback = e;
         hide_callback = hide_callback || $.noop;
         this.$el.removeClass('in');
+        this.$overlay.removeClass('in');
         this.options.on_hide && this.options.on_hide();
 
         function removeWithAnimation() {
@@ -63,6 +68,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 $el.off($.support.transition.end);
                 self._open = false;
                 self.remove();
+                self.$overlay.remove();
                 hide_callback();
             }, 500);
 
@@ -70,6 +76,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
                 clearTimeout(timeout);
                 self._open = false;
                 self.remove();
+                self.$overlay.remove();
                 hide_callback();
             });
         }
@@ -79,6 +86,7 @@ NEWSBLUR.ReaderPopover = Backbone.View.extend({
         } else {
             this._open = false;
             this.remove();
+            this.$overlay.remove();
             hide_callback();
         }
         

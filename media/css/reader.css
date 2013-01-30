@@ -1104,6 +1104,9 @@ background: transparent;
     display: inline-block;
     cursor: pointer;
 }
+#story_titles .NB-feedbar .NB-feedbar-options.NB-active {
+    background-color: rgba(0, 0, 0, .1);
+}
 #story_titles .NB-feedbar .NB-feedbar-options .NB-icon {
     float: right;
     width: 16px;
@@ -3083,14 +3086,14 @@ background: transparent;
     height: 28px;
     border-radius: 2px;
 }
-.NB-feeds-header-user-notifications,
+.NB-feeds-header-user-interactions,
 .NB-feeds-header-user-dashboard {
     cursor: pointer;
     padding: 10px 8px 8px;
     float: right;
     line-height: 0;
 }
-.NB-feeds-header-user-notifications img,
+.NB-feeds-header-user-interactions img,
 .NB-feeds-header-user-dashboard img {
     width: 17px;
     height: 17px;
@@ -9367,4 +9370,31 @@ form.opml_import_form input {
 }
 .fade.in {
   opacity: 1;
+}
+
+.NB-overlay {
+    background: rgba(16, 16, 48, 0);
+    background: -webkit-linear-gradient(rgba(16, 16, 48, 0.3),rgba(16, 16, 48, 0.3) 60%,rgba(16, 16, 48, 0.01));
+    background: -moz-linear-gradient(rgba(16, 16, 48, 0.3),rgba(16, 16, 48, 0.3) 60%,rgba(16, 16, 48, 0.01));
+    background: -ms-linear-gradient(rgba(16, 16, 48, 0.3),rgba(16, 16, 48, 0.3) 60%,rgba(16, 16, 48, 0.01));
+    background: -o-linear-gradient(rgba(16, 16, 48, 0.3),rgba(16, 16, 48, 0.3) 60%,rgba(16, 16, 48, 0.01));
+    background: linear-gradient(rgba(16, 16, 48, 0.3),rgba(16, 16, 48, 0.3) 60%,rgba(16, 16, 48, 0.01));
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    opacity: 0.0;
+    -webkit-transition: opacity 400ms ease,-webkit-transform 0s ease;
+    -moz-transition: opacity 400ms ease,-moz-transform 0s ease;
+    -o-transition: opacity 400ms ease,-o-transform 0s ease;
+    transition: opacity 400ms ease,transform 0s ease;
+}
+.NB-overlay.NB-top {
+    background: -webkit-linear-gradient(rgba(16, 16, 48, 0.01),rgba(16, 16, 48, 0.3) 40%,rgba(16, 16, 48, 0.3));
+    background: -moz-linear-gradient(rgba(16, 16, 48, 0.01),rgba(16, 16, 48, 0.3) 40%,rgba(16, 16, 48, 0.3));
+    background: -ms-linear-gradient(rgba(16, 16, 48, 0.01),rgba(16, 16, 48, 0.3) 40%,rgba(16, 16, 48, 0.3));
+    background: -o-linear-gradient(rgba(16, 16, 48, 0.01),rgba(16, 16, 48, 0.3) 40%,rgba(16, 16, 48, 0.3));
+    background: linear-gradient(rgba(16, 16, 48, 0.01),rgba(16, 16, 48, 0.3) 40%,rgba(16, 16, 48, 0.3));
 }

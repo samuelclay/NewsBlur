@@ -3045,7 +3045,7 @@
                         }
                     }
                     
-                    $manage_menu_container.align($align, 'bottom -left', {
+                    $manage_menu_container.align($align, 'top -left', {
                         'top': -1 * top, 
                         'left': left
                     });

@@ -134,7 +134,7 @@ NEWSBLUR.log = function(msg) {
           } else if (pos.indexOf('-bottom') >= 0) {
             top = b.top;
           } else if (pos.indexOf('bottom') >= 0) {
-            top = b.top - elb.height;
+            top = b.top + elb.height;
           } else { // Centered.
             top = b.top + (b.height - elb.height) / 2;
           }
@@ -149,8 +149,8 @@ NEWSBLUR.log = function(msg) {
           if (constrain) {
             left = Math.max(scrollLeft, Math.min(left, scrollLeft + clientWidth - elb.width));
             top = Math.max(scrollTop, Math.min(top, scrollTop + clientHeight - elb.height));
-            // bottom = Math.max(scrollTop, Math.min(bottom, scrollTop + clientHeight - elb.height));
-            // right = Math.max(scrollTop, Math.min(right, scrollLeft + clientWidth - elb.height));
+            bottom = Math.max(scrollTop, Math.min(bottom, scrollTop + clientHeight - elb.height));
+            right = Math.max(scrollTop, Math.min(right, scrollLeft + clientWidth - elb.height));
           }
 
           // var offParent;
@@ -207,10 +207,12 @@ NEWSBLUR.log = function(msg) {
                     me._autohider(e);
                 }
             };
-            $(document).bind('click', this._autohider);
-            $(document).bind('keypress', this._autohider);
-            $(document).bind('keyup', this._checkesc);
+            $(document).on('click', this._autohider);
+            $(document).on('keypress', this._autohider);
+            $(document).on('keyup', this._checkesc);
           }
+          
+          return this;
         }
         
     });

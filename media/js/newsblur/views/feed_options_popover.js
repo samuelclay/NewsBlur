@@ -25,6 +25,11 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         
         this.show_correct_feed_view_options_in_menu();
     },
+    
+    close: function() {
+        NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").removeClass('NB-active');
+        NEWSBLUR.ReaderPopover.prototype.close.apply(this);
+    },
 
     make_modal: function() {
         var self = this;
@@ -57,6 +62,8 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
         $newest.text('Newest' + (order != 'oldest' ? ' first' : ''));
         $unread.toggleClass('NB-active', read_filter == 'unread');
         $all.toggleClass('NB-active', read_filter != 'unread');
+
+        NEWSBLUR.app.story_titles_header.$(".NB-feedbar-options").addClass('NB-active');
     },
 
     
@@ -77,7 +84,7 @@ NEWSBLUR.FeedOptionsPopover = NEWSBLUR.ReaderPopover.extend({
             this.update_feed({read_filter: 'unread'});
         }
         
-        this.close();
+        this.show_correct_feed_view_options_in_menu();
     },
     
     update_feed: function(setting) {
