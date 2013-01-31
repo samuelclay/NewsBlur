@@ -190,6 +190,7 @@ class ProcessFeed:
         try:
             self.feed.last_modified = mtime(self.fpf.modified)
         except:
+            self.feed.last_modified = None
             pass
         
         self.fpf.entries = self.fpf.entries[:50]
