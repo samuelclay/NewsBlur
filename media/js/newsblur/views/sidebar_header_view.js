@@ -103,6 +103,16 @@ NEWSBLUR.Views.SidebarHeader = Backbone.View.extend({
         }).length;
     },
     
+    update_interactions_count: function(interactions_count) {
+        var $badge = this.$(".NB-feeds-header-user-interactions-badge");
+        
+        if (!interactions_count) {
+            $badge.addClass('NB-hidden').text('');
+        } else {
+            $badge.removeClass('NB-hidden').text('' + interactions_count);
+        }
+    },
+    
     // ==========
     // = Events =
     // ==========

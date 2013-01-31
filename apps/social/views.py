@@ -1306,6 +1306,9 @@ def load_interactions(request):
                                                     categories=categories)
     format = request.REQUEST.get('format', None)
     
+    request.user.profile.dashboard_date = datetime.datetime.now()
+    request.user.profile.save()
+    
     data = {
         'interactions': interactions,
         'page': page,

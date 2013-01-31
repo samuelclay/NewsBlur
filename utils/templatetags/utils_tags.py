@@ -4,7 +4,7 @@ from django.conf import settings
 from django import template
 from apps.reader.forms import FeatureForm
 from apps.reader.models import Feature
-from apps.social.models import MInteraction, MActivity, MSocialProfile
+from apps.social.models import MSocialProfile
 from vendor.timezones.utilities import localtime_for_timezone
 from utils.user_functions import get_user
 
@@ -55,33 +55,6 @@ def render_recommended_users(context):
     return {
         'user': user,
         'profile': profile,
-    }
-          
-@register.inclusion_tag('reader/interactions_module.xhtml', takes_context=True)
-def render_interactions_module(context, page=1):
-    user = get_user(context['user'])
-    interactions, has_next_page = MInteraction.user(user.pk, page)
-    
-    return {
-        'user': user,
-        'interactions': interactions,
-        'page': page,
-        'has_next_page': has_next_page,
-        'MEDIA_URL': context['MEDIA_URL'],
-    }
-    
-@register.inclusion_tag('reader/activities_module.xhtml', takes_context=True)
-def render_activities_module(context, page=1):
-    user = get_user(context['user'])
-    activities, has_next_page = MActivity.user(user.pk, page)
-    
-    return {
-        'user': user,
-        'activities': activities,
-        'page': page,
-        'has_next_page': has_next_page,
-        'username': 'You',
-        'MEDIA_URL': context['MEDIA_URL'],
     }
 
 @register.filter

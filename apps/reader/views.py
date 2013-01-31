@@ -36,7 +36,7 @@ try:
 except:
     pass
 from apps.social.models import MSharedStory, MSocialProfile, MSocialServices
-from apps.social.models import MSocialSubscription, MActivity
+from apps.social.models import MSocialSubscription, MActivity, MInteraction
 from apps.categories.models import MCategory
 from apps.social.views import load_social_page
 from apps.rss_feeds.tasks import ScheduleImmediateFetches
@@ -249,9 +249,6 @@ def load_feeds(request):
     social_profile = MSocialProfile.profile(user.pk)
     social_services = MSocialServices.profile(user.pk)
     
-    user.profile.dashboard_date = datetime.datetime.now()
-    user.profile.save()
-    
     categories = None
     if not user_subs:
         categories = MCategory.serialize()
@@ -411,12 +408,18 @@ def refresh_feeds(request):
             duplicate_feeds = DuplicateFeed.objects.filter(duplicate_feed_id__in=missing_feed_ids)
             for duplicate_feed in duplicate_feeds:
                 feeds[duplicate_feed.duplicate_feed_id] = {'id': duplicate_feed.feed_id}
+    
+    interactions_count = MInteraction.user_unread_count(user.pk)
 
     if settings.DEBUG or check_fetch_status:
         logging.user(request, "~FBRefreshing %s feeds (%s/%s)" % (
             len(feeds.keys()), check_fetch_status, len(favicons_fetching)))
         
-    return {'feeds': feeds, 'social_feeds': social_feeds}
+    return {
+        'feeds': feeds, 
+        'social_feeds': social_feeds,
+        'interactions_count': interactions_count,
+    }
 
 @never_cache
 @json.json_view
@@ -1441,8 +1444,19 @@ def send_story_email(request):
         story, _ = MStory.find_story(feed_id, story_id)
         story   = Feed.format_story(story, feed_id, text=True)
         feed    = Feed.get_by_id(story['story_feed_id'])
-        text    = render_to_string('mail/email_story_text.xhtml', locals())
-        html    = render_to_string('mail/email_story_html.xhtml', locals())
+        params  = {
+            "to_addresses": to_addresses,
+            "from_name": from_name,
+            "from_email": from_email,
+            "email_cc": email_cc,
+            "comments": comments,
+            "from_address": from_address,
+            "story": story,
+            "feed": feed,
+            "share_user_profile": share_user_profile,
+        }
+        text    = render_to_string('mail/email_story_text.xhtml', params)
+        html    = render_to_string('mail/email_story_html.xhtml', params)
         subject = "%s is sharing a story with you: \"%s\"" % (from_name, story['story_title'])
         cc      = None
         if email_cc:

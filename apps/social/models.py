@@ -2343,6 +2343,15 @@ class MInteraction(mongo.Document):
             interactions.append(interaction)
 
         return interactions, has_next_page
+    
+    @classmethod
+    def user_unread_count(cls, user_id):
+        user_profile = Profile.objects.get(user=user_id)
+        dashboard_date = user_profile.dashboard_date or user_profile.last_seen_on
+        
+        interactions_count = cls.objects.filter(user_id=user_id, date__gte=dashboard_date).count()
+        
+        return interactions_count
         
     @classmethod
     def new_follow(cls, follower_user_id, followee_user_id):

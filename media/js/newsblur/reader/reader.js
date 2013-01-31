@@ -3910,18 +3910,20 @@
             }
 
             this.flags['pause_feed_refreshing'] = true;
-            this.model.refresh_feeds(_.bind(function(updated_feeds) {
-                this.post_feed_refresh(updated_feeds, replace_active_feed, feed_id);
+            this.model.refresh_feeds(_.bind(function(data) {
+                this.post_feed_refresh(data);
             }, this), this.flags['has_unfetched_feeds'], feed_id, error_callback);
         },
         
-        post_feed_refresh: function(updated_feeds, replace_active_feed, single_feed_id) {
+        post_feed_refresh: function(data) {
             var feeds = this.model.feeds;
             
             if (this.cache.refresh_callback && $.isFunction(this.cache.refresh_callback)) {
                 this.cache.refresh_callback(feeds);
                 delete this.cache.refresh_callback;
             }
+            
+            NEWSBLUR.app.sidebar_header.update_interactions_count(data.interactions_count);
 
             this.flags['refresh_inline_feed_delay'] = false;
             this.flags['pause_feed_refreshing'] = false;

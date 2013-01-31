@@ -39,6 +39,7 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
     
     close: function() {
         $(".NB-feeds-header-user-notifications").removeClass('NB-active');
+        NEWSBLUR.app.sidebar_header.update_interactions_count(0);
         NEWSBLUR.ReaderPopover.prototype.close.call(this);
     },
 
