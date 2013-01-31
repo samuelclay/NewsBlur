@@ -31,6 +31,8 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
         this.render();
         this.show_loading();
 
+        this.model.preference('dashboard_date', new Date);
+
         $(".NB-feeds-header-user-notifications").addClass('NB-active');
         
         this.fetch_next_page();

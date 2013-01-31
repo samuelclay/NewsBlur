@@ -419,7 +419,6 @@
             if (!skip_router) {
                 NEWSBLUR.router.navigate('');
             }
-            this.model.preference('dashboard_date', new Date);
         },
         
         add_url_from_querystring: function() {

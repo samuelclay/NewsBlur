@@ -103,27 +103,13 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                 <% } %>\
             </div>\
             <div class="NB-feed-story-header-info">\
-                <% if (story.get("story_authors")) { %>\
-                    <div class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
-                        <%= story.get("story_authors") %>\
-                    </div>\
-                <% } %>\
-                <% if (story.get("story_tags", []).length) { %>\
-                    <div class="NB-feed-story-tags">\
-                        <% _.each(story.get("story_tags"), function(tag) { %>\
-                            <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
-                                <%= tag %>\
-                            </div>\
-                        <% }) %>\
-                    </div>\
-                <% } %>\
                 <div class="NB-feed-story-title-container">\
                     <div class="NB-feed-story-sentiment"></div>\
                     <div class="NB-feed-story-manage-icon"></div>\
                     <a class="NB-feed-story-title" href="<%= story.get("story_permalink") %>"><%= title %></a>\
                 </div>\
                 <% if (story.get("long_parsed_date")) { %>\
-                    <span class="NB-feed-story-date">\
+                    <div class="NB-feed-story-date">\
                         <% if (story.has_modifications()) { %>\
                             <div class="NB-feed-story-hide-changes" \
                                  title="<%= NEWSBLUR.assets.preference("hide_story_changes") ? "Show" : "Hide" %>\
@@ -131,10 +117,26 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             </div>\
                         <% } %>\
                         <%= story.get("long_parsed_date") %>\
-                    </span>\
+                    </div>\
                     <% if (story.get("starred_date")) { %>\
                         <span class="NB-feed-story-starred-date"><%= story.get("starred_date") %></span>\
                     <% } %>\
+                <% } %>\
+                <% if (story.get("story_authors")) { %>\
+                    <div class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
+                        <span class="NB-middot">&middot;</span>\
+                        <%= story.get("story_authors") %>\
+                    </div>\
+                <% } %>\
+                <% if (story.get("story_tags", []).length) { %>\
+                    <div class="NB-feed-story-tags">\
+                        <span class="NB-middot">&middot;</span>\
+                        <% _.each(story.get("story_tags"), function(tag) { %>\
+                            <div class="NB-feed-story-tag <% if (tags_score && tags_score[tag]) { %>NB-score-<%= tags_score[tag] %><% } %>">\
+                                <%= tag %>\
+                            </div>\
+                        <% }) %>\
+                    </div>\
                 <% } %>\
             </div>\
         </div>\

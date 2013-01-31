@@ -791,7 +791,7 @@ body {
 
 .NB-feedlists .folder_title .unread_count {
     margin-top: -3px;
-    line-height: 20px;
+    line-height: 16px;
     text-shadow: none;
 }
 .NB-feeds-header .unread_count {
@@ -847,19 +847,24 @@ body {
     float: right;
     font-weight: bold;
     color: #FFF;
-    padding: 0 1px;
-    margin: 3px 1px 0;
+    padding: 2px 1px 2px;
+    margin: 2px 1px 0;
     background-color: #8eb6e8;
     display: none;
-    border-radius: 4px;
+    line-height: 10px;
+    border-radius: 6px;
+    border-top: 1px solid rgba(255, 255, 255, .4);
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
 }
 .unread_count_positive {
-    background-color: #559F4D;
+    background-color: #6EA74A;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 
 .unread_count_neutral {
     color: #303030;
-    background-color: #F9C72A;
+    background-color: #FEE692;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
 }
 
 .unread_count_negative {
@@ -867,11 +872,13 @@ body {
 }
 
 .unread_view_positive .unread_count {
-    padding: 0 6px;
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 .unread_view_neutral .unread_count {
-    padding: 0 3px;
+    padding-left: 3px;
+    padding-right: 3px;
 }
 
 /* Showing unread counts above threshold */
@@ -917,10 +924,6 @@ body {
 .unread_threshold_neutral .unread_negative .unread_count_negative {
     font-weight: bold;
     display: block;
-}
-
-.unread_view_neutral .unread_count {
-    padding: 0 3px;
 }
 
 /* ====================== */
@@ -2098,15 +2101,20 @@ background: transparent;
 
 #story_pane .NB-feed-story-author {
     float: left;
-    color: #808080;
-    font-size: 9px;
-    text-transform: uppercase;
-    margin: 4px 24px 0 0;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
+    font-size: 11px;
+    color: #757B6B;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
     cursor: pointer;
+    margin: 0 8px 6px 0;
+}
+#story_pane .NB-feed-story-author .NB-middot {
+    color: #A0A0A0;
+    padding-right: 4px;
+    font-weight: normal;
 }
 #story_pane .read .NB-feed-story-author {
-    color: #A0A0A0;
+    color: #959B8B;
+    text-shadow: none;
 }
 #story_pane .NB-feed-story-author.NB-score-1 {
     color: #34912E;
@@ -2141,10 +2149,17 @@ background: transparent;
 }
 
 #story_pane .NB-feed-story-tags {
-    margin: 7px 0 -6px;
+    margin: 9px 0 6px;
     overflow: hidden;
     line-height: 12px;
     height: 14px;
+}
+#story_pane .NB-feed-story-tags .NB-middot {
+    color: #A0A0A0;
+    font-size: 10px;
+    padding-right: 4px;
+    float: left;
+    font-weight: normal;
 }
 #story_pane .NB-feed-story-tag {
     /* Grey */
@@ -2159,6 +2174,9 @@ background: transparent;
     border-radius: 4px;
     cursor: pointer;
 } 
+#story_pane .NB-feed-story-tag:first-child {
+    margin-left: 0;
+}
 
 #story_pane .read .NB-feed-story-tag {
     color: #949181;
@@ -2225,14 +2243,17 @@ background: transparent;
     color: #A90103;
 }
 #story_pane .NB-feed-story-header .NB-feed-story-date {
-    position: absolute;
-    right: 12px;
-    top: 6px;
+    float: left;
+    clear: left;
     font-size: 11px;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
+    color: #757B6B;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
+    font-weight: normal;
+    margin: 0 8px 4px 0;
 }
 #story_pane .read .NB-feed-story-header .NB-feed-story-date {
-    color: #606060;
+    color: #959B8B;
+    text-shadow: none;
 }
 #story_pane .NB-feed-story-header .NB-feed-story-hide-changes {
     width: 16px;
@@ -3058,6 +3079,7 @@ background: transparent;
 
 .content-pane .feed_counts_floater .unread_count {
     float: right;
+    line-height: 24px;
     padding: 0 8px;
 }
 
@@ -6014,7 +6036,7 @@ form.opml_import_form input {
   position: absolute;
   left: 0;
   top: 6px;
-  background-color: #559F4D;
+  background-color: #6EA74A;
 }
 .NB-modal-statistics .NB-statistics-facet-neg .NB-statistics-facet-bar {
   height: 8px;
