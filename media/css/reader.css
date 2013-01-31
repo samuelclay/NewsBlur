@@ -791,13 +791,11 @@ body {
 
 .NB-feedlists .folder_title .unread_count {
     margin-top: -3px;
-    line-height: 16px;
-    text-shadow: none;
+    line-height: 14px;
 }
 .NB-feeds-header .unread_count {
     margin-top: 2px;
-    line-height: 18px;
-    text-shadow: none;
+    line-height: 11px;
 }
 
 .NB-feedlist-hide-read-feeds .NB-feedlist .feed {
@@ -869,6 +867,7 @@ body {
 
 .unread_count_negative {
     background-color: #CC2A2E;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
 }
 
 .unread_view_positive .unread_count {
@@ -3245,7 +3244,7 @@ background: transparent;
     line-height: 22px;
     height: 22px;
     overflow: hidden;
-    text-shadow: 0 1px 0 #060607;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
     text-transform: uppercase;
 }
 
@@ -3258,7 +3257,7 @@ background: transparent;
 }
 
 .NB-feeds-header.NB-selected .NB-feeds-header-title {
-    text-shadow: 0 1px 0 #FFC97D;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .4);
     color: #000000;
 }
 
