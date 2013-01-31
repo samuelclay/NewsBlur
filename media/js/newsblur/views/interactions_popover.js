@@ -3,7 +3,7 @@ NEWSBLUR.InteractionsPopover = NEWSBLUR.ReaderPopover.extend({
     className: "NB-interactions-popover",
     
     options: {
-        'width': 336,
+        'width': 386,
         'anchor': '.NB-feeds-header-user-interactions',
         'placement': '-bottom',
         'popover_class': 'NB-interactions-popover-container',

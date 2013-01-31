@@ -1315,6 +1315,8 @@ def load_interactions(request):
         'has_next_page': has_next_page
     }
     
+    logging.user(request, "~FBLoading interactions ~SBp/%s" % page)
+    
     if format == 'html':
         return render_to_response('reader/interactions_module.xhtml', data,
                                   context_instance=RequestContext(request))
@@ -1345,6 +1347,8 @@ def load_activities(request):
         'has_next_page': has_next_page,
         'username': (user.username if public else 'You'),
     }
+    
+    logging.user(request, "~FBLoading activities ~SBp/%s" % page)
     
     if format == 'html':
         return render_to_response('reader/activities_module.xhtml', data,
