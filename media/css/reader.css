@@ -633,16 +633,11 @@ body {
     display: block;
     padding: 4px 40px 2px 23px;
     text-decoration: none;
-    color: #272727;
+    color: rgba(0,0,0,.7);
     line-height: 1.3em;
     height: 14px;
     overflow: hidden;
     text-shadow: 0 1px 0 rgba(250, 250, 250, .4);
-}
-
-.NB-feedlist .feed.selected .feed_title,
-.NB-feedlist .feed.NB-selected .feed_title {
-    color: #000000;
 }
 
 .NB-feedlist .feed .NB-feedlist-manage-icon,
@@ -760,19 +755,15 @@ body {
 }
 .NB-feedlist .feed.selected,
 .NB-feedlist .feed.NB-selected,
-.NB-feeds-header.NB-selected {
-    background-color: #F6A828;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F7BA55), to(#F6A828));
-    background: -moz-linear-gradient(center top , #F7BA55 0%, #F6A828 100%);
-    border-top: 1px solid #C59977;
-    border-bottom: 1px solid #C59977;
+.NB-feeds-header.NB-selected,
+.NB-feedlist .folder.NB-selected > .folder_title {
+    background-color: #FDED8D;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFFFD2), to(#FDED8D));
+    background: -moz-linear-gradient(center top , #FFFFD2 0%, #FDED8D 100%);
+    border-top: 1px solid #EBE0BE;
+    border-bottom: 1px solid #E3D0AE;
 }
 .NB-feedlist .folder.NB-selected > .folder_title {
-    background-color: #F6A828;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F7BA55), to(#F6A828));
-    background: -moz-linear-gradient(center top , #F7BA55 0%, #F6A828 100%);
-    border-top: 1px solid #C59977;
-    border-bottom: 1px solid #C59977;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
 }
 .NB-feedlist .feed.NB-feed-selector-selected {
@@ -9085,7 +9076,7 @@ form.opml_import_form input {
 
 .NB-interactions-container,
 .NB-activities-container {
-    max-height: 300px;
+    max-height: 400px;
     overflow: auto;
 }
 
