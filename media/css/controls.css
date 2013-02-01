@@ -1,10 +1,13 @@
 ul.segmented-control {
     background-color: #AEB0A7;
     list-style-type: none;
-    width: 120px;
-    overflow: hidden;
+    width: auto;
     padding: 1px;
     margin: 0 auto;
+    clear: none;
+    display: inline-block;
+    color: white;
+    text-align: center;
     
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
@@ -13,7 +16,6 @@ ul.segmented-control {
     -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, .15);
     -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, .15);
     box-shadow: 0 1px 0 rgba(255, 255, 255, .15);
-    clear: none;
 }
 
 .segmented-control li {
@@ -24,7 +26,9 @@ ul.segmented-control {
     cursor: pointer;
     margin: 0;
     padding: 0;
+    clear: none;
 
+    border-right: 1px solid rgba(0, 0, 0, .2);
     background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .3)), to(rgba(255, 255, 255, 0)));
     
     background-image: -moz-linear-gradient(0 0 -90deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0));
@@ -37,7 +41,6 @@ ul.segmented-control {
     text-transform: uppercase;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .7);
     text-align: center;
-    border-right: 1px solid rgba(0, 0, 0, .2);
 }
 
 .segmented-control li:first-child {

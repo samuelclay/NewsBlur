@@ -278,7 +278,7 @@
             var rightLayoutOptions = { 
                 resizeWhileDragging:    true,
                 center__paneSelector:   ".content-pane",
-                spacing_open:           story_anchor == 'west' ? 4 : 10,
+                spacing_open:           story_anchor == 'west' ? 4 : 4,
                 resizerDragOpacity:     0.6,
                 enableCursorHotkey:     false,
                 togglerLength_open:     0,
@@ -298,15 +298,10 @@
                 spacing_open:           0,
                 resizerDragOpacity:     0.6,
                 enableCursorHotkey:     false,
-                togglerLength_open:     0
+                togglerLength_open:     0,
+                north__paneSelector:    ".content-north",
+                north__size:            37
             };
-            if (story_anchor == 'west') {
-                contentLayoutOptions['north__paneSelector'] = '.content-north';
-                contentLayoutOptions['north__size'] = 30;
-            } else {
-                contentLayoutOptions[story_anchor+'__paneSelector'] = '.content-north';
-                contentLayoutOptions[story_anchor+'__size'] = 30;
-            }
             this.layout.contentLayout = this.$s.$content_pane.layout(contentLayoutOptions); 
 
             if (refresh) {
