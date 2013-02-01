@@ -3416,7 +3416,7 @@ background: transparent;
     overflow: hidden;
 }
 .NB-feed-taskbar .NB-task-button {
-    padding: 6px 8px;
+    padding: 7px 8px;
     cursor: pointer;
     opacity: .9;
 }
@@ -3563,7 +3563,7 @@ background: transparent;
 #story_taskbar .NB-tryfeed-add,
 #story_taskbar .NB-tryfeed-follow,
 #story_taskbar .NB-tryout-signup {
-    margin: 2px auto 0px;
+    margin: 6px auto 0px;
     width: 60px;
     height: 14px;
     text-align: center;
@@ -3571,6 +3571,7 @@ background: transparent;
     -webkit-box-shadow: #9A9A9A 2px 2px 0px;
     -moz-box-shadow: #9A9A9A 2px 2px 0px;
     box-shadow: #9A9A9A 2px 2px 0px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .4);
 }
 
 
@@ -5499,6 +5500,13 @@ form.opml_import_form input {
 .NB-menu-manage .NB-menu-manage-confirm:hover input.NB-menu-manage-title {
     text-shadow: none;
 }
+.NB-menu-manage .NB-modal-submit-button {
+    margin: 4px 4px 0 0;
+}
+.NB-menu-manage .NB-menu-manage-confirm .NB-modal-submit-button {
+    margin: 2px 4px 2px 0;
+}
+.NB-menu-manage .NB-modal-submit-button,
 .NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-move-save,
 .NB-menu-manage .NB-menu-manage-confirm .NB-menu-manage-rename-save {
   float: right;
@@ -5507,7 +5515,6 @@ form.opml_import_form input {
   text-transform: uppercase;
   color: white;
   padding: 2px 6px;
-  margin: 2px 4px 2px 0;
   background-color: #639510;
   cursor: pointer;
   -moz-box-shadow:2px 2px 0 #95AB76;

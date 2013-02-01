@@ -59,9 +59,7 @@
                 'unfetched_feeds': 0,
                 'fetched_feeds': 0,
                 'page_fill_outs': 0,
-                'recommended_feed_page': 0,
-                'interactions_page': 1,
-                'activities_page': 1
+                'recommended_feed_page': 0
             };
             this.cache = {
                 'iframe_story_positions': {},
@@ -129,14 +127,16 @@
             this.setup_dashboard_graphs();
             this.setup_feedback_table();
             this.setup_howitworks_hovers();
-            this.setup_interactions_module();
-            this.setup_activities_module();
             this.setup_unfetched_feed_check();
         },
 
         // ========
         // = Page =
         // ========
+        
+        logout: function() {
+            window.location.href = "/reader/logout";
+        },
         
         check_and_load_ssl: function() {
             if (window.location.protocol == 'http:' && this.model.preference('ssl')) {
@@ -413,17 +413,6 @@
 
             if (!skip_router) {
                 NEWSBLUR.router.navigate('');
-            }
-        },
-        
-        add_url_from_querystring: function() {
-            if (this.flags['added_url_from_querystring']) return;
-            
-            var url = $.getQueryString('url');
-            this.flags['added_url_from_querystring'] = true;
-
-            if (url) {
-                this.open_add_feed_modal({url: url});
             }
         },
         
@@ -1227,7 +1216,7 @@
                               .addClass('NB-disabled')
                               .attr('title', 'The original page has been disabled by the publisher.')
                               .tipsy({
-                    gravity: 's',
+                    gravity: 'n',
                     fade: true,
                     delayIn: 200
                 });
@@ -2623,6 +2612,7 @@
                     $.make('li', { className: 'NB-menu-separator' }), 
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-account' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-logout NB-modal-submit-green NB-modal-submit-button' }, 'Logout'),
                         $.make('div', { className: 'NB-menu-manage-title' }, 'Account')
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-profile-editor' }, [
@@ -4157,70 +4147,6 @@
             }
         },
         
-        // ===============================
-        // = Interactions and Activities =
-        // ===============================
-        
-        load_interactions_page: function(direction) {
-            var self = this;
-            var $module = $('.NB-module-interactions');
-            
-            $module.addClass('NB-loading');
-            direction = direction || 0;
-
-            this.model.load_interactions_page(this.counts['interactions_page']+direction, 
-                                              function(resp) {
-                $module.removeClass('NB-loading');
-                if (!resp) return;
-                $module.replaceWith(resp);
-                $module = $('.NB-module-interactions');
-                var page = $module[0].className.match(/NB-page-(\d+)/)[1];
-                self.counts['interactions_page'] = parseInt(page, 10);
-                self.load_javascript_elements_on_page();
-            }, function() {
-                $module.removeClass('NB-loading');
-            });
-        },
-        
-        load_activities_page: function(direction) {
-            var self = this;
-            var $module = $('.NB-module-activities');
-
-            $module.addClass('NB-loading');
-            direction = direction || 0;
-            
-            this.model.load_activities_page(this.counts['activities_page']+direction, 
-                                              function(resp) {
-                $module.removeClass('NB-loading');
-                if (!resp) return;
-                $module.replaceWith(resp);
-                $module = $('.NB-module-activities');
-                var page = $module[0].className.match(/NB-page-(\d+)/)[1];
-                self.counts['activities_page'] = parseInt(page, 10);
-                self.load_javascript_elements_on_page();
-            }, function() {
-                $module.removeClass('NB-loading');
-            });
-        },
-        
-        setup_interactions_module: function() {
-            clearInterval(this.locks.load_interactions_module);
-            if (!NEWSBLUR.Globals.debug) {
-                this.locks.load_interactions_module = setInterval(_.bind(function() {
-                    this.load_interactions_page();
-                }, this), 5*60*1000);
-            }
-        },
-        
-        setup_activities_module: function() {
-            clearInterval(this.locks.load_activities_module);
-            if (!NEWSBLUR.Globals.debug) {
-                this.locks.load_activities_module = setInterval(_.bind(function() {
-                    this.load_activities_page();
-                }, this), 5*60*1000);
-            }
-        },
-        
         // ========
         // = FTUX =
         // ========
@@ -4476,7 +4402,7 @@
             var $add = $.make('div', { className: 'NB-modal-submit' }, [
               $.make('div', { className: 'NB-tryout-signup NB-modal-submit-green NB-modal-submit-button' }, 'Sign Up')
             ]).css({'opacity': 0});
-            this.$s.$story_taskbar.find('.NB-taskbar').append($add);
+            this.$s.$story_taskbar.append($add);
             $add.animate({'opacity': 1}, {'duration': 600});
         },
         
@@ -4926,6 +4852,13 @@
                     self.open_preferences_modal();
                 }
             });  
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-logout' }, function($t, $p){
+                e.preventDefault();
+                e.stopPropagation();
+                if (!$t.hasClass('NB-disabled')) {
+                    self.logout();
+                }
+            });  
             $.targetIs(e, { tagSelector: '.NB-menu-manage-account' }, function($t, $p){
                 e.preventDefault();
                 if (!$t.hasClass('NB-disabled')) {
@@ -5213,30 +5146,6 @@
                 var page = $t.prevAll('.NB-module-page-indicator').length;
                 self.load_howitworks_page(page);
             }); 
-            $.targetIs(e, { tagSelector: '.NB-module-next-page', childOf: '.NB-module-interactions' }, function($t, $p){
-                e.preventDefault();
-                if (!$t.hasClass('NB-disabled')) {
-                    self.load_interactions_page(1);
-                }
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-module-previous-page', childOf: '.NB-module-interactions' }, function($t, $p){
-                e.preventDefault();
-                if (!$t.hasClass('NB-disabled')) {
-                    self.load_interactions_page(-1);
-                }
-            });
-            $.targetIs(e, { tagSelector: '.NB-module-next-page', childOf: '.NB-module-activities' }, function($t, $p){
-                e.preventDefault();
-                if (!$t.hasClass('NB-disabled')) {
-                    self.load_activities_page(1);
-                }
-            }); 
-            $.targetIs(e, { tagSelector: '.NB-module-previous-page', childOf: '.NB-module-activities' }, function($t, $p){
-                e.preventDefault();
-                if (!$t.hasClass('NB-disabled')) {
-                    self.load_activities_page(-1);
-                }
-            });
             $.targetIs(e, { tagSelector: '.NB-splash-meta-about' }, function($t, $p){
               e.preventDefault();
               NEWSBLUR.about = new NEWSBLUR.About();

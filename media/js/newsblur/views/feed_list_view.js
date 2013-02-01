@@ -174,7 +174,7 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_account_modal({'change_password': true});
         }
 
-        var url = $.getQueryString('url');
+        var url = $.getQueryString('url') || $.getQueryString('add');
         if (url) {
             NEWSBLUR.reader.open_add_feed_modal({url: url});
         }
