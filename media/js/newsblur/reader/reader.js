@@ -40,7 +40,7 @@
                 $river_global_header: $('.NB-feeds-header-river-global'),
                 $starred_header: $('.NB-feeds-header-starred'),
                 $tryfeed_header: $('.NB-feeds-header-tryfeed'),
-                $taskbar: $('.taskbar_nav'),
+                $taskbar: $('.NB-taskbar-view'),
                 $feed_floater: $('.NB-feed-story-view-floater'),
                 $feedbar: $('.NB-feedbar'),
                 $add_button: $('.NB-task-add')
@@ -1054,7 +1054,8 @@
             $('.task_view_page', this.$s.$taskbar).removeClass('NB-task-return');
             clearTimeout(this.flags['next_fetch']);
             
-            if (this.flags['showing_feed_in_tryfeed_view'] || this.flags['showing_social_feed_in_tryfeed_view']) {
+            if (this.flags['showing_feed_in_tryfeed_view'] ||
+                this.flags['showing_social_feed_in_tryfeed_view']) {
                 this.hide_tryfeed_view();
             }
             if (NEWSBLUR.Globals.is_anonymous) {
@@ -1703,7 +1704,7 @@
             var i_width = $progress.width();
             var o_width = this.$s.$story_taskbar.width();
             var left = (o_width / 2.0) - (i_width / 2.0);
-            var view_taskbar_width = $('.taskbar_nav_view').width();
+            var view_taskbar_width = $('.NB-taskbar-view').width();
 
             if (left < view_taskbar_width) {
                 left += view_taskbar_width - left + 12;
@@ -1757,7 +1758,7 @@
             var i_width = $error.width();
             var o_width = this.$s.$story_taskbar.width();
             var left = (o_width / 2.0) - (i_width / 2.0);
-            var view_taskbar_width = $('.taskbar_nav_view').width();
+            var view_taskbar_width = $('.NB-taskbar-view').width();
 
             if (left < view_taskbar_width) {
                 left += view_taskbar_width - left + 12;
@@ -2308,11 +2309,11 @@
               return;
             } else if (_.contains(['page', 'story'], view) && feed && feed.get('disabled_page')) {
                 view = 'feed';
-            } else if ($('.task_button_view.task_view_'+view).hasClass('NB-disabled')) {
+            } else if ($('.task_view_'+view).hasClass('NB-disabled')) {
                 return;
             }
 
-            var $taskbar_buttons = $('.NB-taskbar .task_button_view');
+            var $taskbar_buttons = $('.NB-taskbar .NB-taskbar-button');
             var $feed_view = this.$s.$feed_view;
             var $feed_iframe = this.$s.$feed_iframe;
             var $to_feed_arrow = $('.NB-taskbar .NB-task-view-to-feed-arrow');
@@ -2341,7 +2342,7 @@
                 this.flags['temporary_story_view'] = true;
             } else {
                 $taskbar_buttons.removeClass('NB-active');
-                $('.task_button_view.task_view_'+view).addClass('NB-active');
+                $('.NB-taskbar-button.task_view_'+view).addClass('NB-active');
                 this.story_view = view;
             }
             
@@ -2413,7 +2414,7 @@
         },
         
         switch_taskbar_view_direction: function(direction) {
-            var $active = $('.taskbar_nav_view .NB-active');
+            var $active = $('.NB-taskbar-view .NB-active');
             var view;
             
             if (direction == -1) {
@@ -3568,7 +3569,7 @@
             if (!_.isNumber(unread_view)) unread_view = this.get_unread_view_score();
             var $sidebar               = this.$s.$sidebar;
             var unread_view_name       = this.get_unread_view_name(unread_view);
-            var $next_story_button     = $('.task_story_next_unread');
+            var $next_story_button     = $('.NB-task-story-next-unread');
             var $story_title_indicator = $('.NB-story-title-indicator', this.$story_titles);
 
             $sidebar.removeClass('unread_view_positive')
@@ -3576,10 +3577,10 @@
                     .removeClass('unread_view_negative')
                     .addClass('unread_view_'+unread_view_name);
 
-            $next_story_button.removeClass('task_story_next_positive')
-                              .removeClass('task_story_next_neutral')
-                              .removeClass('task_story_next_negative')
-                              .addClass('task_story_next_'+unread_view_name);
+            $next_story_button.removeClass('NB-task-story-next-positive')
+                              .removeClass('NB-task-story-next-neutral')
+                              .removeClass('NB-task-story-next-negative')
+                              .addClass('NB-task-story-next-'+unread_view_name);
                               
             $story_title_indicator.removeClass('unread_threshold_positive')
                                   .removeClass('unread_threshold_neutral')
@@ -5005,15 +5006,15 @@
                 e.preventDefault();
                 self.open_feed_exception_modal();
             });         
-            $.targetIs(e, { tagSelector: '.task_button_story.task_story_next_unread' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-taskbar-button.NB-task-story-next-unread' }, function($t, $p){
                 e.preventDefault();
                 self.open_next_unread_story_across_feeds();
             }); 
-            $.targetIs(e, { tagSelector: '.task_button_story.task_story_next' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-taskbar-button.NB-task-story-next' }, function($t, $p){
                 e.preventDefault();
                 self.show_next_story(1);
             }); 
-            $.targetIs(e, { tagSelector: '.task_button_story.task_story_previous' }, function($t, $p){
+            $.targetIs(e, { tagSelector: '.NB-taskbar-button.NB-task-story-previous' }, function($t, $p){
                 e.preventDefault();
                 self.show_previous_story();
             }); 

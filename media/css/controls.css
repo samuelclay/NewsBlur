@@ -64,7 +64,8 @@ ul.segmented-control {
     border-right: none;
 }
 
-.segmented-control li:active {
+.segmented-control li:active,
+.segmented-control-active li:active {
     background-image:
         -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .2)), to(rgba(255, 255, 255, .25))),
         url(/media/img/reader/background-control.png);
@@ -86,7 +87,8 @@ ul.segmented-control {
 }
 
 .segmented-control li.NB-active,
-.segmented-control li.NB-active:active {
+.segmented-control li.NB-active:active,
+.segmented-control-active li {
     background-image:
         -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, .05))),
         url(/media/img/reader/background-control-light.png);

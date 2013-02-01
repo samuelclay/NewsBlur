@@ -2989,7 +2989,7 @@ background: transparent;
 #story_taskbar .NB-river-progress {
   position: absolute;
   top: 0;
-  margin: 4px 0 0 0;
+  margin: 6px 12px 0;
   width: 150px;
   height: 20px;
 }
@@ -3015,7 +3015,7 @@ background: transparent;
 #story_taskbar .NB-feed-error {
   position: absolute;
   top: 0;
-  margin: 2px 0 0 0;
+  margin: 6px 12px 0;
   height: 20px;
 }
 
@@ -3391,7 +3391,7 @@ background: transparent;
 
 .NB-taskbar .NB-task-view-switch-arrow {
     position: absolute;
-    top: 8px;
+    top: 5px;
     left: -8px;
     width: 16px;
     height: 16px;
@@ -3438,12 +3438,6 @@ background: transparent;
     background: transparent url('/media/embed/icons/silk/cog.png') no-repeat 0 0;
 }
 
-.NB-taskbar .taskbar_nav_story {
-  right: 0;
-  width: 261px;
-  position: absolute;
-}
-
 /* =================== */
 /* = Taskbar - Story = */
 /* =================== */
@@ -3460,6 +3454,9 @@ background: transparent;
   overflow: hidden;
     display: none;
 }
+#story_taskbar .feed_counts_floater .unread_count {
+    margin-top: 1px;
+}
 #story_taskbar .NB-taskbar {
     margin: 5px 0 0 0;
 }
@@ -3467,6 +3464,7 @@ background: transparent;
     font-size: 11px;
     padding: 4px 8px 3px;
     line-height: 18px;
+    position: relative;
 }
 
 #story_taskbar .NB-taskbar-view {
@@ -3491,7 +3489,8 @@ background: transparent;
     -webkit-filter: grayscale(100%);
 }
 
-.NB-taskbar .NB-active .NB-task-image {
+.NB-taskbar .NB-active .NB-task-image,
+.NB-taskbar.segmented-control-active .NB-task-image {
     filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 1 0\'/></filter></svg>#grayscale");
     -webkit-filter: grayscale(0%);
 }
@@ -3524,88 +3523,38 @@ background: transparent;
 .NB-view-river .NB-task-feed-settings {
     display: none;
 }
-.NB-taskbar .task_story_next_positive .NB-task-image {
+.NB-taskbar .NB-task-story-next-positive .NB-task-image {
     background: transparent url('/media/embed/icons/silk/bullet_green.png') no-repeat 0 0;
 }
-.NB-taskbar .task_story_next_neutral .NB-task-image {
+.NB-taskbar .NB-task-story-next-neutral .NB-task-image {
     background: transparent url('/media/embed/icons/silk/bullet_yellow.png') no-repeat 0 0;
 }
-.NB-taskbar .task_story_next_negative .NB-task-image {
+.NB-taskbar .NB-task-story-next-negative .NB-task-image {
     background: transparent url('/media/embed/icons/silk/bullet_red.png') no-repeat 0 0;
 }
-.NB-taskbar .task_story_previous .NB-task-image {
+.NB-taskbar .NB-task-story-previous .NB-task-image {
     left: 12px;
     background: transparent url('/media/embed/icons/silk/arrow_left.png') no-repeat 0 0;
 }
-.NB-taskbar .task_story_next .NB-task-image {
+.NB-taskbar .NB-task-story-next .NB-task-image {
     left: 12px;
     background: transparent url('/media/embed/icons/silk/arrow_down.png') no-repeat 0 0;
 }
 
-.NB-taskbar .task_button_background {
-    z-index: 0;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-image:
-        -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .2)), to(rgba(255, 255, 255, .25))),
-        url(/media/img/reader/background-control.png);
-    
-    background-image:
-        -moz-linear-gradient(0% 0% -90deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .25)),
-        url(/media/img/reader/background-control.png);
-        
-        background-position: 0 0;
-        background-repeat: repeat;
-        opacity: .2;
-
-}
-
-
-.NB-taskbar .task_button.NB-active {
-}
-.NB-taskbar .task_button.NB-active .NB-task-title {
-    text-shadow: 0px 1px 1px #B7B7B7;
-}
-.NB-taskbar .task_button:hover .task_button_background {
-    opacity: .4;
-}
-.NB-taskbar .task_button.NB-active .task_button_background {
-    background-color: #A0A7B1;
-    background-image:
-        -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, .2)), to(rgba(255, 255, 255, .25))),
-        url(/media/img/reader/background-control.png);
-    
-    background-image:
-        -moz-linear-gradient(0% 0% -90deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .25)),
-        url(/media/img/reader/background-control.png);
-    background-position: 0 0;
-    opacity: .65;
-    border-top: none;
-    -webkit-box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
-                        inset 0 0 1px rgba(0, 0, 0, .1);
-    -moz-box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
-                     inset 0 0 1px rgba(0, 0, 0, .1);
-    box-shadow: inset 0 1px 4px rgba(0, 0, 0, .15),
-                inset 0 0 1px rgba(0, 0, 0, .1);
-}
-
-.NB-taskbar .task_button.NB-task-return .NB-task-image {
+.NB-taskbar .NB-task-return .NB-task-image {
     background: transparent url('/media/embed/icons/silk/arrow_undo.png') no-repeat 0 0;
 }
-.NB-taskbar .task_button.task_view_page .NB-task-title.NB-task-original-return {
+.NB-taskbar .task_view_page .NB-task-title.NB-task-original-return {
     display: none;
     font-size: 12px;
     padding-top: 1px;
     line-height: 13px;
 }
-.NB-taskbar .task_button.task_view_page.NB-task-return .NB-task-title {
+.NB-taskbar .task_view_page.NB-task-return .NB-task-title {
   display: none;
 }
-.NB-taskbar .task_button.task_view_page.NB-task-return .NB-task-title.NB-task-original-return {
-  display: block;
+.NB-taskbar .task_view_page.NB-task-return .NB-task-title.NB-task-original-return {
+  display: inline-block;
 }
 
 

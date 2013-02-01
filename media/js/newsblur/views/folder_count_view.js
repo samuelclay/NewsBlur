@@ -59,8 +59,8 @@ NEWSBLUR.Views.FolderCount = Backbone.View.extend({
         var i_width = this.$el.width();
         var o_width = NEWSBLUR.reader.$s.$story_taskbar.width();
         var left = (o_width / 2.0) - (i_width / 2.0);
-        var view_taskbar_width = $('.taskbar_nav_view').width();
-        var story_buttons_offset = $(".taskbar_nav_story").position().left;
+        var view_taskbar_width = $('.NB-taskbar-view').outerWidth(true);
+        var story_buttons_offset = $(".NB-taskbar-nav").position().left;
         
         if (i_width + 12 > (story_buttons_offset - view_taskbar_width)) {
             this.$el.hide();
