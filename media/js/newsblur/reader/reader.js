@@ -278,7 +278,7 @@
             var rightLayoutOptions = { 
                 resizeWhileDragging:    true,
                 center__paneSelector:   ".content-pane",
-                spacing_open:           story_anchor == 'west' ? 4 : 4,
+                spacing_open:           story_anchor == 'west' ? 1 : 4,
                 resizerDragOpacity:     0.6,
                 enableCursorHotkey:     false,
                 togglerLength_open:     0,

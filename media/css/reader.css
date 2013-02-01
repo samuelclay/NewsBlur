@@ -2092,22 +2092,24 @@ background: transparent;
     color: #1010A0;
 }
 
-#story_pane .NB-feed-story-author {
+#story_pane .NB-feed-story-author-wrapper {
     float: left;
     font-size: 11px;
     color: #757B6B;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .3);
-    cursor: pointer;
     margin: 0 8px 6px 0;
 }
-#story_pane .NB-feed-story-author .NB-middot {
+#story_pane .NB-feed-story-author-wrapper .NB-middot {
     color: #A0A0A0;
     padding-right: 4px;
     font-weight: normal;
 }
-#story_pane .read .NB-feed-story-author {
+#story_pane .read .NB-feed-story-author-wrapper {
     color: #959B8B;
     text-shadow: none;
+}
+#story_pane .NB-feed-story-author {
+    cursor: pointer;
 }
 #story_pane .NB-feed-story-author.NB-score-1 {
     color: #34912E;
@@ -3469,7 +3471,7 @@ background: transparent;
 
 #story_taskbar .NB-taskbar-view {
     float: left;
-    margin-left: 12px;
+    margin-left: 6px;
 }
 
 #story_taskbar .NB-taskbar-nav {
@@ -7582,6 +7584,7 @@ form.opml_import_form input {
     clear: none;
     padding: 1px 12px 0;
     font-size: 12px;
+    width: 100px;
 }
 
 /* ================== */

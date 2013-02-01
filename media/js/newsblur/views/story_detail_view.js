@@ -123,9 +123,11 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                     <% } %>\
                 <% } %>\
                 <% if (story.get("story_authors")) { %>\
-                    <div class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
+                    <div class="NB-feed-story-author-wrapper">\
                         <span class="NB-middot">&middot;</span>\
-                        <%= story.get("story_authors") %>\
+                        <span class="NB-feed-story-author <% if (authors_score) { %>NB-score-<%= authors_score %><% } %>">\
+                            <%= story.get("story_authors") %>\
+                        </span>\
                     </div>\
                 <% } %>\
                 <% if (story.get("story_tags", []).length) { %>\
@@ -437,7 +439,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
     
     save_classifier: function(e) {
         var $tag = $(e.currentTarget);
-        var classifier_type = $tag.hasClass('NB-feed-story-author') ? 'author' : 'tag';
+        var classifier_type = $tag.hasClass('NB-feed-story-tag') ? 'tag' : 'author';
         var value = _.string.trim($tag.text());
         var score = $tag.hasClass('NB-score-1') ? -1 : $tag.hasClass('NB-score--1') ? 0 : 1;
         var feed_id = this.model.get('story_feed_id');
