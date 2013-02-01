@@ -179,6 +179,8 @@ class Profile(models.Model):
                                           payment_amount=payment.payment_gross,
                                           payment_provider='paypal')
         
+        print " ---> Found %s paypal_payments" % len(paypal_payments)
+        
         # Record Stripe payments
         if self.stripe_id:
             stripe.api_key = settings.STRIPE_SECRET
@@ -190,6 +192,7 @@ class Profile(models.Model):
                                               payment_date=created,
                                               payment_amount=payment.amount / 100.0,
                                               payment_provider='stripe')
+            print " ---> Found %s stripe_payments" % len(stripe_payments)
         
         # Calculate last payment date
         payment_history = PaymentHistory.objects.filter(user=self.user)
@@ -197,6 +200,7 @@ class Profile(models.Model):
         for payment in payment_history:
             if not most_recent_payment_date or payment.payment_date > most_recent_payment_date:
                 most_recent_payment_date = payment.payment_date
+        print " ---> %s payments" % len(payment_history)
         
         if most_recent_payment_date:
             payment_gap = 0
@@ -434,7 +438,10 @@ post_save.connect(create_profile, sender=User)
 
 def paypal_signup(sender, **kwargs):
     ipn_obj = sender
-    user = User.objects.get(username=ipn_obj.custom)
+    try:
+        user = User.objects.get(username__iexact=ipn_obj.custom)
+    except User.DoesNotExist:
+        user = User.objects.get(email__iexact=ipn_obj.payer_email)
     try:
         if not user.email:
             user.email = ipn_obj.payer_email
@@ -446,7 +453,10 @@ subscription_signup.connect(paypal_signup)
 
 def paypal_payment_history_sync(sender, **kwargs):
     ipn_obj = sender
-    user = User.objects.get(username=ipn_obj.custom)
+    try:
+        user = User.objects.get(username__iexact=ipn_obj.custom)
+    except User.DoesNotExist:
+        user = User.objects.get(email__iexact=ipn_obj.payer_email)
     try:
         user.profile.setup_premium_history()
     except:
@@ -508,6 +518,9 @@ class PaymentHistory(models.Model):
     payment_amount = models.IntegerField()
     payment_provider = models.CharField(max_length=20)
     
+    def __unicode__(self):
+        return "[%s] $%s/%s" % (self.payment_date.strftime("%Y-%m-%d"), self.payment_amount,
+                                self.payment_provider)
     class Meta:
         ordering = ['-payment_date']
         
