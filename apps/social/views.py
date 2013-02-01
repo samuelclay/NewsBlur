@@ -363,7 +363,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         socialsubs = MSocialSubscription.objects.filter(user_id=relative_user_id) 
         social_user_ids = [s.subscription_user_id for s in socialsubs]
         story_ids, story_dates = MSocialSubscription.feed_stories(user.pk, social_user_ids, 
-                                                 offset=offset, limit=limit,
+                                                 offset=offset, limit=limit+1,
                                                  # order=order, read_filter=read_filter,
                                                  relative_user_id=relative_user_id,
                                                  everything_unread=True)
@@ -386,7 +386,7 @@ def load_social_page(request, user_id, username=None, **kwargs):
         mstories = MSharedStory.objects(**params).order_by('-shared_date')[offset:limit+1]
         stories = Feed.format_stories(mstories)
 
-        if len(stories) > limit:
+        if len(stories) > (limit - offset):
             has_next_page = True
             stories = stories[:-1]
 
