@@ -23,6 +23,7 @@ NEWSBLUR.Modal.prototype = {
             'onOpen': function (dialog) {
                 self.flags.open = true;
                 dialog.overlay.fadeIn(200, function () {
+                    dialog.container.addClass(self.options.modal_container_class);
                     dialog.container.fadeIn(200);
                     dialog.data.fadeIn(200, function() {
                         if (self.options.onOpen) {

@@ -868,7 +868,7 @@ body {
 
 .unread_count_negative {
     background-color: #CC2A2E;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+/*    text-shadow: 0 1px 0 rgba(0, 0, 0, .3);*/
 }
 
 .unread_view_positive .unread_count {
@@ -6220,12 +6220,27 @@ form.opml_import_form input {
 
 .NB-modal-intro {
 }
+#simplemodal-container.NB-intro-container {
+    padding: 0;
+}
+
+.NB-modal.NB-modal-intro .NB-modal-title {
+    text-align: center;
+    font-weight: normal;
+    line-height: 46px;
+}
+.NB-modal-intro .NB-divider {
+    height: 1px;
+    width: 100%;
+    clear: both;
+    margin: 12px 0;
+    background-color: #F4F5F2;
+}
 
 .NB-modal-intro .NB-modal-loading {
     margin: 8px 8px 0 0;
 }
 .NB-modal-intro .NB-intro-section {
-    border-bottom: 1px solid #E6E6E6;
     padding: 24px 4px;
     text-align: center;
     overflow: hidden;
@@ -6237,8 +6252,13 @@ form.opml_import_form input {
   display: none;
 }
 .NB-modal-intro .NB-modal-page {
-  float: right;
-  margin-top: 7px;
+    position: absolute;
+    top: 14px;
+    right: 12px;
+    line-height: 46px;
+}
+.NB-modal-intro .NB-modal-page-text {
+    float: right;
 }
 .NB-modal-intro .NB-page {
   height: 390px;
@@ -6249,8 +6269,15 @@ form.opml_import_form input {
   display: block;
 }
 .NB-modal-intro .NB-modal-submit {
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border-radius: 6px;
+    padding: 24px;
+    background-color: #F7F8F5;
+    border-top: 1px solid #DFE2DA;
     position: absolute;
-    padding: 0 12px 12px;
     bottom: 0;
     right: 0;
 }
@@ -6271,7 +6298,7 @@ form.opml_import_form input {
 
 .NB-modal-intro .NB-intro-spinning-logo {
     position: absolute;
-    top: 72px;
+    top: 90px;
     left: 180px;
     width: 256px;
     height: 256px;
@@ -6291,7 +6318,7 @@ form.opml_import_form input {
 } 
 
 .NB-modal-intro .NB-page-1-started {
-    margin: 316px 0 0;
+    margin: 284px 0 0;
     text-align: center;
 }
 
@@ -6308,22 +6335,38 @@ form.opml_import_form input {
     position: relative;
 }
 
-.NB-modal-intro .carousel-inner {
-    border-bottom: 1px solid #E6E6E6;
-}
-.NB-modal-intro .carousel .item {
+.NB-modal-intro .NB-carousel {
+    position: relative;
+    height: 240px;
     overflow: hidden;
 }
-.NB-modal-intro .NB-intro-imports-start {
-    min-height: 234px;
+.NB-modal-intro .NB-carousel-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
-
-.NB-modal-intro .NB-intro-imports-progress {
-    min-height: 234px;
+.NB-modal-intro .NB-carousel .NB-carousel-item {
+    overflow: hidden;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
-
-.NB-modal-intro .NB-intro-imports-sites {
-    min-height: 234px;
+.NB-modal-intro .NB-carousel-item.NB-intro-imports-start {
+    left: 0;
+    padding: 0 48px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.NB-modal-intro .NB-carousel-item.NB-intro-imports-progress {
+    left: 100%;
+}
+.NB-modal-intro .NB-carousel-item.NB-intro-imports-sites {
+    left: 200%;
 }
 
 .NB-modal-intro .NB-intro-import-delayed {
@@ -6333,15 +6376,26 @@ form.opml_import_form input {
     text-align: center;
     display: none;
 }
-.NB-modal-intro .NB-intro-import {
-    width: 300px;
-    float: left;
+.NB-modal-intro .NB-intro-import-container {
+    width: 46%;
     text-align: center;
-    padding: 12px 0 31px;
+}
+.NB-modal-intro .NB-module-content-header {
+    text-align: center;
+    padding: 4px 0;
+    margin: 0;
+}
+.NB-modal-intro .NB-intro-import {
+    border-radius: 3px;
+    background-color: #F7F8F5;
+    border: 1px solid #DFE2DA;
+    padding: 12px;
+    overflow: hidden;
 }
 
 .NB-modal-intro .NB-page-2 h4 {
-    margin-bottom: 34px;
+    margin: 16px 0 22px;
+    font-size: 24px;
 }
 .NB-modal-intro .NB-intro-import .NB-modal-submit-button {
     margin: 0;
@@ -6366,8 +6420,6 @@ form.opml_import_form input {
     z-index: 10;
 }
 .NB-modal-intro .NB-intro-import.NB-intro-import-opml {
-    width: 260px;
-    border-left: 1px solid #E6E6E6;
     position: relative;
 }
 .NB-modal-intro .NB-intro-import .NB-error  {
@@ -6376,7 +6428,9 @@ form.opml_import_form input {
     line-height: 13px;
 }
 .NB-modal-intro .NB-intro-import h3 {
-    height: 48px;
+    height: 24px;
+    font-size: 32px;
+    line-height: 23px;
 }
 .NB-modal-intro .NB-add-google-reader-arrow {
     width: 16px;
@@ -6386,17 +6440,17 @@ form.opml_import_form input {
 }
 .NB-modal-intro .NB-intro-bookmarklet {
     text-align: center;
-    padding-left: 112px;
+    padding: 0 48px;
+    width: 100%;
+    overflow: hidden;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 .NB-modal-intro .NB-intro-bookmarklet-info {
     float: left;
-    font-size: 15px;
-}
-.NB-modal-intro .NB-intro-bookmarklet-arrow {
-    float: left;
-    font-size: 24px;
-    line-height: 20px;
-    margin: 0 12px;
+    font-size: 13px;
+    padding: 2px 0 0 12px;
 }
 .NB-modal-intro a.NB-goodies-bookmarklet-button {
     float: left;
