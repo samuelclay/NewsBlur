@@ -40,7 +40,7 @@ NEWSBLUR.Views.TextTabView = Backbone.View.extend({
             skip_content: true,
             text_view: true
         }).render().el);
-        
+        NEWSBLUR.reader.$s.$text_view.scrollTop(0);
         this.show_loading();
         NEWSBLUR.assets.fetch_original_text(story.get('id'), story.get('story_feed_id'), 
                                             _.bind(this.render, this), 

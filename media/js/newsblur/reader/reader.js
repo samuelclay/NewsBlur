@@ -1210,6 +1210,13 @@
             var $page_tab = $('.task_view_page');
             view = view || NEWSBLUR.assets.view_setting(feed_id);
 
+            $original_tabs.removeClass('NB-disabled-page')
+                          .removeClass('NB-disabled')
+                          .removeClass('NB-exception-page');
+            $original_tabs.each(function() {
+                $(this).tipsy('disable');
+            });
+
             if (feed && feed.get('disabled_page')) {
                 view = 'feed';
                 $original_tabs.addClass('NB-disabled-page')
@@ -1223,22 +1230,17 @@
                 $original_tabs.each(function() {
                     $(this).tipsy('enable');
                 });
+            } else if (this.flags.river_view) {
+                $page_tab.addClass('NB-disabled');
             } else if (feed && feed.get('has_exception') && feed.get('exception_type') == 'page') {
                 if (view == 'page') {
                     view = 'feed';
                 }
                 $('.task_view_page').addClass('NB-exception-page');
-            } else {
-                $original_tabs.removeClass('NB-disabled-page')
-                              .removeClass('NB-disabled')
-                              .removeClass('NB-exception-page');
-                $original_tabs.each(function() {
-                    $(this).tipsy('disable');
-                });
             }
 
             if (feed_id == 'starred') {
-                $page_tab.addClass('NB-disabled-page').addClass('NB-disabled');
+                $page_tab.addClass('NB-disabled');
             }
 
             this.story_view = view;
